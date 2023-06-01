@@ -1,5 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
+import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 
@@ -117,8 +118,15 @@ const AddRule = () => {
     setTimeout(() => {
       axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/rules-engine/updated')
+          const { isSuccess } = response.data;
+          if (isSuccess) {
+            notify('Data Saved');
+            navigate('/qradar/rules-engine/updated')
+          } else {
+            notifyFail('Failed to save data');
+          }
+          // console.log(JSON.stringify(response.data))
+          // navigate('/qradar/rules-engine/updated')
         })
         .catch(function (error) {
           console.log(error)

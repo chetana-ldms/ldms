@@ -2,8 +2,10 @@ import React, {useState, useEffect} from 'react'
 import CanvasJSReact from './assets/canvasjs.react'
 const CanvasJSChart = CanvasJSReact.CanvasJSChart
 
-function AlertsTrends() {
+function AlertsTrends(props) {
+  const { days, orgId } = props;
   const [alertData, setAlertData] = useState([])
+  console.log(alertData, "alertData")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -67,7 +69,7 @@ function AlertsTrends() {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              orgId: 1,
+              orgId: orgId,
             }),
           }
         )
@@ -87,7 +89,7 @@ function AlertsTrends() {
     }
 
     fetchData()
-  }, [])
+  }, [orgId])
 
   console.log(alertData) // Log the alertData to the console
 

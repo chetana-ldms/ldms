@@ -1,7 +1,9 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
+import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
+import {fetchLDPTools} from '../../../../../api/Api'
 
 const UpdateToolAction = () => {
   const navigate = useNavigate()
@@ -9,9 +11,24 @@ const UpdateToolAction = () => {
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
   const [toolActionTypes, setToolActionTypes] = useState([])
+  const [ldpTools, setLdpTools] = useState([]);
+  console.log(ldpTools, "ldpTools")
   const toolID = useRef()
   const toolTypeActionID = useRef()
+  const toolId = useRef()
   const errors = {}
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchLDPTools();
+        setLdpTools(data);
+      } catch (error) {
+        console.log(error)
+      }
+    };
+
+    fetchData();
+  }, []);
   useEffect(() => {
     setLoading(true)
     var config = {
@@ -64,12 +81,14 @@ const UpdateToolAction = () => {
       return errors
     }
     event.preventDefault()
+    const modifiedUserId = Number(sessionStorage.getItem('userId'));
+    const modifiedDate = new Date().toISOString();
     var data = JSON.stringify({
       toolID: toolID.current.value,
       toolTypeActionID: toolTypeActionID.current.value,
       toolActionID: id,
-      modifiedDate: '2023-01-10T15:14:46.337Z',
-      modifiedUser: 'super_admin',
+      modifiedDate,
+      modifiedUserId
     })
     var config = {
       method: 'post',
@@ -83,8 +102,15 @@ const UpdateToolAction = () => {
     setTimeout(() => {
       axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/tool-actions/updated')
+          const { isSuccess } = response.data;
+          if (isSuccess) {
+            notify('Data Updated');
+            navigate('/qradar/tool-actions/updated');
+          } else {
+            notifyFail('Failed to update data');
+          }
+          // console.log(JSON.stringify(response.data))
+          // navigate('/qradar/tool-actions/updated')
         })
         .catch(function (error) {
           console.log(error)
@@ -111,7 +137,7 @@ const UpdateToolAction = () => {
       <form>
         <div className='card-body border-top p-9'>
           <div className='row mb-6'>
-            <div className='col-lg-6 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
                   Select Tool Type
@@ -134,7 +160,31 @@ const UpdateToolAction = () => {
                 </select>
               </div>
             </div>
-            <div className='col-lg-6 mb-4 mb-lg-0'>
+
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
+                  Tools
+                </label>
+                <select
+                  className='form-select form-select-solid'
+                  data-kt-select2='true'
+                  data-placeholder='Select option'
+                  data-allow-clear='true'
+                  id='toolId'
+                  ref={toolId}
+                  required
+                >
+                  <option value=''>Select Tools</option>
+                  {ldpTools.map((item, index) => (
+                    <option value={item.toolId} key={index}>
+                      {item.toolName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='toolTypeActionID' className='form-label fs-6 fw-bolder mb-3'>
                   Tool Action Type
@@ -159,6 +209,9 @@ const UpdateToolAction = () => {
             </div>
           </div>
         </div>
+
+
+        
         <div className='card-footer d-flex justify-content-end py-6 px-9'>
           <button
             type='submit'

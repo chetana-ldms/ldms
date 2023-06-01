@@ -1,8 +1,10 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
+import {fetchRoles} from '../../../../../api/Api'
 import axios from 'axios'
 
 const UpdateUserData = () => {
+  const orgId = Number(sessionStorage.getItem('orgId'));
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [roleTypes, setRoleTypes] = useState([])
@@ -60,24 +62,37 @@ const UpdateUserData = () => {
     }, 1000)
   }
 
+  // useEffect(() => {
+  //   setLoading(true)
+  //   var config = {
+  //     method: 'post',
+  //     url: 'http://115.110.192.133:502/api/LDPSecurity/v1/Roles',
+  //     headers: {
+  //       Accept: 'text/plain',
+  //     },
+  //   }
+  //   axios(config)
+  //     .then(function (response) {
+  //       setRoleTypes(response.data.rolesList)
+  //       setLoading(false)
+  //     })
+  //     .catch(function (error) {
+  //       console.log(error)
+  //     })
+  // }, [])
+  
   useEffect(() => {
-    setLoading(true)
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPSecurity/v1/Roles',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-    axios(config)
-      .then(function (response) {
-        setRoleTypes(response.data.rolesList)
-        setLoading(false)
-      })
-      .catch(function (error) {
+    const fetchData = async () => {
+      try {
+        const data = await fetchRoles(orgId);
+        setRoleTypes(data);
+      } catch (error) {
         console.log(error)
-      })
-  }, [])
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className='card'>

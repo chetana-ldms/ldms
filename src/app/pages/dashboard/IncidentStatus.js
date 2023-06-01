@@ -1,13 +1,13 @@
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from 'react';
 
-function IncidentStatus() {
-  const [data, setData] = useState([])
-  const [alertData, setAlertData] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [selectedStatus, setSelectedStatus] = useState('')
-  const statusNames = alertData.map((alert) => alert.statusName)
-  const alertCounts = alertData.map((alert) => alert.alertCount)
+function IncidentStatus(props) {
+  const { days, orgId } = props;
+  const [alertData, setAlertData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [statusNames, setStatusNames] = useState([]);
+  const [alertCounts, setAlertCounts] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,36 +20,63 @@ function IncidentStatus() {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              orgId: 1,
+              orgId: orgId,
               incidentFromDate: '2022-04-13T05:43:48.828Z',
               incidentToDate: '2023-04-13T05:43:48.828Z',
             }),
           }
-        )
+        );
 
         if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(`Network response was not ok: ${response.status} - ${errorData.message}`)
+          const errorData = await response.json();
+          throw new Error(`Network response was not ok: ${response.status} - ${errorData.message}`);
         }
 
-        const {data} = await response.json() // destructure the 'data' property from the response object
-        setAlertData(data)
-        setSelectedStatus(data[0]?.statusName || '')
-        setLoading(false)
+        const { data } = await response.json();
+        setAlertData(data);
+        setSelectedStatus(data[0]?.statusName || '');
+
+        const names = data.map((alert) => alert.statusName);
+        const counts = data.map((alert) => alert.alertCount);
+        setStatusNames(names);
+        setAlertCounts(counts);
+
+        setLoading(false);
       } catch (error) {
-        setError(error.message)
-        setLoading(false)
+        setError(error.message);
+        setLoading(false);
       }
+    };
+
+    if (orgId) {
+      fetchData();
+    } else {
+      setError('Organization ID is required.');
+      setLoading(false);
     }
 
-    fetchData()
-  }, [])
+    return () => {
+      // Cleanup function to reset states
+      setAlertData([]);
+      setLoading(true);
+      setError(null);
+      setSelectedStatus('');
+      setStatusNames([]);
+      setAlertCounts([]);
+    };
+  }, [orgId]);
 
   const handleSelectChange = (event) => {
-    setSelectedStatus(event.target.value)
+    setSelectedStatus(event.target.value);
+  };
+
+  if (!orgId) {
+    return <div>Organization ID is missing.</div>;
   }
 
-  const alertCount = alertCounts[statusNames.indexOf(selectedStatus)] || 0
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className='card-body'>
@@ -78,17 +105,16 @@ function IncidentStatus() {
         {alertData.length > 0 && (
           <div className='row bar-chart mt-8'>
             {loading && <div>Loading...</div>}
-            {error && <div>Error: {error}</div>}
             {selectedStatus && (
               <>
                 <div className='col-lg-3'>
                   <span className='text text-right d-block'>{selectedStatus}</span>{' '}
                 </div>
                 <div className='col-lg-7'>
-                  <span className='bar'>{alertCount}</span>
+                  <span className='bar'>{alertCounts[statusNames.indexOf(selectedStatus)] || 0}</span>
                 </div>
                 <div className='col-lg-2'>
-                  <span>Total</span> <span>{alertCount}</span>
+                  <span>Total</span> <span>{alertCounts[statusNames.indexOf(selectedStatus)] || 0}</span>
                 </div>
               </>
             )}
@@ -96,7 +122,7 @@ function IncidentStatus() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
-export default IncidentStatus
+export default IncidentStatus;

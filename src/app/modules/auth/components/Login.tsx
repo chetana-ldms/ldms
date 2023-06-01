@@ -1,30 +1,36 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useState} from 'react'
+// import { AES } from 'crypto-js';
+import { useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import clsx from 'clsx'
-import {Link} from 'react-router-dom'
-import {useFormik} from 'formik'
-import {getUserByToken, login} from '../core/_requests'
-import {toAbsoluteUrl} from '../../../../_metronic/helpers'
-import {useAuth} from '../core/Auth'
-
+import { Link, useNavigate } from 'react-router-dom'
+import { useFormik } from 'formik'
+// import { getUserByToken, login } from '../core/_requests'
+import { getUserByToken } from '../core/_requests'
+import { toAbsoluteUrl } from '../../../../_metronic/helpers'
+import { fetchAuthenticate, fetchOrganizations } from '../../../api/Api'
+// import { useAuth } from '../core/Auth'
+import axios from 'axios'
 const loginSchema = Yup.object().shape({
-  email: Yup.string()
-    .email('Wrong email format')
+  username: Yup.string()
     .min(3, 'Minimum 3 symbols')
-    .max(50, 'Maximum 50 symbols')
-    .required('Email is required'),
+    .required('Username is required'),
   password: Yup.string()
     .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
     .required('Password is required'),
-})
+  org: Yup.string().required('Organisation is required'),
+});
 
-const initialValues = {
-  email: 'admin@demo.com',
-  password: 'demo',
+interface Organisation {
+  orgID: number;
+  orgName: string;
 }
-
+const initialValues = {
+  username: '',
+  password: '',
+  org: 0,
+};
 /*
   Formik+YUP+Typescript:
   https://jaredpalmer.com/formik/docs/tutorial#getfieldprops
@@ -33,21 +39,42 @@ const initialValues = {
 
 export function Login() {
   const [loading, setLoading] = useState(false)
-  const {saveAuth, setCurrentUser} = useAuth()
-
+  // const { saveAuth, setCurrentUser } = useAuth()
+  const [organisation, setOrganisation] = useState([]);
+  const navigate = useNavigate()
+  useEffect(() => {
+    fetchOrganizations()
+      .then(orgRes => {
+        setOrganisation(orgRes);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, []);
   const formik = useFormik({
     initialValues,
     validationSchema: loginSchema,
-    onSubmit: async (values, {setStatus, setSubmitting}) => {
+    onSubmit: async (values, { setStatus, setSubmitting }) => {
       setLoading(true)
       try {
-        const {data: auth} = await login(values.email, values.password)
-        saveAuth(auth)
-        const {data: user} = await getUserByToken(auth.api_token)
-        setCurrentUser(user)
+        const authData = await fetchAuthenticate(values.username, values.password, Number(values.org))
+        console.log(authData, "authData")
+        if (authData.isSuccess) {
+          sessionStorage.setItem('userId', authData.userID);
+          sessionStorage.setItem('orgId', authData.orgId);
+          sessionStorage.setItem('userName', authData.userName);
+          navigate('/dashboard')
+        } else {
+          setStatus('The login details are incorrect')
+        }
+        // saveAuth(auth);
+        // const { data: auth } = await login(values.username, values.password, Number(values.org));
+        // saveAuth(auth);
+        // const { data: user } = await getUserByToken(auth.api_token);
+        // setCurrentUser(user);
       } catch (error) {
         console.error(error)
-        saveAuth(undefined)
+        // saveAuth(undefined)
         setStatus('The login details are incorrect')
         setSubmitting(false)
         setLoading(false)
@@ -86,24 +113,24 @@ export function Login() {
 
       {/* begin::Form group */}
       <div className='fv-row mb-8'>
-        <label className='form-label fs-6 fw-bolder text-dark'>Email</label>
+        <label className='form-label fs-6 fw-bolder text-dark'>Username</label>
         <input
-          placeholder='Email'
-          {...formik.getFieldProps('email')}
+          placeholder='username'
+          {...formik.getFieldProps('username')}
           className={clsx(
             'form-control bg-transparent',
-            {'is-invalid': formik.touched.email && formik.errors.email},
+            { 'is-invalid': formik.touched.username && formik.errors.username },
             {
-              'is-valid': formik.touched.email && !formik.errors.email,
+              'is-valid': formik.touched.username && !formik.errors.username,
             }
           )}
-          type='email'
-          name='email'
+          type='text'
+          name='username'
           autoComplete='off'
         />
-        {formik.touched.email && formik.errors.email && (
+        {formik.touched.username && formik.errors.username && (
           <div className='fv-plugins-message-container'>
-            <span role='alert'>{formik.errors.email}</span>
+            <span role='alert'>{formik.errors.username}</span>
           </div>
         )}
       </div>
@@ -113,6 +140,7 @@ export function Login() {
       <div className='fv-row mb-3'>
         <label className='form-label fw-bolder text-dark fs-6 mb-0'>Password</label>
         <input
+          placeholder='password'
           type='password'
           autoComplete='off'
           {...formik.getFieldProps('password')}
@@ -134,6 +162,34 @@ export function Login() {
           </div>
         )}
       </div>
+      <div className='fv-row mb-8'>
+        <label className='form-label fs-6 fw-bolder text-dark'>Organisation Name</label>
+        <select
+          placeholder='Organisation'
+          {...formik.getFieldProps('org')}
+          className={clsx(
+            'form-select form-control bg-transparent',
+            { 'is-invalid': formik.touched.org && formik.errors.org },
+            {
+              'is-valid': formik.touched.org && !formik.errors.org,
+            }
+          )}
+          autoComplete='off'
+        >
+          <option value="" >Select</option>
+          {organisation.length > 0 &&
+            organisation.map((user: Organisation) => (
+              <option key={user.orgID} value={user.orgID}>
+                {user.orgName}
+              </option>
+            ))}
+        </select>
+        {formik.touched.org && formik.errors.org && (
+          <div className='fv-plugins-message-container'>
+            <span role='alert'>{formik.errors.org}</span>
+          </div>
+        )}
+      </div>
       {/* end::Form group */}
 
       {/* begin::Wrapper */}
@@ -141,9 +197,9 @@ export function Login() {
         <div />
 
         {/* begin::Link */}
-        <Link to='/auth/forgot-password' className='link-primary'>
+        {/* <Link to='/auth/forgot-password' className='link-primary'>
           Forgot Password ?
-        </Link>
+        </Link> */}
         {/* end::Link */}
       </div>
       {/* end::Wrapper */}
@@ -156,23 +212,25 @@ export function Login() {
           className='btn btn-primary'
           disabled={formik.isSubmitting || !formik.isValid}
         >
-          {!loading && <span className='indicator-label'>Continue</span>}
-          {loading && (
-            <span className='indicator-progress' style={{display: 'block'}}>
+          <span className='indicator-label' >Continue</span>
+          {/* {!loading && <span className='indicator-label' >Continue</span>} */}
+
+          {/* {loading && (
+            <span className='indicator-progress' style={{ display: 'block' }}>
               Please wait...
               <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
             </span>
-          )}
+          )} */}
         </button>
       </div>
       {/* end::Action */}
 
-      <div className='text-gray-500 text-center fw-semibold fs-6'>
+      {/* <div className='text-gray-500 text-center fw-semibold fs-6'>
         Not a Member yet?{' '}
         <Link to='/auth/registration' className='link-primary'>
           Sign up
         </Link>
-      </div>
+      </div> */}
     </form>
   )
 }

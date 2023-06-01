@@ -1,15 +1,18 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {Link, useNavigate, useParams} from 'react-router-dom'
+import React, { useState, useRef, useEffect } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
+import { notify, notifyFail } from '../components/notification/Notification';
+import { UsersListLoading } from '../components/loading/UsersListLoading'
 
 const UpdateToolTypeAction = () => {
   const navigate = useNavigate()
-  const {id} = useParams()
+  const { id } = useParams()
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
   const toolTypeID = useRef()
   const toolAction = useRef()
+  
+  console.log(toolTypeID,"toolTypeID")
   const errors = {}
   useEffect(() => {
     setLoading(true)
@@ -50,14 +53,16 @@ const UpdateToolTypeAction = () => {
     }
 
     event.preventDefault()
-
+    const modifiedUserId = Number(sessionStorage.getItem('userId'));
+    const modifiedDate = new Date().toISOString();
     var data = JSON.stringify({
       toolTypeID: toolTypeID.current.value,
       toolAction: toolAction.current.value,
       toolTypeActionID: id,
-      createdDate: '2023-01-10T15:14:46.337Z',
-      createdUser: 'super_admin',
+      modifiedDate,
+      modifiedUserId
     })
+    console.log(data, "data111")
     var config = {
       method: 'post',
       url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeAction/Update',
@@ -70,8 +75,14 @@ const UpdateToolTypeAction = () => {
     setTimeout(() => {
       axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/tool-type-actions/updated')
+          const { isSuccess } = response.data;
+
+          if (isSuccess) {
+            notify('Data Updated');
+            navigate('/qradar/tool-type-actions/updated');
+          } else {
+            notifyFail('Failed to update data');
+          }
         })
         .catch(function (error) {
           console.log(error)
@@ -146,7 +157,7 @@ const UpdateToolTypeAction = () => {
           >
             {!loading && 'Save Changes'}
             {loading && (
-              <span className='indicator-progress' style={{display: 'block'}}>
+              <span className='indicator-progress' style={{ display: 'block' }}>
                 Please wait...{' '}
                 <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
               </span>
@@ -158,4 +169,4 @@ const UpdateToolTypeAction = () => {
   )
 }
 
-export {UpdateToolTypeAction}
+export { UpdateToolTypeAction }

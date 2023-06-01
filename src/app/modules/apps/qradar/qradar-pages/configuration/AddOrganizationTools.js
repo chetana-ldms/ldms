@@ -1,5 +1,8 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 
 const AddOrganizationTools = () => {
@@ -35,14 +38,16 @@ const AddOrganizationTools = () => {
     }
     setLoading(true)
     event.preventDefault()
+    const createdUserId = Number(sessionStorage.getItem('userId'));
+    const createdDate = new Date().toISOString();
     var data = JSON.stringify({
       toolID: toolID.current.value,
       orgID: orgID.current.value,
       authKey: authKey.current.value,
       lastReadPKID: 0,
       apiUrl: apiUrl.current.value,
-      createdDate: '2022-12-29T14:31:55.732Z',
-      createdUser: 'super_admin',
+      createdDate,
+      createdUserId
     })
     var config = {
       method: 'post',
@@ -56,8 +61,16 @@ const AddOrganizationTools = () => {
     setTimeout(() => {
       axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/organization-tools/updated')
+          const { isSuccess } = response.data;
+
+          if (isSuccess) {
+            notify('Data Saved');
+            navigate('/qradar/organization-tools/updated');
+          } else {
+            notifyFail('Failed to save data');
+          }
+          // console.log(JSON.stringify(response.data))
+          // navigate('/qradar/organization-tools/updated')
         })
         .catch(function (error) {
           console.log(error)
@@ -104,6 +117,7 @@ const AddOrganizationTools = () => {
   }, [])
   return (
     <div className='card'>
+      <ToastContainer />
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
           <span className='card-label fw-bold fs-3 mb-1'>Configure New Organization Tool</span>

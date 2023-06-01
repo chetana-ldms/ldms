@@ -1,7 +1,8 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {Link, useNavigate} from 'react-router-dom'
+import React, { useState, useRef, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
+import { UsersListLoading } from '../components/loading/UsersListLoading'
 
 const AddToolAction = () => {
   const navigate = useNavigate()
@@ -64,11 +65,13 @@ const AddToolAction = () => {
     }
     setLoading(true)
     event.preventDefault()
+    const createdUserId = Number(sessionStorage.getItem('userId'));
+    const createdDate = new Date().toISOString();
     var data = JSON.stringify({
       toolID: toolID.current.value,
       toolTypeActionID: toolTypeActionID.current.value,
-      modifiedDate: '2023-01-10T15:14:46.337Z',
-      modifiedUser: 'super_admin',
+      createdDate,
+      createdUserId
     })
     var config = {
       method: 'post',
@@ -82,8 +85,16 @@ const AddToolAction = () => {
     setTimeout(() => {
       axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/tool-actions/updated')
+          const { isSuccess } = response.data;
+
+          if (isSuccess) {
+            notify('Data Saved');
+            navigate('/qradar/tool-actions/updated');
+          } else {
+            notifyFail('Failed to save data');
+          }
+          // console.log(JSON.stringify(response.data))
+          // navigate('/qradar/tool-actions/updated')
         })
         .catch(function (error) {
           console.log(error)
@@ -167,7 +178,7 @@ const AddToolAction = () => {
           >
             {!loading && 'Save Changes'}
             {loading && (
-              <span className='indicator-progress' style={{display: 'block'}}>
+              <span className='indicator-progress' style={{ display: 'block' }}>
                 Please wait...{' '}
                 <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
               </span>
@@ -179,4 +190,4 @@ const AddToolAction = () => {
   )
 }
 
-export {AddToolAction}
+export { AddToolAction }

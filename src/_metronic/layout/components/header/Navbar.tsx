@@ -2,6 +2,8 @@ import clsx from 'clsx'
 import {KTSVG, toAbsoluteUrl} from '../../../helpers'
 import {HeaderNotificationsMenu, HeaderUserMenu, Search, ThemeModeSwitcher} from '../../../partials'
 import {useLayout} from '../../core'
+import { Link, useNavigate } from 'react-router-dom'
+
 
 const itemClass = 'ms-1 ms-lg-3'
 const btnClass =
@@ -11,8 +13,16 @@ const btnIconClass = 'svg-icon-1'
 
 const Navbar = () => {
   const {config} = useLayout()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    navigate('/auth');
+  };
   return (
     <div className='app-navbar flex-shrink-0'>
+        <button className="btn btn-primary m-3" onClick={handleLogout} >LogOut </button>
+      
+   
       {/* <div className={clsx('app-navbar-item align-items-stretch', itemClass)}>
         <Search />
       </div> */}

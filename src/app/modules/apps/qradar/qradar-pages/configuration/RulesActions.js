@@ -1,14 +1,35 @@
-import React, {useState, useEffect} from 'react'
-import {Link, useParams} from 'react-router-dom'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
+import React, { useState, useEffect } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { UsersListLoading } from '../components/loading/UsersListLoading'
+import { ToastContainer, toast } from 'react-toastify'
+import { notify, notifyFail } from '../components/notification/Notification'
+import 'react-toastify/dist/ReactToastify.css'
+import { fetchRuleActionDelete } from "../../../../../api/Api"
 import axios from 'axios'
 const RulesActions = () => {
   const [loading, setLoading] = useState(false)
   const [tools, setTools] = useState([])
-  const {status} = useParams()
+  const { status } = useParams()
 
-  useEffect(() => {
-    setLoading(true)
+  const handleDelete = async (item) => {
+    console.log(item, "item")
+    const deletedUser = sessionStorage.getItem('userId');
+    const deletedDate = new Date().toISOString();
+    const data = {
+      ruleActionID: item.ruleActionID,
+      deletedDate,
+      deletedUser
+    } 
+    try {
+      await fetchRuleActionDelete(data);
+      notify('Data Deleted');
+      await reload();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const reload = () => {
+    // setLoading(true)
     var config = {
       method: 'get',
       url: 'http://115.110.192.133:8011/api/RuleAction/v1/RuleActions',
@@ -26,10 +47,14 @@ const RulesActions = () => {
       .catch(function (error) {
         console.log(error)
       })
+  }
+  useEffect(() => {
+    reload();
   }, [])
 
   return (
     <div className='card'>
+      <ToastContainer />
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
           <span className='card-label fw-bold fs-3 mb-1'>Rule Actions</span>
@@ -79,8 +104,10 @@ const RulesActions = () => {
                     className='text-white'
                     to={`/qradar/rules-actions/update/${item.ruleActionID}`}
                   >
-                    <button className='btn btn-danger btn-small'>Update</button>
+                    <button className='btn btn-primary btn-small'>Update</button>
                   </Link>
+                  <button className="btn btn-sm btn-danger btn-small ms-5" style={{ fontSize: '14px' }} onClick={() => { handleDelete(item) }}> Delete</button>
+
                 </td>
               </tr>
             ))}
@@ -91,4 +118,4 @@ const RulesActions = () => {
   )
 }
 
-export {RulesActions}
+export { RulesActions }

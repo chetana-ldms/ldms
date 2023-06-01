@@ -113,14 +113,16 @@ const AddRuleAction = () => {
     }
     setLoading(true)
     event.preventDefault()
+    const createduser = sessionStorage.getItem('userId');
+    const createddate = new Date().toISOString();
     var data = JSON.stringify({
       ruleActionName: ruleActionName.current.value,
       toolTypeID: toolTypeID.current.value,
       toolID: toolID.current.value,
       toolActionID: toolActionID.current.value,
       ruleGenerelActionID: 0,
-      createddate: '2023-01-10T15:14:46.337Z',
-      createduser: 'super_admin',
+      createddate,
+      createduser
     })
     var config = {
       method: 'post',

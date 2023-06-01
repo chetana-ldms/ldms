@@ -1,14 +1,39 @@
-import React, {useState, useEffect} from 'react'
-import {Link, useParams} from 'react-router-dom'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
+import React, { useState, useEffect } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { UsersListLoading } from '../components/loading/UsersListLoading'
+import { ToastContainer, toast } from 'react-toastify'
+import { notify, notifyFail } from '../components/notification/Notification'
+import 'react-toastify/dist/ReactToastify.css'
+import { fetchToolTypeActionDelete } from "../../../../../api/Api"
 import axios from 'axios'
 const ToolTypeActions = () => {
   const [loading, setLoading] = useState(false)
   const [toolTypeActions, setToolTypeActions] = useState([])
-  const {status} = useParams()
+  const [updateData, setUpdateData] = useState({})
+  const { status } = useParams()
 
-  useEffect(() => {
-    setLoading(true)
+  const handleDelete = async (item) => {
+    const deletedUserId = Number(sessionStorage.getItem('userId'));
+    const deletedDate = new Date().toISOString();
+    const data = {
+      toolTypeActionID: item.toolTypeActionID,
+      deletedDate,
+      deletedUserId
+    }
+    try {
+      const responce = await fetchToolTypeActionDelete(data);
+      if (responce.isSuccess) {
+        notify('Data Deleted');
+      }else{
+        notifyFail("Data not Deleted")
+      }
+      await reload();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const reload = () => {
+    // setLoading(true)
     var config = {
       method: 'get',
       url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeActions',
@@ -25,10 +50,19 @@ const ToolTypeActions = () => {
       .catch(function (error) {
         console.log(error)
       })
+  }
+
+  const onUpdateClick = (item) => {
+    setUpdateData(item)
+  }
+
+  useEffect(() => {
+    reload();
   }, [])
 
   return (
     <div className='card'>
+      <ToastContainer />
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
           <span className='card-label fw-bold fs-3 mb-1'>Tool Type Actions</span>
@@ -42,7 +76,7 @@ const ToolTypeActions = () => {
         </div>
       </div>
       <div className='card-body'>
-        {status === 'updated' && (
+        {/* {status === 'updated' && (
           <div class='alert alert-success d-flex align-items-center p-5'>
             <div class='d-flex flex-column'>
               <h4 class='mb-1 text-dark'>Data Saved</h4>
@@ -55,7 +89,10 @@ const ToolTypeActions = () => {
               X<span class='svg-icon svg-icon-2x svg-icon-light'>...</span>
             </button>
           </div>
-        )}
+        )} */}
+        {/* {status === 'updated' && (
+          notify('Data Saved')
+        )} */}
 
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
@@ -76,8 +113,11 @@ const ToolTypeActions = () => {
                     className='text-white'
                     to={`/qradar/tool-type-actions/update/${item.toolTypeActionID}`}
                   >
-                    <button className='btn btn-danger btn-small'>Update</button>
+                    <button className='btn btn-primary btn-small'>Update</button>
                   </Link>
+
+                  <button className="btn btn-sm btn-danger btn-small ms-5" style={{ fontSize: '14px' }} onClick={() => { handleDelete(item) }}> Delete</button>
+
                 </td>
               </tr>
             ))}
@@ -88,4 +128,4 @@ const ToolTypeActions = () => {
   )
 }
 
-export {ToolTypeActions}
+export { ToolTypeActions }

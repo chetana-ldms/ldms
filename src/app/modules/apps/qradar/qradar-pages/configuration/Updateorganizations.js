@@ -1,5 +1,7 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
+import {fetchOrganizationDetails} from '../../../../../api/Api'
+import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 
 const UpdateOrganizations = () => {
@@ -10,6 +12,7 @@ const UpdateOrganizations = () => {
   const address = useRef()
   const mobileNo = useRef()
   const email = useRef()
+  const [organizationData, setOrganizationData] = useState(null);
   const errors = {}
   const handleSubmit = (event) => {
     setLoading(true)
@@ -34,14 +37,16 @@ const UpdateOrganizations = () => {
       return errors
     }
     event.preventDefault()
+    const updatedUserId = Number(sessionStorage.getItem('userId'));
+    const updatedDate = new Date().toISOString();
     var data = JSON.stringify({
       orgName: orgName.current.value,
       address: address.current.value,
       mobileNo: mobileNo.current.value,
       orgID: id,
       email: email.current.value,
-      creadtedByUserName: 'super_admin',
-      createdDate: '2022-12-29T13:56:21.318Z',
+      updatedUserId,
+      updatedDate,
     })
     var config = {
       method: 'post',
@@ -55,8 +60,16 @@ const UpdateOrganizations = () => {
     setTimeout(() => {
       axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/organizations/updated')
+          const { isSuccess } = response.data;
+
+          if (isSuccess) {
+            notify('Data Updated');
+            navigate('/qradar/organizations/updated');
+          } else {
+            notifyFail('Failed to update data');
+          }
+          // console.log(JSON.stringify(response.data))
+          // navigate('/qradar/organizations/updated')
         })
         .catch(function (error) {
           console.log(error)
@@ -64,6 +77,19 @@ const UpdateOrganizations = () => {
       setLoading(false)
     }, 1000)
   }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchOrganizationDetails(id, orgName, address, mobileNo, email);
+        setOrganizationData(data);
+      } catch (error) {
+        console.log(error)
+      }
+    };
+
+    fetchData();
+  }, [id, orgName, address, mobileNo, email]);
+ 
 
   return (
     <div className='card'>

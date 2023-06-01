@@ -1,5 +1,6 @@
-import React, {useState, useRef} from 'react'
-import {Link, useNavigate} from 'react-router-dom'
+import React, { useState, useRef } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 
 const AddOrganizations = () => {
@@ -36,13 +37,15 @@ const AddOrganizations = () => {
     }
 
     event.preventDefault()
+    const createdUserId = Number(sessionStorage.getItem('userId'));
+    const createdDate = new Date().toISOString();
     var data = JSON.stringify({
       orgName: orgName.current.value,
       address: address.current.value,
       mobileNo: mobileNo.current.value,
       email: email.current.value,
-      creadtedByUserName: 'super_admin',
-      createdDate: '2022-12-29T13:56:21.318Z',
+      createdUserId,
+      createdDate,
     })
     var config = {
       method: 'post',
@@ -53,17 +56,24 @@ const AddOrganizations = () => {
       },
       data: data,
     }
-    setTimeout(() => {
+    // setTimeout(() => {
       axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/organizations/updated')
+          const { isSuccess } = response.data;
+          if (isSuccess) {
+            notify('Data Saved');
+            navigate('/qradar/organizations/updated');
+          } else {
+            notifyFail('Failed to save data');
+          }
+          // console.log(JSON.stringify(response.data))
+          // navigate('/qradar/organizations/updated')
         })
         .catch(function (error) {
           console.log(error)
         })
       setLoading(false)
-    }, 1000)
+    // }, 1000)
   }
 
   return (
@@ -156,7 +166,7 @@ const AddOrganizations = () => {
           >
             {!loading && 'Save Changes'}
             {loading && (
-              <span className='indicator-progress' style={{display: 'block'}}>
+              <span className='indicator-progress' style={{ display: 'block' }}>
                 Please wait...{' '}
                 <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
               </span>
@@ -168,4 +178,4 @@ const AddOrganizations = () => {
   )
 }
 
-export {AddOrganizations}
+export { AddOrganizations }

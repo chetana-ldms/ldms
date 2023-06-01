@@ -1,9 +1,9 @@
-import React, {useState, useEffect, useRef} from 'react'
-import {Link, useParams} from 'react-router-dom'
-import {UsersListLoading} from '../../modules/apps/qradar/qradar-pages/components/loading/UsersListLoading'
-import axios, {AxiosRequestConfig, AxiosResponse} from 'axios'
+import React, { useState, useEffect, useRef } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { UsersListLoading } from '../../modules/apps/qradar/qradar-pages/components/loading/UsersListLoading'
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 
-import {ChartsWidget9} from '../../../_metronic/partials/widgets'
+import { ChartsWidget9 } from '../../../_metronic/partials/widgets'
 import {
   ListsWidget2,
   ListsWidget3,
@@ -23,7 +23,8 @@ import AlertsTrends from './AlertsTrend'
 import IncidentStatus from './IncidentStatus'
 
 const DashboardWrapper = () => {
-  const [organisations, setOrganisations] = useState([])
+  const userID = Number(sessionStorage.getItem('userId'));
+  const orgId = Number(sessionStorage.getItem('orgId'))
   const [unattendedIcount, setUnattendedIncidentcount] = useState({})
   const [unattendedAcount, setUnattendedAlertcount] = useState({})
   const [falsePAcount, setFalsePAcount] = useState({}) //GetFalsePositiveAlertsCount
@@ -31,11 +32,14 @@ const DashboardWrapper = () => {
   const [organizations, setOrganizations] = useState([]) //Get Organizations
   const [alertstatus, setAlertstatus] = useState([]) //Get Master Alert Status
   const [UserActions, setUseractions] = useState([])
+  console.log(UserActions, "UserActions")
   const [error, setError] = useState(null)
   const [recentIncidents, setrecentIncidents] = useState([])
+  console.log(recentIncidents, "recentIncidents")
   const [isLoaded, setIsLoaded] = useState(false)
   const [users, setUsers] = useState([])
-  console.log(recentIncidents, 'recentIncidents')
+  const [selectedFilter, setSelectedFilter] = useState(30);
+  const [selectedOrganization, setSelectedOrganization] = useState(1);
   function formatDateDiff(date) {
     const diffMs = new Date() - date
     const diffMins = Math.floor(diffMs / 60000)
@@ -45,18 +49,21 @@ const DashboardWrapper = () => {
     return `${days}d ${hours}h ${minutes}m`
   }
 
+  console.log(selectedFilter, "selectedFilter")
   useEffect(() => {
     axios
       .post('http://115.110.192.133:502/api/Alerts/v1/GetAlertsMostUsedTages', {
-        orgID: 1,
+        orgID: selectedOrganization,
         toolID: 0,
         toolTypeID: 0,
-        userID: 0,
-        numberofDays: 90,
+        userID: userID,
+        // numberofDays: 90,
+        numberofDays: selectedFilter,
       })
-      .then(({data}) => {
+      .then(({ data }) => {
         setIsLoaded(true)
         setUsers(data?.mostUsedTags)
+
       })
       .catch((err) => {
         setIsLoaded(true)
@@ -65,34 +72,36 @@ const DashboardWrapper = () => {
 
     axios
       .post('http://115.110.192.133:502/api/UserActions/v1/UserActionsByUser', {
-        userID: 1,
+        userId: userID,
+        numberofDays: selectedFilter,
       })
-      .then(({data}) => {
+      .then(({ data }) => {
         console.log(data, 'UserActions')
         setUseractions(data?.userActionsData)
       })
 
     axios
       .post('http://115.110.192.133:502/api/IncidentManagement/v1/GetMyInternalIncidents', {
-        userID: 1,
-        orgID: 1,
+        userID: userID,
+        orgID: selectedOrganization,
+        numberofDays: selectedFilter,
       })
-      .then(({data}) => {
+      .then(({ data }) => {
         console.log(data, 'getinter aci')
         setrecentIncidents(data?.incidentList)
       })
-    // Un attended Incident Data
     const unattendedincidentdata = JSON.stringify({
-      orgID: 1,
+      orgID: selectedOrganization,
       toolID: 1,
       toolTypeID: 1,
-      userID: 1,
-      numberofDays: 30,
+      userID: userID,
+      // numberofDays: 30,
+      numberofDays: selectedFilter,
     })
     const incidentconfig = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://115.110.192.133:502/api/IncidentManagement/GetUnAttendedIncidentsCount',
+      url: 'http://115.110.192.133:502/api/IncidentManagement/v1/GetUnAttendedIncidentsCount',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/plain',
@@ -101,11 +110,12 @@ const DashboardWrapper = () => {
     }
     // Un attended Alerts Data
     const attendedalertsdata = JSON.stringify({
-      orgID: 1,
+      orgID: selectedOrganization,
       toolID: 1,
       toolTypeID: 1,
-      userID: 1,
-      numberofDays: 60,
+      userID: userID,
+      // numberofDays: 60,
+      numberofDays: selectedFilter,
     })
     const attendedalertsconfig = {
       method: 'post',
@@ -120,11 +130,12 @@ const DashboardWrapper = () => {
 
     // GetFalsePositiveAlertsCount
     const falsepositivealertscountdata = JSON.stringify({
-      orgID: 1,
+      orgID: selectedOrganization,
       toolID: 1,
       toolTypeID: 1,
-      userID: 1,
-      numberofDays: 60,
+      userID: userID,
+      // numberofDays: 60,
+      numberofDays: selectedFilter,
       positiveAnalysisID: 1,
     })
     const falsepositivealertsconfig = {
@@ -139,11 +150,12 @@ const DashboardWrapper = () => {
     }
     // GetAlertsResolvedMeanTime
     const AlertsResolvedMeanTimedata = JSON.stringify({
-      orgID: 1,
+      orgID: selectedOrganization,
       toolID: 1,
       toolTypeID: 1,
-      userID: 1,
-      numberofDays: 90,
+      userID: userID,
+      // numberofDays: 90,
+      numberofDays: selectedFilter,
     })
     const AlertsResolvedMeanTimeconfig = {
       method: 'post',
@@ -228,7 +240,7 @@ const DashboardWrapper = () => {
         })
     }
     GetUnAttendedIncidentsCount()
-  }, [])
+  }, [selectedFilter, selectedOrganization])
   return (
     <div className='dashboard-wrapper'>
       {/* Header filter section */}
@@ -244,12 +256,14 @@ const DashboardWrapper = () => {
                 data-kt-select2='true'
                 data-placeholder='Select option'
                 data-allow-clear='true'
-                defaultValue={'1'}
+                value={selectedFilter}
+                onChange={(e) => setSelectedFilter(e.target.value)}
               >
-                <option value='1'>Days</option>
-                <option value='2'>30</option>
-                <option value='3'>60</option>
-                <option value='4'>90</option>
+                <option value=''>Days</option>
+                <option value='30'>30</option>
+                <option value='60'>60</option>
+                <option value='90'>90</option>
+                <option value='120'>120</option>
               </select>
             </div>
           </div>
@@ -265,16 +279,30 @@ const DashboardWrapper = () => {
                 data-kt-select2='true'
                 data-placeholder='Select option'
                 data-allow-clear='true'
-                defaultValue={'1'}
+              // defaultValue={'1'}
+              value={selectedOrganization}
+              onChange={(e) => setSelectedOrganization(Number(e.target.value))}
               >
-                {organizations?.length > 0 &&
+                {userID === 1 && organizations?.length > 0 && (
                   organizations.map((item, index) => (
-                    <option key={index} value='1'>
-                      {item?.orgName}
+                    <option key={index} value={item.orgID}>
+                      {item.orgName}
                     </option>
-                  ))}
+                  ))
+                )}
+
+                {userID !== 1 && organizations?.length > 0 && (
+                  organizations
+                    .filter((item) => item.orgID === orgId)
+                    .map((item, index) => (
+                      <option key={index} value={item.orgID}>
+                        {item.orgName}
+                      </option>
+                    ))
+                )}
               </select>
             </div>
+
           </div>
         </div>
         <div className='col-lg-5 fs-11 lh-40 fc-gray text-right ds-reload'>
@@ -354,7 +382,7 @@ const DashboardWrapper = () => {
         </div>
         <div className='col-lg-6'>
           <div className='card bg-default alert-chart'>
-            <AlertsTrends />
+            <AlertsTrends days={selectedFilter} orgId={selectedOrganization} />
           </div>
         </div>
       </div>
@@ -364,7 +392,7 @@ const DashboardWrapper = () => {
       <div className='row incident-box mb-5 mt-5'>
         <div className='col-lg-6'>
           <div className='card bg-default'>
-            <IncidentStatus />
+            <IncidentStatus days={selectedFilter} orgId={selectedOrganization} />
           </div>
         </div>
         <div className='col-lg-6'>

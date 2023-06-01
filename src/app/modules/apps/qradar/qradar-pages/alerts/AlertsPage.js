@@ -1,27 +1,69 @@
-import {useMemo, useEffect, useState} from 'react'
+import React from 'react'
+import { useMemo, useEffect, useState } from 'react'
 import axios from 'axios'
-import {Link, useNavigate, useParams} from 'react-router-dom'
-import {KTSVG} from '../../../../../../_metronic/helpers'
-import {GET_RECENT_OFFENSES} from '../../../../../../utils'
-import {useTable, ColumnInstance, Row} from 'react-table'
-import {CustomHeaderColumn} from '../table/columns/CustomHeaderColumn'
-import {CustomRow} from '../table/columns/CustomRow'
-import {useQueryResponseData, useQueryResponseLoading} from '../core/QueryResponseProvider'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { KTSVG } from '../../../../../../_metronic/helpers'
+import { GET_RECENT_OFFENSES } from '../../../../../../utils'
+import { useTable, ColumnInstance, Row } from 'react-table'
+import { CustomHeaderColumn } from '../table/columns/CustomHeaderColumn'
+import { CustomRow } from '../table/columns/CustomRow'
+import { useQueryResponseData, useQueryResponseLoading } from '../core/QueryResponseProvider'
 // import {usersColumns} from './columns/_columns'
-import {User} from '../core/_models'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
-import {UsersListPagination} from '../components/pagination/UsersListPagination'
-import {KTCardBody} from '../../../../../../_metronic/helpers'
-import {ToastContainer, toast} from 'react-toastify'
+import { User } from '../core/_models'
+import { UsersListLoading } from '../components/loading/UsersListLoading'
+import { UsersListPagination } from '../components/pagination/UsersListPagination'
+import { KTCardBody } from '../../../../../../_metronic/helpers'
+import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import {FloatingLabel, Form} from 'react-bootstrap'
-import {useFormik} from 'formik'
+import { FloatingLabel, Form } from 'react-bootstrap'
+import { useFormik } from 'formik'
+import EditAlertsPopUp from './EditAlertsPopUp';
+import { fetchMasterData, fetchUpdatSetAlertIrrelavantStatuseAlert } from '../../../../../api/Api';
 
 const AlertsPage = () => {
   const [inputValue, setInputValue] = useState('')
   const [selectedAlert, setselectedAlert] = useState([])
-  const handleselectedAlert = (e) => {
-    const {value, checked} = e.target
+  const [isCheckboxSelected, setIsCheckboxSelected] = useState(false);
+  const [dropdownData, setDropdownData] = useState({
+    severityNameDropDownData: [],
+    statusDropDown: [],
+    observableTagDropDown: []
+  });
+  const [openEditPage, setOpenEditPage] = useState(false)
+  const [selectedRow, setSelectedRow] = useState({});
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectCheckBox, setSelectCheckBox] = useState(null)
+  const { severityNameDropDownData, statusDropDown, observableTagDropDown } = dropdownData;
+  const handleFormSubmit = () => {
+    setShowPopup(false);
+  };
+  const openEditPopUp = (item) => {
+    setSelectedRow(item)
+    setOpenEditPage(true)
+  }
+  const handleClose = () => {
+    setOpenEditPage(false);
+  }
+  useEffect(() => {
+    Promise.all([
+      fetchMasterData("alert_Sevirity"),
+      fetchMasterData("alert_status"),
+      fetchMasterData("alert_Tags")
+    ]).then(([severityData, statusData, tagsData]) => {
+      setDropdownData(prevDropdownData => ({
+        ...prevDropdownData,
+        severityNameDropDownData: severityData,
+        statusDropDown: statusData,
+        observableTagDropDown: tagsData
+      }));
+    }).catch((error) => {
+      console.log(error)
+    });
+  }, []);
+  const handleselectedAlert = (item, e) => {
+    setSelectCheckBox(item)
+    setIsCheckboxSelected(e.target.checked);
+    const { value, checked } = e.target
     if (checked) {
       setselectedAlert([...selectedAlert, value])
     } else {
@@ -46,7 +88,6 @@ const AlertsPage = () => {
       createdDate: '1999-06-25T02:00:56.703Z',
       createdUser: 'admin',
     })
-
     var config = {
       method: 'post',
       maxBodyLength: Infinity,
@@ -57,7 +98,6 @@ const AlertsPage = () => {
       },
       data: data,
     }
-
     axios(config)
       .then(function (response) {
         console.log(JSON.stringify(response.data))
@@ -70,14 +110,12 @@ const AlertsPage = () => {
         console.log(actionsValue, 'actionsValue')
       })
   }
-
   const navigate = useNavigate()
   const [selectValue, setSelectValue] = useState()
   const onChange = (event) => {
     const value = event.target.value
     setSelectValue(value)
   }
-
   const convertDate = (timestamp) => {
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
@@ -88,13 +126,70 @@ const AlertsPage = () => {
       second: '2-digit',
     }).format(timestamp)
   }
+  const userID = Number(sessionStorage.getItem('userId'));
+  const orgId = Number(sessionStorage.getItem('orgId'));
   const [alertData, setAlertDate] = useState([])
   const [filteredAlertData, setFilteredAlertDate] = useState([])
   const [ldp_security_user, setldp_security_user] = useState([])
+  const [escalate, setEscalate] = useState(true)
+  const [perPage, setPerPage] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showForm, setShowForm] = useState(false)
+  const [ignorVisible, setIgnorVisible] = useState(true);
+  const handleCloseForm = () => {
+    notifyFail('Data not Updated')
+    setShowForm(false);
+  };
+  const handleIgnoreSubmit = async () => {
+    try {
+      const { ownerUserID, modifiedDate } = selectCheckBox;
+      const modifiedUserId = Number(sessionStorage.getItem('userId'));
+      const orgId = Number(sessionStorage.getItem('orgId'));
+      const data = {
+        orgId,
+        alertIDs: selectedAlert,
+        ownerID: ownerUserID,
+        modifiedUserId,
+        modifiedDate
+      };
+      const response = await fetchUpdatSetAlertIrrelavantStatuseAlert(data);
+      notify('Irrelevant / Ignore Created')
+      setIgnorVisible(false);
+      setShowForm(false);
+      qradaralerts();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const startIndex = (currentPage - 1) * perPage;
+  const endIndex = startIndex + perPage;
+  const totalPages = Math.ceil(filteredAlertData.length / perPage);
+  const handleTableRefresh = () => {
+    qradaralerts()
+  };
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+  const handlePageSelect = (event) => {
+    const selectedPerPage = parseInt(event.target.value);
+    const selectedPage = Math.min(currentPage, Math.ceil(filteredAlertData.length / selectedPerPage));
+    setCurrentPage(selectedPage);
+    setPerPage(selectedPerPage);
+  };
   const [delay, setDelay] = useState(1)
   const isLoading = true
   const [alertsCount, setAlertsCount] = useState(0)
-  const {values, handleChange: handleEscalate, handleSubmit} = useFormik({
+  const { values, handleChange: handleEscalate, handleSubmit } = useFormik({
     initialValues: {
       owner: '',
       comments: '',
@@ -111,26 +206,44 @@ const AlertsPage = () => {
           ownerName: values.owner,
           notes: values.comments,
         })
-        .then(({data, status}) => {
+        .then(({ data, status }) => {
           console.log(data)
           if (status === 200) {
             qradaralerts()
           }
         })
+      handleEscalate({
+        target: {
+          name: 'owner',
+          value: '',
+        },
+      });
+      handleEscalate({
+        target: {
+          name: 'comments',
+          value: '',
+        },
+      })
         .catch((err) => {
           console.log(err, 'error')
         })
     },
   })
+  const handleEscalateSubmit = (e) => {
+    e.preventDefault();
+    handleSubmit();
+    setEscalate(false);
+    notify('Escalate Created')
+  };
   let data2 = JSON.stringify({
-    orgID: '1',
+    orgID: orgId,
     toolID: '1',
     toolTypeID: '1',
     paging: {
       rangeStart: '1',
       rangeEnd: '20',
     },
-    loggedInUserId: '1',
+    loggedInUserId: userID,
   })
   const data = JSON.stringify({
     clientID: 0,
@@ -140,7 +253,6 @@ const AlertsPage = () => {
       rangeEnd: 49,
     },
   })
-
   const config = {
     method: 'post',
     url: GET_RECENT_OFFENSES,
@@ -149,7 +261,6 @@ const AlertsPage = () => {
     },
     data: data2,
   }
-  // console.log('GET_RECENT_OFFENSES', GET_RECENT_OFFENSES)
   const qradaralerts = () => {
     axios(config)
       .then(function (response) {
@@ -173,7 +284,7 @@ const AlertsPage = () => {
     }, 60000)
     axios
       .post('http://115.110.192.133:502/api/LDPSecurity/v1/Users?OrgId=1')
-      .then(({data}) => {
+      .then(({ data }) => {
         setldp_security_user(data?.usersList)
       })
       .catch((err) => {
@@ -200,6 +311,18 @@ const AlertsPage = () => {
       progress: undefined,
       theme: 'colored',
     })
+  const notifyFail = (message) => {
+    toast.error(message, {
+      position: 'top-right',
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'colored',
+    });
+  };
   const handleChange = (e, field) => {
     console.log(e.target.value)
     console.log(alertData)
@@ -207,6 +330,14 @@ const AlertsPage = () => {
     console.log(alertData.filter((it) => it[field] === e.target.value))
     let data = alertData.filter((it) => it[field] === e.target.value)
     setFilteredAlertDate(data.length > 0 ? data : alertData)
+  }
+  const onActionsClick = () => {
+    if (isCheckboxSelected) {
+      setIsCheckboxSelected(true)
+    }
+    setShowForm(true);
+    setEscalate(true);
+    setIgnorVisible(true);
   }
   const handleSort = (e, field) => {
     let temp = [...alertData]
@@ -233,7 +364,6 @@ const AlertsPage = () => {
     )
     setFilteredAlertDate(data)
   }
-
   return (
     <KTCardBody className='alert-page'>
       <ToastContainer />
@@ -249,9 +379,10 @@ const AlertsPage = () => {
               <div className='m-0'>
                 <a
                   href='#'
-                  className='btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new'
+                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${!isCheckboxSelected && 'disabled'}`}
                   data-kt-menu-trigger='click'
                   data-kt-menu-placement='bottom-end'
+                  onClick={onActionsClick}
                 >
                   <span className='svg-icon svg-icon-6 svg-icon-muted me-1'>
                     <svg
@@ -274,106 +405,120 @@ const AlertsPage = () => {
                   data-kt-menu='true'
                   id='kt_menu_637dc6f8a1c15'
                 >
-                  {/* <div className='px-7 py-5'>
-                    <div className='fs-5 text-dark fw-bold'>Status</div>
-                  </div> */}
-
-                  <div className='px-7 py-5'>
-                    <div className='mb-5'>
-                      <label className='form-label fw-bolder'>Select:</label>
-                      <div>
-                        <select
-                          onChange={createIncidentSubmit}
-                          className='form-select form-select-solid'
-                          data-kt-select2='true'
-                          data-control='select2'
-                          data-placeholder='Select option'
-                          data-dropdown-parent='#kt_menu_637dc6f8a1c15'
-                          data-allow-clear='true'
-                        >
-                          <option>--</option>
-                          <option value='1' onClick={createIncidentSubmit}>
-                            Create Incident
-                          </option>
-                          <option value='2'>Escalate</option>
-                          <option value='3'>Irrelevant / Ignore</option>
-                          <option value='4'>Generate Report</option>
-                        </select>
-                      </div>
-                    </div>
-                    {actionsValue === '2' && (
-                      <form onSubmit={handleSubmit}>
-                        <div className='mb-5'>
-                          <label className='form-label fw-bolder' htmlFor='ownerName'>
-                            Owner:
-                          </label>
+                  {showForm && (
+                    <div className='px-7 py-5'>
+                      <div className='mb-5'>
+                        <div className='d-flex justify-content-between'>
                           <div>
-                            <select
-                              id='ownerName'
-                              className='form-select form-select-solid'
-                              data-placeholder='Select option'
-                              data-allow-clear='true'
-                              value={values.owner}
-                              name='owner'
-                              onChange={handleEscalate}
-                            >
-                              <option>--</option>
-                              {ldp_security_user.length > 0 &&
-                                ldp_security_user.map((item, index) => {
-                                  return (
-                                    <option key={index} value={item?.name}>
-                                      {item?.name}
-                                    </option>
-                                  )
-                                })}
-                            </select>
+                            <label className='form-label fw-bolder'>Select:</label>
+                          </div>
+                          <div>
+                            <button type="button" className="close" aria-label="Close" onClick={handleCloseForm}>
+                              <span aria-hidden="true" style={{ color: 'inherit', textShadow: 'none' }}>&times;</span>
+                            </button>
                           </div>
                         </div>
-                        <div className='mb-5'>
-                          <label className='form-label fw-bolder' htmlFor='excalatecomments'>
-                            Comments:
-                          </label>
-                          <Form.Control
-                            as='textarea'
-                            placeholder='Leave a comment here'
-                            value={values.comments}
-                            id='excalatecomments'
-                            name='comments'
-                            onChange={handleEscalate}
-                            style={{height: '100px'}}
-                          />
+                        <div>
+                          <select
+                            onChange={createIncidentSubmit}
+                            className='form-select form-select-solid'
+                            data-kt-select2='true'
+                            data-control='select2'
+                            data-placeholder='Select option'
+                            data-dropdown-parent='#kt_menu_637dc6f8a1c15'
+                            data-allow-clear='true'
+                          >
+                            <option>--</option>
+                            <option value='1' onClick={createIncidentSubmit}>
+                              Create Incident
+                            </option>
+                            <option value='2'>Escalate</option>
+                            <option value='3'>Irrelevant / Ignore</option>
+                            <option value='4'>Generate Report</option>
+                          </select>
                         </div>
+                      </div>
+                      {actionsValue === '2' && escalate && (
+                        <form onSubmit={handleSubmit}>
+                          <div className='mb-5'>
+                            <label className='form-label fw-bolder' htmlFor='ownerName'>
+                              Owner:
+                            </label>
+                            <div>
+                              <select
+                                id='ownerName'
+                                className='form-select form-select-solid'
+                                data-placeholder='Select option'
+                                data-allow-clear='true'
+                                value={values.owner}
+                                name='owner'
+                                onChange={handleEscalate}
+                              >
+                                <option>--</option>
+                                {ldp_security_user.length > 0 &&
+                                  ldp_security_user.map((item, index) => {
+                                    return (
+                                      <option key={index} value={item?.name}>
+                                        {item?.name}
+                                      </option>
+                                    )
+                                  })}
+                              </select>
+                            </div>
+                          </div>
+                          <div className='mb-5'>
+                            <label className='form-label fw-bolder' htmlFor='excalatecomments'>
+                              Comments:
+                            </label>
+                            <Form.Control
+                              as='textarea'
+                              placeholder='Leave a comment here'
+                              value={values.comments}
+                              id='excalatecomments'
+                              name='comments'
+                              onChange={handleEscalate}
+                              style={{ height: '100px' }}
+                            />
+                          </div>
+                          <div className='d-flex justify-content-end'>
+                            <button type='submit' className='btn btn-primary btn-small btn-new' onClick={handleEscalateSubmit}>
+                              Escalate
+                            </button>
+                          </div>
+                        </form>
+                      )}
+                      {actionsValue === '3' && ignorVisible && (
                         <div className='d-flex justify-content-end'>
-                          <button type='submit' className='btn btn-primary btn-small btn-new'>
-                            Escalate
+                          <button
+                            type='button'
+                            className='btn btn-primary btn-small btn-new'
+                            onClick={handleIgnoreSubmit}
+                          >
+                            Submit
                           </button>
                         </div>
-                      </form>
-                    )}
+                      )}
+                    </div>
 
-                    {/* <div className='d-flex justify-content-end'>
-                      <button
-                        type='submit'
-                        className='btn btn-sm btn-primary'
-                        data-kt-menu-dismiss='true'
-                      >
-                        Submit
-                      </button>
-                    </div> */}
-                  </div>
+                  )}
                 </div>
               </div>
-              {/* <a
-                href='#'
-                onClick={createIncidentSubmit}
-                className='btn btn-sm fw-bold btn-primary fs-14'
-              >
-                Create Incident
-              </a> */}
             </div>
           </div>
         </div>
-
+        {
+          openEditPage ?
+            <EditAlertsPopUp
+              show={openEditPage}
+              onClose={handleClose}
+              onAdd={openEditPopUp}
+              row={selectedRow}
+              ldp_security_user={ldp_security_user}
+              onSubmit={handleFormSubmit}
+              dropdownData={dropdownData}
+              onTableRefresh={handleTableRefresh}
+            /> : null
+        }
         <div className='card-body py-3' id='kt_accordion_1'>
           <div className='table-responsive alert-table'>
             <table className='table align-middle gs-0 gy-4'>
@@ -422,12 +567,14 @@ const AlertsPage = () => {
                                 data-placeholder='Select option'
                                 data-dropdown-parent='#kt_menu_637dc885a14bb'
                                 data-allow-clear='true'
-                                onChange={(e) => handleChange(e, 'severityName')}
-                              >
-                                <option>Select</option>
-                                <option value='High'>High</option>
-                                <option value='Medium'>Medium</option>
-                                <option value='Low'>Low</option>
+                                onChange={(e) => handleChange(e, 'severityName')}>
+                                <option value="">Select</option>
+                                {severityNameDropDownData.length > 0 &&
+                                  severityNameDropDownData.map((item) => (
+                                    <option key={item.dataID} value={item.dataValue}>
+                                      {item.dataValue}
+                                    </option>
+                                  ))}
                               </select>
                             </div>
                           </div>
@@ -575,13 +722,13 @@ const AlertsPage = () => {
                                 data-allow-clear='true'
                                 onChange={(e) => handleChange(e, 'status')}
                               >
-                                <option>Select</option>
-                                <option value='New'>New</option>
-                                {/* <option value='Pending'>Pending</option> */}
-                                <option value='In Progress'>In Progress</option>
-                                <option value='Resolved'>Resolved</option>
-                                <option value='Escalate'>Escalate</option>
-                                <option value='Closed'>Closed</option>
+                                <option value="">Select</option>
+                                {statusDropDown.length > 0 &&
+                                  statusDropDown.map((item) => (
+                                    <option key={item.dataID} value={item.dataValue}>
+                                      {item.dataValue}
+                                    </option>
+                                  ))}
                               </select>
                             </div>
                           </div>
@@ -719,9 +866,12 @@ const AlertsPage = () => {
                                 onChange={(e) => handleChange(e, 'observableTag')}
                               >
                                 <option>Select</option>
-                                <option value='Credential Access'>Credential Access</option>
-                                <option value='BruteForce'>BruteForce</option>
-                                <option value='Authentication'>Authentication</option>
+                                {observableTagDropDown.length > 0 &&
+                                  observableTagDropDown.map((item) => (
+                                    <option key={item.dataID} value={item.dataValue}>
+                                      {item.dataValue}
+                                    </option>
+                                  ))}
                               </select>
                             </div>
                           </div>
@@ -839,7 +989,6 @@ const AlertsPage = () => {
                   </th>
                 </tr>
               </thead>
-
               <tbody id='kt_accordion_1'>
                 {alertData.length == 0 ? (
                   <>
@@ -852,114 +1001,158 @@ const AlertsPage = () => {
                 ) : (
                   ''
                 )}
-                {filteredAlertData.map((item, index) => (
-                  <>
-                    <tr key={item.alertID}>
-                      <td>
-                        <div className='form-check form-check-sm form-check-custom form-check-solid'>
-                          <input
-                            className='form-check-input widget-13-check'
-                            type='checkbox'
-                            value={item.alertID}
-                            name={item.alertID}
-                            onChange={handleselectedAlert}
-                            autocomplete='false'
-                          />
-                        </div>
-                      </td>
-                      <td
-                        key={index}
-                        id={'kt_accordion_1_header_' + index}
-                        data-bs-toggle='collapse'
-                        data-bs-target={'#kt_accordion_1_body_' + index}
-                        aria-expanded='false'
-                        aria-controls={'kt_accordion_1_body_' + index}
-                      >
-                        {/* <KTSVG
-                        path='/media/icons/duotune/arrows/arr067.svg'
-                        className='svg-icon-3 svg-icon-success'
-                      /> */}
-                        {item.severityName}
-                      </td>
-                      <td>
-                        <span className='text-dark text-hover-primary d-block mb-1'>
-                          {item.sla}
-                        </span>
-                      </td>
-                      {/* <td className='border border-2'>
-                      <span className='text-dark text-hover-primary d-block mb-1'>
-                        {item.severity}
-                      </span>
-                    </td> */}
-                      <td>
-                        <span className='text-dark text-center text-hover-primary d-block mb-1'>
-                          {item.score}
-                        </span>
-                      </td>
-                      <td>
-                        {/* <i className={'fa fa-exclamation-circle text-danger fs-2'}></i> */}
-                        {item.status}
-                      </td>
-                      <td>
-                        <span className='text-dark text-hover-primary d-block mb-1'>
-                          {item.detectedtime}
-                        </span>
-                      </td>
-                      <td className='text-dark text-hover-primary fs-8 alert-name'>
-                        <span title={item.name}>{item.name}</span>
-                      </td>
-                      <td className='text-dark text-hover-primary fs-8'>{item.observableTag}</td>
-                      <td className='text-dark text-hover-primary fs-8'> {item.ownerusername}</td>
-                      <td className='text-dark fw-bold text-hover-primary fs-8'>{item.source}</td>
-                    </tr>
-                    <tr
-                      id={'kt_accordion_1_body_' + index}
-                      className='accordion-collapse collapse'
-                      aria-labelledby={'kt_accordion_1_header_' + index}
-                      data-bs-parent='#kt_accordion_1'
-                    >
-                      <td colSpan='10'>
-                        <div className='row'>
-                          <div className='col-md-1'></div>
-                          <div className='col-md-9'>
-                            <b>Alert Name : </b>
-                            {item.name}
-                            <br />
-                            <b>Score : </b>
-                            {item.score}
-                            <br />
-                            <b>SLA : </b>
-                            {item.sla}
-                            <br />
-                            <b>Severity : </b>
-                            {item.severityName}
-                            <br />
-                            <b>Status : </b>
-                            {item.status}
-                            <br />
-                            <b>Detected Date/Time : </b>
-                            {item.detectedtime}
-                            <br />
-                            <b>Observable Tag : </b>
-                            {item.observableTag} <br />
-                            <b>Owner Name : </b>
-                            {item.ownerusername} <br />
-                            <b>Source Name : </b>
-                            {item.source} <br />
+                {filteredAlertData.length > 0 &&
+                  filteredAlertData.slice(startIndex, endIndex).map((item, index) => (
+                    <>
+                      <tr key={item.alertID}>
+                        <td>
+                          <div className='form-check form-check-sm form-check-custom form-check-solid'>
+                            <input
+                              className='form-check-input widget-13-check'
+                              type='checkbox'
+                              value={item.alertID}
+                              name={item.alertID}
+                              onChange={(e) => handleselectedAlert(item, e)}
+                              autocomplete='false'
+                            />
                           </div>
-                          <div className='col-md-2'>
-                            <div className='btn btn-primary btn-new btn-small'>
-                              Edit {''}
-                              {/* <i className='fa fa-pencil' /> */}
+                        </td>
+                        <td
+                          key={index}
+                          id={'kt_accordion_1_header_' + index}
+                          data-bs-toggle='collapse'
+                          data-bs-target={'#kt_accordion_1_body_' + index}
+                          aria-expanded='false'
+                          aria-controls={'kt_accordion_1_body_' + index}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          {item.severityName}
+                        </td>
+                        <td>
+                          <span className='text-dark text-hover-primary d-block mb-1'>
+                            {item.sla}
+                          </span>
+                        </td>
+                        <td>
+                          <span className='text-dark text-center text-hover-primary d-block mb-1'>
+                            {item.score}
+                          </span>
+                        </td>
+                        <td>
+                          {item.status}
+                        </td>
+                        <td>
+                          <span className='text-dark text-hover-primary d-block mb-1'>
+                            {item.detectedtime}
+                          </span>
+                        </td>
+                        <td className='text-dark text-hover-primary fs-8 alert-name'>
+                          <span title={item.name}>{item.name}</span>
+                        </td>
+                        <td className='text-dark text-hover-primary fs-8'>{item.observableTag}</td>
+                        <td className='text-dark text-hover-primary fs-8'> {item.ownerusername}</td>
+                        <td className='text-dark fw-bold text-hover-primary fs-8'>{item.source}</td>
+                      </tr>
+                      <tr
+                        id={'kt_accordion_1_body_' + index}
+                        className='accordion-collapse collapse'
+                        aria-labelledby={'kt_accordion_1_header_' + index}
+                        data-bs-parent='#kt_accordion_1'
+                      >
+                        <td colSpan='10'>
+                          <div className='row'>
+                            <div className='col-md-1'></div>
+                            <div className='col-md-9'>
+                              <b>Alert Name : </b>
+                              {item.name}
+                              <br />
+                              <b>Score : </b>
+                              {item.score}
+                              <br />
+                              <b>SLA : </b>
+                              {item.sla}
+                              <br />
+                              <b>Severity : </b>
+                              {item.severityName}
+                              <br />
+                              <b>Status : </b>
+                              {item.status}
+                              <br />
+                              <b>Detected Date/Time : </b>
+                              {item.detectedtime}
+                              <br />
+                              <b>Observable Tag : </b>
+                              {item.observableTag} <br />
+                              <b>Owner Name : </b>
+                              {item.ownerusername} <br />
+                              <b>Source Name : </b>
+                              {item.source} <br />
+                            </div>
+                            <div className='col-md-2'>
+                              <div className='btn btn-primary btn-new btn-small' onClick={() => openEditPopUp(item)}>
+                                Edit {''}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                    </tr>
-                  </>
-                ))}
+                        </td>
+                      </tr>
+                    </>
+                  ))}
+                {filteredAlertData.length === 0 && (
+                  <tr>
+                    <td colSpan="10" className="text-center">Data not found</td>
+                  </tr>
+                )}
               </tbody>
             </table>
+          </div>
+          <div className="row d-flex justify-content-end align-items-center">
+            <div className="col-md-10 row d-flex justify-content-end">
+              <ul className="pagination justify-content-end">
+                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                  <button
+                    className="page-link bg-custom-primary page-link-icon"
+                    onClick={handlePreviousPage}
+                  >
+                    <i className="bi bi-arrow-left"></i> Previous
+                  </button>
+                </li>
+                {Array.from({ length: totalPages }).map((_, index) => (
+                  <li
+                    key={index}
+                    className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}
+                  >
+                    <button
+                      className={`page-link ${currentPage === index + 1 ? 'bg-custom-dark' : ''}`}
+                      onClick={() => handlePageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
+                  </li>
+                ))}
+                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                  <button
+                    className="page-link bg-custom-primary page-link-icon"
+                    onClick={handleNextPage}
+                  >
+                    Next <i className="bi bi-arrow-right"></i>
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div className="col-md-2 d-flex justify-content-start align-items-center">
+              <span className="col-md-6">Select page:</span>
+              <select
+                className="form-select form-select-sm"
+                value={perPage}
+                onChange={handlePageSelect}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={15}>15</option>
+                <option value={20}>20</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -967,5 +1160,4 @@ const AlertsPage = () => {
     </KTCardBody>
   )
 }
-
-export {AlertsPage}
+export { AlertsPage }

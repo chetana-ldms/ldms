@@ -1,11 +1,13 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
+import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 
 const AddLdpTools = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
+  console.log(toolTypes, "toolTypes")
   const toolName = useRef()
   const toolType = useRef()
   const errors = {}
@@ -25,11 +27,15 @@ const AddLdpTools = () => {
     }
 
     event.preventDefault()
+    const createdUserId = Number(sessionStorage.getItem('userId'));
+    const createdDate = new Date().toISOString();
     var data = JSON.stringify({
       toolName: toolName.current.value,
-      toolType: toolType.current.value,
-      createdByUser: 'super_admin',
-      createdDate: '2022-12-28T17:59:17.134Z',
+      ToolTypeID: Number(toolType.current.value),
+      // toolTypeID: 1,
+      createdUserId,
+      createdDate
+      
     })
     var config = {
       method: 'post',
@@ -43,8 +49,16 @@ const AddLdpTools = () => {
     setTimeout(() => {
       axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/ldp-tools/list')
+          const { isSuccess } = response.data;
+
+          if (isSuccess) {
+            notify('Data Saved');
+            navigate('/qradar/ldp-tools/list');
+          } else {
+            notifyFail('Failed to save data');
+          }
+          // console.log(JSON.stringify(response.data))
+          // navigate('/qradar/ldp-tools/list')
         })
         .catch(function (error) {
           console.log(error)

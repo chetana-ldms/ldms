@@ -1,5 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
+import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 
 const UpdateOrganizationTools = () => {
@@ -7,6 +8,7 @@ const UpdateOrganizationTools = () => {
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
   const [organizationList, setOrganizationList] = useState([])
+  console.log()
   const {id} = useParams()
   const toolID = useRef()
   const orgID = useRef()
@@ -36,15 +38,17 @@ const UpdateOrganizationTools = () => {
       return errors
     }
     event.preventDefault()
+    const modifiedUserId = Number(sessionStorage.getItem('userId'));
+    const modifiedDate = new Date().toISOString();
     var data = JSON.stringify({
-      toolID: toolID.current.value,
-      orgID: orgID.current.value,
+      toolID: Number(toolID.current.value),
+      orgID: Number(orgID.current.value),
       authKey: authKey.current.value,
-      orgToolID: id,
+      orgToolID: Number(id),
       lastReadPKID: 0,
       apiUrl: apiUrl.current.value,
-      createdDate: '2022-12-29T14:31:55.732Z',
-      createdUser: 'super_admin',
+      modifiedDate,
+      modifiedUserId
     })
     var config = {
       method: 'post',
@@ -58,8 +62,16 @@ const UpdateOrganizationTools = () => {
     setTimeout(() => {
       axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/organization-tools/updated')
+          const { isSuccess } = response.data;
+
+          if (isSuccess) {
+            notify('Data Updated');
+            navigate('/qradar/organization-tools/updated');
+          } else {
+            notifyFail('Failed to update data');
+          }
+          // console.log(JSON.stringify(response.data))
+          // navigate('/qradar/organization-tools/updated')
         })
         .catch(function (error) {
           console.log(error)

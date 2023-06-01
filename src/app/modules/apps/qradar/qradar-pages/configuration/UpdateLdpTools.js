@@ -1,14 +1,19 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {Link, useNavigate, useParams} from 'react-router-dom'
+import React, { useState, useRef, useEffect } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { fetchLDPToolDetails } from '../../../../../api/Api'
+import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 
 const UpdateLdpTools = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
-  const {id} = useParams()
+  const [ldpTools, setLdpTools] = useState({ toolType: '', toolTypeId: '' });
+  console.log(ldpTools, "ldpTools")
+  const { id } = useParams()
   const toolName = useRef()
   const toolType = useRef()
+  console.log(toolType, "toolType111")
   const errors = {}
   const handleSubmit = (event) => {
     setLoading(true)
@@ -23,12 +28,15 @@ const UpdateLdpTools = () => {
       return errors
     }
     event.preventDefault()
+    const modifiedUserId = Number(sessionStorage.getItem('userId'));
+    const updatedDate = new Date().toISOString();
     var data = JSON.stringify({
       toolName: toolName.current.value,
-      toolType: toolType.current.value,
-      toolID: id,
-      updatedByUser: 'super_admin',
-      updatedDate: '2022-12-28T17:59:17.134Z',
+      // toolTypeId: toolType.current.value,
+      toolTypeId: ldpTools.toolTypeId,
+      toolId: id,
+      modifiedUserId,
+      updatedDate,
     })
     var config = {
       method: 'post',
@@ -42,8 +50,16 @@ const UpdateLdpTools = () => {
     setTimeout(() => {
       axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/ldp-tools/updated')
+          const { isSuccess } = response.data;
+
+          if (isSuccess) {
+            notify('Data Updated');
+            navigate('/qradar/ldp-tools/updated');
+          } else {
+            notifyFail('Failed to update data');
+          }
+          // console.log(JSON.stringify(response.data))
+          // navigate('/qradar/ldp-tools/updated')
         })
         .catch(function (error) {
           console.log(error)
@@ -74,6 +90,19 @@ const UpdateLdpTools = () => {
         console.log(error)
       })
   }, [])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchLDPToolDetails(id, toolName);
+        setLdpTools(data);
+      } catch (error) {
+        console.log(error)
+      }
+    };
+
+    fetchData();
+  }, [id, toolName, toolType]);
+
 
   return (
     <div className='card'>
@@ -119,11 +148,18 @@ const UpdateLdpTools = () => {
                   data-allow-clear='true'
                   id='toolType'
                   ref={toolType}
+                  value={ldpTools && ldpTools.toolType}
+                  onChange={(e) =>
+                    setLdpTools({
+                      toolType: e.target.value,
+                      toolTypeId: e.target.options[e.target.selectedIndex].getAttribute('data-id'),
+                    })
+                  }
                   required
                 >
                   <option value=''>Select Rule Category</option>
                   {toolTypes.map((item, index) => (
-                    <option value={item.dataID} key={index}>
+                    <option value={item.dataValue} key={item.dataID} data-id={item.dataID}>
                       {item.dataValue}
                     </option>
                   ))}
@@ -141,7 +177,7 @@ const UpdateLdpTools = () => {
           >
             {!loading && 'Update Changes'}
             {loading && (
-              <span className='indicator-progress' style={{display: 'block'}}>
+              <span className='indicator-progress' style={{ display: 'block' }}>
                 Please wait...{' '}
                 <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
               </span>
@@ -153,4 +189,4 @@ const UpdateLdpTools = () => {
   )
 }
 
-export {UpdateLdpTools}
+export { UpdateLdpTools }

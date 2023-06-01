@@ -1,11 +1,15 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
+import {fetchRoles} from '../../../../../api/Api'
 import axios from 'axios'
 
+
 const AddUserData = () => {
+  const orgId = Number(sessionStorage.getItem('orgId'));
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [roleTypes, setRoleTypes] = useState([])
+  console.log(roleTypes, "roleTypes")
   const userName = useRef()
   const passWord = useRef()
   const roleType = useRef()
@@ -32,12 +36,17 @@ const AddUserData = () => {
     }
 
     event.preventDefault()
+    const createdByUserName = sessionStorage.getItem('userId');
+    const createdDete = new Date().toISOString();
+    const orgId = sessionStorage.getItem('orgId')
     var data = JSON.stringify({
       name: userName.current.value,
       roleID: roleType.current.value,
       password: passWord.current.value,
-      createdByUserName: 'admin',
-      createdDete: '2023-01-05T16:12:17.058Z',
+      sysUser:0,
+      orgId,
+      createdByUserName,
+      createdDete
     })
     console.log('data', data)
     var config = {
@@ -62,24 +71,36 @@ const AddUserData = () => {
     }, 1000)
   }
 
+  // useEffect(() => {
+  //   setLoading(true)
+  //   var config = {
+  //     method: 'post',
+  //     url: 'http://115.110.192.133:502/api/LDPSecurity/v1/Roles',
+  //     headers: {
+  //       Accept: 'text/plain',
+  //     },
+  //   }
+  //   axios(config)
+  //     .then(function (response) {
+  //       setRoleTypes(response.data.rolesList)
+  //       setLoading(false)
+  //     })
+  //     .catch(function (error) {
+  //       console.log(error)
+  //     })
+  // }, [])
   useEffect(() => {
-    setLoading(true)
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPSecurity/v1/Roles',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-    axios(config)
-      .then(function (response) {
-        setRoleTypes(response.data.rolesList)
-        setLoading(false)
-      })
-      .catch(function (error) {
+    const fetchData = async () => {
+      try {
+        const data = await fetchRoles(orgId);
+        setRoleTypes(data);
+      } catch (error) {
         console.log(error)
-      })
-  }, [])
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className='card'>

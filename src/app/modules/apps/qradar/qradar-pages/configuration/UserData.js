@@ -1,14 +1,36 @@
-import React, {useState, useEffect} from 'react'
-import {Link, useParams} from 'react-router-dom'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
+import React, { useState, useEffect } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { UsersListLoading } from '../components/loading/UsersListLoading'
+import { ToastContainer, toast } from 'react-toastify'
+import { notify, notifyFail } from '../components/notification/Notification'
+import 'react-toastify/dist/ReactToastify.css'
+import { fetchUserDelete } from "../../../../../api/Api"
 import axios from 'axios'
 
 const UserData = () => {
   const [loading, setLoading] = useState(false)
   const [users, setUsers] = useState([])
-  const {status} = useParams()
-  useEffect(() => {
-    setLoading(true)
+  const { status } = useParams()
+
+  const handleDelete = async (item) => {
+    const userID = Number(sessionStorage.getItem('userId'));
+    const deletedDate = new Date().toISOString();
+    const deletedUser = sessionStorage.getItem('userName')
+    const data = {
+      deletedUser,
+      deletedDate,
+      userID
+    }
+    try {
+      await fetchUserDelete(data);
+      notify('Data Deleted');
+      await reload();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const reload = () => {
+    // setLoading(true)
     var config = {
       method: 'post',
       url: 'http://115.110.192.133:502/api/LDPSecurity/v1/Users?OrgId=1',
@@ -25,9 +47,13 @@ const UserData = () => {
       .catch(function (error) {
         console.log(error)
       })
+  }
+  useEffect(() => {
+    reload();
   }, [])
   return (
     <div className='card'>
+      <ToastContainer />
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
           <span className='card-label fw-bold fs-3 mb-1'>System Users</span>
@@ -76,8 +102,10 @@ const UserData = () => {
                 <td>{item.createdDete}</td>
                 <td>
                   <Link className='text-white' to={`/qradar/users-data/update/${item.userID}`}>
-                    <button className='btn btn-danger btn-small'>Update</button>
+                    <button className='btn btn-primary btn-small'>Update</button>
                   </Link>
+                  <button className="btn btn-sm btn-danger btn-small ms-5" style={{ fontSize: '14px' }} onClick={() => { handleDelete(item) }}> Delete</button>
+
                 </td>
               </tr>
             ))}
@@ -88,4 +116,4 @@ const UserData = () => {
   )
 }
 
-export {UserData}
+export { UserData }

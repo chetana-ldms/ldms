@@ -1,25 +1,22 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {Link, useNavigate} from 'react-router-dom'
-import axios from 'axios'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { UsersListLoading } from '../components/loading/UsersListLoading';
+import { notify, notifyFail } from '../components/notification/Notification';
 
 const AddToolTypeAction = () => {
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
-  const [toolTypes, setToolTypes] = useState([])
-  const toolTypeID = useRef()
-  const toolAction = useRef()
-  const errors = {}
-  //////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [toolTypes, setToolTypes] = useState([]);
+  const toolTypeID = useRef();
+  const toolAction = useRef();
+  const errors = {};
 
   useEffect(() => {
-    setLoading(true)
-
-    //////////////////
+    setLoading(true);
     var data_4 = JSON.stringify({
       maserDataType: 'Tool_Types',
-    })
+    });
     var config_4 = {
       method: 'post',
       url: 'http://115.110.192.133:502/api/LDPlattform/v1/MasterData',
@@ -27,37 +24,39 @@ const AddToolTypeAction = () => {
         'Content-Type': 'application/json',
       },
       data: data_4,
-    }
+    };
     axios(config_4)
       .then(function (response) {
-        setToolTypes(response.data.masterData)
-        setLoading(false)
+        setToolTypes(response.data.masterData);
+        setLoading(false);
       })
       .catch(function (error) {
-        console.log(error)
-      })
-  }, [])
+        console.log(error);
+      });
+  }, []);
+
   const handleSubmit = (event) => {
-    setLoading(true)
+    setLoading(true);
     if (!toolAction.current.value) {
-      errors.toolAction = 'Select Tool Action'
-      setLoading(false)
-      return errors
+      errors.toolAction = 'Select Tool Action';
+      setLoading(false);
+      return errors;
     }
     if (!toolTypeID.current.value) {
-      errors.toolTypeID = 'Select Tool Type'
-      setLoading(false)
-      return errors
+      errors.toolTypeID = 'Select Tool Type';
+      setLoading(false);
+      return errors;
     }
 
-    event.preventDefault()
-
+    event.preventDefault();
+    const createdUserId = Number(sessionStorage.getItem('userId'));
+    const createdDate = new Date().toISOString();
     var data = JSON.stringify({
       toolTypeID: toolTypeID.current.value,
       toolAction: toolAction.current.value,
-      createdDate: '2023-01-10T15:14:46.337Z',
-      createdUser: 'super_admin',
-    })
+      createdDate,
+      createdUserId
+    });
     var config = {
       method: 'post',
       url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeAction/Add',
@@ -66,19 +65,28 @@ const AddToolTypeAction = () => {
         Accept: 'text/plain',
       },
       data: data,
-    }
-    setTimeout(() => {
+    };
+
+    // setTimeout(() => {
       axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/tool-type-actions/list')
+          const { isSuccess } = response.data;
+
+          if (isSuccess) {
+            notify('Data Saved');
+            navigate('/qradar/tool-type-actions/list');
+          } else {
+            notifyFail('Failed to save data');
+          }
         })
         .catch(function (error) {
-          console.log(error)
+          console.log(error);
         })
-      setLoading(false)
-    }, 1000)
-  }
+        .finally(() => {
+          setLoading(false);
+        });
+    // }, 1000);
+  };
 
   return (
     <div className='card'>
@@ -146,7 +154,7 @@ const AddToolTypeAction = () => {
           >
             {!loading && 'Save Changes'}
             {loading && (
-              <span className='indicator-progress' style={{display: 'block'}}>
+              <span className='indicator-progress' style={{ display: 'block' }}>
                 Please wait...{' '}
                 <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
               </span>
@@ -155,7 +163,7 @@ const AddToolTypeAction = () => {
         </div>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export {AddToolTypeAction}
+export { AddToolTypeAction };

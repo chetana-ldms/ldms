@@ -1,5 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
+import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import {UsersListLoading} from '../components/loading/UsersListLoading' 
 
@@ -134,8 +135,16 @@ const UpdateRule = () => {
     setTimeout(() => {
       axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/rules-engine/updated')
+          const { isSuccess } = response.data;
+
+          if (isSuccess) {
+            notify('Data Updated');
+            navigate('/qradar/rules-engine/updated');
+          } else {
+            notifyFail('Failed to update data');
+          }
+          // console.log(JSON.stringify(response.data))
+          // navigate('/qradar/rules-engine/updated')
         })
         .catch(function (error) {
           console.log(error)
