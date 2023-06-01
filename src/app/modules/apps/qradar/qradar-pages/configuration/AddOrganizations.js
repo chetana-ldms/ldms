@@ -1,0 +1,171 @@
+import React, {useState, useRef} from 'react'
+import {Link, useNavigate} from 'react-router-dom'
+import axios from 'axios'
+
+const AddOrganizations = () => {
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
+  const orgName = useRef()
+  const address = useRef()
+  const mobileNo = useRef()
+  const email = useRef()
+  const errors = {}
+
+  const handleSubmit = (event) => {
+    setLoading(true)
+
+    if (!orgName.current.value) {
+      errors.orgName = 'Enter Organization Name'
+      setLoading(false)
+      return errors
+    }
+    if (!mobileNo.current.value) {
+      errors.mobileNo = 'Enter Organization Mobile No.'
+      setLoading(false)
+      return errors
+    }
+    if (!email.current.value) {
+      errors.email = 'Enter Organization Mobile No.'
+      setLoading(false)
+      return errors
+    }
+    if (!address.current.value) {
+      errors.address = 'Enter Organization Mobile No.'
+      setLoading(false)
+      return errors
+    }
+
+    event.preventDefault()
+    var data = JSON.stringify({
+      orgName: orgName.current.value,
+      address: address.current.value,
+      mobileNo: mobileNo.current.value,
+      email: email.current.value,
+      creadtedByUserName: 'super_admin',
+      createdDate: '2022-12-29T13:56:21.318Z',
+    })
+    var config = {
+      method: 'post',
+      url: 'http://115.110.192.133:502/api/LDPlattform/v1/Organization/Add',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      },
+      data: data,
+    }
+    setTimeout(() => {
+      axios(config)
+        .then(function (response) {
+          console.log(JSON.stringify(response.data))
+          navigate('/qradar/organizations/updated')
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+      setLoading(false)
+    }, 1000)
+  }
+
+  return (
+    <div className='card'>
+      <div className='card-header border-0 pt-5'>
+        <h3 className='card-title align-items-start flex-column'>
+          <span className='card-label fw-bold fs-3 mb-1'>Configure New Organization</span>
+        </h3>
+        <div className='card-toolbar'>
+          <div className='d-flex align-items-center gap-2 gap-lg-3'>
+            <Link to='/qradar/organizations/list' className='btn btn-primary btn-small'>
+              Back
+            </Link>
+          </div>
+        </div>
+      </div>
+      <form>
+        <div className='card-body border-top p-9'>
+          <div className='row mb-6'>
+            <div className='col-lg-6 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='orgName' className='form-label fs-6 fw-bolder mb-3'>
+                  Enter Organization Name
+                </label>
+                <input
+                  type='text'
+                  className='form-control form-control-lg form-control-solid'
+                  required
+                  id='orgName'
+                  ref={orgName}
+                  placeholder='Ex: lancesoft'
+                />
+              </div>
+            </div>
+            <div className='col-lg-6 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='mobileNo' className='form-label fs-6 fw-bolder mb-3'>
+                  Enter Organization Mobile
+                </label>
+                <input
+                  type='tel'
+                  pattern='[0-9]'
+                  required
+                  className='form-control form-control-lg form-control-solid'
+                  id='mobileNo'
+                  ref={mobileNo}
+                  placeholder='Ex: 01 0102030405'
+                />
+              </div>
+            </div>
+            <div className='col-lg-6 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='email' className='form-label fs-6 fw-bolder mb-3'>
+                  Enter Organization Email
+                </label>
+                <input
+                  type='email'
+                  className='form-control form-control-lg form-control-solid'
+                  id='email'
+                  ref={email}
+                  placeholder='email@organization.com'
+                  required
+                />
+              </div>
+            </div>
+            <div className='col-lg-6 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='address' className='form-label fs-6 fw-bolder mb-3'>
+                  Enter Organization Address
+                </label>
+                <input
+                  type='text'
+                  required
+                  className='form-control form-control-lg form-control-solid'
+                  id='address'
+                  ref={address}
+                  placeholder='Address : '
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className='card-footer d-flex justify-content-end py-6 px-9'>
+          <button
+            type='submit'
+            onClick={handleSubmit}
+            className='btn btn-primary'
+            disabled={loading}
+          >
+            {!loading && 'Save Changes'}
+            {loading && (
+              <span className='indicator-progress' style={{display: 'block'}}>
+                Please wait...{' '}
+                <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+              </span>
+            )}
+          </button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+export {AddOrganizations}
