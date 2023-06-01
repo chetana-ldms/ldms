@@ -126,7 +126,7 @@ const AlertsPage = () => {
       second: '2-digit',
     }).format(timestamp)
   }
-  const userID = Number(sessionStorage.getItem('userId'));
+  // const userID = Number(sessionStorage.getItem('userId'));
   const orgId = Number(sessionStorage.getItem('orgId'));
   const [alertData, setAlertDate] = useState([])
   const [filteredAlertData, setFilteredAlertDate] = useState([])
