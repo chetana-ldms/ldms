@@ -92,28 +92,13 @@ const SidebarMenuMain = () => {
         fontIcon='bi-archive'
         icon='/media/icons/duotune/general/gen017.svg'
       />
-      {/* <SidebarMenuItem
-        to='/apps/help'
-        title='Help'
-        fontIcon='bi-chat-left'
-        icon='/media/icons/duotune/general/gen026.svg'
-      /> */}
-      {/* <SidebarMenuItem
-        to='/apps/user-management/users'
-        icon='/media/icons/duotune/general/gen051.svg'
-        title='Notifications '
-        fontIcon='bi-layers'
-      /> */}
+  
+
       <SidebarMenuItem
         icon='/media/icons/duotune/communication/com006.svg'
-        to='/crafted/account/overview'
-        title='Profile'
+        to='/qradar/profile'
+        title='Users Profile'
       />
-      {/* <SidebarMenuItem
-        icon='/media/icons/duotune/coding/cod001.svg'
-        to='/apps/chat/settings'
-        title='Settings'
-      /> */}
     </>
   )
 }

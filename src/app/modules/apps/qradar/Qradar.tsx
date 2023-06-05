@@ -49,6 +49,8 @@ import {UpdateRoleData} from './qradar-pages/configuration/UpdateRoleData'
 import {AddOrganizationTools} from './qradar-pages/configuration/AddOrganizationTools'
 import {UpdateOrganizationTools} from './qradar-pages/configuration/UpdateorganizationTools'
 import {IncidentsPageCollaboration} from './qradar-pages/incidents/IncidentsPageCollaboration'
+import UsersProfile from './qradar-pages/profile/UsersProfile'
+
 
 const usersBreadcrumbs: Array<PageLink> = [
   {
@@ -235,6 +237,15 @@ const QradarPages = () => {
           </>
         }
       />
+      <Route
+          path='profile'
+          element={
+            <>
+              <PageTitle breadcrumbs={usersBreadcrumbs}>User Profile</PageTitle>
+              <UsersProfile />
+            </>
+          }
+        />
       <Route
         path='demo/:status'
         element={

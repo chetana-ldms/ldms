@@ -1030,6 +1030,17 @@ body {
   }
 }
 
+
+//User profile page
+.users-table{
+td{
+  i{
+    font-size: 12px;
+    vertical-align: baseline;
+  }
+}
+}
+
 // Desktop mode
 @include media-breakpoint-up(lg) {
   // Base

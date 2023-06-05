@@ -6,9 +6,8 @@ function TeamsIntegration() {
 
   return (
     <div>
-      <h1>My Microsoft Teams Live Event</h1>
-      {/* <iframe src={liveEventUrl} width='800' height='600' /> */}
-      <iframe src={chatUrl} width='800' height='600' />
+      <h1>Teams</h1>
+      
     </div>
   )
 }
