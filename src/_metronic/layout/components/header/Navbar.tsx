@@ -18,8 +18,10 @@ const Navbar = () => {
   const handleLogout = () => {
     navigate('/auth');
   };
+  const userName = sessionStorage.getItem('userName');
   return (
     <div className='app-navbar flex-shrink-0'>
+      <p className='d-flex m-5'>{userName}</p>
         <button className="btn btn-primary m-3" onClick={handleLogout} >LogOut </button>
       
    

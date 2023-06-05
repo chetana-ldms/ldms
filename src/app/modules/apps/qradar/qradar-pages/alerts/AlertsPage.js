@@ -18,7 +18,11 @@ import 'react-toastify/dist/ReactToastify.css'
 import { FloatingLabel, Form } from 'react-bootstrap'
 import { useFormik } from 'formik'
 import EditAlertsPopUp from './EditAlertsPopUp';
+import './Alerts.css';
+import { notify, notifyFail } from '../components/notification/Notification'
 import { fetchMasterData, fetchUpdatSetAlertIrrelavantStatuseAlert } from '../../../../../api/Api';
+import { fetchAlertData, fetchSetAlertEscalationStatus, fetchSetOfAlerts, fetchUsers } from '../../../../../api/AlertsApi'
+import ReactPaginate from 'react-paginate'
 
 const AlertsPage = () => {
   const [inputValue, setInputValue] = useState('')
@@ -74,41 +78,41 @@ const AlertsPage = () => {
   const [actionsValue, setActionValue] = useState('')
   function createIncidentSubmit(e) {
     setActionValue(e.target.value)
-    var data = JSON.stringify({
-      description: 'Log source Microsoft SQL Server',
-      priority: 39,
-      severity: 42,
-      type: 'Alert ',
-      eventID: '1230987',
-      destinationUser: 'User 1',
-      sourceIP: '192.168.0.1',
-      vendor: 'i',
-      owner: 0,
-      incidentStatus: 32,
-      createdDate: '1999-06-25T02:00:56.703Z',
-      createdUser: 'admin',
-    })
-    var config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'http://115.110.192.133:502/api/IncidentManagement/CreateInternalIncident',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
-    }
-    axios(config)
-      .then(function (response) {
-        console.log(JSON.stringify(response.data))
-        alert('Demo Incident Created')
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-      .finally(() => {
-        console.log(actionsValue, 'actionsValue')
-      })
+    // var data = JSON.stringify({
+    //   description: 'Log source Microsoft SQL Server',
+    //   priority: 39,
+    //   severity: 42,
+    //   type: 'Alert ',
+    //   eventID: '1230987',
+    //   destinationUser: 'User 1',
+    //   sourceIP: '192.168.0.1',
+    //   vendor: 'i',
+    //   owner: 0,
+    //   incidentStatus: 32,
+    //   createdDate: '1999-06-25T02:00:56.703Z',
+    //   createdUser: 'admin',
+    // })
+    // var config = {
+    //   method: 'post',
+    //   maxBodyLength: Infinity,
+    //   url: 'http://115.110.192.133:502/api/IncidentManagement/CreateInternalIncident',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Accept: 'text/plain',
+    //   },
+    //   data: data,
+    // }
+    // axios(config)
+    //   .then(function (response) {
+    //     console.log(JSON.stringify(response.data))
+    //     alert('Demo Incident Created')
+    //   })
+    //   .catch(function (error) {
+    //     console.log(error)
+    //   })
+    //   .finally(() => {
+    //     console.log(actionsValue, 'actionsValue')
+    //   })
   }
   const navigate = useNavigate()
   const [selectValue, setSelectValue] = useState()
@@ -126,16 +130,27 @@ const AlertsPage = () => {
       second: '2-digit',
     }).format(timestamp)
   }
-  // const userID = Number(sessionStorage.getItem('userId'));
+  const userID = Number(sessionStorage.getItem('userId'));
   const orgId = Number(sessionStorage.getItem('orgId'));
   const [alertData, setAlertDate] = useState([])
   const [filteredAlertData, setFilteredAlertDate] = useState([])
   const [ldp_security_user, setldp_security_user] = useState([])
   const [escalate, setEscalate] = useState(true)
-  const [perPage, setPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [showForm, setShowForm] = useState(false)
   const [ignorVisible, setIgnorVisible] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [limit,setLimit] = useState(20)
+
+  const [pageCount, setpageCount] = useState(0);
+
+  useEffect(()=>{
+    axios.get("http://115.110.192.133:502/api/Alerts/v1/Alerts").then((res)=>{
+      console.log(res,"mydata")
+    })
+  },[])
+ 
+
   const handleCloseForm = () => {
     notifyFail('Data not Updated')
     setShowForm(false);
@@ -161,30 +176,13 @@ const AlertsPage = () => {
       console.log(error);
     }
   }
-  const startIndex = (currentPage - 1) * perPage;
-  const endIndex = startIndex + perPage;
-  const totalPages = Math.ceil(filteredAlertData.length / perPage);
   const handleTableRefresh = () => {
     qradaralerts()
   };
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
+
   const handlePageSelect = (event) => {
-    const selectedPerPage = parseInt(event.target.value);
-    const selectedPage = Math.min(currentPage, Math.ceil(filteredAlertData.length / selectedPerPage));
-    setCurrentPage(selectedPage);
-    setPerPage(selectedPerPage);
+    const selectedPerPage = event.target.value
+    setLimit(selectedPerPage);
   };
   const [delay, setDelay] = useState(1)
   const isLoading = true
@@ -194,24 +192,22 @@ const AlertsPage = () => {
       owner: '',
       comments: '',
     },
-    onSubmit: (values) => {
-      axios
-        .post('http://115.110.192.133:502/api/Alerts/v1/SetAlertEscalationStatus', {
-          modifiedUser: 'Global Admin',
-          modifiedDate: '2023-04-13T08:20:40.025Z',
-          modifiedUserId: 1,
-          orgId: 1,
-          alertIDs: selectedAlert,
-          ownerID: 2,
-          ownerName: values.owner,
-          notes: values.comments,
-        })
-        .then(({ data, status }) => {
-          console.log(data)
-          if (status === 200) {
-            qradaralerts()
-          }
-        })
+    onSubmit: async (values) => {
+      const data = {
+        modifiedUser: 'Global Admin',
+        modifiedDate: '2023-04-13T08:20:40.025Z',
+        modifiedUserId: 1,
+        orgId: 1,
+        alertIDs: selectedAlert,
+        ownerID: 2,
+        ownerName: values.owner,
+        notes: values.comments,
+      }
+      const response = await fetchSetAlertEscalationStatus(data)
+      if (response.isSuccess) {
+        qradaralerts()
+        notify('Escalate Created')
+      }
       handleEscalate({
         target: {
           name: 'owner',
@@ -233,63 +229,55 @@ const AlertsPage = () => {
     e.preventDefault();
     handleSubmit();
     setEscalate(false);
-    notify('Escalate Created')
   };
-  let data2 = JSON.stringify({
-    orgID: orgId,
-    toolID: '1',
-    toolTypeID: '1',
-    paging: {
-      rangeStart: '1',
-      rangeEnd: '20',
-    },
-    loggedInUserId: userID,
-  })
-  const data = JSON.stringify({
-    clientID: 0,
-    clientName: 'string',
-    paging: {
-      rangeStart: 0,
-      rangeEnd: 49,
-    },
-  })
-  const config = {
-    method: 'post',
-    url: GET_RECENT_OFFENSES,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: data2,
-  }
-  const qradaralerts = () => {
-    axios(config)
-      .then(function (response) {
-        var newalertData = [...alertData, ...response.data.alertsList]
-        setAlertsCount(response.data.totalOffenseCount)
-        setAlertDate(response.data.alertsList)
-        setFilteredAlertDate(response.data.alertsList)
-        // setRangeStart((rangeStart) => rangeEnd + 1)
-        // setRangeEnd((rangeEnd) => rangeEnd + 2)
-        // console.log('rangeStart', rangeStart)
-        // console.log('rangeEnd', rangeEnd)
-      })
-      .catch(function (error) {
-        console.log('error', error)
-      })
-  }
+  const handlePageClick = async (data) => {
+    let currentPage = data.selected + 1;
+    const setOfAlertsData = await fetchSetOfAlerts(currentPage,orgId,userID,limit);
+    setFilteredAlertDate(setOfAlertsData.filter((item) => item.ownerUserID === userID));
+    setFilteredAlertDate(setOfAlertsData)
+    setCurrentPage(currentPage);
+  };
+
+  const qradaralerts = async () => {
+    let data2 = {
+      orgID: orgId,
+      toolID: '1',
+      toolTypeID: '1',
+      paging: {
+        rangeStart: 1,
+        rangeEnd: limit,
+      },
+      loggedInUserId: userID,
+    };
+    const response = await fetchAlertData(data2);
+
+    setAlertsCount(response.totalOffenseCount)
+    setAlertDate(response.alertsList != null ? response.alertsList : [])
+    const total = response.totalOffenseCount;
+    setpageCount(Math.ceil(total / limit));
+    {
+      if (userID === 1) {
+        setFilteredAlertDate(response.alertsList)
+      } else {
+        let result = response.alertsList != null ? response.alertsList.filter((item) => item.ownerUserID === userID) : [];
+        setFilteredAlertDate(result)
+      }
+    }
+  };
   useEffect(() => {
-    qradaralerts()
-    setTimeout(() => {
-      setDelay((delay) => delay + 1)
-    }, 60000)
-    axios
-      .post('http://115.110.192.133:502/api/LDPSecurity/v1/Users?OrgId=1')
-      .then(({ data }) => {
-        setldp_security_user(data?.usersList)
-      })
-      .catch((err) => {
-        console.log(err, 'error')
-      })
+    qradaralerts();
+  }, [limit]);
+  useEffect(() => {
+    const fetchData = async () => {
+      qradaralerts();
+      setTimeout(() => {
+        setDelay((delay) => delay + 1);
+      }, 60000);
+      const response = await fetchUsers(orgId);
+      setldp_security_user(response?.usersList != undefined ? response?.usersList : []);
+    };
+
+    fetchData();
   }, [delay])
   useEffect(() => {
     if (actionsValue === '1') {
@@ -300,29 +288,6 @@ const AlertsPage = () => {
     }
   }, [actionsValue])
   console.log(filteredAlertData, 'filteredAlertData')
-  const notify = (e) =>
-    toast.success(e, {
-      position: 'top-right',
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'colored',
-    })
-  const notifyFail = (message) => {
-    toast.error(message, {
-      position: 'top-right',
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'colored',
-    });
-  };
   const handleChange = (e, field) => {
     console.log(e.target.value)
     console.log(alertData)
@@ -364,16 +329,55 @@ const AlertsPage = () => {
     )
     setFilteredAlertDate(data)
   }
+  const handleRefresh = (event) => {
+    event.preventDefault();
+    setIsRefreshing(true);
+    qradaralerts();
+    setTimeout(() => setIsRefreshing(false), 2000);
+  };
+  const RefreshInterval = 1 * 60 * 1000;
+
+  useEffect(() => {
+    let isActive = true;
+
+    const refreshIntervalId = setInterval(() => {
+      if (isActive && currentPage === 1) {
+        setIsRefreshing(true);
+        qradaralerts();
+        setTimeout(() => {
+          setIsRefreshing(false);
+        }, 2000);
+      } else {
+        setIsRefreshing(false);
+      }
+    }, RefreshInterval);
+    
+
+    return () => {
+      isActive = false;
+      clearInterval(refreshIntervalId);
+    };
+  }, [currentPage]);
+
   return (
     <KTCardBody className='alert-page'>
       <ToastContainer />
       <div className='card mb-5 mb-xl-8'>
         <div className='card-header border-0 pt-5'>
           <h3 className='card-title align-items-start flex-column'>
-            <span className='card-label fw-bold fs-3 mb-1'>
+            {/* <span className='card-label fw-bold fs-3 mb-1'>
               Alerts {'( ' + alertData.length + ' / ' + alertsCount + ')'}
+            </span> */}
+            <span className='card-label fw-bold fs-3 mb-1'>
+              Alerts {'( ' + filteredAlertData.length + ' / ' + alertsCount + ')'}
             </span>
           </h3>
+          <div className='col-lg-8 fs-15 mt-2 lh-40 fc-gray text-right ds-reload'>
+            Alerts is automatically refreshing every 5 minutes{' '}
+            <a href='#' onClick={handleRefresh}>
+              <i className={`fa fa-refresh ${isRefreshing ? 'rotate' : ''}`} />
+            </a>
+          </div>
           <div className='card-toolbar'>
             <div className='d-flex align-items-center gap-2 gap-lg-3'>
               <div className='m-0'>
@@ -1002,7 +1006,7 @@ const AlertsPage = () => {
                   ''
                 )}
                 {filteredAlertData.length > 0 &&
-                  filteredAlertData.slice(startIndex, endIndex).map((item, index) => (
+                  filteredAlertData.map((item, index) => (
                     <>
                       <tr key={item.alertID}>
                         <td>
@@ -1106,45 +1110,30 @@ const AlertsPage = () => {
               </tbody>
             </table>
           </div>
-          <div className="row d-flex justify-content-end align-items-center">
-            <div className="col-md-10 row d-flex justify-content-end">
-              <ul className="pagination justify-content-end">
-                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                  <button
-                    className="page-link bg-custom-primary page-link-icon"
-                    onClick={handlePreviousPage}
-                  >
-                    <i className="bi bi-arrow-left"></i> Previous
-                  </button>
-                </li>
-                {Array.from({ length: totalPages }).map((_, index) => (
-                  <li
-                    key={index}
-                    className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}
-                  >
-                    <button
-                      className={`page-link ${currentPage === index + 1 ? 'bg-custom-dark' : ''}`}
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </button>
-                  </li>
-                ))}
-                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                  <button
-                    className="page-link bg-custom-primary page-link-icon"
-                    onClick={handleNextPage}
-                  >
-                    Next <i className="bi bi-arrow-right"></i>
-                  </button>
-                </li>
-              </ul>
-            </div>
+          <div className="d-flex justify-content-end align-items-center pagination-bar">
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              pageCount={pageCount}
+              marginPagesDisplayed={1}
+              pageRangeDisplayed={15}
+              onPageChange={handlePageClick}
+              containerClassName={"pagination justify-content-end"}
+              pageClassName={"page-item"}
+              pageLinkClassName={"page-link"}
+              previousClassName={"page-item custom-previous"}
+              previousLinkClassName={"page-link custom-previous-link"}
+              nextClassName={"page-item custom-next"}
+              nextLinkClassName={"page-link custom-next-link"}
+              breakClassName={"page-item"}
+              breakLinkClassName={"page-link"}
+              activeClassName={"active"}
+            />
             <div className="col-md-2 d-flex justify-content-start align-items-center">
               <span className="col-md-6">Select page:</span>
               <select
                 className="form-select form-select-sm"
-                value={perPage}
+                value={limit}
                 onChange={handlePageSelect}
               >
                 <option value={5}>5</option>

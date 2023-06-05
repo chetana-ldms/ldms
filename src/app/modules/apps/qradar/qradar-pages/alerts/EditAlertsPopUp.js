@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Alert, Button, Form, Modal } from "react-bootstrap";
 import { fetchUpdateAlert } from "../../../../../api/Api";
 import { toast } from 'react-toastify'
+import { notify, notifyFail } from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
 
 const EditAlertsPopUp = ({ show, onClose, row, ldp_security_user, dropdownData, onTableRefresh }) => {
@@ -82,29 +83,6 @@ console.log(id, "id111")
             })
         }
     }
-    const notify = (e) =>
-        toast.success(e, {
-            position: 'top-right',
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: 'colored',
-        })
-    const notifyFail = (message) => {
-        toast.error(message, {
-            position: 'top-right',
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: 'colored',
-        });
-    };
     const onClickUpdate = async () => {
         try {
             const modifiedUserId1 = Number(sessionStorage.getItem('userId'));
