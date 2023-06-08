@@ -1,22 +1,109 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {Link, useNavigate, useParams} from 'react-router-dom'
+import React, { useState, useRef, useEffect } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
-import {fetchLDPTools} from '../../../../../api/Api'
+import { UsersListLoading } from '../components/loading/UsersListLoading'
+import { fetchLDPTools } from '../../../../../api/Api'
+import { fetchLDPToolsByToolType, fetchToolActionDetails } from '../../../../../api/ConfigurationApi';
 
 const UpdateToolAction = () => {
   const navigate = useNavigate()
-  const {id} = useParams()
+  const { id } = useParams()
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
   const [toolActionTypes, setToolActionTypes] = useState([])
+  const [toolTypeAction, setToolTypeAction] = useState(
+    {
+      toolTypeName: "",
+      toolName: '',
+      toolID: '',
+      toolTypeActionName: "",
+      toolTypeActionID: "",
+      selectedToolId:""
+    }
+  );
+  console.log(toolTypeAction, "toolTypeAction")
   const [ldpTools, setLdpTools] = useState([]);
-  console.log(ldpTools, "ldpTools")
   const toolID = useRef()
   const toolTypeActionID = useRef()
   const toolId = useRef()
   const errors = {}
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchToolActionDetails(id);
+        setToolTypeAction((prevToolTypeAction) => ({
+          ...prevToolTypeAction,
+          toolTypeName:data.toolTypeName,
+          toolName: data.toolName,
+          toolTypeActionName: data.toolTypeActionName,
+          toolID: data.toolID, //2nd field
+          toolTypeId: data.toolTypeId, //1st field
+          toolTypeActionID: data.toolTypeActionID //3rd field 
+        }));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  const handleChange = (event,field) => {
+    let selectedId = event.target.options[event.target.selectedIndex].getAttribute('data-id');
+    if(field === "selectToolType"){
+      setToolTypeAction({
+        ...toolTypeAction,
+        selectedToolId : selectedId,
+        toolTypeName:event.target.value
+      });
+      const result = async () => {
+        try {
+          const data = {
+            toolTypeId: Number(selectedId)
+          }
+          const response = await fetchLDPToolsByToolType(data);
+          const result = response.ldpToolsList
+          setLdpTools(result)
+        } catch (error) {
+          console.log(error);
+        }
+      };
+  
+      result();
+
+      
+      var config = {
+        method: 'get',
+        url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeActions',
+        headers: {
+          Accept: 'text/plain',
+        },
+      }
+  
+      axios(config)
+        .then(function (response) {
+          let result = response.data.toolTypeActionsList.filter((item)=> {return item.toolTypeID === Number(selectedId)})
+          setToolActionTypes(result);
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+    }else if(field === "tools"){
+      setToolTypeAction({
+        ...toolTypeAction,
+        toolName : event.target.value,
+        toolID:selectedId
+      });
+    }else if(field === "toolActionType"){
+      setToolTypeAction({
+        ...toolTypeAction,
+        toolTypeActionName : event.target.value,
+        toolTypeActionID:selectedId
+      });
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -68,7 +155,7 @@ const UpdateToolAction = () => {
         console.log(error)
       })
   }, [])
-  const handleSubmit = (event) => {
+  const handleSubmit = (event, toolTypeAction) => {
     setLoading(true)
     if (!toolTypeActionID.current.value) {
       errors.toolTypeActionID = 'Select Tool Action'
@@ -84,11 +171,13 @@ const UpdateToolAction = () => {
     const modifiedUserId = Number(sessionStorage.getItem('userId'));
     const modifiedDate = new Date().toISOString();
     var data = JSON.stringify({
-      toolID: toolID.current.value,
-      toolTypeActionID: toolTypeActionID.current.value,
-      toolActionID: id,
-      modifiedDate,
-      modifiedUserId
+        toolID: toolTypeAction.toolID,
+        // toolID: toolTypeAction.toolTypeID,
+        // toolTypeActionID: toolTypeActionID.current.value,
+        toolTypeActionID: toolTypeAction.toolTypeActionID,
+        toolActionID: Number(id),
+        modifiedDate,
+        modifiedUserId
     })
     var config = {
       method: 'post',
@@ -149,11 +238,13 @@ const UpdateToolAction = () => {
                   data-allow-clear='true'
                   id='toolID'
                   ref={toolID}
+                  value={toolTypeAction.toolTypeName}
+                  onChange={(e) => handleChange(e,"selectToolType")}
                   required
                 >
                   <option value=''>Select Tool Type</option>
                   {toolTypes.map((item, index) => (
-                    <option value={item.dataID} key={index}>
+                    <option value={item.value} key={index} data-id={item.dataID}>
                       {item.dataValue}
                     </option>
                   ))}
@@ -164,7 +255,7 @@ const UpdateToolAction = () => {
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
-                  Tools
+                  Select Tools
                 </label>
                 <select
                   className='form-select form-select-solid'
@@ -173,34 +264,38 @@ const UpdateToolAction = () => {
                   data-allow-clear='true'
                   id='toolId'
                   ref={toolId}
+                  value={toolTypeAction.toolName}
+                  onChange={(e) => handleChange(e,"tools")}
                   required
                 >
                   <option value=''>Select Tools</option>
                   {ldpTools.map((item, index) => (
-                    <option value={item.toolId} key={index}>
+                    <option value={item.toolName} key={index} data-id={item.toolId}>
                       {item.toolName}
                     </option>
                   ))}
                 </select>
               </div>
             </div>
-            <div className='col-lg-4 mb-4 mb-lg-0'>
-              <div className='fv-row mb-0'>
-                <label htmlFor='toolTypeActionID' className='form-label fs-6 fw-bolder mb-3'>
+            <div className="col-lg-4 mb-4 mb-lg-0">
+              <div className="fv-row mb-0">
+                <label htmlFor="toolTypeActionID" className="form-label fs-6 fw-bolder mb-3">
                   Tool Action Type
                 </label>
                 <select
-                  className='form-select form-select-solid'
-                  data-kt-select2='true'
-                  data-placeholder='Select option'
-                  data-allow-clear='true'
-                  id='toolTypeActionID'
+                  className="form-select form-select-solid"
+                  data-kt-select2="true"
+                  data-placeholder="Select option"
+                  data-allow-clear="true"
+                  id="toolTypeActionID"
+                  value={toolTypeAction.toolTypeActionName}
                   ref={toolTypeActionID}
+                  onChange={(e)=>handleChange(e,"toolActionType")}
                   required
                 >
-                  <option value=''>Select Tool Action Type</option>
+                  <option value="">Select Tool Action Type</option>
                   {toolActionTypes.map((item, index) => (
-                    <option value={item.toolTypeActionID} key={index}>
+                    <option value={item.toolTypeActionName} key={index} data-id={item.toolTypeActionID}>
                       {item.toolAction}
                     </option>
                   ))}
@@ -211,17 +306,17 @@ const UpdateToolAction = () => {
         </div>
 
 
-        
+
         <div className='card-footer d-flex justify-content-end py-6 px-9'>
           <button
             type='submit'
-            onClick={handleSubmit}
+            onClick={(e) => handleSubmit(e, toolTypeAction)}
             className='btn btn-primary'
             disabled={loading}
           >
             {!loading && 'Save Changes'}
             {loading && (
-              <span className='indicator-progress' style={{display: 'block'}}>
+              <span className='indicator-progress' style={{ display: 'block' }}>
                 Please wait...{' '}
                 <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
               </span>
@@ -233,4 +328,4 @@ const UpdateToolAction = () => {
   )
 }
 
-export {UpdateToolAction}
+export { UpdateToolAction }

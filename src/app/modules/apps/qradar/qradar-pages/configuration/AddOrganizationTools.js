@@ -1,15 +1,17 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {Link, useNavigate, useParams} from 'react-router-dom'
+import React, { useState, useRef, useEffect } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
+import { fetchLDPToolsByToolType } from '../../../../../api/ConfigurationApi';
 
 const AddOrganizationTools = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
   const [organizationList, setOrganizationList] = useState([])
+  const [toolName, setToolName] = useState([])
   const toolID = useRef()
   const orgID = useRef()
   const authKey = useRef()
@@ -115,6 +117,24 @@ const AddOrganizationTools = () => {
         console.log(error)
       })
   }, [])
+
+  let handleChangeToolType = (event) =>{
+      let selectedValue = event.target.value;
+      const result = async () => {
+        try {
+          const data = {
+            toolTypeId: Number(selectedValue)
+          }
+          const response = await fetchLDPToolsByToolType(data);
+          const result = response.ldpToolsList
+          setToolName(result)
+        } catch (error) {
+          console.log(error);
+        }
+      };
+  
+      result();
+  }
   return (
     <div className='card'>
       <ToastContainer />
@@ -133,30 +153,7 @@ const AddOrganizationTools = () => {
       <form>
         <div className='card-body border-top p-9'>
           <div className='row mb-6'>
-            <div className='col-lg-6 mb-4 mb-lg-0'>
-              <div className='fv-row mb-10'>
-                <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Tool Type
-                </label>
-                <select
-                  className='form-select form-select-solid'
-                  data-kt-select2='true'
-                  data-placeholder='Select option'
-                  data-allow-clear='true'
-                  id='toolID'
-                  ref={toolID}
-                  required
-                >
-                  <option value=''>Select Tool Type</option>
-                  {toolTypes.map((item, index) => (
-                    <option value={item.dataID} key={index}>
-                      {item.dataValue}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className='col-lg-6 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='orgID' className='form-label fs-6 fw-bolder mb-3'>
                   Enter Organization
@@ -170,7 +167,7 @@ const AddOrganizationTools = () => {
                   ref={orgID}
                   required
                 >
-                  <option value=''>Select Organization</option>
+                  <option value=''>Select</option>
                   {organizationList.map((item, index) => (
                     <option value={item.orgID} key={index}>
                       {item.orgName}
@@ -179,7 +176,54 @@ const AddOrganizationTools = () => {
                 </select>
               </div>
             </div>
-            <div className='col-lg-6 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='fv-row mb-10'>
+                <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
+                  Enter Tool Type
+                </label>
+                <select
+                  className='form-select form-select-solid'
+                  data-kt-select2='true'
+                  data-placeholder='Select option'
+                  data-allow-clear='true'
+                  id='toolID'
+                  onChange={handleChangeToolType}
+                  ref={toolID}
+                  required
+                >
+                  <option value=''>Select</option>
+                  {toolTypes.map((item, index) => (
+                    <option value={item.dataID} key={index}>
+                      {item.dataValue}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='fv-row mb-10'>
+                <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
+                  Select Tool 
+                </label>
+                <select
+                  className='form-select form-select-solid'
+                  data-kt-select2='true'
+                  data-placeholder='Select option'
+                  data-allow-clear='true'
+                  id='toolID'
+                  ref={toolID}
+                  required
+                >
+                  <option value=''>Select </option>
+                  {toolName.map((item, index) => (
+                    <option value={item.toolId} key={index}>
+                      {item.toolName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='authKey' className='form-label fs-6 fw-bolder mb-3'>
                   Enter Authentication Key
@@ -194,7 +238,7 @@ const AddOrganizationTools = () => {
                 />
               </div>
             </div>
-            <div className='col-lg-6 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='apiUrl' className='form-label fs-6 fw-bolder mb-3'>
                   Enter API URL
@@ -220,7 +264,7 @@ const AddOrganizationTools = () => {
           >
             {!loading && 'Save Changes'}
             {loading && (
-              <span className='indicator-progress' style={{display: 'block'}}>
+              <span className='indicator-progress' style={{ display: 'block' }}>
                 Please wait...{' '}
                 <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
               </span>
@@ -232,4 +276,4 @@ const AddOrganizationTools = () => {
   )
 }
 
-export {AddOrganizationTools}
+export { AddOrganizationTools }

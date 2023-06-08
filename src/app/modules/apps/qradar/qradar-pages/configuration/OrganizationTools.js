@@ -62,7 +62,7 @@ const OrganizationTools = () => {
       <ToastContainer />
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
-          <span className='card-label fw-bold fs-3 mb-1'>Organizations</span>
+          <span className='card-label fw-bold fs-3 mb-1'>Organizations Tools</span>
         </h3>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
@@ -112,7 +112,7 @@ const OrganizationTools = () => {
                   <button className='btn btn-primary btn-small'>
                     <Link
                       className='text-white'
-                      to={`/qradar/organization-tools/update/${item.toolID}`}
+                      to={`/qradar/organization-tools/update/${item.orgToolID}`}
                     >
                       Update
                     </Link>

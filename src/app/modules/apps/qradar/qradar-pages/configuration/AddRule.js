@@ -95,13 +95,16 @@ const AddRule = () => {
   const handleSubmit = (event) => {
     setLoading(true)
     event.preventDefault()
-    // console.log('formFields', formFields)
+    const createdUserId = Number(sessionStorage.getItem('userId'));
+    const orgId = Number(sessionStorage.getItem('orgId'));
+    const createdDate = new Date().toISOString();
     var data = JSON.stringify({
       ruleName: ruleName.current.value,
       ruleCatagoryID: ruleCatagoryID.current.value,
       ruleRunAttributeName: ruleName.current.value,
-      createdDate: '2023-01-03T13:49:58.115Z',
-      createdUser: 'Super_admin',
+      orgId,
+      createdDate,
+      createdUserId,
       ruleConditions: formFields,
     })
 

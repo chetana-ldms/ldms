@@ -6,19 +6,21 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { fetchRulesDelete } from "../../../../../api/Api"
 import axios from 'axios'
+import { fetchRules } from '../../../../../api/ConfigurationApi'
 const RulesEngine = () => {
+  const orgId = Number(sessionStorage.getItem('orgId'));
   const [loading, setLoading] = useState(false)
   const [tools, setTools] = useState([])
   const { status } = useParams()
 
   const handleDelete = async (item) => {
     console.log(item, "item")
-    const deletedUser = sessionStorage.getItem('userId');
+    const deletedUserId = Number(sessionStorage.getItem('userId'));
     const deletedDate = new Date().toISOString();
     const data = {
       ruleID: item.ruleID,
       deletedDate,
-      deletedUser
+      deletedUserId
     }
     try {
       const responce = await fetchRulesDelete(data);
@@ -32,25 +34,13 @@ const RulesEngine = () => {
       console.log(error);
     }
   }
-  const reload = () => {
-    // setLoading(true)
-    var config = {
-      method: 'get',
-      url: 'http://115.110.192.133:8011/api/RulesConfiguraton/v1/Rules',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-
-    axios(config)
-      .then(function (response) {
-        setTools(response.data.rulesList)
-        console.log(response.data.rulesList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
+  const reload = async() => {
+        try {
+          const data = await fetchRules(orgId);
+          setTools(data);
+        } catch (error) {
+          console.log(error)
+        }
   }
   useEffect(() => {
     reload();

@@ -9,6 +9,7 @@ import axios from 'axios'
 const ToolActions = () => {
   const [loading, setLoading] = useState(false)
   const [toolActions, setToolActions] = useState([])
+  console.log(toolActions, "toolActions")
   const { status } = useParams()
 
   const handleDelete = async (item) => {

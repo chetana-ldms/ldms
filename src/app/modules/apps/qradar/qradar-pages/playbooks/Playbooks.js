@@ -2,30 +2,24 @@ import React, {useState, useEffect} from 'react'
 import {Link, useParams} from 'react-router-dom'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import axios from 'axios'
+import { fetchPlayBooks } from '../../../../../api/playBookApi'
 const Playbooks = () => {
+  const orgId = Number(sessionStorage.getItem('orgId'));
   const [loading, setLoading] = useState(false)
   const [playbooks, setPlaybooks] = useState([])
   const {status} = useParams()
 
-  useEffect(() => {
-    setLoading(true)
-    var config = {
-      method: 'get',
-      url: 'http://115.110.192.133:8011/api/PlayBook/v1/PlayBooks',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
 
-    axios(config)
-      .then(function (response) {
-        setPlaybooks(response.data.playbooks)
-        console.log(response.data.playbooks)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
+  const reload = async() => {
+    try {
+      const data = await fetchPlayBooks(orgId);
+      setPlaybooks(data);
+    } catch (error) {
+      console.log(error)
+    }
+}
+  useEffect(() => {
+    reload();
   }, [])
   // const handleExecute = (item, param) => {
   //   setTimeout(() => {

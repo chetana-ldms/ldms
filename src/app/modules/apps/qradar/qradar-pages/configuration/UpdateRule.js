@@ -3,6 +3,7 @@ import {Link, useNavigate, useParams} from 'react-router-dom'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import {UsersListLoading} from '../components/loading/UsersListLoading' 
+import { fetchRuleDetails } from '../../../../../api/ConfigurationApi';
 
 const UpdateRule = () => {
   const navigate = useNavigate()
@@ -10,6 +11,7 @@ const UpdateRule = () => {
   const [loading, setLoading] = useState(false)
   const [ruleCatagories, setRuleCatagories] = useState([])
   const [rulesconditiontypes, setRulesconditiontypes] = useState([])
+  const [toolTypeAction, setToolTypeAction] = useState({ ruleCatagoryName: '', ruleCatagoryID: '' });
   const [ruleData, setRuleData] = useState([])
   const ruleName = useRef()
   const ruleCatagoryID = useRef()
@@ -19,6 +21,22 @@ const UpdateRule = () => {
       ruleConditionValues: [{rulesConditionValue: ''}],
     },
   ])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchRuleDetails(id, ruleName);
+        setToolTypeAction({
+          ...toolTypeAction,
+          ruleCatagoryID:data.ruleCatagoryID,
+          ruleCatagoryName:data.ruleCatagoryName
+        });
+      } catch (error) {
+        console.log(error)
+      }
+    };
+
+    fetchData();
+  }, [id, ruleName]);
   useEffect(() => {
     setLoading(true)
     var config = {
@@ -111,14 +129,18 @@ const UpdateRule = () => {
   const handleSubmit = (event) => {
     setLoading(true)
     event.preventDefault()
-    // console.log('formFields', formFields)
+    const ModifiedUserId = Number(sessionStorage.getItem('userId'));
+    const orgId = Number(sessionStorage.getItem('orgId'));
+    const modifiedDate = new Date().toISOString();
     var data = JSON.stringify({
       ruleName: ruleName.current.value,
-      ruleCatagoryID: ruleCatagoryID.current.value,
+      // ruleCatagoryID: ruleCatagoryID.current.value,
+      ruleCatagoryID: toolTypeAction.ruleCatagoryID,
       ruleRunAttributeName: ruleName.current.value,
       ruleID: id,
-      modifiedDate: '2023-01-03T13:49:58.115Z',
-      modifieduser: 'Super_admin',
+      orgId,
+      modifiedDate,
+      ModifiedUserId,
       ruleConditions: formFields,
     })
 
@@ -197,11 +219,17 @@ const UpdateRule = () => {
                 data-allow-clear='true'
                 required
                 ref={ruleCatagoryID}
-                value={ruleData.ruleCatagoryID}
+                value={toolTypeAction.ruleCatagoryName}
+                onChange={(e) =>
+                  setToolTypeAction({
+                    ruleCatagoryName: e.target.value,
+                    ruleCatagoryID: e.target.options[e.target.selectedIndex].getAttribute('data-id'),
+                  })}
+                // value={ruleData.ruleCatagoryID}
               >
                 <option>Select Rule Category</option>
                 {ruleCatagories.map((item, index) => (
-                  <option value={item.masterdataid} key={index}>
+                  <option value={item.masterdatavalue} key={index} data-id={item.masterdataid}>
                     {item.masterdatavalue}
                   </option>
                 ))}

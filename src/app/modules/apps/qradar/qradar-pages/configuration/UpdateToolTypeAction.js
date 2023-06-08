@@ -3,16 +3,29 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { notify, notifyFail } from '../components/notification/Notification';
 import { UsersListLoading } from '../components/loading/UsersListLoading'
+import { fetchToolTypeActionDetails } from '../../../../../api/ConfigurationApi'
 
 const UpdateToolTypeAction = () => {
   const navigate = useNavigate()
   const { id } = useParams()
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
+  const [toolTypeAction, setToolTypeAction] = useState({ toolTypeName: '', toolTypeID: '' });
   const toolTypeID = useRef()
   const toolAction = useRef()
-  
-  console.log(toolTypeID,"toolTypeID")
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchToolTypeActionDetails(id, toolAction);
+        setToolTypeAction(data);
+      } catch (error) {
+        console.log(error)
+      }
+    };
+
+    fetchData();
+  }, [id, toolAction]);
   const errors = {}
   useEffect(() => {
     setLoading(true)
@@ -56,7 +69,8 @@ const UpdateToolTypeAction = () => {
     const modifiedUserId = Number(sessionStorage.getItem('userId'));
     const modifiedDate = new Date().toISOString();
     var data = JSON.stringify({
-      toolTypeID: toolTypeID.current.value,
+      // toolTypeID: toolTypeID.current.value,
+      toolTypeID: toolTypeAction.toolTypeID,
       toolAction: toolAction.current.value,
       toolTypeActionID: id,
       modifiedDate,
@@ -135,11 +149,18 @@ const UpdateToolTypeAction = () => {
                   data-allow-clear='true'
                   id='toolTypeID'
                   ref={toolTypeID}
+                  value={toolTypeAction && toolTypeAction.toolTypeName}
+                  onChange={(e) =>
+                    setToolTypeAction({
+                      toolTypeName: e.target.value,
+                      toolTypeID: e.target.options[e.target.selectedIndex].getAttribute('data-id'),
+                    })
+                  }
                   required
                 >
                   <option value=''>Select Tool Type</option>
                   {toolTypes.map((item, index) => (
-                    <option value={item.dataID} key={index}>
+                    <option value={item.dataValue} key={index} data-id={item.dataID}>
                       {item.dataValue}
                     </option>
                   ))}

@@ -10,14 +10,16 @@ import axios from 'axios'
 const UserData = () => {
   const [loading, setLoading] = useState(false)
   const [users, setUsers] = useState([])
+  console.log(users, "users")
   const { status } = useParams()
 
   const handleDelete = async (item) => {
-    const userID = Number(sessionStorage.getItem('userId'));
+    const userID= item.userID
+    const deletedUserId = Number(sessionStorage.getItem('userId'));
     const deletedDate = new Date().toISOString();
-    const deletedUser = sessionStorage.getItem('userName')
+    // const deletedUserId = sessionStorage.getItem('userName')
     const data = {
-      deletedUser,
+      deletedUserId,
       deletedDate,
       userID
     }

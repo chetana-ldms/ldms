@@ -12,7 +12,8 @@ const Organizations = () => {
   const [tools, setTools] = useState([])
   console.log(tools, "tools222")
   const { status } = useParams()
-
+  const userID = Number(sessionStorage.getItem('userId'));
+  const orgId = Number(sessionStorage.getItem('orgId'))
   const handleDelete = async (item) => {
     const deletedUserId = Number(sessionStorage.getItem('userId'));
     const deletedDate = new Date().toISOString();
@@ -45,7 +46,13 @@ const Organizations = () => {
     }
     axios(config)
       .then(function (response) {
-        setTools(response.data.organizationList)
+        // setTools(response.data.organizationList)
+        setTools(
+          userID === 1
+            ? response.data.organizationList
+            : response.data.organizationList.filter((item) => item.orgID === orgId)
+        );
+        
         setLoading(false)
       })
       .catch(function (error) {
