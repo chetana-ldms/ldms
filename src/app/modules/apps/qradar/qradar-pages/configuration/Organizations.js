@@ -101,7 +101,7 @@ const Organizations = () => {
               <th className='min-w-50px fs-12'>Address</th>
               <th className='min-w-50px fs-12'>Mobile No.</th>
               <th className='min-w-50px fs-12'>Email</th>
-              <th></th>
+              <th className='min-w-50px fs-12'>Actions</th>
             </tr>
           </thead>
           <tbody>

@@ -1,15 +1,38 @@
 import React, {useState, useEffect} from 'react'
 import {Link, useParams} from 'react-router-dom'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
+import { ToastContainer, toast } from 'react-toastify'
+import { notify, notifyFail } from '../components/notification/Notification'
+import 'react-toastify/dist/ReactToastify.css'
 import axios from 'axios'
-import { fetchPlayBooks } from '../../../../../api/playBookApi'
+import { fetchDelete, fetchPlayBooks } from '../../../../../api/playBookApi'
 const Playbooks = () => {
   const orgId = Number(sessionStorage.getItem('orgId'));
   const [loading, setLoading] = useState(false)
   const [playbooks, setPlaybooks] = useState([])
   const {status} = useParams()
 
-
+  const handleDelete = async (item) => {
+    console.log(item, "item")
+    const deletedUserId = sessionStorage.getItem('userId');
+    const deletedDate = new Date().toISOString();
+    const data = {
+      playBookID: item.playBookID,
+      deletedDate,
+      deletedUserId
+    } 
+    try {
+      const responce = await fetchDelete(data);
+      if (responce.isSuccess) {
+        notify('Data Deleted');
+      }else{
+        notifyFail("Data not Deleted")
+      }
+      await reload();
+    } catch (error) {
+      console.log(error);
+    }
+  }
   const reload = async() => {
     try {
       const data = await fetchPlayBooks(orgId);
@@ -30,6 +53,7 @@ const Playbooks = () => {
 
   return (
     <div className='card'>
+      <ToastContainer />
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
           <span className='card-label fw-bold fs-3 mb-1'>PlayBooks</span>
@@ -43,20 +67,6 @@ const Playbooks = () => {
         </div>
       </div>
       <div className='card-body'>
-        {status === 'updated' && (
-          <div class='alert alert-success d-flex align-items-center p-5'>
-            <div class='d-flex flex-column'>
-              <h4 class='mb-1 text-dark'>Data Saved</h4>
-            </div>
-            <button
-              type='button'
-              class='position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto'
-              data-bs-dismiss='alert'
-            >
-              X<span class='svg-icon svg-icon-2x svg-icon-light'>...</span>
-            </button>
-          </div>
-        )}
 
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
@@ -65,6 +75,7 @@ const Playbooks = () => {
               <th className='min-w-50px'>Description</th>
               <th className='min-w-50px'>Alert Category</th>
               <th className='min-w-50px'>Status</th>
+              <th className='min-w-50px'>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -83,10 +94,11 @@ const Playbooks = () => {
                 </td>
 
                 <td className='fs-14'>
-                  {/* <Link className='text-white' to={`/qradar/updateplaybooks/${item.playBookID}`}>
-                    <button className='btn btn-danger btn-small'>Update</button>
-                  </Link> */}
-                  &nbsp;
+                  <Link className='text-white' to={`/qradar/updateplaybooks/${item.playBookID}`}>
+                    <button className='btn btn-primary btn-small'>Update</button>
+                  </Link>
+                  <button className="btn btn-sm btn-danger btn-small ms-5" style={{ fontSize: '14px' }} onClick={() => { handleDelete(item) }}> Delete</button>
+
                   {/* <button
                     className='btn btn-warning disable btn-small pt-5'
                     onClick={() => handleExecute(item, index)}
