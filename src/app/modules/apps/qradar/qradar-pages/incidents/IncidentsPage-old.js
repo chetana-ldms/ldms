@@ -2,72 +2,165 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { UsersListLoading } from "../components/loading/UsersListLoading";
 import { KTSVG, toAbsoluteUrl } from "../../../../../../_metronic/helpers";
-import { Dropdown1, ChatInner } from "../../../../../../_metronic/partials";
-import Modal from "react-bootstrap/Modal";
-// Chat component
-import { ChatFeed, Message } from "react-chat-ui";
-import ChatBox, { ChatFrame } from "react-chat-plugin";
-import Chat from "./Chat";
-// import {Widget, addResponseMessage} from 'react-chat-widget'
-import "react-chat-widget/lib/styles.css";
-
 import axios from "axios";
-const IncidentsPagev1 = () => {
+import IncidentChat from "./IncidentChat";
+const IncidentsPage = () => {
   const ref = useRef(null);
-  const message_1 = useRef(null);
-  const message_2 = useRef(null);
-  const message_3 = useRef(null);
-  const message_4 = useRef(null);
+
   // Playbooks Code ///
   const [loading, setLoading] = useState(false);
   const [playbooks, setPlaybooks] = useState([]);
   const [incidentdata, setIncidentData] = useState([]);
   const { status } = useParams();
-  //   const [showChat, setShowChat] = useState(1)
+
+  const [isChat, setIsChat] = useState(false);
+
+  const showincidentdetails = () => {
+    setIsChat(true);
+    setIsShown(false);
+  };
+
+  const [message, setMessage] = useState("");
+  const [storedMessageId, setStoredMessageId] = useState("");
+  const [storedMessageContent, setStoredMessageContent] = useState("");
+
+  const showIncident = useRef(null);
+
+  useEffect(() => {
+    showIncident.current.click();
+  }, []);
+
+  const accountSid = "AC706908ab1f90d8732aaa9ff965e693ba";
+  const authToken = "843a69a7508fce85d89d75fb0c79b1d0";
+  const apiUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+
+  const msgid = "SMe3b3275d73082506fa22fa8038c394fb";
+
+  //Send SMS
+  // const showincidentdetails = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       "http://115.110.192.133:502/api/Notification/v1/SMS/Send",
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           accept: "text/plain",
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           smsMessage: "Failed login detected",
+  //           fromPhoneNumber: "+15855172328",
+  //           toPhoneNumber: "+919611264017",
+  //         }),
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+
+  //     const data = await response.json();
+  //     setMessage("Message sent successfully.");
+  //     setStoredMessageId(msgid);
+  //     console.log("storedMessageId:", msgid);
+  //   } catch (error) {
+  //     console.error("There was a problem with the fetch operation:", error);
+  //     setMessage("Enter fields");
+  //   }
+  //   setIsChat(true);
+  //   setIsShown(false);
+  // };
+
+  // Get reply message
+  const getReplyMessage = async () => {
+    try {
+      const response = await fetch(
+        "http://115.110.192.133:502/api/Notification/v1/SMS/GetReplyMessage",
+        {
+          method: "GET",
+          headers: {
+            accept: "text/plain",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const replyContent = await response.text();
+      console.log("Reply content:", replyContent.content);
+
+      // Display the reply content if it matches the message ID
+      if (storedMessageId && replyContent === storedMessageId) {
+        setStoredMessageContent(replyContent.content);
+        console.log("Stored message content:", replyContent.content);
+
+        // Show the div if reply content is 'Yes'
+        if (
+          replyContent.content.toLowerCase() ===
+          "Received message and confirmed login attempt"
+        ) {
+          setIsShown(true);
+        }
+      }
+    } catch (error) {
+      console.error("There was a problem with the fetch operation:", error);
+    }
+  };
+
+  // Call sendSMS and getReplyMessage on component mount
+  useEffect(() => {
+    showincidentdetails();
+    getReplyMessage();
+  }, []);
+
+  //Reply received
+  // const msgid = 'SM27abbe8936f44cfa895e476804977c1f'
+
+  // const onGetReply = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       `http://115.110.192.133:502/api/Notification/v1/SMS/GetReplyMessage`,
+  //       {
+  //         method: 'POST',
+  //         headers: {
+  //           Authorization: `Basic ${btoa(`${accountSid}:${authToken}`)}`,
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify({
+  //           messageID: msgid,
+  //         }),
+  //       }
+  //     )
+
+  //     if (!response.ok) {
+  //       throw new Error('Failed to fetch reply message')
+  //     }
+
+  //     const data = await response.json()
+  //     console.log('Reply:', data.content)
+  //     if (data.content) {
+  //       setReplyMessage(data.content)
+  //     } else {
+  //       setReplyMessage(data.message)
+  //     }
+  //   } catch (error) {
+  //     console.error('Failed to fetch reply message:', error)
+  //   }
+  // }
+
+  // function showincidentdetails() {
+  //   setShowChat(0)
+  // }
+
+  const [isShown, setIsShown] = useState(false);
 
   const handleClick = () => {
-    message_3.current?.scrollIntoView({ block: "end", behavior: "smooth" });
-  };
-  function showincidentdetails() {
-    // setShowChat(0)
-  }
-
-  //Chat Widget
-  // useEffect(() => {
-  //   addResponseMessage('')
-  // }, [])
-
-  //Chat fullscreen
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
-  const handleNewUserMessage = (newMessage) => {
-    console.log(`New message incoming! ${newMessage}`);
-    // Now send the message throught the backend API
+    setIsShown(true);
+    setIsChat(false);
   };
 
-  const ChatHeader = () => {
-    return (
-      <>
-        <div className="mt-2 float-left">
-          <p>
-            DC -20210728-00056
-            {/* <i className='far fa-copy'></i> */}
-          </p>
-          <p className="fs-12">User | SMB Alert</p>
-        </div>
-        <div className="badge text-black fw-normal icon-right float-right">
-          <a href="#" onClick={handleShow}>
-            <i className="far fa-window-restore"></i>
-          </a>
-          {/* <a href={toAbsoluteUrl('/media/reports/Report.docx')} download='myFile'>
-            <i className='fas fa-download'></i>
-          </a> */}
-        </div>
-      </>
-    );
-  };
   const getPlaybooks = () => {
     setLoading(true);
     var config = {
@@ -89,74 +182,69 @@ const IncidentsPagev1 = () => {
       });
   };
 
-  // useEffect(() => {
-  //   setLoading(true)
-  //   var data = JSON.stringify({
-  //     orgID: 1,
-  //     toolID: 1,
-  //     toolTypeID: 1,
-  //     paging: {
-  //       rangeStart: 1,
-  //       rangeEnd: 10,
-  //     },
-  //     loggedInUserId: '1',
-  //   })
-
-  //   var config = {
-  //     method: 'post',
-  //     maxBodyLength: Infinity,
-  //     url: 'http://115.110.192.133:502/api/IncidentManagement/Incidents',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Accept: 'text/plain',
-  //     },
-  //     data: data,
-  //   }
-
-  //   axios(config)
-  //     .then(function (response) {
-  //       console.log(JSON.stringify(response.data))
-  //       setIncidentData(response.data.incidentList)
-  //       setLoading(false)
-  //     })
-  //     .catch(function (error) {
-  //       console.log(error)
-  //     })
-  // }, [])
-
-  //Chat
-  const [messages, setMessages] = useState([
-    {
-      // text: "user2 has joined the conversation",
-      timestamp: 1578366389250,
-      type: "notification",
-      // text: 'Cyber Defense Head Operation IT',
-    },
-    {
-      author: {
-        username: "Smith Cyber Defense Head",
-        id: 1,
-        avatarUrl: "/media/avatars/avatar.png",
+  useEffect(() => {
+    setLoading(true);
+    let data2 = JSON.stringify({
+      orgID: "1",
+      toolID: "1",
+      toolTypeID: "1",
+      paging: {
+        rangeStart: "1",
+        rangeEnd: "10",
       },
-      // text: 'Hi',
-      // type: 'text',
-      // timestamp: 1578366393250,
-    },
-  ]);
+      loggedInUserId: "1",
+    });
+    var data = JSON.stringify({
+      orgID: 1,
+      toolID: 1,
+      toolTypeID: 1,
+      paging: {
+        rangeStart: 1,
+        rangeEnd: 10,
+      },
+    });
 
-  const handleOnSendMessage = (message) => {
-    setMessages(
-      messages.concat({
-        author: {
-          username: "Smith Cyber Defense Head",
-          id: 1,
-          avatarUrl: "/ldms/media/avatars/avatar.png",
-          html: "<span>Cyber Defense Head Operation IT</span>",
-        },
-        timestamp: +new Date(),
-        text: message,
-        type: "text",
+    var config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "http://115.110.192.133:502/api/IncidentManagement/v1/Incidents",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "text/plain",
+      },
+      data: data2,
+    };
+
+    axios(config)
+      .then(function (response) {
+        console.log(JSON.stringify(response.data));
+        setIncidentData(response.data.incidentList);
+        setLoading(false);
       })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }, []);
+
+  const ChatHeader = () => {
+    return (
+      <>
+        <div className="mt-2 float-left">
+          <p>
+            DC -20210728-00056
+            {/* <i className='far fa-copy'></i> */}
+          </p>
+          <p className="fs-12">User</p>
+        </div>
+        <div className="badge text-black fw-normal icon-right float-right">
+          <a href="#">
+            <i className="far fa-window-restore"></i>
+          </a>
+          {/* <a href={toAbsoluteUrl('/media/reports/Report.docx')} download='myFile'>
+            <i className='fas fa-download'></i>
+          </a> */}
+        </div>
+      </>
     );
   };
 
@@ -169,14 +257,14 @@ const IncidentsPagev1 = () => {
             <div className="col-md-4 border-1 border-gray-300 border-end">
               <div className="card">
                 <div className="d-flex justify-content-between bd-highlight mb-3">
-                  <div className="p-1 bd-highlight">
+                  {/* <div className="p-1 bd-highlight">
                     <a
                       href="#"
                       className="btn btn-sm btn-icon btn-light btn-secondary mx-3"
                     >
                       <i className="fa-solid fa-arrows-rotate"></i>
                     </a>
-                  </div>
+                  </div> */}
                   {/* <input ref={inputRef} type='text' />
                   <button onClick={() => setInput(inputRef.current.value)}>Button</button>
                   <p>{input}</p> */}
@@ -187,15 +275,7 @@ const IncidentsPagev1 = () => {
                       </span>
                     </h6>
                   </div>
-                  <div className="p-1 bd-highlight">
-                    {/* <a
-                      href='#'
-                      onClick={handleClickScroll}
-                      className='btn btn-primary btn-sm create-btn'
-                    >
-                      Create Incident
-                    </a> */}
-                  </div>
+                  <div className="p-1 bd-highlight"></div>
                 </div>
 
                 <div className="card-title">
@@ -220,12 +300,15 @@ const IncidentsPagev1 = () => {
                           data-hide-search="true"
                           className="form-select form-select-white form-select-sm fw-bold"
                         >
-                          <option value="1">Status (3)</option>
+                          <option value="1">Status</option>
+                          <option value="4">New</option>
+                          <option value="4">In Progress</option>
                           <option value="4">Closed</option>
+                          <option value="4">Escalate/Ignore</option>
                         </select>
                       </div>
                     </div>
-                    <div className="mt-4 bd-highlight mt-2">Sort by</div>
+                    <div className="mt-2 bd-highlight mt-4">Sort by</div>
                     <div className="mt-2 bd-highlight">
                       <div className="w-120px me-0">
                         <select
@@ -252,9 +335,9 @@ const IncidentsPagev1 = () => {
                         ) : (
                           ""
                         )}
-
                         <div
                           className="incident-section"
+                          ref={showIncident}
                           onClick={showincidentdetails}
                         >
                           <div className="row">
@@ -264,7 +347,9 @@ const IncidentsPagev1 = () => {
 
                             <div className="text-dark col-md-9">
                               <a href="#" className="text-dark">
-                                <span className="fw-bold">SMB Exploit</span>
+                                <span className="fw-bold">
+                                  Multiple Failed login Alert
+                                </span>
                               </a>
                             </div>
                           </div>
@@ -287,9 +372,7 @@ const IncidentsPagev1 = () => {
                           </div>
                           <hr className="my-0" />
                           <div className="d-flex justify-content-between bd-highlight mt-2">
-                            <div className="p-1 bd-highlight fs-14">
-                              Admin
-                            </div>
+                            <div className="p-1 bd-highlight fs-14">Admin</div>
                             <div className="p-1 bd-highlight">
                               <div className="badge badge-light-primary mx-1">
                                 NEW
@@ -301,14 +384,14 @@ const IncidentsPagev1 = () => {
                           </div>
                         </div>
 
-                        {incidentdata === null ? (
+                        {/* {incidentdata === null ? (
                           <UsersListLoading />
                         ) : (
                           incidentdata.map((item, index) => (
                             <>
                               <div
                                 className="incident-section"
-                                onClick={showincidentdetails}
+                                onClick={handleClick}
                               >
                                 <div className="row">
                                   <div className="col-md-1">
@@ -327,7 +410,7 @@ const IncidentsPagev1 = () => {
                                   <div className="d-flex justify-content-between">
                                     <div className="p-2 bd-highlight">
                                       <div className="badge text-black fw-normal">
-                                        {/* {item.incidentID} */}1
+                                        {item.incidentID}
                                         <div className="badge text-black fw-normal">
                                           <i className="fas fa-copy"></i>
                                         </div>
@@ -343,8 +426,7 @@ const IncidentsPagev1 = () => {
                                 <hr className="my-0" />
                                 <div className="d-flex justify-content-between bd-highlight mt-2">
                                   <div className="p-1 bd-highlight fs-14">
-                                    {/* {item.destinationUser} */} Destination
-                                    User
+                                    {item.destinationUser}
                                   </div>
                                   <div className="p-1 bd-highlight">
                                     <div className="badge badge-light-primary mx-1">
@@ -358,83 +440,38 @@ const IncidentsPagev1 = () => {
                               </div>
                             </>
                           ))
-                        )}
+                        )} */}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            {/* ------------------------------------------------------- */}
-            <div className="col-md-4 border-1 border-gray-300 border-end chat-section">
-              <div
-                className=""
-                data-kt-scroll="true"
-                data-kt-scroll-activate="{default: false, lg: true}"
-                data-kt-scroll-max-height="auto"
-                data-kt-scroll-dependencies="#kt_header, #kt_toolbar, #kt_footer, #kt_chat_contacts_header"
-                data-kt-scroll-wrappers="#kt_content, #kt_chat_contacts_body"
-                data-kt-scroll-offset="0px"
-              >
+
+            {isShown ? (
+              <div className="col-md-4 border-1 border-gray-300 border-end chat-section">
                 <div className="chat-header">
                   <ChatHeader />
                 </div>
-                <div className="chat-box scroll-y me-n5">
-                  <div className="date">
-                    <p className="fw-bold mt-10">
-                      <span>Today</span>
-                    </p>
-                  </div>
-                  {/* <Chat /> */}
-                  <ChatBox
-                    messages={messages}
-                    userId={1}
-                    onSendMessage={handleOnSendMessage}
-                    width={"500px"}
-                    height={"500px"}
-                  />
-
-                  <div className="separator separator-dashed"></div>
-                </div>
+                <div className="chat-box scroll-y me-n5 h-600px"></div>
               </div>
-            </div>
-            {/* ------------------------------------------------------- */}
-
-            <Modal show={show} onHide={handleClose} className="chat-fullscreen">
-              <Modal.Header closeButton></Modal.Header>
-              <div className="col-md-12 border-1 border-gray-300 border-end chat-section">
-                <div
-                  className=""
-                  data-kt-scroll="true"
-                  data-kt-scroll-activate="{default: false, lg: true}"
-                  data-kt-scroll-max-height="auto"
-                  data-kt-scroll-dependencies="#kt_header, #kt_toolbar, #kt_footer, #kt_chat_contacts_header"
-                  data-kt-scroll-wrappers="#kt_content, #kt_chat_contacts_body"
-                  data-kt-scroll-offset="0px"
-                >
-                  <div className="chat-header">
-                    <ChatHeader />
+            ) : (
+              <>
+                <IncidentChat />
+                {isShown && (
+                  <div>
+                    <h2>Incident Details</h2>
+                    <p>Details of the incident will be displayed here...</p>
                   </div>
-                  <div className="chat-box scroll-y me-n5">
-                    <div className="date">
-                      <p className="fw-bold mt-10">
-                        <span>Today</span>
-                      </p>
-                    </div>
-                    {/* <Chat /> */}
-                    <ChatBox
-                      messages={messages}
-                      userId={1}
-                      onSendMessage={handleOnSendMessage}
-                      width={"500px"}
-                      height={"500px"}
-                    />
+                )}
+              </>
+            )}
+            {isChat ? <IncidentChat /> : <></>}
+            {/* <IncidentChat /> */}
 
-                    <div className="separator separator-dashed"></div>
-                  </div>
-                </div>
-              </div>
-            </Modal>
+            {/* -----------------------Chat Window Start-------------------------------- */}
+
+            {/* -------------------------Chat Window End------------------------------ */}
 
             <div className="col-md-4 border-1 border-gray-600">
               <div className="card">
@@ -992,4 +1029,4 @@ const IncidentsPagev1 = () => {
   );
 };
 
-export { IncidentsPagev1 };
+export { IncidentsPage };

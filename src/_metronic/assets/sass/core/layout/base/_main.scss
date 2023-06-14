@@ -548,6 +548,9 @@ body {
 }
 
 .chat-section {
+  padding: 0;
+  border-color: #2b2b4c80 !important;
+  border-bottom: 1px solid #ddd;
   .chat-text {
     display: none !important;
     &:nth-last-child(2) {
@@ -615,7 +618,8 @@ body {
     }
   }
   .chat-box {
-    padding: 0 10px;
+    margin: 0 !important;
+    padding: 0 5px;
     img {
       width: 32px;
       height: 30px;
@@ -719,6 +723,18 @@ body {
   left: 0 !important;
   padding: 0 !important;
   background: #fff;
+  .modal-dialog{
+    max-width: 95%;
+  }
+  .modal-content{
+      border: 1px solid #ccc;
+  }
+  .modal-header{
+    padding: 10px;
+    button{
+      background-color: #ccc;
+    }
+  }
 }
 
 //Table filter
@@ -749,7 +765,7 @@ body {
   .channel-title {
     overflow: hidden;
     background-color: #1e1e2d;
-    width: 25%;
+    // width: 25%;
     color: white;
     padding: 10px;
     h4 {
@@ -763,6 +779,7 @@ body {
       border-radius: 3px;
       padding: 2px 6px;
       cursor: pointer;
+      margin-left: 5px;
     }
   }
   ul {
@@ -781,6 +798,8 @@ body {
         padding: 10px 8px;
         position: relative;
         cursor: pointer;
+        width: 100%;
+        border-radius: 0;
         &::before {
           content: '';
           position: absolute;
@@ -789,6 +808,9 @@ body {
           border-width: 7px 9px 0px 0px;
           border-style: solid;
           border-color: #3b537f #fff;
+        }
+        &::after{
+          display: none;
         }
         &.react-tabs__tab--selected {
           background-color: white;
@@ -800,22 +822,23 @@ body {
         &:focus {
           outline: none;
         }
-        &:last-child {
-          background-color: #464eb8;
-          &::before {
-            border-color: #464eb8 #fff;
-          }
-          &.react-tabs__tab--selected {
-            background-color: white;
-            color: black;
-            &::before {
-              border-color: #fff #fff;
-            }
-          }
-        }
+        // &:last-child {
+        //   background-color: #464eb8;
+        //   &::before {
+        //     border-color: #464eb8 #fff;
+        //   }
+        //   &.react-tabs__tab--selected {
+        //     background-color: white;
+        //     color: black;
+        //     &::before {
+        //       border-color: #fff #fff;
+        //     }
+        //   }
+        // }
       }
     }
   }
+  
   .channel-chat {
     float: left;
     width: 70%;
@@ -849,6 +872,11 @@ body {
           margin-left: 10px;
         }
       }
+    }
+    .btn-channel{
+      padding: 6px !important;
+      font-size: 13px;
+      background-color: #008cba !important;
     }
   }
   .chat-body {
@@ -891,7 +919,9 @@ body {
       vertical-align: middle;
     }
   }
-  .threat-report {
+  .channel-report {
+    list-style: none;
+    padding: 0;
     i {
       color: red;
       font-size: 21px;
@@ -910,11 +940,22 @@ body {
       }
     }
     .report-files {
-      a {
+      
+      .doc-section {
         display: inline-block;
-        border: 1px solid;
+        border: 1px solid #5b7cdc;
         padding: 10px;
         margin-right: 10px;
+        width: 30%;
+        
+      }
+      .btn{
+        border-radius: 0;
+        padding: 10px !important;
+        vertical-align: top;
+        i{
+          color: white;
+        }
       }
     }
   }
