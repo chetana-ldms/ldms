@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
 
-const InProgress = ({ channelId, channelName }) => {
+const UnderReview = ({ channelId, channelName }) => {
   const [channelSubItems, setChannelSubItems] = useState([]);
   const [error, setError] = useState(null);
 
@@ -39,13 +40,17 @@ const InProgress = ({ channelId, channelName }) => {
 
   return (
     <div>
-      <p>
+      <p className="channel-heading">
         <strong>{channelName}</strong>
       </p>
-
-      {/* Add more specific content for the Reports template */}
+      <img
+        alt="Logo"
+        src={toAbsoluteUrl("/media/channel/underreview.jpg")}
+        className="d-block margin-auto"
+        width="400"
+      />
     </div>
   );
 };
 
-export default InProgress;
+export default UnderReview;

@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { fetchSubItemsByOrgChannel } from "../../../../../api/ChannelApi";
 
 const Document = ({ channelId, channelName }) => {
-  const [channelSubItems, setChannelSubItems] = useState([]);
+  const [channelSubItems, setChannelSubItems] = useState(null);
   const [error, setError] = useState(null);
-
 
   useEffect(() => {
     const orgId = Number(sessionStorage.getItem("orgId"));
@@ -23,7 +22,7 @@ const Document = ({ channelId, channelName }) => {
   return (
     <div>
       <div className="clearfix">
-        <p className="float-left">
+        <p className="float-left channel-heading">
           <strong>{channelName}</strong>
         </p>
         <button className="float-right btn btn-channel btn-primary">
@@ -34,30 +33,34 @@ const Document = ({ channelId, channelName }) => {
         <p>Error occurred while fetching data</p>
       ) : (
         <ul className="channel-report">
-          {channelSubItems.length > 0 ? (
-            channelSubItems.map((subItem) => (
-              <li className="report-files mb-2" key={subItem.channelSubItemId}>
-                <a
-                  className="doc-section"
-                  href={subItem.documentUrl}
-                  download="Document"
+          {channelSubItems !== null ? (
+            channelSubItems.length > 0 ? (
+              channelSubItems.map((subItem) => (
+                <li
+                  className="report-files mb-2"
+                  key={subItem.channelSubItemId}
                 >
-                  <i className="far fa-file-pdf" />{" "}
-                  <span className="text-blue">
-                    {subItem.channelSubItemName} Report{" "}
-                  </span>
-                  {/* <i className="fas fa-download"></i> */}
-                </a>
-                <button className="btn btn-new">
-                  <a href={subItem.documentUrl} download="Document">
-                    <i className="fas fa-download"></i>
+                  <a
+                    className="doc-section"
+                    href={subItem.documentUrl}
+                    download="Document"
+                  >
+                    <i className="far fa-file-pdf" />{" "}
+                    <span className="text-blue">
+                      {subItem.channelSubItemName} Report{" "}
+                    </span>
                   </a>
-                </button>
-              </li>
-            ))
-          ) : (
-            <li>Loading...</li>
-          )}
+                  <button className="btn btn-new">
+                    <a href={subItem.documentUrl} download="Document">
+                      <i className="fas fa-download"></i>
+                    </a>
+                  </button>
+                </li>
+              ))
+            ) : (
+              <li>Loading...</li>
+            )
+          ) : null}
         </ul>
       )}
       {/* Add more specific content for the Reports template */}

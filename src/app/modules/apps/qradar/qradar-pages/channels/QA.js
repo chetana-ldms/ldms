@@ -1,22 +1,26 @@
 import React, { useState, useEffect, useRef } from "react";
-import { fetchQuestions, fetchQuestionsAdd, fetchQuestionsAnswerAdd } from "../../../../../api/ChannelApi";
+import {
+  fetchQuestions,
+  fetchQuestionsAdd,
+  fetchQuestionsAnswerAdd,
+} from "../../../../../api/ChannelApi";
 import { Modal, Button, Form } from "react-bootstrap";
 
 const QA = ({ channelId, channelName }) => {
-  const createdUserId = Number(sessionStorage.getItem('userId'));
+  const createdUserId = Number(sessionStorage.getItem("userId"));
   const createdDate = new Date().toISOString();
   const orgId = Number(sessionStorage.getItem("orgId"));
   const [channelQAList, setChannelQAList] = useState([]);
-  console.log(channelQAList, "channelQAList")
+  console.log(channelQAList, "channelQAList");
   const [error, setError] = useState(null);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
   const [showAnswerModal, setShowAnswerModal] = useState(false);
   const [questionText, setQuestionText] = useState("");
   const [answerText, setAnswerText] = useState("");
-  const questionTextRef = useRef()
-  const answerTextRef = useRef()
+  const questionTextRef = useRef();
+  const answerTextRef = useRef();
   const [selectedQuestionId, setSelectedQuestionId] = useState(null);
-  console.log(selectedQuestionId,"selectedQuestionId")
+  console.log(selectedQuestionId, "selectedQuestionId");
 
   const fetchChannelQuestions = () => {
     const data = { channelId, orgId };
@@ -41,7 +45,7 @@ const QA = ({ channelId, channelName }) => {
       orgId,
       createdDate,
       createdUserId,
-      questionDescription: questionTextRef.current.value
+      questionDescription: questionTextRef.current.value,
     };
 
     fetchQuestionsAdd(data)
@@ -53,7 +57,6 @@ const QA = ({ channelId, channelName }) => {
         console.log(error);
       });
   };
-  
 
   const handleAddAnswer = () => {
     const data = {
@@ -62,7 +65,7 @@ const QA = ({ channelId, channelName }) => {
       createdDate,
       createdUserId,
       channelQuestionId: selectedQuestionId,
-      answerDescription: answerTextRef.current.value
+      answerDescription: answerTextRef.current.value,
     };
 
     fetchQuestionsAnswerAdd(data)
@@ -78,7 +81,7 @@ const QA = ({ channelId, channelName }) => {
   return (
     <div>
       <div className="clearfix">
-        <p className="float-left">
+        <p className="float-left channel-heading">
           <strong>{channelName}</strong>
         </p>
         <button
@@ -119,7 +122,10 @@ const QA = ({ channelId, channelName }) => {
         ))}
       </div>
 
-      <Modal show={showQuestionModal} onHide={() => setShowQuestionModal(false)}>
+      <Modal
+        show={showQuestionModal}
+        onHide={() => setShowQuestionModal(false)}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Post a Question</Modal.Title>
         </Modal.Header>
@@ -132,7 +138,10 @@ const QA = ({ channelId, channelName }) => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowQuestionModal(false)}>
+          <Button
+            variant="secondary"
+            onClick={() => setShowQuestionModal(false)}
+          >
             Close
           </Button>
           <Button variant="primary" onClick={handlePostQuestion}>

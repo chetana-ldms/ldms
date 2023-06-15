@@ -4,8 +4,9 @@ import "react-tabs/style/react-tabs.css";
 import Reports from "./Reports";
 import Document from "./Document";
 import QA from "./QA";
-import InProgress from "./InProgress";
+import UnderConstruction from "./UnderConstruction";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
+import UnderReview from "./UnderReview";
 
 //Modal
 const NewChannelModal = ({ show, onClose, onAdd }) => {
@@ -142,7 +143,14 @@ const ChannelsPage = () => {
         );
       case "UnderConstruction":
         return (
-          <InProgress
+          <UnderConstruction
+            channelId={channel.channelId}
+            channelName={channel.channelName}
+          />
+        );
+      case "UnderReview":
+        return (
+          <UnderReview
             channelId={channel.channelId}
             channelName={channel.channelName}
           />

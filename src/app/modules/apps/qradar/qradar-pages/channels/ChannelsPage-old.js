@@ -7,7 +7,7 @@ import ThreatIntelReport from "./Pdf";
 import QA from "./QA";
 import Documentation from "./Document";
 import WeeklyReport from "./WeeklyReport";
-import SIEM from "./InProgress";
+import SIEM from "./UnderConstruction";
 import WeeklyActionItem from "./WeeklyActionItem";
 import EDRConfig from "./EDRConfig";
 import USCert from "./USCert";

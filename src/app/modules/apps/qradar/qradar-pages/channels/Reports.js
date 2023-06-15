@@ -5,7 +5,6 @@ const Reports = ({ channelId, channelName }) => {
   const [channelSubItems, setChannelSubItems] = useState([]);
   const [error, setError] = useState(null);
 
-
   useEffect(() => {
     const orgId = Number(sessionStorage.getItem("orgId"));
     const data = { channelId, orgId };
@@ -22,7 +21,7 @@ const Reports = ({ channelId, channelName }) => {
   return (
     <div>
       <div className="clearfix">
-        <p className="float-left">
+        <p className="float-left channel-heading">
           <strong>{channelName}</strong>
         </p>
         {/* <button className="btn btn-new float-right btn-primary">
