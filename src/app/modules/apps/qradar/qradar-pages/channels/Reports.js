@@ -6,9 +6,16 @@ const Reports = ({ channelId, channelName }) => {
 
   useEffect(() => {
     console.log("Channel ID:", channelId);
-    const apiUrl = `http://115.110.192.133:502/api/LDCChannels/v1/Channels/SubItemsbyChannelId?channelId=${channelId}`;
+    const orgId = Number(sessionStorage.getItem("orgId"));
+    const apiUrl = `http://115.110.192.133:502/api/LDCChannels/v1/Channels/SubItemsByOrgChannel`;
 
-    fetch(apiUrl)
+    fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ channelId, orgId }),
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");

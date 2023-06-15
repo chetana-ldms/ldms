@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from "react";
 
 const QA = ({ channelId, channelName }) => {
-  const [channelSubItems, setChannelSubItems] = useState([]);
+  const [channelQAList, setChannelQAList] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     console.log("Channel ID:", channelId);
-    const apiUrl = `http://115.110.192.133:502/api/LDCChannels/v1/Channels/SubItemsbyChannelId?channelId=${channelId}`;
+    const orgId = Number(sessionStorage.getItem("orgId"));
+    const apiUrl = `http://115.110.192.133:502/api/LDCChannels/v1/Channel/Questions`;
 
-    fetch(apiUrl)
+    fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ channelId, orgId }),
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -17,8 +24,8 @@ const QA = ({ channelId, channelName }) => {
       })
       .then((data) => {
         console.log("API response:", data);
-        if (Array.isArray(data.channelSubItems)) {
-          setChannelSubItems(data.channelSubItems);
+        if (Array.isArray(data.channelQAList)) {
+          setChannelQAList(data.channelQAList);
         } else {
           console.log("Invalid response format:", data);
           setError("Invalid response format");
@@ -42,40 +49,27 @@ const QA = ({ channelId, channelName }) => {
       </div>
 
       <div className="qa mt-5">
-        <div className="row">
-          <div className="col">
-            <p className="question">
-              <b>Q:</b> How to create a new channel?
-            </p>
-            <p className="answer">
-              <b>A:</b> Click on 'Add new' button and the request to generate
-              new channel will be processed
-            </p>
+        {channelQAList.map((item) => (
+          <div className="row" key={item.id}>
+            <div className="col">
+              <p className="question">
+                <b>Q:</b> {item.questionDescription}
+              </p>
+              {item.answerDescription && (
+                <p className="answer">
+                  <b>A:</b> {item.answerDescription}
+                </p>
+              )}
+              {!item.answerDescription && (
+                <p className="answer">
+                  <button className="btn btn-channel btn-primary">
+                    Add your answer
+                  </button>
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-        <div className="row mt-5">
-          <div className="col">
-            <p className="question">
-              <b>Q:</b> How to create a new channel?
-            </p>
-            <p className="answer">
-              <b>A:</b> Click on 'Add new' button and the request to generate
-              new channel will be processed
-            </p>
-          </div>
-        </div>
-        <div className="row mt-5">
-          <div className="col">
-            <p className="question">
-              <b>Q:</b> How to create a new channel?
-            </p>
-            <p className="answer">
-              <button className="btn btn-channel btn-primary">
-                Add your answer
-              </button>
-            </p>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

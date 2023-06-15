@@ -94,9 +94,10 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
 
 const ChannelsPage = () => {
   const [channels, setChannels] = useState([]);
+  const orgId = Number(sessionStorage.getItem("orgId"));
 
   useEffect(() => {
-    const orgId = 1;
+    // const orgId = 1;
     const apiUrl = `http://115.110.192.133:502/api/LDCChannels/v1/Channels?orgId=${orgId}`;
 
     fetch(apiUrl)
