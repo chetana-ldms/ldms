@@ -10,4 +10,15 @@
   .rotate {
     animation: rotate 1s linear infinite;
   }
+  .alert-table > thead > tr > th > tr > th.custom-th {
+    background-color: orange !important;
+  }
+  
+  .notes-container {
+    max-height: 100px; 
+    overflow-y: auto; 
+    overflow-x: hidden; 
+  }
+  
+  
   

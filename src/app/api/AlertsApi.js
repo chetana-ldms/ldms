@@ -1,6 +1,7 @@
 const Alerts = "http://115.110.192.133:502/api/Alerts/v1/Alerts"
 const SetAlertEscalationStatus = "http://115.110.192.133:502/api/Alerts/v1/SetAlertEscalationStatus"
 const Users = "http://115.110.192.133:502/api/LDPSecurity/v1/Users"
+const GetAlertNotesByAlertID ="http://115.110.192.133:502/api/Alerts/v1/GetAlertNotesByAlertID"
 
 export const fetchAlertData = async (data) => {
   try {
@@ -71,3 +72,20 @@ export const fetchSetOfAlerts = async (currentPage, orgId, userID, limit) => {
   const response = await fetchAlertData(data2);
   return response.alertsList;
 };
+export const fetchGetAlertNotesByAlertID = async (data) => {
+  try {
+    const response = await fetch(`${GetAlertNotesByAlertID}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+
+    const responseData = await response.json();
+    const alertNotesList = responseData.alertNotesList
+    return alertNotesList;
+  } catch (error) {
+    console.log(error)
+  }
+}

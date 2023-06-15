@@ -21,7 +21,7 @@ import EditAlertsPopUp from './EditAlertsPopUp';
 import './Alerts.css';
 import { notify, notifyFail } from '../components/notification/Notification'
 import { fetchMasterData, fetchUpdatSetAlertIrrelavantStatuseAlert } from '../../../../../api/Api';
-import { fetchAlertData, fetchSetAlertEscalationStatus, fetchSetOfAlerts, fetchUsers } from '../../../../../api/AlertsApi'
+import { fetchAlertData, fetchGetAlertNotesByAlertID, fetchSetAlertEscalationStatus, fetchSetOfAlerts, fetchUsers } from '../../../../../api/AlertsApi'
 import ReactPaginate from 'react-paginate'
 
 const AlertsPage = () => {
@@ -135,21 +135,22 @@ const AlertsPage = () => {
   const [alertData, setAlertDate] = useState([])
   const [filteredAlertData, setFilteredAlertDate] = useState([])
   const [ldp_security_user, setldp_security_user] = useState([])
+  const [alertNotesList, setAlertNotesList] = useState([]);
   const [escalate, setEscalate] = useState(true)
   const [currentPage, setCurrentPage] = useState(1);
   const [showForm, setShowForm] = useState(false)
   const [ignorVisible, setIgnorVisible] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [limit,setLimit] = useState(20)
+  const [limit, setLimit] = useState(20)
 
   const [pageCount, setpageCount] = useState(0);
 
-  useEffect(()=>{
-    axios.get("http://115.110.192.133:502/api/Alerts/v1/Alerts").then((res)=>{
-      console.log(res,"mydata")
+  useEffect(() => {
+    axios.get("http://115.110.192.133:502/api/Alerts/v1/Alerts").then((res) => {
+      console.log(res, "mydata")
     })
-  },[])
- 
+  }, [])
+
 
   const handleCloseForm = () => {
     notifyFail('Data not Updated')
@@ -193,14 +194,15 @@ const AlertsPage = () => {
       comments: '',
     },
     onSubmit: async (values) => {
+      const orgId = Number(sessionStorage.getItem('orgId'))
+      const modifiedUserId = Number(sessionStorage.getItem('userId'));
+      const modifiedDate = new Date().toISOString();
       const data = {
-        modifiedUser: 'Global Admin',
-        modifiedDate: '2023-04-13T08:20:40.025Z',
-        modifiedUserId: 1,
-        orgId: 1,
+        modifiedDate,
+        modifiedUserId,
+        orgId,
         alertIDs: selectedAlert,
-        ownerID: 2,
-        ownerName: values.owner,
+        ownerID: values.owner,
         notes: values.comments,
       }
       const response = await fetchSetAlertEscalationStatus(data)
@@ -232,7 +234,7 @@ const AlertsPage = () => {
   };
   const handlePageClick = async (data) => {
     let currentPage = data.selected + 1;
-    const setOfAlertsData = await fetchSetOfAlerts(currentPage,orgId,userID,limit);
+    const setOfAlertsData = await fetchSetOfAlerts(currentPage, orgId, userID, limit);
     setFilteredAlertDate(setOfAlertsData.filter((item) => item.ownerUserID === userID));
     setFilteredAlertDate(setOfAlertsData)
     setCurrentPage(currentPage);
@@ -351,13 +353,23 @@ const AlertsPage = () => {
         setIsRefreshing(false);
       }
     }, RefreshInterval);
-    
+
 
     return () => {
       isActive = false;
       clearInterval(refreshIntervalId);
     };
   }, [currentPage]);
+  const handleTdClick = async (itemId) => {
+    try {
+      const data = { alertID: itemId };
+      const alertNotesList = await fetchGetAlertNotesByAlertID(data);
+      setAlertNotesList(alertNotesList);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
 
   return (
     <KTCardBody className='alert-page'>
@@ -462,7 +474,7 @@ const AlertsPage = () => {
                                 {ldp_security_user.length > 0 &&
                                   ldp_security_user.map((item, index) => {
                                     return (
-                                      <option key={index} value={item?.name}>
+                                      <option key={index} value={item?.userID}>
                                         {item?.name}
                                       </option>
                                     )
@@ -1029,6 +1041,7 @@ const AlertsPage = () => {
                           aria-expanded='false'
                           aria-controls={'kt_accordion_1_body_' + index}
                           style={{ cursor: 'pointer' }}
+                          onClick={() => handleTdClick(item.alertID)}
                         >
                           {item.severityName}
                         </td>
@@ -1091,6 +1104,35 @@ const AlertsPage = () => {
                               {item.ownerusername} <br />
                               <b>Source Name : </b>
                               {item.source} <br />
+                              <b>Notes:</b>
+                              {alertNotesList.length > 0 ? (
+                                <div className='notes-container'>
+                                  <table className='table'>
+                                    <thead>
+                                      <tr>
+                                        <th className='custom-th'>Created User</th>
+                                        <th className='custom-th'>Created Date</th>
+                                        <th className='custom-th'>Note</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {alertNotesList
+                                        .sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate)) // Sort the notes based on createdDate
+                                        .map((note) => (
+                                          <tr key={note.alertsNotesId}>
+                                            <td>{note.createdUser}</td>
+                                            <td>{note.createdDate}</td>
+                                            <td>{note.notes}</td>
+                                          </tr>
+                                        ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              ) : (
+                                <div>No notes available.</div>
+                              )}
+
+
                             </div>
                             <div className='col-md-2'>
                               <div className='btn btn-primary btn-new btn-small' onClick={() => openEditPopUp(item)}>
