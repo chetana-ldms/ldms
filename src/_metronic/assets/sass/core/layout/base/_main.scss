@@ -994,10 +994,29 @@ body {
       background-color: #eee;
       border: 1px solid #ccc;
       margin-bottom: 5px;
+      &:hover{
+        i{
+          display: inline-block;
+        }
+      }
     }
     .answer {
       padding: 2px;
       margin-bottom: 20px;
+      &:hover{
+        i{
+          display: inline-block;
+        }
+      }
+    }
+    i{
+      display: none;
+      color: #1580af;
+      cursor: pointer;
+      margin-left: 10px;
+      &:last-child{
+        color: red;
+      }
     }
   }
   .channel-heading{

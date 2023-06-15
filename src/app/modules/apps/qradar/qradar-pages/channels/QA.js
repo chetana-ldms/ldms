@@ -98,10 +98,18 @@ const QA = ({ channelId, channelName }) => {
             <div className="col">
               <p className="question">
                 <b>Q:</b> {item.questionDescription}
+                <span className="action float-right">
+                  <i className="fa fa-pencil" title="Edit" />
+                  <i className="fa fa-trash" title="Delete" />
+                </span>
               </p>
               {item.answerDescription && (
                 <p className="answer">
                   <b>A:</b> {item.answerDescription}
+                  <span className="action float-right">
+                    <i className="fa fa-pencil" title="Edit" />
+                    <i className="fa fa-trash" title="Delete" />
+                  </span>
                 </p>
               )}
               {!item.answerDescription && (
