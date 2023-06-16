@@ -274,6 +274,18 @@ const ChannelsPage = () => {
                           <Form.Label>Channel description</Form.Label>
                           <Form.Control as="textarea" rows={3} />
                         </Form.Group>
+                        <Form.Group className="mt-5">
+                          <Button
+                            variant="secondary"
+                            className="btn-small"
+                            onClick={() => setAccordionOpen(false)}
+                          >
+                            Close
+                          </Button>
+                          <Button variant="primary" className="btn-small">
+                            Save
+                          </Button>
+                        </Form.Group>
                       </Form>
                     </td>
                   </tr>

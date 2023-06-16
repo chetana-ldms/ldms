@@ -1040,10 +1040,10 @@ body {
     .modal-dialog{
       max-width: 100%;
       .btn{
-        margin-left: 10px;
+        margin-right: 10px;
       }
       .alert-table{
-        max-height: 400px;
+        max-height: 450px;
         overflow-y: scroll;
         th,td{
           &:last-child{
