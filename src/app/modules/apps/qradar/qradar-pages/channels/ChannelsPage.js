@@ -96,6 +96,8 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
 const ChannelsPage = () => {
   const [channels, setChannels] = useState([]);
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const [showEditChannel, setShowEditChannel] = useState(false);
+  const [accordionOpen, setAccordionOpen] = useState(false);
 
   useEffect(() => {
     // const orgId = 1;
@@ -178,7 +180,12 @@ const ChannelsPage = () => {
           Add Channel
         </span>
         {"  "}
-        <span className="float-right add-btn ml-5">Edit Channel</span>
+        <span
+          className="float-right add-btn ml-5"
+          onClick={() => setShowEditChannel(true)}
+        >
+          Edit Channel
+        </span>
       </div>
       <div className="demo-block">
         <Tabs className="vertical-tabs">
@@ -202,6 +209,80 @@ const ChannelsPage = () => {
           onAdd={handleAddChannel}
         />
       </div>
+      <Modal
+        className="channel-edit"
+        show={showEditChannel}
+        onHide={() => setShowEditChannel(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Channel</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="alert-table">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Channel Name</th>
+                  <th>Channel Type</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Daily Reports</td>
+                  <td>Report</td>
+                  <td>
+                    <button
+                      className="btn btn-small btn-primary"
+                      onClick={() => setAccordionOpen(!accordionOpen)}
+                    >
+                      Edit
+                    </button>
+                    <button className="btn btn-small btn-danger ml-10">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+                {accordionOpen && (
+                  <tr className="accordion-content channel-accordion">
+                    <td colSpan="3">
+                      <div className="accordion-header">
+                        <button
+                          className="close-button"
+                          onClick={() => setAccordionOpen(false)}
+                        >
+                          x
+                        </button>
+                      </div>
+                      <Form>
+                        <Form.Group controlId="channelName">
+                          <Form.Label>Channel name</Form.Label>
+                          <Form.Control type="text" />
+                        </Form.Group>
+                        <br />
+                        <Form.Group>
+                          <Form.Label>Channel Type</Form.Label>
+                          <Form.Select>
+                            <option>Report</option>
+                            <option>Document</option>
+                            <option>Q&A</option>
+                            <option>Other</option>
+                          </Form.Select>
+                        </Form.Group>
+                        <br />
+                        <Form.Group controlId="channelDescription">
+                          <Form.Label>Channel description</Form.Label>
+                          <Form.Control as="textarea" rows={3} />
+                        </Form.Group>
+                      </Form>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
