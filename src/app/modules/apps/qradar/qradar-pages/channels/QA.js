@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   fetcQuestionDetails,
+  fetchAnswerDetails,
   fetchQuestions,
   fetchQuestionsAdd,
   fetchQuestionsAnswerAdd,
@@ -50,7 +51,6 @@ const QA = ({ channelId, channelName }) => {
   }, [channelId]);
   useEffect(() => {
     if (showEditQuestionModal && selectedQuestionId) {
-      // Fetch the data using the selected question ID
       const responce = fetcQuestionDetails(selectedQuestionId)
       .then((response) => {
         setSelectedQuestionData(response);
@@ -59,17 +59,16 @@ const QA = ({ channelId, channelName }) => {
         console.log(error);
       });
     }
-    // if (showEditModal && selectedAnswerId) {
-    //   // Fetch the data using the selected answer ID
-    //   fetchAnswerData(selectedAnswerId)
-    //     .then((response) => {
-    //       setSelectedAnswerData(response);
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     });
-    // }
-  }, [showEditQuestionModal, selectedQuestionId]);
+    if (showEditModal && selectedAnswerId) {
+      const responce = fetchAnswerDetails(selectedAnswerId)
+        .then((response) => {
+          setSelectedAnswerData(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [showEditQuestionModal, selectedQuestionId, showEditModal, selectedAnswerId]);
 
 
   const handlePostQuestion = () => {
@@ -210,6 +209,12 @@ const QA = ({ channelId, channelName }) => {
                     onClick={() => {
                       setSelectedQuestionId(item.questionId);
                       setShowEditQuestionModal(true);
+                    }}
+                    style={{
+                      display:
+                      createdUserId === 1 || (createdUserId !== 1 && item.orgId === orgId)
+                          ? "inline-block"
+                          : "none",
                     }}
                   />
                   <i
@@ -357,7 +362,9 @@ const QA = ({ channelId, channelName }) => {
           <Form>
             <Form.Group controlId="answerText">
               <Form.Label>Answer</Form.Label>
-              <Form.Control type="text" ref={EditanswerTextRef} />
+              <Form.Control type="text"
+              defaultValue={selectedAnswerData?.answerDescription}
+              ref={EditanswerTextRef} />
             </Form.Group>
           </Form>
         </Modal.Body>

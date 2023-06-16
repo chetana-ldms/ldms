@@ -7,6 +7,8 @@ const QuestionsDelete="http://115.110.192.133:502/api/LDCChannels/v1/Channel/Que
 const QuestionsAnswereUpdate="http://115.110.192.133:502/api/LDCChannels/v1/Channels/Questions/Answere/Update"
 const QuestionsAnswerDelete="http://115.110.192.133:502/api/LDCChannels/v1/Channel/Questions/Answer/Delete"
 const QuestionDetails="http://115.110.192.133:502/api/LDCChannels/v1/Channels/QuestionDetails"
+const AnswerDetails="http://115.110.192.133:502/api/LDCChannels/v1/Channels/AnswerDetails"
+const Channels="http://115.110.192.133:502/api/LDCChannels/v1/Channels"
 
 export const fetchSubItemsByOrgChannel = async (data) => {
     try {
@@ -170,4 +172,37 @@ export const fetcQuestionDetails = async (questionId) => {
       console.log(error);
     }
   };
+  export const fetchAnswerDetails = async (answerId) => {
+    try {
+      const response = await fetch(`${AnswerDetails}?AnswerId=${answerId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const responseData = await response.json();
+      const channelAnswerData = responseData.channelAnswerData;
+      return channelAnswerData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchChannels = async (orgId) => {
+    try {
+      const response = await fetch(`${Channels}?orgId=${orgId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      const responseData = await response.json();
+      const channelsData = responseData.channelsData;
+      return channelsData;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
+  
   
