@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import Reports from "./Reports";
@@ -6,29 +6,43 @@ import Document from "./Document";
 import QA from "./QA";
 import UnderConstruction from "./UnderConstruction";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
+import { ToastContainer } from 'react-toastify'
+import { notify, notifyFail } from '../components/notification/Notification'
+import 'react-toastify/dist/ReactToastify.css'
 import UnderReview from "./UnderReview";
+import { fetchChannels, fetchChannelsAdd, fetchChannelsDelete } from "../../../../../api/ChannelApi";
+import { fetchMasterData } from "../../../../../api/Api";
 
 //Modal
 const NewChannelModal = ({ show, onClose, onAdd }) => {
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const createdUserId = Number(sessionStorage.getItem('userId'));
+  const createdDate = new Date().toISOString();
   const [channelName, setChannelName] = useState("");
   const [channelDescription, setChannelDescription] = useState("");
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-
-  const handleChannelNameChange = (e) => {
-    setChannelName(e.target.value);
-  };
-
-  const handleChannelDescriptionChange = (e) => {
-    setChannelDescription(e.target.value);
-  };
+  const channelNames = useRef()
+  const channelDescriptions = useRef()
 
   const handleSubmit = () => {
-    // Add new channel to the channel list and close the modal
+    const data = {
+      channelName: channelNames.current.value,
+      channelDescription: channelDescriptions.current.value,
+      displayOrder: 0,
+      orgId,
+      // "msTeamsTeamsId": "string",
+      // "msTeamsChannelId": "string",
+      createdDate,
+      createdUserId
+    };
+
+    fetchChannelsAdd(data);
     const newChannel = { name: channelName, description: channelDescription };
     onAdd(newChannel);
-    // onClose()
-    setShowSuccessMessage(true); // set the success message to true
+    onClose();
+    setShowSuccessMessage(true);
   };
+
 
   const handleModalClose = () => {
     setChannelName("");
@@ -55,28 +69,21 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
             <Form.Label>Channel name</Form.Label>
             <Form.Control
               type="text"
-              value={channelName}
-              onChange={handleChannelNameChange}
+              ref={channelNames}
+              onChange={(e) => setChannelName(e.target.value)}
+              required
             />
           </Form.Group>
           <br />
-          <Form.Group>
-            <Form.Label>Channel Type</Form.Label>
-            <Form.Select>
-              <option>Report</option>
-              <option>Document</option>
-              <option>Q&A</option>
-              <option>Other</option>
-            </Form.Select>
-          </Form.Group>
-          <br />
+
           <Form.Group controlId="channelDescription">
             <Form.Label>Channel description</Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
-              value={channelDescription}
-              onChange={handleChannelDescriptionChange}
+              ref={channelDescriptions}
+              onChange={(e) => setChannelDescription(e.target.value)}
+              required
             />
           </Form.Group>
         </Form>
@@ -95,28 +102,84 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
 
 const ChannelsPage = () => {
   const [channels, setChannels] = useState([]);
+  console.log(channels, "channels")
   const orgId = Number(sessionStorage.getItem("orgId"));
   const [showEditChannel, setShowEditChannel] = useState(false);
+  const [dropdownData, setDropdownData] = useState([])
   const [accordionOpen, setAccordionOpen] = useState(false);
-
+  const fetchData = async () => {
+    try {
+      const data = await fetchChannels(orgId);
+      setChannels(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    // const orgId = 1;
-    const apiUrl = `http://115.110.192.133:502/api/LDCChannels/v1/Channels?orgId=${orgId}`;
-
-    fetch(apiUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("API response:", data);
-        if (Array.isArray(data.channelsData)) {
-          setChannels(data.channelsData);
-        } else {
-          console.log("Invalid response format:", data);
-        }
+    fetchMasterData("Channel_Type")
+      .then((typeData) => {
+        setDropdownData({
+          dropdownData: typeData,
+        });
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const handleDelete = async (channel) => {
+    const deletedUserId = Number(sessionStorage.getItem('userId'));
+    const deletedDate = new Date().toISOString();
+    const data = {
+      channelId: channel.channelId,
+      deletedDate,
+      deletedUserId
+    }
+    try {
+      const responce = await fetchChannelsDelete(data);
+      if (responce.isSuccess) {
+        notify('Data Deleted');
+      } else {
+        notifyFail("Data not Deleted")
+      }
+      await fetchData();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  // useEffect(() => {
+  //   // const orgId = 1;
+  //   const apiUrl = `http://115.110.192.133:502/api/LDCChannels/v1/Channels?orgId=${orgId}`;
+
+  //   fetch(apiUrl)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       console.log("API response:", data);
+  //       if (Array.isArray(data.channelsData)) {
+  //         setChannels(data.channelsData);
+  //       } else {
+  //         console.log("Invalid response format:", data);
+  //       }
+  //     })
+  //     .catch((error) => console.log(error));
+  // }, []);
 
   //show modal
+  const handleAccordionToggle = (channelId) => {
+    setChannels((prevChannels) => {
+      return prevChannels.map((channel) => {
+        if (channel.channelId === channelId) {
+          return {
+            ...channel,
+            isAccordionOpen: !channel.isAccordionOpen
+          };
+        }
+        return channel;
+      });
+    });
+  };
   const [showModal, setShowModal] = useState(false);
   const handleAddChannel = (channel) => {
     setChannels([...channels, channel]);
@@ -169,6 +232,7 @@ const ChannelsPage = () => {
 
   return (
     <div className="channel-list channels-page">
+      <ToastContainer />
       <div className="channel-title">
         <h4 className="float-left">
           Channels <span>(12)</span>
@@ -228,69 +292,85 @@ const ChannelsPage = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>Daily Reports</td>
-                  <td>Report</td>
-                  <td>
-                    <button
-                      className="btn btn-small btn-primary"
-                      onClick={() => setAccordionOpen(!accordionOpen)}
-                    >
-                      Edit
-                    </button>
-                    <button className="btn btn-small btn-danger ml-10">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-                {accordionOpen && (
-                  <tr className="accordion-content channel-accordion">
-                    <td colSpan="3">
-                      <div className="accordion-header">
+                {channels.map((channel) => (
+                  <React.Fragment key={channel.channelId}>
+                    <tr>
+                      <td>{channel.channelName}</td>
+                      <td>{channel.channelTypeName}</td>
+                      <td>
                         <button
-                          className="close-button"
-                          onClick={() => setAccordionOpen(false)}
+                          className="btn btn-small btn-primary"
+                          onClick={() => handleAccordionToggle(channel.channelId)}
                         >
-                          x
+                          Edit
                         </button>
-                      </div>
-                      <Form>
-                        <Form.Group controlId="channelName">
-                          <Form.Label>Channel name</Form.Label>
-                          <Form.Control type="text" />
-                        </Form.Group>
-                        <br />
-                        <Form.Group>
-                          <Form.Label>Channel Type</Form.Label>
-                          <Form.Select>
-                            <option>Report</option>
-                            <option>Document</option>
-                            <option>Q&A</option>
-                            <option>Other</option>
-                          </Form.Select>
-                        </Form.Group>
-                        <br />
-                        <Form.Group controlId="channelDescription">
-                          <Form.Label>Channel description</Form.Label>
-                          <Form.Control as="textarea" rows={3} />
-                        </Form.Group>
-                        <Form.Group className="mt-5">
-                          <Button
-                            variant="secondary"
-                            className="btn-small"
-                            onClick={() => setAccordionOpen(false)}
-                          >
-                            Close
-                          </Button>
-                          <Button variant="primary" className="btn-small">
-                            Save
-                          </Button>
-                        </Form.Group>
-                      </Form>
-                    </td>
-                  </tr>
-                )}
+                        <button className="btn btn-small btn-danger ml-10" onClick={() => { handleDelete(channel) }}> Delete</button>
+
+                      </td>
+                    </tr>
+                    {channel.isAccordionOpen && (
+                      <tr className="accordion-content channel-accordion">
+                        <td colSpan="3">
+                          <div className="accordion-header">
+                            <button
+                              className="close-button"
+                              onClick={() => handleAccordionToggle(channel.channelId)}
+                            >
+                              x
+                            </button>
+                          </div>
+                          <Form>
+                            <Form.Group controlId="channelName">
+                              <Form.Label>Channel name</Form.Label>
+                              <Form.Control type="text" />
+                            </Form.Group>
+                            <br />
+                            <Form.Group>
+                              <Form.Label>Channel Type</Form.Label>
+                              <select
+                                className='form-select form-select-solid'
+                                data-kt-select2='true'
+                                data-placeholder='Select option'
+                                data-allow-clear='true'
+                                required
+                              >
+                                <option value="">Select</option>
+                                {dropdownData && dropdownData.dropdownData && dropdownData.dropdownData.length > 0 &&
+                                  dropdownData.dropdownData.map((item) => (
+                                    <option
+                                      key={item.dataID}
+                                      value={item.dataValue}
+                                    >
+                                      {item.dataValue}
+                                    </option>
+                                  ))}
+                              </select>
+                            </Form.Group>
+                            <br />
+                            <Form.Group controlId="channelDescription">
+                              <Form.Label>Channel description</Form.Label>
+                              <Form.Control as="textarea" rows={3} />
+                            </Form.Group>
+                            <Form.Group className="mt-5">
+                              <Button
+                                variant="secondary"
+                                className="btn-small"
+                                onClick={() => handleAccordionToggle(channel.channelId)}
+                              >
+                                Close
+                              </Button>
+                              <Button variant="primary" className="btn-small">
+                                Save
+                              </Button>
+                            </Form.Group>
+                          </Form>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))}
               </tbody>
+
             </table>
           </div>
         </Modal.Body>
