@@ -7,17 +7,13 @@ import QA from "./QA";
 import UnderConstruction from "./UnderConstruction";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
 import UnderReview from "./UnderReview";
-import { fetchChannels } from "../../../../../api/ChannelApi";
 
 //Modal
 const NewChannelModal = ({ show, onClose, onAdd }) => {
-  const createdUserId = Number(sessionStorage.getItem("userId"));
-  const createdDate = new Date().toISOString();
-  const orgId = Number(sessionStorage.getItem("orgId"));
   const [channelName, setChannelName] = useState("");
   const [channelDescription, setChannelDescription] = useState("");
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [channels, setChannels] = useState([])
+
   const handleChannelNameChange = (e) => {
     setChannelName(e.target.value);
   };
@@ -40,18 +36,7 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
     onClose();
     setShowSuccessMessage(false);
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchChannels(orgId);
-        setChannels(data);
-      } catch (error) {
-        console.log(error)
-      }
-    };
 
-    fetchData();
-  }, []);
   return (
     <Modal show={show} onHide={handleModalClose}>
       <Modal.Header closeButton>
@@ -243,10 +228,9 @@ const ChannelsPage = () => {
                 </tr>
               </thead>
               <tbody>
-              {channels.map((channel) => (
-                <tr key={channel.channelId}>
-                  <td>{channel.channelName}</td>
-                  <td>{channel.channelTypeName}</td>
+                <tr>
+                  <td>Daily Reports</td>
+                  <td>Report</td>
                   <td>
                     <button
                       className="btn btn-small btn-primary"
@@ -259,7 +243,6 @@ const ChannelsPage = () => {
                     </button>
                   </td>
                 </tr>
-              ))}
                 {accordionOpen && (
                   <tr className="accordion-content channel-accordion">
                     <td colSpan="3">
