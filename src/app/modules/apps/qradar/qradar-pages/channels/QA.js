@@ -1,8 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
+  fetcQuestionDetails,
   fetchQuestions,
   fetchQuestionsAdd,
   fetchQuestionsAnswerAdd,
+  fetchQuestionsAnswerDelete,
+  fetchQuestionsAnswereUpdate,
+  fetchQuestionsDelete,
+  fetchQuestionsUpdate,
 } from "../../../../../api/ChannelApi";
 import { Modal, Button, Form } from "react-bootstrap";
 
@@ -11,16 +16,21 @@ const QA = ({ channelId, channelName }) => {
   const createdDate = new Date().toISOString();
   const orgId = Number(sessionStorage.getItem("orgId"));
   const [channelQAList, setChannelQAList] = useState([]);
-  console.log(channelQAList, "channelQAList");
   const [error, setError] = useState(null);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
   const [showAnswerModal, setShowAnswerModal] = useState(false);
-  const [questionText, setQuestionText] = useState("");
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showEditQuestionModal, setShowEditQuestionModal] = useState(false);
+  const [showEditAnswerModal, setShowEditAnswerModal] = useState("");
   const [answerText, setAnswerText] = useState("");
   const questionTextRef = useRef();
   const answerTextRef = useRef();
+  const EditQuestionTextRef = useRef()
+  const EditanswerTextRef = useRef()
   const [selectedQuestionId, setSelectedQuestionId] = useState(null);
-  console.log(selectedQuestionId, "selectedQuestionId");
+  const [selectedAnswerId, setSelectedAnswerId] = useState(null);
+  const [selectedQuestionData, setSelectedQuestionData] = useState(null);
+  const [selectedAnswerData, setSelectedAnswerData] = useState(null);
 
   const fetchChannelQuestions = () => {
     const data = { channelId, orgId };
@@ -38,6 +48,29 @@ const QA = ({ channelId, channelName }) => {
   useEffect(() => {
     fetchChannelQuestions();
   }, [channelId]);
+  useEffect(() => {
+    if (showEditQuestionModal && selectedQuestionId) {
+      // Fetch the data using the selected question ID
+      const responce = fetcQuestionDetails(selectedQuestionId)
+      .then((response) => {
+        setSelectedQuestionData(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    }
+    // if (showEditModal && selectedAnswerId) {
+    //   // Fetch the data using the selected answer ID
+    //   fetchAnswerData(selectedAnswerId)
+    //     .then((response) => {
+    //       setSelectedAnswerData(response);
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //     });
+    // }
+  }, [showEditQuestionModal, selectedQuestionId]);
+
 
   const handlePostQuestion = () => {
     const data = {
@@ -78,6 +111,78 @@ const QA = ({ channelId, channelName }) => {
       });
   };
 
+  const handleEditQuestion = () => {
+    const data = {
+      channelId,
+      orgId,
+      modifiedDate: createdDate,
+      modifiedUserId: createdUserId,
+      questionId: selectedQuestionId,
+      questionDescription: EditQuestionTextRef.current.value,
+    };
+
+    fetchQuestionsUpdate(data)
+      .then(() => {
+        setShowEditQuestionModal(false);
+        fetchChannelQuestions();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleDeleteQuestion = async () => {
+    try {
+      const data = {
+        questionId: selectedQuestionId,
+        deletedDate: createdDate,
+        deletedUserId: createdUserId,
+      };
+
+      await fetchQuestionsDelete(data);
+      fetchChannelQuestions();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  const handleEditAnswer = () => {
+    const data = {
+      channelId,
+      orgId,
+      modifiedDate: createdDate,
+      modifiedUserId: createdUserId,
+      questionId: selectedQuestionId,
+      answerDescription: EditanswerTextRef.current.value,
+      answerId: selectedAnswerId,
+    };
+
+    fetchQuestionsAnswereUpdate(data)
+      .then(() => {
+        setShowEditModal(false);
+        fetchChannelQuestions();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleDeleteAnswer = async () => {
+    try {
+      const data = {
+        answerId: selectedAnswerId,
+        deletedDate: createdDate,
+        deletedUserId: createdUserId,
+      };
+
+      await fetchQuestionsAnswerDelete(data);
+      fetchChannelQuestions();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div>
       <div className="clearfix">
@@ -99,16 +204,46 @@ const QA = ({ channelId, channelName }) => {
               <p className="question">
                 <b>Q:</b> {item.questionDescription}
                 <span className="action float-right">
-                  <i className="fa fa-pencil" title="Edit" />
-                  <i className="fa fa-trash" title="Delete" />
+                  <i
+                    className="fa fa-pencil"
+                    title="Edit"
+                    onClick={() => {
+                      setSelectedQuestionId(item.questionId);
+                      setShowEditQuestionModal(true);
+                    }}
+                  />
+                  <i
+                    className="fa fa-trash"
+                    title="Delete"
+                    onClick={() => {
+                      setSelectedQuestionId(item.questionId);
+                      handleDeleteQuestion();
+                    }}
+                  />
                 </span>
               </p>
               {item.answerDescription && (
                 <p className="answer">
                   <b>A:</b> {item.answerDescription}
                   <span className="action float-right">
-                    <i className="fa fa-pencil" title="Edit" />
-                    <i className="fa fa-trash" title="Delete" />
+                    <i
+                      className="fa fa-pencil"
+                      title="Edit"
+                      onClick={() => {
+                        setSelectedQuestionId(item.questionId);
+                        setSelectedAnswerId(item.answerId);
+                        setShowEditModal(true);
+                      }}
+                    />
+                    <i
+                      className="fa fa-trash"
+                      title="Delete"
+                      onClick={() => {
+                        setSelectedAnswerId(item.answerId);
+                        handleDeleteAnswer()
+                        // setShowDeleteModal(true);
+                      }}
+                    />
                   </span>
                 </p>
               )}
@@ -179,6 +314,63 @@ const QA = ({ channelId, channelName }) => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <Modal show={showEditQuestionModal} onHide={() => setShowEditQuestionModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Question</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedQuestionData ? (
+            <Form>
+              <Form.Group controlId="questionText">
+                <Form.Label>Question</Form.Label>
+                <Form.Control
+                  type="text"
+                  defaultValue={selectedQuestionData.questionDescription}
+                  ref={EditQuestionTextRef}
+                />
+              </Form.Group>
+            </Form>
+          ) : (
+            <p>Loading question data...</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowEditQuestionModal(false)}
+          >
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleEditQuestion}>
+            Save Question
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+
+      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Your Answer</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="answerText">
+              <Form.Label>Answer</Form.Label>
+              <Form.Control type="text" ref={EditanswerTextRef} />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleEditAnswer}>
+            Save Answer
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
     </div>
   );
 };
