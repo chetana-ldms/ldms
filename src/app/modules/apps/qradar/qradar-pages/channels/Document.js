@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { fetchSubItemsByOrgChannel } from "../../../../../api/ChannelApi";
+import { Modal, Button, Form } from "react-bootstrap";
 
 const Document = ({ channelId, channelName }) => {
   const [channelSubItems, setChannelSubItems] = useState(null);
   const [error, setError] = useState(null);
+  const [uploadDocumentModal, setUploadDocumentModal] = useState(false);
 
   useEffect(() => {
     const orgId = Number(sessionStorage.getItem("orgId"));
@@ -25,7 +27,10 @@ const Document = ({ channelId, channelName }) => {
         <p className="float-left channel-heading">
           <strong>{channelName}</strong>
         </p>
-        <button className="float-right btn btn-channel btn-primary">
+        <button
+          className="float-right btn btn-channel btn-primary"
+          onClick={() => setUploadDocumentModal(true)}
+        >
           Upload Document
         </button>
       </div>
@@ -40,16 +45,18 @@ const Document = ({ channelId, channelName }) => {
                   className="report-files mb-2"
                   key={subItem.channelSubItemId}
                 >
-                  <a
-                    className="doc-section"
-                    href={subItem.documentUrl}
-                    download="Document"
-                  >
-                    <i className="far fa-file-pdf" />{" "}
-                    <span className="text-blue">
-                      {subItem.channelSubItemName} Report{" "}
-                    </span>
-                  </a>
+                  <label>
+                    <a
+                      className="doc-section"
+                      href={subItem.documentUrl}
+                      download="Document"
+                    >
+                      <i className="far fa-file-pdf" />{" "}
+                      <span className="text-blue">
+                        {subItem.channelSubItemName} Report{" "}
+                      </span>
+                    </a>
+                  </label>
                   <button className="btn btn-new">
                     <a href={subItem.documentUrl} download="Document">
                       <i className="fas fa-download"></i>
@@ -63,7 +70,33 @@ const Document = ({ channelId, channelName }) => {
           ) : null}
         </ul>
       )}
-      {/* Add more specific content for the Reports template */}
+      {/* Upload Document Modak */}
+      <Modal
+        show={uploadDocumentModal}
+        onHide={() => setUploadDocumentModal(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Upload a Document</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group>
+              <Form.Label>Document upload</Form.Label>
+              <Form.Control type="file" />
+            </Form.Group>
+          </Form>
+          <p className="text-muted mt-5 mb-0">Max. size limit 20MB</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary btn-small"
+            onClick={() => setUploadDocumentModal(false)}
+          >
+            Close
+          </Button>
+          <Button variant="primary btn-small">Upload</Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
