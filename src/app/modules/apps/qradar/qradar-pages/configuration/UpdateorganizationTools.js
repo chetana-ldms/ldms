@@ -1,21 +1,72 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {Link, useNavigate, useParams} from 'react-router-dom'
+import React, { useState, useRef, useEffect } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
+import { fetchLDPToolsByToolType, fetchOrganizationToolDetails } from '../../../../../api/ConfigurationApi';
 
 const UpdateOrganizationTools = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
+  const [toolName, setToolName] = useState([])
   const [organizationList, setOrganizationList] = useState([])
-  console.log()
-  const {id} = useParams()
+  const [toolTypeAction, setToolTypeAction] = useState(
+    {
+      orgID:"",
+      orgName: "",
+      toolTypeId: "",
+      toolTypeName: '',
+      toolID: "",
+      toolName: '',
+      authKey: "",
+      apiUrl: ""
+    }
+  );
+  const { id } = useParams()
   const toolID = useRef()
   const orgID = useRef()
   const authKey = useRef()
   const apiUrl = useRef()
   const errors = {}
-  const handleSubmit = (event) => {
+  useEffect(() => {
+    const result = async () => {
+      try {
+        const data = {
+          toolTypeId: Number(toolTypeAction.toolTypeId)
+        }
+        const response = await fetchLDPToolsByToolType(data);
+        const result = response.ldpToolsList
+        setToolName(result)
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    result();
+  }, [toolTypeAction.toolTypeId]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchOrganizationToolDetails(id);
+        setToolTypeAction({
+          ...toolTypeAction,
+          orgID:data.orgID,
+          orgName: data.orgName,
+          toolTypeId: data.toolTypeId,
+          toolTypeName: data.toolTypeName,
+          toolID: data.toolID,
+          toolName: data.toolName,
+          authKey: data.authKey,
+          apiUrl: data.apiUrl
+        })
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+  const handleSubmit = (event, toolTypeAction) => {
     setLoading(true)
     if (!toolID.current.value) {
       errors.toolID = 'Enter Tool'
@@ -41,12 +92,12 @@ const UpdateOrganizationTools = () => {
     const modifiedUserId = Number(sessionStorage.getItem('userId'));
     const modifiedDate = new Date().toISOString();
     var data = JSON.stringify({
-      toolID: Number(toolID.current.value),
-      orgID: Number(orgID.current.value),
-      authKey: authKey.current.value,
+      toolID: toolTypeAction.toolID,
+      orgID: toolTypeAction.orgID,
+      authKey: toolTypeAction.authKey,
       orgToolID: Number(id),
       lastReadPKID: 0,
-      apiUrl: apiUrl.current.value,
+      apiUrl: toolTypeAction.apiUrl,
       modifiedDate,
       modifiedUserId
     })
@@ -116,6 +167,49 @@ const UpdateOrganizationTools = () => {
         console.log(error)
       })
   }, [])
+  const handleChange = (event, field) => {
+    const selectedValue = event.target.value;
+  
+    if (field === "authKey" || field === "apiUrl") {
+      setToolTypeAction((prevState) => ({
+        ...prevState,
+        [field]: selectedValue,
+      }));
+    }
+  
+    if (field === "toolName" || field === "orgName") {
+      const selectedId = event.target.options[event.target.selectedIndex].getAttribute('data-id');
+      setToolTypeAction((prevState) => ({
+        ...prevState,
+        [field === "toolName" ? "toolID" : "orgID"]: selectedId,
+        [field]: selectedValue,
+      }));
+    }
+  
+    if (field === "toolTypeName") {
+      const selectedId = event.target.options[event.target.selectedIndex].getAttribute('data-id');
+      const fetchData = async () => {
+        try {
+          const data = {
+            toolTypeId: Number(selectedId)
+          }
+          const response = await fetchLDPToolsByToolType(data);
+          const result = response.ldpToolsList
+          setToolName(result)
+        } catch (error) {
+          console.log(error);
+        }
+      };
+  
+      fetchData();
+      setToolTypeAction((prevState) => ({
+        ...prevState,
+        toolTypeId: selectedId,
+        toolTypeName: selectedValue,
+      }));
+    }
+  };
+  
   return (
     <div className='card'>
       <div className='card-header border-0 pt-5'>
@@ -133,30 +227,7 @@ const UpdateOrganizationTools = () => {
       <form>
         <div className='card-body border-top p-9'>
           <div className='row mb-6'>
-            <div className='col-lg-6 mb-4 mb-lg-0'>
-              <div className='fv-row mb-0'>
-                <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Tool
-                </label>
-                <select
-                  className='form-select form-select-solid'
-                  data-kt-select2='true'
-                  data-placeholder='Select option'
-                  data-allow-clear='true'
-                  id='toolID'
-                  ref={toolID}
-                  required
-                >
-                  <option value=''>Select Tool Type</option>
-                  {toolTypes.map((item, index) => (
-                    <option value={item.dataID} key={index}>
-                      {item.dataValue}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className='col-lg-6 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='orgID' className='form-label fs-6 fw-bolder mb-3'>
                   Enter Organization
@@ -167,19 +238,71 @@ const UpdateOrganizationTools = () => {
                   data-placeholder='Select option'
                   data-allow-clear='true'
                   id='orgID'
+                  value={toolTypeAction.orgName}
+                  onChange={(e) => handleChange(e, "orgName")}
                   ref={orgID}
                   required
                 >
-                  <option value=''>Select Organization</option>
+                  <option value=''>Select</option>
                   {organizationList.map((item, index) => (
-                    <option value={item.orgID} key={index}>
+                    <option value={item.orgName} key={index} data-id={item.orgID}>
                       {item.orgName}
                     </option>
                   ))}
                 </select>
               </div>
             </div>
-            <div className='col-lg-6 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
+                  Enter Tool
+                </label>
+                <select
+                  className='form-select form-select-solid'
+                  data-kt-select2='true'
+                  data-placeholder='Select option'
+                  data-allow-clear='true'
+                  id='toolID'
+                  value={toolTypeAction.toolTypeName}
+                  onChange={(e) => handleChange(e, "toolTypeName")}
+                  // ref={toolID}
+                  required
+                >
+                  <option value=''>Select</option>
+                  {toolTypes.map((item, index) => (
+                    <option value={item.dataValue} key={index} data-id={item.dataID}>
+                      {item.dataValue}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
+                  Select Tool
+                </label>
+                <select
+                  className='form-select form-select-solid'
+                  data-kt-select2='true'
+                  data-placeholder='Select option'
+                  data-allow-clear='true'
+                  id='toolID'
+                  value={toolTypeAction.toolName}
+                  onChange={(e) => handleChange(e, "toolName")}
+                  ref={toolID}
+                  required
+                >
+                  <option value=''>Select</option>
+                  {toolName.map((item, index) => (
+                    <option value={item.toolName} key={index} data-id={item.toolId}>
+                      {item.toolName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='authKey' className='form-label fs-6 fw-bolder mb-3'>
                   Enter Authentication Key
@@ -190,11 +313,13 @@ const UpdateOrganizationTools = () => {
                   className='form-control form-control-lg form-control-solid'
                   id='authKey'
                   ref={authKey}
+                  onChange={(e) => handleChange(e, "authKey")}
+                  value={toolTypeAction.authKey}
                   placeholder='Ex: xxxxxxxxxxxxxxxxx'
                 />
               </div>
             </div>
-            <div className='col-lg-6 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='apiUrl' className='form-label fs-6 fw-bolder mb-3'>
                   Enter API URL
@@ -204,6 +329,8 @@ const UpdateOrganizationTools = () => {
                   required
                   className='form-control form-control-lg form-control-solid'
                   id='apiUrl'
+                  value={toolTypeAction.apiUrl}
+                  onChange={(e) => handleChange(e, "apiUrl")}
                   ref={apiUrl}
                   placeholder='Ex: https://10.100.0.102/api/siem/offences'
                 />
@@ -214,13 +341,13 @@ const UpdateOrganizationTools = () => {
         <div className='card-footer d-flex justify-content-end py-6 px-9'>
           <button
             type='submit'
-            onClick={handleSubmit}
+            onClick={(e) => handleSubmit(e, toolTypeAction)}
             className='btn btn-primary'
             disabled={loading}
           >
             {!loading && 'Update Changes'}
             {loading && (
-              <span className='indicator-progress' style={{display: 'block'}}>
+              <span className='indicator-progress' style={{ display: 'block' }}>
                 Please wait...{' '}
                 <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
               </span>
@@ -232,4 +359,4 @@ const UpdateOrganizationTools = () => {
   )
 }
 
-export {UpdateOrganizationTools}
+export { UpdateOrganizationTools }

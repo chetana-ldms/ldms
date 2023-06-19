@@ -1,5 +1,6 @@
 import React, {useCallback, useRef, useState, useEffect} from 'react'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
+import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import {Link, useNavigate} from 'react-router-dom'
 import ReactFlow, {
@@ -30,48 +31,50 @@ const AddPlaybooks = () => {
   ///////////////////// Dynamic Data fetch  //////////////////////////
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const [rules, setRules] = useState([])
-  const [actions, setActions] = useState([])
+  // const [rules, setRules] = useState([])
+  // console.log(rules, "rules")
+  // const [actions, setActions] = useState([])
+  // console.log(actions, "actions")
   const [rulesData, setRulesData] = useState([])
   useEffect(() => {
     setLoading(true)
     ////// Fetch Rules From API
-    var rules_config = {
-      method: 'get',
-      url: 'http://115.110.192.133:8011/api/RulesConfiguraton/v1/Rules',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
+    // var rules_config = {
+    //   method: 'get',
+    //   url: 'http://115.110.192.133:8011/api/RulesConfiguraton/v1/Rules',
+    //   headers: {
+    //     Accept: 'text/plain',
+    //   },
+    // }
 
-    axios(rules_config)
-      .then(function (response) {
-        //console.log('response', response)
-        setRules(response.data.rulesList)
-        // console.log('rules', response.data.rulesList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
+    // axios(rules_config)
+    //   .then(function (response) {
+    //     //console.log('response', response)
+    //     setRules(response.data.rulesList)
+    //     // console.log('rules', response.data.rulesList)
+    //     setLoading(false)
+    //   })
+    //   .catch(function (error) {
+    //     console.log(error)
+    //   })
     ////// Fetch Actions From API
-    var actions_config = {
-      method: 'get',
-      url: 'http://115.110.192.133:8011/api/RuleAction/v1/RuleActions',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
+    // var actions_config = {
+    //   method: 'get',
+    //   url: 'http://115.110.192.133:8011/api/RuleAction/v1/RuleActions',
+    //   headers: {
+    //     Accept: 'text/plain',
+    //   },
+    // }
 
-    axios(actions_config)
-      .then(function (response) {
-        setActions(response.data.ruleActionList)
-        // console.log('Actions', response.data.ruleActionList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
+    // axios(actions_config)
+    //   .then(function (response) {
+    //     setActions(response.data.ruleActionList)
+    //     // console.log('Actions', response.data.ruleActionList)
+    //     setLoading(false)
+    //   })
+    //   .catch(function (error) {
+    //     console.log(error)
+    //   })
   }, [])
   ///////////////////// Dynamic Data fetch  //////////////////////////
   const reactFlowWrapper = useRef(null)
@@ -118,12 +121,16 @@ const AddPlaybooks = () => {
       }
       /// Send Data to Server :
       var axios = require('axios')
+      const createdUserId = Number(sessionStorage.getItem('userId'));
+    const orgId = Number(sessionStorage.getItem('orgId'));
+    const createdDate = new Date().toISOString();
       var data = JSON.stringify({
         alertCatogory: 'category_1',
         playBookName: playBookName.current.value,
         remarks: remarks.current.value,
-        createdDate: '2023-01-11T06:09:21.265Z',
-        createdUser: 'super_admin',
+        orgId,
+        createdDate,
+        createdUserId,
         playbookDtls: rulesData,
       })
 
@@ -138,8 +145,15 @@ const AddPlaybooks = () => {
       }
       axios(playbook_config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/playbooks/updated')
+          const { isSuccess } = response.data;
+          if (isSuccess) {
+            notify('Data Saved');
+            navigate('/qradar/playbooks/updated')
+          } else {
+            notifyFail('Failed to save data');
+          }
+          // console.log(JSON.stringify(response.data))
+          // navigate('/qradar/playbooks/updated')
         })
         .catch(function (error) {
           console.log(error)
@@ -222,7 +236,19 @@ const AddPlaybooks = () => {
 
   return (
     <form>
-      <div className='playbooks'>
+      <div className='card'>
+      <div className='card-header border-0 pt-5'>
+        <h3 className='card-title align-items-start flex-column'>
+          <span className='card-label fw-bold fs-3 mb-1'>Add Playbooks</span>
+        </h3>
+        <div className='card-toolbar'>
+          <div className='d-flex align-items-center gap-2 gap-lg-3'>
+            <Link to='/qradar/playbooks/list' className='btn btn-primary btn-small'>
+              Back
+            </Link>
+          </div>
+        </div>
+      </div>
         <div className='card-header border-0'></div>
         <div className='row mb-6'>
           <div className='col-lg-6 mb-4 mb-lg-0'>
@@ -256,7 +282,7 @@ const AddPlaybooks = () => {
           </div>
         </div>
         <div className='card mb-5 mb-xl-8'>
-          <div className='row'>
+          {/* <div className='row'>
             <div className='col-lg-3'>
               <div className='card-body highlight h-100'>
                 {loading && <UsersListLoading />}
@@ -274,7 +300,6 @@ const AddPlaybooks = () => {
                         }
                         draggable
                       >
-                        {/* <i className='fas fa-search'></i> */}
                         <span> {item.ruleName}</span>
                       </div>
                     </>
@@ -334,7 +359,7 @@ const AddPlaybooks = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
           <div className='row mb-6'>
             <div className='col-lg-10 mb-4 mb-lg-0'></div>
             <div className='col-lg-2 mb-4 mb-lg-0'>

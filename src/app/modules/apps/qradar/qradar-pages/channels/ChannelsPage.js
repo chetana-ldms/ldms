@@ -1,47 +1,64 @@
-import React, {useState} from 'react'
-import {Tabs, Tab, TabList, TabPanel} from 'react-tabs'
-import {KTSVG, toAbsoluteUrl} from '../../../../../../_metronic/helpers'
-import {Modal, Button, Form, Alert} from 'react-bootstrap'
-import DailyReports from './DailyReports'
-import ThreatIntelReport from './ThreatIntelReport'
-import QA from './QA'
-import Documentation from './Documentation'
-import WeeklyReport from './WeeklyReport'
-import SIEM from './SIEM'
-import WeeklyActionItem from './WeeklyActionItem'
-import EDRConfig from './EDRConfig'
-import USCert from './USCert'
-import TeamsIntegration from './Teams'
+import React, { useState, useEffect, useRef } from "react";
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import "react-tabs/style/react-tabs.css";
+import Reports from "./Reports";
+import Document from "./Document";
+import QA from "./QA";
+import UnderConstruction from "./UnderConstruction";
+import { Modal, Button, Form, Alert } from "react-bootstrap";
+import { ToastContainer } from 'react-toastify'
+import { notify, notifyFail } from '../components/notification/Notification'
+import 'react-toastify/dist/ReactToastify.css'
+import UnderReview from "./UnderReview";
+import { fetchChannelDetails, fetchChannels, fetchChannelsAdd, fetchChannelsDelete, fetchChannelsUpdate } from "../../../../../api/ChannelApi";
+import { fetchMasterData } from "../../../../../api/Api";
 
 //Modal
+const NewChannelModal = ({ show, onClose, onAdd }) => {
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const createdUserId = Number(sessionStorage.getItem('userId'));
+  const createdDate = new Date().toISOString();
+  const [channelName, setChannelName] = useState("");
+  const [channelDescription, setChannelDescription] = useState("");
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const channelNames = useRef()
+  const channelDescriptions = useRef()
+  const [channels, setChannels] = useState([]);
+  const fetchData = async () => {
+    try {
+      const data = await fetchChannels(orgId);
+      setChannels(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleSubmit = async () => {
+    const data = {
+      channelName: channelNames.current.value,
+      channelDescription: channelDescriptions.current.value,
+      displayOrder: 0,
+      orgId,
+      // "msTeamsTeamsId": "string",
+      // "msTeamsChannelId": "string",
+      createdDate,
+      createdUserId
+    };
 
-const NewChannelModal = ({show, onClose, onAdd}) => {
-  const [channelName, setChannelName] = useState('')
-  const [channelDescription, setChannelDescription] = useState('')
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+    await fetchChannelsAdd(data);
+    const newChannel = { name: channelName, description: channelDescription };
+    onAdd(newChannel);
+    onClose();
+    setShowSuccessMessage(true);
+    fetchData();
+  };
 
-  const handleChannelNameChange = (e) => {
-    setChannelName(e.target.value)
-  }
-
-  const handleChannelDescriptionChange = (e) => {
-    setChannelDescription(e.target.value)
-  }
-
-  const handleSubmit = () => {
-    // Add new channel to the channel list and close the modal
-    const newChannel = {name: channelName, description: channelDescription}
-    onAdd(newChannel)
-    // onClose()
-    setShowSuccessMessage(true) // set the success message to true
-  }
 
   const handleModalClose = () => {
-    setChannelName('')
-    setChannelDescription('')
-    onClose()
-    setShowSuccessMessage(false)
-  }
+    setChannelName("");
+    setChannelDescription("");
+    onClose();
+    setShowSuccessMessage(false);
+  };
 
   return (
     <Modal show={show} onHide={handleModalClose}>
@@ -51,418 +68,371 @@ const NewChannelModal = ({show, onClose, onAdd}) => {
       <Modal.Body>
         {
           showSuccessMessage && (
-            <Alert variant='primary' className='fs-14'>
+            <Alert variant="primary" className="fs-14">
               Your request to add new channel will be processed within 24Hrs.
             </Alert>
           ) // show success message if the showSuccessMessage is true
         }
         <Form>
-          <Form.Group controlId='channelName'>
+          <Form.Group controlId="channelName">
             <Form.Label>Channel name</Form.Label>
-            <Form.Control type='text' value={channelName} onChange={handleChannelNameChange} />
+            <Form.Control
+              type="text"
+              ref={channelNames}
+              onChange={(e) => setChannelName(e.target.value)}
+              required
+            />
           </Form.Group>
           <br />
-          <Form.Group controlId='channelDescription'>
+
+          <Form.Group controlId="channelDescription">
             <Form.Label>Channel description</Form.Label>
             <Form.Control
-              as='textarea'
+              as="textarea"
               rows={3}
-              value={channelDescription}
-              onChange={handleChannelDescriptionChange}
+              ref={channelDescriptions}
+              onChange={(e) => setChannelDescription(e.target.value)}
+              required
             />
           </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant='secondary' onClick={handleModalClose}>
+        <Button variant="secondary" onClick={handleModalClose}>
           Close
         </Button>
-        <Button variant='primary' onClick={handleSubmit}>
+        <Button variant="primary" onClick={handleSubmit}>
           Add Channel
         </Button>
       </Modal.Footer>
     </Modal>
-  )
-}
+  );
+};
 
 const ChannelsPage = () => {
-  const [showChatWindow, setShowChatWindow] = useState(false)
-  const [selectedTab, setSelectedTab] = useState(0)
-  const [channels, setChannels] = useState([])
+  const [channels, setChannels] = useState([]);
+  const orgId = Number(sessionStorage.getItem("orgId"));
+  const deletedUserId = Number(sessionStorage.getItem('userId'));
+  const deletedDate = new Date().toISOString();
+  const [showEditChannel, setShowEditChannel] = useState(false);
+  const [dropdownData, setDropdownData] = useState([])
+  const [accordionOpen, setAccordionOpen] = useState(false);
+  const channelNames = useRef()
+  const channelDescriptions = useRef()
+  const channelTypes = useRef()
+  const [selectedChannel, setSelectedChannel] = useState(null);
 
-  //show modal
-  const [showModal, setShowModal] = useState(false)
-
-  const handleTabSelect = (index) => {
-    setShowChatWindow(true)
-    setSelectedTab(index)
-  }
-
-  const handleAddChannel = (channel) => {
-    setChannels([...channels, channel])
-  }
-
-  const tabNames = channels.map((channel) => channel.name).filter(Boolean)
-
-  const tabData = [
-    {
-      title: 'Daily reports',
-      content: '',
-    },
-    {
-      title: 'Threat intel report',
-      content: '',
-    },
-    {
-      title: 'Q&A',
-      content: '',
-    },
-    {
-      title: 'Documentation',
-      content: '',
-    },
-    {
-      title: 'Weekly report',
-      content: '',
-    },
-    {
-      title: 'SIEM update',
-      content: '',
-    },
-    {
-      title: 'Weekly action items',
-      content: '',
-    },
-    {
-      title: 'EDR configuration',
-      content: '',
-    },
-    {
-      title: 'US-CERT',
-      content: '',
-    },
-    {
-      title: 'Microsoft Teams',
-      content: '',
-    },
-  ]
-
-  const ChatHeader = () => {
-    const channelTitle = tabData[selectedTab]?.title || ''
-    return (
-      <>
-        <div className='mt-2 float-left'>
-          <p>{channelTitle}</p>
-        </div>
-        {/* <div className='badge text-black fw-normal icon-right float-right'>
-          <a href='#'>
-            <i className='far fa-window-restore'></i>
-          </a>
-          <a href={toAbsoluteUrl('/media/reports/Report.docx')} download='myFile'>
-            <i className='fas fa-download'></i>
-          </a>
-        </div> */}
-      </>
-    )
-  }
-
-  const addedChannels = channels.slice(1)
-
-  return (
-    <div className='row channels-page'>
-      {/* Begin Col */}
-      <div className='col-lg-12'>
-        <div className='card mb-5 mb-xl-12'>
-          <div className=''>
-            {/* <h2>Channels</h2> */}
-            <div className='demo-block'>
-              <Tabs onSelect={handleTabSelect} selectedIndex={selectedTab}>
-                <div className='channel-title'>
-                  <h4 className='float-left'>
-                    Channels <span>(12)</span>
-                  </h4>
-                  <span className='float-right add-btn' onClick={() => setShowModal(true)}>
-                    Add new
-                  </span>
-                </div>
-
-                <TabList className='inner-tablist channels-tab'>
-                  {/* {tabNames.map((name, index) => (
-                    <Tab key={index}>
-                      {name} <i className='fas fa-sitemap float-right' />
-                    </Tab>
-                  ))} */}
-                  {tabData.map((tab, index) => (
-                    <Tab key={tab.title}>{tab.title}</Tab>
-                  ))}
-                </TabList>
-
-                {/* {tabNames.map((name, index) => (
-                  <TabPanel key={index} className='channel-chat'>
-                    <>
-                      <div className='chat-header'>
-                        <ChatHeader />
-                      </div>
-                      {name && (
-                        <>
-                          <div className='chat-body'>
-                            <div className='row'>
-                              <div className='col'>
-                                <div className='date'>
-                                  <p className='fw-bold mt-10'>
-                                    <span>April 20, 2023</span>
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                            <div className='row'>
-                              <div className='col-md-1'>
-                                <div className='symbol symbol-35px symbol-circle'>
-                                  <img alt='Pic' src={toAbsoluteUrl('/media/avatars/bot.png')} />
-                                </div>
-                              </div>
-                              <div className='col-md-10'>
-                                <a
-                                  href='#'
-                                  className='fs-5 fw-bolder text-blue text-hover-primary mb-2'
-                                >
-                                  System Message
-                                </a>
-                                <p>
-                                  Channel <b className='text-blue'>{name}</b> was created by{' '}
-                                  <b className='text-blue'>Vinu J</b>
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                          <div className='chat-input'>
-                            <ChatWindow defaultMessage='' />
-                          </div>
-                        </>
-                      )}
-                    </>
-                  </TabPanel>
-                ))} */}
-                {tabData.map((tab, index) => (
-                  <TabPanel key={tab.title} className='channel-chat'>
-                    <>
-                      <div className='chat-header'>
-                        <ChatHeader />
-                      </div>
-                      <div className='chat-body'>
-                        <div className='row'>
-                          <div className='col'>
-                            <div className='date'>
-                              <p className='fw-bold mt-10'>
-                                <span className='text-blue'>
-                                  {new Date().toLocaleDateString('en-US', {
-                                    month: 'long',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                  })}
-                                </span>
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        {tab.title === 'Daily reports' && (
-                          <>
-                            <div className='row hidden'>
-                              <div className='col-md-1'>
-                                <div className='symbol symbol-35px symbol-circle'>
-                                  <img alt='Pic' src={toAbsoluteUrl('/media/avatars/bot.png')} />
-                                </div>
-                              </div>
-                              <div className='col-md-10'>
-                                <a
-                                  href='#'
-                                  className='fs-5 fw-bolder text-blue text-hover-primary mb-2'
-                                >
-                                  System Message
-                                </a>
-                                <p>
-                                  Channel <b className='text-blue'>{tab.title}</b> was created by{' '}
-                                  <b className='text-blue'>Vinu J</b>
-                                </p>
-                              </div>
-                            </div>
-                            <div className='row mb-10'>
-                              <div className='col'>
-                                <DailyReports />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                        {tab.title === 'Threat intel report' && (
-                          <>
-                            <div className='row mb-10'>
-                              <div className='col'>
-                                <ThreatIntelReport />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                        {tab.title === 'Q&A' && (
-                          <>
-                            <div className='row mb-10'>
-                              <div className='col'>
-                                <QA />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                        {tab.title === 'Documentation' && (
-                          <>
-                            <div className='row mb-10'>
-                              <div className='col'>
-                                <Documentation />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                        {tab.title === 'Weekly report' && (
-                          <>
-                            <div className='row mb-10'>
-                              <div className='col'>
-                                <WeeklyReport />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                        {tab.title === 'SIEM update' && (
-                          <>
-                            <div className='row mb-10'>
-                              <div className='col'>
-                                <SIEM />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                        {tab.title === 'Weekly action items' && (
-                          <>
-                            <div className='row mb-10'>
-                              <div className='col'>
-                                <WeeklyActionItem />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                        {tab.title === 'EDR configuration' && (
-                          <>
-                            <div className='row mb-10'>
-                              <div className='col'>
-                                <EDRConfig />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                        {tab.title === 'US-CERT' && (
-                          <>
-                            <div className='row mb-10'>
-                              <div className='col'>
-                                <USCert />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                        {tab.title === 'Microsoft Teams' && (
-                          <>
-                            <div className='row mb-10'>
-                              <div className='col'>
-                                <TeamsIntegration />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                        <div className='chat-input'>
-                          <ChatWindow defaultMessage='' />
-                        </div>
-                      </div>
-                    </>
-                  </TabPanel>
-                ))}
-              </Tabs>
-              <NewChannelModal
-                show={showModal}
-                onClose={() => setShowModal(false)}
-                onAdd={handleAddChannel}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* End Col */}
-    </div>
-  )
-}
-
-const ChatWindow = ({defaultMessage}) => {
-  const [inputValue, setInputValue] = useState('')
-  const [messages, setMessages] = useState([defaultMessage])
-
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value)
-  }
-
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    if (inputValue) {
-      setMessages([...messages, inputValue])
-      setInputValue('')
+  const fetchData = async () => {
+    try {
+      const data = await fetchChannels(orgId);
+      setChannels(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    fetchMasterData("Channel_Type")
+      .then((typeData) => {
+        setDropdownData({
+          dropdownData: typeData,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const handleDelete = async (channel) => {
+    const deletedUserId = Number(sessionStorage.getItem('userId'));
+    const deletedDate = new Date().toISOString();
+    const data = {
+      channelId: channel.channelId,
+      deletedDate,
+      deletedUserId
+    }
+    try {
+      const responce = await fetchChannelsDelete(data);
+      if (responce.isSuccess) {
+        notify('Data Deleted');
+      } else {
+        notifyFail("Data not Deleted")
+      }
+      await fetchData();
+    } catch (error) {
+      console.log(error);
     }
   }
+  // useEffect(() => {
+  //   // const orgId = 1;
+  //   const apiUrl = `http://115.110.192.133:502/api/LDCChannels/v1/Channels?orgId=${orgId}`;
+
+  //   fetch(apiUrl)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       console.log("API response:", data);
+  //       if (Array.isArray(data.channelsData)) {
+  //         setChannels(data.channelsData);
+  //       } else {
+  //         console.log("Invalid response format:", data);
+  //       }
+  //     })
+  //     .catch((error) => console.log(error));
+  // }, []);
+
+  //show modal
+  const handleAccordionToggle = async (channelId) => {
+    try {
+      const channelData = await fetchChannelDetails(channelId); // Call the API to fetch channel data
+      setChannels((prevChannels) => {
+        return prevChannels.map((channel) => {
+          if (channel.channelId === channelId) {
+            setSelectedChannel(channelData); // Set the selected channel with the fetched data
+            return {
+              ...channel,
+              isAccordionOpen: !channel.isAccordionOpen
+            };
+          }
+          return channel;
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
+  const [showModal, setShowModal] = useState(false);
+  const handleAddChannel = (channel) => {
+    setChannels([...channels, channel]);
+  };
+
+  // Render different templates based on channelTypeName
+  const renderChannelTemplate = (channel) => {
+    switch (channel.channelTypeName) {
+      case "Report":
+        return (
+          <Reports
+            channelId={channel.channelId}
+            channelName={channel.channelName}
+          />
+        );
+      case "Document":
+        return (
+          <Document
+            channelId={channel.channelId}
+            channelName={channel.channelName}
+          />
+        );
+      case "QuestionAndAnswer":
+        return (
+          <QA channelId={channel.channelId} channelName={channel.channelName} />
+        );
+      case "UnderConstruction":
+        return (
+          <UnderConstruction
+            channelId={channel.channelId}
+            channelName={channel.channelName}
+          />
+        );
+      case "UnderReview":
+        return (
+          <UnderReview
+            channelId={channel.channelId}
+            channelName={channel.channelName}
+          />
+        );
+      default:
+        return (
+          <div>
+            <p>This is a default channel template.</p>
+            {/* Add more content for the default template */}
+          </div>
+        );
+    }
+  };
+  const handleSave = async (channelId) => {
+
+    const data = {
+      channelId: channelId,
+      channelName: channelNames.current.value,
+      channelDescription: channelDescriptions.current.value,
+      channelTypeId:channelTypes.current.value,
+      displayOrder:0,
+      orgId,
+      modifiedDate:deletedDate,
+      modifiedUserId:deletedUserId,
+    };
+
+    try {
+      const response = await fetchChannelsUpdate(data);
+      handleAccordionToggle(channelId);
+      fetchData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
-    <div className='chat-window'>
-      <div className='messages'>
-        {messages.map((message, index) => {
-          const isUserMessage = index === messages.length - 1
-          return (
-            <div className='row' key={index}>
-              <div className='col-md-1'>
-                {!isUserMessage && (
-                  <div className='symbol symbol-35px symbol-circle'>
-                    <img alt='Pic' src={toAbsoluteUrl('/media/avatars/300-1.jpg')} />
-                  </div>
-                )}
-              </div>
-
-              <div className='col-md-10'>
-                {!isUserMessage && (
-                  <>
-                    <a href='#' className='fs-5 fw-bolder text-blue text-hover-primary mb-2'>
-                      vinu@lancesoft.com Senior Analyst
-                    </a>
-
-                    <span className='sub-txt'> 2:09:18 PM</span>
-                  </>
-                )}
-                <p>
-                  <div key={index}>{message}</div>
-                </p>
-              </div>
-            </div>
-          )
-        })}
+    <div className="channel-list channels-page">
+      <ToastContainer />
+      <div className="channel-title">
+        <h4 className="float-left">
+          Channels <span>(12)</span>
+        </h4>
+        <span
+          className="float-right add-btn"
+          onClick={() => setShowModal(true)}
+        >
+          Add Channel
+        </span>
+        {"  "}
+        <span
+          className="float-right add-btn ml-5"
+          onClick={() => setShowEditChannel(true)}
+        >
+          Edit Channel
+        </span>
       </div>
+      <div className="demo-block">
+        <Tabs className="vertical-tabs">
+          <TabList className="inner-tablist channels-tab">
+            {channels.map((channel) => (
+              <Tab key={channel.channelId}>{channel.channelName}</Tab>
+            ))}
+          </TabList>
 
-      <form className='chat-form' onSubmit={handleSubmit}>
-        <div className='input-group'>
-          <input
-            className='form-control'
-            type='text'
-            value={inputValue}
-            onChange={handleInputChange}
-          />
-          <button type='submit' className='btn-chat'>
-            <span className='input-group-text'>
-              <i className='fas fa-paper-plane'></i>
-            </span>
-          </button>
-        </div>
-      </form>
+          {channels.map((channel) => (
+            <TabPanel key={channel.channelId} className="channel-chat">
+              <div className="tab-content pt-5">
+                {renderChannelTemplate(channel)}
+              </div>
+            </TabPanel>
+          ))}
+        </Tabs>
+        <NewChannelModal
+          show={showModal}
+          onClose={() => setShowModal(false)}
+          onAdd={handleAddChannel}
+        />
+      </div>
+      <Modal
+        className="channel-edit"
+        show={showEditChannel}
+        onHide={() => setShowEditChannel(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Channel</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="alert-table">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Channel Name</th>
+                  <th>Channel Type</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {channels.map((channel) => (
+                  <React.Fragment key={channel.channelId}>
+                    <tr>
+                      <td>{channel.channelName}</td>
+                      <td>{channel.channelTypeName}</td>
+                      <td>
+                        <button
+                          className="btn btn-small btn-primary"
+                          onClick={() => handleAccordionToggle(channel.channelId)}
+                        >
+                          Edit
+                        </button>
+                        <button className="btn btn-small btn-danger ml-10" onClick={() => { handleDelete(channel) }}> Delete</button>
+
+                      </td>
+                    </tr>
+                    {channel.isAccordionOpen && (
+                      <tr className="accordion-content channel-accordion">
+                        <td colSpan="3">
+                          <div className="accordion-header">
+                            <button
+                              className="close-button"
+                              onClick={() => handleAccordionToggle(channel.channelId)}
+                            >
+                              x
+                            </button>
+                          </div>
+                          <Form>
+                            <Form.Group controlId="channelName">
+                              <Form.Label>Channel name</Form.Label>
+                              <Form.Control type="text" 
+                                ref={channelNames}
+                                defaultValue={selectedChannel.channelName}
+                                />
+                            </Form.Group>
+                            <br />
+                            <Form.Group>
+                              <Form.Label>Channel Type</Form.Label>
+                              <select
+                                className='form-select form-select-solid'
+                                data-kt-select2='true'
+                                data-placeholder='Select option'
+                                data-allow-clear='true'
+                                ref={channelTypes}
+                                required
+                              >
+                                <option value="">Select</option>
+                                {dropdownData && dropdownData.dropdownData && dropdownData.dropdownData.length > 0 &&
+                                  dropdownData.dropdownData.map((item) => (
+                                    <option
+                                      key={item.dataID}
+                                      value={item.dataID}
+                                    >
+                                      {item.dataValue}
+                                    </option>
+                                  ))}
+                              </select>
+                            </Form.Group>
+                            <br />
+                            <Form.Group controlId="channelDescription">
+                              <Form.Label>Channel description</Form.Label>
+                              <Form.Control as="textarea"
+                                ref={channelDescriptions}
+                                rows={3}
+                                defaultValue={selectedChannel.channelDescription}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mt-5">
+                              <Button
+                                variant="secondary"
+                                className="btn-small"
+                                onClick={() => handleAccordionToggle(channel.channelId)}
+                              >
+                                Close
+                              </Button>
+                              <Button
+                                variant="primary"
+                                className="btn-small"
+                                onClick={() => handleSave(channel.channelId)}
+                              >
+                                Save
+                              </Button>
+
+                            </Form.Group>
+                          </Form>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))}
+              </tbody>
+
+            </table>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
-  )
-}
+  );
+};
 
-export {ChannelsPage}
+export { ChannelsPage };

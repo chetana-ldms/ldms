@@ -3,34 +3,36 @@ import { Link, useNavigate } from 'react-router-dom'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import { UsersListLoading } from '../components/loading/UsersListLoading'
+import { fetchLDPToolsByToolType } from '../../../../../api/ConfigurationApi';
 
 const AddToolAction = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
   const [toolActionTypes, setToolActionTypes] = useState([])
+  const [ldpTools, setLdpTools] = useState([]);
   const toolID = useRef()
+  const toolId = useRef()
   const toolTypeActionID = useRef()
   const errors = {}
-
   useEffect(() => {
     setLoading(true)
-    var config = {
-      method: 'get',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeActions',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
+    // var config = {
+    //   method: 'get',
+    //   url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeActions',
+    //   headers: {
+    //     Accept: 'text/plain',
+    //   },
+    // }
 
-    axios(config)
-      .then(function (response) {
-        setToolActionTypes(response.data.toolTypeActionsList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
+    // axios(config)
+    //   .then(function (response) {
+    //     setToolActionTypes(response.data.toolTypeActionsList)
+    //     setLoading(false)
+    //   })
+    //   .catch(function (error) {
+    //     console.log(error)
+    //   })
     //////////////////
     var data_4 = JSON.stringify({
       maserDataType: 'Tool_Types',
@@ -102,7 +104,39 @@ const AddToolAction = () => {
       setLoading(false)
     }, 1000)
   }
+  let handleChangeToolType = (event) =>{
+    let selectedValue = event.target.value;
+    const result = async () => {
+      try {
+        const data = {
+          toolTypeId: Number(selectedValue)
+        }
+        const response = await fetchLDPToolsByToolType(data);
+        const result = response.ldpToolsList
+        setLdpTools(result)
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
+    result();
+    var config = {
+      method: 'get',
+      url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeActions',
+      headers: {
+        Accept: 'text/plain',
+      },
+    }
+
+    axios(config)
+      .then(function (response) {
+        let result = response.data.toolTypeActionsList.filter((item)=> {return item.toolTypeID === Number(selectedValue)})
+        setToolActionTypes(result);
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+}
   return (
     <div className='card'>
       {loading && <UsersListLoading />}
@@ -121,7 +155,7 @@ const AddToolAction = () => {
       <form>
         <div className='card-body border-top p-9'>
           <div className='row mb-6'>
-            <div className='col-lg-6 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
                   Select Tool Type
@@ -133,9 +167,10 @@ const AddToolAction = () => {
                   data-allow-clear='true'
                   id='toolID'
                   ref={toolID}
+                  onChange={handleChangeToolType}
                   required
                 >
-                  <option value=''>Select Tool Type</option>
+                  <option value=''>Select</option>
                   {toolTypes.map((item, index) => (
                     <option value={item.dataID} key={index}>
                       {item.dataValue}
@@ -144,7 +179,30 @@ const AddToolAction = () => {
                 </select>
               </div>
             </div>
-            <div className='col-lg-6 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
+                  Select Tools
+                </label>
+                <select
+                  className='form-select form-select-solid'
+                  data-kt-select2='true'
+                  data-placeholder='Select option'
+                  data-allow-clear='true'
+                  id='toolId'
+                  ref={toolId}
+                  required
+                >
+                  <option value=''>Select</option>
+                  {ldpTools.map((item, index) => (
+                    <option value={item.toolId} key={index}>
+                      {item.toolName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='toolTypeActionID' className='form-label fs-6 fw-bolder mb-3'>
                   Select Tool Action Type
@@ -158,7 +216,7 @@ const AddToolAction = () => {
                   ref={toolTypeActionID}
                   required
                 >
-                  <option value=''>Select Tool Action Type</option>
+                  <option value=''>Select</option>
                   {toolActionTypes.map((item, index) => (
                     <option value={item.toolTypeActionID} key={index}>
                       {item.toolAction}

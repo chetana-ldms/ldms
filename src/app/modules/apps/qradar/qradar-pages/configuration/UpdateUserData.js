@@ -1,6 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
 import {fetchRoles} from '../../../../../api/Api'
+import { fetchUserDetails } from '../../../../../api/ConfigurationApi'
 import axios from 'axios'
 
 const UpdateUserData = () => {
@@ -8,11 +9,30 @@ const UpdateUserData = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [roleTypes, setRoleTypes] = useState([])
+  console.log(roleTypes, "roleTypes111")
+  const [toolTypeAction, setToolTypeAction] = useState({ toolTypeName: '', toolTypeID: '' });
   const {id} = useParams()
   const userName = useRef()
+  console.log(userName, "userName")
   const passWord = useRef()
   const roleType = useRef()
   const errors = {}
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchUserDetails(id, userName);
+        setToolTypeAction({
+          ...toolTypeAction,
+          roleID:data.roleID
+        });
+      } catch (error) {
+        console.log(error)
+      }
+    };
+
+    fetchData();
+  }, [id, userName]);
   const handleSubmit = (event) => {
     setLoading(true)
     if (!userName.current.value) {
@@ -31,13 +51,18 @@ const UpdateUserData = () => {
       return errors
     }
     event.preventDefault()
+    const modifiedUserId = Number(sessionStorage.getItem('userId'));
+    const modifiedDate = new Date().toISOString();
+    const orgId = sessionStorage.getItem('orgId')
     var data = JSON.stringify({
       name: userName.current.value,
       roleID: roleType.current.value,
       password: passWord.current.value,
       createdByUserName: 'admin',
-      createdDete: '2023-01-05T16:12:17.058Z',
+      modifiedDate,
       userID: id,
+      orgId,
+      modifiedUserId
     })
     console.log('data', data)
     var config = {
@@ -61,26 +86,6 @@ const UpdateUserData = () => {
       setLoading(false)
     }, 1000)
   }
-
-  // useEffect(() => {
-  //   setLoading(true)
-  //   var config = {
-  //     method: 'post',
-  //     url: 'http://115.110.192.133:502/api/LDPSecurity/v1/Roles',
-  //     headers: {
-  //       Accept: 'text/plain',
-  //     },
-  //   }
-  //   axios(config)
-  //     .then(function (response) {
-  //       setRoleTypes(response.data.rolesList)
-  //       setLoading(false)
-  //     })
-  //     .catch(function (error) {
-  //       console.log(error)
-  //     })
-  // }, [])
-  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -153,11 +158,17 @@ const UpdateUserData = () => {
                   data-allow-clear='true'
                   id='roleType'
                   ref={roleType}
+                  value={toolTypeAction.roleID}
+                  onChange={(e) =>
+                    setToolTypeAction({
+                      // toolTypeName: e.target.value,
+                      toolTypeID: e.target.options[e.target.selectedIndex].getAttribute('data-id'),
+                    })}
                   required
                 >
                   <option value=''>Select Role Type</option>
                   {roleTypes.map((item, index) => (
-                    <option value={item.roleID} key={index}>
+                    <option value={item.roleID} key={index} data-id={item.roleID}>
                       {item.roleName}
                     </option>
                   ))}

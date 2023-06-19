@@ -11,6 +11,8 @@ import {PrivateRoutes} from './PrivateRoutes'
 import {ErrorsPage} from '../modules/errors/ErrorsPage'
 import {Logout, AuthPage, useAuth} from '../modules/auth'
 import {App} from '../App'
+import { PageLayout } from '../modules/auth/components/components/PageLayout'
+import{TeamsChannel} from "../modules/auth/components/TeamsChannel"
 
 /**
  * Base URL of the website.
@@ -30,12 +32,21 @@ const AppRoutes: FC = () => {
           {/* {currentUser ? (
             <> */}
               <Route path='/*' element={<PrivateRoutes />} />
-              <Route index element={<Navigate to='/dashboard' />} />
+              <Route path='*' element={<Navigate to='/dashboard' />} />
             {/* </>
           ) : (
             <> */}
+          //  the code need uncomment if you want microsoft login page
+              {/* <Route path='auth/*' element={<AuthPage />} />   
+              <Route path='*' element={<Navigate to='/auth' />} /> */}
+          //  the code need comment if you want microsoft login page
               <Route path='auth/*' element={<AuthPage />} />
-              <Route path='*' element={<Navigate to='/auth' />} />
+              <Route index element={<Navigate to='/auth' />} />
+          //  the code need uncomment if you want microsoft login page
+              {/* <Route path='pagelayout/*' element={<PageLayout />} />
+              <Route index element={<Navigate to='/pagelayout' />} /> */}
+              <Route path='teams-channel/*' element={<TeamsChannel />} />
+              <Route path='*' element={<Navigate to='/teams-channel' />} />
             {/* </>
           )} */}
         </Route>

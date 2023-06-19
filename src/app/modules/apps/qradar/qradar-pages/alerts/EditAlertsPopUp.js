@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import { Alert, Button, Form, Modal } from "react-bootstrap";
 import { fetchUpdateAlert } from "../../../../../api/Api";
 import { toast } from 'react-toastify'
+import { notify, notifyFail } from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
 
 const EditAlertsPopUp = ({ show, onClose, row, ldp_security_user, dropdownData, onTableRefresh }) => {
@@ -16,99 +17,72 @@ const EditAlertsPopUp = ({ show, onClose, row, ldp_security_user, dropdownData, 
         observableTag: row.observableTag,
         ownerusername: row.ownerusername
     });
-    console.log(row, "row1111")
+    const commentRef = useRef(null);
     const [ownerId, setOwnerId] = useState()
     const { orgID, alertID, statusID, userID, severityId, observableTagID, ownerUserID, modifiedDate } = row;
-//    const {userID} = ldp_security_user;
     const [id, setId] = useState({
-        severityId:severityId,
-        statusID:statusID,
-        observableTagID:observableTagID,
-        ownerUserID:ownerUserID
+        severityId: severityId,
+        statusID: statusID,
+        observableTagID: observableTagID,
+        ownerUserID: ownerUserID
     });
-console.log(id, "id111")
-    console.log("idsssss",row);
 
     const { severityName, status, observableTag, ownerusername } = formData
-    console.log(formData, "formData111111")
     const { name, score, sla, detectedtime, source } = row
     const { severityNameDropDownData, statusDropDown, observableTagDropDown } = dropdownData;
 
-   
+
     const handleChange = (e, field) => {
         e.preventDefault();
-        console.log(e.target.value, "value11111")
         setFormData({
             ...formData,
             [field]: e.target.value
         })
 
-        if(field==="severityName"){
-            severityNameDropDownData.filter((item)=>{
-                if(item.dataValue === e.target.value){
-                     setId({
+        if (field === "severityName") {
+            severityNameDropDownData.filter((item) => {
+                if (item.dataValue === e.target.value) {
+                    setId({
                         ...id,
-                        severityId:item.dataID
-                     })
+                        severityId: item.dataID
+                    })
                 }
             })
-        }else if(field==="status"){
-            statusDropDown.filter((item)=>{
-                if(item.dataValue === e.target.value){
-                     setId({
+        } else if (field === "status") {
+            statusDropDown.filter((item) => {
+                if (item.dataValue === e.target.value) {
+                    setId({
                         ...id,
-                        statusID:item.dataID
-                     })
+                        statusID: item.dataID
+                    })
                 }
             })
-        }else if(field==="observableTag"){
-            observableTagDropDown.filter((item)=>{
-                if(item.dataValue === e.target.value){
-                     setId({
+        } else if (field === "observableTag") {
+            observableTagDropDown.filter((item) => {
+                if (item.dataValue === e.target.value) {
+                    setId({
                         ...id,
-                        observableTagID:item.dataID
-                     })
+                        observableTagID: item.dataID
+                    })
                 }
             })
         }
-        else if(field==="ownerusername") {
-            ldp_security_user.filter((item)=>{
-                if(item.name === e.target.value){
-                     setId({
+        else if (field === "ownerusername") {
+            ldp_security_user.filter((item) => {
+                if (item.name === e.target.value) {
+                    setId({
                         ...id,
-                        ownerUserID:item.userID
-                     })
+                        ownerUserID: item.userID
+                    })
                 }
             })
         }
     }
-    const notify = (e) =>
-        toast.success(e, {
-            position: 'top-right',
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: 'colored',
-        })
-    const notifyFail = (message) => {
-        toast.error(message, {
-            position: 'top-right',
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: 'colored',
-        });
-    };
     const onClickUpdate = async () => {
         try {
+            const comment = commentRef.current.value;
             const modifiedUserId1 = Number(sessionStorage.getItem('userId'));
-            const { orgID, alertID, score, statusID, priorityid, severityId, observableTagID, ownerUserID=1, modifiedUserId = modifiedUserId1, modifiedDate } = row;
+            const { orgID, alertID, score, statusID, priorityid, severityId, observableTagID, ownerUserID = 1, modifiedUserId = modifiedUserId1, modifiedDate } = row;
 
             const data = {
                 orgID,
@@ -120,7 +94,8 @@ console.log(id, "id111")
                 ownerUserId: id.ownerUserID,
                 modifiedUserId,
                 modifiedDate,
-                score
+                score,
+                alertNote: comment
             };
             const response = await fetchUpdateAlert(data);
             console.log(response);
@@ -256,7 +231,17 @@ console.log(id, "id111")
                             <Form.Label className="col-md-3">Source Name :</Form.Label>
                             <div className="col-md-9">{source}</div>
                         </Form.Group>
-                        <br />
+                        <Form.Group className="row">
+                            <Form.Label className="col-md-3">Comment :</Form.Label>
+                            <div className="col-md-9">
+                                <textarea
+                                    className="form-control"
+                                    rows={2}
+                                    placeholder="Comment"
+                                    ref={commentRef}
+                                />
+                            </div>
+                        </Form.Group>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>

@@ -101,7 +101,7 @@ const UpdateLdpTools = () => {
     };
 
     fetchData();
-  }, [id, toolName, toolType]);
+  }, [id, toolName]);
 
 
   return (

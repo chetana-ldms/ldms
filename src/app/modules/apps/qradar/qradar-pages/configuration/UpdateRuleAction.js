@@ -1,25 +1,125 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {Link, useNavigate, useParams} from 'react-router-dom'
+import React, { useState, useRef, useEffect } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
+import { UsersListLoading } from '../components/loading/UsersListLoading'
+import { notify, notifyFail } from '../components/notification/Notification';
+import { fetchLDPToolsByToolType, fetchRuleActionDetails, fetchToolActions } from '../../../../../api/ConfigurationApi'
+import { fetchLDPTools } from '../../../../../api/Api'
 
 const UpdateRuleAction = () => {
-  const {id} = useParams()
+  const { id } = useParams()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [toolTypeActions, setToolTypeActions] = useState([])
   const [toolAcations, setToolAcations] = useState([])
   const [tools, setTools] = useState([])
   const [toolTypes, setToolTypes] = useState([])
+  const [toolTypeAction, setToolTypeAction] = useState(
+    {
+      ruleActionName:'',
+      toolTypeName: '',
+      toolTypeID: '',
+      toolName: '',
+      toolID: '',
+      toolActionName: '',
+      toolActionID: ''
+    }
+  );
 
   // const [ruleCatagories, setRuleCatagories] = useState([])
   // const [rulesconditiontypes, setRulesconditiontypes] = useState([])
   const ruleActionName = useRef()
   const toolTypeID = useRef()
-  const toolID = useRef()
+  const toolId = useRef()
   const toolActionID = useRef()
   const errors = {}
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchRuleActionDetails(id);
+        setToolTypeAction({
+          ...toolTypeAction,
+          ruleActionName:data.ruleActionName,
+          toolTypeName: data.toolTypeName,
+          toolTypeID: data.toolTypeID,
+          toolName: data.toolName,
+          toolID: data.toolID,
+          toolActionName: data.toolActionName,
+          toolActionID: data.toolActionID
+        })
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
+    fetchData();
+  }, [id]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchLDPTools();
+        setTools(data);
+      } catch (error) {
+        console.log(error)
+      }
+    };
+
+    fetchData();
+  }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchToolActions();
+        setToolTypeActions(data);
+      } catch (error) {
+        console.log(error)
+      }
+    };
+
+    fetchData();
+  }, []);
+  const handleChange = (event, field) => {
+    const selectedValue = event.target.value;
+  
+    if (field === "ruleActionName") {
+      setToolTypeAction((prevState) => ({
+        ...prevState,
+        [field]: selectedValue,
+      }));
+    }
+  
+    if (field === "toolName" || field === "toolActionName") {
+      const selectedId = event.target.options[event.target.selectedIndex].getAttribute('data-id');
+      setToolTypeAction((prevState) => ({
+        ...prevState,
+        [field === "toolName" ? "toolID" : "toolActionID"]: selectedId,
+        [field]: selectedValue,
+      }));
+    }
+  
+    if (field === "toolTypeName") {
+      const selectedId = event.target.options[event.target.selectedIndex].getAttribute('data-id');
+      const fetchData = async () => {
+        try {
+          const data = {
+            toolTypeId: Number(selectedId)
+          }
+          const response = await fetchLDPToolsByToolType(data);
+          const result = response.ldpToolsList
+          setTools(result)
+        } catch (error) {
+          console.log(error);
+        }
+      };
+  
+      fetchData();
+      setToolTypeAction((prevState) => ({
+        ...prevState,
+        dataID: selectedId,
+        toolTypeName: selectedValue,
+      }));
+    }
+  };
   useEffect(() => {
     setLoading(true)
 
@@ -40,37 +140,37 @@ const UpdateRuleAction = () => {
         console.log(error)
       })
     //////////////////////////////////////////////
-    var config_2 = {
-      method: 'get',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeActions',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-    axios(config_2)
-      .then(function (response) {
-        setToolTypeActions(response.data.toolTypeActionsList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
+    // var config_2 = {
+    //   method: 'get',
+    //   url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeActions',
+    //   headers: {
+    //     Accept: 'text/plain',
+    //   },
+    // }
+    // axios(config_2)
+    //   .then(function (response) {
+    //     setToolTypeActions(response.data.toolTypeActionsList)
+    //     setLoading(false)
+    //   })
+    //   .catch(function (error) {
+    //     console.log(error)
+    //   })
     /////////////////////////////////////
-    var config_3 = {
-      method: 'get',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/LDPTools',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-    axios(config_3)
-      .then(function (response) {
-        setTools(response.data.ldpToolsList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
+    // var config_3 = {
+    //   method: 'get',
+    //   url: 'http://115.110.192.133:502/api/LDPlattform/v1/LDPTools',
+    //   headers: {
+    //     Accept: 'text/plain',
+    //   },
+    // }
+    // axios(config_3)
+    //   .then(function (response) {
+    //     setTools(response.data.ldpToolsList)
+    //     setLoading(false)
+    //   })
+    //   .catch(function (error) {
+    //     console.log(error)
+    //   })
     //////////////////
     var data_4 = JSON.stringify({
       maserDataType: 'Tool_Types',
@@ -104,8 +204,8 @@ const UpdateRuleAction = () => {
       setLoading(false)
       return errors
     }
-    if (!toolID.current.value) {
-      errors.toolID = 'Select Tool'
+    if (!toolId.current.value) {
+      errors.toolId = 'Select Tool'
       setLoading(false)
       return errors
     }
@@ -115,15 +215,28 @@ const UpdateRuleAction = () => {
       return errors
     }
     event.preventDefault()
+    const modifieduserid = Number(sessionStorage.getItem('userId'));
+    const orgId = Number(sessionStorage.getItem('orgId'));
+    const modifieddate = new Date().toISOString();
     var data = JSON.stringify({
-      ruleActionName: ruleActionName.current.value,
-      toolTypeID: toolTypeID.current.value,
-      toolID: toolID.current.value,
-      toolActionID: toolActionID.current.value,
+      // ruleActionName: ruleActionName.current.value,
+      // toolTypeID: toolTypeID.current.value,
+      // toolID: toolId.current.value,
+      // toolActionID: toolActionID.current.value,
+      // ruleGenerelActionID: 0,
+      // ruleActionID: id,
+      // orgId,
+      // modifieddate,
+      // modifieduserid,
+      ruleActionName: toolTypeAction.ruleActionName,
+      toolTypeID: toolTypeAction.toolTypeID,
+      toolID: toolTypeAction.toolID,
+      toolActionID: toolTypeAction.toolActionID,
       ruleGenerelActionID: 0,
       ruleActionID: id,
-      modifieddate: '2023-01-10T15:14:46.337Z',
-      modifieduser: 'super_admin',
+      orgId,
+      modifieddate,
+      modifieduserid,
     })
     var config = {
       method: 'post',
@@ -137,8 +250,17 @@ const UpdateRuleAction = () => {
     setTimeout(() => {
       axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/rules-actions/updated')
+          const { isSuccess } = response.data;
+
+          if (isSuccess) {
+            notify('Data Updated');
+            navigate('/qradar/rules-actions/updated')
+          } else {
+            notifyFail('Failed to update data');
+          }
+
+          // console.log(JSON.stringify(response.data))
+          // navigate('/qradar/rules-actions/updated')
         })
         .catch(function (error) {
           console.log(error)
@@ -175,6 +297,8 @@ const UpdateRuleAction = () => {
                   required
                   className='form-control form-control-lg form-control-solid'
                   placeholder='Ex: FreshDesk_CreateTicket'
+                  value={toolTypeAction.ruleActionName}
+                  onChange={(e) => handleChange(e, "ruleActionName")}
                   ref={ruleActionName}
                 />
               </div>
@@ -191,11 +315,14 @@ const UpdateRuleAction = () => {
                   data-allow-clear='true'
                   id='toolTypeID'
                   ref={toolTypeID}
+                  value={toolTypeAction.toolTypeName}
+                  onChange={(e) => handleChange(e, "toolTypeName")}
+                  // onChange={handleChangeToolType}
                   required
                 >
                   <option value=''>Select Tool Type</option>
                   {toolTypes.map((item, index) => (
-                    <option value={item.dataID} key={index}>
+                    <option value={item.dataValue} key={index} data-id={item.dataID}>
                       {item.dataValue}
                     </option>
                   ))}
@@ -214,12 +341,14 @@ const UpdateRuleAction = () => {
                   data-placeholder='Select option'
                   data-allow-clear='true'
                   id='toolID'
-                  ref={toolID}
+                  value={toolTypeAction.toolName}
+                  onChange={(e) => handleChange(e, "toolName")}
+                  ref={toolId}
                   required
                 >
                   <option value=''>Select Tool</option>
                   {tools.map((item, index) => (
-                    <option value={item.toolTypeID} key={index}>
+                    <option value={item.toolName} key={index} data-id={item.toolId}>
                       {item.toolName}
                     </option>
                   ))}
@@ -238,13 +367,15 @@ const UpdateRuleAction = () => {
                   data-placeholder='Select option'
                   data-allow-clear='true'
                   id='toolActionID'
+                  value={toolTypeAction.toolActionName}
+                  onChange={(e) => handleChange(e, "toolActionName")}
                   ref={toolActionID}
                   required
                 >
                   <option value=''>Select Tool Action</option>
                   {toolTypeActions.map((item, index) => (
-                    <option value={item.toolTypeID} key={index}>
-                      {item.toolAction}
+                    <option value={item.toolTypeActionName} key={index} data-id={item.toolActionID}>
+                      {item.toolTypeActionName}
                     </option>
                   ))}
                 </select>
@@ -261,7 +392,7 @@ const UpdateRuleAction = () => {
           >
             {!loading && 'Save Changes'}
             {loading && (
-              <span className='indicator-progress' style={{display: 'block'}}>
+              <span className='indicator-progress' style={{ display: 'block' }}>
                 Please wait...{' '}
                 <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
               </span>
@@ -273,4 +404,4 @@ const UpdateRuleAction = () => {
   )
 }
 
-export {UpdateRuleAction}
+export { UpdateRuleAction }

@@ -36,7 +36,7 @@ const AddUserData = () => {
     }
 
     event.preventDefault()
-    const createdByUserName = sessionStorage.getItem('userId');
+    const createdUserId = Number(sessionStorage.getItem('userId'));
     const createdDete = new Date().toISOString();
     const orgId = sessionStorage.getItem('orgId')
     var data = JSON.stringify({
@@ -45,7 +45,7 @@ const AddUserData = () => {
       password: passWord.current.value,
       sysUser:0,
       orgId,
-      createdByUserName,
+      createdUserId,
       createdDete
     })
     console.log('data', data)

@@ -6,48 +6,42 @@ import { notify, notifyFail } from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
 import { fetchRuleActionDelete } from "../../../../../api/Api"
 import axios from 'axios'
+import { fetchRuleActions } from '../../../../../api/ConfigurationApi'
 const RulesActions = () => {
+  const orgId = Number(sessionStorage.getItem('orgId'));
   const [loading, setLoading] = useState(false)
   const [tools, setTools] = useState([])
   const { status } = useParams()
 
   const handleDelete = async (item) => {
     console.log(item, "item")
-    const deletedUser = sessionStorage.getItem('userId');
+    const deletedUserId = sessionStorage.getItem('userId');
     const deletedDate = new Date().toISOString();
     const data = {
       ruleActionID: item.ruleActionID,
       deletedDate,
-      deletedUser
+      deletedUserId
     } 
     try {
-      await fetchRuleActionDelete(data);
-      notify('Data Deleted');
+      const responce = await fetchRuleActionDelete(data);
+      if (responce.isSuccess) {
+        notify('Data Deleted');
+      }else{
+        notifyFail("Data not Deleted")
+      }
       await reload();
     } catch (error) {
       console.log(error);
     }
   }
-  const reload = () => {
-    // setLoading(true)
-    var config = {
-      method: 'get',
-      url: 'http://115.110.192.133:8011/api/RuleAction/v1/RuleActions',
-      headers: {
-        Accept: 'text/plain',
-      },
+  const reload = async() => {
+    try {
+      const data = await fetchRuleActions(orgId);
+      setTools(data);
+    } catch (error) {
+      console.log(error)
     }
-
-    axios(config)
-      .then(function (response) {
-        setTools(response.data.ruleActionList)
-        console.log(response.data.ruleActionList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }
+}
   useEffect(() => {
     reload();
   }, [])
@@ -68,7 +62,7 @@ const RulesActions = () => {
         </div>
       </div>
       <div className='card-body'>
-        {status === 'updated' && (
+        {/* {status === 'updated' && (
           <div class='alert alert-success d-flex align-items-center p-5'>
             <div class='d-flex flex-column'>
               <h4 class='mb-1 text-dark'>Data Saved</h4>
@@ -81,7 +75,7 @@ const RulesActions = () => {
               X<span class='svg-icon svg-icon-2x svg-icon-light'>...</span>
             </button>
           </div>
-        )}
+        )} */}
 
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>

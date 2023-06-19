@@ -18,43 +18,16 @@ const Navbar = () => {
   const handleLogout = () => {
     navigate('/auth');
   };
+  const userName = sessionStorage.getItem('userName');
   return (
     <div className='app-navbar flex-shrink-0'>
-        <button className="btn btn-primary m-3" onClick={handleLogout} >LogOut </button>
-      
-   
-      {/* <div className={clsx('app-navbar-item align-items-stretch', itemClass)}>
-        <Search />
-      </div> */}
+      <p className='d-flex m-5'>Welcome, <b> { userName}!</b></p>
+        {/* <button className="btn btn-primary m-3" onClick={handleLogout} >LogOut </button> */}
 
-      {/* <div className={clsx('app-navbar-item', itemClass)}>
-        <div id='kt_activities_toggle' className={btnClass}>
-          <KTSVG path='/media/icons/duotune/general/gen032.svg' className={btnIconClass} />
-        </div>
-      </div> */}
 
       <div className={clsx('app-navbar-item', itemClass)}>
-        {/* <div
-          data-kt-menu-trigger="{default: 'click'}"
-          data-kt-menu-attach='parent'
-          data-kt-menu-placement='bottom-end'
-          className={btnClass}
-        >
-          <KTSVG path='/media/icons/duotune/general/gen022.svg' className={btnIconClass} />
-        </div> */}
         <HeaderNotificationsMenu />
       </div>
-
-      {/* <div className={clsx('app-navbar-item', itemClass)}>
-        <div className={clsx('position-relative', btnClass)} id='kt_drawer_chat_toggle'>
-          <KTSVG path='/media/icons/duotune/communication/com012.svg' className={btnIconClass} />
-          <span className='bullet bullet-dot bg-success h-6px w-6px position-absolute translate-middle top-0 start-50 animation-blink' />
-        </div>
-      </div> */}
-
-      {/* <div className={clsx('app-navbar-item', itemClass)}>
-        <ThemeModeSwitcher toggleBtnClass={clsx('btn-active-light-primary btn-custom')} />
-      </div> */}
 
       <div className={clsx('app-navbar-item', itemClass)}>
         <div
@@ -63,21 +36,12 @@ const Navbar = () => {
           data-kt-menu-attach='parent'
           data-kt-menu-placement='bottom-end'
         >
-          <img src={toAbsoluteUrl('/media/avatars/avatar.png')} alt='' />
+          <img src={toAbsoluteUrl('/media/avatars/300-1.jpg')} alt='' />
         </div>
         <HeaderUserMenu />
       </div>
 
-      {/* {config.app?.header?.default?.menu?.display && (
-        <div className='app-navbar-item d-lg-none ms-2 me-n3' title='Show header menu'>
-          <div
-            className='btn btn-icon btn-active-color-primary w-35px h-35px'
-            id='kt_app_header_menu_toggle'
-          >
-            <KTSVG path='/media/icons/duotune/text/txt001.svg' className={btnIconClass} />
-          </div>
-        </div>
-      )} */}
+      
     </div>
   )
 }
