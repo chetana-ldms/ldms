@@ -10,7 +10,7 @@ import { ToastContainer } from 'react-toastify'
 import { notify, notifyFail } from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
 import UnderReview from "./UnderReview";
-import { fetchChannels, fetchChannelsAdd, fetchChannelsDelete } from "../../../../../api/ChannelApi";
+import { fetchChannelDetails, fetchChannels, fetchChannelsAdd, fetchChannelsDelete, fetchChannelsUpdate } from "../../../../../api/ChannelApi";
 import { fetchMasterData } from "../../../../../api/Api";
 
 //Modal
@@ -23,8 +23,16 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const channelNames = useRef()
   const channelDescriptions = useRef()
-
-  const handleSubmit = () => {
+  const [channels, setChannels] = useState([]);
+  const fetchData = async () => {
+    try {
+      const data = await fetchChannels(orgId);
+      setChannels(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleSubmit = async () => {
     const data = {
       channelName: channelNames.current.value,
       channelDescription: channelDescriptions.current.value,
@@ -36,11 +44,12 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
       createdUserId
     };
 
-    fetchChannelsAdd(data);
+    await fetchChannelsAdd(data);
     const newChannel = { name: channelName, description: channelDescription };
     onAdd(newChannel);
     onClose();
     setShowSuccessMessage(true);
+    fetchData();
   };
 
 
@@ -102,11 +111,17 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
 
 const ChannelsPage = () => {
   const [channels, setChannels] = useState([]);
-  console.log(channels, "channels")
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const deletedUserId = Number(sessionStorage.getItem('userId'));
+  const deletedDate = new Date().toISOString();
   const [showEditChannel, setShowEditChannel] = useState(false);
   const [dropdownData, setDropdownData] = useState([])
   const [accordionOpen, setAccordionOpen] = useState(false);
+  const channelNames = useRef()
+  const channelDescriptions = useRef()
+  const channelTypes = useRef()
+  const [selectedChannel, setSelectedChannel] = useState(null);
+
   const fetchData = async () => {
     try {
       const data = await fetchChannels(orgId);
@@ -167,19 +182,26 @@ const ChannelsPage = () => {
   // }, []);
 
   //show modal
-  const handleAccordionToggle = (channelId) => {
-    setChannels((prevChannels) => {
-      return prevChannels.map((channel) => {
-        if (channel.channelId === channelId) {
-          return {
-            ...channel,
-            isAccordionOpen: !channel.isAccordionOpen
-          };
-        }
-        return channel;
+  const handleAccordionToggle = async (channelId) => {
+    try {
+      const channelData = await fetchChannelDetails(channelId); // Call the API to fetch channel data
+      setChannels((prevChannels) => {
+        return prevChannels.map((channel) => {
+          if (channel.channelId === channelId) {
+            setSelectedChannel(channelData); // Set the selected channel with the fetched data
+            return {
+              ...channel,
+              isAccordionOpen: !channel.isAccordionOpen
+            };
+          }
+          return channel;
+        });
       });
-    });
+    } catch (error) {
+      console.log(error);
+    }
   };
+  
   const [showModal, setShowModal] = useState(false);
   const handleAddChannel = (channel) => {
     setChannels([...channels, channel]);
@@ -227,6 +249,27 @@ const ChannelsPage = () => {
             {/* Add more content for the default template */}
           </div>
         );
+    }
+  };
+  const handleSave = async (channelId) => {
+
+    const data = {
+      channelId: channelId,
+      channelName: channelNames.current.value,
+      channelDescription: channelDescriptions.current.value,
+      channelTypeId:channelTypes.current.value,
+      displayOrder:0,
+      orgId,
+      modifiedDate:deletedDate,
+      modifiedUserId:deletedUserId,
+    };
+
+    try {
+      const response = await fetchChannelsUpdate(data);
+      handleAccordionToggle(channelId);
+      fetchData();
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -322,7 +365,10 @@ const ChannelsPage = () => {
                           <Form>
                             <Form.Group controlId="channelName">
                               <Form.Label>Channel name</Form.Label>
-                              <Form.Control type="text" />
+                              <Form.Control type="text" 
+                                ref={channelNames}
+                                defaultValue={selectedChannel.channelName}
+                                />
                             </Form.Group>
                             <br />
                             <Form.Group>
@@ -332,6 +378,7 @@ const ChannelsPage = () => {
                                 data-kt-select2='true'
                                 data-placeholder='Select option'
                                 data-allow-clear='true'
+                                ref={channelTypes}
                                 required
                               >
                                 <option value="">Select</option>
@@ -339,7 +386,7 @@ const ChannelsPage = () => {
                                   dropdownData.dropdownData.map((item) => (
                                     <option
                                       key={item.dataID}
-                                      value={item.dataValue}
+                                      value={item.dataID}
                                     >
                                       {item.dataValue}
                                     </option>
@@ -349,7 +396,11 @@ const ChannelsPage = () => {
                             <br />
                             <Form.Group controlId="channelDescription">
                               <Form.Label>Channel description</Form.Label>
-                              <Form.Control as="textarea" rows={3} />
+                              <Form.Control as="textarea"
+                                ref={channelDescriptions}
+                                rows={3}
+                                defaultValue={selectedChannel.channelDescription}
+                                />
                             </Form.Group>
                             <Form.Group className="mt-5">
                               <Button
@@ -359,9 +410,14 @@ const ChannelsPage = () => {
                               >
                                 Close
                               </Button>
-                              <Button variant="primary" className="btn-small">
+                              <Button
+                                variant="primary"
+                                className="btn-small"
+                                onClick={() => handleSave(channel.channelId)}
+                              >
                                 Save
                               </Button>
+
                             </Form.Group>
                           </Form>
                         </td>

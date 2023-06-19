@@ -11,6 +11,8 @@ const AnswerDetails="http://115.110.192.133:502/api/LDCChannels/v1/Channels/Answ
 const Channels="http://115.110.192.133:502/api/LDCChannels/v1/Channels"
 const ChannelsDelete="http://115.110.192.133:502/api/LDCChannels/v1/Channels/Delete"
 const ChannelsAdd="http://115.110.192.133:502/api/LDCChannels/v1/Channels/Add"
+const ChannelsUpdate= "http://115.110.192.133:502/api/LDCChannels/v1/Channels/Update"
+const ChannelDetails="http://115.110.192.133:502/api/LDCChannels/v1/ChannelDetails"
 
 export const fetchSubItemsByOrgChannel = async (data) => {
     try {
@@ -242,5 +244,38 @@ export const fetcQuestionDetails = async (questionId) => {
       console.log(error)
     }
   }
+  export const fetchChannelsUpdate = async (data) => {
+    try {
+      const response = await fetch(`${ChannelsUpdate}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data
+        }),
+      });
+    
+      const responseData = await response.json();
+      return responseData
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  export const fetchChannelDetails = async (channelId) => {
+    try {
+      const response = await fetch(`${ChannelDetails}?channelId=${channelId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const responseData = await response.json();
+      const channelsData = responseData.channelsData;
+      return channelsData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
   
   
