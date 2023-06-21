@@ -222,10 +222,10 @@ const IncidentsPage = () => {
                                 )}
                                 <div className="p-1 bd-highlight">
                                   <div className="badge badge-light-primary mx-1">
-                                    {item.priority}
+                                  {item.priorityName}
                                   </div>
                                   <div className="badge badge-light-danger">
-                                    {item.severity}
+                                  {item.severityName}
                                   </div>
                                 </div>
                               </div>

@@ -39,6 +39,7 @@ const IncidentDetails = ({ incident }) => {
     owner: "",
     ownerName: "",
   });
+
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchUsers(orgId);
@@ -161,6 +162,8 @@ const IncidentDetails = ({ incident }) => {
         console.log(error);
       });
   }, [id]);
+  // const alertId = incidentData.alertIncidentMapping.alertIncidentMappingDtl[0].alertid;
+  // console.log(alertId, "alertId");
   return (
     <div className="col-md-4 border-1 border-gray-600">
       <div className="card">
@@ -475,7 +478,7 @@ const IncidentDetails = ({ incident }) => {
                         <div className="d-flex justify-content-between bd-highlight">
                           <div
                             className="p-1 bd-highlight fw-bold fs-12"
-                            style={{ width: "200px", textAlign: "left" }}
+                            style={{ width: "190px", textAlign: "left" }}
                           >
                             <div className="text-dark mb-1">
                               <a href="#" className="text-dark">
