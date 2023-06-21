@@ -3,6 +3,8 @@ import { fetchSubItemsByOrgChannel } from "../../../../../api/ChannelApi";
 
 const Reports = ({ channelId, channelName }) => {
   const [channelSubItems, setChannelSubItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -18,6 +20,17 @@ const Reports = ({ channelId, channelName }) => {
         setError("Error occurred while fetching channel sub-item data");
       });
   }, [channelId]);
+
+  const handleItemCheckboxChange = (subItemId) => {
+    setSelectedItems((prevSelectedItems) => {
+      if (prevSelectedItems.includes(subItemId)) {
+        return prevSelectedItems.filter((id) => id !== subItemId);
+      } else {
+        return [...prevSelectedItems, subItemId];
+      }
+    });
+  };
+
   return (
     <div>
       <div className="clearfix">
@@ -41,24 +54,33 @@ const Reports = ({ channelId, channelName }) => {
                   className="report-files mb-2"
                   key={subItem.channelSubItemId}
                 >
-                  <a
-                    className="doc-section"
-                    href={subItem.documentUrl}
-                    download="Document"
-                  >
-                    <i className="far fa-file-pdf" />{" "}
-                    <span className="text-blue">
-                      {subItem.channelSubItemName} Report{" "}
-                    </span>
-                  </a>
-                  <button className="btn btn-new btn-primary">
-                    Generate Report
-                  </button>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={selectedItems.includes(subItem.channelSubItemId)}
+                      onChange={() =>
+                        handleItemCheckboxChange(subItem.channelSubItemId)
+                      }
+                    />
+                    <a
+                      className="doc-section"
+                      href={subItem.documentUrl}
+                      download="Document"
+                    >
+                      <i className="far fa-file-pdf" />{" "}
+                      <span className="text-blue">
+                        {subItem.channelSubItemName} Report
+                      </span>
+                    </a>
+                  </label>
                 </div>
               ))
             ) : (
               <div>Loading...</div>
             )}
+            <button className="btn btn-new btn-primary btn-small mt-5">
+              Generate Report
+            </button>
           </div>
 
           {/* Download Report */}
@@ -72,17 +94,18 @@ const Reports = ({ channelId, channelName }) => {
                   className="report-files mb-2"
                   key={subItem.channelSubItemId}
                 >
-                  <a
-                    className="doc-section"
-                    href={subItem.documentUrl}
-                    download="Document"
-                  >
-                    <i className="far fa-file-pdf" />{" "}
-                    <span className="text-blue">
-                      {subItem.channelSubItemName} Report{" "}
-                    </span>
-                    {/* <i className="fas fa-download"></i> */}
-                  </a>
+                  <label>
+                    <a
+                      className="doc-section"
+                      href={subItem.documentUrl}
+                      download="Document"
+                    >
+                      <i className="far fa-file-pdf" />{" "}
+                      <span className="text-blue">
+                        {subItem.channelSubItemName} Report{" "}
+                      </span>
+                    </a>
+                  </label>
                   <button className="btn btn-new">
                     <a href={subItem.documentUrl} download="Document">
                       <i className="fas fa-download"></i>

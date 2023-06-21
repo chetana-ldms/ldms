@@ -26,8 +26,8 @@ const QA = ({ channelId, channelName }) => {
   const [answerText, setAnswerText] = useState("");
   const questionTextRef = useRef();
   const answerTextRef = useRef();
-  const EditQuestionTextRef = useRef()
-  const EditanswerTextRef = useRef()
+  const EditQuestionTextRef = useRef();
+  const EditanswerTextRef = useRef();
   const [selectedQuestionId, setSelectedQuestionId] = useState(null);
   const [selectedAnswerId, setSelectedAnswerId] = useState(null);
   const [selectedQuestionData, setSelectedQuestionData] = useState(null);
@@ -52,12 +52,12 @@ const QA = ({ channelId, channelName }) => {
   useEffect(() => {
     if (showEditQuestionModal && selectedQuestionId) {
       const responce = fetcQuestionDetails(selectedQuestionId)
-      .then((response) => {
-        setSelectedQuestionData(response);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+        .then((response) => {
+          setSelectedQuestionData(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
     if (showEditModal && selectedAnswerId) {
       const responce = fetchAnswerDetails(selectedAnswerId)
@@ -68,8 +68,12 @@ const QA = ({ channelId, channelName }) => {
           console.log(error);
         });
     }
-  }, [showEditQuestionModal, selectedQuestionId, showEditModal, selectedAnswerId]);
-
+  }, [
+    showEditQuestionModal,
+    selectedQuestionId,
+    showEditModal,
+    selectedAnswerId,
+  ]);
 
   const handlePostQuestion = () => {
     const data = {
@@ -145,7 +149,6 @@ const QA = ({ channelId, channelName }) => {
     }
   };
 
-
   const handleEditAnswer = () => {
     const data = {
       channelId,
@@ -212,7 +215,8 @@ const QA = ({ channelId, channelName }) => {
                     }}
                     style={{
                       display:
-                      createdUserId === 1 || (createdUserId !== 1 && item.orgId === orgId)
+                        createdUserId === 1 ||
+                        (createdUserId !== 1 && item.orgId === orgId)
                           ? "inline-block"
                           : "none",
                     }}
@@ -245,7 +249,7 @@ const QA = ({ channelId, channelName }) => {
                       title="Delete"
                       onClick={() => {
                         setSelectedAnswerId(item.answerId);
-                        handleDeleteAnswer()
+                        handleDeleteAnswer();
                         // setShowDeleteModal(true);
                       }}
                     />
@@ -320,7 +324,10 @@ const QA = ({ channelId, channelName }) => {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={showEditQuestionModal} onHide={() => setShowEditQuestionModal(false)}>
+      <Modal
+        show={showEditQuestionModal}
+        onHide={() => setShowEditQuestionModal(false)}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Edit Question</Modal.Title>
         </Modal.Header>
@@ -353,7 +360,6 @@ const QA = ({ channelId, channelName }) => {
         </Modal.Footer>
       </Modal>
 
-
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Edit Your Answer</Modal.Title>
@@ -362,9 +368,11 @@ const QA = ({ channelId, channelName }) => {
           <Form>
             <Form.Group controlId="answerText">
               <Form.Label>Answer</Form.Label>
-              <Form.Control type="text"
-              defaultValue={selectedAnswerData?.answerDescription}
-              ref={EditanswerTextRef} />
+              <Form.Control
+                type="text"
+                defaultValue={selectedAnswerData?.answerDescription}
+                ref={EditanswerTextRef}
+              />
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -377,7 +385,6 @@ const QA = ({ channelId, channelName }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-
     </div>
   );
 };
