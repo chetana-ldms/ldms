@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
 import { fetchMasterData } from "../../../../../api/Api";
 import { fetchUsers } from "../../../../../api/AlertsApi";
-import { fetchIncidentDetails, fetchUpdateIncident } from "../../../../../api/IncidentsApi";
+import { fetchGetIncidentHistory, fetchIncidentDetails, fetchUpdateIncident } from "../../../../../api/IncidentsApi";
 
 const IncidentDetails = ({ incident }) => {
   const { subject, createdDate, description, incidentID } = incident;
@@ -19,8 +19,10 @@ const IncidentDetails = ({ incident }) => {
     priorityDropDown: [],
     typeDropDown: [],
   });
+  const checkboxRef = useRef(null);
+  const [incidentHistory, setIncidentHistory] = useState([]);
+  console.log(incidentHistory, "incidentHistory")
   const [ldp_security_user, setldp_security_user] = useState([]);
-  console.log(ldp_security_user, "ldp_security_user")
   const [incidentData, setIncidentData] = useState(
     {
       incidentStatus: "",
@@ -32,7 +34,7 @@ const IncidentDetails = ({ incident }) => {
       typeId: "",
       type: "",
       owner: "",
-      ownerName: ""
+      ownerName: "",
     }
   );
   useEffect(() => {
@@ -70,19 +72,19 @@ const IncidentDetails = ({ incident }) => {
       try {
         const data = await fetchIncidentDetails(id);
         data !== undefined &&
-        setIncidentData((prevIncidentData) => ({
-          ...prevIncidentData,
-          incidentStatus: data.incidentStatus,
-          incidentStatusName: data.incidentStatusName,
-          priority: data.priority,
-          priorityName: data.priorityName,
-          severity: data.severity,
-          severityName: data.severityName,
-          typeId: data.typeId,
-          type: data.type,
-          owner: data.owner,
-          ownerName: data.ownerName,
-        }));
+          setIncidentData((prevIncidentData) => ({
+            ...prevIncidentData,
+            incidentStatus: data.incidentStatus,
+            incidentStatusName: data.incidentStatusName,
+            priority: data.priority,
+            priorityName: data.priorityName,
+            severity: data.severity,
+            severityName: data.severityName,
+            typeId: data.typeId,
+            type: data.type,
+            owner: data.owner,
+            ownerName: data.ownerName,
+          }));
       } catch (error) {
         console.log(error);
       }
@@ -125,24 +127,32 @@ const IncidentDetails = ({ incident }) => {
       });
     }
   };
-  const handleSubmit = (event, toolTypeAction) => {
+  const handleSubmit = (event, incidentData) => {
     event.preventDefault()
     const data = {
-        incidentId: Number(id),
-        statusId:incidentData.incidentStatus ,
-        priorityId: incidentData.priority,
-        severityId: incident.severity,
-        // "score": "string",
-        typeId: incidentData.typeId,
-        ownerUserId: incidentData.owner,
-        // "significantIncident": true,
-        modifiedUserId: userID,
-        modifiedDate: date,
-        }
-      
+      incidentId: Number(id),
+      statusId: incidentData.incidentStatus,
+      priorityId: incidentData.priority,
+      severityId: incidentData.severity,
+      // "score": "string",
+      typeId: incidentData.typeId,
+      ownerUserId: incidentData.owner,
+      significantIncident: checkboxRef.current.checked,
+      modifiedUserId: userID,
+      modifiedDate: date,
+    }
+
     fetchUpdateIncident(data)
-   
+
   }
+  useEffect(()=>{
+    const data = {
+      orgId,
+      incidentId: Number(id),
+    }
+   const responce = fetchGetIncidentHistory(data)
+   setIncidentHistory(responce)
+  },[])
   return (
     <div className="col-md-4 border-1 border-gray-600">
       <div className="card">
@@ -158,16 +168,16 @@ const IncidentDetails = ({ incident }) => {
         <div className="d-flex justify-content-between bd-highlight mb-3 incident-tabs">
           <div className="p-2 bd-highlight">
             <ul className="nav nav-tabs nav-line-tabs mb-5 fs-8">
-            <li className="nav-item">
-            <a
-              className={`nav-link ${activeTab === "general" ? "active" : ""}`}
-              data-bs-toggle="tab"
-              href="#kt_tab_pane_1"
-              onClick={() => setActiveTab("general")}
-            >
-              General
-            </a>
-          </li>
+              <li className="nav-item">
+                <a
+                  className={`nav-link ${activeTab === "general" ? "active" : ""}`}
+                  data-bs-toggle="tab"
+                  href="#kt_tab_pane_1"
+                  onClick={() => setActiveTab("general")}
+                >
+                  General
+                </a>
+              </li>
               <li className="nav-item">
                 <a
                   className={`nav-link ${activeTab === "alerts" ? "active" : ""}`}
@@ -200,10 +210,10 @@ const IncidentDetails = ({ incident }) => {
               </li>
               <li className="nav-item">
                 <a
-                 className={`nav-link ${activeTab === "timeline" ? "active" : ""}`}
-                 data-bs-toggle="tab"
-                 href="#kt_tab_pane_5"
-                 onClick={() => setActiveTab("timeline")}
+                  className={`nav-link ${activeTab === "timeline" ? "active" : ""}`}
+                  data-bs-toggle="tab"
+                  href="#kt_tab_pane_5"
+                  onClick={() => setActiveTab("timeline")}
                 >
                   Timeline
                 </a>
@@ -377,6 +387,17 @@ const IncidentDetails = ({ incident }) => {
                     </div>
                   </div>
                 </div>
+                <div className="checkbox-wrapper">
+                  <input
+                    className="p-2"
+                    type="checkbox"
+                    ref={checkboxRef}
+                    // checked={incidentData.significantIncident}
+                    // onChange={(event) => handleChange(event, "significantIncident")}
+                  />
+                  <label style={{ marginLeft: '8px' }}>Significant Incident</label>
+                </div>
+
 
                 <div className="d-flex justify-content-between bd-highlight">
                   <div className="p-2 bd-highlight">
@@ -400,6 +421,7 @@ const IncidentDetails = ({ incident }) => {
                   </div>
                 </div>
               </div>
+
               <div className="tab-pane fade" id="kt_tab_pane_2" role="tabpanel">
                 <table
                   className="scroll-y me-n5 pe-5 table table-hover table-row-dashed fs-6 gy-5 my-0 dataTable no-footer"
@@ -659,14 +681,14 @@ const IncidentDetails = ({ incident }) => {
                 </div>
               </div>
               <div className='card-footer d-flex justify-content-end'>
-              {activeTab === "general" && (
-              <div className="text-end mt-5">
-                <button
-                 type='submit'
-                 onClick={(event) => handleSubmit(event, incidentData)}
-                 className="btn btn-primary">Save Changes</button>
-              </div>
-            )}
+                {activeTab === "general" && (
+                  <div className="text-end mt-5">
+                    <button
+                      type='submit'
+                      onClick={(event) => handleSubmit(event, incidentData)}
+                      className="btn btn-primary">Save Changes</button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
