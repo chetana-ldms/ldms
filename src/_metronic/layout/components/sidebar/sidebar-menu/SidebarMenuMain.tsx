@@ -41,6 +41,12 @@ const SidebarMenuMain = () => {
         fontIcon='bi-archive'
         icon='/media/icons/duotune/general/gen011.svg'
       />
+        {/* <SidebarMenuItem
+        to='/qradar/incidentsPagev2'
+        title='Incidentsv1'
+        fontIcon='bi-archive'
+        icon='/media/icons/duotune/general/gen011.svg'
+      /> */}
       <SidebarMenuItem
         to='/qradar/channels'
         title='Channels'

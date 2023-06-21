@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import { fetchLDPToolsByToolType, fetchOrganizationToolDetails } from '../../../../../api/ConfigurationApi';
+import { fetchLDPTools } from '../../../../../api/Api';
 
 const UpdateOrganizationTools = () => {
   const navigate = useNavigate()
@@ -28,22 +29,18 @@ const UpdateOrganizationTools = () => {
   const authKey = useRef()
   const apiUrl = useRef()
   const errors = {}
-  useEffect(() => {
-    const result = async () => {
+ useEffect(() => {
+    const fetchData = async () => {
       try {
-        const data = {
-          toolTypeId: Number(toolTypeAction.toolTypeId)
-        }
-        const response = await fetchLDPToolsByToolType(data);
-        const result = response.ldpToolsList
-        setToolName(result)
+        const data = await fetchLDPTools();
+        setToolName(data);
       } catch (error) {
-        console.log(error);
+        console.log(error)
       }
     };
 
-    result();
-  }, [toolTypeAction.toolTypeId]);
+    fetchData();
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       try {

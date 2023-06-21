@@ -1,7 +1,128 @@
 import React, { useState, useEffect, useRef } from "react";
 import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
+import { fetchMasterData } from "../../../../../api/Api";
+import { fetchUsers } from "../../../../../api/AlertsApi";
+import { fetchIncidentDetails } from "../../../../../api/IncidentsApi";
 
-const IncidentDetails = () => {
+const IncidentDetails = ({ incident }) => {
+  const { incidentStatusName, priorityName, severityName, type, ownerName, subject, createdDate, description, incidentID } = incident;
+  const id = incidentID;
+  console.log(id, "id")
+
+  const userID = Number(sessionStorage.getItem('userId'));
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const date = new Date().toISOString();
+  const [dropdownData, setDropdownData] = useState({
+    severityNameDropDownData: [],
+    statusDropDown: [],
+    priorityDropDown: [],
+    typeDropDown: [],
+  });
+  const [ldp_security_user, setldp_security_user] = useState([]);
+  console.log(ldp_security_user, "ldp_security_user")
+  const [incidentData, setIncidentData] = useState(
+    {
+      incidentStatus: "",
+      incidentStatusName: '',
+      priority: '',
+      priorityName: "",
+      severity: "",
+      severityName: "",
+      typeId: "",
+      type: "",
+      owner: "",
+      ownerName: ""
+    }
+  );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchIncidentDetails(id);
+        // setIncidentData((prevIncidentData) => ({
+        //   ...prevIncidentData,
+        //   incidentStatus: data.incidentStatus,
+        //   incidentStatusName: data.incidentStatusName,
+        //   priority: data.priority,
+        //   priorityName: data.priorityName,
+        //   severity: data.severity,
+        //   severityName: data.severityName,
+        //   typeId: data.typeId,
+        //   type: data.type,
+        //   owner: data.owner,
+        //   ownerName: data.ownerName,
+        // }));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [id]); 
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetchUsers(orgId);
+      setldp_security_user(
+        response?.usersList != undefined ? response?.usersList : []
+      );
+    };
+
+    fetchData();
+  }, []);
+  useEffect(() => {
+    Promise.all([
+      fetchMasterData('incident_severity'),
+      fetchMasterData('incident_status'),
+      fetchMasterData('incident_priority'),
+      fetchMasterData('Incident_Type'),
+    ])
+      .then(([severityData, statusData, priorityData, typeData]) => {
+        setDropdownData((prevDropdownData) => ({
+          ...prevDropdownData,
+          severityNameDropDownData: severityData,
+          statusDropDown: statusData,
+          priorityDropDown: priorityData,
+          typeDropDown: typeData,
+        }));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+  const handleChange = (event, field) => {
+    const selectedId = event.target.options[event.target.selectedIndex].getAttribute("data-id");
+
+    if (field === "status") {
+      setIncidentData({
+        ...incidentData,
+        incidentStatus: selectedId,
+        incidentStatusName: event.target.value
+      });
+    } else if (field === "priority") {
+      setIncidentData({
+        ...incidentData,
+        priority: selectedId,
+        priorityName: event.target.value
+      });
+    } else if (field === "severity") {
+      setIncidentData({
+        ...incidentData,
+        severity: selectedId,
+        severityName: event.target.value
+      });
+    } else if (field === "type") {
+      setIncidentData({
+        ...incidentData,
+        typeId: selectedId,
+        type: event.target.value
+      });
+    } else if (field === "owner") {
+      setIncidentData({
+        ...incidentData,
+        owner: selectedId,
+        ownerName: event.target.value
+      });
+    }
+  };
   return (
     <div className="col-md-4 border-1 border-gray-600">
       <div className="card">
@@ -75,15 +196,19 @@ const IncidentDetails = () => {
                   <div className="col-md-9 bd-highlight">
                     <div className="w-120px">
                       <select
-                        name="status"
+                        name="incidentStatusName"
                         data-control="select2"
                         data-hide-search="true"
                         className="form-select form-control form-select-white form-select-sm fw-bold"
+                        value={incidentData.incidentStatusName}
+                        onChange={(event) => handleChange(event, "status")}
                       >
-                        <option value="1">New</option>
-                        <option value="1">Open</option>
-                        <option value="1">Pending</option>
-                        <option value="1">Closed</option>
+                        <option value="">Select</option>
+                        {dropdownData.statusDropDown.map((status) => (
+                          <option key={status.dataID} value={status.dataValue} data-id={status.dataID}>
+                            {status.dataValue}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -94,20 +219,19 @@ const IncidentDetails = () => {
                   <div className="col-md-9 bd-highlight">
                     <div className="w-120px">
                       <select
-                        name="status"
+                        name="priorityName"
                         data-control="select2"
                         data-hide-search="true"
-                        className="form-select form-control form-select-white form-select-sm fw-bold text-danger"
+                        className="form-select form-control form-select-white form-select-sm fw-bold"
+                        // value={priorityName}
+                        onChange={(event) => handleChange(event, "priority")}
                       >
-                        <option value="1" className="text-danger">
-                          High
-                        </option>
-                        <option value="1" className="text-warning">
-                          Medium
-                        </option>
-                        <option value="1" className="text-info">
-                          Low
-                        </option>
+                        <option value="">Select</option>
+                        {dropdownData.priorityDropDown.map((priority) => (
+                          <option key={priority.dataID} value={priority.dataValue} data-id={priority.dataID}>
+                            {priority.dataValue}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -118,20 +242,19 @@ const IncidentDetails = () => {
                   <div className="col-md-9 bd-highlight">
                     <div className="w-120px">
                       <select
-                        name="status"
+                        name="severityName"
                         data-control="select2"
                         data-hide-search="true"
-                        className="form-select form-control form-select-white form-select-sm fw-bold text-danger"
+                        className="form-select form-control form-select-white form-select-sm fw-bold"
+                        // value={severityName}
+                        onChange={(event) => handleChange(event, "severity")}
                       >
-                        <option value="1" className="text-danger">
-                          High
-                        </option>
-                        <option value="1" className="text-warning">
-                          Medium
-                        </option>
-                        <option value="1" className="text-info">
-                          Low
-                        </option>
+                        <option value="">Select</option>
+                        {dropdownData.severityNameDropDownData.map((severity) => (
+                          <option key={severity.dataID} value={severity.dataValue} data-id={severity.dataID}>
+                            {severity.dataValue}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -143,14 +266,19 @@ const IncidentDetails = () => {
                   <div className="col-md-9 bd-highlight">
                     <div className="w-120px">
                       <select
-                        name="status"
+                        name="type"
                         data-control="select2"
                         data-hide-search="true"
                         className="form-select form-control form-select-white form-select-sm fw-bold"
+                        // value={type}
+                        onChange={(event) => handleChange(event, "type")}
                       >
-                        <option value="1">AD Failed Login</option>
-                        <option value="1">AD Failed Login</option>
-                        <option value="1">AD Failed Login</option>
+                        <option value="">Select</option>
+                        {dropdownData.typeDropDown.map((type) => (
+                          <option key={type.dataID} value={type.dataValue} data-id={type.dataID}>
+                            {type.dataValue}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -159,8 +287,7 @@ const IncidentDetails = () => {
                 <div className="bd-highlight mb-3 bdr-top">
                   <div className="col-md-12 bd-highlight">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Alert Name - </span> Multiple
-                      failed login for same IP
+                      <span className="fw-bold">Incident Name - </span> {subject}
                     </div>
                   </div>
                   <div className="col-md-12 bd-highlight">
@@ -192,11 +319,6 @@ const IncidentDetails = () => {
                   <div className="p-2 bd-highlight">
                     <div className="badge text-black fs-13">
                       20210728-00056{" "}
-                      {/*
-                  <div className="badge text-black fs-13">
-                    <i className="fas fa-copy"></i>
-                  </div>
-                  */}
                     </div>
                   </div>
                 </div>
@@ -208,14 +330,24 @@ const IncidentDetails = () => {
                   <div className="p-2 bd-highlight">
                     <div className="">
                       <select
-                        name="status"
-                        data-control="select2"
-                        data-hide-search="true"
-                        className="form-select form-control form-select-white form-select-sm fw-bold"
+                        name="ownerName"
+                        className="form-select form-select-solid"
+                        data-kt-select2="true"
+                        data-placeholder="Select option"
+                        data-dropdown-parent="#kt_menu_637dc885a14bb"
+                        data-allow-clear="true"
+                        // value={ownerName}
+                        onChange={(event) => handleChange(event, "owner")}
                       >
-                        <option value="1">User 1</option>
-                        <option value="1">User 2</option>
-                        <option value="1">User 3</option>
+                        <option>Select</option>
+                        {ldp_security_user.length > 0 &&
+                          ldp_security_user.map((item, index) => {
+                            return (
+                              <option key={index} value={item?.name} data-id={item.userID}>
+                                {item?.name}
+                              </option>
+                            );
+                          })}
                       </select>
                     </div>
                   </div>
@@ -227,7 +359,7 @@ const IncidentDetails = () => {
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="badge text-black fw-normal">
-                      Jul 28, 2022 02:02:02 PM
+                      {createdDate}
                     </div>
                   </div>
                 </div>
@@ -256,12 +388,12 @@ const IncidentDetails = () => {
                             <div className="text-dark mb-1">
                               <a href="#" className="text-dark">
                                 <span className="fw-bold">
-                                  Login Failure Alert
+                                  {description}
                                 </span>
                               </a>
                             </div>
                           </div>
-                          <div className="p-1 bd-highlight">
+                          <div className="p-1 bd-highlight"  style={{ width: '160px', textAlign: 'right' }}>
                             <a
                               href="#"
                               className="btn btn-sm btn-icon btn-light btn-secondary mx-1"
@@ -291,7 +423,7 @@ const IncidentDetails = () => {
                             Detected date
                           </div>
                           <div className="p-1 bd-highlight fs-12">
-                            7/01/2023, 02:20 PM
+                          {createdDate}
                           </div>
                         </div>
                         <hr className="my-0" />
@@ -504,7 +636,18 @@ const IncidentDetails = () => {
             </div>
           </div>
         </div>
+        <div className='card-footer d-flex justify-content-end'>
+          <button
+            type='submit'
+            // onClick={handleSubmit}
+            className='btn btn-primary'
+          >
+            Save Changes
+
+          </button>
+        </div>
       </div>
+
     </div>
   );
 };

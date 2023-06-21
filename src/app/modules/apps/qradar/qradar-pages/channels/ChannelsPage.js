@@ -45,11 +45,17 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
     };
 
     await fetchChannelsAdd(data);
-    const newChannel = { name: channelName, description: channelDescription };
-    onAdd(newChannel);
+    // const newChannel = { channelName: channelName, channelDescription: channelDescription };
+    try {
+      const result = await fetchChannels(orgId);
+      // setChannels(data);
+      onAdd(result[result.length-1]);
+    } catch (error) {
+      console.log(error);
+    }
+    
     onClose();
     setShowSuccessMessage(true);
-    fetchData();
   };
 
 

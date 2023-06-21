@@ -34,7 +34,7 @@ const DemoAlert = () => {
     notify("Alert identified as threat");
     notify("Incident created");
     setTimeout(() => {
-      navigate("/qradar/incidents");
+      navigate("/qradar/incidentsDemo");
     }, 5000);
     // navigate("/qradar/incidents", { state: { alertData: [alertData] } });
   };
