@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
 import { fetchMasterData } from "../../../../../api/Api";
 import { fetchUsers } from "../../../../../api/AlertsApi";
-import { fetchIncidentDetails } from "../../../../../api/IncidentsApi";
+import { fetchIncidentDetails, fetchUpdateIncident } from "../../../../../api/IncidentsApi";
 
 const IncidentDetails = ({ incident }) => {
-  const { incidentStatusName, priorityName, severityName, type, ownerName, subject, createdDate, description, incidentID } = incident;
+  const { subject, createdDate, description, incidentID } = incident;
+  // const { incidentStatusName, priorityName, severityName, type, ownerName, subject, createdDate, description, incidentID } = incident;
   const id = incidentID;
   console.log(id, "id")
-
+  const [activeTab, setActiveTab] = useState("general");
   const userID = Number(sessionStorage.getItem('userId'));
   const orgId = Number(sessionStorage.getItem('orgId'))
   const date = new Date().toISOString();
@@ -34,30 +35,6 @@ const IncidentDetails = ({ incident }) => {
       ownerName: ""
     }
   );
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchIncidentDetails(id);
-        // setIncidentData((prevIncidentData) => ({
-        //   ...prevIncidentData,
-        //   incidentStatus: data.incidentStatus,
-        //   incidentStatusName: data.incidentStatusName,
-        //   priority: data.priority,
-        //   priorityName: data.priorityName,
-        //   severity: data.severity,
-        //   severityName: data.severityName,
-        //   typeId: data.typeId,
-        //   type: data.type,
-        //   owner: data.owner,
-        //   ownerName: data.ownerName,
-        // }));
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, [id]); 
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchUsers(orgId);
@@ -88,6 +65,31 @@ const IncidentDetails = ({ incident }) => {
         console.log(error);
       });
   }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchIncidentDetails(id);
+        data !== undefined &&
+        setIncidentData((prevIncidentData) => ({
+          ...prevIncidentData,
+          incidentStatus: data.incidentStatus,
+          incidentStatusName: data.incidentStatusName,
+          priority: data.priority,
+          priorityName: data.priorityName,
+          severity: data.severity,
+          severityName: data.severityName,
+          typeId: data.typeId,
+          type: data.type,
+          owner: data.owner,
+          ownerName: data.ownerName,
+        }));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
   const handleChange = (event, field) => {
     const selectedId = event.target.options[event.target.selectedIndex].getAttribute("data-id");
 
@@ -123,6 +125,24 @@ const IncidentDetails = ({ incident }) => {
       });
     }
   };
+  const handleSubmit = (event, toolTypeAction) => {
+    event.preventDefault()
+    const data = {
+        incidentId: Number(id),
+        statusId:incidentData.incidentStatus ,
+        priorityId: incidentData.priority,
+        severityId: incident.severity,
+        // "score": "string",
+        typeId: incidentData.typeId,
+        ownerUserId: incidentData.owner,
+        // "significantIncident": true,
+        modifiedUserId: userID,
+        modifiedDate: date,
+        }
+      
+    fetchUpdateIncident(data)
+   
+  }
   return (
     <div className="col-md-4 border-1 border-gray-600">
       <div className="card">
@@ -138,47 +158,52 @@ const IncidentDetails = ({ incident }) => {
         <div className="d-flex justify-content-between bd-highlight mb-3 incident-tabs">
           <div className="p-2 bd-highlight">
             <ul className="nav nav-tabs nav-line-tabs mb-5 fs-8">
+            <li className="nav-item">
+            <a
+              className={`nav-link ${activeTab === "general" ? "active" : ""}`}
+              data-bs-toggle="tab"
+              href="#kt_tab_pane_1"
+              onClick={() => setActiveTab("general")}
+            >
+              General
+            </a>
+          </li>
               <li className="nav-item">
                 <a
-                  className="nav-link active"
-                  data-bs-toggle="tab"
-                  href="#kt_tab_pane_1"
-                >
-                  General
-                </a>
-              </li>
-              <li className="nav-item">
-                <a
-                  className="nav-link"
+                  className={`nav-link ${activeTab === "alerts" ? "active" : ""}`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_2"
+                  onClick={() => setActiveTab("alerts")}
                 >
                   Alerts
                 </a>
               </li>
               <li className="nav-item">
                 <a
-                  className="nav-link"
+                  className={`nav-link ${activeTab === "playbooks" ? "active" : ""}`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_3"
+                  onClick={() => setActiveTab("playbooks")}
                 >
                   Playbooks
                 </a>
               </li>
               <li className="nav-item">
                 <a
-                  className="nav-link"
+                  className={`nav-link ${activeTab === "observables" ? "active" : ""}`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_4"
+                  onClick={() => setActiveTab("observables")}
                 >
                   Observables
                 </a>
               </li>
               <li className="nav-item">
                 <a
-                  className="nav-link"
-                  data-bs-toggle="tab"
-                  href="#kt_tab_pane_5"
+                 className={`nav-link ${activeTab === "timeline" ? "active" : ""}`}
+                 data-bs-toggle="tab"
+                 href="#kt_tab_pane_5"
+                 onClick={() => setActiveTab("timeline")}
                 >
                   Timeline
                 </a>
@@ -223,7 +248,7 @@ const IncidentDetails = ({ incident }) => {
                         data-control="select2"
                         data-hide-search="true"
                         className="form-select form-control form-select-white form-select-sm fw-bold"
-                        // value={priorityName}
+                        value={incidentData.priorityName}
                         onChange={(event) => handleChange(event, "priority")}
                       >
                         <option value="">Select</option>
@@ -246,7 +271,7 @@ const IncidentDetails = ({ incident }) => {
                         data-control="select2"
                         data-hide-search="true"
                         className="form-select form-control form-select-white form-select-sm fw-bold"
-                        // value={severityName}
+                        value={incidentData.severityName}
                         onChange={(event) => handleChange(event, "severity")}
                       >
                         <option value="">Select</option>
@@ -270,7 +295,7 @@ const IncidentDetails = ({ incident }) => {
                         data-control="select2"
                         data-hide-search="true"
                         className="form-select form-control form-select-white form-select-sm fw-bold"
-                        // value={type}
+                        value={incidentData.type}
                         onChange={(event) => handleChange(event, "type")}
                       >
                         <option value="">Select</option>
@@ -336,7 +361,7 @@ const IncidentDetails = ({ incident }) => {
                         data-placeholder="Select option"
                         data-dropdown-parent="#kt_menu_637dc885a14bb"
                         data-allow-clear="true"
-                        // value={ownerName}
+                        value={incidentData.ownerName}
                         onChange={(event) => handleChange(event, "owner")}
                       >
                         <option>Select</option>
@@ -393,7 +418,7 @@ const IncidentDetails = ({ incident }) => {
                               </a>
                             </div>
                           </div>
-                          <div className="p-1 bd-highlight"  style={{ width: '160px', textAlign: 'right' }}>
+                          <div className="p-1 bd-highlight" style={{ width: '160px', textAlign: 'right' }}>
                             <a
                               href="#"
                               className="btn btn-sm btn-icon btn-light btn-secondary mx-1"
@@ -423,7 +448,7 @@ const IncidentDetails = ({ incident }) => {
                             Detected date
                           </div>
                           <div className="p-1 bd-highlight fs-12">
-                          {createdDate}
+                            {createdDate}
                           </div>
                         </div>
                         <hr className="my-0" />
@@ -633,19 +658,20 @@ const IncidentDetails = ({ incident }) => {
                   </div>
                 </div>
               </div>
+              <div className='card-footer d-flex justify-content-end'>
+              {activeTab === "general" && (
+              <div className="text-end mt-5">
+                <button
+                 type='submit'
+                 onClick={(event) => handleSubmit(event, incidentData)}
+                 className="btn btn-primary">Save Changes</button>
+              </div>
+            )}
+              </div>
             </div>
           </div>
         </div>
-        <div className='card-footer d-flex justify-content-end'>
-          <button
-            type='submit'
-            // onClick={handleSubmit}
-            className='btn btn-primary'
-          >
-            Save Changes
 
-          </button>
-        </div>
       </div>
 
     </div>
