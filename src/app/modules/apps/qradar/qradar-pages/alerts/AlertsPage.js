@@ -34,6 +34,7 @@ import {
   fetchUsers,
 } from "../../../../../api/AlertsApi";
 import ReactPaginate from "react-paginate";
+import { fetchCreateIncident } from "../../../../../api/IncidentsApi";
 
 const AlertsPage = () => {
   const [inputValue, setInputValue] = useState("");
@@ -91,7 +92,6 @@ const AlertsPage = () => {
       setselectedAlert(selectedAlert.filter((e) => e !== value));
     }
   };
-  console.log(selectedAlert, "selectedAlert");
   const [actionsValue, setActionValue] = useState("");
   function createIncidentSubmit(e) {
     setActionValue(e.target.value);
@@ -149,6 +149,7 @@ const AlertsPage = () => {
   };
   const userID = Number(sessionStorage.getItem("userId"));
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const modifiedDate = new Date().toISOString();
   const [alertData, setAlertDate] = useState([]);
   const [filteredAlertData, setFilteredAlertDate] = useState([]);
   const [ldp_security_user, setldp_security_user] = useState([]);
@@ -310,10 +311,17 @@ const AlertsPage = () => {
   }, [delay]);
   useEffect(() => {
     if (actionsValue === "1") {
+      const data = {
+        orgId,
+        createDate:modifiedDate,
+        createUserId:userID,
+        alertIDs:selectedAlert
+      }
+      fetchCreateIncident(data);
       notify("Incident Created");
       setTimeout(() => {
         navigate("/qradar/incidents");
-      }, 3000);
+      }, 2000);
     }
   }, [actionsValue]);
   console.log(filteredAlertData, "filteredAlertData");

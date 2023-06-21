@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import IncidentChat from "./IncidentChat";
 import IncidentDetails from "./IncidentDetails";
 import { useLocation } from "react-router-dom";
@@ -6,44 +6,151 @@ import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
 import Chat from "./Chat";
 import ChatBox, { ChatFrame } from "react-chat-plugin";
 import { IncidentsPageCollaboration } from "./IncidentsPageCollaboration";
+import { fetchGetIncidentSearchResult, fetchIncidents } from "../../../../../api/IncidentsApi";
+import { fetchMasterData } from "../../../../../api/Api";
 
 const IncidentsPage = () => {
+  const userID = Number(sessionStorage.getItem('userId'));
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const date = new Date().toISOString();
   const location = useLocation();
   const alertData = JSON.parse(localStorage.getItem("alertData"));
-  const [demoAlertData, setDemoAlertData] = useState([]);
   const [selectedAlert, setSelectedAlert] = useState(null);
   const [showChat, setShowChat] = useState(false);
-
+  const [incident, setIncident] = useState([])
+  console.log(incident, "incident")
+  const [statusDropDown, setStatusDropDown] = useState([]);
+  const [incidentSortOptions, setIncidentSortOptions] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
+  const status = useRef();
+  const sortOption = useRef();
+  const [selectedIncident, setSelectedIncident] = useState({});
+  console.log(selectedIncident, "selectedIncident")
   useEffect(() => {
-    if (Array.isArray(alertData)) {
-      setDemoAlertData(
-        alertData.reverse().map((alert) => ({ ...alert, isSelected: false }))
-      );
+    Promise.all([
+      fetchMasterData("incident_status"),
+      fetchMasterData("IncidentSortOptions")
+    ])
+      .then(([statusData, sortOptionsData]) => {
+        setStatusDropDown(statusData);
+        setIncidentSortOptions(sortOptionsData);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+  const incidents = async () => {
+    const data = {
+      orgID: orgId,
+      paging: {
+        rangeStart: 1,
+        rangeEnd: 20
+      },
+      loggedInUserId: userID
     }
-  }, [alertData]);
-
-  const handleIncSecClick = () => {
-    setShowChat(true);
+    try {
+      const response = await fetchIncidents(data);
+      setIncident(response)
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const handleAlertClick = (selectedAlert) => {
-    const updatedAlerts = demoAlertData.map((alert) => {
-      if (alert.id === selectedAlert.id) {
-        return { ...alert, isSelected: true };
-      } else {
-        return { ...alert, isSelected: false };
-      }
-    });
-
-    console.log(updatedAlerts); // Check the updatedAlerts in the console
-
-    setSelectedAlert(selectedAlert);
-    setDemoAlertData(updatedAlerts);
-    // Show the chat only when the "Demo: Add Failed Login Alert" incident is selected
-    setShowChat(selectedAlert.name === "Demo : Add Failed Login Alert");
+  fetchIncidents();
+  useEffect(() => {
+    incidents();
+  }, [])
+  const handleSearch = async () => {
+    const data = {
+      orgID: orgId,
+      paging: {
+        rangeStart: 1,
+        rangeEnd: 100
+      },
+      loggedInUserId: userID,
+      statusId: status.current?.value,
+      searchText: searchValue,
+      sortOptionId: sortOption.current?.value,
+      // toolID:
+      // toolTypeID
+    }
+    try {
+      const response = await fetchGetIncidentSearchResult(data);
+      setIncident(response)
+      // incidents();
+    } catch (error) {
+      console.log(error);
+    }
   };
+  const handleIncidentClick = (item) => {
+    setSelectedIncident(item);
+    console.log("Clicked incident:", item);
+  };
+  // const handleStatusChange = (e) => {
+  //   const selectedStatus = e.target.value;
+  //   let sortedIncidents = [...incident];
 
-  //Chat window
+  //   if (selectedStatus) {
+  //     sortedIncidents = sortedIncidents.filter(
+  //       (item) => item.incidentStatusName === selectedStatus
+  //     );
+  //   }
+  //   setIncident(sortedIncidents);
+  // };
+
+
+  // const handleSortOptionChange = (e) => {
+  //   // const selectedSortOption = e.target.value;
+  //   // let sortedIncidents = [...incident];
+
+  //   // if (selectedSortOption === "option1") {
+  //   //   // Sort based on option 1: Sort by incident severity
+  //   //   sortedIncidents.sort((a, b) => {
+  //   //     const severityA = a.incidentSeverity;
+  //   //     const severityB = b.incidentSeverity;
+  //   //     return severityA - severityB;
+  //   //   });
+  //   // } else if (selectedSortOption === "option2") {
+  //   //   // Sort based on option 2: Sort by incident date (newest to oldest)
+  //   //   sortedIncidents.sort((a, b) => {
+  //   //     const dateA = new Date(a.incidentDate);
+  //   //     const dateB = new Date(b.incidentDate);
+  //   //     return dateB - dateA;
+  //   //   });
+  //   // }
+
+  //   // setIncident(sortedIncidents);
+  // };
+
+  // useEffect(() => {
+  //   if (Array.isArray(alertData)) {
+  //     setDemoAlertData(
+  //       alertData.reverse().map((alert) => ({ ...alert, isSelected: false }))
+  //     );
+  //   }
+  // }, [alertData]);
+
+  // const handleIncSecClick = () => {
+  //   setShowChat(true);
+  // };
+
+  // const handleAlertClick = (selectedAlert) => {
+  //   const updatedAlerts = demoAlertData.map((alert) => {
+  //     if (alert.id === selectedAlert.id) {
+  //       return { ...alert, isSelected: true };
+  //     } else {
+  //       return { ...alert, isSelected: false };
+  //     }
+  //   });
+
+  //   console.log(updatedAlerts);
+
+  //   setSelectedAlert(selectedAlert);
+  //   setDemoAlertData(updatedAlerts);
+  //   setShowChat(selectedAlert.name === "Demo : Add Failed Login Alert");
+  // };
+
+  // //Chat window
   const [messages, setMessages] = useState([
     {
       // text: "user2 has joined the conversation",
@@ -122,40 +229,57 @@ const IncidentsPage = () => {
                       type="text"
                       className="form-control form-control-sm"
                       placeholder="Search Incident"
+                      value={searchValue}
+                      onChange={(e) => setSearchValue(e.target.value)}
                     />
-                    <span className="input-group-text">
-                      <i className="fas fa-magnifying-glass"></i>
-                    </span>
+                    <button className="btn btn-sm btn-primary" onClick={handleSearch}>
+                      <i className="fas fa-search"></i>
+                    </button>
                   </div>
                   {/* end::Search */}
                   <div className="d-flex justify-content-between bd-highlight mb-3">
                     <div className="mt-2 bd-highlight">
                       <div className="w-110px me-2">
-                        <select
-                          name="status"
-                          data-control="select2"
-                          data-hide-search="true"
-                          className="form-select form-select-white form-select-sm fw-bold"
-                        >
-                          <option value="1">Status</option>
-                          <option value="4">New</option>
-                          <option value="4">In Progress</option>
-                          <option value="4">Closed</option>
-                          <option value="4">Escalate/Ignore</option>
-                        </select>
+                        <div>
+                          <select
+                            className="form-select"
+                            data-kt-select2="true"
+                            data-placeholder="Select option"
+                            data-dropdown-parent="#kt_menu_637dc885a14bb"
+                            data-allow-clear="true"
+                            ref={status}
+                          // onChange={handleStatusChange}
+                          >
+                            <option value="">Select</option>
+                            {statusDropDown.length > 0 &&
+                              statusDropDown.map((item) => (
+                                <option key={item.dataID} value={item.dataID}>
+                                  {item.dataValue}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
                       </div>
                     </div>
                     <div className="mt-2 bd-highlight mt-4">Sort by</div>
                     <div className="mt-2 bd-highlight">
                       <div className="w-120px me-0">
                         <select
-                          name="status"
-                          data-control="select2"
-                          data-hide-search="true"
-                          className="form-select form-select-white form-select-sm fw-bold"
+                          className="form-select"
+                          data-kt-select2="true"
+                          data-placeholder="Select option"
+                          data-dropdown-parent="#kt_menu_637dc885a14bb"
+                          data-allow-clear="true"
+                          ref={sortOption}
+                        // onChange={handleSortOptionChange}
                         >
-                          <option value="1">Modified</option>
-                          <option value="4">Latest</option>
+                          <option value="">Select</option>
+                          {incidentSortOptions.length > 0 &&
+                            incidentSortOptions.map((item) => (
+                              <option key={item.dataID} value={item.dataID}>
+                                {item.dataValue}
+                              </option>
+                            ))}
                         </select>
                       </div>
                     </div>
@@ -163,118 +287,64 @@ const IncidentsPage = () => {
                   <div className="scroll-y h-500px">
                     <div className="incident-list">
                       <>
-                        {Array.isArray(demoAlertData) ? (
-                          demoAlertData.map((incident) => (
-                            <>
-                              <div
-                                className={`incident-section${
-                                  incident.isSelected == "true"
-                                    ? "selected"
-                                    : ""
-                                }`}
-                                key={incident.id}
-                                onClick={() => {
-                                  console.log("Clicked incident:", incident);
-                                  handleAlertClick(incident);
-                                }}
-                              >
-                                <div className="select">
-                                  <div className="row">
-                                    <div className="col-md-1">
-                                      <i className="fa-solid fa-arrow-up text-danger"></i>
-                                    </div>
-                                    <div className="text-dark col-md-9">
-                                      <a href="#" className="text-dark">
-                                        <span className="fw-bold">
-                                          {incident.name}
-                                        </span>
-                                      </a>
-                                    </div>
-                                  </div>
-                                  <div className="row">
-                                    <div className="d-flex justify-content-between">
-                                      <div className="p-2 bd-highlight">
-                                        <div className="badge text-black fw-normal">
-                                          2
-                                          <div className="badge text-black fw-normal">
-                                            <i className="fas fa-copy"></i>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="pt-3 bd-highlight">
-                                        <div className="badge text-black fw-normal">
-                                          3 MIN
-                                        </div>
+                        {incident && incident.length > 0 ? (
+                          incident.map((item) => (
+                            <div
+                              className={`incident-section${item.isSelected === "true" ? " selected" : ""}`}
+                              key={item.id}
+                              onClick={() => handleIncidentClick(item)}
+                            >
+                              <div className="row">
+                                <div className="col-md-1">
+                                  {/* <i className="fa-solid fa-arrow-up text-danger"></i> */}
+                                </div>
+                                <div className="text-dark col-md-9">
+                                  <a href="#" className="text-dark">
+                                    <span className="fw-bold">
+                                      {item.subject}
+                                    </span>
+                                  </a>
+                                </div>
+                              </div>
+                              <div className="row">
+                                <div className="d-flex justify-content-between">
+                                  <div className="p-2 bd-highlight">
+                                    <div className="badge text-black fw-normal">
+                                      {item.incidentStatusName}
+                                      <div className="badge text-black fw-normal">
+                                        {/* <i className="fas fa-copy"></i> */}
                                       </div>
                                     </div>
                                   </div>
-                                  <hr className="my-0" />
-                                  <div className="d-flex justify-content-between bd-highlight mt-2">
-                                    <div className="p-1 bd-highlight fs-14">
-                                      Admin
-                                    </div>
-                                    <div className="p-1 bd-highlight">
-                                      <div className="badge badge-light-primary mx-1">
-                                        NEW
-                                      </div>
-                                      <div className="badge badge-light-danger">
-                                        HIGH
-                                      </div>
+                                  <div className="pt-3 bd-highlight">
+                                    <div className="badge text-black fw-normal">
+                                      {item.createdDate}
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </>
+                              <hr className="my-0" />
+                              <div className="d-flex justify-content-between bd-highlight mt-2">
+                                {item.ownerName ? (
+                                  <div className="p-1 bd-highlight fs-14">{item.ownerName}</div>
+                                ) : (
+                                  <div className="p-1 bd-highlight fs-14">{item.createdUser}</div>
+                                )}
+                                <div className="p-1 bd-highlight">
+                                  <div className="badge badge-light-primary mx-1">
+                                    {item.priority}
+                                  </div>
+                                  <div className="badge badge-light-danger">
+                                    {item.severity}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
                           ))
                         ) : (
-                          <p>No demo alert data available.</p>
+                          <div className="text-center">Data not found.</div>
                         )}
-                        <div
-                          className="incident-section inc-sec"
-                          onClick={handleIncSecClick}
-                        >
-                          <div className="row">
-                            <div className="col-md-1">
-                              <i className="fa-solid fa-arrow-up text-danger"></i>
-                            </div>
-                            <div className="text-dark col-md-9">
-                              <a href="#" className="text-dark">
-                                <span className="fw-bold">
-                                  Demo : Failed Login Alert
-                                </span>
-                              </a>
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="d-flex justify-content-between">
-                              <div className="p-2 bd-highlight">
-                                <div className="badge text-black fw-normal">
-                                  1
-                                  <div className="badge text-black fw-normal">
-                                    <i className="fas fa-copy"></i>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="pt-3 bd-highlight">
-                                <div className="badge text-black fw-normal">
-                                  3 MIN
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <hr className="my-0" />
-                          <div className="d-flex justify-content-between bd-highlight mt-2">
-                            <div className="p-1 bd-highlight fs-14">Admin</div>
-                            <div className="p-1 bd-highlight">
-                              <div className="badge badge-light-primary mx-1">
-                                NEW
-                              </div>
-                              <div className="badge badge-light-danger">
-                                HIGH
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+
                       </>
                     </div>
                   </div>
@@ -287,8 +357,8 @@ const IncidentsPage = () => {
               ) : (
                 <div>
                   {showChat ||
-                  (selectedAlert &&
-                    selectedAlert.name === "Demo : Add Failed Login Alert") ? (
+                    (selectedAlert &&
+                      selectedAlert.name === "Demo : Add Failed Login Alert") ? (
                     <IncidentChat />
                   ) : (
                     <p>
@@ -305,9 +375,9 @@ const IncidentsPage = () => {
                             </div>
                             {/* <Chat /> */}
                             <ChatBox
-                              messages={messages}
+                              // messages={messages}
                               userId={1}
-                              onSendMessage={handleOnSendMessage}
+                              // onSendMessage={handleOnSendMessage}
                               width={"500px"}
                               height={"500px"}
                             />
@@ -326,7 +396,9 @@ const IncidentsPage = () => {
               )}
             </div>
 
-            <IncidentDetails />
+
+            <IncidentDetails incident={selectedIncident} />
+
           </div>
         </div>
       </div>
