@@ -2,16 +2,20 @@ import React, { useState, useEffect, useRef } from "react";
 import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
 import { fetchMasterData } from "../../../../../api/Api";
 import { fetchUsers } from "../../../../../api/AlertsApi";
-import { fetchGetIncidentHistory, fetchIncidentDetails, fetchUpdateIncident } from "../../../../../api/IncidentsApi";
+import {
+  fetchGetIncidentHistory,
+  fetchIncidentDetails,
+  fetchUpdateIncident,
+} from "../../../../../api/IncidentsApi";
 
 const IncidentDetails = ({ incident }) => {
   const { subject, createdDate, description, incidentID } = incident;
   // const { incidentStatusName, priorityName, severityName, type, ownerName, subject, createdDate, description, incidentID } = incident;
   const id = incidentID;
-  console.log(id, "id")
+  console.log(id, "id");
   const [activeTab, setActiveTab] = useState("general");
-  const userID = Number(sessionStorage.getItem('userId'));
-  const orgId = Number(sessionStorage.getItem('orgId'))
+  const userID = Number(sessionStorage.getItem("userId"));
+  const orgId = Number(sessionStorage.getItem("orgId"));
   const date = new Date().toISOString();
   const [dropdownData, setDropdownData] = useState({
     severityNameDropDownData: [],
@@ -21,22 +25,20 @@ const IncidentDetails = ({ incident }) => {
   });
   const checkboxRef = useRef(null);
   const [incidentHistory, setIncidentHistory] = useState([]);
-  console.log(incidentHistory, "incidentHistory")
+  console.log(incidentHistory, "incidentHistory");
   const [ldp_security_user, setldp_security_user] = useState([]);
-  const [incidentData, setIncidentData] = useState(
-    {
-      incidentStatus: "",
-      incidentStatusName: '',
-      priority: '',
-      priorityName: "",
-      severity: "",
-      severityName: "",
-      typeId: "",
-      type: "",
-      owner: "",
-      ownerName: "",
-    }
-  );
+  const [incidentData, setIncidentData] = useState({
+    incidentStatus: "",
+    incidentStatusName: "",
+    priority: "",
+    priorityName: "",
+    severity: "",
+    severityName: "",
+    typeId: "",
+    type: "",
+    owner: "",
+    ownerName: "",
+  });
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchUsers(orgId);
@@ -49,10 +51,10 @@ const IncidentDetails = ({ incident }) => {
   }, []);
   useEffect(() => {
     Promise.all([
-      fetchMasterData('incident_severity'),
-      fetchMasterData('incident_status'),
-      fetchMasterData('incident_priority'),
-      fetchMasterData('Incident_Type'),
+      fetchMasterData("incident_severity"),
+      fetchMasterData("incident_status"),
+      fetchMasterData("incident_priority"),
+      fetchMasterData("Incident_Type"),
     ])
       .then(([severityData, statusData, priorityData, typeData]) => {
         setDropdownData((prevDropdownData) => ({
@@ -93,42 +95,44 @@ const IncidentDetails = ({ incident }) => {
     fetchData();
   }, [id]);
   const handleChange = (event, field) => {
-    const selectedId = event.target.options[event.target.selectedIndex].getAttribute("data-id");
+    const selectedId = event.target.options[
+      event.target.selectedIndex
+    ].getAttribute("data-id");
 
     if (field === "status") {
       setIncidentData({
         ...incidentData,
         incidentStatus: selectedId,
-        incidentStatusName: event.target.value
+        incidentStatusName: event.target.value,
       });
     } else if (field === "priority") {
       setIncidentData({
         ...incidentData,
         priority: selectedId,
-        priorityName: event.target.value
+        priorityName: event.target.value,
       });
     } else if (field === "severity") {
       setIncidentData({
         ...incidentData,
         severity: selectedId,
-        severityName: event.target.value
+        severityName: event.target.value,
       });
     } else if (field === "type") {
       setIncidentData({
         ...incidentData,
         typeId: selectedId,
-        type: event.target.value
+        type: event.target.value,
       });
     } else if (field === "owner") {
       setIncidentData({
         ...incidentData,
         owner: selectedId,
-        ownerName: event.target.value
+        ownerName: event.target.value,
       });
     }
   };
   const handleSubmit = (event, incidentData) => {
-    event.preventDefault()
+    event.preventDefault();
     const data = {
       incidentId: Number(id),
       statusId: incidentData.incidentStatus,
@@ -140,19 +144,23 @@ const IncidentDetails = ({ incident }) => {
       significantIncident: checkboxRef.current.checked,
       modifiedUserId: userID,
       modifiedDate: date,
-    }
+    };
 
-    fetchUpdateIncident(data)
-
-  }
-  useEffect(()=>{
+    fetchUpdateIncident(data);
+  };
+  useEffect(() => {
     const data = {
       orgId,
       incidentId: Number(id),
-    }
-   const responce = fetchGetIncidentHistory(data)
-   setIncidentHistory(responce)
-  },[])
+    };
+    fetchGetIncidentHistory(data)
+      .then((res) => {
+        setIncidentHistory(res);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [id]);
   return (
     <div className="col-md-4 border-1 border-gray-600">
       <div className="card">
@@ -165,12 +173,14 @@ const IncidentDetails = ({ incident }) => {
             </h6>
           </div>
         </div>
-        <div className="d-flex justify-content-between bd-highlight mb-3 incident-tabs">
-          <div className="p-2 bd-highlight">
+        <div className="d-flex justify-content-between bd-highlight mb-3 incident-tabs h-500px scroll-y">
+          <div className="p-2 bd-highlight incident-details">
             <ul className="nav nav-tabs nav-line-tabs mb-5 fs-8">
               <li className="nav-item">
                 <a
-                  className={`nav-link ${activeTab === "general" ? "active" : ""}`}
+                  className={`nav-link ${
+                    activeTab === "general" ? "active" : ""
+                  }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_1"
                   onClick={() => setActiveTab("general")}
@@ -180,7 +190,9 @@ const IncidentDetails = ({ incident }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${activeTab === "alerts" ? "active" : ""}`}
+                  className={`nav-link ${
+                    activeTab === "alerts" ? "active" : ""
+                  }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_2"
                   onClick={() => setActiveTab("alerts")}
@@ -190,7 +202,9 @@ const IncidentDetails = ({ incident }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${activeTab === "playbooks" ? "active" : ""}`}
+                  className={`nav-link ${
+                    activeTab === "playbooks" ? "active" : ""
+                  }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_3"
                   onClick={() => setActiveTab("playbooks")}
@@ -200,7 +214,9 @@ const IncidentDetails = ({ incident }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${activeTab === "observables" ? "active" : ""}`}
+                  className={`nav-link ${
+                    activeTab === "observables" ? "active" : ""
+                  }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_4"
                   onClick={() => setActiveTab("observables")}
@@ -210,7 +226,9 @@ const IncidentDetails = ({ incident }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${activeTab === "timeline" ? "active" : ""}`}
+                  className={`nav-link ${
+                    activeTab === "timeline" ? "active" : ""
+                  }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_5"
                   onClick={() => setActiveTab("timeline")}
@@ -240,7 +258,11 @@ const IncidentDetails = ({ incident }) => {
                       >
                         <option value="">Select</option>
                         {dropdownData.statusDropDown.map((status) => (
-                          <option key={status.dataID} value={status.dataValue} data-id={status.dataID}>
+                          <option
+                            key={status.dataID}
+                            value={status.dataValue}
+                            data-id={status.dataID}
+                          >
                             {status.dataValue}
                           </option>
                         ))}
@@ -263,7 +285,11 @@ const IncidentDetails = ({ incident }) => {
                       >
                         <option value="">Select</option>
                         {dropdownData.priorityDropDown.map((priority) => (
-                          <option key={priority.dataID} value={priority.dataValue} data-id={priority.dataID}>
+                          <option
+                            key={priority.dataID}
+                            value={priority.dataValue}
+                            data-id={priority.dataID}
+                          >
                             {priority.dataValue}
                           </option>
                         ))}
@@ -285,11 +311,17 @@ const IncidentDetails = ({ incident }) => {
                         onChange={(event) => handleChange(event, "severity")}
                       >
                         <option value="">Select</option>
-                        {dropdownData.severityNameDropDownData.map((severity) => (
-                          <option key={severity.dataID} value={severity.dataValue} data-id={severity.dataID}>
-                            {severity.dataValue}
-                          </option>
-                        ))}
+                        {dropdownData.severityNameDropDownData.map(
+                          (severity) => (
+                            <option
+                              key={severity.dataID}
+                              value={severity.dataValue}
+                              data-id={severity.dataID}
+                            >
+                              {severity.dataValue}
+                            </option>
+                          )
+                        )}
                       </select>
                     </div>
                   </div>
@@ -310,7 +342,11 @@ const IncidentDetails = ({ incident }) => {
                       >
                         <option value="">Select</option>
                         {dropdownData.typeDropDown.map((type) => (
-                          <option key={type.dataID} value={type.dataValue} data-id={type.dataID}>
+                          <option
+                            key={type.dataID}
+                            value={type.dataValue}
+                            data-id={type.dataID}
+                          >
                             {type.dataValue}
                           </option>
                         ))}
@@ -322,7 +358,8 @@ const IncidentDetails = ({ incident }) => {
                 <div className="bd-highlight mb-3 bdr-top">
                   <div className="col-md-12 bd-highlight">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Incident Name - </span> {subject}
+                      <span className="fw-bold">Incident Name - </span>{" "}
+                      {subject}
                     </div>
                   </div>
                   <div className="col-md-12 bd-highlight">
@@ -378,7 +415,11 @@ const IncidentDetails = ({ incident }) => {
                         {ldp_security_user.length > 0 &&
                           ldp_security_user.map((item, index) => {
                             return (
-                              <option key={index} value={item?.name} data-id={item.userID}>
+                              <option
+                                key={index}
+                                value={item?.name}
+                                data-id={item.userID}
+                              >
                                 {item?.name}
                               </option>
                             );
@@ -395,9 +436,10 @@ const IncidentDetails = ({ incident }) => {
                     // checked={incidentData.significantIncident}
                     // onChange={(event) => handleChange(event, "significantIncident")}
                   />
-                  <label style={{ marginLeft: '8px' }}>Significant Incident</label>
+                  <label style={{ marginLeft: "8px" }}>
+                    Significant Incident
+                  </label>
                 </div>
-
 
                 <div className="d-flex justify-content-between bd-highlight">
                   <div className="p-2 bd-highlight">
@@ -431,16 +473,17 @@ const IncidentDetails = ({ incident }) => {
                     <tr className="bg-gray-100 mb-3">
                       <td className="p-2 pb-8">
                         <div className="d-flex justify-content-between bd-highlight">
-                          <div className="p-1 bd-highlight fw-bold fs-12">
+                          <div
+                            className="p-1 bd-highlight fw-bold fs-12"
+                            style={{ width: "200px", textAlign: "left" }}
+                          >
                             <div className="text-dark mb-1">
                               <a href="#" className="text-dark">
-                                <span className="fw-bold">
-                                  {description}
-                                </span>
+                                <span className="fw-bold">{description}</span>
                               </a>
                             </div>
                           </div>
-                          <div className="p-1 bd-highlight" style={{ width: '160px', textAlign: 'right' }}>
+                          <div className="p-1 bd-highlight">
                             <a
                               href="#"
                               className="btn btn-sm btn-icon btn-light btn-secondary mx-1"
@@ -680,22 +723,23 @@ const IncidentDetails = ({ incident }) => {
                   </div>
                 </div>
               </div>
-              <div className='card-footer d-flex justify-content-end'>
+              <div className="">
                 {activeTab === "general" && (
                   <div className="text-end mt-5">
                     <button
-                      type='submit'
+                      type="submit"
                       onClick={(event) => handleSubmit(event, incidentData)}
-                      className="btn btn-primary">Save Changes</button>
+                      className="btn btn-primary"
+                    >
+                      Save Changes
+                    </button>
                   </div>
                 )}
               </div>
             </div>
           </div>
         </div>
-
       </div>
-
     </div>
   );
 };
