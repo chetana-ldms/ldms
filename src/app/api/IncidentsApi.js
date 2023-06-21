@@ -2,6 +2,7 @@ const CreateIncident="http://115.110.192.133:502/api/IncidentManagement/v1/Creat
 const Incidents="http://115.110.192.133:502/api/IncidentManagement/v1/Incidents"
 const GetIncidentSearchResult="http://115.110.192.133:502/api/IncidentManagement/v1/GetIncidentSearchResult"
 const IncidentDetails="http://115.110.192.133:502/api/IncidentManagement/v1/IncidentDetails"
+const UpdateIncident="http://115.110.192.133:502/api/IncidentManagement/v1/UpdateIncident"
 
 export const fetchCreateIncident = async (data) => {
     try {
@@ -74,3 +75,21 @@ export const fetchCreateIncident = async (data) => {
       console.log(error);
     }
   };
+  export const fetchUpdateIncident = async (data) => {
+    try {
+      const response = await fetch(`${UpdateIncident}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data
+        }),
+      });
+    
+      const responseData = await response.json();
+      return responseData
+    } catch (error) {
+      console.log(error)
+    }
+  }
