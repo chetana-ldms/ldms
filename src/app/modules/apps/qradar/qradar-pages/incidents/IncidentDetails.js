@@ -145,14 +145,18 @@ const IncidentDetails = ({ incident }) => {
     fetchUpdateIncident(data)
 
   }
-  useEffect(()=>{
+  useEffect(() => {
     const data = {
       orgId,
       incidentId: Number(id),
     }
-   const responce = fetchGetIncidentHistory(data)
-   setIncidentHistory(responce)
-  },[])
+    fetchGetIncidentHistory(data).then((res) => {
+      setIncidentHistory(res)
+    }).catch((error) => {
+      console.log(error)
+    });
+
+  }, [id])
   return (
     <div className="col-md-4 border-1 border-gray-600">
       <div className="card">
@@ -392,8 +396,8 @@ const IncidentDetails = ({ incident }) => {
                     className="p-2"
                     type="checkbox"
                     ref={checkboxRef}
-                    // checked={incidentData.significantIncident}
-                    // onChange={(event) => handleChange(event, "significantIncident")}
+                  // checked={incidentData.significantIncident}
+                  // onChange={(event) => handleChange(event, "significantIncident")}
                   />
                   <label style={{ marginLeft: '8px' }}>Significant Incident</label>
                 </div>
@@ -431,7 +435,7 @@ const IncidentDetails = ({ incident }) => {
                     <tr className="bg-gray-100 mb-3">
                       <td className="p-2 pb-8">
                         <div className="d-flex justify-content-between bd-highlight">
-                          <div className="p-1 bd-highlight fw-bold fs-12">
+                          <div className="p-1 bd-highlight fw-bold fs-12"style={{ width: '200px', textAlign: 'left' }}>
                             <div className="text-dark mb-1">
                               <a href="#" className="text-dark">
                                 <span className="fw-bold">
@@ -440,7 +444,7 @@ const IncidentDetails = ({ incident }) => {
                               </a>
                             </div>
                           </div>
-                          <div className="p-1 bd-highlight" style={{ width: '160px', textAlign: 'right' }}>
+                          <div className="p-1 bd-highlight" >
                             <a
                               href="#"
                               className="btn btn-sm btn-icon btn-light btn-secondary mx-1"
