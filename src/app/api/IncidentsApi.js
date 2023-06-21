@@ -3,6 +3,7 @@ const Incidents="http://115.110.192.133:502/api/IncidentManagement/v1/Incidents"
 const GetIncidentSearchResult="http://115.110.192.133:502/api/IncidentManagement/v1/GetIncidentSearchResult"
 const IncidentDetails="http://115.110.192.133:502/api/IncidentManagement/v1/IncidentDetails"
 const UpdateIncident="http://115.110.192.133:502/api/IncidentManagement/v1/UpdateIncident"
+const GetIncidentHistory="http://115.110.192.133:502/api/AlertHistory/v1/GetIncidentHistory"
 
 export const fetchCreateIncident = async (data) => {
     try {
@@ -89,6 +90,25 @@ export const fetchCreateIncident = async (data) => {
     
       const responseData = await response.json();
       return responseData
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  export const fetchGetIncidentHistory = async (data) => {
+    try {
+      const response = await fetch(`${GetIncidentHistory}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data
+        }),
+      });
+    
+      const responseData = await response.json();
+     const alertHistoryData=responseData.alertHistoryData
+      return alertHistoryData
     } catch (error) {
       console.log(error)
     }
