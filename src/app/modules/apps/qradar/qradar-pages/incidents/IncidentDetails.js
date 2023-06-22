@@ -3,14 +3,15 @@ import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
 import { fetchMasterData } from "../../../../../api/Api";
 import { fetchUsers } from "../../../../../api/AlertsApi";
 import {
+  fetchAlertsByAlertIds,
   fetchGetIncidentHistory,
   fetchIncidentDetails,
+  fetchIncidents,
   fetchUpdateIncident,
 } from "../../../../../api/IncidentsApi";
 
 const IncidentDetails = ({ incident }) => {
-  const { subject, createdDate, description, incidentID } = incident;
-  // const { incidentStatusName, priorityName, severityName, type, ownerName, subject, createdDate, description, incidentID } = incident;
+  const { subject, createdDate, incidentID } = incident;
   const id = incidentID;
   console.log(id, "id");
   const [activeTab, setActiveTab] = useState("general");
@@ -25,7 +26,7 @@ const IncidentDetails = ({ incident }) => {
   });
   const checkboxRef = useRef(null);
   const [incidentHistory, setIncidentHistory] = useState([]);
-  console.log(incidentHistory, "incidentHistory");
+  const [alertsList, setAlertsList] = useState({})
   const [ldp_security_user, setldp_security_user] = useState([]);
   const [incidentData, setIncidentData] = useState({
     incidentStatus: "",
@@ -38,8 +39,10 @@ const IncidentDetails = ({ incident }) => {
     type: "",
     owner: "",
     ownerName: "",
+    alertId: ""
   });
 
+  const alertId = incidentData.alertId
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchUsers(orgId);
@@ -74,7 +77,10 @@ const IncidentDetails = ({ incident }) => {
     const fetchData = async () => {
       try {
         const data = await fetchIncidentDetails(id);
-        data !== undefined &&
+        if (data !== undefined) {
+          const { alertIncidentMapping } = data;
+          const alertId = alertIncidentMapping.alertIncidentMappingDtl[0].alertid;
+
           setIncidentData((prevIncidentData) => ({
             ...prevIncidentData,
             incidentStatus: data.incidentStatus,
@@ -87,7 +93,9 @@ const IncidentDetails = ({ incident }) => {
             type: data.type,
             owner: data.owner,
             ownerName: data.ownerName,
+            alertId: alertId, // Add alertId to the state
           }));
+        }
       } catch (error) {
         console.log(error);
       }
@@ -95,6 +103,7 @@ const IncidentDetails = ({ incident }) => {
 
     fetchData();
   }, [id]);
+
   const handleChange = (event, field) => {
     const selectedId = event.target.options[
       event.target.selectedIndex
@@ -132,6 +141,17 @@ const IncidentDetails = ({ incident }) => {
       });
     }
   };
+  const incidents =  () => {
+    const data = {
+      orgID: orgId,
+      paging: {
+        rangeStart: 1,
+        rangeEnd: 20,
+      },
+      loggedInUserId: userID,
+    };
+      fetchIncidents(data);
+  };
   const handleSubmit = (event, incidentData) => {
     event.preventDefault();
     const data = {
@@ -148,6 +168,7 @@ const IncidentDetails = ({ incident }) => {
     };
 
     fetchUpdateIncident(data);
+    incidents();
   };
   useEffect(() => {
     const data = {
@@ -162,8 +183,38 @@ const IncidentDetails = ({ incident }) => {
         console.log(error);
       });
   }, [id]);
-  // const alertId = incidentData.alertIncidentMapping.alertIncidentMappingDtl[0].alertid;
-  // console.log(alertId, "alertId");
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = [alertId];
+        const alertsList = await fetchAlertsByAlertIds(data);
+        console.log(alertsList, "alertsList1111");
+        setAlertsList(alertsList);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [alertId]);
+
+  //To add Randam colors to the timeline Bullet
+  const css_classes = [
+    "text-primary",
+    "text-secondary",
+    "text-success",
+    "text-danger",
+    "text-warning",
+    "text-info",
+    "text-dark",
+    "text-muted"
+  ];
+
+  const getRandomClass = () => {
+    const randomIndex = Math.floor(Math.random() * css_classes.length);
+    return css_classes[randomIndex];
+  };
+
   return (
     <div className="col-md-4 border-1 border-gray-600">
       <div className="card">
@@ -181,9 +232,8 @@ const IncidentDetails = ({ incident }) => {
             <ul className="nav nav-tabs nav-line-tabs mb-5 fs-8">
               <li className="nav-item">
                 <a
-                  className={`nav-link ${
-                    activeTab === "general" ? "active" : ""
-                  }`}
+                  className={`nav-link ${activeTab === "general" ? "active" : ""
+                    }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_1"
                   onClick={() => setActiveTab("general")}
@@ -193,9 +243,8 @@ const IncidentDetails = ({ incident }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${
-                    activeTab === "alerts" ? "active" : ""
-                  }`}
+                  className={`nav-link ${activeTab === "alerts" ? "active" : ""
+                    }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_2"
                   onClick={() => setActiveTab("alerts")}
@@ -205,9 +254,8 @@ const IncidentDetails = ({ incident }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${
-                    activeTab === "playbooks" ? "active" : ""
-                  }`}
+                  className={`nav-link ${activeTab === "playbooks" ? "active" : ""
+                    }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_3"
                   onClick={() => setActiveTab("playbooks")}
@@ -217,9 +265,8 @@ const IncidentDetails = ({ incident }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${
-                    activeTab === "observables" ? "active" : ""
-                  }`}
+                  className={`nav-link ${activeTab === "observables" ? "active" : ""
+                    }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_4"
                   onClick={() => setActiveTab("observables")}
@@ -229,9 +276,8 @@ const IncidentDetails = ({ incident }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${
-                    activeTab === "timeline" ? "active" : ""
-                  }`}
+                  className={`nav-link ${activeTab === "timeline" ? "active" : ""
+                    }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_5"
                   onClick={() => setActiveTab("timeline")}
@@ -482,7 +528,7 @@ const IncidentDetails = ({ incident }) => {
                           >
                             <div className="text-dark mb-1">
                               <a href="#" className="text-dark">
-                                <span className="fw-bold">{description}</span>
+                                <span className="fw-bold">{alertsList?.name}</span>
                               </a>
                             </div>
                           </div>
@@ -516,14 +562,14 @@ const IncidentDetails = ({ incident }) => {
                             Detected date
                           </div>
                           <div className="p-1 bd-highlight fs-12">
-                            {createdDate}
+                            {alertsList?.detectedtime}
                           </div>
                         </div>
                         <hr className="my-0" />
                       </td>
                     </tr>
 
-                    <tr className="bg-gray-100">
+                    {/* <tr className="bg-gray-100">
                       <td className="min-w-80px p-2 pb-8">
                         <div className="d-flex justify-content-between bd-highlight">
                           <div className="p-1 bd-highlight fw-bold fs-12">
@@ -570,7 +616,7 @@ const IncidentDetails = ({ incident }) => {
                         </div>
                         <hr className="my-0" />
                       </td>
-                    </tr>
+                    </tr> */}
                   </tbody>
                 </table>
               </div>
@@ -600,129 +646,26 @@ const IncidentDetails = ({ incident }) => {
               <div className="tab-pane fade" id="kt_tab_pane_5" role="tabpanel">
                 <div className="card-body pt-6 h-600px">
                   <div className="timeline-label">
-                    <div className="timeline-item">
-                      <div className="timeline-label fw-bold text-gray-800 fs-6">
-                        08:42
-                      </div>
+                    {
+                      incidentHistory && incidentHistory.length > 0 ? (
+                        incidentHistory.map(item => (
+                          <div className="timeline-item">
+                            <div className="timeline-label fw-bold text-gray-800 fs-6">
+                              {item.historyDate.split("T")[1].split(":").slice(0, 2).join(":")}
+                            </div>
+                            <div className="timeline-badge">
+                              <i className={`fa fa-genderless ${getRandomClass()} fs-1`}></i>
+                            </div>
+                            <div className="fw-semibold text-gray-700 ps-3 fs-7">
+                              {item.historyDescription}
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-gray-500">No data found</div>
+                      )
+                    }
 
-                      <div className="timeline-badge">
-                        <i className="fa fa-genderless text-gray-600 fs-1"></i>
-                      </div>
-
-                      <div className="fw-semibold text-gray-700 ps-3 fs-7">
-                        Information passed to Concern team.
-                      </div>
-                    </div>
-
-                    <div className="timeline-item d-flex align-items-center">
-                      <div className="timeline-label fw-bold text-gray-800 fs-6">
-                        10:00
-                      </div>
-
-                      <div className="timeline-badge">
-                        <i className="fa fa-genderless text-success fs-1"></i>
-                      </div>
-
-                      <div className="d-flex align-items-center">
-                        <span className="fw-bold text-gray-800 px-3">
-                          Alert Reviewed by{" "}
-                        </span>
-
-                        <div className="symbol symbol-35px me-3">
-                          <img
-                            alt="Pic"
-                            src={toAbsoluteUrl("/media/avatars/300-1.jpg")}
-                          />
-                        </div>
-
-                        <div className="symbol symbol-35px">
-                          <img
-                            alt="Pic"
-                            src={toAbsoluteUrl("/media/avatars/300-2.jpg")}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="timeline-item">
-                      <div className="timeline-label fw-bold text-gray-800 fs-6">
-                        14:37
-                      </div>
-
-                      <div className="timeline-badge">
-                        <i className="fa fa-genderless text-danger fs-1"></i>
-                      </div>
-
-                      <div className="timeline-content fw-bold text-gray-800 ps-3">
-                        severity: notice message: undefined Rule:
-                        <a href="#" className="text-primary">
-                          Count 9
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="timeline-item">
-                      <div className="timeline-label fw-bold text-gray-800 fs-6">
-                        16:50
-                      </div>
-
-                      <div className="timeline-badge">
-                        <i className="fa fa-genderless text-primary fs-1"></i>
-                      </div>
-
-                      <div className="fw-semibold text-gray-700 ps-3 fs-7">
-                        Alert : IP address need to be blocked
-                      </div>
-                    </div>
-
-                    <div className="timeline-item">
-                      <div className="timeline-label fw-bold text-gray-800 fs-6">
-                        21:03
-                      </div>
-
-                      <div className="timeline-badge">
-                        <i className="fa fa-genderless text-warning fs-1"></i>
-                      </div>
-
-                      <div className="timeline-content fw-semibold text-gray-800 ps-3">
-                        New Ticket Raised{" "}
-                        <a href="#" className="text-primary">
-                          #XF-2356
-                        </a>
-                        .
-                      </div>
-                    </div>
-
-                    <div className="timeline-item">
-                      <div className="timeline-label fw-bold text-gray-800 fs-6">
-                        16:50
-                      </div>
-
-                      <div className="timeline-badge">
-                        <i className="fa fa-genderless text-info fs-1"></i>
-                      </div>
-
-                      <div className="fw-semibold text-gray-700 ps-3 fs-7">
-                        Ticket status updated
-                      </div>
-                    </div>
-
-                    <div className="timeline-item">
-                      <div className="timeline-label fw-bold text-gray-800 fs-6">
-                        14:37
-                      </div>
-
-                      <div className="timeline-badge">
-                        <i className="fa fa-genderless text-danger fs-1"></i>
-                      </div>
-
-                      <div className="timeline-content fw-bold text-gray-800 ps-3">
-                        Ticket Closed -
-                        <a href="#" className="text-primary">
-                          Issue Resolved
-                        </a>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
