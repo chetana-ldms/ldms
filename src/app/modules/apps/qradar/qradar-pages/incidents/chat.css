@@ -71,7 +71,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 20px;
-  background-color: #303558;
+  background-color: #505a9f;
   color: #fff;
   font-weight: bold;
     font-size: 14px;
@@ -106,6 +106,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
 }
 .message {
   width: 100%;
@@ -116,13 +117,20 @@
   padding: 15px;
 }
 .sendBtn {
-  width: 90px;
-  background-color: green;
+  width: 40px;
+  height: 40px;
+  background-color: #6180F4;
   padding: 10px;
   border: none;
-  outline: none;
+  outline: none;  
   color: #EAE3D2;
   cursor: pointer;
+  position: absolute;
+  right: 5px;
+  border-radius: 10px;
+}
+.sendBtn i{
+  color: #fff;
 }
 .attachment__label{
   position: relative;
@@ -147,7 +155,8 @@
   background-color: rgb(129, 201, 129);
 }
 .message__recipient {
-background-color: #f5ccc2;
+background-color: #6886F4;
+color: #fff;
 width: 300px;
 padding: 10px;
 border-radius: 10px;
@@ -157,7 +166,7 @@ font-size: 15px;
   margin-bottom: 0;
 }
 .message__sender{
-background-color: rgb(194, 243, 194);
+background-color: #EEF1FF;
 max-width: 300px;
 padding: 10px;
 border-radius: 10px;
@@ -172,9 +181,11 @@ font-size: 15px;
 }
 .message__chats > p {
   font-size: 13px;
+  margin-bottom: 5px;
 }
 .sender__name {
   text-align: right;
+  font-weight: bold;
 }
 .message__status {
   position: fixed;
