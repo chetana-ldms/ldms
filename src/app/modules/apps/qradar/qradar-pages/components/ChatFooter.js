@@ -66,7 +66,9 @@ const ChatFooter = ({ socket, username }) => {
           />
           <i className="fa fa-paperclip" />
         </label>
-        <button className="sendBtn">SEND</button>
+        <button className="sendBtn">
+          <i className="fa fa-paper-plane" />
+        </button>
       </form>
     </div>
   );
