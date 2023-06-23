@@ -55,7 +55,7 @@ function OpenIncidentSummary() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          'http://115.110.192.133:502/api/Reports/v1/OpenIncidentsSummery',
+          'http://182.71.241.246:502/api/Reports/v1/OpenIncidentsSummery',
           {
             method: 'POST',
             headers: {

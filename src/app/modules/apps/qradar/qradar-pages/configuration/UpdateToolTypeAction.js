@@ -36,7 +36,7 @@ const UpdateToolTypeAction = () => {
     })
     var config_4 = {
       method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/MasterData',
+      url: 'http://182.71.241.246:502/api/LDPlattform/v1/MasterData',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -79,7 +79,7 @@ const UpdateToolTypeAction = () => {
     console.log(data, "data111")
     var config = {
       method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeAction/Update',
+      url: 'http://182.71.241.246:502/api/LDPlattform/v1/ToolTypeAction/Update',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/plain',

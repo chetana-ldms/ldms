@@ -67,7 +67,7 @@ const UpdateUserData = () => {
     console.log('data', data)
     var config = {
       method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPSecurity/v1/User/Update',
+      url: 'http://182.71.241.246:502/api/LDPSecurity/v1/User/Update',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/plain',

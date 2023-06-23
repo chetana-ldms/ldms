@@ -54,7 +54,7 @@ function CreatedIncidentStatusReport() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          'http://115.110.192.133:502/api/Reports/v1/AllIncidentsSummery',
+          'http://182.71.241.246:502/api/Reports/v1/AllIncidentsSummery',
           {
             method: 'POST',
             headers: {

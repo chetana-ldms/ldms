@@ -1,6 +1,6 @@
-const PlayBooks="http://115.110.192.133:8011/api/PlayBook/v1/PlayBooks"
-const Delete="http://115.110.192.133:8011/api/PlayBook/v1/Playbook/Delete"
-const PlaybookByID="http://115.110.192.133:8011/api/PlayBook/v1/PlaybookByID"
+const PlayBooks="http://182.71.241.246:8011/api/PlayBook/v1/PlayBooks"
+const Delete="http://182.71.241.246:8011/api/PlayBook/v1/Playbook/Delete"
+const PlaybookByID="http://182.71.241.246:8011/api/PlayBook/v1/PlaybookByID"
 
 export const fetchDelete = async (data) => {
     try {

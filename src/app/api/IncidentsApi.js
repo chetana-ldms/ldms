@@ -1,10 +1,10 @@
-const CreateIncident = "http://115.110.192.133:502/api/IncidentManagement/v1/CreateIncident"
-const Incidents = "http://115.110.192.133:502/api/IncidentManagement/v1/Incidents"
-const GetIncidentSearchResult = "http://115.110.192.133:502/api/IncidentManagement/v1/GetIncidentSearchResult"
-const IncidentDetails = "http://115.110.192.133:502/api/IncidentManagement/v1/IncidentDetails"
-const UpdateIncident = "http://115.110.192.133:502/api/IncidentManagement/v1/UpdateIncident"
-const GetIncidentHistory = "http://115.110.192.133:502/api/AlertHistory/v1/GetIncidentHistory"
-const AlertsByAlertIds = "http://115.110.192.133:502/api/Alerts/v1/AlertsByAlertIds"
+const CreateIncident = "http://182.71.241.246:502/api/IncidentManagement/v1/CreateIncident"
+const Incidents = "http://182.71.241.246:502/api/IncidentManagement/v1/Incidents"
+const GetIncidentSearchResult = "http://182.71.241.246:502/api/IncidentManagement/v1/GetIncidentSearchResult"
+const IncidentDetails = "http://182.71.241.246:502/api/IncidentManagement/v1/IncidentDetails"
+const UpdateIncident = "http://182.71.241.246:502/api/IncidentManagement/v1/UpdateIncident"
+const GetIncidentHistory = "http://182.71.241.246:502/api/AlertHistory/v1/GetIncidentHistory"
+const AlertsByAlertIds = "http://182.71.241.246:502/api/Alerts/v1/AlertsByAlertIds"
 
 export const fetchCreateIncident = async (data) => {
     try {

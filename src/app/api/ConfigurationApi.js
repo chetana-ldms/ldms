@@ -1,13 +1,13 @@
-const LDPToolsByToolType="http://115.110.192.133:502/api/LDPlattform/v1/LDPToolsByToolType"
-const ToolTypeActionDetails="http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeActionDetails"
-const UserDetails= "http://115.110.192.133:502/api/LDPSecurity/v1/UserDetails"
-const ToolActionDetails='http://115.110.192.133:502/api/LDPlattform/v1/ToolActionDetails'
-const OrganizationToolDetails="http://115.110.192.133:502/api/LDPlattform/v1/OrganizationToolDetails"
-const Rules="http://115.110.192.133:8011/api/RulesConfiguraton/v1/Rules"
-const RuleDetails="http://115.110.192.133:8011/api/RulesConfiguraton/v1/Rules/RuleDetails"
-const RuleActions="http://115.110.192.133:8011/api/RuleAction/v1/RuleActions"
-const ToolActions="http://115.110.192.133:502/api/LDPlattform/v1/ToolActions"
-const RuleActionDetails="http://115.110.192.133:8011/api/RuleAction/v1/RuleActionDetails"
+const LDPToolsByToolType="http://182.71.241.246:502/api/LDPlattform/v1/LDPToolsByToolType"
+const ToolTypeActionDetails="http://182.71.241.246:502/api/LDPlattform/v1/ToolTypeActionDetails"
+const UserDetails= "http://182.71.241.246:502/api/LDPSecurity/v1/UserDetails"
+const ToolActionDetails='http://182.71.241.246:502/api/LDPlattform/v1/ToolActionDetails'
+const OrganizationToolDetails="http://182.71.241.246:502/api/LDPlattform/v1/OrganizationToolDetails"
+const Rules="http://182.71.241.246:8011/api/RulesConfiguraton/v1/Rules"
+const RuleDetails="http://182.71.241.246:8011/api/RulesConfiguraton/v1/Rules/RuleDetails"
+const RuleActions="http://182.71.241.246:8011/api/RuleAction/v1/RuleActions"
+const ToolActions="http://182.71.241.246:502/api/LDPlattform/v1/ToolActions"
+const RuleActionDetails="http://182.71.241.246:8011/api/RuleAction/v1/RuleActionDetails"
 
 export const fetchLDPToolsByToolType = async (data) => {
     try {

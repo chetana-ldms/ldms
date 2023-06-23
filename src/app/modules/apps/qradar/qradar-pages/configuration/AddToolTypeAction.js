@@ -19,7 +19,7 @@ const AddToolTypeAction = () => {
     });
     var config_4 = {
       method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/MasterData',
+      url: 'http://182.71.241.246:502/api/LDPlattform/v1/MasterData',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -59,7 +59,7 @@ const AddToolTypeAction = () => {
     });
     var config = {
       method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeAction/Add',
+      url: 'http://182.71.241.246:502/api/LDPlattform/v1/ToolTypeAction/Add',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/plain',

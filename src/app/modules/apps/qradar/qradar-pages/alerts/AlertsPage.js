@@ -112,7 +112,7 @@ const AlertsPage = () => {
     // var config = {
     //   method: 'post',
     //   maxBodyLength: Infinity,
-    //   url: 'http://115.110.192.133:502/api/IncidentManagement/CreateInternalIncident',
+    //   url: 'http://182.71.241.246:502/api/IncidentManagement/CreateInternalIncident',
     //   headers: {
     //     'Content-Type': 'application/json',
     //     Accept: 'text/plain',
@@ -164,7 +164,7 @@ const AlertsPage = () => {
   const [pageCount, setpageCount] = useState(0);
 
   useEffect(() => {
-    axios.get("http://115.110.192.133:502/api/Alerts/v1/Alerts").then((res) => {
+    axios.get("http://182.71.241.246:502/api/Alerts/v1/Alerts").then((res) => {
       console.log(res, "mydata");
     });
   }, []);

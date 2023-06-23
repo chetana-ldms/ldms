@@ -39,7 +39,7 @@ const OrganizationTools = () => {
     // setLoading(true)
     var config = {
       method: 'get',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/OrganizationTools',
+      url: 'http://182.71.241.246:502/api/LDPlattform/v1/OrganizationTools',
       headers: {
         Accept: 'text/plain',
       },
