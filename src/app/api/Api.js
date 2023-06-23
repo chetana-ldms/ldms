@@ -1,21 +1,21 @@
 import axios from "axios";
-const MasterData = "http://115.110.192.133:502/api/LDPlattform/v1/MasterData";
-const Organizations = "http://115.110.192.133:502/api/LDPlattform/v1/Organizations";
-const Authenticate = "http://115.110.192.133:502/api/LDPSecurity/v1/User/Authenticate";
-const UpdateAlert = "http://115.110.192.133:502/api/Alerts/v1/UpdateAlert";
-const SetAlertIrrelavantStatus = "http://115.110.192.133:502/api/Alerts/v1/SetAlertIrrelavantStatus";
-const ToolTypeActionDelete = "http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeAction/Delete";
-const OrganizationDelete= "http://115.110.192.133:502/api/LDPlattform/v1/Organization/Delete";
-const LDPToolsDelete= "http://115.110.192.133:502/api/LDPlattform/v1/LDPTools/Delete";
-const OrganizationToolsDelete ="http://115.110.192.133:502/api/LDPlattform/v1/OrganizationTools/Delete";
-const UserDelete= "http://115.110.192.133:502/api/LDPSecurity/v1/User/Delete";
-const ToolActionDelete= "http://115.110.192.133:502/api/LDPlattform/v1/ToolAction/Delete";
-const  RulesDelete= "http://115.110.192.133:8011/api/RulesConfiguraton/v1/Rules/Delete";
-const RuleActionDelete="http://115.110.192.133:8011/api/RuleAction/v1/RuleAction/Delete";
-const LDPTools="http://115.110.192.133:502/api/LDPlattform/v1/LDPTools";
-const Roles="http://115.110.192.133:502/api/LDPSecurity/v1/Roles"
-const OrganizationDetails= "http://115.110.192.133:502/api/LDPlattform/v1/OrganizationDetails";
-const LDPToolDetails="http://115.110.192.133:502/api/LDPlattform/v1/LDPToolDetails"
+const MasterData = "http://182.71.241.246:502/api/LDPlattform/v1/MasterData";
+const Organizations = "http://182.71.241.246:502/api/LDPlattform/v1/Organizations";
+const Authenticate = "http://182.71.241.246:502/api/LDPSecurity/v1/User/Authenticate";
+const UpdateAlert = "http://182.71.241.246:502/api/Alerts/v1/UpdateAlert";
+const SetAlertIrrelavantStatus = "http://182.71.241.246:502/api/Alerts/v1/SetAlertIrrelavantStatus";
+const ToolTypeActionDelete = "http://182.71.241.246:502/api/LDPlattform/v1/ToolTypeAction/Delete";
+const OrganizationDelete= "http://182.71.241.246:502/api/LDPlattform/v1/Organization/Delete";
+const LDPToolsDelete= "http://182.71.241.246:502/api/LDPlattform/v1/LDPTools/Delete";
+const OrganizationToolsDelete ="http://182.71.241.246:502/api/LDPlattform/v1/OrganizationTools/Delete";
+const UserDelete= "http://182.71.241.246:502/api/LDPSecurity/v1/User/Delete";
+const ToolActionDelete= "http://182.71.241.246:502/api/LDPlattform/v1/ToolAction/Delete";
+const  RulesDelete= "http://182.71.241.246:8011/api/RulesConfiguraton/v1/Rules/Delete";
+const RuleActionDelete="http://182.71.241.246:8011/api/RuleAction/v1/RuleAction/Delete";
+const LDPTools="http://182.71.241.246:502/api/LDPlattform/v1/LDPTools";
+const Roles="http://182.71.241.246:502/api/LDPSecurity/v1/Roles"
+const OrganizationDetails= "http://182.71.241.246:502/api/LDPlattform/v1/OrganizationDetails";
+const LDPToolDetails="http://182.71.241.246:502/api/LDPlattform/v1/LDPToolDetails"
 
 
 export const fetchMasterData = async (maserDataType) => {

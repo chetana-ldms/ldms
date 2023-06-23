@@ -85,7 +85,7 @@ const UpdatePlaybooks = () => {
 
       var playbook_config = {
         method: 'post',
-        url: 'http://115.110.192.133:8011/api/PlayBook/v1/Playbook/Update',
+        url: 'http://182.71.241.246:8011/api/PlayBook/v1/Playbook/Update',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'text/plain',

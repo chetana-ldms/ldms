@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import IncidentChat from "./IncidentChat";
 import IncidentDetails from "./IncidentDetails";
+import ReactPaginate from "react-paginate";
 import { useLocation } from "react-router-dom";
 import "./chat.css";
 import {
   fetchGetIncidentSearchResult,
   fetchIncidents,
+  fetchSetOfIncidents,
 } from "../../../../../api/IncidentsApi";
 import { fetchMasterData } from "../../../../../api/Api";
 import ChatApp from "./ChatApp";
@@ -26,7 +28,9 @@ const IncidentsPage = () => {
   const status = useRef();
   const sortOption = useRef();
   const [selectedIncident, setSelectedIncident] = useState({});
-  console.log(selectedIncident, "selectedIncident");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageCount, setpageCount] = useState(0);
+  const [limit, setLimit] = useState(20);
   useEffect(() => {
     Promise.all([
       fetchMasterData("incident_status"),
@@ -45,13 +49,17 @@ const IncidentsPage = () => {
       orgID: orgId,
       paging: {
         rangeStart: 1,
-        rangeEnd: 20,
+        rangeEnd: limit,
       },
       loggedInUserId: userID,
     };
     try {
       const response = await fetchIncidents(data);
       setIncident(response);
+      // const total = response.totalOffenseCount;
+      const total = 40;
+
+      setpageCount(Math.ceil(total / limit));
     } catch (error) {
       console.log(error);
     }
@@ -78,6 +86,7 @@ const IncidentsPage = () => {
     try {
       const response = await fetchGetIncidentSearchResult(data);
       setIncident(response);
+
       // incidents();
     } catch (error) {
       console.log(error);
@@ -86,6 +95,26 @@ const IncidentsPage = () => {
   const handleIncidentClick = (item) => {
     setSelectedIncident(item);
     console.log("Clicked incident:", item);
+  };
+
+  const handlePageClick = async (data) => {
+    let currentPage = data.selected + 1;
+    const setOfAlertsData = await fetchSetOfIncidents(
+      currentPage,
+      orgId,
+      userID,
+      limit
+    );
+    setIncident(setOfAlertsData);
+    // setFilteredAlertDate(
+    //   setOfAlertsData.filter((item) => item.ownerUserID === userID)
+    // );
+    // setFilteredAlertDate(setOfAlertsData);
+    setCurrentPage(currentPage);
+  };
+  const handlePageSelect = (event) => {
+    const selectedPerPage = event.target.value;
+    setLimit(selectedPerPage);
   };
 
   return (
@@ -135,7 +164,7 @@ const IncidentsPage = () => {
                             data-dropdown-parent="#kt_menu_637dc885a14bb"
                             data-allow-clear="true"
                             ref={status}
-                            // onChange={handleStatusChange}
+                          // onChange={handleStatusChange}
                           >
                             <option value="">Select</option>
                             {statusDropDown.length > 0 &&
@@ -158,7 +187,7 @@ const IncidentsPage = () => {
                           data-dropdown-parent="#kt_menu_637dc885a14bb"
                           data-allow-clear="true"
                           ref={sortOption}
-                          // onChange={handleSortOptionChange}
+                        // onChange={handleSortOptionChange}
                         >
                           <option value="">Select</option>
                           {incidentSortOptions.length > 0 &&
@@ -177,9 +206,8 @@ const IncidentsPage = () => {
                         {incident && incident.length > 0 ? (
                           incident.map((item) => (
                             <div
-                              className={`incident-section${
-                                item.isSelected === "true" ? " selected" : ""
-                              }`}
+                              className={`incident-section${item.isSelected === "true" ? " selected" : ""
+                                }`}
                               key={item.id}
                               onClick={() => handleIncidentClick(item)}
                             >
@@ -222,10 +250,10 @@ const IncidentsPage = () => {
                                 )}
                                 <div className="p-1 bd-highlight">
                                   <div className="badge badge-light-primary mx-1">
-                                  {item.priorityName}
+                                    {item.priorityName}
                                   </div>
                                   <div className="badge badge-light-danger">
-                                  {item.severityName}
+                                    {item.severityName}
                                   </div>
                                 </div>
                               </div>
@@ -235,6 +263,41 @@ const IncidentsPage = () => {
                           <div className="text-center">Data not found.</div>
                         )}
                       </>
+                    </div>
+
+                    <div className="d-flex align-items-center justify-content-between pagination-bar">
+                      <ReactPaginate
+                        previousLabel={"<"}
+                        nextLabel={">"}
+                        pageCount={pageCount}
+                        marginPagesDisplayed={1}
+                        pageRangeDisplayed={2}
+                        onPageChange={handlePageClick}
+                        containerClassName={"pagination justify-content-end"}
+                        pageClassName={"page-item"}
+                        pageLinkClassName={"page-link"}
+                        previousClassName={"page-item custom-previous"}
+                        previousLinkClassName={"page-link custom-previous-link"}
+                        nextClassName={"page-item custom-next"}
+                        nextLinkClassName={"page-link custom-next-link"}
+                        breakClassName={"page-item"}
+                        breakLinkClassName={"page-link"}
+                        activeClassName={"active"}
+                      />
+                      <div className="col-md-4 d-flex justify-content-end align-items-center">
+                        <span className="col-md-4">Pages:</span>
+                        <select
+                          className="form-select form-select-sm"
+                          value={limit}
+                          onChange={handlePageSelect}
+                        >
+                          <option value={5}>5</option>
+                          <option value={10}>10</option>
+                          <option value={15}>15</option>
+                          <option value={20}>20</option>
+                        </select>
+                      </div>
+
                     </div>
                   </div>
                 </div>
@@ -247,7 +310,6 @@ const IncidentsPage = () => {
                 orgId={sessionStorage.getItem("orgId")}
               />
             </div>
-
             <IncidentDetails incident={selectedIncident} />
           </div>
         </div>

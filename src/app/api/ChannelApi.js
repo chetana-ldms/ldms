@@ -1,18 +1,18 @@
-const SubItemsByOrgChannel = `http://115.110.192.133:502/api/LDCChannels/v1/Channels/SubItemsByOrgChannel`
-const Questions = "http://115.110.192.133:502/api/LDCChannels/v1/Channel/Questions"
-const QuestionsAdd = "http://115.110.192.133:502/api/LDCChannels/v1/Channels/Questions/Add"
-const QuestionsAnswerAdd ="http://115.110.192.133:502/api/LDCChannels/v1/Channels/Questions/Answer/Add"
-const QuestionsUpdate="http://115.110.192.133:502/api/LDCChannels/v1/Channels/Questions/Update"
-const QuestionsDelete="http://115.110.192.133:502/api/LDCChannels/v1/Channel/Questions/Delete"
-const QuestionsAnswereUpdate="http://115.110.192.133:502/api/LDCChannels/v1/Channels/Questions/Answere/Update"
-const QuestionsAnswerDelete="http://115.110.192.133:502/api/LDCChannels/v1/Channel/Questions/Answer/Delete"
-const QuestionDetails="http://115.110.192.133:502/api/LDCChannels/v1/Channels/QuestionDetails"
-const AnswerDetails="http://115.110.192.133:502/api/LDCChannels/v1/Channels/AnswerDetails"
-const Channels="http://115.110.192.133:502/api/LDCChannels/v1/Channels"
-const ChannelsDelete="http://115.110.192.133:502/api/LDCChannels/v1/Channels/Delete"
-const ChannelsAdd="http://115.110.192.133:502/api/LDCChannels/v1/Channels/Add"
-const ChannelsUpdate= "http://115.110.192.133:502/api/LDCChannels/v1/Channels/Update"
-const ChannelDetails="http://115.110.192.133:502/api/LDCChannels/v1/ChannelDetails"
+const SubItemsByOrgChannel = `http://182.71.241.246:502/api/LDCChannels/v1/Channels/SubItemsByOrgChannel`
+const Questions = "http://182.71.241.246:502/api/LDCChannels/v1/Channel/Questions"
+const QuestionsAdd = "http://182.71.241.246:502/api/LDCChannels/v1/Channels/Questions/Add"
+const QuestionsAnswerAdd ="http://182.71.241.246:502/api/LDCChannels/v1/Channels/Questions/Answer/Add"
+const QuestionsUpdate="http://182.71.241.246:502/api/LDCChannels/v1/Channels/Questions/Update"
+const QuestionsDelete="http://182.71.241.246:502/api/LDCChannels/v1/Channel/Questions/Delete"
+const QuestionsAnswereUpdate="http://182.71.241.246:502/api/LDCChannels/v1/Channels/Questions/Answere/Update"
+const QuestionsAnswerDelete="http://182.71.241.246:502/api/LDCChannels/v1/Channel/Questions/Answer/Delete"
+const QuestionDetails="http://182.71.241.246:502/api/LDCChannels/v1/Channels/QuestionDetails"
+const AnswerDetails="http://182.71.241.246:502/api/LDCChannels/v1/Channels/AnswerDetails"
+const Channels="http://182.71.241.246:502/api/LDCChannels/v1/Channels"
+const ChannelsDelete="http://182.71.241.246:502/api/LDCChannels/v1/Channels/Delete"
+const ChannelsAdd="http://182.71.241.246:502/api/LDCChannels/v1/Channels/Add"
+const ChannelsUpdate= "http://182.71.241.246:502/api/LDCChannels/v1/Channels/Update"
+const ChannelDetails="http://182.71.241.246:502/api/LDCChannels/v1/ChannelDetails"
 
 export const fetchSubItemsByOrgChannel = async (data) => {
     try {

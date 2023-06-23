@@ -66,7 +66,7 @@ function SignificantIncident() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          'http://115.110.192.133:502/api/Reports/v1/SignificantsIncidentsSummery',
+          'http://182.71.241.246:502/api/Reports/v1/SignificantsIncidentsSummery',
           {
             method: 'POST',
             headers: {

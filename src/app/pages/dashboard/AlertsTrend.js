@@ -62,7 +62,7 @@ function AlertsTrends(props) {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          'http://115.110.192.133:502/api/Alerts/v1/GetAlertsTrendData',
+          'http://182.71.241.246:502/api/Alerts/v1/GetAlertsTrendData',
           {
             method: 'POST',
             headers: {

@@ -40,7 +40,7 @@ const IncidentsPage = () => {
   // const showincidentdetails = async () => {
   //   try {
   //     const response = await fetch(
-  //       "http://115.110.192.133:502/api/Notification/v1/SMS/Send",
+  //       "http://182.71.241.246:502/api/Notification/v1/SMS/Send",
   //       {
   //         method: "POST",
   //         headers: {
@@ -75,7 +75,7 @@ const IncidentsPage = () => {
   const getReplyMessage = async () => {
     try {
       const response = await fetch(
-        "http://115.110.192.133:502/api/Notification/v1/SMS/GetReplyMessage",
+        "http://182.71.241.246:502/api/Notification/v1/SMS/GetReplyMessage",
         {
           method: "GET",
           headers: {
@@ -121,7 +121,7 @@ const IncidentsPage = () => {
   // const onGetReply = async () => {
   //   try {
   //     const response = await fetch(
-  //       `http://115.110.192.133:502/api/Notification/v1/SMS/GetReplyMessage`,
+  //       `http://182.71.241.246:502/api/Notification/v1/SMS/GetReplyMessage`,
   //       {
   //         method: 'POST',
   //         headers: {
@@ -165,7 +165,7 @@ const IncidentsPage = () => {
     setLoading(true);
     var config = {
       method: "get",
-      url: "http://115.110.192.133:8011/api/PlayBook/v1/PlayBooks",
+      url: "http://182.71.241.246:8011/api/PlayBook/v1/PlayBooks",
       headers: {
         Accept: "text/plain",
       },
@@ -207,7 +207,7 @@ const IncidentsPage = () => {
     var config = {
       method: "post",
       maxBodyLength: Infinity,
-      url: "http://115.110.192.133:502/api/IncidentManagement/v1/Incidents",
+      url: "http://182.71.241.246:502/api/IncidentManagement/v1/Incidents",
       headers: {
         "Content-Type": "application/json",
         Accept: "text/plain",

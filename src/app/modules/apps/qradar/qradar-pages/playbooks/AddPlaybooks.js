@@ -41,7 +41,7 @@ const AddPlaybooks = () => {
     ////// Fetch Rules From API
     // var rules_config = {
     //   method: 'get',
-    //   url: 'http://115.110.192.133:8011/api/RulesConfiguraton/v1/Rules',
+    //   url: 'http://182.71.241.246:8011/api/RulesConfiguraton/v1/Rules',
     //   headers: {
     //     Accept: 'text/plain',
     //   },
@@ -60,7 +60,7 @@ const AddPlaybooks = () => {
     ////// Fetch Actions From API
     // var actions_config = {
     //   method: 'get',
-    //   url: 'http://115.110.192.133:8011/api/RuleAction/v1/RuleActions',
+    //   url: 'http://182.71.241.246:8011/api/RuleAction/v1/RuleActions',
     //   headers: {
     //     Accept: 'text/plain',
     //   },
@@ -136,7 +136,7 @@ const AddPlaybooks = () => {
 
       var playbook_config = {
         method: 'post',
-        url: 'http://115.110.192.133:8011/api/PlayBook/v1/Playbook/Add',
+        url: 'http://182.71.241.246:8011/api/PlayBook/v1/Playbook/Add',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'text/plain',

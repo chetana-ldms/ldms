@@ -1,7 +1,7 @@
-const Alerts = "http://115.110.192.133:502/api/Alerts/v1/Alerts"
-const SetAlertEscalationStatus = "http://115.110.192.133:502/api/Alerts/v1/SetAlertEscalationStatus"
-const Users = "http://115.110.192.133:502/api/LDPSecurity/v1/Users"
-const GetAlertNotesByAlertID ="http://115.110.192.133:502/api/Alerts/v1/GetAlertNotesByAlertID"
+const Alerts = "http://182.71.241.246:502/api/Alerts/v1/Alerts"
+const SetAlertEscalationStatus = "http://182.71.241.246:502/api/Alerts/v1/SetAlertEscalationStatus"
+const Users = "http://182.71.241.246:502/api/LDPSecurity/v1/Users"
+const GetAlertNotesByAlertID ="http://182.71.241.246:502/api/Alerts/v1/GetAlertNotesByAlertID"
 
 export const fetchAlertData = async (data) => {
   try {

@@ -52,7 +52,7 @@ const DashboardWrapper = () => {
   console.log(selectedFilter, "selectedFilter")
   useEffect(() => {
     axios
-      .post('http://115.110.192.133:502/api/Alerts/v1/GetAlertsMostUsedTages', {
+      .post('http://182.71.241.246:502/api/Alerts/v1/GetAlertsMostUsedTages', {
         orgID: selectedOrganization,
         toolID: 0,
         toolTypeID: 0,
@@ -71,7 +71,7 @@ const DashboardWrapper = () => {
       })
 
     axios
-      .post('http://115.110.192.133:502/api/UserActions/v1/UserActionsByUser', {
+      .post('http://182.71.241.246:502/api/UserActions/v1/UserActionsByUser', {
         userId: userID,
         numberofDays: selectedFilter,
       })
@@ -81,7 +81,7 @@ const DashboardWrapper = () => {
       })
 
     axios
-      .post('http://115.110.192.133:502/api/IncidentManagement/v1/GetMyInternalIncidents', {
+      .post('http://182.71.241.246:502/api/IncidentManagement/v1/GetMyInternalIncidents', {
         userID: userID,
         orgID: selectedOrganization,
         numberofDays: selectedFilter,
@@ -101,7 +101,7 @@ const DashboardWrapper = () => {
     const incidentconfig = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://115.110.192.133:502/api/IncidentManagement/v1/GetUnAttendedIncidentsCount',
+      url: 'http://182.71.241.246:502/api/IncidentManagement/v1/GetUnAttendedIncidentsCount',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/plain',
@@ -120,7 +120,7 @@ const DashboardWrapper = () => {
     const attendedalertsconfig = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://115.110.192.133:502/api/Alerts/v1/GetUnAttendedAletsCount',
+      url: 'http://182.71.241.246:502/api/Alerts/v1/GetUnAttendedAletsCount',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/plain',
@@ -141,7 +141,7 @@ const DashboardWrapper = () => {
     const falsepositivealertsconfig = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://115.110.192.133:502/api/Alerts/v1/GetFalsePositiveAlertsCount',
+      url: 'http://182.71.241.246:502/api/Alerts/v1/GetFalsePositiveAlertsCount',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/plain',
@@ -160,7 +160,7 @@ const DashboardWrapper = () => {
     const AlertsResolvedMeanTimeconfig = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://115.110.192.133:502/api/Alerts/v1/GetAlertsResolvedMeanTime',
+      url: 'http://182.71.241.246:502/api/Alerts/v1/GetAlertsResolvedMeanTime',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/plain',
@@ -171,7 +171,7 @@ const DashboardWrapper = () => {
     const organizationsconfig = {
       method: 'get',
       maxBodyLength: Infinity,
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/Organizations',
+      url: 'http://182.71.241.246:502/api/LDPlattform/v1/Organizations',
       headers: {
         Accept: 'text/plain',
       },
@@ -184,7 +184,7 @@ const DashboardWrapper = () => {
     const alertstatusconfig = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/MasterData',
+      url: 'http://182.71.241.246:502/api/LDPlattform/v1/MasterData',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/plain',

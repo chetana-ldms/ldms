@@ -172,7 +172,7 @@ const ChannelsPage = () => {
   }
   // useEffect(() => {
   //   // const orgId = 1;
-  //   const apiUrl = `http://115.110.192.133:502/api/LDCChannels/v1/Channels?orgId=${orgId}`;
+  //   const apiUrl = `http://182.71.241.246:502/api/LDCChannels/v1/Channels?orgId=${orgId}`;
 
   //   fetch(apiUrl)
   //     .then((response) => response.json())

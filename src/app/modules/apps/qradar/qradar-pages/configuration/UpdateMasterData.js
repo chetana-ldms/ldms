@@ -31,7 +31,7 @@ const UpdateMasterData = () => {
     })
     var config = {
       method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/MasterData/Update',
+      url: 'http://182.71.241.246:502/api/LDPlattform/v1/MasterData/Update',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/plain',
