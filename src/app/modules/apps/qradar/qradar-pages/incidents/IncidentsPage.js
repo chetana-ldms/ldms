@@ -10,6 +10,9 @@ import {
   fetchSetOfIncidents,
 } from "../../../../../api/IncidentsApi";
 import { fetchMasterData } from "../../../../../api/Api";
+import { ToastContainer } from 'react-toastify'
+import { notify, notifyFail } from '../components/notification/Notification'
+import 'react-toastify/dist/ReactToastify.css'
 import ChatApp from "./ChatApp";
 
 const IncidentsPage = () => {
@@ -28,6 +31,7 @@ const IncidentsPage = () => {
   const status = useRef();
   const sortOption = useRef();
   const [selectedIncident, setSelectedIncident] = useState({});
+  const [refreshParent, setRefreshParent] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageCount, setpageCount] = useState(0);
   const [limit, setLimit] = useState(20);
@@ -69,6 +73,9 @@ const IncidentsPage = () => {
   useEffect(() => {
     incidents();
   }, []);
+  useEffect(() => {
+    incidents();
+  }, [limit]);
   const handleSearch = async () => {
     const data = {
       orgID: orgId,
@@ -96,7 +103,16 @@ const IncidentsPage = () => {
     setSelectedIncident(item);
     console.log("Clicked incident:", item);
   };
-
+  const refreshIncidents = () => {
+    // Function to refresh the incidents data
+    incidents();
+  };
+  useEffect(() => {
+    if (refreshParent) {
+      incidents();
+      setRefreshParent(false);
+    }
+  }, [refreshParent]);
   const handlePageClick = async (data) => {
     let currentPage = data.selected + 1;
     const setOfAlertsData = await fetchSetOfIncidents(
@@ -120,6 +136,7 @@ const IncidentsPage = () => {
   return (
     <>
       <div className="card mb-5 mb-xl-8 bg-red incident-page">
+      <ToastContainer />
         <div className="card-body1 py-3">
           <div className="row">
             <div className="col-md-4 border-1 border-gray-300 border-end">
@@ -206,8 +223,7 @@ const IncidentsPage = () => {
                         {incident && incident.length > 0 ? (
                           incident.map((item) => (
                             <div
-                              className={`incident-section${item.isSelected === "true" ? " selected" : ""
-                                }`}
+                            className={`incident-section${selectedIncident === item ? " selected" : ""}`}
                               key={item.id}
                               onClick={() => handleIncidentClick(item)}
                             >
@@ -310,7 +326,10 @@ const IncidentsPage = () => {
                 orgId={sessionStorage.getItem("orgId")}
               />
             </div>
-            <IncidentDetails incident={selectedIncident} />
+            <IncidentDetails
+             incident={selectedIncident}
+             onRefreshIncidents={refreshIncidents}
+             />
           </div>
         </div>
       </div>

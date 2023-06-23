@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
 import { fetchMasterData } from "../../../../../api/Api";
 import { fetchUsers } from "../../../../../api/AlertsApi";
+import { notify, notifyFail } from '../components/notification/Notification';
 import {
   fetchAlertsByAlertIds,
   fetchGetIncidentHistory,
@@ -10,7 +11,7 @@ import {
   fetchUpdateIncident,
 } from "../../../../../api/IncidentsApi";
 
-const IncidentDetails = ({ incident }) => {
+const IncidentDetails = ({ incident, onRefreshIncidents }) => {
   const { subject, createdDate, incidentID } = incident;
   const id = incidentID;
   console.log(id, "id");
@@ -141,18 +142,7 @@ const IncidentDetails = ({ incident }) => {
       });
     }
   };
-  const incidents =  () => {
-    const data = {
-      orgID: orgId,
-      paging: {
-        rangeStart: 1,
-        rangeEnd: 20,
-      },
-      loggedInUserId: userID,
-    };
-      fetchIncidents(data);
-  };
-  const handleSubmit = (event, incidentData) => {
+  const handleSubmit = async (event, incidentData) => {
     event.preventDefault();
     const data = {
       incidentId: Number(id),
@@ -167,8 +157,13 @@ const IncidentDetails = ({ incident }) => {
       modifiedDate: date,
     };
 
-    fetchUpdateIncident(data);
-    incidents();
+    try {
+      await fetchUpdateIncident(data);
+      notify('Data Updated');
+      onRefreshIncidents();
+    } catch (error) {
+      notifyFail('Failed to update data');
+    }
   };
   useEffect(() => {
     const data = {
@@ -482,8 +477,6 @@ const IncidentDetails = ({ incident }) => {
                     className="p-2"
                     type="checkbox"
                     ref={checkboxRef}
-                  // checked={incidentData.significantIncident}
-                  // onChange={(event) => handleChange(event, "significantIncident")}
                   />
                   <label style={{ marginLeft: "8px" }}>
                     Significant Incident
@@ -648,23 +641,32 @@ const IncidentDetails = ({ incident }) => {
                   <div className="timeline-label">
                     {
                       incidentHistory && incidentHistory.length > 0 ? (
-                        incidentHistory.map(item => (
-                          <div className="timeline-item">
-                            <div className="timeline-label fw-bold text-gray-800 fs-6">
-                              {item.historyDate.split("T")[1].split(":").slice(0, 2).join(":")}
+                        incidentHistory.map(item => {
+                          const [_date, time] = item.historyDate.split("T");
+                          const formattedDate = _date;
+                          const formattedTime = time.split(":").slice(0, 2).join(":");
+
+                          return (
+                            <div className="timeline-item" key={item.id}>
+                              <div className="timeline-label fw-bold text-gray-800 fs-6">
+                                <span style={{ color: "red", fontSize: "9px" }}>{formattedDate}</span>{" "}
+                                <span style={{ color: "blue", fontSize: "10px" }}>{formattedTime}</span>
+                              </div>
+
+                              <div className="timeline-badge">
+                                <i className={`fa fa-genderless ${getRandomClass()} fs-1`}></i>
+                              </div>
+                              <div className="fw-semibold text-gray-700 ps-3 fs-7">
+                                {item.historyDescription}
+                              </div>
                             </div>
-                            <div className="timeline-badge">
-                              <i className={`fa fa-genderless ${getRandomClass()} fs-1`}></i>
-                            </div>
-                            <div className="fw-semibold text-gray-700 ps-3 fs-7">
-                              {item.historyDescription}
-                            </div>
-                          </div>
-                        ))
+                          );
+                        })
                       ) : (
                         <div className="text-gray-500">No data found</div>
                       )
                     }
+
 
                   </div>
                 </div>

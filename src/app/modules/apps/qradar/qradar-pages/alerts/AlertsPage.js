@@ -313,9 +313,9 @@ const AlertsPage = () => {
     if (actionsValue === "1") {
       const data = {
         orgId,
-        createDate:modifiedDate,
-        createUserId:userID,
-        alertIDs:selectedAlert
+        createDate: modifiedDate,
+        createUserId: userID,
+        alertIDs: selectedAlert
       }
       fetchCreateIncident(data);
       notify("Incident Created");
@@ -429,9 +429,8 @@ const AlertsPage = () => {
               <div className="m-0">
                 <a
                   href="#"
-                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${
-                    !isCheckboxSelected && "disabled"
-                  }`}
+                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${!isCheckboxSelected && "disabled"
+                    }`}
                   data-kt-menu-trigger="click"
                   data-kt-menu-placement="bottom-end"
                   onClick={onActionsClick}
@@ -1108,13 +1107,16 @@ const AlertsPage = () => {
                       <tr key={item.alertID}>
                         <td>
                           <div className="form-check form-check-sm form-check-custom form-check-solid">
+                            {item.alertIncidentMappingId > 0 && (
+                              <span>Done</span>
+                            )}
                             <input
                               className="form-check-input widget-13-check"
                               type="checkbox"
                               value={item.alertID}
                               name={item.alertID}
                               onChange={(e) => handleselectedAlert(item, e)}
-                              autocomplete="false"
+                              autoComplete="off"
                             />
                           </div>
                         </td>
