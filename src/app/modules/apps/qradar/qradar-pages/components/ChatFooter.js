@@ -22,6 +22,8 @@ const ChatFooter = ({ socket, username }) => {
 
   const handleAttachmentChange = (e) => {
     const file = e.target.files[0];
+    e.target.value = ""; // Clear the input value
+
     if (file) {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -32,7 +34,14 @@ const ChatFooter = ({ socket, username }) => {
           data: reader.result.split(",")[1],
         });
       };
+    } else {
+      // If no file is selected, clear the attachment state
+      setAttachment(null);
     }
+  };
+
+  const handleRemoveAttachment = () => {
+    setAttachment(null);
   };
 
   return (
@@ -47,13 +56,20 @@ const ChatFooter = ({ socket, username }) => {
             onChange={(e) => setMessage(e.target.value)}
           />
           {attachment && (
-            <input
-              type="text"
-              placeholder="Attachment"
-              className="attachment"
-              value={attachment.name}
-              readOnly
-            />
+            <div className="attachment-section">
+              <input
+                type="text"
+                placeholder="Attachment"
+                className="attachment"
+                value={attachment.name}
+                readOnly
+              />
+
+              <i
+                className="fa fa-times remove"
+                onClick={handleRemoveAttachment}
+              />
+            </div>
           )}
         </div>
         <label htmlFor="attachment" className="attachment__label">
