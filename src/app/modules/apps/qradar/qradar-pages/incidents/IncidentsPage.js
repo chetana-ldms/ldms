@@ -223,7 +223,7 @@ const IncidentsPage = () => {
                         {incident && incident.length > 0 ? (
                           incident.map((item) => (
                             <div
-                            className={`incident-section${selectedIncident === item ? " selected" : ""}`}
+                             className={`incident-section${selectedIncident === item ? " selected" : ""}`}
                               key={item.id}
                               onClick={() => handleIncidentClick(item)}
                             >
