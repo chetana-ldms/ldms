@@ -315,8 +315,8 @@ const AlertsPage = () => {
         orgId,
         createDate: modifiedDate,
         createUserId: userID,
-        alertIDs: selectedAlert
-      }
+        alertIDs: selectedAlert,
+      };
       fetchCreateIncident(data);
       notify("Incident Created");
       setTimeout(() => {
@@ -429,8 +429,9 @@ const AlertsPage = () => {
               <div className="m-0">
                 <a
                   href="#"
-                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${!isCheckboxSelected && "disabled"
-                    }`}
+                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${
+                    !isCheckboxSelected && "disabled"
+                  }`}
                   data-kt-menu-trigger="click"
                   data-kt-menu-placement="bottom-end"
                   onClick={onActionsClick}
@@ -466,9 +467,9 @@ const AlertsPage = () => {
                             </label>
                           </div>
                           <div>
-                            <button
-                              type="button"
-                              className="close"
+                            <div
+                              // type="button"
+                              className="close fs-20 text-muted pointer"
                               aria-label="Close"
                               onClick={handleCloseForm}
                             >
@@ -478,7 +479,7 @@ const AlertsPage = () => {
                               >
                                 &times;
                               </span>
-                            </button>
+                            </div>
                           </div>
                         </div>
                         <div>
@@ -1107,9 +1108,6 @@ const AlertsPage = () => {
                       <tr key={item.alertID}>
                         <td>
                           <div className="form-check form-check-sm form-check-custom form-check-solid">
-                            {item.alertIncidentMappingId > 0 && (
-                              <span>Done</span>
-                            )}
                             <input
                               className="form-check-input widget-13-check"
                               type="checkbox"
@@ -1118,6 +1116,15 @@ const AlertsPage = () => {
                               onChange={(e) => handleselectedAlert(item, e)}
                               autoComplete="off"
                             />
+                            {/* check incident creation */}
+                            <span>
+                              {item.alertIncidentMappingId > 0 && (
+                                <i
+                                  className="fa fa-circle-exclamation incident-icon"
+                                  title="Incident created"
+                                />
+                              )}
+                            </span>
                           </div>
                         </td>
                         <td
@@ -1258,8 +1265,8 @@ const AlertsPage = () => {
           </div>
           <div className="d-flex justify-content-end align-items-center pagination-bar">
             <ReactPaginate
-              previousLabel={"Previous"}
-              nextLabel={"Next"}
+              previousLabel=<i className="fa fa-chevron-left" />
+              nextLabel=<i className="fa fa-chevron-right" />
               pageCount={pageCount}
               marginPagesDisplayed={1}
               pageRangeDisplayed={15}
@@ -1276,7 +1283,7 @@ const AlertsPage = () => {
               activeClassName={"active"}
             />
             <div className="col-md-2 d-flex justify-content-start align-items-center">
-              <span className="col-md-6">Select page:</span>
+              <span className="col-md-4">Count: </span>
               <select
                 className="form-select form-select-sm"
                 value={limit}

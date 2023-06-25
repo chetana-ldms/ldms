@@ -10,9 +10,9 @@ import {
   fetchSetOfIncidents,
 } from "../../../../../api/IncidentsApi";
 import { fetchMasterData } from "../../../../../api/Api";
-import { ToastContainer } from 'react-toastify'
-import { notify, notifyFail } from '../components/notification/Notification'
-import 'react-toastify/dist/ReactToastify.css'
+import { ToastContainer } from "react-toastify";
+import { notify, notifyFail } from "../components/notification/Notification";
+import "react-toastify/dist/ReactToastify.css";
 import ChatApp from "./ChatApp";
 
 const IncidentsPage = () => {
@@ -136,7 +136,7 @@ const IncidentsPage = () => {
   return (
     <>
       <div className="card mb-5 mb-xl-8 bg-red incident-page">
-      <ToastContainer />
+        <ToastContainer />
         <div className="card-body1 py-3">
           <div className="row">
             <div className="col-md-4 border-1 border-gray-300 border-end">
@@ -181,7 +181,7 @@ const IncidentsPage = () => {
                             data-dropdown-parent="#kt_menu_637dc885a14bb"
                             data-allow-clear="true"
                             ref={status}
-                          // onChange={handleStatusChange}
+                            // onChange={handleStatusChange}
                           >
                             <option value="">Select</option>
                             {statusDropDown.length > 0 &&
@@ -194,7 +194,7 @@ const IncidentsPage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="mt-2 bd-highlight mt-4">Sort by</div>
+                    <div className="mt-2 bd-highlight mt-5">Sort by</div>
                     <div className="mt-2 bd-highlight">
                       <div className="w-120px me-0">
                         <select
@@ -204,7 +204,7 @@ const IncidentsPage = () => {
                           data-dropdown-parent="#kt_menu_637dc885a14bb"
                           data-allow-clear="true"
                           ref={sortOption}
-                        // onChange={handleSortOptionChange}
+                          // onChange={handleSortOptionChange}
                         >
                           <option value="">Select</option>
                           {incidentSortOptions.length > 0 &&
@@ -223,7 +223,9 @@ const IncidentsPage = () => {
                         {incident && incident.length > 0 ? (
                           incident.map((item) => (
                             <div
-                             className={`incident-section${selectedIncident === item ? " selected" : ""}`}
+                              className={`incident-section${
+                                selectedIncident === item ? " selected" : ""
+                              }`}
                               key={item.id}
                               onClick={() => handleIncidentClick(item)}
                             >
@@ -280,40 +282,38 @@ const IncidentsPage = () => {
                         )}
                       </>
                     </div>
-
-                    <div className="d-flex align-items-center justify-content-between pagination-bar">
-                      <ReactPaginate
-                        previousLabel={"<"}
-                        nextLabel={">"}
-                        pageCount={pageCount}
-                        marginPagesDisplayed={1}
-                        pageRangeDisplayed={2}
-                        onPageChange={handlePageClick}
-                        containerClassName={"pagination justify-content-end"}
-                        pageClassName={"page-item"}
-                        pageLinkClassName={"page-link"}
-                        previousClassName={"page-item custom-previous"}
-                        previousLinkClassName={"page-link custom-previous-link"}
-                        nextClassName={"page-item custom-next"}
-                        nextLinkClassName={"page-link custom-next-link"}
-                        breakClassName={"page-item"}
-                        breakLinkClassName={"page-link"}
-                        activeClassName={"active"}
-                      />
-                      <div className="col-md-4 d-flex justify-content-end align-items-center">
-                        <span className="col-md-4">Pages:</span>
-                        <select
-                          className="form-select form-select-sm"
-                          value={limit}
-                          onChange={handlePageSelect}
-                        >
-                          <option value={5}>5</option>
-                          <option value={10}>10</option>
-                          <option value={15}>15</option>
-                          <option value={20}>20</option>
-                        </select>
-                      </div>
-
+                  </div>
+                  <div className="d-flex align-items-center justify-content-between pagination-bar pt-5 border-top">
+                    <ReactPaginate
+                      previousLabel=<i className="fa fa-chevron-left" />
+                      nextLabel=<i className="fa fa-chevron-right" />
+                      pageCount={pageCount}
+                      marginPagesDisplayed={1}
+                      pageRangeDisplayed={2}
+                      onPageChange={handlePageClick}
+                      containerClassName={"pagination justify-content-end"}
+                      pageClassName={"page-item"}
+                      pageLinkClassName={"page-link"}
+                      previousClassName={"page-item custom-previous"}
+                      previousLinkClassName={"page-link custom-previous-link"}
+                      nextClassName={"page-item custom-next"}
+                      nextLinkClassName={"page-link custom-next-link"}
+                      breakClassName={"page-item"}
+                      breakLinkClassName={"page-link"}
+                      activeClassName={"active"}
+                    />
+                    <div className="d-flex justify-content-end align-items-center">
+                      {/* <span className="col-md-4">Pages:</span> */}
+                      <select
+                        className="form-select form-select-sm"
+                        value={limit}
+                        onChange={handlePageSelect}
+                      >
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={15}>15</option>
+                        <option value={20}>20</option>
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -327,9 +327,9 @@ const IncidentsPage = () => {
               />
             </div>
             <IncidentDetails
-             incident={selectedIncident}
-             onRefreshIncidents={refreshIncidents}
-             />
+              incident={selectedIncident}
+              onRefreshIncidents={refreshIncidents}
+            />
           </div>
         </div>
       </div>

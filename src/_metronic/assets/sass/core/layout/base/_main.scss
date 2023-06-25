@@ -269,6 +269,10 @@ body {
   margin: 0 auto;
 }
 
+.pointer{
+  cursor: pointer;
+}
+
 .fs-10 {
   font-size: $fs-10 !important;
 }
@@ -421,6 +425,10 @@ body {
   .card-body {
     padding: 20px !important;
   }
+  .incident-icon{
+    margin-left: 10px;
+    color: #ea790e;
+  }
 }
 
 //Table
@@ -541,7 +549,7 @@ body {
     &:focus {
       background-color: #e1e9f5;
     }
-    &.active {
+    &.selected {
       background-color: #e1e9f5;
     }
   }

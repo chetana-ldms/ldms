@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
 import { fetchMasterData } from "../../../../../api/Api";
 import { fetchUsers } from "../../../../../api/AlertsApi";
-import { notify, notifyFail } from '../components/notification/Notification';
+import { notify, notifyFail } from "../components/notification/Notification";
 import {
   fetchAlertsByAlertIds,
   fetchGetIncidentHistory,
@@ -27,7 +27,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
   });
   const checkboxRef = useRef(null);
   const [incidentHistory, setIncidentHistory] = useState([]);
-  const [alertsList, setAlertsList] = useState({})
+  const [alertsList, setAlertsList] = useState({});
   const [ldp_security_user, setldp_security_user] = useState([]);
   const [incidentData, setIncidentData] = useState({
     incidentStatus: "",
@@ -40,10 +40,10 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
     type: "",
     owner: "",
     ownerName: "",
-    alertId: ""
+    alertId: "",
   });
 
-  const alertId = incidentData.alertId
+  const alertId = incidentData.alertId;
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchUsers(orgId);
@@ -80,7 +80,8 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
         const data = await fetchIncidentDetails(id);
         if (data !== undefined) {
           const { alertIncidentMapping } = data;
-          const alertId = alertIncidentMapping.alertIncidentMappingDtl[0].alertid;
+          const alertId =
+            alertIncidentMapping.alertIncidentMappingDtl[0].alertid;
 
           setIncidentData((prevIncidentData) => ({
             ...prevIncidentData,
@@ -159,10 +160,10 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
 
     try {
       await fetchUpdateIncident(data);
-      notify('Data Updated');
+      notify("Data Updated");
       onRefreshIncidents();
     } catch (error) {
-      notifyFail('Failed to update data');
+      notifyFail("Failed to update data");
     }
   };
   useEffect(() => {
@@ -202,7 +203,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
     "text-warning",
     "text-info",
     "text-dark",
-    "text-muted"
+    "text-muted",
   ];
 
   const getRandomClass = () => {
@@ -227,8 +228,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
             <ul className="nav nav-tabs nav-line-tabs mb-5 fs-8">
               <li className="nav-item">
                 <a
-                  className={`nav-link ${activeTab === "general" ? "active" : ""
-                    }`}
+                  className={`nav-link ${
+                    activeTab === "general" ? "active" : ""
+                  }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_1"
                   onClick={() => setActiveTab("general")}
@@ -238,8 +240,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${activeTab === "alerts" ? "active" : ""
-                    }`}
+                  className={`nav-link ${
+                    activeTab === "alerts" ? "active" : ""
+                  }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_2"
                   onClick={() => setActiveTab("alerts")}
@@ -249,8 +252,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${activeTab === "playbooks" ? "active" : ""
-                    }`}
+                  className={`nav-link ${
+                    activeTab === "playbooks" ? "active" : ""
+                  }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_3"
                   onClick={() => setActiveTab("playbooks")}
@@ -260,8 +264,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${activeTab === "observables" ? "active" : ""
-                    }`}
+                  className={`nav-link ${
+                    activeTab === "observables" ? "active" : ""
+                  }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_4"
                   onClick={() => setActiveTab("observables")}
@@ -271,8 +276,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${activeTab === "timeline" ? "active" : ""
-                    }`}
+                  className={`nav-link ${
+                    activeTab === "timeline" ? "active" : ""
+                  }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_5"
                   onClick={() => setActiveTab("timeline")}
@@ -473,11 +479,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                 </div>
                 <div className="checkbox-wrapper">
-                  <input
-                    className="p-2"
-                    type="checkbox"
-                    ref={checkboxRef}
-                  />
+                  <input className="p-2" type="checkbox" ref={checkboxRef} />
                   <label style={{ marginLeft: "8px" }}>
                     Significant Incident
                   </label>
@@ -521,7 +523,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                           >
                             <div className="text-dark mb-1">
                               <a href="#" className="text-dark">
-                                <span className="fw-bold">{alertsList?.name}</span>
+                                <span className="fw-bold">
+                                  {alertsList?.name}
+                                </span>
                               </a>
                             </div>
                           </div>
@@ -639,35 +643,40 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               <div className="tab-pane fade" id="kt_tab_pane_5" role="tabpanel">
                 <div className="card-body pt-6 h-600px">
                   <div className="timeline-label">
-                    {
-                      incidentHistory && incidentHistory.length > 0 ? (
-                        incidentHistory.map(item => {
-                          const [_date, time] = item.historyDate.split("T");
-                          const formattedDate = _date;
-                          const formattedTime = time.split(":").slice(0, 2).join(":");
+                    {incidentHistory && incidentHistory.length > 0 ? (
+                      incidentHistory.map((item) => {
+                        const [_date, time] = item.historyDate.split("T");
+                        const formattedDate = _date;
+                        const formattedTime = time
+                          .split(":")
+                          .slice(0, 2)
+                          .join(":");
 
-                          return (
-                            <div className="timeline-item" key={item.id}>
-                              <div className="timeline-label fw-bold text-gray-800 fs-6">
-                                <span style={{ color: "red", fontSize: "9px" }}>{formattedDate}</span>{" "}
-                                <span style={{ color: "blue", fontSize: "10px" }}>{formattedTime}</span>
-                              </div>
-
-                              <div className="timeline-badge">
-                                <i className={`fa fa-genderless ${getRandomClass()} fs-1`}></i>
-                              </div>
-                              <div className="fw-semibold text-gray-700 ps-3 fs-7">
-                                {item.historyDescription}
-                              </div>
+                        return (
+                          <div className="timeline-item" key={item.id}>
+                            <div className="timeline-label fw-bold text-gray-800 fs-6">
+                              <span style={{ fontSize: "9px" }}>
+                                {formattedDate}
+                              </span>{" "}
+                              <span style={{ color: "blue", fontSize: "10px" }}>
+                                {formattedTime}
+                              </span>
                             </div>
-                          );
-                        })
-                      ) : (
-                        <div className="text-gray-500">No data found</div>
-                      )
-                    }
 
-
+                            <div className="timeline-badge">
+                              <i
+                                className={`fa fa-genderless ${getRandomClass()} fs-1`}
+                              ></i>
+                            </div>
+                            <div className="fw-semibold text-gray-700 ps-3 fs-7">
+                              {item.historyDescription}
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="text-gray-500">No data found</div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -677,7 +686,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                     <button
                       type="submit"
                       onClick={(event) => handleSubmit(event, incidentData)}
-                      className="btn btn-primary"
+                      className="btn btn-primary btn-new btn-small"
                     >
                       Save Changes
                     </button>
