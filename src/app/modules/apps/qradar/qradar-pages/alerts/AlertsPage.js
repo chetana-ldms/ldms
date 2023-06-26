@@ -170,7 +170,7 @@ const AlertsPage = () => {
   }, []);
 
   const handleCloseForm = () => {
-    notifyFail("Data not Updated");
+    // notifyFail("Data not Updated");
     setShowForm(false);
   };
   const handleIgnoreSubmit = async () => {

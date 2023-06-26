@@ -1,3 +1,6 @@
+const Delete="http://182.71.241.246:502/api/File/v1/Files/Delete"
+const Upload="http://182.71.241.246:502/api/File/v1/Files/Upload"
+const GetUploadedFilesListByChannelId="http://182.71.241.246:502/api/File/v1/Files/GetUploadedFilesListByChannelId"
 const SubItemsByOrgChannel = `http://182.71.241.246:502/api/LDCChannels/v1/Channels/SubItemsByOrgChannel`
 const Questions = "http://182.71.241.246:502/api/LDCChannels/v1/Channel/Questions"
 const QuestionsAdd = "http://182.71.241.246:502/api/LDCChannels/v1/Channels/Questions/Add"
@@ -14,6 +17,47 @@ const ChannelsAdd="http://182.71.241.246:502/api/LDCChannels/v1/Channels/Add"
 const ChannelsUpdate= "http://182.71.241.246:502/api/LDCChannels/v1/Channels/Update"
 const ChannelDetails="http://182.71.241.246:502/api/LDCChannels/v1/ChannelDetails"
 
+export const fetchDelete = async (formData) => {
+  try {
+    const response = await fetch(`${Delete}`, {
+      method: 'POST',
+      body: formData,
+    });
+  
+    const responseData = await response.json();
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchUpload = async (formData) => {
+  try {
+      const response = await fetch(`${Upload}`, {
+          method: 'POST',
+          body: formData,
+      });
+
+      const responseData = await response.json();
+      return responseData
+  } catch (error) {
+      console.log(error)
+  }
+}
+export const fetchGetUploadedFilesListByChannelId = async (channelId) => {
+  try {
+    const response = await fetch(`${GetUploadedFilesListByChannelId}?channelId=${channelId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const responseData = await response.json();
+    const uploadedFileList = responseData.uploadedFileList;
+    return uploadedFileList;
+  } catch (error) {
+    console.log(error);
+  }
+};
 export const fetchSubItemsByOrgChannel = async (data) => {
     try {
         const response = await fetch(`${SubItemsByOrgChannel}`, {

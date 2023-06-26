@@ -25,6 +25,7 @@ const IncidentsPage = () => {
   const [showChat, setShowChat] = useState(false);
   const [incident, setIncident] = useState([]);
   console.log(incident, "incident");
+  const[totalIncidentsCount, setTotalIncidentsCount] =useState(null)
   const [statusDropDown, setStatusDropDown] = useState([]);
   const [incidentSortOptions, setIncidentSortOptions] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -59,9 +60,10 @@ const IncidentsPage = () => {
     };
     try {
       const response = await fetchIncidents(data);
-      setIncident(response);
-      // const total = response.totalOffenseCount;
-      const total = 40;
+      setIncident(response.incidentList);
+      setTotalIncidentsCount(response.totalIncidentsCount)
+      const total = response.totalIncidentsCount;
+      // const total = 40;
 
       setpageCount(Math.ceil(total / limit));
     } catch (error) {
@@ -84,9 +86,9 @@ const IncidentsPage = () => {
         rangeEnd: 100,
       },
       loggedInUserId: userID,
-      statusId: status.current?.value,
-      searchText: searchValue,
-      sortOptionId: sortOption.current?.value,
+        statusId: status.current?.value || 0 ,
+        searchText: searchValue || "",
+        sortOptionId: sortOption.current?.value  || 0,
       // toolID:
       // toolTypeID
     };
@@ -121,7 +123,7 @@ const IncidentsPage = () => {
       userID,
       limit
     );
-    setIncident(setOfAlertsData);
+    setIncident(setOfAlertsData.incidentList);
     // setFilteredAlertDate(
     //   setOfAlertsData.filter((item) => item.ownerUserID === userID)
     // );
@@ -145,8 +147,9 @@ const IncidentsPage = () => {
                   <div className="p-1 bd-highlight">
                     <h6 className="card-title align-items-start flex-column pt-2">
                       <span className="card-label fw-bold fs-5 mb-1">
-                        Incidents <span className="text-black-50">(2)</span>
+                        Incidents <span className="text-black-50">({totalIncidentsCount})</span>
                       </span>
+
                     </h6>
                   </div>
                   <div className="p-1 bd-highlight"></div>
@@ -181,7 +184,7 @@ const IncidentsPage = () => {
                             data-dropdown-parent="#kt_menu_637dc885a14bb"
                             data-allow-clear="true"
                             ref={status}
-                            // onChange={handleStatusChange}
+                          // onChange={handleStatusChange}
                           >
                             <option value="">Select</option>
                             {statusDropDown.length > 0 &&
@@ -204,7 +207,7 @@ const IncidentsPage = () => {
                           data-dropdown-parent="#kt_menu_637dc885a14bb"
                           data-allow-clear="true"
                           ref={sortOption}
-                          // onChange={handleSortOptionChange}
+                        // onChange={handleSortOptionChange}
                         >
                           <option value="">Select</option>
                           {incidentSortOptions.length > 0 &&
@@ -223,9 +226,8 @@ const IncidentsPage = () => {
                         {incident && incident.length > 0 ? (
                           incident.map((item) => (
                             <div
-                              className={`incident-section${
-                                selectedIncident === item ? " selected" : ""
-                              }`}
+                              className={`incident-section${selectedIncident === item ? " selected" : ""
+                                }`}
                               key={item.id}
                               onClick={() => handleIncidentClick(item)}
                             >

@@ -37,8 +37,7 @@ export const fetchIncidents = async (data) => {
         });
 
         const responseData = await response.json();
-        const incidentList = responseData.incidentList
-        return incidentList
+        return responseData
     } catch (error) {
         console.log(error)
     }
