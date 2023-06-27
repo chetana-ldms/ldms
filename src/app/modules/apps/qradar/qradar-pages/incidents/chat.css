@@ -92,7 +92,18 @@
   padding: 20px;
   overflow-y: scroll;
 }
-
+.message__container ul{
+  padding: 0 !important;
+}
+.message__container li{
+  margin-bottom: 15px;
+  clear: both;
+  overflow: hidden;
+}
+.message__container li img{
+  border-radius: 50%;
+  margin-right: 3px;
+}
 .message__container > * {
   margin-bottom: 10px;
 }
@@ -167,20 +178,21 @@
 .message__recipient {
 background-color: #6886F4;
 color: #fff;
-width: 300px;
+width: 250px;
 padding: 10px;
-border-radius: 10px;
+border-radius: 8px;
 font-size: 15px;
+float: right;
 }
 .message__recipient p{
   margin-bottom: 0;
 }
 .message__sender{
 background-color: #EEF1FF;
-max-width: 300px;
+max-width: 250px;
 padding: 10px;
-border-radius: 10px;
-margin-left: auto;
+border-radius: 8px;
+margin-left: 0;
 font-size: 15px;
 }
 .message__sender p{
@@ -194,8 +206,14 @@ font-size: 15px;
   margin-bottom: 5px;
 }
 .sender__name {
+  text-align: left;
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+.reciever__name{
   text-align: right;
   font-weight: bold;
+  margin-bottom: 3px;
 }
 .message__status {
   position: fixed;

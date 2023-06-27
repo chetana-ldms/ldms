@@ -25,7 +25,7 @@ const IncidentsPage = () => {
   const [showChat, setShowChat] = useState(false);
   const [incident, setIncident] = useState([]);
   console.log(incident, "incident");
-  const[totalIncidentsCount, setTotalIncidentsCount] =useState(null)
+  const [totalIncidentsCount, setTotalIncidentsCount] = useState(null);
   const [statusDropDown, setStatusDropDown] = useState([]);
   const [incidentSortOptions, setIncidentSortOptions] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -61,7 +61,7 @@ const IncidentsPage = () => {
     try {
       const response = await fetchIncidents(data);
       setIncident(response.incidentList);
-      setTotalIncidentsCount(response.totalIncidentsCount)
+      setTotalIncidentsCount(response.totalIncidentsCount);
       const total = response.totalIncidentsCount;
       // const total = 40;
 
@@ -86,9 +86,9 @@ const IncidentsPage = () => {
         rangeEnd: 100,
       },
       loggedInUserId: userID,
-        statusId: status.current?.value || 0 ,
-        searchText: searchValue || "",
-        sortOptionId: sortOption.current?.value  || 0,
+      statusId: status.current?.value || 0,
+      searchText: searchValue || "",
+      sortOptionId: sortOption.current?.value || 0,
       // toolID:
       // toolTypeID
     };
@@ -136,7 +136,7 @@ const IncidentsPage = () => {
   };
   useEffect(() => {
     if (incident.length > 0) {
-      setSelectedIncident(incident[0]); 
+      setSelectedIncident(incident[0]);
     }
   }, [incident]);
 
@@ -152,9 +152,11 @@ const IncidentsPage = () => {
                   <div className="p-1 bd-highlight">
                     <h6 className="card-title align-items-start flex-column pt-2">
                       <span className="card-label fw-bold fs-5 mb-1">
-                        Incidents <span className="text-black-50">({totalIncidentsCount})</span>
+                        Incidents{" "}
+                        <span className="text-black-50">
+                          ({totalIncidentsCount})
+                        </span>
                       </span>
-
                     </h6>
                   </div>
                   <div className="p-1 bd-highlight"></div>
@@ -189,7 +191,7 @@ const IncidentsPage = () => {
                             data-dropdown-parent="#kt_menu_637dc885a14bb"
                             data-allow-clear="true"
                             ref={status}
-                          // onChange={handleStatusChange}
+                            // onChange={handleStatusChange}
                           >
                             <option value="">Select</option>
                             {statusDropDown.length > 0 &&
@@ -212,7 +214,7 @@ const IncidentsPage = () => {
                           data-dropdown-parent="#kt_menu_637dc885a14bb"
                           data-allow-clear="true"
                           ref={sortOption}
-                        // onChange={handleSortOptionChange}
+                          // onChange={handleSortOptionChange}
                         >
                           <option value="">Select</option>
                           {incidentSortOptions.length > 0 &&
@@ -231,8 +233,9 @@ const IncidentsPage = () => {
                         {incident && incident.length > 0 ? (
                           incident.map((item, index) => (
                             <div
-                              className={`incident-section${selectedIncident === item ? " selected" : ""
-                                }`}
+                              className={`incident-section${
+                                selectedIncident === item ? " selected" : ""
+                              }`}
                               key={item.id}
                               onClick={() => handleIncidentClick(item)}
                             >
@@ -247,12 +250,9 @@ const IncidentsPage = () => {
                               </div>
                               <div className="row">
                                 <div className="d-flex justify-content-between">
-                                  <div className="p-2 bd-highlight">
-                                    <div className="badge text-black fw-normal">
+                                  <div className="pt-2 bd-highlight">
+                                    <div className="text-black fw-normal">
                                       {item.incidentStatusName}
-                                      <div className="badge text-black fw-normal">
-                                        {/* <i className="fas fa-copy"></i> */}
-                                      </div>
                                     </div>
                                   </div>
                                   <div className="pt-3 bd-highlight">

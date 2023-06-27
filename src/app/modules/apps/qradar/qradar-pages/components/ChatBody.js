@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchGetChatHistory } from "../../../../../api/IncidentsApi";
+import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
 
 const ChatBody = ({
   messages,
@@ -7,7 +8,7 @@ const ChatBody = ({
   lastMessageRef,
   selectedIncident,
   refreshChatHistory,
-  setRefreshChatHistory
+  setRefreshChatHistory,
 }) => {
   const loggedInUserName = sessionStorage.getItem("userName");
   const { incidentID } = selectedIncident;
@@ -21,7 +22,7 @@ const ChatBody = ({
       const data = {
         orgId: orgId,
         subject: "Incident",
-        subjectRefId: id
+        subjectRefId: id,
       };
       const chatHistory = await fetchGetChatHistory(data);
       setChatHistory(chatHistory || []);
@@ -34,11 +35,13 @@ const ChatBody = ({
   const exportChatHistory = () => {
     const filename = `Chat_History_Incident_${id}.txt`;
     const formattedChatHistory = chatHistory
-      .map(message => `${message.fromUserName}: ${message.chatMessage}`)
+      .map((message) => `${message.fromUserName}: ${message.chatMessage}`)
       .join("\n");
 
     const element = document.createElement("a");
-    element.href = "data:text/plain;charset=utf-8," + encodeURIComponent(formattedChatHistory);
+    element.href =
+      "data:text/plain;charset=utf-8," +
+      encodeURIComponent(formattedChatHistory);
     element.download = filename;
     element.click();
   };
@@ -46,17 +49,48 @@ const ChatBody = ({
   return (
     <>
       <header className="chat__mainHeader">
-        <span>User: {loggedInUserName}</span>
-        <button onClick={exportChatHistory}>Download Chat History</button>
+        <span>{loggedInUserName}</span>
+        <span className="pointer" onClick={exportChatHistory}>
+          <i className="fa fa-download" title="download chat history" />
+        </span>
       </header>
-      <div>
-        <ul style={{ listStyle: "none", padding: 10 }}>
+      <div className="message__container">
+        <ul
+          className="message__chats"
+          style={{ listStyle: "none", padding: 10 }}
+        >
           {chatHistory.length > 0 ? (
             chatHistory.map((message, index) => (
               <li key={index}>
-                <span>{message.fromUserName}</span>
-                <br />
-                {message.chatMessage}
+                {/* <span>{message.fromUserName}</span> */}
+                {message.fromUserName === loggedInUserName ? (
+                  <p className="sender__name">
+                    <img
+                      alt="Logo"
+                      src={toAbsoluteUrl("/media/avatars/300-1.jpg")}
+                      width="30"
+                    />
+                    You
+                  </p>
+                ) : (
+                  <p className="reciever__name">
+                    {message.fromUserName}{" "}
+                    <img
+                      alt="Logo"
+                      src={toAbsoluteUrl("/media/avatars/300-4.jpg")}
+                      width="30"
+                    />
+                  </p>
+                )}
+                <div
+                  className={
+                    message.fromUserName === loggedInUserName
+                      ? "message__sender"
+                      : "message__recipient"
+                  }
+                >
+                  <p>{message.chatMessage}</p>
+                </div>
               </li>
             ))
           ) : (
@@ -64,8 +98,26 @@ const ChatBody = ({
           )}
         </ul>
       </div>
+      <div className="attachment__container">
+        {chatHistory.length > 0 &&
+          chatHistory.map((message, index) => (
+            <div key={index} className="attachment__item">
+              {message.attachment && (
+                <div>
+                  <a
+                    href={message.attachment}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Attachment: {message.attachment}
+                  </a>
+                </div>
+              )}
+            </div>
+          ))}
+      </div>
 
-      <div className="message__container">
+      {/* <div className="message__container">
         {messages.map((message) => (
           <div className="message__chats" key={message.id}>
             {message.name === loggedInUserName ? (
@@ -99,7 +151,7 @@ const ChatBody = ({
           <p>{typingStatus}</p>
         </div>
         <div ref={lastMessageRef} />
-      </div>
+      </div> */}
     </>
   );
 };
