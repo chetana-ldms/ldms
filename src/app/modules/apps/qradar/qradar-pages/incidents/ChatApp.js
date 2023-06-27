@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
-import ChatPage from "../components/ChatPage"; 
+import ChatPage from "../components/ChatPage";
 import { fetchGetChatHistory } from "../../../../../api/IncidentsApi";
 
 const ChatApp = ({ selectedIncident }) => {
@@ -12,7 +12,7 @@ const ChatApp = ({ selectedIncident }) => {
   useEffect(() => {
     // Create a socket connection
     console.log("Attempting to establish socket connection...");
-    const socketInstance = io("http://localhost:4000");
+    const socketInstance = io("http://182.71.241.246:4000");
     setSocket(socketInstance);
     console.log("Socket:", socketInstance);
 
@@ -22,8 +22,6 @@ const ChatApp = ({ selectedIncident }) => {
     };
   }, [userId, userName, orgId]);
 
-
-
   return (
     <div className="app-chat">
       {socket ? (
@@ -31,8 +29,6 @@ const ChatApp = ({ selectedIncident }) => {
       ) : (
         <div>Loading...</div>
       )}
-
-      
     </div>
   );
 };
