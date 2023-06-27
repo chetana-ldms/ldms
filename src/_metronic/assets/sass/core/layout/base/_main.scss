@@ -802,6 +802,35 @@ body {
   }
 }
 
+.teams-channel{
+  .dropdown-toggle{
+    background-color: transparent;
+    border: 1px solid #ccc !important;
+    padding: 5px 10px !important;
+    img{
+      vertical-align: top;
+    }
+    &:hover,&:focus{
+      background-color: transparent !important;
+      color: #333 !important;
+      &:not(.btn-active){
+        background-color: transparent !important;
+      }
+    }
+  }
+  .dropdown-item{
+    margin-bottom: 5px;
+    &:hover{
+      background-color: #7980e6;
+      color: white;
+    }
+  }
+}
+
+.teams-modal{
+  
+}
+
 //Channels page
 .channels-page {
   .channel-title {
