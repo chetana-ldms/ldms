@@ -164,6 +164,14 @@ body {
   }
 }
 
+//Form css
+
+form{
+  select{
+    padding: 0 12px !important;
+  }
+}
+
 // General mode
 .app-main {
   display: flex;
@@ -426,7 +434,7 @@ body {
     padding: 20px !important;
   }
   .incident-icon{
-    margin-left: 10px;
+    margin-left: 30px;
     color: #ea790e;
   }
 }
