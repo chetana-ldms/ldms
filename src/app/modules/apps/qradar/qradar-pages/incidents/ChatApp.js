@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
-import ChatPage from "../components/ChatPage";
+import ChatPage from "../components/ChatPage"; 
+import { fetchGetChatHistory } from "../../../../../api/IncidentsApi";
 
-const ChatApp = () => {
+const ChatApp = ({ selectedIncident }) => {
   const [socket, setSocket] = useState(null);
   const userId = sessionStorage.getItem("userId");
   const orgId = sessionStorage.getItem("orgId");
@@ -21,9 +22,17 @@ const ChatApp = () => {
     };
   }, [userId, userName, orgId]);
 
+
+
   return (
     <div className="app-chat">
-      {socket ? <ChatPage socket={socket} /> : <div>Loading...</div>}
+      {socket ? (
+        <ChatPage socket={socket} selectedIncident={selectedIncident} />
+      ) : (
+        <div>Loading...</div>
+      )}
+
+      
     </div>
   );
 };

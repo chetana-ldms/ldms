@@ -134,6 +134,11 @@ const IncidentsPage = () => {
     const selectedPerPage = event.target.value;
     setLimit(selectedPerPage);
   };
+  useEffect(() => {
+    if (incident.length > 0) {
+      setSelectedIncident(incident[0]); 
+    }
+  }, [incident]);
 
   return (
     <>
@@ -224,7 +229,7 @@ const IncidentsPage = () => {
                     <div className="incident-list">
                       <>
                         {incident && incident.length > 0 ? (
-                          incident.map((item) => (
+                          incident.map((item, index) => (
                             <div
                               className={`incident-section${selectedIncident === item ? " selected" : ""
                                 }`}
@@ -326,6 +331,7 @@ const IncidentsPage = () => {
                 userId={sessionStorage.getItem("userId")}
                 userName={sessionStorage.getItem("userName")}
                 orgId={sessionStorage.getItem("orgId")}
+                selectedIncident={selectedIncident}
               />
             </div>
             <IncidentDetails

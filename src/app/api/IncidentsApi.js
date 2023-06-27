@@ -5,6 +5,8 @@ const IncidentDetails = "http://182.71.241.246:502/api/IncidentManagement/v1/Inc
 const UpdateIncident = "http://182.71.241.246:502/api/IncidentManagement/v1/UpdateIncident"
 const GetIncidentHistory = "http://182.71.241.246:502/api/AlertHistory/v1/GetIncidentHistory"
 const AlertsByAlertIds = "http://182.71.241.246:502/api/Alerts/v1/AlertsByAlertIds"
+const GetChatHistory="http://182.71.241.246:502/api/Chat/v1/GetChatHistory"
+const AddChatMessage="http://182.71.241.246:502/api/Chat/v1/AddChatMessage"
 
 export const fetchCreateIncident = async (data) => {
     try {
@@ -142,6 +144,43 @@ export const fetchAlertsByAlertIds = async (data) => {
         const responseData = await response.json();
         const alertsList = responseData.alertsList[0]
         return alertsList
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const fetchGetChatHistory = async (data) => {
+    try {
+        const response = await fetch(`${GetChatHistory}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ...data
+            }),
+        });
+
+        const responseData = await response.json();
+        const chatHistory = responseData.chatHistory
+        return chatHistory
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const fetchAddChatMessage = async (data) => {
+    try {
+        const response = await fetch(`${AddChatMessage}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ...data
+            }),
+        });
+
+        const responseData = await response.json();
+        return responseData
     } catch (error) {
         console.log(error)
     }

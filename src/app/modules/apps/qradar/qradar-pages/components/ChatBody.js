@@ -1,12 +1,69 @@
-// ChatBody.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { fetchGetChatHistory } from "../../../../../api/IncidentsApi";
 
-const ChatBody = ({ messages, typingStatus, lastMessageRef }) => {
+const ChatBody = ({
+  messages,
+  typingStatus,
+  lastMessageRef,
+  selectedIncident,
+  refreshChatHistory,
+  setRefreshChatHistory
+}) => {
   const loggedInUserName = sessionStorage.getItem("userName");
+  const { incidentID } = selectedIncident;
+  const id = incidentID;
+  const orgId = sessionStorage.getItem("orgId");
+  const [chatHistory, setChatHistory] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      // Fetch chat history for the selected incident
+      const data = {
+        orgId: orgId,
+        subject: "Incident",
+        subjectRefId: id
+      };
+      const chatHistory = await fetchGetChatHistory(data);
+      setChatHistory(chatHistory || []);
+      setRefreshChatHistory(false); // Reset the refresh trigger
+    };
+
+    fetchData();
+  }, [id, refreshChatHistory, setRefreshChatHistory]);
+
+  const exportChatHistory = () => {
+    const filename = `Chat_History_Incident_${id}.txt`;
+    const formattedChatHistory = chatHistory
+      .map(message => `${message.fromUserName}: ${message.chatMessage}`)
+      .join("\n");
+
+    const element = document.createElement("a");
+    element.href = "data:text/plain;charset=utf-8," + encodeURIComponent(formattedChatHistory);
+    element.download = filename;
+    element.click();
+  };
 
   return (
     <>
-      <header className="chat__mainHeader">User: {loggedInUserName}</header>
+      <header className="chat__mainHeader">
+        <span>User: {loggedInUserName}</span>
+        <button onClick={exportChatHistory}>Download Chat History</button>
+      </header>
+      <div>
+        <ul style={{ listStyle: "none", padding: 10 }}>
+          {chatHistory.length > 0 ? (
+            chatHistory.map((message, index) => (
+              <li key={index}>
+                <span>{message.fromUserName}</span>
+                <br />
+                {message.chatMessage}
+              </li>
+            ))
+          ) : (
+            <div>No chat history available.</div>
+          )}
+        </ul>
+      </div>
 
       <div className="message__container">
         {messages.map((message) => (
