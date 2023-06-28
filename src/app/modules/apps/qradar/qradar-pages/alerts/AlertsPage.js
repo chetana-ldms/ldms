@@ -49,7 +49,7 @@ const AlertsPage = () => {
   const [selectedRow, setSelectedRow] = useState({});
   const [showPopup, setShowPopup] = useState(false);
   const [selectCheckBox, setSelectCheckBox] = useState(null);
-  console.log(selectCheckBox, "selectCheckBox")
+  console.log(selectCheckBox, "selectCheckBox");
   const {
     severityNameDropDownData,
     statusDropDown,
@@ -369,7 +369,7 @@ const AlertsPage = () => {
       console.log(error);
     }
   };
-  
+
   return (
     <KTCardBody className="alert-page">
       <ToastContainer />
@@ -459,9 +459,13 @@ const AlertsPage = () => {
                             data-allow-clear="true"
                           >
                             <option>--</option>
-                            <option value="1" onClick={createIncidentSubmit}
-                             disabled={selectCheckBox.alertIncidentMappingId > 0}
-                             >
+                            <option
+                              value="1"
+                              onClick={createIncidentSubmit}
+                              disabled={
+                                selectCheckBox.alertIncidentMappingId > 0
+                              }
+                            >
                               Create Incident
                             </option>
                             <option value="2">Escalate</option>
@@ -1086,10 +1090,15 @@ const AlertsPage = () => {
                             />
                             {/* check incident creation */}
                             <span>
-                              {item.alertIncidentMappingId > 0 && (
+                              {item.alertIncidentMappingId > 0 ? (
                                 <i
-                                  className="fa fa-circle-exclamation incident-icon"
+                                  className="fa fa-circle-exclamation incident-icon green"
                                   title="Incident created"
+                                />
+                              ) : (
+                                <i
+                                  className="fa fa-circle-exclamation incident-icon orange"
+                                  title="Alert"
                                 />
                               )}
                             </span>
@@ -1250,10 +1259,10 @@ const AlertsPage = () => {
               breakLinkClassName={"page-link"}
               activeClassName={"active"}
             />
-            <div className="col-md-2 d-flex justify-content-start align-items-center">
+            <div className="col-md-3 d-flex justify-content-end align-items-center">
               <span className="col-md-4">Count: </span>
               <select
-                className="form-select form-select-sm"
+                className="form-select form-select-sm col-md-4"
                 value={limit}
                 onChange={handlePageSelect}
               >

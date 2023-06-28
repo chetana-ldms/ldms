@@ -39,7 +39,6 @@ const ChatBody = ({
     };
   }, [id, refreshChatHistory, setRefreshChatHistory]);
 
-
   const exportChatHistory = () => {
     const filename = `Chat_History_Incident_${id}.txt`;
     const formattedChatHistory = chatHistory
@@ -82,12 +81,12 @@ const ChatBody = ({
                   </p>
                 ) : (
                   <p className="reciever__name">
-                    {message.fromUserName}{" "}
                     <img
                       alt="Logo"
                       src={toAbsoluteUrl("/media/avatars/300-4.jpg")}
                       width="30"
                     />
+                    {message.fromUserName}{" "}
                   </p>
                 )}
                 <div

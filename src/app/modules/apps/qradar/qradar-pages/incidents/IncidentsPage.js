@@ -227,7 +227,7 @@ const IncidentsPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="scroll-y h-400px">
+                  <div className="scroll-y h-350px">
                     <div className="incident-list">
                       <>
                         {incident && incident.length > 0 ? (

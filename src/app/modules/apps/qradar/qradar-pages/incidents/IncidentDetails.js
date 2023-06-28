@@ -405,36 +405,36 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                 </div>
                 {/* Text */}
-                <div className="bd-highlight mb-3 bdr-top">
-                  <div className="col-md-12 bd-highlight">
+                <div className="bd-highlight mb-3 bdr-top pt-5 mt-5">
+                  <div className="bd-highlight">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Incident Name - </span>{" "}
+                      <span className="fw-bold">Incident Name : </span>{" "}
                       {subject}
                     </div>
                   </div>
-                  <div className="col-md-12 bd-highlight">
+                  <div className="bd-highlight">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Event ID - </span> 4625
+                      <span className="fw-bold">Event ID : </span> 4625
                     </div>
                   </div>
-                  <div className="col-md-12 bd-highlight">
+                  <div className="bd-highlight">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold"> Destination User - </span>{" "}
+                      <span className="fw-bold"> Destination User : </span>{" "}
                       James James
                     </div>
                   </div>
-                  <div className="col-md-12 bd-highlight">
+                  <div className="bd-highlight">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Source IP - </span> 192.168.0.1
+                      <span className="fw-bold">Source IP : </span> 192.168.0.1
                     </div>
                   </div>
-                  <div className="col-md-12 bd-highlight">
+                  <div className="bd-highlight">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Vendor - </span> Microsoft
+                      <span className="fw-bold">Vendor : </span> Microsoft
                     </div>
                   </div>
                 </div>
-                <div className="d-flex justify-content-between bd-highlight">
+                <div className="d-flex justify-content-between bd-highlight bdr-top pt-2">
                   <div className="p-2 bd-highlight">
                     <div className="fs-13">Incident ID</div>
                   </div>
@@ -479,7 +479,11 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                 </div>
                 <div className="checkbox-wrapper">
-                  <input className="p-2" type="checkbox" ref={checkboxRef} />
+                  <input
+                    className="p-2 v-middle"
+                    type="checkbox"
+                    ref={checkboxRef}
+                  />
                   <label style={{ marginLeft: "8px" }}>
                     Significant Incident
                   </label>
@@ -490,7 +494,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                     <div className="fs-13">Created</div>
                   </div>
                   <div className="p-2 bd-highlight">
-                    <div className="badge text-black fw-normal">
+                    <div className="badge text-black fw-bold">
                       {createdDate}
                     </div>
                   </div>
@@ -501,7 +505,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                     <div className="fs-13">Updated</div>
                   </div>
                   <div className="p-2 bd-highlight">
-                    <div className="badge text-black fw-normal">
+                    <div className="badge text-black fw-bold">
                       Jul 29, 2022 01:12:32 AM
                     </div>
                   </div>
@@ -682,7 +686,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </div>
               <div className="">
                 {activeTab === "general" && (
-                  <div className="text-end mt-5">
+                  <div className="text-end mt-10">
                     <button
                       type="submit"
                       onClick={(event) => handleSubmit(event, incidentData)}

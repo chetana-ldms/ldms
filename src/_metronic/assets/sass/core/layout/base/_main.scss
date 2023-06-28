@@ -46,6 +46,10 @@ body {
   color: #333;
 }
 
+.bdr-top{
+    border-top: 1px solid #d6d5e1;
+}
+
 //Table CSS
 
 .alert-table {
@@ -325,6 +329,10 @@ form{
   text-transform: $uppercase;
 }
 
+.v-middle{
+  vertical-align: middle;
+}
+
 .span-red {
   font-size: 12px;
   // color: black;
@@ -435,7 +443,12 @@ form{
   }
   .incident-icon{
     margin-left: 30px;
-    color: #ea790e;
+    &.orange{
+      color: #ea790e;
+    }
+    &.green{
+      color: green;
+    }
   }
 }
 
@@ -565,6 +578,9 @@ form{
   .incident-tabs{
     .incident-details{
       width: 95%;
+      select{
+          padding: 0 10px;
+      }
     }
   }
 
