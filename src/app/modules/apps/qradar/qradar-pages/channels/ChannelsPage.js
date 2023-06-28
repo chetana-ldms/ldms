@@ -175,24 +175,6 @@ const ChannelsPage = () => {
       console.log(error);
     }
   };
-  // useEffect(() => {
-  //   // const orgId = 1;
-  //   const apiUrl = `http://182.71.241.246:502/api/LDCChannels/v1/Channels?orgId=${orgId}`;
-
-  //   fetch(apiUrl)
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log("API response:", data);
-  //       if (Array.isArray(data.channelsData)) {
-  //         setChannels(data.channelsData);
-  //       } else {
-  //         console.log("Invalid response format:", data);
-  //       }
-  //     })
-  //     .catch((error) => console.log(error));
-  // }, []);
-
-  //show modal
   const handleAccordionToggle = async (channelId) => {
     try {
       const channelData = await fetchChannelDetails(channelId); // Call the API to fetch channel data

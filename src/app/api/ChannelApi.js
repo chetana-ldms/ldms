@@ -19,6 +19,11 @@ const channelsDeleteUrl = process.env.REACT_APP_CHANNELS_DELETE_URL;
 const channelsAddUrl = process.env.REACT_APP_CHANNELS_ADD_URL;
 const channelsUpdateUrl = process.env.REACT_APP_CHANNELS_UPDATE_URL;
 const channelDetailsUrl = process.env.REACT_APP_CHANNEL_DETAILS_URL;
+// const listUrl = process.env.REACT_APP_CHANNEL_LIST_URL;
+console.log(process.env,"Process")
+const listUrl = "http://182.71.241.246:502/api/Teams/v1/List"
+const ChannelsCreateUrl ="http://182.71.241.246:502/api/Teams/v1/Channels/Create"
+
 
 export const fetchDelete = async (formData) => {
   try {
@@ -333,3 +338,40 @@ export const fetchChannelDetails = async (channelId) => {
     console.log(error);
   }
 };
+export const fetchlistUrl = async (orgId) => {
+  try {
+    const response = await fetch(`${listUrl}?orgId=${orgId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const responseData = await response.json();
+    const teams = responseData.teams;
+    return teams;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+export const fetchChannelsCreateUrl = async (data) => {
+  try {
+    const response = await fetch(`${ChannelsCreateUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+

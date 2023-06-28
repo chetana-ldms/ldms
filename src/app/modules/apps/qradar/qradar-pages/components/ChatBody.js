@@ -26,11 +26,19 @@ const ChatBody = ({
       };
       const chatHistory = await fetchGetChatHistory(data);
       setChatHistory(chatHistory || []);
-      setRefreshChatHistory(false); // Reset the refresh trigger
+      setRefreshChatHistory(false);
     };
 
     fetchData();
+    const interval = setInterval(() => {
+      fetchData();
+    }, 500);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [id, refreshChatHistory, setRefreshChatHistory]);
+
 
   const exportChatHistory = () => {
     const filename = `Chat_History_Incident_${id}.txt`;

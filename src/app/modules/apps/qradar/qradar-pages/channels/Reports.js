@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { fetchSubItemsByOrgChannel } from "../../../../../api/ChannelApi";
+import { fetchChannelsCreateUrl, fetchSubItemsByOrgChannel, fetchlistUrl } from "../../../../../api/ChannelApi";
 import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
 
 import {
@@ -14,13 +14,16 @@ import {
 } from "reactstrap";
 
 const Reports = ({ channelId, channelName }) => {
+  const orgId = Number(sessionStorage.getItem('orgId'))
   const [channelSubItems, setChannelSubItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-
+  const [teamsList, setTeamsList] = useState([])
+  console.log(teamsList, "teamsList")
   const [error, setError] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => setDropdownOpen((prevState) => !prevState);
   const dropdownRef = useRef(null);
+  const teamSelectRef = useRef(null);
 
   const [modalOpen, setModalOpen] = useState(false);
   const openModal = () => {
@@ -54,7 +57,30 @@ const Reports = ({ channelId, channelName }) => {
       }
     });
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchlistUrl(orgId);
+        setTeamsList(data);
+      } catch (error) {
+        console.log(error)
+      }
+    };
 
+    fetchData();
+  }, []);
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    const selectedTeamId = teamSelectRef.current.value;
+    const data = {
+      teamsId: Number(selectedTeamId),
+      channelId: channelId
+    }
+    fetchChannelsCreateUrl(data)
+      .catch((error) => {
+        console.error(error);
+      });
+  };
   return (
     <div>
       <div className="clearfix">
@@ -166,18 +192,25 @@ const Reports = ({ channelId, channelName }) => {
       <Modal isOpen={modalOpen} toggle={closeModal} className="teams-modal">
         <ModalHeader toggle={closeModal}>Add Channel in Teams</ModalHeader>
         <ModalBody>
-          <form>
+        
             <div className="form-group">
               <label htmlFor="teamSelect">Select Team:</label>
-              <select id="teamSelect" className="form-select form-select-solid">
+              <select
+                id="teamSelect"
+                className="form-select form-select-solid"
+                ref={teamSelectRef}
+              >
                 <option value="">Select a team</option>
-                <option>LDC Teams</option>
+                {teamsList.map((team) => (
+                  <option key={team.teamId} value={team.teamId}>
+                    {team.teamName}
+                  </option>
+                ))}
               </select>
             </div>
-          </form>
         </ModalBody>
         <ModalFooter>
-          <button className="btn btn-primary btn-small">Submit</button>
+          <button className="btn btn-primary btn-small" onClick={handleFormSubmit}>Submit</button>
           <button className="btn btn-secondary btn-small" onClick={closeModal}>
             Close
           </button>
