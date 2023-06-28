@@ -10,7 +10,7 @@ import { notify, notifyFail } from "../components/notification/Notification";
 import "react-toastify/dist/ReactToastify.css";
 
 const Document = ({ channelId, channelName }) => {
-  const userID = Number(sessionStorage.getItem("userId"));
+  const CreatedUserId = Number(sessionStorage.getItem("userId"));
   const orgId = Number(sessionStorage.getItem("orgId"));
   const date = new Date().toISOString();
   const [documents, setDocuments] = useState(null);
@@ -35,19 +35,19 @@ const Document = ({ channelId, channelName }) => {
   const handleUpload = async () => {
     if (selectedFile) {
       const formData = new FormData();
-      formData.append(selectedFile);
-      formData.append(userID);
-      formData.append(date);
-      formData.append(orgId);
-      formData.append(channelId);
-      // formData.append('SubitemId', subitemId);
-
+      formData.append("file", selectedFile); // Provide a key for the file
+  
+      formData.append("CreatedUserId", CreatedUserId);
+      formData.append("date", date);
+      formData.append("orgId", orgId);
+      formData.append("channelId", channelId);
+  
       try {
         const response = await fetchUpload(formData);
         if (response.isSuccess) {
-          notify("file update Successfully");
+          notify("File updated successfully");
         } else {
-          notifyFail("file not update Successfully");
+          notifyFail("Failed to update file");
         }
         setUploadDocumentModal(false);
         fetchData(channelId);
@@ -56,6 +56,7 @@ const Document = ({ channelId, channelName }) => {
       }
     }
   };
+  
   const handleDelete = async (item) => {
     const formData = new FormData();
     formData.append("fileId", item.fileId);

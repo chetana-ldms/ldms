@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { fetchAllIncidentsSummery } from '../../api/dashBoardApi';
 
 function IncidentStatus(props) {
   const { days, orgId } = props;
@@ -12,27 +13,12 @@ function IncidentStatus(props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          'http://182.71.241.246:502/api/Reports/v1/AllIncidentsSummery',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              orgId: orgId,
-              incidentFromDate: '2022-04-13T05:43:48.828Z',
-              incidentToDate: '2023-04-13T05:43:48.828Z',
-            }),
-          }
-        );
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(`Network response was not ok: ${response.status} - ${errorData.message}`);
-        }
-
-        const { data } = await response.json();
+        const AllIncidentsSummeryResponse = await fetchAllIncidentsSummery({
+          orgId: orgId,
+          incidentFromDate: '2022-04-13T05:43:48.828Z',
+          incidentToDate: '2023-04-13T05:43:48.828Z',
+        });
+        const { data } = await AllIncidentsSummeryResponse;
         setAlertData(data);
         setSelectedStatus(data[0]?.statusName || '');
 

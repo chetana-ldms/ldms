@@ -19,10 +19,9 @@ const channelsDeleteUrl = process.env.REACT_APP_CHANNELS_DELETE_URL;
 const channelsAddUrl = process.env.REACT_APP_CHANNELS_ADD_URL;
 const channelsUpdateUrl = process.env.REACT_APP_CHANNELS_UPDATE_URL;
 const channelDetailsUrl = process.env.REACT_APP_CHANNEL_DETAILS_URL;
-// const listUrl = process.env.REACT_APP_CHANNEL_LIST_URL;
-console.log(process.env,"Process")
-const listUrl = "http://182.71.241.246:502/api/Teams/v1/List"
-const ChannelsCreateUrl ="http://182.71.241.246:502/api/Teams/v1/Channels/Create"
+const listUrl = process.env.REACT_APP_CHANNEL_LIST_URL;
+// const ChannelsCreateUrl ="http://182.71.241.246:502/api/Teams/v1/Channels/Create"
+const ChannelsCreateUrl = process.env.REACT_APP_CHANNELS_CREATE_URL
 
 
 export const fetchDelete = async (formData) => {

@@ -21,6 +21,7 @@ import {
 } from '../../../_metronic/partials/widgets'
 import AlertsTrends from './AlertsTrend'
 import IncidentStatus from './IncidentStatus'
+import { fetchGetAlertsMostUsedTags, fetchGetAlertsResolvedMeanTime, fetchGetFalsePositiveAlertsCount, fetchGetMyInternalIncidents, fetchGetUnAttendedAletsCount, fetchGetUnAttendedIncidentsCount, fetchMasterData, fetchOrganizations, fetchUserActionsByUser } from '../../api/dashBoardApi'
 
 const DashboardWrapper = () => {
   const userID = Number(sessionStorage.getItem('userId'));
@@ -38,6 +39,7 @@ const DashboardWrapper = () => {
   console.log(recentIncidents, "recentIncidents")
   const [isLoaded, setIsLoaded] = useState(false)
   const [users, setUsers] = useState([])
+  console.log(users, "users")
   const [selectedFilter, setSelectedFilter] = useState(30);
   const [selectedOrganization, setSelectedOrganization] = useState(1);
   function formatDateDiff(date) {
@@ -50,197 +52,118 @@ const DashboardWrapper = () => {
   }
 
   console.log(selectedFilter, "selectedFilter")
+  useEffect(()=>{
+    const fetchData = async () => {
+      try {
+     // Organizations
+     const organizationsResponse = await fetchOrganizations();
+     setOrganizations(organizationsResponse);
+    } catch (error) {
+      console.log(error);
+    } 
+  };
+
+  fetchData();
+  },[])
+  useEffect(()=>{
+    const fetchData = async () => {
+      try {
+     // GetAlertsMostUsedTags
+     const mostUsedTagsResponse = await fetchGetAlertsMostUsedTags({
+      orgID: selectedOrganization,
+      toolID: 0,
+      toolTypeID: 0,
+      userID: userID,
+      numberofDays: selectedFilter,
+    });
+    const mostUsedTagsData = mostUsedTagsResponse;
+    const mostUsedTags = mostUsedTagsData.mostUsedTags
+    setUsers(mostUsedTags);
+    } catch (error) {
+      console.log(error);
+    } 
+  };
+
+  fetchData();
+  },[selectedFilter, selectedOrganization ])
   useEffect(() => {
-    axios
-      .post('http://182.71.241.246:502/api/Alerts/v1/GetAlertsMostUsedTages', {
-        orgID: selectedOrganization,
-        toolID: 0,
-        toolTypeID: 0,
-        userID: userID,
-        // numberofDays: 90,
-        numberofDays: selectedFilter,
-      })
-      .then(({ data }) => {
-        setIsLoaded(true)
-        setUsers(data?.mostUsedTags)
-
-      })
-      .catch((err) => {
-        setIsLoaded(true)
-        setError(error)
-      })
-
-    axios
-      .post('http://182.71.241.246:502/api/UserActions/v1/UserActionsByUser', {
-        userId: userID,
-        numberofDays: selectedFilter,
-      })
-      .then(({ data }) => {
-        console.log(data, 'UserActions')
-        setUseractions(data?.userActionsData)
-      })
-
-    axios
-      .post('http://182.71.241.246:502/api/IncidentManagement/v1/GetMyInternalIncidents', {
-        userID: userID,
-        orgID: selectedOrganization,
-        numberofDays: selectedFilter,
-      })
-      .then(({ data }) => {
-        console.log(data, 'getinter aci')
-        setrecentIncidents(data?.incidentList)
-      })
-    const unattendedincidentdata = JSON.stringify({
-      orgID: selectedOrganization,
-      toolID: 1,
-      toolTypeID: 1,
-      userID: userID,
-      // numberofDays: 30,
-      numberofDays: selectedFilter,
-    })
-    const incidentconfig = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'http://182.71.241.246:502/api/IncidentManagement/v1/GetUnAttendedIncidentsCount',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: unattendedincidentdata,
-    }
-    // Un attended Alerts Data
-    const attendedalertsdata = JSON.stringify({
-      orgID: selectedOrganization,
-      toolID: 1,
-      toolTypeID: 1,
-      userID: userID,
-      // numberofDays: 60,
-      numberofDays: selectedFilter,
-    })
-    const attendedalertsconfig = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'http://182.71.241.246:502/api/Alerts/v1/GetUnAttendedAletsCount',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: attendedalertsdata,
-    }
-
-    // GetFalsePositiveAlertsCount
-    const falsepositivealertscountdata = JSON.stringify({
-      orgID: selectedOrganization,
-      toolID: 1,
-      toolTypeID: 1,
-      userID: userID,
-      // numberofDays: 60,
-      numberofDays: selectedFilter,
-      positiveAnalysisID: 1,
-    })
-    const falsepositivealertsconfig = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'http://182.71.241.246:502/api/Alerts/v1/GetFalsePositiveAlertsCount',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: falsepositivealertscountdata,
-    }
-    // GetAlertsResolvedMeanTime
-    const AlertsResolvedMeanTimedata = JSON.stringify({
-      orgID: selectedOrganization,
-      toolID: 1,
-      toolTypeID: 1,
-      userID: userID,
-      // numberofDays: 90,
-      numberofDays: selectedFilter,
-    })
-    const AlertsResolvedMeanTimeconfig = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'http://182.71.241.246:502/api/Alerts/v1/GetAlertsResolvedMeanTime',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: AlertsResolvedMeanTimedata,
-    }
-    // Organizations
-    const organizationsconfig = {
-      method: 'get',
-      maxBodyLength: Infinity,
-      url: 'http://182.71.241.246:502/api/LDPlattform/v1/Organizations',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-
-    // Get Alert Status Master data
-    const alertstatusdata = JSON.stringify({
-      maserDataType: 'alert_status',
-    })
-    const alertstatusconfig = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'http://182.71.241.246:502/api/LDPlattform/v1/MasterData',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: alertstatusdata,
-    }
-
-    const GetUnAttendedIncidentsCount = () => {
-      // U Incidents Count
-      axios(incidentconfig)
-        .then(function (response) {
-          setUnattendedIncidentcount(response.data)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      // U Alerts Count
-      axios(attendedalertsconfig)
-        .then(function (response) {
-          setUnattendedAlertcount(response.data)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      axios(falsepositivealertsconfig)
-        .then(function (response) {
-          setFalsePAcount(response.data)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      axios(AlertsResolvedMeanTimeconfig)
-        .then(function (response) {
-          setAlertsResolvedMeanTime(response.data)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      axios(organizationsconfig)
-        .then(function (response) {
-          setOrganizations(response.data.organizationList)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-
-      axios(alertstatusconfig)
-        .then(function (response) {
-          setAlertstatus(response.data.masterData)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-    }
-    GetUnAttendedIncidentsCount()
-  }, [selectedFilter, selectedOrganization])
+    const fetchData = async () => {
+      try {
+        // UserActionsByUser
+        const userActionsResponse = await fetchUserActionsByUser({
+          userId: userID,
+          numberofDays: selectedFilter,
+        });
+        const userActionsData = userActionsResponse;
+        setUseractions(userActionsData);
+  
+        // GetMyInternalIncidents
+        const myInternalIncidentsResponse = await fetchGetMyInternalIncidents({
+          userID: userID,
+          orgID: selectedOrganization,
+          numberofDays: selectedFilter,
+        });
+        const myInternalIncidentsData = myInternalIncidentsResponse;
+        setrecentIncidents(myInternalIncidentsData);
+  
+        // GetUnAttendedIncidentsCount
+        const unattendedIncidentsCountResponse = await fetchGetUnAttendedIncidentsCount({
+          orgID: selectedOrganization,
+          toolID: 1,
+          toolTypeID: 1,
+          userID: userID,
+          numberofDays: selectedFilter,
+        });
+        const unattendedIncidentsCountData = unattendedIncidentsCountResponse;
+        setUnattendedIncidentcount(unattendedIncidentsCountData);
+  
+        // GetUnAttendedAletsCount
+        const unattendedAlertsCountResponse = await fetchGetUnAttendedAletsCount({
+          orgID: selectedOrganization,
+          toolID: 1,
+          toolTypeID: 1,
+          userID: userID,
+          numberofDays: selectedFilter,
+        });
+        const unattendedAlertsCountData = unattendedAlertsCountResponse;
+        setUnattendedAlertcount(unattendedAlertsCountData);
+  
+        // GetFalsePositiveAlertsCount
+        const falsePositiveAlertsCountResponse = await fetchGetFalsePositiveAlertsCount({
+          orgID: selectedOrganization,
+          toolID: 1,
+          toolTypeID: 1,
+          userID: userID,
+          numberofDays: selectedFilter,
+          positiveAnalysisID: 1,
+        });
+        const falsePositiveAlertsCountData = falsePositiveAlertsCountResponse;
+        setFalsePAcount(falsePositiveAlertsCountData);
+  
+        // GetAlertsResolvedMeanTime
+        const alertsResolvedMeanTimeResponse = await fetchGetAlertsResolvedMeanTime({
+          orgID: selectedOrganization,
+          toolID: 1,
+          toolTypeID: 1,
+          userID: userID,
+          numberofDays: selectedFilter,
+        });
+        const alertsResolvedMeanTimeData = alertsResolvedMeanTimeResponse;
+        setAlertsResolvedMeanTime(alertsResolvedMeanTimeData);
+        // MasterData
+        const masterDataResponse = await fetchMasterData({ maserDataType: 'alert_status' });
+        const masterData = masterDataResponse.masterData;
+        setAlertstatus(masterData);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoaded(true);
+      }
+    };
+  
+    fetchData();
+  }, [selectedFilter, selectedOrganization]);
+  
   return (
     <div className='dashboard-wrapper'>
       {/* Header filter section */}

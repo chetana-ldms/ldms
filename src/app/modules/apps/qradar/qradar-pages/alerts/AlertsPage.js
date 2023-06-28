@@ -49,6 +49,7 @@ const AlertsPage = () => {
   const [selectedRow, setSelectedRow] = useState({});
   const [showPopup, setShowPopup] = useState(false);
   const [selectCheckBox, setSelectCheckBox] = useState(null);
+  console.log(selectCheckBox, "selectCheckBox")
   const {
     severityNameDropDownData,
     statusDropDown,
@@ -95,41 +96,6 @@ const AlertsPage = () => {
   const [actionsValue, setActionValue] = useState("");
   function createIncidentSubmit(e) {
     setActionValue(e.target.value);
-    // var data = JSON.stringify({
-    //   description: 'Log source Microsoft SQL Server',
-    //   priority: 39,
-    //   severity: 42,
-    //   type: 'Alert ',
-    //   eventID: '1230987',
-    //   destinationUser: 'User 1',
-    //   sourceIP: '192.168.0.1',
-    //   vendor: 'i',
-    //   owner: 0,
-    //   incidentStatus: 32,
-    //   createdDate: '1999-06-25T02:00:56.703Z',
-    //   createdUser: 'admin',
-    // })
-    // var config = {
-    //   method: 'post',
-    //   maxBodyLength: Infinity,
-    //   url: 'http://182.71.241.246:502/api/IncidentManagement/CreateInternalIncident',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Accept: 'text/plain',
-    //   },
-    //   data: data,
-    // }
-    // axios(config)
-    //   .then(function (response) {
-    //     console.log(JSON.stringify(response.data))
-    //     alert('Demo Incident Created')
-    //   })
-    //   .catch(function (error) {
-    //     console.log(error)
-    //   })
-    //   .finally(() => {
-    //     console.log(actionsValue, 'actionsValue')
-    //   })
   }
   const navigate = useNavigate();
   const [selectValue, setSelectValue] = useState();
@@ -403,7 +369,7 @@ const AlertsPage = () => {
       console.log(error);
     }
   };
-
+  
   return (
     <KTCardBody className="alert-page">
       <ToastContainer />
@@ -493,7 +459,9 @@ const AlertsPage = () => {
                             data-allow-clear="true"
                           >
                             <option>--</option>
-                            <option value="1" onClick={createIncidentSubmit}>
+                            <option value="1" onClick={createIncidentSubmit}
+                             disabled={selectCheckBox.alertIncidentMappingId > 0}
+                             >
                               Create Incident
                             </option>
                             <option value="2">Escalate</option>
