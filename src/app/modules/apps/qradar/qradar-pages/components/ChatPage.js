@@ -18,10 +18,9 @@ const ChatPage = ({ socket, selectedIncident }) => {
   }, [socket]);
 
   useEffect(() => {
-    // Scroll to bottom every time messages change
+    // 👇️ scroll to bottom every time messages change
     lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
   const handleRefreshChatHistory = () => {
     setRefreshChatHistory(true);
   };
@@ -35,7 +34,6 @@ const ChatPage = ({ socket, selectedIncident }) => {
           typingStatus={typingStatus}
           lastMessageRef={lastMessageRef}
           selectedIncident={selectedIncident}
-          refreshChatHistory={refreshChatHistory}
           setRefreshChatHistory={setRefreshChatHistory}
         />
         <ChatFooter

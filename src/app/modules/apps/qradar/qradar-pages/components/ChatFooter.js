@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { fetchAddChatMessage } from "../../../../../api/IncidentsApi";
 
 const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
@@ -9,44 +8,18 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
   const id = incidentID;
   const date = new Date().toISOString();
   const [message, setMessage] = useState("");
+  console.log(message, "message")
   const [attachment, setAttachment] = useState(null);
 
   const handleTyping = () => socket.emit("typing", `${username} is typing`);
 
-  // const handleSendMessage = async (e) => {
-  //   e.preventDefault();
-  //   if (message.trim() || attachment) {
-  //     const messageData = {
-  //       text: message,
-  //       name: username,
-  //       attachment: attachment
-  //     };
-  //     const formData = {
-  //       orgId,
-  //       fromUserID: userID,
-  //       toUserID: 0,
-  //       chatMessage: message || attachment,
-  //       chatSubject: "Incident",
-  //       subjectRefID: id,
-  //       messsageDate: date
-  //     };
-  //     try {
-  //       const response = await fetchAddChatMessage(formData);
-  //       console.log(response, "chat Add api");
-  //       onSendMessage();
-  //     } catch (error) {
-  //       console.log("Error sending chat message:", error);
-  //     }
-  //   }
-  //   setMessage("");
-  //   setAttachment(null);
-  // };
   const handleSendMessage = async (e) => {
+    console.log(e, "handleSendMessage")
     e.preventDefault();
     console.log("attachment:", attachment);
     if (message.trim() || attachment) {
       const formData = new FormData();
-      formData.append("ChatAttachmentFile", attachment ? attachment.data : "");
+      formData.append("attachmentUrl", attachment ? attachment.data : "");
       formData.append("MesssageDate", date || "");
       formData.append("OrgId", orgId || "");
       formData.append("FromUserID", userID || "");
@@ -54,11 +27,16 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
       formData.append("ChatMessage", message || (attachment ? attachment.name : ""));
       formData.append("ChatSubject", "Incident");
       formData.append("SubjectRefID", id || "");
-      // formData.append("AttachmentName", attachment ? attachment.name : ""); 
-      
+
       try {
         const response = await fetchAddChatMessage(formData);
         console.log(response, "chat Add API");
+        socket.emit("message", {
+          text: message,
+          name: username,
+          attachment: attachment,
+          incidentID: id 
+        });
         onSendMessage();
       } catch (error) {
         console.log(error);
@@ -67,7 +45,7 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
     setMessage("");
     setAttachment(null);
   };
-  
+
 
   const handleAttachmentChange = (e) => {
     const file = e.target.files[0];
@@ -80,10 +58,11 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
         setAttachment({
           name: file.name,
           type: file.type,
-          data: reader.result.split(",")[1]
+          data: reader.result.split(",")[1],
         });
       };
     } else {
+      // If no file is selected, clear the attachment state
       setAttachment(null);
     }
   };
@@ -112,7 +91,6 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
                 value={attachment.name}
                 readOnly
               />
-
               <i
                 className="fa fa-times remove"
                 onClick={handleRemoveAttachment}
@@ -130,7 +108,7 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
           />
           <i className="fa fa-paperclip" />
         </label>
-        <button className="sendBtn" type="submit">
+        <button className="sendBtn">
           <i className="fa fa-paper-plane" />
         </button>
       </form>

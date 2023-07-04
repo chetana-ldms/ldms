@@ -1,21 +1,18 @@
+
 import React, { useEffect, useState } from "react";
 import { fetchGetChatHistory } from "../../../../../api/IncidentsApi";
 import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
 
-const ChatBody = ({
-  messages,
-  typingStatus,
-  lastMessageRef,
-  selectedIncident,
-  refreshChatHistory,
-  setRefreshChatHistory,
-}) => {
+const ChatBody = ({ messages, typingStatus, lastMessageRef, selectedIncident, setRefreshChatHistory }) => {
   const loggedInUserName = sessionStorage.getItem("userName");
   const { incidentID } = selectedIncident;
   const id = incidentID;
+ // Declare and assign value to messageId
+ const messageId = messages.length > 0 ? messages[0].incidentID : null;
+ console.log(messageId, "messageId");
+ const isCurrentIncident = (message) => message.incidentID === id;
   const orgId = sessionStorage.getItem("orgId");
   const [chatHistory, setChatHistory] = useState([]);
-
   useEffect(() => {
     const fetchData = async () => {
       // Fetch chat history for the selected incident
@@ -30,6 +27,7 @@ const ChatBody = ({
     };
 
     fetchData();
+    setChatHistory([]);
     // const interval = setInterval(() => {
     //   fetchData();
     // }, 1000);
@@ -37,10 +35,9 @@ const ChatBody = ({
     // return () => {
     //   clearInterval(interval);
     // };
-  }, [id, refreshChatHistory, setRefreshChatHistory]);
-
+  }, [id, setRefreshChatHistory]);
   const exportChatHistory = () => {
-    const filename = `Chat_History_Incident_${id}.txt`;
+    const filename = `Chat_History_Incident_${id}.pdf`;
     const formattedChatHistory = chatHistory
       .map((message) => `${message.fromUserName}: ${message.chatMessage}`)
       .join("\n");
@@ -123,44 +120,49 @@ const ChatBody = ({
             </div>
           ))}
       </div>
-
-      {/* <div className="message__container">
-        {messages.map((message) => (
-          <div className="message__chats" key={message.id}>
-            {message.name === loggedInUserName ? (
-              <p className="sender__name">You</p>
-            ) : (
-              <p>{message.name}</p>
-            )}
-            <div
-              className={
-                message.name === loggedInUserName
-                  ? "message__sender"
-                  : "message__recipient"
-              }
-            >
-              <p>{message.text}</p>
-              {message.attachment && (
-                <div>
-                  <a
-                    href={`data:${message.attachment.type};base64,${message.attachment.data}`}
-                    download={message.attachment.name}
-                  >
-                    {message.attachment.name}
-                  </a>
-                </div>
+   
+        <div className="message__container">
+          {messages.map((message) => (
+             isCurrentIncident(message) && (
+            <div className="message__chats" key={message.id}>
+              {message.name === loggedInUserName ? (
+                <p className="sender__name">You</p>
+              ) : (
+                <p>{message.name}</p>
               )}
-            </div>
-          </div>
-        ))}
 
-        <div className="message__status">
-          <p>{typingStatus}</p>
+              <div
+                className={
+                  message.name === loggedInUserName
+                    ? "message__sender"
+                    : "message__recipient"
+                }
+              >
+                <p>{message.text}</p>
+                {message.attachment && (
+                  <div>
+                    <a
+                      href={`data:${message.attachment.type};base64,${message.attachment.data}`}
+                      download={message.attachment.name}
+                    >
+                      {message.attachment.name}
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+             )
+          ))}
+
+          <div className="message__status">
+            <p>{typingStatus}</p>
+          </div>
+          <div ref={lastMessageRef} />
         </div>
-        <div ref={lastMessageRef} />
-      </div> */}
+   
     </>
   );
+
 };
 
 export default ChatBody;
