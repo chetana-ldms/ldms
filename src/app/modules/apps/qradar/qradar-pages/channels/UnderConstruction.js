@@ -8,7 +8,7 @@ const UnderConstruction = ({ channelId, channelName }) => {
   useEffect(() => {
     console.log("Channel ID:", channelId);
     const orgId = Number(sessionStorage.getItem("orgId"));
-    const apiUrl = `http://182.71.241.246:502/api/LDCChannels/v1/Channels/SubItemsByOrgChannel`;
+    const apiUrl = `http://115.110.192.133:502/api/LDCChannels/v1/Channels/SubItemsByOrgChannel`;
 
     fetch(apiUrl, {
       method: "POST",

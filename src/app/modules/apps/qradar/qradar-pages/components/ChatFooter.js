@@ -13,34 +13,61 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
 
   const handleTyping = () => socket.emit("typing", `${username} is typing`);
 
+  // const handleSendMessage = async (e) => {
+  //   e.preventDefault();
+  //   if (message.trim() || attachment) {
+  //     const messageData = {
+  //       text: message,
+  //       name: username,
+  //       attachment: attachment
+  //     };
+  //     const formData = {
+  //       orgId,
+  //       fromUserID: userID,
+  //       toUserID: 0,
+  //       chatMessage: message || attachment,
+  //       chatSubject: "Incident",
+  //       subjectRefID: id,
+  //       messsageDate: date
+  //     };
+  //     try {
+  //       const response = await fetchAddChatMessage(formData);
+  //       console.log(response, "chat Add api");
+  //       onSendMessage();
+  //     } catch (error) {
+  //       console.log("Error sending chat message:", error);
+  //     }
+  //   }
+  //   setMessage("");
+  //   setAttachment(null);
+  // };
   const handleSendMessage = async (e) => {
     e.preventDefault();
+    console.log("attachment:", attachment);
     if (message.trim() || attachment) {
-      const messageData = {
-        text: message,
-        name: username,
-        attachment: attachment
-      };
-      const data = {
-        orgId,
-        fromUserID: userID,
-        toUserID: 0,
-        chatMessage: message || attachment,
-        chatSubject: "Incident",
-        subjectRefID: id,
-        messsageDate: date
-      };
+      const formData = new FormData();
+      formData.append("ChatAttachmentFile", attachment ? attachment.data : "");
+      formData.append("MesssageDate", date || "");
+      formData.append("OrgId", orgId || "");
+      formData.append("FromUserID", userID || "");
+      formData.append("ToUserID", 0);
+      formData.append("ChatMessage", message || (attachment ? attachment.name : ""));
+      formData.append("ChatSubject", "Incident");
+      formData.append("SubjectRefID", id || "");
+      // formData.append("AttachmentName", attachment ? attachment.name : ""); 
+      
       try {
-        const response = await fetchAddChatMessage(data);
-        console.log(response, "chat Add api");
+        const response = await fetchAddChatMessage(formData);
+        console.log(response, "chat Add API");
         onSendMessage();
       } catch (error) {
-        console.log("Error sending chat message:", error);
+        console.log(error);
       }
     }
     setMessage("");
     setAttachment(null);
   };
+  
 
   const handleAttachmentChange = (e) => {
     const file = e.target.files[0];
@@ -57,7 +84,6 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
         });
       };
     } else {
-      // If no file is selected, clear the attachment state
       setAttachment(null);
     }
   };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   fetchDelete,
+  fetchFilesDownloadUrl,
   fetchGetUploadedFilesListByChannelId,
   fetchUpload,
 } from "../../../../../api/ChannelApi";
@@ -73,6 +74,22 @@ const Document = ({ channelId, channelName }) => {
       console.log(error);
     }
   };
+  const handleDownload = async (item) => {
+    const fileId = item.fileId; // Get the fileId directly
+  
+    try {
+      const response = await fetchFilesDownloadUrl(fileId); // Pass the fileId directly
+      if (response.isSuccess) {
+        notify("File Deleted");
+      } else {
+        notifyFail("File not Deleted");
+      }
+      await fetchData(channelId);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
 
   return (
     <div>
@@ -107,8 +124,11 @@ const Document = ({ channelId, channelName }) => {
                     </a>
                   </label>
                   <button className="btn btn-new">
-                    <a href={item.documentUrl} download="Document">
+                    <a href={item.filePhysicalPath} download="Document" onClick={() => {
+                      handleDownload(item);
+                    }}>
                       <i className="fas fa-download"></i>
+                     
                     </a>
                   </button>
                   <button

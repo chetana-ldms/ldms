@@ -12,7 +12,7 @@ const ChatApp = ({ selectedIncident }) => {
   useEffect(() => {
     // Create a socket connection
     console.log("Attempting to establish socket connection...");
-    const socketInstance = io("http://182.71.241.246:4000");
+    const socketInstance = io("http://115.110.192.133:4000");
     setSocket(socketInstance);
     console.log("Socket:", socketInstance);
 

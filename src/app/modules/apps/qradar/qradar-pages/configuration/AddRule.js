@@ -17,7 +17,7 @@ const AddRule = () => {
     var config_2 = {
       method: 'get',
       url:
-        'http://182.71.241.246:8011/api/RulesConfiguraton/v1/RuleEngine/MasterData?MasterDataType=Rule_Catagories',
+        'http://115.110.192.133:8011/api/RulesConfiguraton/v1/RuleEngine/MasterData?MasterDataType=Rule_Catagories',
       headers: {
         Accept: 'text/plain',
       },
@@ -34,7 +34,7 @@ const AddRule = () => {
     var config_3 = {
       method: 'get',
       url:
-        'http://182.71.241.246:8011/api/RulesConfiguraton/v1/RuleEngine/MasterData?MasterDataType=Rules_Condition_Types',
+        'http://115.110.192.133:8011/api/RulesConfiguraton/v1/RuleEngine/MasterData?MasterDataType=Rules_Condition_Types',
       headers: {
         Accept: 'text/plain',
       },
@@ -111,7 +111,7 @@ const AddRule = () => {
     // console.log('Data to be sent', data)
     var config = {
       method: 'post',
-      url: 'http://182.71.241.246:8011/api/RulesConfiguraton/v1/Rules/Add',
+      url: 'http://115.110.192.133:8011/api/RulesConfiguraton/v1/Rules/Add',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/plain',

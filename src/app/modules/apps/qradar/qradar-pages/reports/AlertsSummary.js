@@ -62,7 +62,7 @@ function AlertsSummary() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://182.71.241.246:502/api/Reports/v1/AlertsSummery', {
+        const response = await fetch('http://115.110.192.133:502/api/Reports/v1/AlertsSummery', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

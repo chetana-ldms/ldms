@@ -72,7 +72,7 @@ const IncidentsPagev1 = () => {
     setLoading(true);
     var config = {
       method: "get",
-      url: "http://182.71.241.246:8011/api/PlayBook/v1/PlayBooks",
+      url: "http://115.110.192.133:8011/api/PlayBook/v1/PlayBooks",
       headers: {
         Accept: "text/plain",
       },
@@ -105,7 +105,7 @@ const IncidentsPagev1 = () => {
   //   var config = {
   //     method: 'post',
   //     maxBodyLength: Infinity,
-  //     url: 'http://182.71.241.246:502/api/IncidentManagement/Incidents',
+  //     url: 'http://115.110.192.133:502/api/IncidentManagement/Incidents',
   //     headers: {
   //       'Content-Type': 'application/json',
   //       Accept: 'text/plain',

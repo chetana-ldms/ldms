@@ -130,7 +130,7 @@ const AlertsPage = () => {
   const [pageCount, setpageCount] = useState(0);
 
   useEffect(() => {
-    axios.get("http://182.71.241.246:502/api/Alerts/v1/Alerts").then((res) => {
+    axios.get("http://115.110.192.133:502/api/Alerts/v1/Alerts").then((res) => {
       console.log(res, "mydata");
     });
   }, []);
@@ -1090,15 +1090,15 @@ const AlertsPage = () => {
                             />
                             {/* check incident creation */}
                             <span>
-                              {item.alertIncidentMappingId > 0 ? (
+                              {item.status == "New" ? (
                                 <i
-                                  className="fa fa-circle-exclamation incident-icon green"
-                                  title="Incident created"
+                                className="fa fa-circle-exclamation incident-icon orange"
+                                  title="Alert"
                                 />
                               ) : (
                                 <i
-                                  className="fa fa-circle-exclamation incident-icon orange"
-                                  title="Alert"
+                                className="fa fa-circle-exclamation incident-icon green"
+                                title="Incident created"
                                 />
                               )}
                             </span>

@@ -7,7 +7,7 @@ const updateIncidentUrl = process.env.REACT_APP_UPDATE_INCIDENT_URL;
 const getIncidentHistoryUrl = process.env.REACT_APP_GET_INCIDENT_HISTORY_URL;
 const alertsByAlertIdsUrl = process.env.REACT_APP_ALERTS_BY_ALERT_IDS_URL;
 const getChatHistoryUrl = process.env.REACT_APP_GET_CHAT_HISTORY_URL;
-const addChatMessageUrl = process.env.REACT_APP_ADD_CHAT_MESSAGE_URL;
+const addChatMessageUrl = process.env.REACT_APP_SEND_CHAT_MESSAGE_URL;
 
 export const fetchCreateIncident = async (data) => {
   try {
@@ -176,16 +176,11 @@ export const fetchGetChatHistory = async (data) => {
     console.log(error);
   }
 };
-export const fetchAddChatMessage = async (data) => {
+export const fetchAddChatMessage = async (formData) => {
   try {
     const response = await fetch(`${addChatMessageUrl}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...data,
-      }),
+      body: formData,
     });
 
     const responseData = await response.json();

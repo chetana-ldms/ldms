@@ -6,6 +6,7 @@ import { notify, notifyFail } from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
 import { fetchToolTypeActionDelete } from "../../../../../api/Api"
 import axios from 'axios'
+import { fetchToolTypeActions } from '../../../../../api/ConfigurationApi'
 const ToolTypeActions = () => {
   const [loading, setLoading] = useState(false)
   const [toolTypeActions, setToolTypeActions] = useState([])
@@ -32,28 +33,9 @@ const ToolTypeActions = () => {
       console.log(error);
     }
   }
-  const reload = () => {
-    // setLoading(true)
-    var config = {
-      method: 'get',
-      url: 'http://182.71.241.246:502/api/LDPlattform/v1/ToolTypeActions',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-
-    axios(config)
-      .then(function (response) {
-        setToolTypeActions(response.data.toolTypeActionsList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }
-
-  const onUpdateClick = (item) => {
-    setUpdateData(item)
+  const reload = async() => {
+   const response = await fetchToolTypeActions();
+   setToolTypeActions(response)
   }
 
   useEffect(() => {

@@ -39,7 +39,7 @@ const AlertsPage = () => {
     var config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://182.71.241.246:502/api/IncidentManagement/CreateInternalIncident',
+      url: 'http://115.110.192.133:502/api/IncidentManagement/CreateInternalIncident',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/plain',

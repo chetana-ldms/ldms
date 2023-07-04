@@ -16,7 +16,7 @@ const DemoSMS = () => {
     e.preventDefault()
 
     try {
-      const response = await fetch('http://182.71.241.246:502/api/Notification/v1/SMS/Send', {
+      const response = await fetch('http://115.110.192.133:502/api/Notification/v1/SMS/Send', {
         method: 'POST',
         headers: {
           accept: 'text/plain',
@@ -48,7 +48,7 @@ const DemoSMS = () => {
   const onGetReply = async () => {
     try {
       const response = await fetch(
-        `http://182.71.241.246:502/api/Notification/v1/SMS/GetReplyMessage`,
+        `http://115.110.192.133:502/api/Notification/v1/SMS/GetReplyMessage`,
         {
           method: 'POST',
           headers: {

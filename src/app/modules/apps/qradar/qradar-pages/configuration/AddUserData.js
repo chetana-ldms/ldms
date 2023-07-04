@@ -51,7 +51,7 @@ const AddUserData = () => {
     console.log('data', data)
     var config = {
       method: 'post',
-      url: 'http://182.71.241.246:502/api/LDPSecurity/v1/User/Add',
+      url: 'http://115.110.192.133:502/api/LDPSecurity/v1/User/Add',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/plain',
@@ -75,7 +75,7 @@ const AddUserData = () => {
   //   setLoading(true)
   //   var config = {
   //     method: 'post',
-  //     url: 'http://182.71.241.246:502/api/LDPSecurity/v1/Roles',
+  //     url: 'http://115.110.192.133:502/api/LDPSecurity/v1/Roles',
   //     headers: {
   //       Accept: 'text/plain',
   //     },

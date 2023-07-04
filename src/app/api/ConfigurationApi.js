@@ -1,10 +1,8 @@
 const ldptoolsByToolTypeUrl = process.env.REACT_APP_LDPTOOLS_BY_TOOLTYPE_URL;
-const toolTypeActionDetailsUrl =
-  process.env.REACT_APP_TOOLTYPEACTION_DETAILS_URL;
+const toolTypeActionDetailsUrl = process.env.REACT_APP_TOOLTYPEACTION_DETAILS_URL;
 const userDetailsUrl = process.env.REACT_APP_USER_DETAILS_URL;
 const toolActionDetailsUrl = process.env.REACT_APP_TOOL_ACTION_DETAILS_URL;
-const organizationToolDetailsUrl =
-  process.env.REACT_APP_ORGANIZATION_TOOL_DETAILS_URL;
+const organizationToolDetailsUrl = process.env.REACT_APP_ORGANIZATION_TOOL_DETAILS_URL;
 const rulesUrl = process.env.REACT_APP_RULES_URL;
 const ruleDetailsUrl = process.env.REACT_APP_RULE_DETAILS_URL;
 const ruleActionsUrl = process.env.REACT_APP_RULE_ACTIONS_URL;
@@ -19,8 +17,6 @@ export const fetchLDPToolsByToolType = async (data) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        // orgID: orgID,
-        // alertID: alertID,
         ...data,
       }),
     });
@@ -80,10 +76,6 @@ export const fetchToolActionDetails = async (id) => {
     });
     const responseData = await response.json();
     const toolAcation = responseData.toolAcation;
-    console.log(toolAcation, "toolAcation");
-    // Populate the form fields with the retrieved data
-    //   toolNameRef.current.value = toolTypeAction.toolAction;
-    // toolTypeRef.current.value = ldpTool.toolType;
     return toolAcation;
   } catch (error) {
     console.log(error);
@@ -100,9 +92,6 @@ export const fetchOrganizationToolDetails = async (id) => {
     });
     const responseData = await response.json();
     const organizationToolData = responseData.organizationToolData;
-    // Populate the form fields with the retrieved data
-    //   toolNameRef.current.value = toolTypeAction.toolAction;
-    // toolTypeRef.current.value = ldpTool.toolType;
     return organizationToolData;
   } catch (error) {
     console.log(error);
@@ -188,6 +177,44 @@ export const fetchRuleActionDetails = async (id) => {
     //   toolNameRef.current.value = toolTypeAction.toolAction;
     // toolTypeRef.current.value = ldpTool.toolType;
     return ruleActionData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+
+const ToolTypeActionsUrl ='http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeActions'
+const ToolTypeActionUpdateUrl ='http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeAction/Update'
+export const fetchToolTypeActions = async () => {
+  try {
+    const response = await fetch(`${ToolTypeActionsUrl}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const responseData = await response.json();
+    const toolTypeActionsList = responseData.toolTypeActionsList;
+    return toolTypeActionsList;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchToolTypeActionUpdate = async (data) => {
+  try {
+    const response = await fetch(`${ToolTypeActionUpdateUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
   } catch (error) {
     console.log(error);
   }
