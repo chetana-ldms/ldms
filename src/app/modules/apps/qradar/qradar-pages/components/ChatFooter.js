@@ -19,14 +19,16 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
     console.log("attachment:", attachment);
     if (message.trim() || attachment) {
       const formData = new FormData();
-      formData.append("attachmentUrl", attachment ? attachment.data : "");
+      // formData.append("ChatAttachmentFile", attachment ? attachment.data : "");
+      formData.append("ChatAttachmentFile", attachment ? attachment.data : "");
       formData.append("MesssageDate", date || "");
-      formData.append("OrgId", orgId || "");
-      formData.append("FromUserID", userID || "");
+      formData.append("OrgId", orgId || 0);
+      formData.append("FromUserID", userID || 0);
       formData.append("ToUserID", 0);
-      formData.append("ChatMessage", message || (attachment ? attachment.name : ""));
+      // formData.append("ChatMessage", message || (attachment ? attachment.name : ""));
+      formData.append("ChatMessage", message || "");
       formData.append("ChatSubject", "Incident");
-      formData.append("SubjectRefID", id || "");
+      formData.append("SubjectRefID", id || 0);
 
       try {
         const response = await fetchAddChatMessage(formData);

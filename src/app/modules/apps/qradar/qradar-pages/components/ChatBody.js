@@ -13,6 +13,7 @@ const ChatBody = ({ messages, typingStatus, lastMessageRef, selectedIncident, se
  const isCurrentIncident = (message) => message.incidentID === id;
   const orgId = sessionStorage.getItem("orgId");
   const [chatHistory, setChatHistory] = useState([]);
+  console.log(chatHistory, "chatHistory")
   useEffect(() => {
     const fetchData = async () => {
       // Fetch chat history for the selected incident
@@ -100,6 +101,38 @@ const ChatBody = ({ messages, typingStatus, lastMessageRef, selectedIncident, se
           ) : (
             <div>No chat history available.</div>
           )}
+            {messages.map((message) => (
+             isCurrentIncident(message) && (
+            <div className="message__chats" key={message.id}>
+              {message.name === loggedInUserName ? (
+                <p className="sender__name">You</p>
+              ) : (
+                <p>{message.name}</p>
+              )}
+
+              <div
+                className={
+                  message.name === loggedInUserName
+                    ? "message__sender"
+                    : "message__recipient"
+                }
+              >
+                <p>{message.text}</p>
+                {message.attachment && (
+                  <div>
+                    <a
+                      // href={`data:${message.attachment.type};base64,${message.attachment.data}`}
+                      href={`data:${message.attachment.type};base64,${message.attachment.data}`}
+                      download={message.attachment.name}
+                    >
+                      {message.attachment.name}
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+             )
+          ))}
         </ul>
       </div>
       <div className="attachment__container">
@@ -121,7 +154,7 @@ const ChatBody = ({ messages, typingStatus, lastMessageRef, selectedIncident, se
           ))}
       </div>
    
-        <div className="message__container">
+        {/* <div className="message__container">
           {messages.map((message) => (
              isCurrentIncident(message) && (
             <div className="message__chats" key={message.id}>
@@ -158,7 +191,7 @@ const ChatBody = ({ messages, typingStatus, lastMessageRef, selectedIncident, se
             <p>{typingStatus}</p>
           </div>
           <div ref={lastMessageRef} />
-        </div>
+        </div> */}
    
     </>
   );

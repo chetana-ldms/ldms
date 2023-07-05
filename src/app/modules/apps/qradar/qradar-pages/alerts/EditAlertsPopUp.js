@@ -82,6 +82,7 @@ const EditAlertsPopUp = ({ show, onClose, row, ldp_security_user, dropdownData, 
         try {
             const comment = commentRef.current.value;
             const modifiedUserId1 = Number(sessionStorage.getItem('userId'));
+            const date = new Date().toISOString();
             const { orgID, alertID, score, statusID, priorityid, severityId, observableTagID, ownerUserID = 1, modifiedUserId = modifiedUserId1, modifiedDate } = row;
 
             const data = {
@@ -93,7 +94,7 @@ const EditAlertsPopUp = ({ show, onClose, row, ldp_security_user, dropdownData, 
                 observableTagId: id.observableTagID,
                 ownerUserId: id.ownerUserID,
                 modifiedUserId,
-                modifiedDate,
+                modifiedDate: date,
                 score,
                 alertNote: comment
             };
