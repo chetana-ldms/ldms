@@ -376,7 +376,7 @@ const DashboardWrapper = () => {
           <div className="card bg-default">
             <div className="card-body">
               <h6 className="uppercase text-center">Actions assigned to me</h6>
-              <div className="table-responsive">
+              <div className="table-responsive alert-table">
                 {/* begin::Table */}
                 <table className="table align-middle gs-0 gy-5 ds-table mt-2">
                   <thead>
@@ -394,7 +394,7 @@ const DashboardWrapper = () => {
                           <tr key={index}>
                             <td>{item?.severity}</td>
                             <td>
-                              <span className="red">
+                              <span className="fw-normal">
                                 {" "}
                                 {formatDateDiff(new Date(item?.actionDate))}
                               </span>
@@ -416,7 +416,7 @@ const DashboardWrapper = () => {
           <div className="card bg-default">
             <div className="card-body">
               <h6 className="uppercase text-center">My recent Incidents</h6>
-              <div className="table-responsive">
+              <div className="table-responsive alert-table">
                 {/* begin::Table */}
                 <table className="table align-middle gs-0 gy-5 ds-table mt-2">
                   <thead>
@@ -434,7 +434,7 @@ const DashboardWrapper = () => {
                           <tr key={index}>
                             <td>{item?.severity}</td>
                             <td>
-                              <span className="red">
+                              <span className="fw-normal">
                                 {formatDateDiff(new Date(item?.createdDate))}
                               </span>
                             </td>
