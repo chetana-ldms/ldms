@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { fetchChannelsCreateUrl, fetchSubItemsByOrgChannel, fetchlistUrl } from "../../../../../api/ChannelApi";
+import {
+  fetchChannelsCreateUrl,
+  fetchSubItemsByOrgChannel,
+  fetchlistUrl,
+} from "../../../../../api/ChannelApi";
 import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
 
 import {
@@ -14,11 +18,11 @@ import {
 } from "reactstrap";
 
 const Reports = ({ channelId, channelName }) => {
-  const orgId = Number(sessionStorage.getItem('orgId'))
+  const orgId = Number(sessionStorage.getItem("orgId"));
   const [channelSubItems, setChannelSubItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [teamsList, setTeamsList] = useState([])
-  console.log(teamsList, "teamsList")
+  const [teamsList, setTeamsList] = useState([]);
+  console.log(teamsList, "teamsList");
   const [error, setError] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => setDropdownOpen((prevState) => !prevState);
@@ -63,7 +67,7 @@ const Reports = ({ channelId, channelName }) => {
         const data = await fetchlistUrl(orgId);
         setTeamsList(data);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     };
 
@@ -74,12 +78,11 @@ const Reports = ({ channelId, channelName }) => {
     const selectedTeamId = teamSelectRef.current.value;
     const data = {
       teamsId: Number(selectedTeamId),
-      channelId: channelId
-    }
-    fetchChannelsCreateUrl(data)
-      .catch((error) => {
-        console.error(error);
-      });
+      channelId: channelId,
+    };
+    fetchChannelsCreateUrl(data).catch((error) => {
+      console.error(error);
+    });
   };
   return (
     <div>
@@ -87,7 +90,8 @@ const Reports = ({ channelId, channelName }) => {
         <p className="float-left channel-heading">
           <strong>{channelName}</strong>
         </p>
-        <div className="float-right teams-channel">
+        {/* Microsoft teams integration (hidden for now) */}
+        <div className="float-right teams-channel hidden">
           <Dropdown
             isOpen={dropdownOpen}
             toggle={toggleDropdown}
@@ -192,25 +196,29 @@ const Reports = ({ channelId, channelName }) => {
       <Modal isOpen={modalOpen} toggle={closeModal} className="teams-modal">
         <ModalHeader toggle={closeModal}>Add Channel in Teams</ModalHeader>
         <ModalBody>
-        
-            <div className="form-group">
-              <label htmlFor="teamSelect">Select Team:</label>
-              <select
-                id="teamSelect"
-                className="form-select form-select-solid"
-                ref={teamSelectRef}
-              >
-                <option value="">Select a team</option>
-                {teamsList.map((team) => (
-                  <option key={team.teamId} value={team.teamId}>
-                    {team.teamName}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="form-group">
+            <label htmlFor="teamSelect">Select Team:</label>
+            <select
+              id="teamSelect"
+              className="form-select form-select-solid"
+              ref={teamSelectRef}
+            >
+              <option value="">Select a team</option>
+              {teamsList.map((team) => (
+                <option key={team.teamId} value={team.teamId}>
+                  {team.teamName}
+                </option>
+              ))}
+            </select>
+          </div>
         </ModalBody>
         <ModalFooter>
-          <button className="btn btn-primary btn-small" onClick={handleFormSubmit}>Submit</button>
+          <button
+            className="btn btn-primary btn-small"
+            onClick={handleFormSubmit}
+          >
+            Submit
+          </button>
           <button className="btn btn-secondary btn-small" onClick={closeModal}>
             Close
           </button>

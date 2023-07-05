@@ -1,59 +1,82 @@
-import { useState, useEffect } from 'react';
-import { fetchAllIncidentsSummery } from '../../api/dashBoardApi';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { fetchMasterData } from "../../api/Api";
 
 function IncidentStatus(props) {
   const { days, orgId } = props;
-  const [alertData, setAlertData] = useState([]);
+  const [alertCounts, setAlertCounts] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [statusNames, setStatusNames] = useState([]);
-  const [alertCounts, setAlertCounts] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedPriority, setSelectedPriority] = useState("");
+  const [dropdownData, setDropdownData] = useState({
+    severityNameDropDownData: [],
+    statusDropDown: [],
+    priorityDropDown: [],
+    typeDropDown: [],
+  });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const AllIncidentsSummeryResponse = await fetchAllIncidentsSummery({
-          orgId: orgId,
-          incidentFromDate: '2022-04-13T05:43:48.828Z',
-          incidentToDate: '2023-04-13T05:43:48.828Z',
-        });
-        const { data } = await AllIncidentsSummeryResponse;
-        setAlertData(data);
-        setSelectedStatus(data[0]?.statusName || '');
+    Promise.all([
+      fetchMasterData("incident_severity"),
+      fetchMasterData("incident_status"),
+      fetchMasterData("incident_priority"),
+      fetchMasterData("Incident_Type"),
+    ])
+      .then(([severityData, statusData, priorityData, typeData]) => {
+        setDropdownData((prevDropdownData) => ({
+          ...prevDropdownData,
+          severityNameDropDownData: severityData,
+          statusDropDown: statusData,
+          priorityDropDown: priorityData,
+          typeDropDown: typeData,
+        }));
 
-        const names = data.map((alert) => alert.statusName);
-        const counts = data.map((alert) => alert.alertCount);
-        setStatusNames(names);
-        setAlertCounts(counts);
+        // Store the first status ID and priority ID
+        if (statusData.length > 0) {
+          setSelectedStatus(statusData[0].dataID);
+        }
+        if (priorityData.length > 0) {
+          setSelectedPriority(priorityData[0].dataID);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
-        setLoading(false);
-      } catch (error) {
-        setError(error.message);
-        setLoading(false);
-      }
-    };
+  useEffect(() => {
+    if (selectedStatus && selectedPriority) {
+      fetchAlertCount();
+    }
+  }, [selectedStatus, selectedPriority]);
 
-    if (orgId) {
-      fetchData();
-    } else {
-      setError('Organization ID is required.');
+  const handleSelectStatusChange = (event) => {
+    setSelectedStatus(event.target.value);
+  };
+
+  const handleSelectPriorityChange = (event) => {
+    setSelectedPriority(event.target.value);
+  };
+
+  const fetchAlertCount = async () => {
+    try {
+      setLoading(true);
+      const apiUrl =
+        "http://115.110.192.133:502/api/IncidentManagement/v1/GetIncidentCountByPriorityAndStatus";
+      const requestData = {
+        statusID: selectedStatus,
+        priorityID: selectedPriority,
+        orgId: 1,
+      };
+      const response = await axios.post(apiUrl, requestData);
+      const { alertsCount } = response.data;
+      setAlertCounts(alertsCount);
+      setLoading(false);
+    } catch (error) {
+      setError(error.message);
       setLoading(false);
     }
-
-    return () => {
-      // Cleanup function to reset states
-      setAlertData([]);
-      setLoading(true);
-      setError(null);
-      setSelectedStatus('');
-      setStatusNames([]);
-      setAlertCounts([]);
-    };
-  }, [orgId]);
-
-  const handleSelectChange = (event) => {
-    setSelectedStatus(event.target.value);
   };
 
   if (!orgId) {
@@ -65,47 +88,64 @@ function IncidentStatus(props) {
   }
 
   return (
-    <div className='card-body'>
-      <div className='row'>
-        <label className='form-label fw-normal fs-12 col-lg-5 lh-40 fc-gray fs-14'>
-          <span>Incident by status:</span>
+    <div className="card-body">
+      <div className="row">
+        <label className="form-label fw-bold fs-12 col-lg-5 lh-40 fs-14">
+          <span>Incident by Status & Priority:</span>
         </label>
-        <div className='col-lg-6 header-filter'>
-          {alertData.length > 0 && (
-            <select
-              className='form-select form-select-solid bg-blue-light'
-              data-kt-select2='true'
-              data-placeholder='Select option'
-              data-allow-clear='true'
-              value={selectedStatus}
-              onChange={handleSelectChange}
-            >
-              {statusNames.map((statusName, index) => (
-                <option key={index} value={statusName}>
-                  {statusName}
-                </option>
-              ))}
-            </select>
-          )}
+        <div className="col-lg-4 header-filter">
+          <select
+            name="incidentStatusName"
+            data-control="select2"
+            data-hide-search="true"
+            className="form-select form-control form-select-white form-select-sm mt-2"
+            value={selectedStatus}
+            onChange={handleSelectStatusChange}
+          >
+            <option value="">Select</option>
+            {dropdownData.statusDropDown.map((status) => (
+              <option
+                key={status.dataID}
+                value={status.dataID}
+                data-id={status.dataID}
+              >
+                {status.dataValue}
+              </option>
+            ))}
+          </select>
         </div>
-        {alertData.length > 0 && (
-          <div className='row bar-chart mt-8'>
-            {loading && <div>Loading...</div>}
-            {selectedStatus && (
-              <>
-                <div className='col-lg-3'>
-                  <span className='text text-right d-block'>{selectedStatus}</span>{' '}
-                </div>
-                <div className='col-lg-7'>
-                  <span className='bar'>{alertCounts[statusNames.indexOf(selectedStatus)] || 0}</span>
-                </div>
-                <div className='col-lg-2'>
-                  <span>Total</span> <span>{alertCounts[statusNames.indexOf(selectedStatus)] || 0}</span>
-                </div>
-              </>
-            )}
-          </div>
-        )}
+        <div className="col-lg-3 header-filter">
+          <select
+            name="priorityName"
+            data-control="select2"
+            data-hide-search="true"
+            className="form-select form-control form-select-white form-select-sm mt-2"
+            value={selectedPriority}
+            onChange={handleSelectPriorityChange}
+          >
+            <option value="">Select</option>
+            {dropdownData.priorityDropDown.map((priority) => (
+              <option
+                key={priority.dataID}
+                value={priority.dataID}
+                data-id={priority.dataID}
+              >
+                {priority.dataValue}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="row bar-chart mt-10">
+          <>
+            <div className="col-lg-2 fw-bold">Count:</div>
+            <div className="col-lg-7">
+              <span className="bar">{alertCounts}</span>
+            </div>
+            <div className="col-lg-2">
+              <span>Total</span> <span>{alertCounts}</span>
+            </div>
+          </>
+        </div>
       </div>
     </div>
   );

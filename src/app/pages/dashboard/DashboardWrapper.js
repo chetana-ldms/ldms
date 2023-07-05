@@ -432,7 +432,7 @@ const DashboardWrapper = () => {
                       recentIncidents.map((item, index) => {
                         return (
                           <tr key={index}>
-                            <td>{item?.severity}</td>
+                            <td>{item?.severityName}</td>
                             <td>
                               <span className="fw-normal">
                                 {formatDateDiff(new Date(item?.createdDate))}
