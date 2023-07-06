@@ -12,7 +12,7 @@ import {
 } from "../../../../../api/IncidentsApi";
 
 const IncidentDetails = ({ incident, onRefreshIncidents }) => {
-  const { subject, createdDate, incidentID } = incident;
+  const { subject, createdDate, incidentID, modifiedDate } = incident;
   const id = incidentID;
   console.log(id, "id");
   const [activeTab, setActiveTab] = useState("general");
@@ -506,7 +506,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="badge text-black fw-bold">
-                      Jul 29, 2022 01:12:32 AM
+                      {modifiedDate}
                     </div>
                   </div>
                 </div>

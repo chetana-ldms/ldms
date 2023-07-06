@@ -4,7 +4,7 @@ import { fetchMasterData } from "../../api/Api";
 
 function IncidentStatus(props) {
   const { days, orgId } = props;
-  const [alertCounts, setAlertCounts] = useState(0);
+  const [incidentCount, setIncidentCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -70,8 +70,8 @@ function IncidentStatus(props) {
         orgId: 1,
       };
       const response = await axios.post(apiUrl, requestData);
-      const { alertsCount } = response.data;
-      setAlertCounts(alertsCount);
+      const { incidentCount } = response.data;
+      setIncidentCount(incidentCount);
       setLoading(false);
     } catch (error) {
       setError(error.message);
@@ -139,10 +139,10 @@ function IncidentStatus(props) {
           <>
             <div className="col-lg-2 fw-bold">Count:</div>
             <div className="col-lg-7">
-              <span className="bar">{alertCounts}</span>
+              <span className="bar">{incidentCount}</span>
             </div>
             <div className="col-lg-2">
-              <span>Total</span> <span>{alertCounts}</span>
+              <span>Total</span> <span>{incidentCount}</span>
             </div>
           </>
         </div>

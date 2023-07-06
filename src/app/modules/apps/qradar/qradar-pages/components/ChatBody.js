@@ -1,22 +1,31 @@
-
 import React, { useEffect, useState } from "react";
-import { fetchDownloadAttachmentURL, fetchDownloadAttachmentUrl, fetchGetChatHistory } from "../../../../../api/IncidentsApi";
+import {
+  fetchDownloadAttachmentURL,
+  fetchDownloadAttachmentUrl,
+  fetchGetChatHistory,
+} from "../../../../../api/IncidentsApi";
 import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
-import { saveAs } from 'file-saver';
 
-
-const ChatBody = ({ messages: initialMessages, typingStatus, lastMessageRef, selectedIncident, setRefreshChatHistory, resetMessages }) => {
+const ChatBody = ({
+  messages: initialMessages,
+  typingStatus,
+  lastMessageRef,
+  selectedIncident,
+  setRefreshChatHistory,
+  resetMessages,
+}) => {
   const loggedInUserName = sessionStorage.getItem("userName");
   const { incidentID } = selectedIncident;
   const id = incidentID;
   // Declare and assign value to messageId
-  const messageId = initialMessages.length > 0 ? initialMessages[0].incidentID : null;
+  const messageId =
+    initialMessages.length > 0 ? initialMessages[0].incidentID : null;
   console.log(messageId, "messageId");
   const isCurrentIncident = (message) => message.incidentID === id;
   const orgId = sessionStorage.getItem("orgId");
   const [messages, setMessages] = useState(initialMessages);
   const [chatHistory, setChatHistory] = useState([]);
-  console.log(chatHistory, "chatHistory")
+  console.log(chatHistory, "chatHistory");
   useEffect(() => {
     setMessages(initialMessages);
   }, [initialMessages]);
@@ -31,7 +40,7 @@ const ChatBody = ({ messages: initialMessages, typingStatus, lastMessageRef, sel
       const chatHistory = await fetchGetChatHistory(data);
       setChatHistory(chatHistory || []);
       setRefreshChatHistory(false);
-      setMessages([])
+      setMessages([]);
       resetMessages();
     };
 
@@ -61,9 +70,9 @@ const ChatBody = ({ messages: initialMessages, typingStatus, lastMessageRef, sel
   const handleDownloadAttachment = async (message) => {
     try {
       const data = {
-        fileUrl:message.attachmentUrl,
-        filePhysicalPath:message.attachmentPhysicalPath
-      }
+        fileUrl: message.attachmentUrl,
+        filePhysicalPath: message.attachmentPhysicalPath,
+      };
       const response = await fetchDownloadAttachmentUrl(data);
       if (response.ok) {
         const fileBlob = await response.blob();
@@ -87,11 +96,11 @@ const ChatBody = ({ messages: initialMessages, typingStatus, lastMessageRef, sel
   const formatDate = (datetimeString) => {
     const datetime = new Date(datetimeString);
 
-    const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    const timeOptions = { hour: '2-digit', minute: '2-digit' };
+    const dateOptions = { year: "numeric", month: "2-digit", day: "2-digit" };
+    const timeOptions = { hour: "2-digit", minute: "2-digit" };
 
-    const formattedDate = datetime.toLocaleDateString('en-US', dateOptions);
-    const formattedTime = datetime.toLocaleTimeString('en-US', timeOptions);
+    const formattedDate = datetime.toLocaleDateString("en-US", dateOptions);
+    const formattedTime = datetime.toLocaleTimeString("en-US", timeOptions);
 
     return `${formattedDate} ${formattedTime}`;
   };
@@ -133,13 +142,28 @@ const ChatBody = ({ messages: initialMessages, typingStatus, lastMessageRef, sel
                   </p>
                 )}
                 <div
+                  className={`date-time ${
+                    message.fromUserName === loggedInUserName
+                      ? "float-right"
+                      : "float-left"
+                  }`}
+                >
+                  {formatDate(message.messsageDate)}
+                </div>
+                <div className="clearfix" />
+                <div
                   className={
                     message.fromUserName === loggedInUserName
                       ? "message__sender"
                       : "message__recipient"
                   }
                 >
-                  {message.messageType === "Chat_Message" && <p>{message.chatMessage}{formatDate(message.messsageDate)}</p>}
+                  {message.messageType === "Chat_Message" && (
+                    <>
+                      <p>{message.chatMessage}</p>
+                    </>
+                  )}
+
                   {message.messageType === "Attachment" && (
                     <div>
                       <a
@@ -151,49 +175,61 @@ const ChatBody = ({ messages: initialMessages, typingStatus, lastMessageRef, sel
                           handleDownloadAttachment(message);
                         }}
                       >
-                        {message.chatMessage}{formatDate(message.messsageDate)}
+                        {message.chatMessage}
+                        {/* <div className="date-time">
+                          {formatDate(message.messsageDate)}
+                        </div> */}
                       </a>
                     </div>
                   )}
-                  
                 </div>
+                <div className="clearfix" />
               </li>
-            ))
-          }
-          {messages.map((message) => (
-            isCurrentIncident(message) && (
-              <div className="message__chats" key={message.id}>
-                {message.name === loggedInUserName ? (
-                  <p className="sender__name">You</p>
-                ) : (
-                  <p>{message.name}</p>
-                )}
+            ))}
+          {messages.map(
+            (message) =>
+              isCurrentIncident(message) && (
+                <div className="message__chats" key={message.id}>
+                  {message.name === loggedInUserName ? (
+                    <p className="sender__name">
+                      <img
+                        alt="Logo"
+                        src={toAbsoluteUrl("/media/avatars/300-1.jpg")}
+                        width="30"
+                      />{" "}
+                      You
+                    </p>
+                  ) : (
+                    <p>{message.name}</p>
+                  )}
 
-                <div
-                  className={
-                    message.name === loggedInUserName
-                      ? "message__sender"
-                      : "message__recipient"
-                  }
-                >
-                  <p>{message.text}</p>
-                  {message.attachment && (
-                    <div>
-                      <a
-                        href={`data:${message.attachment.type};base64,${message.attachment.data}`}
-                        download={message.attachment.name}
-                      >
-                        {message.attachment.name}
-                      </a>
-                    </div>
-                  )}
-                  {message.createdDate && (
-                    <div>{formatDate(message.createdDate)}</div>
-                  )}
+                  <div
+                    className={
+                      message.name === loggedInUserName
+                        ? "message__sender"
+                        : "message__recipient"
+                    }
+                  >
+                    <p>{message.text}</p>
+                    {message.attachment && (
+                      <div>
+                        <a
+                          href={`data:${message.attachment.type};base64,${message.attachment.data}`}
+                          download={message.attachment.name}
+                        >
+                          {message.attachment.name}
+                        </a>
+                      </div>
+                    )}
+                    {message.createdDate && (
+                      <div className="date-time">
+                        {formatDate(message.createdDate)}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )
-          ))}
+              )
+          )}
         </ul>
       </div>
       {/* <div className="attachment__container">
@@ -253,10 +289,8 @@ const ChatBody = ({ messages: initialMessages, typingStatus, lastMessageRef, sel
           </div>
           <div ref={lastMessageRef} />
         </div> */}
-
     </>
   );
-
 };
 
 export default ChatBody;

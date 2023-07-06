@@ -220,6 +220,10 @@
   font-size: 13px;
   margin-bottom: 5px;
 }
+.message__chats .date-time{
+  font-size: 11px;
+  color: #7e7c7c;
+}
 .sender__name {
   text-align: right;
   font-weight: bold;

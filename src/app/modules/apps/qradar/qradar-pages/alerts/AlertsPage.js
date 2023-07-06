@@ -373,6 +373,7 @@ const AlertsPage = () => {
   return (
     <KTCardBody className="alert-page">
       <ToastContainer />
+
       <div className="card mb-5 mb-xl-8">
         <div className="card-header border-0 pt-5">
           <h3 className="card-title align-items-start flex-column">
@@ -384,12 +385,7 @@ const AlertsPage = () => {
               {"( " + filteredAlertData.length + " / " + alertsCount + ")"}
             </span>
           </h3>
-          <div className="col-lg-8 fs-15 mt-2 lh-40 fc-gray text-right ds-reload">
-            Alerts is automatically refreshing every 5 minutes{" "}
-            <a href="#" onClick={handleRefresh}>
-              <i className={`fa fa-refresh ${isRefreshing ? "rotate" : ""}`} />
-            </a>
-          </div>
+
           <div className="card-toolbar">
             <div className="d-flex align-items-center gap-2 gap-lg-3">
               <div className="m-0">
@@ -434,7 +430,6 @@ const AlertsPage = () => {
                           </div>
                           <div>
                             <div
-                              // type="button"
                               className="close fs-20 text-muted pointer"
                               aria-label="Close"
                               onClick={handleCloseForm}
@@ -528,7 +523,14 @@ const AlertsPage = () => {
                               className="btn btn-primary btn-small btn-new"
                               onClick={handleEscalateSubmit}
                             >
-                              Escalate
+                              Submit
+                            </button>
+                            &nbsp;&nbsp;
+                            <button
+                              className="btn btn-secondary btn-small ml-10"
+                              onClick={handleCloseForm}
+                            >
+                              Cancel
                             </button>
                           </div>
                         </form>
@@ -551,6 +553,13 @@ const AlertsPage = () => {
             </div>
           </div>
         </div>
+        <div className="clearfix" />
+        <div className="float-right fs-15 mt-2 lh-40 fc-gray text-right ds-reload">
+          Alerts is automatically refreshing every 5 minutes{" "}
+          <a href="#" onClick={handleRefresh}>
+            <i className={`fa fa-refresh ${isRefreshing ? "rotate" : ""}`} />
+          </a>
+        </div>
         {openEditPage ? (
           <EditAlertsPopUp
             show={openEditPage}
@@ -563,7 +572,7 @@ const AlertsPage = () => {
             onTableRefresh={handleTableRefresh}
           />
         ) : null}
-        <div className="card-body py-3" id="kt_accordion_1">
+        <div className="card-body1 py-3" id="kt_accordion_1">
           <div className="table-responsive alert-table">
             <table className="table align-middle gs-0 gy-4">
               <thead>
@@ -1092,13 +1101,13 @@ const AlertsPage = () => {
                             <span>
                               {item.status == "New" ? (
                                 <i
-                                className="fa fa-circle-exclamation incident-icon orange"
+                                  className="fa fa-circle-exclamation incident-icon orange"
                                   title="Alert"
                                 />
                               ) : (
                                 <i
-                                className="fa fa-circle-exclamation incident-icon green"
-                                title="Incident created"
+                                  className="fa fa-circle-exclamation incident-icon green"
+                                  title="Incident created"
                                 />
                               )}
                             </span>

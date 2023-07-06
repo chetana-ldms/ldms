@@ -401,7 +401,7 @@ const DashboardWrapper = () => {
                             </td>
                             <td>{item.score}</td>
                             <td>
-                              <span>New</span>
+                              <span>{item?.actionStatusName}</span>
                             </td>
                           </tr>
                         );
@@ -440,7 +440,7 @@ const DashboardWrapper = () => {
                             </td>
                             <td>{item.score ?? 0}</td>
                             <td>
-                              <span>New</span>
+                              <span>{item?.incidentStatusName}</span>
                             </td>
                           </tr>
                         );

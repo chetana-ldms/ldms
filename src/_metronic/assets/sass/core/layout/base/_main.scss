@@ -23,6 +23,13 @@ body {
   min-width: 130px !important;
 }
 
+.login-form{
+  .login-subtxt{
+    position: relative;
+    top: -30px;
+  }
+}
+
 //logo
 .app-sidebar-logo {
   .app-sidebar-logo-default {
@@ -394,7 +401,13 @@ form{
   .card-body {
     padding: 0 10px;
   }
+  .canvasjs-chart-credit {
+    display: none;
+  }
 }
+ .canvasjs-chart-credit {
+    display: none;
+  }
 
 .bar-chart {
   span {
@@ -449,6 +462,9 @@ form{
     &.green{
       color: green;
     }
+  }
+  .card-header{
+    padding: 0;
   }
 }
 
@@ -578,9 +594,9 @@ form{
   .incident-tabs{
     .incident-details{
       width: 95%;
-      select{
-          padding: 0 10px;
-      }
+      // select{
+      //     padding: 0 10px;
+      // }
     }
   }
 
