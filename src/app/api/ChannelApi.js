@@ -375,18 +375,23 @@ export const fetchChannelsCreateUrl = async (data) => {
 export const fetchFilesDownloadUrl = async (fileId) => {
   try {
     const response = await fetch(`${FilesDownloadUrl}?fileId=${fileId}`, {
-      method: "POST",
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
     });
 
-    const responseData = await response.json();
-    return responseData;
+    if (response.ok) {
+      return response; 
+    } else {
+      throw new Error("File download failed");
+    }
   } catch (error) {
     console.log(error);
     throw error;
   }
 };
+
+
 
 

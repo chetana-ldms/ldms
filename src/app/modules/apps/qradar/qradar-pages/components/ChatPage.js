@@ -24,6 +24,9 @@ const ChatPage = ({ socket, selectedIncident }) => {
   const handleRefreshChatHistory = () => {
     setRefreshChatHistory(true);
   };
+  const resetMessages = () => {
+    setMessages([]);
+  };
 
   return (
     <div className="chat-app">
@@ -35,6 +38,7 @@ const ChatPage = ({ socket, selectedIncident }) => {
           lastMessageRef={lastMessageRef}
           selectedIncident={selectedIncident}
           setRefreshChatHistory={setRefreshChatHistory}
+          resetMessages={resetMessages}
         />
         <ChatFooter
           socket={socket}

@@ -75,18 +75,25 @@ const Document = ({ channelId, channelName }) => {
     }
   };
   const handleDownload = async (item) => {
-    const fileId = item.fileId; // Get the fileId directly
-  
     try {
-      const response = await fetchFilesDownloadUrl(fileId); // Pass the fileId directly
-      if (response.isSuccess) {
-        notify("File Deleted");
+      const response = await fetchFilesDownloadUrl(item.fileId);
+      if (response.ok) {
+        const fileBlob = await response.blob();
+        const url = URL.createObjectURL(fileBlob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = item.fileName;
+        link.target = "_blank";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        notify("File Downloaded successfully");
       } else {
-        notifyFail("File not Deleted");
+        notifyFail("File not Downloaded successfully");
       }
-      await fetchData(channelId);
     } catch (error) {
       console.log(error);
+      notifyFail("Error occurred while downloading the file");
     }
   };
   

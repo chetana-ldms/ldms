@@ -20,7 +20,7 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
     if (message.trim() || attachment) {
       const formData = new FormData();
       // formData.append("ChatAttachmentFile", attachment ? attachment.data : "");
-      formData.append("ChatAttachmentFile", attachment ? attachment.data : "");
+      // formData.append("ChatAttachmentFile", attachment ? attachment.data : "");
       formData.append("MesssageDate", date || "");
       formData.append("OrgId", orgId || 0);
       formData.append("FromUserID", userID || 0);
@@ -29,15 +29,25 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
       formData.append("ChatMessage", message || "");
       formData.append("ChatSubject", "Incident");
       formData.append("SubjectRefID", id || 0);
-
+      if (attachment) {
+        // Create a new File object with the attachment data
+        const file = new File([attachment.data], attachment.name, {
+          type: attachment.type,
+        });
+  
+        // Append the file as an IFormFile
+        formData.append("ChatAttachmentFile", file);
+      }
       try {
         const response = await fetchAddChatMessage(formData);
         console.log(response, "chat Add API");
+        const date = new Date().toISOString();
         socket.emit("message", {
           text: message,
           name: username,
           attachment: attachment,
-          incidentID: id 
+          incidentID: id,
+          createdDate: date
         });
         onSendMessage();
       } catch (error) {

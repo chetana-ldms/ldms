@@ -8,6 +8,7 @@ const getIncidentHistoryUrl = process.env.REACT_APP_GET_INCIDENT_HISTORY_URL;
 const alertsByAlertIdsUrl = process.env.REACT_APP_ALERTS_BY_ALERT_IDS_URL;
 const getChatHistoryUrl = process.env.REACT_APP_GET_CHAT_HISTORY_URL;
 const addChatMessageUrl = process.env.REACT_APP_SEND_CHAT_MESSAGE_URL;
+const DownloadAttachmentUrl="http://115.110.192.133:502/api/Chat/v1/DownloadAttachment"
 
 export const fetchCreateIncident = async (data) => {
   try {
@@ -189,3 +190,28 @@ export const fetchAddChatMessage = async (formData) => {
     console.log(error);
   }
 };
+
+export const fetchDownloadAttachmentUrl = async (data) => {
+  try {
+    const response = await fetch(`${DownloadAttachmentUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      window.open(url);
+    } else {
+      throw new Error("Failed to download attachment");
+    }
+  } catch (error) {
+    console.error("Error downloading attachment:", error);
+  }
+};
+
