@@ -176,7 +176,13 @@ const ChatBody = ({
                         }}
                       >
                         {message.chatMessage}
-                        {/* <div className="date-time">
+                        {/* <div
+                          className={`date-time ${
+                            message.fromUserName === loggedInUserName
+                              ? "float-right"
+                              : "float-left"
+                          }`}
+                        >
                           {formatDate(message.messsageDate)}
                         </div> */}
                       </a>
@@ -200,9 +206,27 @@ const ChatBody = ({
                       You
                     </p>
                   ) : (
-                    <p>{message.name}</p>
+                    <p className="reciever__name">
+                      <img
+                        alt="Logo"
+                        src={toAbsoluteUrl("/media/avatars/300-4.jpg")}
+                        width="30"
+                      />{" "}
+                      {message.name}
+                    </p>
                   )}
-
+                  {message.createdDate && (
+                    <div
+                      className={`date-time ${
+                        message.name === loggedInUserName
+                          ? "float-right"
+                          : "float-left"
+                      }`}
+                    >
+                      {formatDate(message.createdDate)}
+                    </div>
+                  )}
+                  <div className="clearfix" />
                   <div
                     className={
                       message.name === loggedInUserName
@@ -219,11 +243,6 @@ const ChatBody = ({
                         >
                           {message.attachment.name}
                         </a>
-                      </div>
-                    )}
-                    {message.createdDate && (
-                      <div className="date-time">
-                        {formatDate(message.createdDate)}
                       </div>
                     )}
                   </div>
