@@ -1099,7 +1099,7 @@ const AlertsPage = () => {
                             />
                             {/* check incident creation */}
                             <span>
-                              {item.status == "New" ? (
+                              {item.status == "New" && item.alertIncidentMappingId == 0 ? (
                                 <i
                                   className="fa fa-circle-exclamation incident-icon orange"
                                   title="Alert"
