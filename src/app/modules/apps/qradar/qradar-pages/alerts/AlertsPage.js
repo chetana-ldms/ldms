@@ -152,7 +152,7 @@ const AlertsPage = () => {
         modifiedDate,
       };
       const response = await fetchUpdatSetAlertIrrelavantStatuseAlert(data);
-      notify("Irrelevant / Ignore Created");
+      notify("Alert marked as Irrelevant/Ignore");
       setIgnorVisible(false);
       setShowForm(false);
       qradaralerts();
@@ -191,7 +191,7 @@ const AlertsPage = () => {
       const response = await fetchSetAlertEscalationStatus(data);
       if (response.isSuccess) {
         qradaralerts();
-        notify("Escalate Created");
+        notify("Alert Escalated");
       }
       handleEscalate({
         target: {
@@ -375,7 +375,7 @@ const AlertsPage = () => {
       <ToastContainer />
 
       <div className="card mb-5 mb-xl-8">
-        <div className="card-header border-0 pt-5">
+        <div className="card-header border-0">
           <h3 className="card-title align-items-start flex-column">
             {/* <span className='card-label fw-bold fs-3 mb-1'>
               Alerts {'( ' + alertData.length + ' / ' + alertsCount + ')'}

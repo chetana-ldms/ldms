@@ -166,9 +166,9 @@ const ChannelsPage = () => {
     try {
       const responce = await fetchChannelsDelete(data);
       if (responce.isSuccess) {
-        notify("Data Deleted");
+        notify("Channel Deleted");
       } else {
-        notifyFail("Data not Deleted");
+        notifyFail("Failed to delete Channel");
       }
       await fetchData();
     } catch (error) {

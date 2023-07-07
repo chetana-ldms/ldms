@@ -160,7 +160,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
 
     try {
       await fetchUpdateIncident(data);
-      notify("Data Updated");
+      notify("Incident updated");
       onRefreshIncidents();
     } catch (error) {
       notifyFail("Failed to update data");
