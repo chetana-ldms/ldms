@@ -37,12 +37,12 @@ const Document = ({ channelId, channelName }) => {
     if (selectedFile) {
       const formData = new FormData();
       formData.append("file", selectedFile); // Provide a key for the file
-  
+
       formData.append("CreatedUserId", CreatedUserId);
       formData.append("date", date);
       formData.append("orgId", orgId);
       formData.append("channelId", channelId);
-  
+
       try {
         const response = await fetchUpload(formData);
         if (response.isSuccess) {
@@ -57,7 +57,7 @@ const Document = ({ channelId, channelName }) => {
       }
     }
   };
-  
+
   const handleDelete = async (item) => {
     const formData = new FormData();
     formData.append("fileId", item.fileId);
@@ -67,7 +67,7 @@ const Document = ({ channelId, channelName }) => {
       if (response.isSuccess) {
         notify("File Deleted");
       } else {
-        notifyFail("File not Deleted");
+        notifyFail("Failed to delete");
       }
       await fetchData(channelId);
     } catch (error) {
@@ -87,16 +87,15 @@ const Document = ({ channelId, channelName }) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        notify("File Downloaded successfully");
+        notify("File downloaded successfully");
       } else {
-        notifyFail("File not Downloaded successfully");
+        notifyFail("File not downloaded");
       }
     } catch (error) {
       console.log(error);
       notifyFail("Error occurred while downloading the file");
     }
   };
-  
 
   return (
     <div>
@@ -131,11 +130,14 @@ const Document = ({ channelId, channelName }) => {
                     </a>
                   </label>
                   <button className="btn btn-new">
-                    <a href={item.filePhysicalPath} download="Document" onClick={() => {
-                      handleDownload(item);
-                    }}>
+                    <a
+                      href={item.filePhysicalPath}
+                      download="Document"
+                      onClick={() => {
+                        handleDownload(item);
+                      }}
+                    >
                       <i className="fas fa-download"></i>
-                     
                     </a>
                   </button>
                   <button

@@ -130,11 +130,11 @@ const EditAlertsPopUp = ({
       const response = await fetchUpdateAlert(data);
       console.log(response);
       if (response.isSuccess) {
-        notify("table Updated");
+        notify("Alert data updated");
         onClose();
         onTableRefresh();
       } else {
-        notifyFail("table not Updated");
+        notifyFail("Alert data not Updated");
       }
     } catch (error) {
       console.log(error);

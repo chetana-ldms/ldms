@@ -240,10 +240,13 @@ const IncidentsPage = () => {
                               onClick={() => handleIncidentClick(item)}
                             >
                               <div className="row">
-                                <div className="text-dark col-md-9">
+                                <div className="text-dark">
                                   <a href="#" className="text-dark">
-                                    <span className="fw-bold">
-                                      {item.subject}
+                                    <span
+                                      className="fw-bold incident-name"
+                                      title={item.description}
+                                    >
+                                      {item.description}
                                     </span>
                                   </a>
                                 </div>
