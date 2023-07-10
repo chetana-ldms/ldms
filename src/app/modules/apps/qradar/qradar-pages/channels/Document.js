@@ -59,11 +59,8 @@ const Document = ({ channelId, channelName }) => {
   };
 
   const handleDelete = async (item) => {
-    const formData = new FormData();
-    formData.append("fileId", item.fileId);
-
     try {
-      const response = await fetchDelete(formData);
+      const response = await fetchDelete(item.fileId);
       if (response.isSuccess) {
         notify("File Deleted");
       } else {

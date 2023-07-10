@@ -24,19 +24,28 @@ const ChannelsCreateUrl = process.env.REACT_APP_CHANNELS_CREATE_URL;
 const FilesDownloadUrl ="http://115.110.192.133:502/api/File/v1/Files/Download"
 
 
-export const fetchDelete = async (formData) => {
+export const fetchDelete = async (fileId) => {
   try {
-    const response = await fetch(`${deleteUrl}`, {
+    const response = await fetch(`${deleteUrl}?fileId=${fileId}`, {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ fileId }),
     });
 
-    const responseData = await response.json();
-    return responseData;
+    if (response.ok) {
+      const responseData = await response.json();
+      return responseData;
+    } else {
+      throw new Error("File deletion failed");
+    }
   } catch (error) {
     console.log(error);
+    throw error;
   }
 };
+
 export const fetchUpload = async (formData) => {
   try {
     const response = await fetch(`${uploadUrl}`, {

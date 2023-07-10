@@ -35,6 +35,7 @@ import {
 } from "../../../../../api/AlertsApi";
 import ReactPaginate from "react-paginate";
 import { fetchCreateIncident } from "../../../../../api/IncidentsApi";
+import './Alerts.css';
 
 const AlertsPage = () => {
   const [inputValue, setInputValue] = useState("");
@@ -129,11 +130,6 @@ const AlertsPage = () => {
 
   const [pageCount, setpageCount] = useState(0);
 
-  useEffect(() => {
-    axios.get("http://115.110.192.133:502/api/Alerts/v1/Alerts").then((res) => {
-      console.log(res, "mydata");
-    });
-  }, []);
 
   const handleCloseForm = () => {
     // notifyFail("Data not Updated");
@@ -192,6 +188,8 @@ const AlertsPage = () => {
       if (response.isSuccess) {
         qradaralerts();
         notify("Alert Escalated");
+        setEscalate(false);
+        setShowForm(false)
       }
       handleEscalate({
         target: {
@@ -209,11 +207,10 @@ const AlertsPage = () => {
       });
     },
   });
-  const handleEscalateSubmit = (e) => {
-    e.preventDefault();
-    handleSubmit();
-    setEscalate(false);
-  };
+  // const handleEscalateSubmit = (e) => {
+  //   e.preventDefault();
+  //   handleSubmit();
+  // };
   const handlePageClick = async (data) => {
     let currentPage = data.selected + 1;
     const setOfAlertsData = await fetchSetOfAlerts(
@@ -391,9 +388,8 @@ const AlertsPage = () => {
               <div className="m-0">
                 <a
                   href="#"
-                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${
-                    !isCheckboxSelected && "disabled"
-                  }`}
+                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${!isCheckboxSelected && "disabled"
+                    }`}
                   data-kt-menu-trigger="click"
                   data-kt-menu-placement="bottom-end"
                   onClick={onActionsClick}
@@ -487,8 +483,9 @@ const AlertsPage = () => {
                                 value={values.owner}
                                 name="owner"
                                 onChange={handleEscalate}
+                                required
                               >
-                                <option>--</option>
+                                <option value="">Select</option>
                                 {ldp_security_user.length > 0 &&
                                   ldp_security_user.map((item, index) => {
                                     return (
@@ -498,6 +495,7 @@ const AlertsPage = () => {
                                     );
                                   })}
                               </select>
+
                             </div>
                           </div>
                           <div className="mb-5">
@@ -515,16 +513,17 @@ const AlertsPage = () => {
                               name="comments"
                               onChange={handleEscalate}
                               style={{ height: "100px" }}
+                              required
                             />
                           </div>
                           <div className="d-flex justify-content-end">
                             <button
                               type="submit"
                               className="btn btn-primary btn-small btn-new"
-                              onClick={handleEscalateSubmit}
                             >
                               Submit
                             </button>
+
                             &nbsp;&nbsp;
                             <button
                               className="btn btn-secondary btn-small ml-10"
