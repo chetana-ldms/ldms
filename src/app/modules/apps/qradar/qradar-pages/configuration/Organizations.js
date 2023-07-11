@@ -6,6 +6,7 @@ import { notify, notifyFail } from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
 import { fetchOrganizationDelete } from "../../../../../api/Api"
 import axios from 'axios'
+import { fetchOrganizationsUrl } from '../../../../../api/ConfigurationApi'
 
 const Organizations = () => {
   const [loading, setLoading] = useState(false)
@@ -35,30 +36,22 @@ const Organizations = () => {
     }
   }
   
-  const reload = () => {
-    // setLoading(true)
-    var config = {
-      method: 'get',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/Organizations',
-      headers: {
-        Accept: 'text/plain',
-      },
+
+  const reload = async () => {
+    try {
+      setLoading(true);
+      const response = await fetchOrganizationsUrl();
+      setTools(
+            userID === 1
+              ? response
+              : response.filter((item) => item.orgID === orgId)
+          );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
-    axios(config)
-      .then(function (response) {
-        // setTools(response.data.organizationList)
-        setTools(
-          userID === 1
-            ? response.data.organizationList
-            : response.data.organizationList.filter((item) => item.orgID === orgId)
-        );
-        
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }
+  };
   useEffect(() => {
     reload();
   }, [])

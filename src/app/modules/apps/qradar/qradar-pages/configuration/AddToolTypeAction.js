@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { UsersListLoading } from '../components/loading/UsersListLoading';
 import { notify, notifyFail } from '../components/notification/Notification';
+import { fetchMasterData } from '../../../../../api/Api';
+import { fetchToolTypeActionAddUrl } from '../../../../../api/ConfigurationApi';
 
 const AddToolTypeAction = () => {
   const navigate = useNavigate();
@@ -13,29 +15,16 @@ const AddToolTypeAction = () => {
   const errors = {};
 
   useEffect(() => {
-    setLoading(true);
-    var data_4 = JSON.stringify({
-      maserDataType: 'Tool_Types',
-    });
-    var config_4 = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/MasterData',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: data_4,
-    };
-    axios(config_4)
-      .then(function (response) {
-        setToolTypes(response.data.masterData);
-        setLoading(false);
+    fetchMasterData("Tool_Types")
+      .then((typeData) => {
+        setToolTypes(typeData);
       })
-      .catch(function (error) {
+      .catch((error) => {
         console.log(error);
       });
   }, []);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     setLoading(true);
     if (!toolAction.current.value) {
       errors.toolAction = 'Select Tool Action';
@@ -51,41 +40,27 @@ const AddToolTypeAction = () => {
     event.preventDefault();
     const createdUserId = Number(sessionStorage.getItem('userId'));
     const createdDate = new Date().toISOString();
-    var data = JSON.stringify({
+    var data = {
       toolTypeID: toolTypeID.current.value,
       toolAction: toolAction.current.value,
       createdDate,
       createdUserId
-    });
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeAction/Add',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
     };
-
-    // setTimeout(() => {
-      axios(config)
-        .then(function (response) {
-          const { isSuccess } = response.data;
-
-          if (isSuccess) {
-            notify('Data Saved');
-            navigate('/qradar/tool-type-actions/list');
-          } else {
-            notifyFail('Failed to save data');
-          }
-        })
-        .catch(function (error) {
-          console.log(error);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    // }, 1000);
+    try {
+      const responseData = await fetchToolTypeActionAddUrl(data);
+      const { isSuccess } = responseData;
+  
+      if (isSuccess) {
+        notify('Data Saved');
+        navigate('/qradar/tool-type-actions/list');
+      } else {
+        notifyFail('Failed to save data');
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

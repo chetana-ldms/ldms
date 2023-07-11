@@ -3,7 +3,8 @@ import {Link, useNavigate} from 'react-router-dom'
 import axios from 'axios'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import { notify, notifyFail } from '../components/notification/Notification';
-import { fetchLDPToolsByToolType, fetchToolActions } from '../../../../../api/ConfigurationApi'
+import { fetchLDPToolsByToolType, fetchRuleActionUrl, fetchToolActions } from '../../../../../api/ConfigurationApi'
+import { fetchMasterData } from '../../../../../api/Api';
 
 const AddRuleAction = () => {
   const navigate = useNavigate()
@@ -53,77 +54,15 @@ const AddRuleAction = () => {
     
   }
   useEffect(() => {
-    setLoading(true)
-
-    var config = {
-      method: 'get',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolActions',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-    axios(config)
-      .then(function (response) {
-        setToolAcations(response.data.toolAcationsList)
-        setLoading(false)
+    fetchMasterData("Tool_Types")
+      .then((typeData) => {
+        setToolTypes(typeData);
       })
-      .catch(function (error) {
-        console.log(error)
-      })
-    //////////////////////////////////////////////
-    // var config_2 = {
-    //   method: 'get',
-    //   url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeActions',
-    //   headers: {
-    //     Accept: 'text/plain',
-    //   },
-    // }
-    // axios(config_2)
-    //   .then(function (response) {
-    //     setToolTypeActions(response.data.toolTypeActionsList)
-    //     setLoading(false)
-    //   })
-    //   .catch(function (error) {
-    //     console.log(error)
-    //   })
-    /////////////////////////////////////
-    // var config_3 = {
-    //   method: 'get',
-    //   url: 'http://115.110.192.133:502/api/LDPlattform/v1/LDPTools',
-    //   headers: {
-    //     Accept: 'text/plain',
-    //   },
-    // }
-    // axios(config_3)
-    //   .then(function (response) {
-    //     setTools(response.data.ldpToolsList)
-    //     setLoading(false)
-    //   })
-    //   .catch(function (error) {
-    //     console.log(error)
-    //   })
-    //////////////////
-    var data_4 = JSON.stringify({
-      maserDataType: 'Tool_Types',
-    })
-    var config_4 = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/MasterData',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: data_4,
-    }
-    axios(config_4)
-      .then(function (response) {
-        setToolTypes(response.data.masterData)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }, [])
-  const handleSubmit = (event) => {
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+  const handleSubmit = async (event) => {
     if (!ruleActionName.current.value) {
       errors.ruleActionName = 'Enter Rule Action Name'
       setLoading(false)
@@ -149,7 +88,7 @@ const AddRuleAction = () => {
     const createduserId = Number(sessionStorage.getItem('userId'));
     const orgId = Number(sessionStorage.getItem('orgId'));
     const createddate = new Date().toISOString();
-    var data = JSON.stringify({
+    var data = {
       ruleActionName: ruleActionName.current.value,
       toolTypeID: toolTypeID.current.value,
       toolID: toolId.current.value,
@@ -158,34 +97,23 @@ const AddRuleAction = () => {
       orgId,
       createddate,
       createduserId
-    })
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:8011/api/RuleAction/v1/RuleAction/Add',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
     }
-    // setTimeout(() => {
-      axios(config)
-        .then(function (response) {
-          const { isSuccess } = response.data;
-          if (isSuccess) {
-            notify('Data Saved');
-            navigate('/qradar/rules-actions/list')
-          } else {
-            notifyFail('Failed to save data');
-          }
-          // console.log(JSON.stringify(response.data))
-          // navigate('/qradar/rules-actions/list')
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      setLoading(false)
-    // }, 1000)
+  
+    try {
+      const responseData = await fetchRuleActionUrl(data);
+      const { isSuccess } = responseData;
+  
+      if (isSuccess) {
+        notify('Data Saved');
+        navigate('/qradar/rules-actions/list')
+      } else {
+        notifyFail('Failed to save data');
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

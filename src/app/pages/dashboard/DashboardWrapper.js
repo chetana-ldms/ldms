@@ -65,7 +65,6 @@ const DashboardWrapper = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Organizations
         const organizationsResponse = await fetchOrganizations();
         setOrganizations(organizationsResponse);
       } catch (error) {

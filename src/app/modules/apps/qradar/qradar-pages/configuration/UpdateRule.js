@@ -3,7 +3,7 @@ import {Link, useNavigate, useParams} from 'react-router-dom'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import {UsersListLoading} from '../components/loading/UsersListLoading' 
-import { fetchRuleDetails } from '../../../../../api/ConfigurationApi';
+import { fetchRuleCatagoriesUrl, fetchRuleDetails, fetchRulesUpdateUrl } from '../../../../../api/ConfigurationApi';
 
 const UpdateRule = () => {
   const navigate = useNavigate()
@@ -37,57 +37,44 @@ const UpdateRule = () => {
 
     fetchData();
   }, [id, ruleName]);
+  // useEffect(() => {
+  //   setLoading(true)
+  //   var config = {
+  //     method: 'get',
+  //     url: `http://115.110.192.133:8011/api/RulesConfiguraton/v1/Rules/Rule?ruleID=${id}`,
+  //     headers: {
+  //       Accept: 'text/plain',
+  //     },
+  //   }
+  //   axios(config)
+  //     .then(function (response) {
+  //       setRuleData(response.data.ruleData)
+  //       setFormFields(response.data.ruleData.ruleConditions)
+  //       setLoading(false)
+  //     })
+  //     .catch(function (error) {
+  //       console.log(error)
+  //     })
+  // }, [])
   useEffect(() => {
-    setLoading(true)
-    var config = {
-      method: 'get',
-      url: `http://115.110.192.133:8011/api/RulesConfiguraton/v1/Rules/Rule?ruleID=${id}`,
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-    axios(config)
-      .then(function (response) {
-        setRuleData(response.data.ruleData)
-        setFormFields(response.data.ruleData.ruleConditions)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-    /////////////////////////////////////
-    var config_2 = {
-      method: 'get',
-      url: 'http://115.110.192.133:8011/api/RulesConfiguraton/v1/RuleEngine/MasterData?MasterDataType=Rule_Catagories',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-    axios(config_2)
-      .then(function (response) {
-        setRuleCatagories(response.data.masterDataList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-    /////////////////////////////////////
-    var config_3 = {
-      method: 'get',
-      url: 'http://115.110.192.133:8011/api/RulesConfiguraton/v1/RuleEngine/MasterData?MasterDataType=Rules_Condition_Types',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-    axios(config_3)
-      .then(function (response) {
-        setRulesconditiontypes(response.data.masterDataList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }, [])
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        const ruleCategoriesResponse = await fetchRuleCatagoriesUrl('Rule_Catagories');
+        setRuleCatagories(ruleCategoriesResponse);
+
+        const rulesConditionTypesResponse = await fetchRuleCatagoriesUrl('Rules_Condition_Types');
+        setRulesconditiontypes(rulesConditionTypesResponse);
+
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
   // Dynamic Rules Starts
   const addRule = () => {
     let object = {
@@ -126,13 +113,13 @@ const UpdateRule = () => {
     setFormFields(data)
   }
   // Dynamic Rules Ends
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     setLoading(true)
     event.preventDefault()
     const ModifiedUserId = Number(sessionStorage.getItem('userId'));
     const orgId = Number(sessionStorage.getItem('orgId'));
     const modifiedDate = new Date().toISOString();
-    var data = JSON.stringify({
+    var data = {
       ruleName: ruleName.current.value,
       // ruleCatagoryID: ruleCatagoryID.current.value,
       ruleCatagoryID: toolTypeAction.ruleCatagoryID,
@@ -142,37 +129,51 @@ const UpdateRule = () => {
       modifiedDate,
       ModifiedUserId,
       ruleConditions: formFields,
-    })
+    }
 
     // console.log('Data to be sent', data)
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:8011/api/RulesConfiguraton/v1/Rules/Update',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
-    }
-    setTimeout(() => {
-      axios(config)
-        .then(function (response) {
-          const { isSuccess } = response.data;
+    // var config = {
+    //   method: 'post',
+    //   url: 'http://115.110.192.133:8011/api/RulesConfiguraton/v1/Rules/Update',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Accept: 'text/plain',
+    //   },
+    //   data: data,
+    // }
+    // setTimeout(() => {
+    //   axios(config)
+    //     .then(function (response) {
+    //       const { isSuccess } = response.data;
 
-          if (isSuccess) {
-            notify('Data Updated');
-            navigate('/qradar/rules-engine/updated');
-          } else {
-            notifyFail('Failed to update data');
-          }
-          // console.log(JSON.stringify(response.data))
-          // navigate('/qradar/rules-engine/updated')
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      setLoading(false)
-    }, 1000)
+    //       if (isSuccess) {
+    //         notify('Data Updated');
+    //         navigate('/qradar/rules-engine/updated');
+    //       } else {
+    //         notifyFail('Failed to update data');
+    //       }
+    //       // console.log(JSON.stringify(response.data))
+    //       // navigate('/qradar/rules-engine/updated')
+    //     })
+    //     .catch(function (error) {
+    //       console.log(error)
+    //     })
+    //   setLoading(false)
+    // }, 1000)
+    try {
+      const responseData = await fetchRulesUpdateUrl(data);
+      const { isSuccess } = responseData;
+  
+      if (isSuccess) {
+        notify('Data Updated');
+        navigate('/qradar/rules-engine/updated');
+      } else {
+        notifyFail('Failed to update data');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
     /// Get Rule Category IDs
   }
 

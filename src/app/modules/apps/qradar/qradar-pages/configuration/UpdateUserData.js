@@ -1,8 +1,9 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {Link, useNavigate, useParams} from 'react-router-dom'
-import {fetchRoles} from '../../../../../api/Api'
-import { fetchUserDetails } from '../../../../../api/ConfigurationApi'
+import React, { useState, useRef, useEffect } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { fetchRoles } from '../../../../../api/Api'
+import { fetchUserDetails, fetchUserUpdateUrl } from '../../../../../api/ConfigurationApi'
 import axios from 'axios'
+import { notify, notifyFail } from '../components/notification/Notification';
 
 const UpdateUserData = () => {
   const orgId = Number(sessionStorage.getItem('orgId'));
@@ -11,7 +12,7 @@ const UpdateUserData = () => {
   const [roleTypes, setRoleTypes] = useState([])
   console.log(roleTypes, "roleTypes111")
   const [toolTypeAction, setToolTypeAction] = useState({ toolTypeName: '', toolTypeID: '' });
-  const {id} = useParams()
+  const { id } = useParams()
   const userName = useRef()
   console.log(userName, "userName")
   const passWord = useRef()
@@ -24,7 +25,7 @@ const UpdateUserData = () => {
         const data = await fetchUserDetails(id, userName);
         setToolTypeAction({
           ...toolTypeAction,
-          roleID:data.roleID
+          roleID: data.roleID
         });
       } catch (error) {
         console.log(error)
@@ -33,7 +34,7 @@ const UpdateUserData = () => {
 
     fetchData();
   }, [id, userName]);
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     setLoading(true)
     if (!userName.current.value) {
       errors.userName = 'Enter username'
@@ -54,7 +55,7 @@ const UpdateUserData = () => {
     const modifiedUserId = Number(sessionStorage.getItem('userId'));
     const modifiedDate = new Date().toISOString();
     const orgId = sessionStorage.getItem('orgId')
-    var data = JSON.stringify({
+    var data ={
       name: userName.current.value,
       roleID: roleType.current.value,
       password: passWord.current.value,
@@ -63,28 +64,21 @@ const UpdateUserData = () => {
       userID: id,
       orgId,
       modifiedUserId
-    })
-    console.log('data', data)
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPSecurity/v1/User/Update',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
     }
-    setTimeout(() => {
-      axios(config)
-        .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/users-data/list')
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      setLoading(false)
-    }, 1000)
+    try {
+      const responseData = await fetchUserUpdateUrl(data);
+      // const { isSuccess } = responseData;
+
+      // if (isSuccess) {
+      //   notify('Data Updated');
+        navigate('/qradar/users-data/list')
+      // } else {
+      //   notifyFail('Failed to update data');
+      // }
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
   }
   useEffect(() => {
     const fetchData = async () => {
@@ -186,7 +180,7 @@ const UpdateUserData = () => {
           >
             {!loading && 'Update Changes'}
             {loading && (
-              <span className='indicator-progress' style={{display: 'block'}}>
+              <span className='indicator-progress' style={{ display: 'block' }}>
                 Please wait...{' '}
                 <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
               </span>
@@ -198,4 +192,4 @@ const UpdateUserData = () => {
   )
 }
 
-export {UpdateUserData}
+export { UpdateUserData }

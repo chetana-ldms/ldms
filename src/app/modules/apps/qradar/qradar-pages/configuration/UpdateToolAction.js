@@ -3,8 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import { UsersListLoading } from '../components/loading/UsersListLoading'
-import { fetchLDPTools } from '../../../../../api/Api'
-import { fetchLDPToolsByToolType, fetchToolActionDetails } from '../../../../../api/ConfigurationApi';
+import { fetchLDPTools, fetchMasterData } from '../../../../../api/Api'
+import { fetchLDPToolsByToolType, fetchToolActionDetails, fetchToolActionUpdateUrl, fetchToolTypeActions } from '../../../../../api/ConfigurationApi';
 
 const UpdateToolAction = () => {
   const navigate = useNavigate()
@@ -71,24 +71,19 @@ const UpdateToolAction = () => {
       };
   
       result();
-
-      
-      var config = {
-        method: 'get',
-        url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeActions',
-        headers: {
-          Accept: 'text/plain',
-        },
-      }
-  
-      axios(config)
-        .then(function (response) {
-          let result = response.data.toolTypeActionsList.filter((item)=> {return item.toolTypeID === Number(selectedId)})
+      const fetch = async () => {
+        try {
+          setLoading(true);
+          const response = await fetchToolTypeActions();
+          const result = response.filter((item) => item.toolTypeID === Number(selectedId));
           setToolActionTypes(result);
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetch()
     }else if(field === "tools"){
       setToolTypeAction({
         ...toolTypeAction,
@@ -134,28 +129,16 @@ const UpdateToolAction = () => {
       .catch(function (error) {
         console.log(error)
       })
-    //////////////////
-    var data_4 = JSON.stringify({
-      maserDataType: 'Tool_Types',
-    })
-    var config_4 = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/MasterData',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: data_4,
-    }
-    axios(config_4)
-      .then(function (response) {
-        setToolTypes(response.data.masterData)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
+   
+        fetchMasterData("Tool_Types")
+          .then((typeData) => {
+            setToolTypes(typeData);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
   }, [])
-  const handleSubmit = (event, toolTypeAction) => {
+  const handleSubmit = async(event, toolTypeAction) => {
     setLoading(true)
     if (!toolTypeActionID.current.value) {
       errors.toolTypeActionID = 'Select Tool Action'
@@ -170,42 +153,27 @@ const UpdateToolAction = () => {
     event.preventDefault()
     const modifiedUserId = Number(sessionStorage.getItem('userId'));
     const modifiedDate = new Date().toISOString();
-    var data = JSON.stringify({
+    var data ={
         toolID: toolTypeAction.toolID,
-        // toolID: toolTypeAction.toolTypeID,
-        // toolTypeActionID: toolTypeActionID.current.value,
         toolTypeActionID: toolTypeAction.toolTypeActionID,
         toolActionID: Number(id),
         modifiedDate,
         modifiedUserId
-    })
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolAction/Update',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
     }
-    setTimeout(() => {
-      axios(config)
-        .then(function (response) {
-          const { isSuccess } = response.data;
-          if (isSuccess) {
-            notify('Data Updated');
-            navigate('/qradar/tool-actions/updated');
-          } else {
-            notifyFail('Failed to update data');
-          }
-          // console.log(JSON.stringify(response.data))
-          // navigate('/qradar/tool-actions/updated')
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      setLoading(false)
-    }, 1000)
+    try {
+      const responseData = await fetchToolActionUpdateUrl(data);
+      const { isSuccess } = responseData;
+  
+      if (isSuccess) {
+        notify('Data Updated');
+        navigate('/qradar/tool-actions/updated');
+      } else {
+        notifyFail('Failed to update data');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
   }
 
   return (
