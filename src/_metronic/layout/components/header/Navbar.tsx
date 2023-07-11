@@ -21,7 +21,7 @@ const Navbar = () => {
   const userName = sessionStorage.getItem('userName');
   return (
     <div className='app-navbar flex-shrink-0'>
-      <p className='d-flex m-5'>Welcome, <b> { userName}!</b></p>
+      <p className='d-flex m-5'>Welcome &nbsp;<b>{" "} { userName}!</b></p>
         {/* <button className="btn btn-primary m-3" onClick={handleLogout} >LogOut </button> */}
 
 

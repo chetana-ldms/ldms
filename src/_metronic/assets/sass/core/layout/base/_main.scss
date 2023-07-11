@@ -90,6 +90,10 @@ body {
       padding: 4px;
     }
   }
+  .menu-sub{
+    box-shadow: rgb(239, 236, 236) 1px 1px 0px 0px;
+    border: 1px solid #eee;
+  }
 }
 
 .dash-table {
@@ -841,6 +845,11 @@ form{
     width: 100% !important;
     height: 40px;
     border-radius: 6px;
+  }
+  input{
+    &:focus{
+      outline: #a3d4ed;
+    }
   }
 }
 

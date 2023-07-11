@@ -356,7 +356,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                         name="severityName"
                         data-control="select2"
                         data-hide-search="true"
-                        className="form-select form-control form-select-white form-select-sm fw-bold"
+                        className="form-select form-select-sm"
                         value={incidentData.severityName}
                         onChange={(event) => handleChange(event, "severity")}
                       >
