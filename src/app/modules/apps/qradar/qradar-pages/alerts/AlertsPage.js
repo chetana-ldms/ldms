@@ -35,7 +35,7 @@ import {
 } from "../../../../../api/AlertsApi";
 import ReactPaginate from "react-paginate";
 import { fetchCreateIncident } from "../../../../../api/IncidentsApi";
-import './Alerts.css';
+import "./Alerts.css";
 
 const AlertsPage = () => {
   const [inputValue, setInputValue] = useState("");
@@ -130,7 +130,6 @@ const AlertsPage = () => {
 
   const [pageCount, setpageCount] = useState(0);
 
-
   const handleCloseForm = () => {
     // notifyFail("Data not Updated");
     setShowForm(false);
@@ -189,7 +188,7 @@ const AlertsPage = () => {
         qradaralerts();
         notify("Alert Escalated");
         setEscalate(false);
-        setShowForm(false)
+        setShowForm(false);
       }
       handleEscalate({
         target: {
@@ -388,8 +387,9 @@ const AlertsPage = () => {
               <div className="m-0">
                 <a
                   href="#"
-                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${!isCheckboxSelected && "disabled"
-                    }`}
+                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${
+                    !isCheckboxSelected && "disabled"
+                  }`}
                   data-kt-menu-trigger="click"
                   data-kt-menu-placement="bottom-end"
                   onClick={onActionsClick}
@@ -416,14 +416,14 @@ const AlertsPage = () => {
                   id="kt_menu_637dc6f8a1c15"
                 >
                   {showForm && (
-                    <div className="px-7 py-5">
+                    <div className="px-5 py-5">
                       <div className="mb-5">
-                        <div className="d-flex justify-content-between">
-                          <div>
+                        <div className="d-flex justify-content-end mb-5">
+                          {/* <div>
                             <label className="form-label fw-bolder">
                               Select:
                             </label>
-                          </div>
+                          </div> */}
                           <div>
                             <div
                               className="close fs-20 text-muted pointer"
@@ -449,7 +449,7 @@ const AlertsPage = () => {
                             data-dropdown-parent="#kt_menu_637dc6f8a1c15"
                             data-allow-clear="true"
                           >
-                            <option>--</option>
+                            <option>Select</option>
                             <option
                               value="1"
                               onClick={createIncidentSubmit}
@@ -495,7 +495,6 @@ const AlertsPage = () => {
                                     );
                                   })}
                               </select>
-
                             </div>
                           </div>
                           <div className="mb-5">
@@ -523,7 +522,6 @@ const AlertsPage = () => {
                             >
                               Submit
                             </button>
-
                             &nbsp;&nbsp;
                             <button
                               className="btn btn-secondary btn-small ml-10"
@@ -1098,7 +1096,8 @@ const AlertsPage = () => {
                             />
                             {/* check incident creation */}
                             <span>
-                              {item.status == "New" && item.alertIncidentMappingId == 0 ? (
+                              {item.status == "New" &&
+                              item.alertIncidentMappingId == 0 ? (
                                 <i
                                   className="fa fa-circle-exclamation incident-icon orange"
                                   title="Alert"

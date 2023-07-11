@@ -192,7 +192,7 @@ const ChatBody = ({
                 <div className="clearfix" />
               </li>
             ))}
-          {messages.map(
+          {initialMessages.map(
             (message) =>
               isCurrentIncident(message) && (
                 <div className="message__chats" key={message.id}>
@@ -251,63 +251,6 @@ const ChatBody = ({
           )}
         </ul>
       </div>
-      {/* <div className="attachment__container">
-        {chatHistory.length > 0 &&
-          chatHistory.map((message, index) => (
-            <div key={index} className="attachment__item">
-              {message.attachment && (
-                <div>
-                  <a
-                    href={message.attachment}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Attachment: {message.attachment}
-                  </a>
-                </div>
-              )}
-            </div>
-          ))}
-      </div> */}
-
-      {/* <div className="message__container">
-          {messages.map((message) => (
-             isCurrentIncident(message) && (
-            <div className="message__chats" key={message.id}>
-              {message.name === loggedInUserName ? (
-                <p className="sender__name">You</p>
-              ) : (
-                <p>{message.name}</p>
-              )}
-
-              <div
-                className={
-                  message.name === loggedInUserName
-                    ? "message__sender"
-                    : "message__recipient"
-                }
-              >
-                <p>{message.text}</p>
-                {message.attachment && (
-                  <div>
-                    <a
-                      href={`data:${message.attachment.type};base64,${message.attachment.data}`}
-                      download={message.attachment.name}
-                    >
-                      {message.attachment.name}
-                    </a>
-                  </div>
-                )}
-              </div>
-            </div>
-             )
-          ))}
-
-          <div className="message__status">
-            <p>{typingStatus}</p>
-          </div>
-          <div ref={lastMessageRef} />
-        </div> */}
     </>
   );
 };

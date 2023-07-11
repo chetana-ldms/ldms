@@ -185,7 +185,7 @@ const IncidentsPage = () => {
                       <div className="w-110px me-2">
                         <div>
                           <select
-                            className="form-select"
+                            className="form-select form-select-sm"
                             data-kt-select2="true"
                             data-placeholder="Select option"
                             data-dropdown-parent="#kt_menu_637dc885a14bb"
@@ -208,7 +208,7 @@ const IncidentsPage = () => {
                     <div className="mt-2 bd-highlight">
                       <div className="w-120px me-0">
                         <select
-                          className="form-select"
+                          className="form-select form-select-sm"
                           data-kt-select2="true"
                           data-placeholder="Select option"
                           data-dropdown-parent="#kt_menu_637dc885a14bb"
