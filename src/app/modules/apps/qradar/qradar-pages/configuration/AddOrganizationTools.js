@@ -4,7 +4,9 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
-import { fetchLDPToolsByToolType } from '../../../../../api/ConfigurationApi';
+import { fetchLDPToolsByToolType, fetchOrganizationToolsAddUrl } from '../../../../../api/ConfigurationApi';
+import { fetchOrganizations } from '../../../../../api/dashBoardApi';
+import { fetchMasterData } from '../../../../../api/Api';
 
 const AddOrganizationTools = () => {
   const navigate = useNavigate()
@@ -17,7 +19,7 @@ const AddOrganizationTools = () => {
   const authKey = useRef()
   const apiUrl = useRef()
   const errors = {}
-  const handleSubmit = (event) => {
+  const handleSubmit = async(event) => {
     if (!toolID.current.value) {
       errors.toolID = 'Enter Tool ID'
       setLoading(false)
@@ -42,7 +44,7 @@ const AddOrganizationTools = () => {
     event.preventDefault()
     const createdUserId = Number(sessionStorage.getItem('userId'));
     const createdDate = new Date().toISOString();
-    var data = JSON.stringify({
+    var data = {
       toolID: toolID.current.value,
       orgID: orgID.current.value,
       authKey: authKey.current.value,
@@ -50,72 +52,71 @@ const AddOrganizationTools = () => {
       apiUrl: apiUrl.current.value,
       createdDate,
       createdUserId
-    })
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/OrganizationTools/Add',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
     }
-    setTimeout(() => {
-      axios(config)
-        .then(function (response) {
-          const { isSuccess } = response.data;
+    // var config = {
+    //   method: 'post',
+    //   url: 'http://115.110.192.133:502/api/LDPlattform/v1/OrganizationTools/Add',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Accept: 'text/plain',
+    //   },
+    //   data: data,
+    // }
+    // setTimeout(() => {
+    //   axios(config)
+    //     .then(function (response) {
+    //       const { isSuccess } = response.data;
 
-          if (isSuccess) {
-            notify('Data Saved');
-            navigate('/qradar/organization-tools/updated');
-          } else {
-            notifyFail('Failed to save data');
-          }
-          // console.log(JSON.stringify(response.data))
-          // navigate('/qradar/organization-tools/updated')
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      setLoading(false)
-    }, 1000)
+    //       if (isSuccess) {
+    //         notify('Data Saved');
+    //         navigate('/qradar/organization-tools/updated');
+    //       } else {
+    //         notifyFail('Failed to save data');
+    //       }
+    //       // console.log(JSON.stringify(response.data))
+    //       // navigate('/qradar/organization-tools/updated')
+    //     })
+    //     .catch(function (error) {
+    //       console.log(error)
+    //     })
+    //   setLoading(false)
+    // }, 1000)
+    try {
+      const responseData = await fetchOrganizationToolsAddUrl(data);
+      const { isSuccess } = responseData;
+  
+      if (isSuccess) {
+        notify('Data Saved');
+        navigate('/qradar/organization-tools/updated');
+      } else {
+        notifyFail('Failed to save data');
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   }
   useEffect(() => {
-    setLoading(true)
-    var data = JSON.stringify({
-      maserDataType: 'Tool_Types',
-    })
-    var config_2 = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/MasterData',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: data,
-    }
-    axios(config_2)
-      .then(function (response) {
-        setToolTypes(response.data.masterData)
-        setLoading(false)
+    fetchMasterData("Tool_Types")
+      .then((typeData) => {
+        setToolTypes(typeData);
       })
-      .catch(function (error) {
-        console.log(error)
-      })
-    var config_3 = {
-      method: 'GET',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/Organizations',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-    axios(config_3)
-      .then(function (response) {
-        setOrganizationList(response.data.organizationList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+  useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const organizationsResponse = await fetchOrganizations();
+          setOrganizationList(organizationsResponse);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+  
+      fetchData();
   }, [])
 
   let handleChangeToolType = (event) =>{

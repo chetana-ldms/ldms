@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { fetchLDPToolDetails } from '../../../../../api/Api'
+import { fetchLDPToolDetails, fetchMasterData } from '../../../../../api/Api'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
+import { fetchLDPToolsUpdateUrl } from '../../../../../api/ConfigurationApi';
 
 const UpdateLdpTools = () => {
   const navigate = useNavigate()
@@ -15,7 +16,7 @@ const UpdateLdpTools = () => {
   const toolType = useRef()
   console.log(toolType, "toolType111")
   const errors = {}
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     setLoading(true)
     if (!toolName.current.value) {
       errors.toolName = 'Enter Tool Name'
@@ -30,66 +31,39 @@ const UpdateLdpTools = () => {
     event.preventDefault()
     const modifiedUserId = Number(sessionStorage.getItem('userId'));
     const updatedDate = new Date().toISOString();
-    var data = JSON.stringify({
+    var data = {
       toolName: toolName.current.value,
       // toolTypeId: toolType.current.value,
       toolTypeId: ldpTools.toolTypeId,
       toolId: id,
       modifiedUserId,
       updatedDate,
-    })
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/LDPTools/Update',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
     }
-    setTimeout(() => {
-      axios(config)
-        .then(function (response) {
-          const { isSuccess } = response.data;
-
-          if (isSuccess) {
-            notify('Data Updated');
-            navigate('/qradar/ldp-tools/updated');
-          } else {
-            notifyFail('Failed to update data');
-          }
-          // console.log(JSON.stringify(response.data))
-          // navigate('/qradar/ldp-tools/updated')
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      setLoading(false)
-    }, 1000)
+    try {
+      const responseData = await fetchLDPToolsUpdateUrl(data);
+      const { isSuccess } = responseData;
+  
+      if (isSuccess) {
+        notify('Data Updated');
+        navigate('/qradar/ldp-tools/updated');
+      } else {
+        notifyFail('Failed to update data');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
   }
 
   useEffect(() => {
-    setLoading(true)
-    var data = JSON.stringify({
-      maserDataType: 'Tool_Types',
-    })
-    var config_2 = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/MasterData',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: data,
-    }
-    axios(config_2)
-      .then(function (response) {
-        setToolTypes(response.data.masterData)
-        setLoading(false)
+    fetchMasterData("Tool_Types")
+      .then((typeData) => {
+        setToolTypes(typeData);
       })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }, [])
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       try {

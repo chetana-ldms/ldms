@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
+import { async } from 'q';
+import { fetchOrganizationAddUrl } from '../../../../../api/ConfigurationApi';
 
 const AddOrganizations = () => {
   const navigate = useNavigate()
@@ -12,7 +14,7 @@ const AddOrganizations = () => {
   const email = useRef()
   const errors = {}
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     setLoading(true)
 
     if (!orgName.current.value) {
@@ -39,41 +41,29 @@ const AddOrganizations = () => {
     event.preventDefault()
     const createdUserId = Number(sessionStorage.getItem('userId'));
     const createdDate = new Date().toISOString();
-    var data = JSON.stringify({
+    var data = {
       orgName: orgName.current.value,
       address: address.current.value,
       mobileNo: mobileNo.current.value,
       email: email.current.value,
       createdUserId,
       createdDate,
-    })
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/Organization/Add',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
     }
-    // setTimeout(() => {
-      axios(config)
-        .then(function (response) {
-          const { isSuccess } = response.data;
-          if (isSuccess) {
-            notify('Data Saved');
-            navigate('/qradar/organizations/updated');
-          } else {
-            notifyFail('Failed to save data');
-          }
-          // console.log(JSON.stringify(response.data))
-          // navigate('/qradar/organizations/updated')
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      setLoading(false)
-    // }, 1000)
+    try {
+      const responseData = await fetchOrganizationAddUrl(data);
+      const { isSuccess } = responseData;
+
+      if (isSuccess) {
+        notify('Data Saved');
+        navigate('/qradar/organizations/updated');
+      } else {
+        notifyFail('Failed to save data');
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

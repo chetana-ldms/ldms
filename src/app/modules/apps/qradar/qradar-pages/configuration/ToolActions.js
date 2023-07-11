@@ -6,6 +6,7 @@ import { notify, notifyFail } from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
 import { fetchToolActionDelete } from "../../../../../api/Api"
 import axios from 'axios'
+import { fetchToolActionsUrl } from '../../../../../api/ConfigurationApi'
 const ToolActions = () => {
   const [loading, setLoading] = useState(false)
   const [toolActions, setToolActions] = useState([])
@@ -33,25 +34,19 @@ const ToolActions = () => {
       console.log(error);
     }
   }
-  const reload = () => {
-    setLoading(true)
-    var config = {
-      method: 'get',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolActions',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
 
-    axios(config)
-      .then(function (response) {
-        setToolActions(response.data.toolAcationsList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }
+  const reload = async () => {
+    try {
+      setLoading(true);
+      const response = await fetchToolActionsUrl();
+      setToolActions(response);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   useEffect(() => {
     reload();
   }, [])

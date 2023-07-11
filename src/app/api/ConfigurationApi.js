@@ -9,6 +9,30 @@ const ruleActionsUrl = process.env.REACT_APP_RULE_ACTIONS_URL;
 const toolActionsUrl = process.env.REACT_APP_TOOL_ACTIONS_URL;
 const ruleActionDetailsUrl = process.env.REACT_APP_RULE_ACTION_DETAILS_URL;
 
+const ToolTypeActionsUrl = process.env.REACT_APP_TOOL_TYPE_ACTIONS_URL;
+const ToolTypeActionUpdateUrl = process.env.REACT_APP_TOOL_TYPE_ACTION_UPDATE_URL;
+const ToolTypeActionAddUrl= process.env.REACT_APP_TOOL_TYPE_ACTION_ADD_URL
+const OrganizationsUrl= process.env.REACT_APP_ORGANIZATIONS_URL
+const OrganizationAddUrl=  process.env.REACT_APP_ORGANIZATIONS_ADD_URL
+const OrganizationUpdateUrl=  process.env.REACT_APP_ORGANIZATIONS_UPDATE_URL
+const UsersUrl= process.env.REACT_APP_USERS_URL
+const UserAddUrl= process.env.REACT_APP_USER_ADD_URL
+const UserUpdateUrl= process.env.REACT_APP_USER_UPDATE_URL
+const LDPToolsUrl= process.env.REACT_APP_LDPTOOLS_URL
+const LDPToolsAddUrl= process.env.REACT_APP_LDPTOOLS_ADD_URL
+const LDPToolsUpdateUrl= process.env.REACT_APP_LDPTOOLS_UPDATE_URL
+const ToolActionsUrl= process.env.REACT_APP_TOOLACTIONS_URL
+const ToolActionAddUrl= process.env.REACT_APP_TOOLACTIONS_ADD_URL
+const ToolActionUpdateUrl= process.env.REACT_APP_TOOLACTIONS_UPDATE_URL
+const OrganizationToolsUrl= process.env.REACT_APP_ORGANIZATION_TOOLS_URL
+const OrganizationToolsAddUrl= process.env.REACT_APP_ORGANIZATION_TOOLS_ADD_URL
+const OrganizationToolsUpdateUrl= process.env.REACT_APP_ORGANIZATION_TOOLS_UPDATE_URL
+const RuleCatagoriesUrl= process.env.REACT_APP_RULE_RULEENGINE_MASTERDATA_URL
+const RulesAddUrl = process.env.REACT_APP_RULE_RULE_ADD_URL
+const RulesUpdateUrl= process.env.REACT_APP_RULE_RULES_UPDATE_URL
+const RuleActionUrl= process.env.REACT_APP_RULE_ACTION_ADD_URL
+const RuleActionUpdateUrl= process.env.REACT_APP_RULE_ACTION_UPDATE_URL
+
 export const fetchLDPToolsByToolType = async (data) => {
   try {
     const response = await fetch(`${ldptoolsByToolTypeUrl}`, {
@@ -181,11 +205,6 @@ export const fetchRuleActionDetails = async (id) => {
     console.log(error);
   }
 };
-
-
-
-const ToolTypeActionsUrl ='http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeActions'
-const ToolTypeActionUpdateUrl ='http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeAction/Update'
 export const fetchToolTypeActions = async () => {
   try {
     const response = await fetch(`${ToolTypeActionsUrl}`, {
@@ -204,6 +223,370 @@ export const fetchToolTypeActions = async () => {
 export const fetchToolTypeActionUpdate = async (data) => {
   try {
     const response = await fetch(`${ToolTypeActionUpdateUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchToolTypeActionAddUrl = async (data) => {
+  try {
+    const response = await fetch(`${ToolTypeActionAddUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchOrganizationsUrl = async () => {
+  try {
+    const response = await fetch(`${OrganizationsUrl}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const responseData = await response.json();
+    const organizationList = responseData.organizationList;
+    return organizationList;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchOrganizationAddUrl = async (data) => {
+  try {
+    const response = await fetch(`${OrganizationAddUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchOrganizationUpdateUrl = async (data) => {
+  try {
+    const response = await fetch(`${OrganizationUpdateUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchUsersUrl = async (orgId) => {
+  try {
+    const response = await fetch(`${UsersUrl}?orgId=${orgId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        orgId,
+      }),
+    });
+    const responseData = await response.json();
+    const usersList = responseData.usersList;
+    return usersList;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchUserAddUrl = async (data) => {
+  try {
+    const response = await fetch(`${UserAddUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchUserUpdateUrl = async (data) => {
+  try {
+    const response = await fetch(`${UserUpdateUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchLDPToolsUrl = async () => {
+  try {
+    const response = await fetch(`${LDPToolsUrl}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const responseData = await response.json();
+    const ldpToolsList = responseData.ldpToolsList;
+    return ldpToolsList;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchLDPToolsAddUrl = async (data) => {
+  try {
+    const response = await fetch(`${LDPToolsAddUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchLDPToolsUpdateUrl = async (data) => {
+  try {
+    const response = await fetch(`${LDPToolsUpdateUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchToolActionsUrl = async () => {
+  try {
+    const response = await fetch(`${ToolActionsUrl}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const responseData = await response.json();
+    const toolAcationsList = responseData.toolAcationsList;
+    return toolAcationsList;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchToolActionAddUrl = async (data) => {
+  try {
+    const response = await fetch(`${ToolActionAddUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchToolActionUpdateUrl = async (data) => {
+  try {
+    const response = await fetch(`${ToolActionUpdateUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchOrganizationToolsUrl = async () => {
+  try {
+    const response = await fetch(`${OrganizationToolsUrl}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const responseData = await response.json();
+    const organizationToolList = responseData.organizationToolList;
+    return organizationToolList;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchOrganizationToolsAddUrl = async (data) => {
+  try {
+    const response = await fetch(`${OrganizationToolsAddUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchOrganizationToolsUpdateUrl = async (data) => {
+  try {
+    const response = await fetch(`${OrganizationToolsUpdateUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchRuleCatagoriesUrl = async (MasterDataType) => {
+  try {
+    const url = `${RuleCatagoriesUrl}?MasterDataType=${encodeURIComponent(MasterDataType)}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const responseData = await response.json();
+    const masterDataList = responseData.masterDataList;
+    return masterDataList;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchRulesAddUrl = async (data) => {
+  try {
+    const response = await fetch(`${RulesAddUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchRulesUpdateUrl = async (data) => {
+  try {
+    const response = await fetch(`${RulesUpdateUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchRuleActionUrl = async (data) => {
+  try {
+    const response = await fetch(`${RuleActionUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchRuleActionUpdateUrl = async (data) => {
+  try {
+    const response = await fetch(`${RuleActionUpdateUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

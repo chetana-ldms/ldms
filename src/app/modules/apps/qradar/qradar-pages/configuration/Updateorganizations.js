@@ -1,20 +1,22 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {Link, useNavigate, useParams} from 'react-router-dom'
-import {fetchOrganizationDetails} from '../../../../../api/Api'
+import React, { useState, useRef, useEffect } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { fetchOrganizationDetails } from '../../../../../api/Api'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
+import { fetchOrganizationUpdateUrl } from '../../../../../api/ConfigurationApi';
+import { async } from 'q';
 
 const UpdateOrganizations = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const {id} = useParams()
+  const { id } = useParams()
   const orgName = useRef()
   const address = useRef()
   const mobileNo = useRef()
   const email = useRef()
   const [organizationData, setOrganizationData] = useState(null);
   const errors = {}
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     setLoading(true)
     if (!orgName.current.value) {
       errors.orgName = 'Enter Organization Name'
@@ -39,7 +41,7 @@ const UpdateOrganizations = () => {
     event.preventDefault()
     const updatedUserId = Number(sessionStorage.getItem('userId'));
     const updatedDate = new Date().toISOString();
-    var data = JSON.stringify({
+    var data = {
       orgName: orgName.current.value,
       address: address.current.value,
       mobileNo: mobileNo.current.value,
@@ -47,35 +49,21 @@ const UpdateOrganizations = () => {
       email: email.current.value,
       updatedUserId,
       updatedDate,
-    })
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/Organization/Update',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
     }
-    setTimeout(() => {
-      axios(config)
-        .then(function (response) {
-          const { isSuccess } = response.data;
+    try {
+      const responseData = await fetchOrganizationUpdateUrl(data);
+      const { isSuccess } = responseData;
 
-          if (isSuccess) {
-            notify('Data Updated');
-            navigate('/qradar/organizations/updated');
-          } else {
-            notifyFail('Failed to update data');
-          }
-          // console.log(JSON.stringify(response.data))
-          // navigate('/qradar/organizations/updated')
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      setLoading(false)
-    }, 1000)
+      if (isSuccess) {
+        notify('Data Updated');
+        navigate('/qradar/organizations/updated');
+      } else {
+        notifyFail('Failed to update data');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false)
   }
   useEffect(() => {
     const fetchData = async () => {
@@ -89,7 +77,7 @@ const UpdateOrganizations = () => {
 
     fetchData();
   }, [id, orgName, address, mobileNo, email]);
- 
+
 
   return (
     <div className='card'>
@@ -179,7 +167,7 @@ const UpdateOrganizations = () => {
           >
             {!loading && 'Update Changes'}
             {loading && (
-              <span className='indicator-progress' style={{display: 'block'}}>
+              <span className='indicator-progress' style={{ display: 'block' }}>
                 Please wait...{' '}
                 <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
               </span>
@@ -191,4 +179,4 @@ const UpdateOrganizations = () => {
   )
 }
 
-export {UpdateOrganizations}
+export { UpdateOrganizations }

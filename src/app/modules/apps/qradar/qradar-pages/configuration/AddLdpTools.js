@@ -2,6 +2,8 @@ import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
+import { fetchMasterData } from '../../../../../api/Api';
+import { fetchLDPToolsAddUrl } from '../../../../../api/ConfigurationApi';
 
 const AddLdpTools = () => {
   const navigate = useNavigate()
@@ -11,7 +13,7 @@ const AddLdpTools = () => {
   const toolName = useRef()
   const toolType = useRef()
   const errors = {}
-  const handleSubmit = (event) => {
+  const handleSubmit = async(event) => {
     setLoading(true)
 
     if (!toolName.current.value) {
@@ -29,66 +31,40 @@ const AddLdpTools = () => {
     event.preventDefault()
     const createdUserId = Number(sessionStorage.getItem('userId'));
     const createdDate = new Date().toISOString();
-    var data = JSON.stringify({
+    var data = {
       toolName: toolName.current.value,
       ToolTypeID: Number(toolType.current.value),
       // toolTypeID: 1,
       createdUserId,
       createdDate
       
-    })
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/LDPTools/Add',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
     }
-    setTimeout(() => {
-      axios(config)
-        .then(function (response) {
-          const { isSuccess } = response.data;
-
-          if (isSuccess) {
-            notify('Data Saved');
-            navigate('/qradar/ldp-tools/list');
-          } else {
-            notifyFail('Failed to save data');
-          }
-          // console.log(JSON.stringify(response.data))
-          // navigate('/qradar/ldp-tools/list')
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      setLoading(false)
-    }, 1000)
+    try {
+      const responseData = await fetchLDPToolsAddUrl(data);
+      const { isSuccess } = responseData;
+  
+      if (isSuccess) {
+        notify('Data Saved');
+        navigate('/qradar/ldp-tools/list')
+      } else {
+        notifyFail('Failed to save data');
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
-    setLoading(true)
-    var data = JSON.stringify({
-      maserDataType: 'Tool_Types',
-    })
-    var config_2 = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/MasterData',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: data,
-    }
-    axios(config_2)
-      .then(function (response) {
-        setToolTypes(response.data.masterData)
-        setLoading(false)
+    fetchMasterData("Tool_Types")
+      .then((typeData) => {
+        setToolTypes(typeData);
       })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }, [])
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   return (
     <div className='card'>

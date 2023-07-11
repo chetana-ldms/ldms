@@ -21,7 +21,7 @@ const channelsUpdateUrl = process.env.REACT_APP_CHANNELS_UPDATE_URL;
 const channelDetailsUrl = process.env.REACT_APP_CHANNEL_DETAILS_URL;
 const listUrl = process.env.REACT_APP_CHANNEL_LIST_URL;
 const ChannelsCreateUrl = process.env.REACT_APP_CHANNELS_CREATE_URL;
-const FilesDownloadUrl ="http://115.110.192.133:502/api/File/v1/Files/Download"
+const FilesDownloadUrl =process.env.REACT_APP_CHANNELS_FILES_DOWNLOAD_URL
 
 
 export const fetchDelete = async (fileId) => {

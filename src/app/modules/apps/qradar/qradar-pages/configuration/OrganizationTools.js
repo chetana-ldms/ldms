@@ -6,6 +6,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { fetchOrganizationToolsDelete } from "../../../../../api/Api"
 import axios from 'axios'
+import { fetchOrganizationToolsUrl } from '../../../../../api/ConfigurationApi'
 
 const OrganizationTools = () => {
   const [loading, setLoading] = useState(false)
@@ -34,25 +35,17 @@ const OrganizationTools = () => {
       console.log(error);
     }
   }
-  
-  const reload = () => {
-    // setLoading(true)
-    var config = {
-      method: 'get',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/OrganizationTools',
-      headers: {
-        Accept: 'text/plain',
-      },
+  const reload = async () => {
+    try {
+      setLoading(true);
+      const response = await fetchOrganizationToolsUrl();
+      setTools(response);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
-    axios(config)
-      .then(function (response) {
-        setTools(response.data.organizationToolList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }
+  };
   useEffect(() => {
     reload();
   }, [])
@@ -73,20 +66,6 @@ const OrganizationTools = () => {
         </div>
       </div>
       <div className='card-body'>
-        {/* {status == 'updated' && (
-          <div class='alert alert-success d-flex align-items-center p-5'>
-            <div class='d-flex flex-column'>
-              <h4 class='mb-1 text-dark'>Data Saved</h4>
-            </div>
-            <button
-              type='button'
-              class='position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto'
-              data-bs-dismiss='alert'
-            >
-              X<span class='svg-icon svg-icon-2x svg-icon-light'>...</span>
-            </button>
-          </div>
-        )} */}
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>

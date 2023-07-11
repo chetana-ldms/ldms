@@ -33,10 +33,17 @@ const ToolTypeActions = () => {
       console.log(error);
     }
   }
-  const reload = async() => {
-   const response = await fetchToolTypeActions();
-   setToolTypeActions(response)
-  }
+  const reload = async () => {
+    try {
+      setLoading(true);
+      const response = await fetchToolTypeActions();
+      setToolTypeActions(response);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     reload();

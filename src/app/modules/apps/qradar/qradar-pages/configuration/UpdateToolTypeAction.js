@@ -28,28 +28,6 @@ const UpdateToolTypeAction = () => {
     fetchData();
   }, [id, toolAction]);
   const errors = {}
-  // useEffect(() => {
-  //   setLoading(true)
-  //   var data_4 = JSON.stringify({
-  //     maserDataType: 'Tool_Types',
-  //   })
-  //   var config_4 = {
-  //     method: 'post',
-  //     url: 'http://115.110.192.133:502/api/LDPlattform/v1/MasterData',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     data: data_4,
-  //   }
-  //   axios(config_4)
-  //     .then(function (response) {
-  //       setToolTypes(response.data.masterData)
-  //       setLoading(false)
-  //     })
-  //     .catch(function (error) {
-  //       console.log(error)
-  //     })
-  // }, [])
   useEffect(() => {
     fetchMasterData("Tool_Types")
       .then((typeData) => {
