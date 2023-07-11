@@ -472,7 +472,7 @@ const AlertsPage = () => {
                               className="form-label fw-bolder"
                               htmlFor="ownerName"
                             >
-                              Owner:
+                              Owner <sup className="red">*</sup>:
                             </label>
                             <div>
                               <select
@@ -502,7 +502,7 @@ const AlertsPage = () => {
                               className="form-label fw-bolder"
                               htmlFor="excalatecomments"
                             >
-                              Comments:
+                              Comments <sup className="red">*</sup>:
                             </label>
                             <Form.Control
                               as="textarea"
