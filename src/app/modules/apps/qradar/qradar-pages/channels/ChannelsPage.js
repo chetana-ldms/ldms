@@ -6,23 +6,29 @@ import Document from "./Document";
 import QA from "./QA";
 import UnderConstruction from "./UnderConstruction";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
-import { ToastContainer } from 'react-toastify'
-import { notify, notifyFail } from '../components/notification/Notification'
-import 'react-toastify/dist/ReactToastify.css'
+import { ToastContainer } from "react-toastify";
+import { notify, notifyFail } from "../components/notification/Notification";
+import "react-toastify/dist/ReactToastify.css";
 import UnderReview from "./UnderReview";
-import { fetchChannelDetails, fetchChannels, fetchChannelsAdd, fetchChannelsDelete, fetchChannelsUpdate } from "../../../../../api/ChannelApi";
+import {
+  fetchChannelDetails,
+  fetchChannels,
+  fetchChannelsAdd,
+  fetchChannelsDelete,
+  fetchChannelsUpdate,
+} from "../../../../../api/ChannelApi";
 import { fetchMasterData } from "../../../../../api/Api";
 
 //Modal
 const NewChannelModal = ({ show, onClose, onAdd }) => {
-  const orgId = Number(sessionStorage.getItem('orgId'))
-  const createdUserId = Number(sessionStorage.getItem('userId'));
+  const orgId = Number(sessionStorage.getItem("orgId"));
+  const createdUserId = Number(sessionStorage.getItem("userId"));
   const createdDate = new Date().toISOString();
   const [channelName, setChannelName] = useState("");
   const [channelDescription, setChannelDescription] = useState("");
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const channelNames = useRef()
-  const channelDescriptions = useRef()
+  const channelNames = useRef();
+  const channelDescriptions = useRef();
   const [channels, setChannels] = useState([]);
   const fetchData = async () => {
     try {
@@ -32,6 +38,7 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
       console.log(error);
     }
   };
+  
   const handleSubmit = async () => {
     const data = {
       channelName: channelNames.current.value,
@@ -41,17 +48,22 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
       // "msTeamsTeamsId": "string",
       // "msTeamsChannelId": "string",
       createdDate,
-      createdUserId
+      createdUserId,
     };
 
     await fetchChannelsAdd(data);
-    const newChannel = { name: channelName, description: channelDescription };
-    onAdd(newChannel);
+    // const newChannel = { channelName: channelName, channelDescription: channelDescription };
+    try {
+      const result = await fetchChannels(orgId);
+      // setChannels(data);
+      onAdd(result[result.length - 1]);
+    } catch (error) {
+      console.log(error);
+    }
+
     onClose();
     setShowSuccessMessage(true);
-    fetchData();
   };
-
 
   const handleModalClose = () => {
     setChannelName("");
@@ -111,17 +123,19 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
 
 const ChannelsPage = () => {
   const [channels, setChannels] = useState([]);
+  console.log(channels, "channels11")
   const orgId = Number(sessionStorage.getItem("orgId"));
-  const deletedUserId = Number(sessionStorage.getItem('userId'));
+  const deletedUserId = Number(sessionStorage.getItem("userId"));
   const deletedDate = new Date().toISOString();
   const [showEditChannel, setShowEditChannel] = useState(false);
-  const [dropdownData, setDropdownData] = useState([])
+  const [dropdownData, setDropdownData] = useState([]);
+  console.log(dropdownData, "dropdownData")
   const [accordionOpen, setAccordionOpen] = useState(false);
-  const channelNames = useRef()
-  const channelDescriptions = useRef()
-  const channelTypes = useRef()
-  const [selectedChannel, setSelectedChannel] = useState(null);
-
+  const channelNames = useRef();
+  const channelDescriptions = useRef();
+  const channelTypes = useRef();
+  const [selectedChannel, setSelectedChannel] = useState({selectedChannelName:'',selectedChannelID:''});
+  console.log(selectedChannel, "selectedChannel")
   const fetchData = async () => {
     try {
       const data = await fetchChannels(orgId);
@@ -145,43 +159,25 @@ const ChannelsPage = () => {
     fetchData();
   }, []);
   const handleDelete = async (channel) => {
-    const deletedUserId = Number(sessionStorage.getItem('userId'));
+    const deletedUserId = Number(sessionStorage.getItem("userId"));
     const deletedDate = new Date().toISOString();
     const data = {
       channelId: channel.channelId,
       deletedDate,
-      deletedUserId
-    }
+      deletedUserId,
+    };
     try {
       const responce = await fetchChannelsDelete(data);
       if (responce.isSuccess) {
-        notify('Data Deleted');
+        notify("Channel Deleted");
       } else {
-        notifyFail("Data not Deleted")
+        notifyFail("Failed to delete Channel");
       }
       await fetchData();
     } catch (error) {
       console.log(error);
     }
-  }
-  // useEffect(() => {
-  //   // const orgId = 1;
-  //   const apiUrl = `http://115.110.192.133:502/api/LDCChannels/v1/Channels?orgId=${orgId}`;
-
-  //   fetch(apiUrl)
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log("API response:", data);
-  //       if (Array.isArray(data.channelsData)) {
-  //         setChannels(data.channelsData);
-  //       } else {
-  //         console.log("Invalid response format:", data);
-  //       }
-  //     })
-  //     .catch((error) => console.log(error));
-  // }, []);
-
-  //show modal
+  };
   const handleAccordionToggle = async (channelId) => {
     try {
       const channelData = await fetchChannelDetails(channelId); // Call the API to fetch channel data
@@ -191,7 +187,7 @@ const ChannelsPage = () => {
             setSelectedChannel(channelData); // Set the selected channel with the fetched data
             return {
               ...channel,
-              isAccordionOpen: !channel.isAccordionOpen
+              isAccordionOpen: !channel.isAccordionOpen,
             };
           }
           return channel;
@@ -201,7 +197,7 @@ const ChannelsPage = () => {
       console.log(error);
     }
   };
-  
+
   const [showModal, setShowModal] = useState(false);
   const handleAddChannel = (channel) => {
     setChannels([...channels, channel]);
@@ -252,16 +248,16 @@ const ChannelsPage = () => {
     }
   };
   const handleSave = async (channelId) => {
-
     const data = {
       channelId: channelId,
       channelName: channelNames.current.value,
       channelDescription: channelDescriptions.current.value,
-      channelTypeId:channelTypes.current.value,
-      displayOrder:0,
+      // channelTypeId: channelTypes.current.value,
+      channelTypeId: selectedChannel.selectedChannelID,
+      displayOrder: 0,
       orgId,
-      modifiedDate:deletedDate,
-      modifiedUserId:deletedUserId,
+      modifiedDate: deletedDate,
+      modifiedUserId: deletedUserId,
     };
 
     try {
@@ -278,7 +274,8 @@ const ChannelsPage = () => {
       <ToastContainer />
       <div className="channel-title">
         <h4 className="float-left">
-          Channels <span>(12)</span>
+          Channels <span>( {channels.length} )</span>
+         
         </h4>
         <span
           className="float-right add-btn"
@@ -322,7 +319,7 @@ const ChannelsPage = () => {
         onHide={() => setShowEditChannel(false)}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Edit Channel</Modal.Title>
+          <Modal.Title>Channels List</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="alert-table">
@@ -343,12 +340,21 @@ const ChannelsPage = () => {
                       <td>
                         <button
                           className="btn btn-small btn-primary"
-                          onClick={() => handleAccordionToggle(channel.channelId)}
+                          onClick={() =>
+                            handleAccordionToggle(channel.channelId)
+                          }
                         >
                           Edit
                         </button>
-                        <button className="btn btn-small btn-danger ml-10" onClick={() => { handleDelete(channel) }}> Delete</button>
-
+                        <button
+                          className="btn btn-small btn-danger ml-10"
+                          onClick={() => {
+                            handleDelete(channel);
+                          }}
+                        >
+                          {" "}
+                          Delete
+                        </button>
                       </td>
                     </tr>
                     {channel.isAccordionOpen && (
@@ -357,7 +363,9 @@ const ChannelsPage = () => {
                           <div className="accordion-header">
                             <button
                               className="close-button"
-                              onClick={() => handleAccordionToggle(channel.channelId)}
+                              onClick={() =>
+                                handleAccordionToggle(channel.channelId)
+                              }
                             >
                               x
                             </button>
@@ -365,28 +373,37 @@ const ChannelsPage = () => {
                           <Form>
                             <Form.Group controlId="channelName">
                               <Form.Label>Channel name</Form.Label>
-                              <Form.Control type="text" 
+                              <Form.Control
+                                type="text"
                                 ref={channelNames}
                                 defaultValue={selectedChannel.channelName}
-                                />
+                              />
                             </Form.Group>
                             <br />
                             <Form.Group>
                               <Form.Label>Channel Type</Form.Label>
                               <select
-                                className='form-select form-select-solid'
-                                data-kt-select2='true'
-                                data-placeholder='Select option'
-                                data-allow-clear='true'
+                                className="form-select form-select-solid"
+                                data-kt-select2="true"
+                                data-placeholder="Select option"
+                                data-allow-clear="true"
                                 ref={channelTypes}
-                                required
+                                defaultValue={selectedChannel.channelTypeName}
+                                onChange={(e) =>
+                                  setSelectedChannel({
+                                    selectedChannelName: e.target.value,
+                                    selectedChannelID: e.target.options[e.target.selectedIndex].getAttribute('data-id'),
+                                  })
+                                }
                               >
                                 <option value="">Select</option>
-                                {dropdownData && dropdownData.dropdownData && dropdownData.dropdownData.length > 0 &&
+                                {dropdownData &&
+                                  dropdownData.dropdownData &&
+                                  dropdownData.dropdownData.length > 0 &&
                                   dropdownData.dropdownData.map((item) => (
                                     <option
                                       key={item.dataID}
-                                      value={item.dataID}
+                                      value={item.channelTypeName} data-id={item.dataID}
                                     >
                                       {item.dataValue}
                                     </option>
@@ -396,17 +413,22 @@ const ChannelsPage = () => {
                             <br />
                             <Form.Group controlId="channelDescription">
                               <Form.Label>Channel description</Form.Label>
-                              <Form.Control as="textarea"
+                              <Form.Control
+                                as="textarea"
                                 ref={channelDescriptions}
                                 rows={3}
-                                defaultValue={selectedChannel.channelDescription}
-                                />
+                                defaultValue={
+                                  selectedChannel.channelDescription
+                                }
+                              />
                             </Form.Group>
                             <Form.Group className="mt-5">
                               <Button
                                 variant="secondary"
                                 className="btn-small"
-                                onClick={() => handleAccordionToggle(channel.channelId)}
+                                onClick={() =>
+                                  handleAccordionToggle(channel.channelId)
+                                }
                               >
                                 Close
                               </Button>
@@ -417,7 +439,6 @@ const ChannelsPage = () => {
                               >
                                 Save
                               </Button>
-
                             </Form.Group>
                           </Form>
                         </td>
@@ -426,7 +447,6 @@ const ChannelsPage = () => {
                   </React.Fragment>
                 ))}
               </tbody>
-
             </table>
           </div>
         </Modal.Body>

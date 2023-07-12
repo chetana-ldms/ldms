@@ -1,64 +1,49 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {Link, useNavigate} from 'react-router-dom'
+import React, { useState, useRef, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
+import { UsersListLoading } from '../components/loading/UsersListLoading'
+import { fetchRuleCatagoriesUrl, fetchRulesAddUrl } from '../../../../../api/ConfigurationApi';
 
 const AddRule = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const [ruleCatagories, setRuleCatagories] = useState([])
+  const [ruleCategories, setRuleCatagories] = useState([])
   const [rulesconditiontypes, setRulesconditiontypes] = useState([])
   const ruleName = useRef()
   const ruleCatagoryID = useRef()
 
   useEffect(() => {
-    setLoading(true)
-    var config_2 = {
-      method: 'get',
-      url:
-        'http://115.110.192.133:8011/api/RulesConfiguraton/v1/RuleEngine/MasterData?MasterDataType=Rule_Catagories',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-    axios(config_2)
-      .then(function (response) {
-        setRuleCatagories(response.data.masterDataList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-    /////////////////////////////////////
-    var config_3 = {
-      method: 'get',
-      url:
-        'http://115.110.192.133:8011/api/RulesConfiguraton/v1/RuleEngine/MasterData?MasterDataType=Rules_Condition_Types',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-    axios(config_3)
-      .then(function (response) {
-        setRulesconditiontypes(response.data.masterDataList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }, [])
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        const ruleCategoriesResponse = await fetchRuleCatagoriesUrl('Rule_Catagories');
+        setRuleCatagories(ruleCategoriesResponse);
+
+        const rulesConditionTypesResponse = await fetchRuleCatagoriesUrl('Rules_Condition_Types');
+        setRulesconditiontypes(rulesConditionTypesResponse);
+
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   // Dynamic Rules Starts
   const [formFields, setFormFields] = useState([
     {
       rulesConditionTypeID: '',
-      ruleConditionValues: [{rulesConditionValue: ''}],
+      ruleConditionValues: [{ rulesConditionValue: '' }],
     },
   ])
   const addRule = () => {
     let object = {
       rulesConditionTypeID: '',
-      ruleConditionValues: [{rulesConditionValue: ''}],
+      ruleConditionValues: [{ rulesConditionValue: '' }],
     }
     setFormFields([...formFields, object])
   }
@@ -73,7 +58,7 @@ const AddRule = () => {
     setFormFields(data)
   }
   const addAction = (index) => {
-    let actionobject = {rulesConditionValue: ''}
+    let actionobject = { rulesConditionValue: '' }
     let data = [...formFields]
     let afterPush = data[index]['ruleConditionValues'].concat(actionobject)
     data[index]['ruleConditionValues'] = afterPush
@@ -92,13 +77,13 @@ const AddRule = () => {
     setFormFields(data)
   }
   // Dynamic Rules Ends
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     setLoading(true)
     event.preventDefault()
     const createdUserId = Number(sessionStorage.getItem('userId'));
     const orgId = Number(sessionStorage.getItem('orgId'));
     const createdDate = new Date().toISOString();
-    var data = JSON.stringify({
+    var data = {
       ruleName: ruleName.current.value,
       ruleCatagoryID: ruleCatagoryID.current.value,
       ruleRunAttributeName: ruleName.current.value,
@@ -106,37 +91,23 @@ const AddRule = () => {
       createdDate,
       createdUserId,
       ruleConditions: formFields,
-    })
-
-    // console.log('Data to be sent', data)
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:8011/api/RulesConfiguraton/v1/Rules/Add',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
     }
-    setTimeout(() => {
-      axios(config)
-        .then(function (response) {
-          const { isSuccess } = response.data;
-          if (isSuccess) {
-            notify('Data Saved');
-            navigate('/qradar/rules-engine/updated')
-          } else {
-            notifyFail('Failed to save data');
-          }
-          // console.log(JSON.stringify(response.data))
-          // navigate('/qradar/rules-engine/updated')
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      setLoading(false)
-    }, 1000)
-    /// Get Rule Category IDs
+
+    try {
+      const responseData = await fetchRulesAddUrl(data);
+      const { isSuccess } = responseData;
+  
+      if (isSuccess) {
+        notify('Data Saved');
+        navigate('/qradar/rules-engine/updated')
+      } else {
+        notifyFail('Failed to save data');
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -183,12 +154,13 @@ const AddRule = () => {
                 ref={ruleCatagoryID}
               >
                 <option>Select Rule Category</option>
-                {ruleCatagories.map((item, index) => (
+                {ruleCategories.map((item, index) => (
                   <option value={item.masterdataid} key={index}>
                     {item.masterdatavalue}
                   </option>
                 ))}
               </select>
+
             </div>
           </div>
 
@@ -298,7 +270,7 @@ const AddRule = () => {
         <button type='submit' onClick={handleSubmit} className='btn btn-primary' disabled={loading}>
           {!loading && 'Save Changes'}
           {loading && (
-            <span className='indicator-progress' style={{display: 'block'}}>
+            <span className='indicator-progress' style={{ display: 'block' }}>
               Please wait...{' '}
               <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
             </span>
@@ -309,4 +281,4 @@ const AddRule = () => {
   )
 }
 
-export {AddRule}
+export { AddRule }

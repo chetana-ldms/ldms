@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import { UsersListLoading } from '../components/loading/UsersListLoading'
-import { fetchLDPToolsByToolType } from '../../../../../api/ConfigurationApi';
+import { fetchLDPToolsByToolType, fetchToolActionAddUrl, fetchToolTypeActions } from '../../../../../api/ConfigurationApi';
+import { fetchMasterData } from '../../../../../api/Api';
 
 const AddToolAction = () => {
   const navigate = useNavigate()
@@ -17,44 +18,16 @@ const AddToolAction = () => {
   const errors = {}
   useEffect(() => {
     setLoading(true)
-    // var config = {
-    //   method: 'get',
-    //   url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeActions',
-    //   headers: {
-    //     Accept: 'text/plain',
-    //   },
-    // }
-
-    // axios(config)
-    //   .then(function (response) {
-    //     setToolActionTypes(response.data.toolTypeActionsList)
-    //     setLoading(false)
-    //   })
-    //   .catch(function (error) {
-    //     console.log(error)
-    //   })
-    //////////////////
-    var data_4 = JSON.stringify({
-      maserDataType: 'Tool_Types',
-    })
-    var config_4 = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/MasterData',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: data_4,
-    }
-    axios(config_4)
-      .then(function (response) {
-        setToolTypes(response.data.masterData)
+    fetchMasterData("Tool_Types")
+      .then((typeData) => {
+        setToolTypes(typeData);
         setLoading(false)
       })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }, [])
-  const handleSubmit = (event) => {
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+  const handleSubmit = async (event) => {
     if (!toolID.current.value) {
       errors.toolID = 'Enter Tool Type'
       setLoading(false)
@@ -69,42 +42,29 @@ const AddToolAction = () => {
     event.preventDefault()
     const createdUserId = Number(sessionStorage.getItem('userId'));
     const createdDate = new Date().toISOString();
-    var data = JSON.stringify({
+    var data = {
       toolID: toolID.current.value,
       toolTypeActionID: toolTypeActionID.current.value,
       createdDate,
       createdUserId
-    })
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolAction/Add',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
     }
-    setTimeout(() => {
-      axios(config)
-        .then(function (response) {
-          const { isSuccess } = response.data;
+    try {
+      const responseData = await fetchToolActionAddUrl(data);
+      const { isSuccess } = responseData;
 
-          if (isSuccess) {
-            notify('Data Saved');
-            navigate('/qradar/tool-actions/updated');
-          } else {
-            notifyFail('Failed to save data');
-          }
-          // console.log(JSON.stringify(response.data))
-          // navigate('/qradar/tool-actions/updated')
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      setLoading(false)
-    }, 1000)
+      if (isSuccess) {
+        notify('Data Saved');
+        navigate('/qradar/tool-actions/updated');
+      } else {
+        notifyFail('Failed to save data');
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   }
-  let handleChangeToolType = (event) =>{
+  let handleChangeToolType = (event) => {
     let selectedValue = event.target.value;
     const result = async () => {
       try {
@@ -120,23 +80,21 @@ const AddToolAction = () => {
     };
 
     result();
-    var config = {
-      method: 'get',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeActions',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-
-    axios(config)
-      .then(function (response) {
-        let result = response.data.toolTypeActionsList.filter((item)=> {return item.toolTypeID === Number(selectedValue)})
+    const fetch = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchToolTypeActions();
+        const result = response.filter((item) => item.toolTypeID === Number(selectedValue));
         setToolActionTypes(result);
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-}
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetch()
+    
+  }
   return (
     <div className='card'>
       {loading && <UsersListLoading />}

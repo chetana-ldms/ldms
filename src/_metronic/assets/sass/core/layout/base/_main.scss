@@ -23,6 +23,13 @@ body {
   min-width: 130px !important;
 }
 
+.login-form{
+  .login-subtxt{
+    position: relative;
+    top: -30px;
+  }
+}
+
 //logo
 .app-sidebar-logo {
   .app-sidebar-logo-default {
@@ -44,6 +51,10 @@ body {
   border-radius: 10px;
   background: #f9f6f6;
   color: #333;
+}
+
+.bdr-top{
+    border-top: 1px solid #d6d5e1;
 }
 
 //Table CSS
@@ -78,6 +89,10 @@ body {
       border: 1px solid #333;
       padding: 4px;
     }
+  }
+  .menu-sub{
+    box-shadow: rgb(239, 236, 236) 1px 1px 0px 0px;
+    border: 1px solid #eee;
   }
 }
 
@@ -164,6 +179,14 @@ body {
   }
 }
 
+//Form css
+
+form{
+  .form-control{
+    height: 40px;
+  }
+}
+
 // General mode
 .app-main {
   display: flex;
@@ -180,7 +203,7 @@ body {
 //Dashboard CSS
 .header-filter {
   .form-select {
-    padding-right: 10px;
+    padding: 4px 10px;
     font-size: 13px;
     border: 1px solid #ccc !important;
     background-color: white !important;
@@ -229,7 +252,7 @@ body {
   .card {
     padding-left: 2px;
     padding-right: 2px;
-    box-shadow: 0px 1px 2px 2px #dbd9d9;
+    box-shadow: 0px 0px 2px 2px #e5e5e5;
   }
   .bg-secondary {
     background-color: #c0e3ff !important;
@@ -267,6 +290,10 @@ body {
 
 .margin-auto{
   margin: 0 auto;
+}
+
+.pointer{
+  cursor: pointer;
 }
 
 .fs-10 {
@@ -313,6 +340,10 @@ body {
   text-transform: $uppercase;
 }
 
+.v-middle{
+  vertical-align: middle;
+}
+
 .span-red {
   font-size: 12px;
   // color: black;
@@ -354,7 +385,7 @@ body {
   i {
     vertical-align: middle;
     margin-left: 5px;
-    background: #dedcdc;
+    // background: #dedcdc;
     padding: 5px;
     border-radius: 3px;
     cursor: pointer;
@@ -374,7 +405,13 @@ body {
   .card-body {
     padding: 0 10px;
   }
+  .canvasjs-chart-credit {
+    display: none;
+  }
 }
+ .canvasjs-chart-credit {
+    display: none;
+  }
 
 .bar-chart {
   span {
@@ -420,6 +457,18 @@ body {
   }
   .card-body {
     padding: 20px !important;
+  }
+  .incident-icon{
+    margin-left: 30px;
+    &.orange{
+      color: #ea790e;
+    }
+    &.green{
+      color: green;
+    }
+  }
+  .card-header{
+    padding: 0;
   }
 }
 
@@ -534,15 +583,32 @@ body {
     box-shadow: rgba(0, 0, 0, 0.14) 1px 4px 8px;
     border: 1px solid #eee;
     border-radius: 5px;
-    margin-left: 10px;
+    // margin-left: 10px;
     padding: 10px;
     margin-bottom: 6px;
     &:hover,
     &:focus {
       background-color: #e1e9f5;
     }
-    &.active {
+    &.selected {
       background-color: #e1e9f5;
+    }
+    .incident-name{
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+  }
+
+  .incident-tabs{
+    .incident-details{
+      width: 95%;
+      // select{
+      //     padding: 0 10px;
+      // }
     }
   }
 
@@ -744,6 +810,9 @@ body {
 .alert-action {
   select {
     border: 1px solid #aaa !important;
+    option:disabled{
+      color: #c9c6c6;
+    }
   }
 }
 
@@ -777,6 +846,11 @@ body {
     height: 40px;
     border-radius: 6px;
   }
+  input{
+    &:focus{
+      outline: #a3d4ed;
+    }
+  }
 }
 
 //Reports
@@ -786,6 +860,35 @@ body {
   .canvasjs-chart-credit {
     display: none;
   }
+}
+
+.teams-channel{
+  .dropdown-toggle{
+    background-color: transparent;
+    border: 1px solid #ccc !important;
+    padding: 5px 10px !important;
+    img{
+      vertical-align: top;
+    }
+    &:hover,&:focus{
+      background-color: transparent !important;
+      color: #333 !important;
+      &:not(.btn-active){
+        background-color: transparent !important;
+      }
+    }
+  }
+  .dropdown-item{
+    margin-bottom: 5px;
+    &:hover{
+      background-color: #7980e6;
+      color: white;
+    }
+  }
+}
+
+.teams-modal{
+  
 }
 
 //Channels page

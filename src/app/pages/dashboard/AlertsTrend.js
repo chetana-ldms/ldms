@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import CanvasJSReact from './assets/canvasjs.react'
+import { fetchGetAlertsTrendData } from '../../api/dashBoardApi';
 const CanvasJSChart = CanvasJSReact.CanvasJSChart
 
 function AlertsTrends(props) {
@@ -61,25 +62,17 @@ function AlertsTrends(props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          'http://115.110.192.133:502/api/Alerts/v1/GetAlertsTrendData',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              orgId: orgId,
-            }),
-          }
-        )
+        const GetAlertsTrendDataResponse = await fetchGetAlertsTrendData({
+          orgId: orgId
+        });
+        const { alertsTrendDatas } = await GetAlertsTrendDataResponse;
 
-        if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(`Network response was not ok: ${response.status} - ${errorData.message}`)
-        }
+        // if (!response.ok) {
+        //   const errorData = await response.json()
+        //   throw new Error(`Network response was not ok: ${response.status} - ${errorData.message}`)
+        // }
 
-        const {alertsTrendDatas} = await response.json() // destructure the 'alertsTrendDatas' property from the response object
+        // const {alertsTrendDatas} = await response.json() // destructure the 'alertsTrendDatas' property from the response object
         setAlertData(alertsTrendDatas)
         setLoading(false)
       } catch (error) {

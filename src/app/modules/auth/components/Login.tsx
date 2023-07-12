@@ -84,7 +84,7 @@ export function Login() {
 
   return (
     <form
-      className='form w-100'
+      className='form w-100 login-form'
       onSubmit={formik.handleSubmit}
       noValidate
       id='kt_login_signin_form'
@@ -94,7 +94,7 @@ export function Login() {
         <h1 className='text-dark fw-bolder mb-3'>
           <img src={toAbsoluteUrl('/media/misc/lancesoft_logo.png')} className='h-80px me-3' />
         </h1>
-        <div className='text-blue-500 fw-semibold fs-20'>Defence Centre</div>
+        <div className='text-blue-500 fw-semibold fs-20 login-subtxt'>Defence Centre</div>
       </div>
       {/* begin::Heading */}
 
@@ -212,7 +212,7 @@ export function Login() {
           className='btn btn-primary'
           disabled={formik.isSubmitting || !formik.isValid}
         >
-          <span className='indicator-label' >Continue</span>
+          <span className='indicator-label' >LOGIN</span>
           {/* {!loading && <span className='indicator-label' >Continue</span>} */}
 
           {/* {loading && (

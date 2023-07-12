@@ -2,6 +2,8 @@ import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {fetchRoles} from '../../../../../api/Api'
 import axios from 'axios'
+import { fetchUserAddUrl } from '../../../../../api/ConfigurationApi'
+import { notify, notifyFail } from '../components/notification/Notification';
 
 
 const AddUserData = () => {
@@ -14,7 +16,7 @@ const AddUserData = () => {
   const passWord = useRef()
   const roleType = useRef()
   const errors = {}
-  const handleSubmit = (event) => {
+  const handleSubmit = async(event) => {
     setLoading(true)
 
     if (!userName.current.value) {
@@ -39,7 +41,7 @@ const AddUserData = () => {
     const createdUserId = Number(sessionStorage.getItem('userId'));
     const createdDete = new Date().toISOString();
     const orgId = sessionStorage.getItem('orgId')
-    var data = JSON.stringify({
+    var data ={
       name: userName.current.value,
       roleID: roleType.current.value,
       password: passWord.current.value,
@@ -47,48 +49,23 @@ const AddUserData = () => {
       orgId,
       createdUserId,
       createdDete
-    })
-    console.log('data', data)
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPSecurity/v1/User/Add',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
     }
-    setTimeout(() => {
-      axios(config)
-        .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/users-data/list')
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      setLoading(false)
-    }, 1000)
+    try {
+      const responseData = await fetchUserAddUrl(data);
+      const { isSuccess } = responseData;
+  
+      if (isSuccess) {
+        notify('Data Saved');
+        navigate('/qradar/users-data/list')
+      } else {
+        notifyFail('Failed to save data');
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   }
-
-  // useEffect(() => {
-  //   setLoading(true)
-  //   var config = {
-  //     method: 'post',
-  //     url: 'http://115.110.192.133:502/api/LDPSecurity/v1/Roles',
-  //     headers: {
-  //       Accept: 'text/plain',
-  //     },
-  //   }
-  //   axios(config)
-  //     .then(function (response) {
-  //       setRoleTypes(response.data.rolesList)
-  //       setLoading(false)
-  //     })
-  //     .catch(function (error) {
-  //       console.log(error)
-  //     })
-  // }, [])
   useEffect(() => {
     const fetchData = async () => {
       try {

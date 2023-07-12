@@ -1,23 +1,23 @@
-import React from 'react'
-import CanvasJSReact from './assets/canvasjs.react'
-import {Tabs, Tab, TabList, TabPanel} from 'react-tabs'
-import AlertsSummary from './AlertsSummary'
-import SlaMeasurement from './SlaMeasurement'
-import ClosedIncidentReport from './ClosedIncidentReport'
-import OpenIncidentSummary from './OpenIncidentSummary'
-import SignificantIncident from './SignificantIncident'
-import CreatedIncidentStatusReport from './CreatedIncidentStatusReport'
+import React from "react";
+import CanvasJSReact from "./assets/canvasjs.react";
+import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
+import AlertsSummary from "./AlertsSummary";
+import SlaMeasurement from "./SlaMeasurement";
+import ClosedIncidentReport from "./ClosedIncidentReport";
+import OpenIncidentSummary from "./OpenIncidentSummary";
+import SignificantIncident from "./SignificantIncident";
+import CreatedIncidentStatusReport from "./CreatedIncidentStatusReport";
 
-const CanvasJS = CanvasJSReact.CanvasJS
-const CanvasJSChart = CanvasJSReact.CanvasJSChart
+const CanvasJS = CanvasJSReact.CanvasJS;
+const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 //Pie chart color code
-CanvasJS.addColorSet('colorShades', [
+CanvasJS.addColorSet("colorShades", [
   //colorSet Array
-  '#f0e68c',
-  '#ffb700',
-  '#008080',
-])
+  "#f0e68c",
+  "#ffb700",
+  "#008080",
+]);
 
 const Reports = () => {
   //Pie chart for status of created incidents
@@ -25,54 +25,54 @@ const Reports = () => {
     exportEnabled: true,
     animationEnabled: true,
     zoomEnabled: true,
-    colorSet: 'colorShades',
+    colorSet: "colorShades",
     title: {
-      text: '',
+      text: "",
     },
     data: [
       {
-        type: 'pie',
+        type: "pie",
         startAngle: 220,
-        toolTipContent: '<b>{label}</b>: {y}%',
-        showInLegend: 'true',
-        legendText: '{label}',
+        toolTipContent: "<b>{label}</b>: {y}%",
+        showInLegend: "true",
+        legendText: "{label}",
         indexLabelFontSize: 13,
-        indexLabel: '{label} - {y}%',
+        indexLabel: "{label} - {y}%",
         dataPoints: [
-          {y: 10.91, label: 'New'},
-          {y: 1.87, label: 'Open'},
-          {y: 87.27, label: 'Closed'},
+          { y: 10.91, label: "New" },
+          { y: 1.87, label: "Open" },
+          { y: 87.27, label: "Closed" },
         ],
       },
     ],
-  }
+  };
 
   //Pie chart for Open incident status
   const openstatusoptions = {
     exportEnabled: true,
     animationEnabled: true,
     zoomEnabled: true,
-    colorSet: 'colorShades',
+    colorSet: "colorShades",
     title: {
-      text: '',
+      text: "",
     },
     data: [
       {
-        type: 'pie',
+        type: "pie",
         startAngle: 220,
-        toolTipContent: '<b>{label}</b>: {y}%',
-        showInLegend: 'true',
-        legendText: '{label}',
+        toolTipContent: "<b>{label}</b>: {y}%",
+        showInLegend: "true",
+        legendText: "{label}",
         indexLabelFontSize: 13,
-        indexLabel: '{label} - {y}%',
+        indexLabel: "{label} - {y}%",
         dataPoints: [
-          {y: 10.91, label: 'New'},
-          {y: 1.87, label: 'Open'},
-          {y: 87.27, label: 'Closed'},
+          { y: 10.91, label: "New" },
+          { y: 1.87, label: "Open" },
+          { y: 87.27, label: "Closed" },
         ],
       },
     ],
-  }
+  };
 
   //Bar chart
   const baroptions = {
@@ -87,50 +87,55 @@ const Reports = () => {
       labelWrap: true, // change it to false
       interval: 1,
       labelFontSize: 11,
-      labelFontWeight: 'normal',
-      labelTextAlign: 'center',
+      labelFontWeight: "normal",
+      labelTextAlign: "center",
       labelAngle: 180,
     },
     data: [
       {
         // Change type to "doughnut", "line", "splineArea", etc.
-        type: 'column',
+        type: "column",
         dataPoints: [
-          {label: 'Customer Name - Smith Co Alert Name - Windows...', y: 17},
-          {label: 'Customer Name - Smith Co Alert Name - Windows...', y: 14},
-          {label: 'Customer Name - Smith Co Alert Name - Windows...', y: 13},
-          {label: 'Customer Name - Smith Co Alert Name - Windows...', y: 10},
-          {label: 'Customer Name - Smith Co Alert Name - Windows...', y: 8},
-          {label: 'Customer Name - Smith Co Alert Name - Windows...', y: 8},
-          {label: 'Customer Name - Smith Co Alert Name - Windows...', y: 7},
-          {label: 'Customer Name - Smith Co Alert Name - Windows...', y: 4},
-          {label: 'Customer Name - Smith Co Alert Name - Windows...', y: 4},
-          {label: 'SMB Port Scanning Device Vendor - Checkpoint...', y: 5},
-          {label: 'Today, Apr 26,2018 it was found that "Shadow Brokers" le...', y: 5},
+          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 17 },
+          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 14 },
+          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 13 },
+          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 10 },
+          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 8 },
+          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 8 },
+          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 7 },
+          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 4 },
+          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 4 },
+          { label: "SMB Port Scanning Device Vendor - Checkpoint...", y: 5 },
+          {
+            label:
+              'Today, Apr 26,2018 it was found that "Shadow Brokers" le...',
+            y: 5,
+          },
         ],
       },
     ],
-  }
+  };
 
   return (
-    <div className='row reports-page'>
+    <div className="row reports-page">
       {/* Begin Col */}
-      <div className='col-lg-12'>
-        <div className='mb-5 mb-xl-12'>
+      <div className="col-lg-12">
+        <div className="mb-5 mb-xl-12">
           <h2>Reports</h2>
-          <div className='demo-block'>
-            <Tabs className='report-tabs'>
-              <div className='card'>
-                <div className='card-body'>
-                  <TabPanel className='main-tab'>
+          <div className="demo-block">
+            <Tabs className="report-tabs">
+              <div className="card">
+                <div className="card-body">
+                  <TabPanel className="main-tab">
                     <AlertsSummary />
                   </TabPanel>
-                  <TabPanel className='main-tab'>
-                    <h2 className='mb-10'>
-                      Top 10 alerts by rule name for the last year (2/20/2020 and 7/28/2021)
+                  <TabPanel className="main-tab">
+                    <h2 className="mb-10">
+                      Top 10 alerts by rule name for the last year (2/20/2020
+                      and 7/28/2021)
                     </h2>
                     <Tabs>
-                      <TabList className='inner-tablist'>
+                      <TabList className="inner-tablist">
                         {/* <Tab>Last day</Tab>
                           <Tab>Last 7 days</Tab>
                           <Tab>Last month</Tab> */}
@@ -140,54 +145,17 @@ const Reports = () => {
                       {/* <TabPanel className='inner-tab'>1</TabPanel>
                         <TabPanel>2</TabPanel>
                         <TabPanel>3</TabPanel> */}
-                      <TabPanel className='inner-tab'>
+                      <TabPanel className="inner-tab">
                         <CanvasJSChart options={baroptions} />
                       </TabPanel>
                     </Tabs>
                   </TabPanel>
-                  <TabPanel className='main-tab'>
+                  <TabPanel className="main-tab">
                     <SlaMeasurement />
                   </TabPanel>
-                  <TabPanel className='main-tab'>
+                  <TabPanel className="main-tab">
                     <div>
-                      <h2>
-                        Status of all created incidents for the last year (2/10/2022 and 7/28/2023)
-                      </h2>
                       <CreatedIncidentStatusReport />
-                      {/* <Tabs>
-                        <TabList className='inner-tablist'>
-                          <Tab>Last 7 days</Tab>
-                          <Tab>Last month</Tab>
-                          <Tab>Last year</Tab>
-                        </TabList>
-
-                        <TabPanel>
-                          <CreatedIncidentStatusReport />
-                        </TabPanel>
-                        <TabPanel>
-                          <CanvasJSChart options={options} />
-                        </TabPanel>
-                        <TabPanel>
-                          <div className='row mt-5'>
-                            <div className='col-lg-6'>
-                              <h4>Previous period</h4>
-                              <div className='incident-txt mt-10'>
-                                <p>55 Incidents were opened during the report period.</p>
-                                <p>
-                                  48 Incidents closed after investigation, 7 Incidents were on
-                                  investigation stage.
-                                </p>
-                              </div>
-                            </div>
-                            <div className='col-lg-6'>
-                              <h4>Current period</h4>
-                              <div className='mt-10'>
-                                <CanvasJSChart options={options} />
-                              </div>
-                            </div>
-                          </div>
-                        </TabPanel>
-                      </Tabs> */}
                     </div>
                   </TabPanel>
                   <TabPanel>
@@ -201,7 +169,7 @@ const Reports = () => {
                   </TabPanel>
                 </div>
               </div>
-              <TabList className='tab-list'>
+              <TabList className="tab-list">
                 <Tab>Alert summary</Tab>
                 <Tab>Alerts rule</Tab>
                 <Tab>SLA measurement</Tab>
@@ -217,7 +185,7 @@ const Reports = () => {
 
       {/* End Col */}
     </div>
-  )
-}
+  );
+};
 
-export {Reports}
+export { Reports };

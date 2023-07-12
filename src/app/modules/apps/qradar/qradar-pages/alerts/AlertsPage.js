@@ -34,6 +34,8 @@ import {
   fetchUsers,
 } from "../../../../../api/AlertsApi";
 import ReactPaginate from "react-paginate";
+import { fetchCreateIncident } from "../../../../../api/IncidentsApi";
+import "./Alerts.css";
 
 const AlertsPage = () => {
   const [inputValue, setInputValue] = useState("");
@@ -48,6 +50,7 @@ const AlertsPage = () => {
   const [selectedRow, setSelectedRow] = useState({});
   const [showPopup, setShowPopup] = useState(false);
   const [selectCheckBox, setSelectCheckBox] = useState(null);
+  console.log(selectCheckBox, "selectCheckBox");
   const {
     severityNameDropDownData,
     statusDropDown,
@@ -91,45 +94,9 @@ const AlertsPage = () => {
       setselectedAlert(selectedAlert.filter((e) => e !== value));
     }
   };
-  console.log(selectedAlert, "selectedAlert");
   const [actionsValue, setActionValue] = useState("");
   function createIncidentSubmit(e) {
     setActionValue(e.target.value);
-    // var data = JSON.stringify({
-    //   description: 'Log source Microsoft SQL Server',
-    //   priority: 39,
-    //   severity: 42,
-    //   type: 'Alert ',
-    //   eventID: '1230987',
-    //   destinationUser: 'User 1',
-    //   sourceIP: '192.168.0.1',
-    //   vendor: 'i',
-    //   owner: 0,
-    //   incidentStatus: 32,
-    //   createdDate: '1999-06-25T02:00:56.703Z',
-    //   createdUser: 'admin',
-    // })
-    // var config = {
-    //   method: 'post',
-    //   maxBodyLength: Infinity,
-    //   url: 'http://115.110.192.133:502/api/IncidentManagement/CreateInternalIncident',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Accept: 'text/plain',
-    //   },
-    //   data: data,
-    // }
-    // axios(config)
-    //   .then(function (response) {
-    //     console.log(JSON.stringify(response.data))
-    //     alert('Demo Incident Created')
-    //   })
-    //   .catch(function (error) {
-    //     console.log(error)
-    //   })
-    //   .finally(() => {
-    //     console.log(actionsValue, 'actionsValue')
-    //   })
   }
   const navigate = useNavigate();
   const [selectValue, setSelectValue] = useState();
@@ -149,6 +116,7 @@ const AlertsPage = () => {
   };
   const userID = Number(sessionStorage.getItem("userId"));
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const modifiedDate = new Date().toISOString();
   const [alertData, setAlertDate] = useState([]);
   const [filteredAlertData, setFilteredAlertDate] = useState([]);
   const [ldp_security_user, setldp_security_user] = useState([]);
@@ -162,14 +130,8 @@ const AlertsPage = () => {
 
   const [pageCount, setpageCount] = useState(0);
 
-  useEffect(() => {
-    axios.get("http://115.110.192.133:502/api/Alerts/v1/Alerts").then((res) => {
-      console.log(res, "mydata");
-    });
-  }, []);
-
   const handleCloseForm = () => {
-    notifyFail("Data not Updated");
+    // notifyFail("Data not Updated");
     setShowForm(false);
   };
   const handleIgnoreSubmit = async () => {
@@ -185,7 +147,7 @@ const AlertsPage = () => {
         modifiedDate,
       };
       const response = await fetchUpdatSetAlertIrrelavantStatuseAlert(data);
-      notify("Irrelevant / Ignore Created");
+      notify("Alert marked as Irrelevant/Ignore");
       setIgnorVisible(false);
       setShowForm(false);
       qradaralerts();
@@ -224,7 +186,9 @@ const AlertsPage = () => {
       const response = await fetchSetAlertEscalationStatus(data);
       if (response.isSuccess) {
         qradaralerts();
-        notify("Escalate Created");
+        notify("Alert Escalated");
+        setEscalate(false);
+        setShowForm(false);
       }
       handleEscalate({
         target: {
@@ -242,11 +206,10 @@ const AlertsPage = () => {
       });
     },
   });
-  const handleEscalateSubmit = (e) => {
-    e.preventDefault();
-    handleSubmit();
-    setEscalate(false);
-  };
+  // const handleEscalateSubmit = (e) => {
+  //   e.preventDefault();
+  //   handleSubmit();
+  // };
   const handlePageClick = async (data) => {
     let currentPage = data.selected + 1;
     const setOfAlertsData = await fetchSetOfAlerts(
@@ -310,10 +273,17 @@ const AlertsPage = () => {
   }, [delay]);
   useEffect(() => {
     if (actionsValue === "1") {
+      const data = {
+        orgId,
+        createDate: modifiedDate,
+        createUserId: userID,
+        alertIDs: selectedAlert,
+      };
+      fetchCreateIncident(data);
       notify("Incident Created");
       setTimeout(() => {
         navigate("/qradar/incidents");
-      }, 3000);
+      }, 2000);
     }
   }, [actionsValue]);
   console.log(filteredAlertData, "filteredAlertData");
@@ -399,8 +369,9 @@ const AlertsPage = () => {
   return (
     <KTCardBody className="alert-page">
       <ToastContainer />
+
       <div className="card mb-5 mb-xl-8">
-        <div className="card-header border-0 pt-5">
+        <div className="card-header border-0">
           <h3 className="card-title align-items-start flex-column">
             {/* <span className='card-label fw-bold fs-3 mb-1'>
               Alerts {'( ' + alertData.length + ' / ' + alertsCount + ')'}
@@ -410,12 +381,7 @@ const AlertsPage = () => {
               {"( " + filteredAlertData.length + " / " + alertsCount + ")"}
             </span>
           </h3>
-          <div className="col-lg-8 fs-15 mt-2 lh-40 fc-gray text-right ds-reload">
-            Alerts is automatically refreshing every 5 minutes{" "}
-            <a href="#" onClick={handleRefresh}>
-              <i className={`fa fa-refresh ${isRefreshing ? "rotate" : ""}`} />
-            </a>
-          </div>
+
           <div className="card-toolbar">
             <div className="d-flex align-items-center gap-2 gap-lg-3">
               <div className="m-0">
@@ -450,18 +416,17 @@ const AlertsPage = () => {
                   id="kt_menu_637dc6f8a1c15"
                 >
                   {showForm && (
-                    <div className="px-7 py-5">
+                    <div className="px-5 py-5">
                       <div className="mb-5">
-                        <div className="d-flex justify-content-between">
-                          <div>
+                        <div className="d-flex justify-content-end mb-5">
+                          {/* <div>
                             <label className="form-label fw-bolder">
                               Select:
                             </label>
-                          </div>
+                          </div> */}
                           <div>
-                            <button
-                              type="button"
-                              className="close"
+                            <div
+                              className="close fs-20 text-muted pointer"
                               aria-label="Close"
                               onClick={handleCloseForm}
                             >
@@ -471,7 +436,7 @@ const AlertsPage = () => {
                               >
                                 &times;
                               </span>
-                            </button>
+                            </div>
                           </div>
                         </div>
                         <div>
@@ -484,8 +449,14 @@ const AlertsPage = () => {
                             data-dropdown-parent="#kt_menu_637dc6f8a1c15"
                             data-allow-clear="true"
                           >
-                            <option>--</option>
-                            <option value="1" onClick={createIncidentSubmit}>
+                            <option>Select</option>
+                            <option
+                              value="1"
+                              onClick={createIncidentSubmit}
+                              disabled={
+                                selectCheckBox.alertIncidentMappingId > 0
+                              }
+                            >
                               Create Incident
                             </option>
                             <option value="2">Escalate</option>
@@ -501,7 +472,7 @@ const AlertsPage = () => {
                               className="form-label fw-bolder"
                               htmlFor="ownerName"
                             >
-                              Owner:
+                              Owner <sup className="red">*</sup>:
                             </label>
                             <div>
                               <select
@@ -512,8 +483,9 @@ const AlertsPage = () => {
                                 value={values.owner}
                                 name="owner"
                                 onChange={handleEscalate}
+                                required
                               >
-                                <option>--</option>
+                                <option value="">Select</option>
                                 {ldp_security_user.length > 0 &&
                                   ldp_security_user.map((item, index) => {
                                     return (
@@ -530,7 +502,7 @@ const AlertsPage = () => {
                               className="form-label fw-bolder"
                               htmlFor="excalatecomments"
                             >
-                              Comments:
+                              Comments <sup className="red">*</sup>:
                             </label>
                             <Form.Control
                               as="textarea"
@@ -540,15 +512,22 @@ const AlertsPage = () => {
                               name="comments"
                               onChange={handleEscalate}
                               style={{ height: "100px" }}
+                              required
                             />
                           </div>
                           <div className="d-flex justify-content-end">
                             <button
                               type="submit"
                               className="btn btn-primary btn-small btn-new"
-                              onClick={handleEscalateSubmit}
                             >
-                              Escalate
+                              Submit
+                            </button>
+                            &nbsp;&nbsp;
+                            <button
+                              className="btn btn-secondary btn-small ml-10"
+                              onClick={handleCloseForm}
+                            >
+                              Cancel
                             </button>
                           </div>
                         </form>
@@ -571,6 +550,13 @@ const AlertsPage = () => {
             </div>
           </div>
         </div>
+        <div className="clearfix" />
+        <div className="float-right fs-15 mt-2 lh-40 fc-gray text-right ds-reload">
+          Alerts is automatically refreshing every 5 minutes{" "}
+          <a href="#" onClick={handleRefresh}>
+            <i className={`fa fa-refresh ${isRefreshing ? "rotate" : ""}`} />
+          </a>
+        </div>
         {openEditPage ? (
           <EditAlertsPopUp
             show={openEditPage}
@@ -583,7 +569,7 @@ const AlertsPage = () => {
             onTableRefresh={handleTableRefresh}
           />
         ) : null}
-        <div className="card-body py-3" id="kt_accordion_1">
+        <div className="card-body1 py-3" id="kt_accordion_1">
           <div className="table-responsive alert-table">
             <table className="table align-middle gs-0 gy-4">
               <thead>
@@ -1106,8 +1092,23 @@ const AlertsPage = () => {
                               value={item.alertID}
                               name={item.alertID}
                               onChange={(e) => handleselectedAlert(item, e)}
-                              autocomplete="false"
+                              autoComplete="off"
                             />
+                            {/* check incident creation */}
+                            <span>
+                              {item.status == "New" &&
+                              item.alertIncidentMappingId == 0 ? (
+                                <i
+                                  className="fa fa-circle-exclamation incident-icon orange"
+                                  title="Alert"
+                                />
+                              ) : (
+                                <i
+                                  className="fa fa-circle-exclamation incident-icon green"
+                                  title="Incident created"
+                                />
+                              )}
+                            </span>
                           </div>
                         </td>
                         <td
@@ -1248,8 +1249,8 @@ const AlertsPage = () => {
           </div>
           <div className="d-flex justify-content-end align-items-center pagination-bar">
             <ReactPaginate
-              previousLabel={"Previous"}
-              nextLabel={"Next"}
+              previousLabel=<i className="fa fa-chevron-left" />
+              nextLabel=<i className="fa fa-chevron-right" />
               pageCount={pageCount}
               marginPagesDisplayed={1}
               pageRangeDisplayed={15}
@@ -1265,10 +1266,10 @@ const AlertsPage = () => {
               breakLinkClassName={"page-link"}
               activeClassName={"active"}
             />
-            <div className="col-md-2 d-flex justify-content-start align-items-center">
-              <span className="col-md-6">Select page:</span>
+            <div className="col-md-3 d-flex justify-content-end align-items-center">
+              <span className="col-md-4">Count: </span>
               <select
-                className="form-select form-select-sm"
+                className="form-select form-select-sm col-md-4"
                 value={limit}
                 onChange={handlePageSelect}
               >

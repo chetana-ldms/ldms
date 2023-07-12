@@ -6,6 +6,7 @@ import { notify, notifyFail } from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
 import { fetchOrganizationDelete } from "../../../../../api/Api"
 import axios from 'axios'
+import { fetchOrganizationsUrl } from '../../../../../api/ConfigurationApi'
 
 const Organizations = () => {
   const [loading, setLoading] = useState(false)
@@ -35,30 +36,22 @@ const Organizations = () => {
     }
   }
   
-  const reload = () => {
-    // setLoading(true)
-    var config = {
-      method: 'get',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/Organizations',
-      headers: {
-        Accept: 'text/plain',
-      },
+
+  const reload = async () => {
+    try {
+      setLoading(true);
+      const response = await fetchOrganizationsUrl();
+      setTools(
+            userID === 1
+              ? response
+              : response.filter((item) => item.orgID === orgId)
+          );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
-    axios(config)
-      .then(function (response) {
-        // setTools(response.data.organizationList)
-        setTools(
-          userID === 1
-            ? response.data.organizationList
-            : response.data.organizationList.filter((item) => item.orgID === orgId)
-        );
-        
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }
+  };
   useEffect(() => {
     reload();
   }, [])
@@ -72,27 +65,19 @@ const Organizations = () => {
         </h3>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
+          {userID === 1 ? (
             <Link to='/qradar/organizations/add' className='btn btn-danger btn-small'>
               Add
             </Link>
+          ) : (
+            <button className='btn btn-danger btn-small' disabled>
+              Add
+            </button>
+          )}
           </div>
         </div>
       </div>
       <div className='card-body'>
-        {/* {status == 'updated' && (
-          <div class='alert alert-success d-flex align-items-center p-5'>
-            <div class='d-flex flex-column'>
-              <h4 class='mb-1 text-dark'>Data Saved</h4>
-            </div>
-            <button
-              type='button'
-              class='position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto'
-              data-bs-dismiss='alert'
-            >
-              X<span class='svg-icon svg-icon-2x svg-icon-light'>...</span>
-            </button>
-          </div>
-        )} */}
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
@@ -114,12 +99,36 @@ const Organizations = () => {
                 <td>{item.mobileNo}</td>
                 <td>{item.email}</td>
                 <td>
-                  <button className='btn btn-primary btn-small'>
-                    <Link className='text-white' to={`/qradar/organizations/update/${item.orgID}`}>
+                {userID === 1 ? (
+                    <button className='btn btn-primary btn-small'>
+                      <Link className='text-white' to={`/qradar/organizations/update/${item.orgID}`}>
+                        Update
+                      </Link>
+                    </button>
+                  ) : (
+                    <button className='btn btn-primary btn-small' disabled>
                       Update
-                    </Link>
-                  </button>
-                  <button className="btn btn-sm btn-danger btn-small ms-5" style={{ fontSize: '14px' }} onClick={() => { handleDelete(item) }}> Delete</button>
+                    </button>
+                  )}
+                  {userID === 1 ? (
+                    <button
+                      className='btn btn-sm btn-danger btn-small ms-5'
+                      style={{ fontSize: '14px' }}
+                      onClick={() => {
+                        handleDelete(item);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  ) : (
+                    <button
+                      className='btn btn-sm btn-danger btn-small ms-5'
+                      style={{ fontSize: '14px' }}
+                      disabled
+                    >
+                      Delete
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

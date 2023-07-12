@@ -1,11 +1,42 @@
-import React, { useState, useEffect } from "react";
-import { fetchSubItemsByOrgChannel } from "../../../../../api/ChannelApi";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  fetchChannelsCreateUrl,
+  fetchSubItemsByOrgChannel,
+  fetchlistUrl,
+} from "../../../../../api/ChannelApi";
+import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
+
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "reactstrap";
 
 const Reports = ({ channelId, channelName }) => {
+  const orgId = Number(sessionStorage.getItem("orgId"));
   const [channelSubItems, setChannelSubItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-
+  const [teamsList, setTeamsList] = useState([]);
+  console.log(teamsList, "teamsList");
   const [error, setError] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const toggleDropdown = () => setDropdownOpen((prevState) => !prevState);
+  const dropdownRef = useRef(null);
+  const teamSelectRef = useRef(null);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
 
   useEffect(() => {
     const orgId = Number(sessionStorage.getItem("orgId"));
@@ -30,16 +61,58 @@ const Reports = ({ channelId, channelName }) => {
       }
     });
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchlistUrl(orgId);
+        setTeamsList(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
+    fetchData();
+  }, []);
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    const selectedTeamId = teamSelectRef.current.value;
+    const data = {
+      teamsId: Number(selectedTeamId),
+      channelId: channelId,
+    };
+    fetchChannelsCreateUrl(data).catch((error) => {
+      console.error(error);
+    });
+  };
   return (
     <div>
       <div className="clearfix">
         <p className="float-left channel-heading">
           <strong>{channelName}</strong>
         </p>
-        {/* <button className="btn btn-new float-right btn-primary">
-          Add Channel to Teams
-        </button> */}
+        {/* Microsoft teams integration (hidden for now) */}
+        <div className="float-right teams-channel hidden">
+          <Dropdown
+            isOpen={dropdownOpen}
+            toggle={toggleDropdown}
+            innerRef={dropdownRef}
+          >
+            <DropdownToggle caret>
+              Teams{" "}
+              <img
+                alt="Logo"
+                src={toAbsoluteUrl("/media/icons/teams-icon.png")}
+                width="20"
+              />
+            </DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={openModal}>
+                Add Channel in Teams
+              </DropdownItem>
+              <DropdownItem>Share File to Teams</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </div>
       </div>
 
       {error ? (
@@ -119,7 +192,38 @@ const Reports = ({ channelId, channelName }) => {
           </div>
         </div>
       )}
-      {/* Add more specific content for the Reports template */}
+      {/* Add channels in teams modal */}
+      <Modal isOpen={modalOpen} toggle={closeModal} className="teams-modal">
+        <ModalHeader toggle={closeModal}>Add Channel in Teams</ModalHeader>
+        <ModalBody>
+          <div className="form-group">
+            <label htmlFor="teamSelect">Select Team:</label>
+            <select
+              id="teamSelect"
+              className="form-select form-select-solid"
+              ref={teamSelectRef}
+            >
+              <option value="">Select a team</option>
+              {teamsList.map((team) => (
+                <option key={team.teamId} value={team.teamId}>
+                  {team.teamName}
+                </option>
+              ))}
+            </select>
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <button
+            className="btn btn-primary btn-small"
+            onClick={handleFormSubmit}
+          >
+            Submit
+          </button>
+          <button className="btn btn-secondary btn-small" onClick={closeModal}>
+            Close
+          </button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 };

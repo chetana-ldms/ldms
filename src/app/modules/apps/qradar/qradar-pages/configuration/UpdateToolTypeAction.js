@@ -3,7 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { notify, notifyFail } from '../components/notification/Notification';
 import { UsersListLoading } from '../components/loading/UsersListLoading'
-import { fetchToolTypeActionDetails } from '../../../../../api/ConfigurationApi'
+import { fetchToolTypeActionDetails, fetchToolTypeActionUpdate } from '../../../../../api/ConfigurationApi'
+import { fetchMasterData } from '../../../../../api/Api';
 
 const UpdateToolTypeAction = () => {
   const navigate = useNavigate()
@@ -28,82 +29,59 @@ const UpdateToolTypeAction = () => {
   }, [id, toolAction]);
   const errors = {}
   useEffect(() => {
-    setLoading(true)
-
-    //////////////////
-    var data_4 = JSON.stringify({
-      maserDataType: 'Tool_Types',
-    })
-    var config_4 = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/MasterData',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: data_4,
-    }
-    axios(config_4)
-      .then(function (response) {
-        setToolTypes(response.data.masterData)
-        setLoading(false)
+    fetchMasterData("Tool_Types")
+      .then((typeData) => {
+        setToolTypes(typeData);
       })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }, [])
-  const handleSubmit = (event) => {
-    setLoading(true)
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+  
+  const handleSubmit = async (event) => {
+    setLoading(true);
+  
     if (!toolAction.current.value) {
-      console.log('error')
-      errors.toolAction = 'Select Tool Action'
-      setLoading(false)
-      return errors
+      console.log('error');
+      errors.toolAction = 'Select Tool Action';
+      setLoading(false);
+      return errors;
     }
+  
     if (!toolTypeID.current.value) {
-      errors.toolTypeID = 'Select Tool Type'
-      setLoading(false)
-      return errors
+      errors.toolTypeID = 'Select Tool Type';
+      setLoading(false);
+      return errors;
     }
-
-    event.preventDefault()
+  
+    event.preventDefault();
     const modifiedUserId = Number(sessionStorage.getItem('userId'));
     const modifiedDate = new Date().toISOString();
-    var data = JSON.stringify({
-      // toolTypeID: toolTypeID.current.value,
+    const data = {
       toolTypeID: toolTypeAction.toolTypeID,
       toolAction: toolAction.current.value,
       toolTypeActionID: id,
       modifiedDate,
-      modifiedUserId
-    })
-    console.log(data, "data111")
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeAction/Update',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
+      modifiedUserId,
+    };
+  
+    try {
+      const responseData = await fetchToolTypeActionUpdate(data);
+      const { isSuccess } = responseData;
+  
+      if (isSuccess) {
+        notify('Data Updated');
+        navigate('/qradar/tool-type-actions/updated');
+      } else {
+        notifyFail('Failed to update data');
+      }
+    } catch (error) {
+      console.log(error);
     }
-    setTimeout(() => {
-      axios(config)
-        .then(function (response) {
-          const { isSuccess } = response.data;
-
-          if (isSuccess) {
-            notify('Data Updated');
-            navigate('/qradar/tool-type-actions/updated');
-          } else {
-            notifyFail('Failed to update data');
-          }
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      setLoading(false)
-    }, 1000)
-  }
+    setLoading(false);
+  };
+  
+  // fetchToolTypeActionUpdate(data)
 
   return (
     <div className='card'>

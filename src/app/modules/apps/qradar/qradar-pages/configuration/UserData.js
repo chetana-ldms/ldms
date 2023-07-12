@@ -6,6 +6,7 @@ import { notify, notifyFail } from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
 import { fetchUserDelete } from "../../../../../api/Api"
 import axios from 'axios'
+import { fetchUsersUrl } from '../../../../../api/ConfigurationApi'
 
 const UserData = () => {
   const [loading, setLoading] = useState(false)
@@ -14,10 +15,9 @@ const UserData = () => {
   const { status } = useParams()
 
   const handleDelete = async (item) => {
-    const userID= item.userID
+    const userID = item.userID
     const deletedUserId = Number(sessionStorage.getItem('userId'));
     const deletedDate = new Date().toISOString();
-    // const deletedUserId = sessionStorage.getItem('userName')
     const data = {
       deletedUserId,
       deletedDate,
@@ -31,24 +31,14 @@ const UserData = () => {
       console.log(error);
     }
   }
-  const reload = () => {
-    // setLoading(true)
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPSecurity/v1/Users?OrgId=1',
-      headers: {
-        Accept: 'text/plain',
-      },
+  const reload = async () => {
+    try {
+      const orgId = Number(sessionStorage.getItem('orgId'))
+      const data = await fetchUsersUrl(orgId);
+      setUsers(data);
+    } catch (error) {
+      console.log(error)
     }
-
-    axios(config)
-      .then(function (response) {
-        setUsers(response.data.usersList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
   }
   useEffect(() => {
     reload();

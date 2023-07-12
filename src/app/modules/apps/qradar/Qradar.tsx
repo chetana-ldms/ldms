@@ -2,7 +2,8 @@ import {Route, Routes, Outlet, Navigate} from 'react-router-dom'
 import {PageLink, PageTitle} from '../../../../_metronic/layout/core'
 import {DemoPage} from './qradar-pages/demo/DemoPage'
 import {IncidentsPagev1} from './qradar-pages/incidents/IncidentsPagev1'
-import {IncidentsPage} from './qradar-pages/incidents/IncidentsPage'
+import {IncidentsPageDemo} from './qradar-pages/incidents/IncidentsPageDemo'
+
 import {AlertsPage} from './qradar-pages/alerts/AlertsPage'
 import {ChannelsPage} from './qradar-pages/channels/ChannelsPage'
 import {Reports} from './qradar-pages/reports/Reports'
@@ -50,6 +51,8 @@ import {AddOrganizationTools} from './qradar-pages/configuration/AddOrganization
 import {UpdateOrganizationTools} from './qradar-pages/configuration/UpdateorganizationTools'
 import {IncidentsPageCollaboration} from './qradar-pages/incidents/IncidentsPageCollaboration'
 import UsersProfile from './qradar-pages/profile/UsersProfile'
+import { IncidentsPage } from './qradar-pages/incidents/IncidentsPage'
+
 
 
 const usersBreadcrumbs: Array<PageLink> = [
@@ -62,6 +65,12 @@ const usersBreadcrumbs: Array<PageLink> = [
   {
     title: 'Qradar',
     path: '/apps/qradar/incidents',
+    isSeparator: false,
+    isActive: false,
+  },
+  {
+    title: 'Qradar',
+    path: '/apps/qradar/incidentsPageDemo',
     isSeparator: false,
     isActive: false,
   },
@@ -170,6 +179,15 @@ const QradarPages = () => {
             <>
               <PageTitle breadcrumbs={usersBreadcrumbs}>Qradar Saved Alerts</PageTitle>
               <IncidentsPage />
+            </>
+          }
+        />
+          <Route
+          path='incidentsDemo'
+          element={
+            <>
+              <PageTitle breadcrumbs={usersBreadcrumbs}>Qradar Saved Alerts</PageTitle>
+              <IncidentsPageDemo />
             </>
           }
         />

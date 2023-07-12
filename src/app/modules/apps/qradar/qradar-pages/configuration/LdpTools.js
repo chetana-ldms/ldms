@@ -6,6 +6,7 @@ import { notify, notifyFail } from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
 import { fetchLDPToolsDelete } from "../../../../../api/Api"
 import axios from 'axios'
+import { fetchLDPToolsUrl } from '../../../../../api/ConfigurationApi'
 const LdpTools = () => {
   const [loading, setLoading] = useState(false)
   const [tools, setTools] = useState([])
@@ -33,25 +34,10 @@ const LdpTools = () => {
       console.log(error);
     }
   }
-  const reload = () => {
-     // setLoading(true)
-     var config = {
-      method: 'get',
-      url: 'http://115.110.192.133:502/api/LDPlattform/v1/LDPTools',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-
-    axios(config)
-      .then(function (response) {
-        setTools(response.data.ldpToolsList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }
+  const reload = async() => {
+    const response = await fetchLDPToolsUrl();
+    setTools(response)
+   }
   useEffect(() => {
     reload();
   }, [])

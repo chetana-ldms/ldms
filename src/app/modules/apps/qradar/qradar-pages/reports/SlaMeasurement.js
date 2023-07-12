@@ -225,6 +225,13 @@ function SlaMeasurement() {
 
   console.log(alertData); // Log the alertData to the console
 
+  //Date range
+  const today = new Date();
+  const lastYear = new Date();
+  lastYear.setFullYear(lastYear.getFullYear() - 1);
+  const startDate = lastYear.toLocaleDateString("en-GB");
+  const endDate = today.toLocaleDateString("en-GB");
+
   return (
     <div>
       {loading ? (
@@ -234,7 +241,7 @@ function SlaMeasurement() {
       ) : (
         <>
           <h2 className="mb-10">
-            SLA measurement for the last year (2/20/2020 and 7/28/2021)
+            SLA measurement for the last year ({startDate} to {endDate})
           </h2>
           <Tabs>
             <TabList className="inner-tablist">
