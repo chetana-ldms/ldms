@@ -146,39 +146,7 @@ const Reports = ({ channelId, channelName }) => {
                       </span>
                     </a>
                   </label>
-                </div>
-              ))
-            ) : (
-              <div>Loading...</div>
-            )}
-            <button className="btn btn-new btn-primary btn-small mt-5">
-              Generate Report
-            </button>
-          </div>
-
-          {/* Download Report */}
-          <div className="download-report mt-10">
-            <p>
-              <strong>Download Report:</strong>{" "}
-            </p>
-            {channelSubItems.length > 0 ? (
-              channelSubItems.map((subItem) => (
-                <div
-                  className="report-files mb-2"
-                  key={subItem.channelSubItemId}
-                >
-                  <label>
-                    <a
-                      className="doc-section"
-                      href={subItem.documentUrl}
-                      download="Document"
-                    >
-                      <i className="far fa-file-pdf" />{" "}
-                      <span className="text-blue">
-                        {subItem.channelSubItemName} Report{" "}
-                      </span>
-                    </a>
-                  </label>
+                  {/* Download Report - show download icon once report is available for download */}
                   <button className="btn btn-new">
                     <a href={subItem.documentUrl} download="Document">
                       <i className="fas fa-download"></i>
@@ -189,6 +157,9 @@ const Reports = ({ channelId, channelName }) => {
             ) : (
               <div>Loading...</div>
             )}
+            <button className="btn btn-new btn-primary btn-small mt-5">
+              Generate Report
+            </button>
           </div>
         </div>
       )}

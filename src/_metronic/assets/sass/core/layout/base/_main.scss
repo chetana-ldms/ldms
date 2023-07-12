@@ -1005,7 +1005,7 @@ form{
       }
     }
     .btn-channel{
-      padding: 4px !important;
+      padding: 6px 10px !important;
       font-size: 12px;
       background-color: #008cba !important;
       // border-radius: 0;
@@ -1160,7 +1160,7 @@ form{
     }
   }
   .channel-accordion{
-    background-color: #eeeded;
+    background-color: #f1f1f1;
     td{
       text-align: left !important;
       .close-button{
@@ -1285,6 +1285,31 @@ form{
   .menu-link {
     &:hover {
       background-color: #3a414e;
+      margin: 0 !important;
+    }
+  }
+}
+
+//Timeline
+.timeline-section{
+  .timeline-label{
+    
+    p{
+      margin-bottom: 0;
+      font-weight: normal;
+      font-size: 10px;
+      &.time{
+        color: blue;
+      }
+    }
+    &::before{
+      left: 71px;
+    }
+    .timeline-label{
+      width: 70px;
+      &::before{
+        left: 71px;
+      }
     }
   }
 }

@@ -27,7 +27,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
   });
   const checkboxRef = useRef(null);
   const [incidentHistory, setIncidentHistory] = useState([]);
-  console.log(incidentHistory, "incidentHistory")
+  console.log(incidentHistory, "incidentHistory");
   const [alertsList, setAlertsList] = useState({});
   const [ldp_security_user, setldp_security_user] = useState([]);
   const [incidentData, setIncidentData] = useState({
@@ -596,8 +596,12 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               <div className="tab-pane fade" id="kt_tab_pane_4" role="tabpanel">
                 Observables data
               </div>
-              <div className="tab-pane fade" id="kt_tab_pane_5" role="tabpanel">
-                <div className="card-body pt-6 h-600px">
+              <div
+                className="tab-pane fade timeline-section"
+                id="kt_tab_pane_5"
+                role="tabpanel"
+              >
+                <div className="pt-6 h-600px">
                   <div className="timeline-label">
                     {incidentHistory && incidentHistory.length > 0 ? (
                       incidentHistory.map((item) => {
@@ -611,15 +615,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                         return (
                           <div className="timeline-item" key={item.incidentId}>
                             <div className="timeline-label fw-bold text-gray-800 fs-6">
-                              <span style={{ fontSize: "9px" }}>
-                                {formattedDate}
-                              </span>{" "}
-                              <span style={{ color: "blue", fontSize: "10px" }}>
-                                {formattedTime}
-                              </span>
-                              <p className="text-muted fs-11 fw-normal">
-                                {item.createdUser}
-                              </p>
+                              <p>{formattedDate}</p>{" "}
+                              <p className="time">{formattedTime}</p>
+                              <p className="text-muted">{item.createdUser}</p>
                             </div>
 
                             <div className="timeline-badge">

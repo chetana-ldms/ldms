@@ -38,7 +38,7 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
       console.log(error);
     }
   };
-  
+
   const handleSubmit = async () => {
     const data = {
       channelName: channelNames.current.value,
@@ -110,10 +110,10 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleModalClose}>
+        <Button variant="secondary btn-small" onClick={handleModalClose}>
           Close
         </Button>
-        <Button variant="primary" onClick={handleSubmit}>
+        <Button variant="primary btn-small" onClick={handleSubmit}>
           Add Channel
         </Button>
       </Modal.Footer>
@@ -123,19 +123,22 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
 
 const ChannelsPage = () => {
   const [channels, setChannels] = useState([]);
-  console.log(channels, "channels11")
+  console.log(channels, "channels11");
   const orgId = Number(sessionStorage.getItem("orgId"));
   const deletedUserId = Number(sessionStorage.getItem("userId"));
   const deletedDate = new Date().toISOString();
   const [showEditChannel, setShowEditChannel] = useState(false);
   const [dropdownData, setDropdownData] = useState([]);
-  console.log(dropdownData, "dropdownData")
+  console.log(dropdownData, "dropdownData");
   const [accordionOpen, setAccordionOpen] = useState(false);
   const channelNames = useRef();
   const channelDescriptions = useRef();
   const channelTypes = useRef();
-  const [selectedChannel, setSelectedChannel] = useState({selectedChannelName:'',selectedChannelID:''});
-  console.log(selectedChannel, "selectedChannel")
+  const [selectedChannel, setSelectedChannel] = useState({
+    selectedChannelName: "",
+    selectedChannelID: "",
+  });
+  console.log(selectedChannel, "selectedChannel");
   const fetchData = async () => {
     try {
       const data = await fetchChannels(orgId);
@@ -275,7 +278,6 @@ const ChannelsPage = () => {
       <div className="channel-title">
         <h4 className="float-left">
           Channels <span>( {channels.length} )</span>
-         
         </h4>
         <span
           className="float-right add-btn"
@@ -392,7 +394,9 @@ const ChannelsPage = () => {
                                 onChange={(e) =>
                                   setSelectedChannel({
                                     selectedChannelName: e.target.value,
-                                    selectedChannelID: e.target.options[e.target.selectedIndex].getAttribute('data-id'),
+                                    selectedChannelID: e.target.options[
+                                      e.target.selectedIndex
+                                    ].getAttribute("data-id"),
                                   })
                                 }
                               >
@@ -403,7 +407,8 @@ const ChannelsPage = () => {
                                   dropdownData.dropdownData.map((item) => (
                                     <option
                                       key={item.dataID}
-                                      value={item.channelTypeName} data-id={item.dataID}
+                                      value={item.channelTypeName}
+                                      data-id={item.dataID}
                                     >
                                       {item.dataValue}
                                     </option>
@@ -434,7 +439,7 @@ const ChannelsPage = () => {
                               </Button>
                               <Button
                                 variant="primary"
-                                className="btn-small"
+                                className="btn-small btn-new"
                                 onClick={() => handleSave(channel.channelId)}
                               >
                                 Save
