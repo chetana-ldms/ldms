@@ -13,7 +13,7 @@ const AddUserData = () => {
   const [roleTypes, setRoleTypes] = useState([])
   console.log(roleTypes, "roleTypes")
   const userName = useRef()
-  const passWord = useRef()
+  // const passWord = useRef()
   const roleType = useRef()
   const errors = {}
   const handleSubmit = async(event) => {
@@ -25,11 +25,11 @@ const AddUserData = () => {
       return errors
     }
 
-    if (!passWord.current.value) {
-      errors.passWord = 'Enter password'
-      setLoading(false)
-      return errors
-    }
+    // if (!passWord.current.value) {
+    //   errors.passWord = 'Enter password'
+    //   setLoading(false)
+    //   return errors
+    // }
 
     if (!roleType.current.value) {
       errors.roleType = 'Select Role Type'
@@ -44,7 +44,7 @@ const AddUserData = () => {
     var data ={
       name: userName.current.value,
       roleID: roleType.current.value,
-      password: passWord.current.value,
+      // password: passWord.current.value,
       sysUser:0,
       orgId,
       createdUserId,
@@ -112,7 +112,7 @@ const AddUserData = () => {
                 />
               </div>
             </div>
-            <div className='col-lg-4 mb-4 mb-lg-0'>
+            {/* <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
                   Enter Password
@@ -126,7 +126,7 @@ const AddUserData = () => {
                   placeholder='Ex: ***********'
                 />
               </div>
-            </div>
+            </div> */}
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='toolType' className='form-label fs-6 fw-bolder mb-3'>
