@@ -104,6 +104,7 @@ const Document = ({ channelId, channelName }) => {
         <button
           className="float-right btn btn-channel btn-primary"
           onClick={() => setUploadDocumentModal(true)}
+          disabled={CreatedUserId !== 1}
         >
           Upload Document
         </button>
@@ -142,6 +143,7 @@ const Document = ({ channelId, channelName }) => {
                     onClick={() => {
                       handleDelete(item);
                     }}
+                    disabled={CreatedUserId !== 1}
                   >
                     <i className="fas fa-trash-alt"></i>
                   </button>

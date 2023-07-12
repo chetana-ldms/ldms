@@ -99,7 +99,7 @@ const UpdateOrganizations = () => {
             <div className='col-lg-6 mb-5'>
               <div className='fv-row mb-0'>
                 <label htmlFor='orgName' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Organization Name
+                  Organization Name
                 </label>
                 <input
                   type='text'
@@ -114,7 +114,7 @@ const UpdateOrganizations = () => {
             <div className='col-lg-6 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='mobileNo' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Organization Mobile
+                   Organization Mobile
                 </label>
                 <input
                   type='tel'
@@ -129,7 +129,7 @@ const UpdateOrganizations = () => {
             <div className='col-lg-6 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='email' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Organization Email
+                   Organization Email
                 </label>
                 <input
                   type='email'
@@ -144,7 +144,7 @@ const UpdateOrganizations = () => {
             <div className='col-lg-6 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='address' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Organization Address
+                   Organization Address
                 </label>
                 <input
                   type='text'

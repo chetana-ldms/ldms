@@ -70,7 +70,7 @@ const AddOrganizations = () => {
     <div className='card'>
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
-          <span className='card-label fw-bold fs-3 mb-1'>Configure New Organization</span>
+          <span className='card-label fw-bold fs-3 mb-1'>Add New Organization</span>
         </h3>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
@@ -86,7 +86,7 @@ const AddOrganizations = () => {
             <div className='col-lg-6 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='orgName' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Organization Name
+                  Organization Name
                 </label>
                 <input
                   type='text'
@@ -101,7 +101,7 @@ const AddOrganizations = () => {
             <div className='col-lg-6 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='mobileNo' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Organization Mobile
+                 Organization Mobile
                 </label>
                 <input
                   type='tel'
@@ -117,7 +117,7 @@ const AddOrganizations = () => {
             <div className='col-lg-6 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='email' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Organization Email
+                 Organization Email
                 </label>
                 <input
                   type='email'
@@ -132,7 +132,7 @@ const AddOrganizations = () => {
             <div className='col-lg-6 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='address' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Organization Address
+                 Organization Address
                 </label>
                 <input
                   type='text'

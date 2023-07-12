@@ -27,6 +27,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
   });
   const checkboxRef = useRef(null);
   const [incidentHistory, setIncidentHistory] = useState([]);
+  console.log(incidentHistory, "incidentHistory")
   const [alertsList, setAlertsList] = useState({});
   const [ldp_security_user, setldp_security_user] = useState([]);
   const [incidentData, setIncidentData] = useState({
@@ -569,55 +570,6 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                         <hr className="my-0" />
                       </td>
                     </tr>
-
-                    {/* <tr className="bg-gray-100">
-                      <td className="min-w-80px p-2 pb-8">
-                        <div className="d-flex justify-content-between bd-highlight">
-                          <div className="p-1 bd-highlight fw-bold fs-12">
-                            <div className="text-dark mb-1">
-                              <a href="#" className="text-dark">
-                                <span className="fw-bold">
-                                  CheckPoint - Malware Traffic
-                                </span>
-                              </a>
-                            </div>
-                          </div>
-                          <div className="p-1 bd-highlight">
-                            <a
-                              href="#"
-                              className="btn btn-sm btn-icon btn-light btn-secondary mx-1"
-                            >
-                              <i className="fa-solid fa-trash"></i>
-                            </a>
-                            <a
-                              href="#"
-                              className="btn btn-sm btn-icon btn-light btn-secondary mx-1"
-                            >
-                              <i className="fa-solid fa-arrow-down"></i>
-                            </a>
-                          </div>
-                        </div>
-
-                        <div className="d-flex justify-content-between align-text-left bd-highlight">
-                          <div className="p-1 bd-highlight fw-bold fs-12">
-                            Suspicious Rate
-                          </div>
-                          <div className="p-1 bd-highlight fw-bold fs-12">
-                            <i className="fa-solid fa-circle-check text-success"></i>{" "}
-                            2
-                          </div>
-                        </div>
-                        <div className="d-flex justify-content-between align-text-left bd-highlight">
-                          <div className="p-1 bd-highlight fw-bold fs-12">
-                            Detected date
-                          </div>
-                          <div className="p-1 bd-highlight fs-12">
-                            5/04/2023, 12:15 PM
-                          </div>
-                        </div>
-                        <hr className="my-0" />
-                      </td>
-                    </tr> */}
                   </tbody>
                 </table>
               </div>
@@ -657,7 +609,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                           .join(":");
 
                         return (
-                          <div className="timeline-item" key={item.id}>
+                          <div className="timeline-item" key={item.incidentId}>
                             <div className="timeline-label fw-bold text-gray-800 fs-6">
                               <span style={{ fontSize: "9px" }}>
                                 {formattedDate}
@@ -665,6 +617,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                               <span style={{ color: "blue", fontSize: "10px" }}>
                                 {formattedTime}
                               </span>
+                              <p className="text-muted fs-11 fw-normal">
+                                {item.createdUser}
+                              </p>
                             </div>
 
                             <div className="timeline-badge">

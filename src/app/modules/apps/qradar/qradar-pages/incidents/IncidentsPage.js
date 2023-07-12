@@ -236,7 +236,7 @@ const IncidentsPage = () => {
                               className={`incident-section${
                                 selectedIncident === item ? " selected" : ""
                               }`}
-                              key={item.id}
+                              key={item.incidentID}
                               onClick={() => handleIncidentClick(item)}
                             >
                               <div className="row">

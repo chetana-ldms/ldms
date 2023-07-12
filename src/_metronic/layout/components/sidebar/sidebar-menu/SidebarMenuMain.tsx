@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-no-target-blank */
 import React from 'react'
-import {useIntl} from 'react-intl'
-import {KTSVG} from '../../../../helpers'
-import {SidebarMenuItemWithSub} from './SidebarMenuItemWithSub'
-import {SidebarMenuItem} from './SidebarMenuItem'
+import { useIntl } from 'react-intl'
+import { KTSVG } from '../../../../helpers'
+import { SidebarMenuItemWithSub } from './SidebarMenuItemWithSub'
+import { SidebarMenuItem } from './SidebarMenuItem'
 
 const SidebarMenuMain = () => {
   const intl = useIntl()
@@ -41,7 +41,7 @@ const SidebarMenuMain = () => {
         fontIcon='bi-archive'
         icon='/media/icons/duotune/general/gen011.svg'
       />
-        {/* <SidebarMenuItem
+      {/* <SidebarMenuItem
         to='/qradar/incidentsPagev2'
         title='Incidentsv1'
         fontIcon='bi-archive'
@@ -60,26 +60,21 @@ const SidebarMenuMain = () => {
         icon='/media/icons/duotune/coding/cod001.svg'
         title='Configuration'
       >
-        <SidebarMenuItem
-          hasBullet={true}
-          to='/qradar/tool-type-actions/list'
-          title='Tool Type Actions'
-        />
+
+
         <SidebarMenuItem hasBullet={true} to='/qradar/organizations/list' title='Organizations' />
         <SidebarMenuItem hasBullet={true} to='/qradar/users-data/list' title='Users' />
+        <SidebarMenuItem hasBullet={true} to='/qradar/organization-tools/list' title='Organization Tools' />
         <SidebarMenuItem hasBullet={true} to='/qradar/ldp-tools/list' title='LDP Tools' />
-        <SidebarMenuItem hasBullet={true} to='/qradar/tool-actions/list' title='Tool Actions' />
-        <SidebarMenuItem
-          hasBullet={true}
-          to='/qradar/organization-tools/list'
-          title='Organization Tools'
-        />
         <SidebarMenuItem hasBullet={true} to='/qradar/rules-engine/list' title='Rules' />
         <SidebarMenuItem hasBullet={true} to='/qradar/rules-actions/list' title='Rules Actions' />
+        <SidebarMenuItem hasBullet={true} to='/qradar/tool-actions/list' title='Tool Actions' />
+        <SidebarMenuItem hasBullet={true} to='/qradar/tool-type-actions/list' title='Tool Type Actions' />
+        <SidebarMenuItem hasBullet={true} to='/qradar/roles-data/list' title='Roles' />
         <SidebarMenuItem hasBullet={true} to='/qradar/master-data/list' title='Master Data' />
 
         {/* <SidebarMenuItem hasBullet={true} to='/qradar/master-data/list' title='Master Data' /> */}
-        <SidebarMenuItem hasBullet={true} to='/qradar/roles-data/list' title='Roles' />
+       
       </SidebarMenuItemWithSub>
 
       <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen004.svg' title='Demo'>
@@ -98,7 +93,7 @@ const SidebarMenuMain = () => {
         fontIcon='bi-archive'
         icon='/media/icons/duotune/general/gen017.svg'
       />
-  
+
 
       <SidebarMenuItem
         icon='/media/icons/duotune/communication/com006.svg'
@@ -109,4 +104,4 @@ const SidebarMenuMain = () => {
   )
 }
 
-export {SidebarMenuMain}
+export { SidebarMenuMain }
