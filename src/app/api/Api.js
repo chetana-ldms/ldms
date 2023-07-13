@@ -93,7 +93,6 @@ export const fetchUpdateAlert = async (data) => {
     console.log(error);
   }
 };
-
 export const fetchUpdatSetAlertIrrelavantStatuseAlert = async (data) => {
   try {
     const response = await fetch(`${setAlertIrrelevantStatusUrl}`, {
@@ -148,7 +147,6 @@ export const fetchOrganizationDelete = async (data) => {
     console.log(error);
   }
 };
-
 export const fetchLDPToolsDelete = async (data) => {
   try {
     const response = await fetch(`${ldpToolsDeleteUrl}`, {
@@ -167,7 +165,6 @@ export const fetchLDPToolsDelete = async (data) => {
     console.log(error);
   }
 };
-
 export const fetchOrganizationToolsDelete = async (data) => {
   try {
     const response = await fetch(`${organizationToolsDeleteUrl}`, {

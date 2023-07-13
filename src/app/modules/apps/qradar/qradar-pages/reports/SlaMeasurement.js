@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 import CanvasJSReact from "./assets/canvasjs.react";
+import { fetchSLAMeasurementSummeryUrl } from "../../../../../api/ReportApi";
 
 function SlaMeasurement() {
+  const orgId = Number(sessionStorage.getItem('orgId'))
   const [alertData, setAlertData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -186,23 +188,57 @@ function SlaMeasurement() {
     ],
   };
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         "http://115.110.192.133:502/api/Reports/v1/SLAMeasurementSummery",
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({
+  //             orgId: 1,
+  //             alertFromDate: "2022-04-20T14:45:49.587Z",
+  //             alertToDate: "2023-04-20T14:45:49.587Z",
+  //           }),
+  //         }
+  //       );
+
+  //       if (!response.ok) {
+  //         const errorData = await response.json();
+  //         throw new Error(
+  //           `Network response was not ok: ${response.status} - ${errorData.message}`
+  //         );
+  //       }
+
+  //       const { data } = await response.json(); // destructure the 'data' property from the response object
+  //       setAlertData(data);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       setError(error.message);
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+
   useEffect(() => {
     const fetchData = async () => {
+      const toDate = new Date().toISOString(); // Get the current date and time
+      const fromDate = new Date();
+      fromDate.setFullYear(fromDate.getFullYear() - 1); // Subtract 1 year from the current year
+      const fromDateISO = fromDate.toISOString(); // Convert the fromDate to ISO string format
+  
+      const requestData = {
+        orgId,
+        alertFromDate: fromDateISO,
+        alertToDate: toDate,
+      };
       try {
-        const response = await fetch(
-          "http://115.110.192.133:502/api/Reports/v1/SLAMeasurementSummery",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              orgId: 1,
-              alertFromDate: "2022-04-20T14:45:49.587Z",
-              alertToDate: "2023-04-20T14:45:49.587Z",
-            }),
-          }
-        );
+        const response = await fetchSLAMeasurementSummeryUrl(requestData)
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -222,8 +258,6 @@ function SlaMeasurement() {
 
     fetchData();
   }, []);
-
-  console.log(alertData); // Log the alertData to the console
 
   //Date range
   const today = new Date();

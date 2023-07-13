@@ -104,7 +104,12 @@ const UserData = () => {
           </tbody>
         </table>
 
-        {users.length === 0 && (userID !== 1 && userID !== 2) && (
+        {(userID !== 1 && userID !== 2) && (
+          <div className="text-center mt-4">
+            <p>No data found.</p>
+          </div>
+        )}
+         {users.length === 0 &&  (
           <div className="text-center mt-4">
             <p>No data found.</p>
           </div>
