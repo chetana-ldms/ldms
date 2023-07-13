@@ -387,9 +387,8 @@ const AlertsPage = () => {
               <div className="m-0">
                 <a
                   href="#"
-                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${
-                    !isCheckboxSelected && "disabled"
-                  }`}
+                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${!isCheckboxSelected && "disabled"
+                    }`}
                   data-kt-menu-trigger="click"
                   data-kt-menu-placement="bottom-end"
                   onClick={onActionsClick}
@@ -1097,7 +1096,7 @@ const AlertsPage = () => {
                             {/* check incident creation */}
                             <span>
                               {item.status == "New" &&
-                              item.alertIncidentMappingId == 0 ? (
+                                item.alertIncidentMappingId == 0 ? (
                                 <i
                                   className="fa fa-circle-exclamation incident-icon orange"
                                   title="Alert"
@@ -1136,8 +1135,26 @@ const AlertsPage = () => {
                         <td>{item.status}</td>
                         <td>
                           <span className="text-dark text-hover-primary d-block mb-1">
-                            {item.detectedtime}
+                            <span>
+                              {new Date(item.detectedtime).toLocaleDateString(undefined, {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                              }).replace(/-/g, '/')}
+                            </span>
+                            <br />
+                            <span>
+                              {new Date(item.detectedtime).toLocaleTimeString(undefined, {
+                                hour: 'numeric',
+                                minute: 'numeric',
+                                hour12: true,
+                              })}
+                            </span>
+
                           </span>
+
+
+
                         </td>
                         <td className="text-dark text-hover-primary fs-8 alert-name">
                           <span title={item.name}>{item.name}</span>
@@ -1179,7 +1196,7 @@ const AlertsPage = () => {
                               {item.status}
                               <br />
                               <b>Detected Date/Time : </b>
-                              {item.detectedtime}
+                              {new Date(item.detectedtime).toLocaleString()}
                               <br />
                               <b>Observable Tag : </b>
                               {item.observableTag} <br />

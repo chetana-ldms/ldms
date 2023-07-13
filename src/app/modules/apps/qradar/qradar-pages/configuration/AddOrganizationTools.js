@@ -157,7 +157,7 @@ const AddOrganizationTools = () => {
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='orgID' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Organization
+                   Organization
                 </label>
                 <select
                   className='form-select form-select-solid'
@@ -180,7 +180,7 @@ const AddOrganizationTools = () => {
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-10'>
                 <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Tool Type
+                   Tool Type
                 </label>
                 <select
                   className='form-select form-select-solid'
@@ -227,7 +227,7 @@ const AddOrganizationTools = () => {
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='authKey' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Authentication Key
+                   Authentication Key
                 </label>
                 <input
                   type='text'
@@ -242,7 +242,7 @@ const AddOrganizationTools = () => {
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='apiUrl' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter API URL
+                   API URL
                 </label>
                 <input
                   type='text'

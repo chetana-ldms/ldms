@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import CanvasJSReact from './assets/canvasjs.react'
+import { fetchOpenIncidentsSummeryUrl } from '../../../../../api/ReportApi'
 
 function OpenIncidentSummary() {
+  const orgId = Number(sessionStorage.getItem('orgId'))
   const [alertData, setAlertData] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -51,42 +53,73 @@ function OpenIncidentSummary() {
     ],
   }
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         'http://115.110.192.133:502/api/Reports/v1/OpenIncidentsSummery',
+  //         {
+  //           method: 'POST',
+  //           headers: {
+  //             'Content-Type': 'application/json',
+  //           },
+  //           body: JSON.stringify({
+  //             orgId: 1,
+  //             incidentFromDate: '2022-04-11T14:07:52.759Z',
+  //             incidentToDate: '2023-04-11T14:07:52.759Z',
+  //           }),
+  //         }
+  //       )
+
+  //       if (!response.ok) {
+  //         const errorData = await response.json()
+  //         throw new Error(`Network response was not ok: ${response.status} - ${errorData.message}`)
+  //       }
+
+  //       const {data} = await response.json() // destructure the 'data' property from the response object
+  //       setAlertData(data)
+  //       setLoading(false)
+  //     } catch (error) {
+  //       setError(error.message)
+  //       setLoading(false)
+  //     }
+  //   }
+
+  //   fetchData()
+  // }, [])
   useEffect(() => {
     const fetchData = async () => {
+      const toDate = new Date().toISOString(); // Get the current date and time
+      const fromDate = new Date();
+      fromDate.setFullYear(fromDate.getFullYear() - 1); // Subtract 1 year from the current year
+      const fromDateISO = fromDate.toISOString(); // Convert the fromDate to ISO string format
+
+      const requestData = {
+        orgId,
+        incidentFromDate: fromDateISO,
+        incidentToDate: toDate,
+      };
       try {
-        const response = await fetch(
-          'http://115.110.192.133:502/api/Reports/v1/OpenIncidentsSummery',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              orgId: 1,
-              incidentFromDate: '2022-04-11T14:07:52.759Z',
-              incidentToDate: '2023-04-11T14:07:52.759Z',
-            }),
-          }
-        )
+        const response = await fetchOpenIncidentsSummeryUrl(requestData)
 
         if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(`Network response was not ok: ${response.status} - ${errorData.message}`)
+          const errorData = await response.json();
+          throw new Error(
+            `Network response was not ok: ${response.status} - ${errorData.message}`
+          );
         }
 
-        const {data} = await response.json() // destructure the 'data' property from the response object
-        setAlertData(data)
-        setLoading(false)
+        const { data } = await response.json(); // destructure the 'data' property from the response object
+        setAlertData(data);
+        setLoading(false);
       } catch (error) {
-        setError(error.message)
-        setLoading(false)
+        setError(error.message);
+        setLoading(false);
       }
-    }
+    };
 
-    fetchData()
-  }, [])
-
-  console.log(alertData) // Log the alertData to the console
+    fetchData();
+  }, []);
 
   return (
     <div>

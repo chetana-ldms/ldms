@@ -229,9 +229,8 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
             <ul className="nav nav-tabs nav-line-tabs mb-5 fs-8">
               <li className="nav-item">
                 <a
-                  className={`nav-link ${
-                    activeTab === "general" ? "active" : ""
-                  }`}
+                  className={`nav-link ${activeTab === "general" ? "active" : ""
+                    }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_1"
                   onClick={() => setActiveTab("general")}
@@ -241,9 +240,8 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${
-                    activeTab === "alerts" ? "active" : ""
-                  }`}
+                  className={`nav-link ${activeTab === "alerts" ? "active" : ""
+                    }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_2"
                   onClick={() => setActiveTab("alerts")}
@@ -253,9 +251,8 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${
-                    activeTab === "playbooks" ? "active" : ""
-                  }`}
+                  className={`nav-link ${activeTab === "playbooks" ? "active" : ""
+                    }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_3"
                   onClick={() => setActiveTab("playbooks")}
@@ -265,9 +262,8 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${
-                    activeTab === "observables" ? "active" : ""
-                  }`}
+                  className={`nav-link ${activeTab === "observables" ? "active" : ""
+                    }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_4"
                   onClick={() => setActiveTab("observables")}
@@ -277,9 +273,8 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${
-                    activeTab === "timeline" ? "active" : ""
-                  }`}
+                  className={`nav-link ${activeTab === "timeline" ? "active" : ""
+                    }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_5"
                   onClick={() => setActiveTab("timeline")}
@@ -496,8 +491,18 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="badge text-black fw-bold">
-                      {createdDate}
+                      {new Date(createdDate).toLocaleDateString(navigator.language, {
+                        month: "2-digit",
+                        day: "2-digit",
+                        year: "numeric"
+                      })}
+                      {" "}
+                      {new Date(createdDate).toLocaleTimeString(navigator.language, {
+                        hour: "numeric",
+                        minute: "numeric"
+                      })}
                     </div>
+
                   </div>
                 </div>
 
@@ -507,7 +512,16 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="badge text-black fw-bold">
-                      {modifiedDate}
+                      {new Date(modifiedDate).toLocaleDateString(navigator.language, {
+                        month: "2-digit",
+                        day: "2-digit",
+                        year: "numeric"
+                      })}
+                      {" "}
+                      {new Date(modifiedDate).toLocaleTimeString(navigator.language, {
+                        hour: "numeric",
+                        minute: "numeric"
+                      })}
                     </div>
                   </div>
                 </div>
@@ -564,7 +578,20 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                             Detected date
                           </div>
                           <div className="p-1 bd-highlight fs-12">
-                            {alertsList?.detectedtime}
+                            {alertsList?.detectedtime && (
+                              <div className="badge text-black fw-bold">
+                                {new Date(alertsList.detectedtime).toLocaleDateString(navigator.language, {
+                                  month: "2-digit",
+                                  day: "2-digit",
+                                  year: "numeric"
+                                })}
+                                {" "}
+                                {new Date(alertsList.detectedtime).toLocaleTimeString(navigator.language, {
+                                  hour: "numeric",
+                                  minute: "numeric"
+                                })}
+                              </div>
+                            )}
                           </div>
                         </div>
                         <hr className="my-0" />
@@ -606,16 +633,21 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                     {incidentHistory && incidentHistory.length > 0 ? (
                       incidentHistory.map((item) => {
                         const [_date, time] = item.historyDate.split("T");
-                        const formattedDate = _date;
-                        const formattedTime = time
-                          .split(":")
-                          .slice(0, 2)
-                          .join(":");
+                        const formattedDate = new Date(_date).toLocaleDateString(navigator.language, {
+                          month: "2-digit",
+                          day: "2-digit",
+                          year: "numeric"
+                        });
+                        const formattedTime = new Date(`2000-01-01T${time}`).toLocaleTimeString(navigator.language, {
+                          hour: "numeric",
+                          minute: "numeric",
+                          hour12: true
+                        });
 
                         return (
                           <div className="timeline-item" key={item.incidentId}>
                             <div className="timeline-label fw-bold text-gray-800 fs-6">
-                              <p>{formattedDate}</p>{" "}
+                              <p>{formattedDate}</p>
                               <p className="time">{formattedTime}</p>
                               <p className="text-muted">{item.createdUser}</p>
                             </div>
@@ -634,6 +666,8 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                     ) : (
                       <div className="text-gray-500">No data found</div>
                     )}
+
+
                   </div>
                 </div>
               </div>

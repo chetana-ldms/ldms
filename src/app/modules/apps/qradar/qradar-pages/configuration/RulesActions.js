@@ -11,6 +11,7 @@ const RulesActions = () => {
   const orgId = Number(sessionStorage.getItem('orgId'));
   const [loading, setLoading] = useState(false)
   const [tools, setTools] = useState([])
+  console.log(tools, "tools")
   const { status } = useParams()
 
   const handleDelete = async (item) => {
@@ -91,8 +92,8 @@ const RulesActions = () => {
             {tools.map((item, index) => (
               <tr key={index} className='fs-12'>
                 <td>{item.ruleActionName}</td>
-                <td>{item.toolTypeID}</td>
-                <td>{item.toolID}</td>
+                <td>{item.toolTypeName}</td>
+                <td>{item.toolName}</td>
                 <td>
                   <Link
                     className='text-white'

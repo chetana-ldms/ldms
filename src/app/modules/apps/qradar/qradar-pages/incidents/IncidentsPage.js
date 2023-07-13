@@ -191,7 +191,7 @@ const IncidentsPage = () => {
                             data-dropdown-parent="#kt_menu_637dc885a14bb"
                             data-allow-clear="true"
                             ref={status}
-                            // onChange={handleStatusChange}
+                          // onChange={handleStatusChange}
                           >
                             <option value="">Select</option>
                             {statusDropDown.length > 0 &&
@@ -214,9 +214,8 @@ const IncidentsPage = () => {
                           data-dropdown-parent="#kt_menu_637dc885a14bb"
                           data-allow-clear="true"
                           ref={sortOption}
-                          // onChange={handleSortOptionChange}
                         >
-                          <option value="">Select</option>
+                         
                           {incidentSortOptions.length > 0 &&
                             incidentSortOptions.map((item) => (
                               <option key={item.dataID} value={item.dataID}>
@@ -233,9 +232,8 @@ const IncidentsPage = () => {
                         {incident && incident.length > 0 ? (
                           incident.map((item, index) => (
                             <div
-                              className={`incident-section${
-                                selectedIncident === item ? " selected" : ""
-                              }`}
+                              className={`incident-section${selectedIncident === item ? " selected" : ""
+                                }`}
                               key={item.incidentID}
                               onClick={() => handleIncidentClick(item)}
                             >
@@ -260,7 +258,16 @@ const IncidentsPage = () => {
                                   </div>
                                   <div className="pt-3 bd-highlight">
                                     <div className="badge text-black fw-normal">
-                                      {item.createdDate}
+                                      {new Date(item.createdDate).toLocaleDateString(navigator.language, {
+                                        month: "2-digit",
+                                        day: "2-digit",
+                                        year: "numeric"
+                                      })}
+                                      {" "}
+                                      {new Date(item.createdDate).toLocaleTimeString(navigator.language, {
+                                        hour: "numeric",
+                                        minute: "numeric"
+                                      })}
                                     </div>
                                   </div>
                                 </div>
