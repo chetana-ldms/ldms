@@ -215,8 +215,7 @@ const QA = ({ channelId, channelName }) => {
                     }}
                     style={{
                       display:
-                        createdUserId === 1 ||
-                        (createdUserId !== 1 && item.orgId === orgId)
+                        createdUserId === 1 
                           ? "inline-block"
                           : "none",
                     }}
@@ -227,6 +226,12 @@ const QA = ({ channelId, channelName }) => {
                     onClick={() => {
                       setSelectedQuestionId(item.questionId);
                       handleDeleteQuestion();
+                    }}
+                    style={{
+                      display:
+                        createdUserId === 1 
+                          ? "inline-block"
+                          : "none",
                     }}
                   />
                 </span>
@@ -243,6 +248,12 @@ const QA = ({ channelId, channelName }) => {
                         setSelectedAnswerId(item.answerId);
                         setShowEditModal(true);
                       }}
+                      style={{
+                        display:
+                          createdUserId === 1 
+                            ? "inline-block"
+                            : "none",
+                      }}
                     />
                     <i
                       className="fa fa-trash"
@@ -252,6 +263,12 @@ const QA = ({ channelId, channelName }) => {
                         handleDeleteAnswer();
                         // setShowDeleteModal(true);
                       }}
+                      style={{
+                        display:
+                          createdUserId === 1 
+                            ? "inline-block"
+                            : "none",
+                      }} 
                     />
                   </span>
                 </p>

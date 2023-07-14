@@ -645,7 +645,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                         });
 
                         return (
-                          <div className="timeline-item" key={item.incidentId}>
+                          <div className="timeline-item" >
                             <div className="timeline-label fw-bold text-gray-800 fs-6">
                               <p>{formattedDate}</p>
                               <p className="time">{formattedTime}</p>
