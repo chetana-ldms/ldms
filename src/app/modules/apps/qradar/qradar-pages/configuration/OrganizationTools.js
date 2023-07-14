@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { UsersListLoading } from '../components/loading/UsersListLoading'
-import { notify, notifyFail } from '../components/notification/Notification'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import { fetchOrganizationToolsDelete } from "../../../../../api/Api"
-import axios from 'axios'
-import { fetchOrganizationToolsUrl } from '../../../../../api/ConfigurationApi'
+import React, { useState, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { notify, notifyFail } from '../components/notification/Notification';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { fetchOrganizationToolsDelete } from "../../../../../api/Api";
+import axios from 'axios';
+import { fetchOrganizationToolsUrl } from '../../../../../api/ConfigurationApi';
 
 const OrganizationTools = () => {
-  const [loading, setLoading] = useState(false)
-  const [tools, setTools] = useState([])
-  console.log(tools, "tools3333")
-  const { status } = useParams()
+  const userID = Number(sessionStorage.getItem('userId'));
+  const orgId = Number(sessionStorage.getItem('orgId'));
+  const [tools, setTools] = useState([]);
+
+  const { status } = useParams();
 
   const handleDelete = async (item) => {
     console.log(item, "item")
@@ -24,10 +24,10 @@ const OrganizationTools = () => {
       deletedUserId
     }
     try {
-      const responce = await  fetchOrganizationToolsDelete(data);
+      const responce = await fetchOrganizationToolsDelete(data);
       if (responce.isSuccess) {
         notify('Data Deleted');
-      }else{
+      } else {
         notifyFail("Data not Deleted")
       }
       await reload();
@@ -35,20 +35,19 @@ const OrganizationTools = () => {
       console.log(error);
     }
   }
+
   const reload = async () => {
     try {
-      setLoading(true);
       const response = await fetchOrganizationToolsUrl();
       setTools(response);
     } catch (error) {
       console.log(error);
-    } finally {
-      setLoading(false);
     }
   };
+
   useEffect(() => {
     reload();
-  }, [])
+  }, []);
 
   return (
     <div className='card'>
@@ -59,9 +58,15 @@ const OrganizationTools = () => {
         </h3>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
-            <Link to='/qradar/organization-tools/add' className='btn btn-danger btn-small'>
-              Add
-            </Link>
+            {userID === 1 ? (
+              <Link to='/qradar/organization-tools/add' className='btn btn-danger btn-small'>
+                Add
+              </Link>
+            ) : (
+              <button className='btn btn-danger btn-small' disabled>
+                Add
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -79,32 +84,72 @@ const OrganizationTools = () => {
             </tr>
           </thead>
           <tbody>
-            {loading && <UsersListLoading />}
-            {tools.map((item, index) => (
-              <tr key={index} className='fs-12'>
-                <td>{index + 1}</td>
-                <td className='fw-bold'>{item.toolName}</td>
-                <td>{item.orgName}</td>
-                <td className='text-warning fw-bold'>{item.authKey}</td>
-                <td style={{ maxWidth: '250px' }}>{item.apiUrl}</td>
-                <td>
-                  <button className='btn btn-primary btn-small'>
-                    <Link
-                      className='text-white'
-                      to={`/qradar/organization-tools/update/${item.orgToolID}`}
-                    >
-                      Update
-                    </Link>
-                  </button>
-                  <button className="btn btn-sm btn-danger btn-small ms-5" style={{ fontSize: '14px' }} onClick={() => { handleDelete(item) }}> Delete</button>
+            {tools.length === 0 ? (
+              <tr>
+                <td colSpan='6' className='text-center'>
+                  No data found.
                 </td>
               </tr>
-            ))}
+            ) : (
+              tools.map((item, index) => {
+                // Check if the userID is 1 or the item belongs to the current user (userID === 2)
+                const shouldDisplay = userID === 1 || item.orgID === orgId;
+
+                if (shouldDisplay) {
+                  return (
+                    <tr key={index} className='fs-12'>
+                      <td>{index + 1}</td>
+                      <td className='fw-bold'>{item.toolName}</td>
+                      <td>{item.orgName}</td>
+                      <td className='text-warning fw-bold'>{item.authKey}</td>
+                      <td style={{ maxWidth: '250px' }}>{item.apiUrl}</td>
+                      <td>
+                        {userID === 1 ? (
+                          <button className='btn btn-primary btn-small'>
+                            <Link
+                              className='text-white'
+                              to={`/qradar/organization-tools/update/${item.orgToolID}`}
+                            >
+                              Update
+                            </Link>
+                          </button>
+                        ) : (
+                          <button className='btn btn-primary btn-small' disabled>
+                            Update
+                          </button>
+                        )}
+                        {userID === 1 ? (
+                          <button
+                            className='btn btn-sm btn-danger btn-small ms-5'
+                            style={{ fontSize: '14px' }}
+                            onClick={() => {
+                              handleDelete(item);
+                            }}
+                          >
+                            Delete
+                          </button>
+                        ) : (
+                          <button
+                            className='btn btn-sm btn-danger btn-small ms-5'
+                            style={{ fontSize: '14px' }}
+                            disabled
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                }
+
+                return null; // Skip rendering if the condition is not met
+              })
+            )}
           </tbody>
         </table>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export { OrganizationTools }
+export { OrganizationTools };

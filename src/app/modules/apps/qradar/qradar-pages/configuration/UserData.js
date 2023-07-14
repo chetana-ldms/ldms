@@ -56,9 +56,15 @@ const UserData = () => {
         </h3>
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">
-            <Link to="/qradar/users-data/add" className="btn btn-danger btn-small">
-              Add New User
-            </Link>
+            {userID === 1 ? (
+              <Link to="/qradar/users-data/add" className="btn btn-danger btn-small">
+                Add New User
+              </Link>
+            ) : (
+              <button className='btn btn-danger btn-small' disabled>
+                Add New User
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -82,9 +88,16 @@ const UserData = () => {
                     <td>{item.name}</td>
                     <td className="text-warning fw-bold">{item.roleName}</td>
                     <td>
-                      <Link className="text-white" to={`/qradar/users-data/update/${item.userID}`}>
-                        <button className="btn btn-primary btn-small">Update</button>
-                      </Link>
+                      {userID === 1 ? (
+                        <Link className="text-white" to={`/qradar/users-data/update/${item.userID}`}>
+                          <button className="btn btn-primary btn-small">Update</button>
+                        </Link>
+                      ) : (
+                        <button className='btn btn-primary btn-small' disabled>
+                          Update
+                        </button>
+                      )}
+                        {userID === 1 ? (
                       <button
                         className="btn btn-sm btn-danger btn-small ms-5"
                         style={{ fontSize: '14px' }}
@@ -94,6 +107,15 @@ const UserData = () => {
                       >
                         Delete
                       </button>
+                       ) : (
+                        <button
+                        className='btn btn-sm btn-danger btn-small ms-5'
+                        style={{ fontSize: '14px' }}
+                        disabled
+                      >
+                        Delete
+                      </button>
+                    )}
                     </td>
                   </tr>
                 );
@@ -109,7 +131,7 @@ const UserData = () => {
             <p>No data found.</p>
           </div>
         )}
-         {users.length === 0 &&  (
+        {users.length === 0 && (
           <div className="text-center mt-4">
             <p>No data found.</p>
           </div>

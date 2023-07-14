@@ -32,6 +32,7 @@ import {
   fetchOrganizations,
   fetchUserActionsByUser,
 } from "../../api/dashBoardApi";
+import "./Dashboard.css";
 
 const DashboardWrapper = () => {
   const userID = Number(sessionStorage.getItem("userId"));
@@ -51,6 +52,7 @@ const DashboardWrapper = () => {
   const [users, setUsers] = useState([]);
   console.log(users, "users");
   const [selectedFilter, setSelectedFilter] = useState(30);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState(1);
   function formatDateDiff(date) {
     const diffMs = new Date() - date;
@@ -61,7 +63,6 @@ const DashboardWrapper = () => {
     return `${days}d ${hours}h ${minutes}m`;
   }
 
-  console.log(selectedFilter, "selectedFilter");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -71,117 +72,125 @@ const DashboardWrapper = () => {
         console.log(error);
       }
     };
-
     fetchData();
   }, []);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // GetAlertsMostUsedTags
-        const mostUsedTagsResponse = await fetchGetAlertsMostUsedTags({
+
+  const fetchData = async () => {
+    try {
+      // GetAlertsMostUsedTags
+      const mostUsedTagsResponse = await fetchGetAlertsMostUsedTags({
+        orgID: selectedOrganization,
+        toolID: 0,
+        toolTypeID: 0,
+        userID: userID,
+        numberofDays: selectedFilter,
+      });
+      const mostUsedTagsData = mostUsedTagsResponse;
+      const mostUsedTags = mostUsedTagsData.mostUsedTags;
+      setUsers(mostUsedTags);
+
+      // UserActionsByUser
+      const userActionsResponse = await fetchUserActionsByUser({
+        userId: userID,
+        numberofDays: selectedFilter,
+      });
+      const userActionsData = userActionsResponse;
+      setUseractions(userActionsData);
+
+      // GetMyInternalIncidents
+      const myInternalIncidentsResponse = await fetchGetMyInternalIncidents({
+        userID: userID,
+        orgID: selectedOrganization,
+        numberofDays: selectedFilter,
+      });
+      const myInternalIncidentsData = myInternalIncidentsResponse;
+      setrecentIncidents(myInternalIncidentsData);
+
+      // GetUnAttendedIncidentsCount
+      const unattendedIncidentsCountResponse = await fetchGetUnAttendedIncidentsCount(
+        {
           orgID: selectedOrganization,
-          toolID: 0,
-          toolTypeID: 0,
+          toolID: 1,
+          toolTypeID: 1,
           userID: userID,
           numberofDays: selectedFilter,
-        });
-        const mostUsedTagsData = mostUsedTagsResponse;
-        const mostUsedTags = mostUsedTagsData.mostUsedTags;
-        setUsers(mostUsedTags);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+        }
+      );
+      const unattendedIncidentsCountData = unattendedIncidentsCountResponse;
+      setUnattendedIncidentcount(unattendedIncidentsCountData);
 
-    fetchData();
-  }, [selectedFilter, selectedOrganization]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // UserActionsByUser
-        const userActionsResponse = await fetchUserActionsByUser({
-          userId: userID,
-          numberofDays: selectedFilter,
-        });
-        const userActionsData = userActionsResponse;
-        setUseractions(userActionsData);
-
-        // GetMyInternalIncidents
-        const myInternalIncidentsResponse = await fetchGetMyInternalIncidents({
-          userID: userID,
+      // GetUnAttendedAletsCount
+      const unattendedAlertsCountResponse = await fetchGetUnAttendedAletsCount(
+        {
           orgID: selectedOrganization,
+          toolID: 1,
+          toolTypeID: 1,
+          userID: userID,
           numberofDays: selectedFilter,
-        });
-        const myInternalIncidentsData = myInternalIncidentsResponse;
-        setrecentIncidents(myInternalIncidentsData);
+        }
+      );
+      const unattendedAlertsCountData = unattendedAlertsCountResponse;
+      setUnattendedAlertcount(unattendedAlertsCountData);
 
-        // GetUnAttendedIncidentsCount
-        const unattendedIncidentsCountResponse = await fetchGetUnAttendedIncidentsCount(
-          {
-            orgID: selectedOrganization,
-            toolID: 1,
-            toolTypeID: 1,
-            userID: userID,
-            numberofDays: selectedFilter,
-          }
-        );
-        const unattendedIncidentsCountData = unattendedIncidentsCountResponse;
-        setUnattendedIncidentcount(unattendedIncidentsCountData);
+      // GetFalsePositiveAlertsCount
+      const falsePositiveAlertsCountResponse = await fetchGetFalsePositiveAlertsCount(
+        {
+          orgID: selectedOrganization,
+          toolID: 1,
+          toolTypeID: 1,
+          userID: userID,
+          numberofDays: selectedFilter,
+          positiveAnalysisID: 1,
+        }
+      );
+      const falsePositiveAlertsCountData = falsePositiveAlertsCountResponse;
+      setFalsePAcount(falsePositiveAlertsCountData);
 
-        // GetUnAttendedAletsCount
-        const unattendedAlertsCountResponse = await fetchGetUnAttendedAletsCount(
-          {
-            orgID: selectedOrganization,
-            toolID: 1,
-            toolTypeID: 1,
-            userID: userID,
-            numberofDays: selectedFilter,
-          }
-        );
-        const unattendedAlertsCountData = unattendedAlertsCountResponse;
-        setUnattendedAlertcount(unattendedAlertsCountData);
+      // GetAlertsResolvedMeanTime
+      const alertsResolvedMeanTimeResponse = await fetchGetAlertsResolvedMeanTime(
+        {
+          orgID: selectedOrganization,
+          toolID: 1,
+          toolTypeID: 1,
+          userID: userID,
+          numberofDays: selectedFilter,
+        }
+      );
+      const alertsResolvedMeanTimeData = alertsResolvedMeanTimeResponse;
+      setAlertsResolvedMeanTime(alertsResolvedMeanTimeData);
 
-        // GetFalsePositiveAlertsCount
-        const falsePositiveAlertsCountResponse = await fetchGetFalsePositiveAlertsCount(
-          {
-            orgID: selectedOrganization,
-            toolID: 1,
-            toolTypeID: 1,
-            userID: userID,
-            numberofDays: selectedFilter,
-            positiveAnalysisID: 1,
-          }
-        );
-        const falsePositiveAlertsCountData = falsePositiveAlertsCountResponse;
-        setFalsePAcount(falsePositiveAlertsCountData);
+      // MasterData
+      const masterDataResponse = await fetchMasterData({
+        maserDataType: "alert_status",
+      });
+      const masterData = masterDataResponse.masterData;
+      setAlertstatus(masterData);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoaded(true);
+    }
+  };
 
-        // GetAlertsResolvedMeanTime
-        const alertsResolvedMeanTimeResponse = await fetchGetAlertsResolvedMeanTime(
-          {
-            orgID: selectedOrganization,
-            toolID: 1,
-            toolTypeID: 1,
-            userID: userID,
-            numberofDays: selectedFilter,
-          }
-        );
-        const alertsResolvedMeanTimeData = alertsResolvedMeanTimeResponse;
-        setAlertsResolvedMeanTime(alertsResolvedMeanTimeData);
-        // MasterData
-        const masterDataResponse = await fetchMasterData({
-          maserDataType: "alert_status",
-        });
-        const masterData = masterDataResponse.masterData;
-        setAlertstatus(masterData);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoaded(true);
-      }
+  useEffect(() => {
+    fetchData(); // Fetch initial data
+
+    const interval = setInterval(() => {
+      fetchData(); // Fetch data every 5 minutes
+    }, 5 * 60 * 1000); // 5 minutes in milliseconds
+
+    return () => {
+      clearInterval(interval); // Clear the interval when the component unmounts
     };
-
-    fetchData();
   }, [selectedFilter, selectedOrganization]);
+
+  const handleRefreshData = (e) => {
+    e.preventDefault(); // Prevent the default behavior of the anchor tag
+    setIsLoaded(false); // Reset the loaded state to false
+    setIsRefreshing(true);
+    fetchData(); // Fetch the data again
+    setTimeout(() => setIsRefreshing(false), 2000);
+  };
 
   return (
     <div className="dashboard-wrapper">
@@ -250,8 +259,8 @@ const DashboardWrapper = () => {
         </div>
         <div className="col-lg-5 fs-11 lh-40 fc-gray text-right ds-reload">
           Dashboard is automatically refreshing every 5 minutes{" "}
-          <a href="">
-            <i className="fa fa-refresh" />
+          <a href="" onClick={handleRefreshData}>
+          <i className={`fa fa-refresh ${isRefreshing ? "rotate" : ""}`} />
           </a>
         </div>
       </div>
