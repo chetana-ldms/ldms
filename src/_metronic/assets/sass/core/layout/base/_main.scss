@@ -203,12 +203,15 @@ form{
 //Dashboard CSS
 .header-filter {
   .form-select {
-    padding: 4px 10px;
+    // padding: 4px 10px;
     font-size: 13px;
     border: 1px solid #ccc !important;
     background-color: white !important;
     &:focus {
       border: 1px solid #ccc !important;
+    }
+    .form-select-sm{
+      padding: 4px 10px;
     }
   }
 }
