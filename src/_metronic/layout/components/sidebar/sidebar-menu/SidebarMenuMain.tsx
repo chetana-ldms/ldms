@@ -7,6 +7,7 @@ import { SidebarMenuItem } from './SidebarMenuItem'
 
 const SidebarMenuMain = () => {
   const intl = useIntl()
+  const userID = Number(sessionStorage.getItem('userId'));
 
   return (
     <>
@@ -74,7 +75,7 @@ const SidebarMenuMain = () => {
         <SidebarMenuItem hasBullet={true} to='/qradar/master-data/list' title='Master Data' />
 
         {/* <SidebarMenuItem hasBullet={true} to='/qradar/master-data/list' title='Master Data' /> */}
-       
+
       </SidebarMenuItemWithSub>
 
       <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen004.svg' title='Demo'>
@@ -95,11 +96,13 @@ const SidebarMenuMain = () => {
       />
 
 
-      <SidebarMenuItem
-        icon='/media/icons/duotune/communication/com006.svg'
-        to='/qradar/profile'
-        title='Users Profile'
-      />
+      {userID === 1 && (
+        <SidebarMenuItem
+          icon='/media/icons/duotune/communication/com006.svg'
+          to='/qradar/profile'
+          title='Users Profile'
+        />
+      )}
     </>
   )
 }

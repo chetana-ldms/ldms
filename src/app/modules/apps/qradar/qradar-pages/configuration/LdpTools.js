@@ -58,20 +58,6 @@ const LdpTools = () => {
         </div>
       </div>
       <div className='card-body'>
-        {/* {status === 'updated' && (
-          <div class='alert alert-success d-flex align-items-center p-5'>
-            <div class='d-flex flex-column'>
-              <h4 class='mb-1 text-dark'>Data Saved</h4>
-            </div>
-            <button
-              type='button'
-              class='position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto'
-              data-bs-dismiss='alert'
-            >
-              X<span class='svg-icon svg-icon-2x svg-icon-light'>...</span>
-            </button>
-          </div>
-        )} */}
 
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
@@ -79,7 +65,7 @@ const LdpTools = () => {
               <th className='min-w-50px'>Tool ID</th>
               <th className='min-w-50px'>Tool Name</th>
               <th className='min-w-50px'>Tool Type</th>
-              <th className='min-w-50px'>Created Date</th>
+              {/* <th className='min-w-50px'>Created Date</th> */}
               <th className='min-w-50px'>Action</th>
             </tr>
           </thead>
@@ -90,7 +76,7 @@ const LdpTools = () => {
                 <td className='text-danger fw-bold'>{item.toolId}</td>
                 <td>{item.toolName}</td>
                 <td className='text-warning fw-bold'>{item.toolType}</td>
-                <td>{item.createdDate}</td>
+                {/* <td>{item.createdDate}</td> */}
                 <td>
                   <Link className='text-white' to={`/qradar/ldp-tools/update/${item.toolId}`}>
                     <button className='btn btn-primary btn-small'>Update</button>
