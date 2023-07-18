@@ -95,12 +95,16 @@ function UsersProfile() {
       deletedDate,
       userID,
     };
-    try {
-      await fetchUserDelete(data);
-      notify('User Deleted');
-      await reload();
-    } catch (error) {
-      console.log(error);
+    const confirmDelete = window.confirm('Do you want to delete this user profile?');
+
+    if (confirmDelete) {
+      try {
+        await fetchUserDelete(data);
+        notify('User Deleted');
+        await reload();
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -120,30 +124,41 @@ function UsersProfile() {
           </thead>
           <tbody>
             {userProfiles.map((profile) => (
-              <tr key={profile.userID}>
-                <td>{profile.userID}</td>
-                <td>{profile.name}</td>
-                <td>{profile.roleName}</td>
-                <td align="right">
-                  <span className="btn btn-small btn-new btn-primary" onClick={() => handleShowChangePwdModal(profile.userID)}>
-                    Change pwd <i className="fa fa-pencil" />
-                  </span>{" "}
-                  <span className="btn btn-small btn-new btn-primary" onClick={() => handleResetPassword(profile.userID)}>
-                    Reset pwd <i className="fa fa-pencil" />
-                  </span>{" "}
-
-                  <span className="btn btn-small btn-danger"
-                    style={{ fontSize: '14px' }}
-                    onClick={() => {
-                      handleDelete(profile.userID);
-                    }}
-                  >
-                    Delete <i className="fa fa-trash" />
-                  </span>
-                </td>
-              </tr>
+              (userID === 1 || userID === profile.userID) && (
+                <tr key={profile.userID}>
+                  <td>{profile.userID}</td>
+                  <td>{profile.name}</td>
+                  <td>{profile.roleName}</td>
+                  <td align="right">
+                    <span className="btn btn-small btn-new btn-primary" onClick={() => handleShowChangePwdModal(profile.userID)}>
+                      Change pwd <i className="fa fa-pencil" />
+                    </span>{" "}
+                    <span className="btn btn-small btn-new btn-primary" onClick={() => handleResetPassword(profile.userID)}>
+                      Reset pwd <i className="fa fa-pencil" />
+                    </span>{" "}
+                    {(userID === 1) ? (
+                      <span className="btn btn-small btn-danger"
+                        style={{ fontSize: '14px' }}
+                        onClick={() => {
+                          handleDelete(profile.userID);
+                        }}
+                      >
+                        Delete <i className="fa fa-trash" />
+                      </span>
+                    ) : (
+                      <span className="btn btn-small btn-danger"
+                        style={{ fontSize: '14px' }}
+                        disabled
+                      >
+                        Delete <i className="fa fa-trash" />
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              )
             ))}
           </tbody>
+
         </table>
       </div>
 

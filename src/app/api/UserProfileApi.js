@@ -1,5 +1,7 @@
-const ChangePasswordUrl= "http://115.110.192.133:502/api/LDPSecurity/v1/User/ChangePassword"
-const ResetPasswordUrl="http://115.110.192.133:502/api/LDPSecurity/v1/User/ResetPassword"
+
+
+const ChangePasswordUrl= process.env.REACT_APP_CHANGE_PASSWORD_URL
+const ResetPasswordUrl=process.env.REACT_APP_RESET_PASSWORD_URL
 
 export const fetchChangePasswordUrl = async (data) => {
     try {

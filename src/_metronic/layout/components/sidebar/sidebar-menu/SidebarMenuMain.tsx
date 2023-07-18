@@ -7,7 +7,6 @@ import { SidebarMenuItem } from './SidebarMenuItem'
 
 const SidebarMenuMain = () => {
   const intl = useIntl()
-  const userID = Number(sessionStorage.getItem('userId'));
 
   return (
     <>
@@ -96,13 +95,13 @@ const SidebarMenuMain = () => {
       />
 
 
-      {userID === 1 && (
+    
         <SidebarMenuItem
           icon='/media/icons/duotune/communication/com006.svg'
           to='/qradar/profile'
           title='Users Profile'
         />
-      )}
+    
     </>
   )
 }
