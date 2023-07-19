@@ -11,8 +11,10 @@ const ChatApp = ({ selectedIncident }) => {
   useEffect(() => {
     // Create a socket connection
     console.log("Attempting to establish socket connection...");
-    const socketInstance = io("/socket.io");
+    const socketInstance = io("http://115.110.192.133:4000/", { mode: "cors" });
+    // const response = await fetch('http://localhost:8080/', {mode:'cors'});
     setSocket(socketInstance);
+    console.log("Socket:", socketInstance);
 
     // Clean up the socket connection on unmount
     return () => {
