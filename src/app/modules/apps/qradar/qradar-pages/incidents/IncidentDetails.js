@@ -436,7 +436,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="badge text-black fs-13">
-                      20210728-00056{" "}
+                      {incidentID}{" "}
                     </div>
                   </div>
                 </div>

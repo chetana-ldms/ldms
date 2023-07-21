@@ -80,8 +80,8 @@ export const fetchGetIncidentSearchResult = async (data) => {
     });
 
     const responseData = await response.json();
-    const incidentList = responseData.incidentList;
-    return incidentList;
+    // const incidentList = responseData.incidentList;
+    return responseData;
   } catch (error) {
     console.log(error);
   }

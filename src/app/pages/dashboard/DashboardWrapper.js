@@ -280,7 +280,7 @@ const DashboardWrapper = () => {
                     : "0"}
                 </span>
                 <span className="span-red">
-                  <i className="fa fa-arrow-down"></i> 67%
+                  {/* <i className="fa fa-arrow-down"></i> 67% */}
                 </span>
               </div>
             </div>
@@ -296,7 +296,7 @@ const DashboardWrapper = () => {
                     : "0"}
                 </span>
                 <span className="span-red">
-                  <i className="fa fa-arrow-down"></i> 100%
+                  {/* <i className="fa fa-arrow-down"></i> 100% */}
                 </span>
               </div>
             </div>
@@ -326,7 +326,7 @@ const DashboardWrapper = () => {
                     : "0"}
                 </span>
                 <span className="span-red">
-                  <i className="fa fa-arrow-down"></i> 100%
+                  {/* <i className="fa fa-arrow-down"></i> 100% */}
                 </span>
               </div>
             </div>

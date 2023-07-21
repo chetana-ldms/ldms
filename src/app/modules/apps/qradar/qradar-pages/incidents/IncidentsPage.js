@@ -94,7 +94,12 @@ const IncidentsPage = () => {
     };
     try {
       const response = await fetchGetIncidentSearchResult(data);
-      setIncident(response);
+      setIncident(response.incidentList);
+      setTotalIncidentsCount(response.totalIncidentsCount);
+      const total = response.totalIncidentsCount;
+      // const total = 40;
+
+      setpageCount(Math.ceil(total / limit));
 
       // incidents();
     } catch (error) {
