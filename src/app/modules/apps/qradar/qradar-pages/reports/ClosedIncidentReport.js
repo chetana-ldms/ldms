@@ -20,7 +20,7 @@ function ClosedIncidentReport() {
   ])
 
   const statusNames = alertData.map((alert) => alert.statusName)
-  const alertCounts = alertData.map((alert) => alert.alertCount)
+  const alertCounts = alertData.map((alert) => alert.percentageValue)
 
   //Pie chart for closed incidents
   const closedoptions = {
@@ -42,7 +42,7 @@ function ClosedIncidentReport() {
         indexLabel: '{label} - {y}%',
         dataPoints: statusNames.map((statusName, index) => {
           return {
-            y: alertCounts[index],
+            y: alertCounts[index].toFixed(2),
             label: statusName,
           }
         }),
@@ -50,40 +50,6 @@ function ClosedIncidentReport() {
     ],
   }
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         'http://115.110.192.133:502/api/Reports/v1/ClosedIncidentsSummery',
-  //         {
-  //           method: 'POST',
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //           body: JSON.stringify({
-  //             orgId: 1,
-  //             incidentFromDate: '2022-04-11T14:05:06.443Z',
-  //             incidentToDate: '2023-04-11T14:05:06.443Z',
-  //           }),
-  //         }
-  //       )
-
-  //       if (!response.ok) {
-  //         const errorData = await response.json()
-  //         throw new Error(`Network response was not ok: ${response.status} - ${errorData.message}`)
-  //       }
-
-  //       const {data} = await response.json() // destructure the 'data' property from the response object
-  //       setAlertData(data)
-  //       setLoading(false)
-  //     } catch (error) {
-  //       setError(error.message)
-  //       setLoading(false)
-  //     }
-  //   }
-
-  //   fetchData()
-  // }, [])
   useEffect(() => {
     const fetchData = async () => {
       const toDate = new Date().toISOString(); // Get the current date and time
@@ -117,6 +83,12 @@ function ClosedIncidentReport() {
 
     fetchData();
   }, []);
+  //Date range
+ const today = new Date();
+ const lastYear = new Date();
+ lastYear.setFullYear(lastYear.getFullYear() - 1);
+ const startDate = lastYear.toLocaleDateString("en-GB");
+ const endDate = today.toLocaleDateString("en-GB");
 
   return (
     <div>
@@ -126,7 +98,10 @@ function ClosedIncidentReport() {
         <p>Error: {error}</p>
       ) : (
         <>
-          <h4>Closed Incident</h4>
+          <h2>
+          Closed Incident for the last year ({startDate} to{" "}
+            {endDate})
+          </h2>
           <CanvasJSChart options={closedoptions} />
         </>
       )}

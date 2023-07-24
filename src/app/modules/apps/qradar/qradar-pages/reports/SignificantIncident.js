@@ -28,14 +28,14 @@ function SignificantIncident() {
 
   if (alertData && alertData.length > 0) {
     statusNames = alertData.map((alert) => alert.statusName)
-    alertCounts = alertData.map((alert) => alert.alertCount)
+    alertCounts = alertData.map((alert) => alert.percentageValue)
   }
 
   const dataPoints =
     alertData && alertData.length > 0
       ? alertData.map((alert) => {
           return {
-            y: alert.alertCount,
+            y: alert.percentageValue.toFixed(2),
             label: alert.statusName,
           }
         })
@@ -132,16 +132,25 @@ function SignificantIncident() {
 
     fetchData();
   }, []);
+  //Date range
+  const today = new Date();
+  const lastYear = new Date();
+  lastYear.setFullYear(lastYear.getFullYear() - 1);
+  const startDate = lastYear.toLocaleDateString("en-GB");
+  const endDate = today.toLocaleDateString("en-GB");
 
   return (
     <div>
-      <h4>Significant Incident </h4>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
         <p>Error: {error}</p>
       ) : (
         <>
+          <h2>
+          Significant Incident for the last year ({startDate} to{" "}
+            {endDate})
+          </h2>
           <CanvasJSChart options={openstatusoptions} />
         </>
       )}

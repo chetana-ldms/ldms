@@ -220,7 +220,7 @@ const IncidentsPage = () => {
                           data-allow-clear="true"
                           ref={sortOption}
                         >
-                         
+
                           {incidentSortOptions.length > 0 &&
                             incidentSortOptions.map((item) => (
                               <option key={item.dataID} value={item.dataID}>
@@ -263,18 +263,30 @@ const IncidentsPage = () => {
                                   </div>
                                   <div className="pt-3 bd-highlight">
                                     <div className="badge text-black fw-normal">
-                                      {new Date(item.createdDate).toLocaleDateString(navigator.language, {
-                                        month: "2-digit",
-                                        day: "2-digit",
-                                        year: "numeric"
-                                      })}
-                                      {" "}
-                                      {new Date(item.createdDate).toLocaleTimeString(navigator.language, {
-                                        hour: "numeric",
-                                        minute: "numeric"
-                                      })}
+                                      {item.modifiedDate
+                                        ? new Date(item.modifiedDate).toLocaleDateString(navigator.language, {
+                                          month: "2-digit",
+                                          day: "2-digit",
+                                          year: "numeric",
+                                        }) +
+                                        " " +
+                                        new Date(item.modifiedDate).toLocaleTimeString(navigator.language, {
+                                          hour: "numeric",
+                                          minute: "numeric",
+                                        })
+                                        : new Date(item.createdDate).toLocaleDateString(navigator.language, {
+                                          month: "2-digit",
+                                          day: "2-digit",
+                                          year: "numeric",
+                                        }) +
+                                        " " +
+                                        new Date(item.createdDate).toLocaleTimeString(navigator.language, {
+                                          hour: "numeric",
+                                          minute: "numeric",
+                                        })}
                                     </div>
                                   </div>
+
                                 </div>
                               </div>
                               <hr className="my-0" />

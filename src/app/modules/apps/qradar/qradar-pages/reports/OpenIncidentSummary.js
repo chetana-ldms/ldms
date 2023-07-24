@@ -23,7 +23,7 @@ function OpenIncidentSummary() {
   ])
 
   const statusNames = alertData.map((alert) => alert.statusName)
-  const alertCounts = alertData.map((alert) => alert.alertCount)
+  const alertCounts = alertData.map((alert) => alert.percentageValue)
 
   //Pie chart for Open incident status
   const openstatusoptions = {
@@ -45,7 +45,7 @@ function OpenIncidentSummary() {
         indexLabel: '{label} - {y}%',
         dataPoints: statusNames.map((statusName, index) => {
           return {
-            y: alertCounts[index],
+            y: alertCounts[index].toFixed(2),
             label: statusName,
           }
         }),
@@ -120,16 +120,25 @@ function OpenIncidentSummary() {
 
     fetchData();
   }, []);
+    //Date range
+    const today = new Date();
+    const lastYear = new Date();
+    lastYear.setFullYear(lastYear.getFullYear() - 1);
+    const startDate = lastYear.toLocaleDateString("en-GB");
+    const endDate = today.toLocaleDateString("en-GB");
 
   return (
     <div>
-      <h4>Open Incident Status</h4>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
         <p>Error: {error}</p>
       ) : (
         <>
+          <h2>
+          Open Incident Status for the last year ({startDate} to{" "}
+            {endDate})
+          </h2>
           <CanvasJSChart options={openstatusoptions} />
         </>
       )}

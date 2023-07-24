@@ -188,43 +188,6 @@ function SlaMeasurement() {
     ],
   };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         "http://115.110.192.133:502/api/Reports/v1/SLAMeasurementSummery",
-  //         {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: JSON.stringify({
-  //             orgId: 1,
-  //             alertFromDate: "2022-04-20T14:45:49.587Z",
-  //             alertToDate: "2023-04-20T14:45:49.587Z",
-  //           }),
-  //         }
-  //       );
-
-  //       if (!response.ok) {
-  //         const errorData = await response.json();
-  //         throw new Error(
-  //           `Network response was not ok: ${response.status} - ${errorData.message}`
-  //         );
-  //       }
-
-  //       const { data } = await response.json(); // destructure the 'data' property from the response object
-  //       setAlertData(data);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       setError(error.message);
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
-
   useEffect(() => {
     const fetchData = async () => {
       const toDate = new Date().toISOString(); // Get the current date and time

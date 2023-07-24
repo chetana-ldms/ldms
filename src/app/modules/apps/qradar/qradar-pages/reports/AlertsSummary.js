@@ -25,14 +25,14 @@ function AlertsSummary() {
 
   if (alertData && alertData.length > 0) {
     statusNames = alertData.map((alert) => alert.statusName)
-    alertCounts = alertData.map((alert) => alert.alertCount)
+    alertCounts = alertData.map((alert) => alert.percentageValue)
   }
 
   const dataPoints =
     alertData && alertData.length > 0
       ? alertData.map((alert) => {
           return {
-            y: alert.alertCount,
+            y: alert.percentageValue.toFixed(2),
             label: alert.statusName,
           }
         })
@@ -61,37 +61,6 @@ function AlertsSummary() {
     ],
   }
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch('http://115.110.192.133:502/api/Reports/v1/AlertsSummery', {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //         body: JSON.stringify({
-  //           orgId,
-  //           alertFromDate: '2022-04-20T14:43:26.643Z',
-  //           alertToDate: '2023-04-20T14:43:26.643Z',
-  //         }),
-  //       })
-
-  //       if (!response.ok) {
-  //         const errorData = await response.json()
-  //         throw new Error(`Network response was not ok: ${response.status} - ${errorData.message}`)
-  //       }
-
-  //       const {data} = await response.json() // destructure the 'data' property from the response object
-  //       setAlertData(data)
-  //       setLoading(false)
-  //     } catch (error) {
-  //       setError(error.message)
-  //       setLoading(false)
-  //     }
-  //   }
-
-  //   fetchData()
-  // }, [])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -131,12 +100,19 @@ function AlertsSummary() {
   
 
   
-
-  console.log(alertData) // Log the alertData to the console
+ //Date range
+ const today = new Date();
+ const lastYear = new Date();
+ lastYear.setFullYear(lastYear.getFullYear() - 1);
+ const startDate = lastYear.toLocaleDateString("en-GB");
+ const endDate = today.toLocaleDateString("en-GB");
 
   return (
     <div>
-      <h1>Alerts Summary</h1>
+      <h2>
+      Alerts Summary for the last year ({startDate} to{" "}
+            {endDate})
+          </h2>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (

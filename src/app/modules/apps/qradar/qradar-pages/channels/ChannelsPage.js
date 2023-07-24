@@ -124,6 +124,7 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
 const ChannelsPage = () => {
   const [channels, setChannels] = useState([]);
   console.log(channels, "channels11");
+  const userID = Number(sessionStorage.getItem('userId'));
   const orgId = Number(sessionStorage.getItem("orgId"));
   const deletedUserId = Number(sessionStorage.getItem("userId"));
   const deletedDate = new Date().toISOString();
@@ -340,6 +341,7 @@ const ChannelsPage = () => {
                       <td>{channel.channelName}</td>
                       <td>{channel.channelTypeName}</td>
                       <td>
+                      {userID === 1 ? (
                         <button
                           className="btn btn-small btn-primary"
                           onClick={() =>
@@ -348,6 +350,12 @@ const ChannelsPage = () => {
                         >
                           Edit
                         </button>
+                         ) : (
+                          <button className="btn btn-primary btn-small" disabled>
+                            Edit
+                          </button>
+                        )}
+                          {userID === 1 ? (
                         <button
                           className="btn btn-small btn-danger ml-10"
                           onClick={() => {
@@ -357,6 +365,11 @@ const ChannelsPage = () => {
                           {" "}
                           Delete
                         </button>
+                         ) : (
+                          <button className="btn btn-sm btn-danger btn-small ml-10" disabled>
+                          Delete
+                        </button>
+                      )}
                       </td>
                     </tr>
                     {channel.isAccordionOpen && (

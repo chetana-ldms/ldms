@@ -115,6 +115,12 @@ const Reports = () => {
       },
     ],
   };
+   //Date range
+   const today = new Date();
+   const lastYear = new Date();
+   lastYear.setFullYear(lastYear.getFullYear() - 1);
+   const startDate = lastYear.toLocaleDateString("en-GB");
+   const endDate = today.toLocaleDateString("en-GB");
 
   return (
     <div className="row reports-page">
@@ -131,8 +137,8 @@ const Reports = () => {
                   </TabPanel>
                   <TabPanel className="main-tab">
                     <h2 className="mb-10">
-                      Top 10 alerts by rule name for the last year (2/20/2020
-                      and 7/28/2021)
+                      Top 10 alerts by rule name for the last year ({startDate} to{" "}
+            {endDate})
                     </h2>
                     <Tabs>
                       <TabList className="inner-tablist">
