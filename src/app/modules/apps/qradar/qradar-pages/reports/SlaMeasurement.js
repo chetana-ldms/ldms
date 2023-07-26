@@ -46,18 +46,18 @@ function SlaMeasurement() {
   if (filteredData365) {
     severityName365 = filteredData365.map((alert) => alert.severityName);
     alertCount365 = filteredData365.map(
-      (alert) => alert.summeryPeriodAlertCount
+      (alert) => alert.sevirityWisePercentageValue
     );
   }
 
   if (filteredData7) {
     severityName7 = filteredData7.map((alert) => alert.severityName);
-    alertCount7 = filteredData7.map((alert) => alert.summeryPeriodAlertCount);
+    alertCount7 = filteredData7.map((alert) => alert.sevirityWisePercentageValue);
   }
 
   if (filteredData30) {
     severityName30 = filteredData30.map((alert) => alert.severityName);
-    alertCount30 = filteredData30.map((alert) => alert.summeryPeriodAlertCount);
+    alertCount30 = filteredData30.map((alert) => alert.sevirityWisePercentageValue);
   }
 
   //SLA measurement Bar chart

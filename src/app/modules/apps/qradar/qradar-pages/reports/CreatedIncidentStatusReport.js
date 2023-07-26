@@ -22,7 +22,7 @@ function CreatedIncidentStatusReport() {
   ]);
 
   const statusNames = alertData.map((alert) => alert.statusName);
-  const alertCounts = alertData.map((alert) => alert.percentageValue);
+  const alertCounts = alertData.map((alert) => alert.percentageValue); 
 
   //Pie chart for Open incident status
   const allstatusoption = {

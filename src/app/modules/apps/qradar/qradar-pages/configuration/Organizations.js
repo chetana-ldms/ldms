@@ -133,7 +133,7 @@ const Organizations = () => {
                         Delete
                       </button>
                     )}
-                  </td>
+                  </td> 
                 </tr>
               ))
             )}
