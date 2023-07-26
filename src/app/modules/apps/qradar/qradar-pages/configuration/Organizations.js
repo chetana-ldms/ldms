@@ -26,9 +26,9 @@ const Organizations = () => {
     try {
       const responce = await fetchOrganizationDelete(data);
       if (responce.isSuccess) {
-        notify('Data Deleted');
+        notify('Organization Deleted');
       } else {
-        notifyFail('Data not Deleted');
+        notifyFail('Organization not Deleted');
       }
       await reload();
     } catch (error) {

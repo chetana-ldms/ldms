@@ -26,7 +26,7 @@ const UserData = () => {
     };
     try {
       await fetchUserDelete(data);
-      notify('Data Deleted');
+      notify('User Deleted');
       await reload();
     } catch (error) {
       console.log(error);

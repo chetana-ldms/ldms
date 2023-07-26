@@ -44,10 +44,10 @@ const AddLdpTools = () => {
       const { isSuccess } = responseData;
   
       if (isSuccess) {
-        notify('Data Saved');
+        notify('LDP Tools saved');
         navigate('/qradar/ldp-tools/list')
       } else {
-        notifyFail('Failed to save data');
+        notifyFail('Failed to save LDP Tools');
       }
     } catch (error) {
       console.log(error);

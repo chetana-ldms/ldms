@@ -25,9 +25,9 @@ const ToolActions = () => {
     try {
       const responce = await fetchToolActionDelete(data);
       if (responce.isSuccess) {
-        notify('Data Deleted');
+        notify('Tool Action Deleted');
       }else{
-        notifyFail("Data not Deleted")
+        notifyFail("Tool Action not Deleted")
       }
       await reload();
     } catch (error) {

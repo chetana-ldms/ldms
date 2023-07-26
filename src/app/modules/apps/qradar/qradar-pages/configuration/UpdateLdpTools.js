@@ -44,10 +44,10 @@ const UpdateLdpTools = () => {
       const { isSuccess } = responseData;
   
       if (isSuccess) {
-        notify('Data Updated');
+        notify('LDP Tool Updated');
         navigate('/qradar/ldp-tools/updated');
       } else {
-        notifyFail('Failed to update data');
+        notifyFail('Failed to update LDP Tool');
       }
     } catch (error) {
       console.log(error);

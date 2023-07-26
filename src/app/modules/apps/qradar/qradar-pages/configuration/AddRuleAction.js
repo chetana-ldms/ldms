@@ -104,10 +104,10 @@ const AddRuleAction = () => {
       const { isSuccess } = responseData;
   
       if (isSuccess) {
-        notify('Data Saved');
+        notify('Rule Action Saved');
         navigate('/qradar/rules-actions/list')
       } else {
-        notifyFail('Failed to save data');
+        notifyFail('Failed to save Rule Action');
       }
     } catch (error) {
       console.log(error);

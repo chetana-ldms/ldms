@@ -53,10 +53,10 @@ const AddToolAction = () => {
       const { isSuccess } = responseData;
 
       if (isSuccess) {
-        notify('Data Saved');
+        notify('Tool Action Saved');
         navigate('/qradar/tool-actions/updated');
       } else {
-        notifyFail('Failed to save data');
+        notifyFail('Failed to save Tool Action');
       }
     } catch (error) {
       console.log(error);

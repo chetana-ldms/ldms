@@ -25,9 +25,9 @@ const RulesEngine = () => {
     try {
       const responce = await fetchRulesDelete(data);
       if (responce.isSuccess) {
-        notify('Data Deleted');
+        notify('Rule Deleted');
       }else{
-        notifyFail("Data not Deleted")
+        notifyFail("Rule not Deleted")
       }
       await reload();
     } catch (error) {

@@ -98,10 +98,10 @@ const AddRule = () => {
       const { isSuccess } = responseData;
   
       if (isSuccess) {
-        notify('Data Saved');
+        notify('Rule Saved');
         navigate('/qradar/rules-engine/updated')
       } else {
-        notifyFail('Failed to save data');
+        notifyFail('Failed to save Rule');
       }
     } catch (error) {
       console.log(error);

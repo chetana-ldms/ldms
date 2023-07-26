@@ -55,10 +55,10 @@ const UpdateOrganizations = () => {
       const { isSuccess } = responseData;
 
       if (isSuccess) {
-        notify('Data Updated');
+        notify('Organization Updated');
         navigate('/qradar/organizations/updated');
       } else {
-        notifyFail('Failed to update data');
+        notifyFail('Failed to update Organization');
       }
     } catch (error) {
       console.log(error);

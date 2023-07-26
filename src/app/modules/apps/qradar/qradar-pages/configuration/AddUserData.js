@@ -55,10 +55,10 @@ const AddUserData = () => {
       const { isSuccess } = responseData;
   
       if (isSuccess) {
-        notify('Data Saved');
+        notify('User Saved');
         navigate('/qradar/users-data/list')
       } else {
-        notifyFail('Failed to save data');
+        notifyFail('Failed to save User');
       }
     } catch (error) {
       console.log(error);

@@ -164,7 +164,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
       notify("Incident updated");
       onRefreshIncidents();
     } catch (error) {
-      notifyFail("Failed to update data");
+      notifyFail("Failed to update Incident");
     }
   };
   useEffect(() => {

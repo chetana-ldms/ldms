@@ -165,10 +165,10 @@ const UpdateRule = () => {
       const { isSuccess } = responseData;
   
       if (isSuccess) {
-        notify('Data Updated');
+        notify('Rule Updated');
         navigate('/qradar/rules-engine/updated');
       } else {
-        notifyFail('Failed to update data');
+        notifyFail('Failed to update Rule');
       }
     } catch (error) {
       console.log(error);

@@ -24,9 +24,9 @@ const Playbooks = () => {
     try {
       const responce = await fetchDelete(data);
       if (responce.isSuccess) {
-        notify('Data Deleted');
+        notify('PlayBook Deleted');
       }else{
-        notifyFail("Data not Deleted")
+        notifyFail("PlayBook not Deleted")
       }
       await reload();
     } catch (error) {

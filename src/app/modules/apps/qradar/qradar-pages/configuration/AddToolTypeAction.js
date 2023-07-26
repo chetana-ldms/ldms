@@ -51,10 +51,10 @@ const AddToolTypeAction = () => {
       const { isSuccess } = responseData;
   
       if (isSuccess) {
-        notify('Data Saved');
+        notify(' Tool Type Action Saved');
         navigate('/qradar/tool-type-actions/list');
       } else {
-        notifyFail('Failed to save data');
+        notifyFail('Failed to save  Tool Type Action');
       }
     } catch (error) {
       console.log(error);
@@ -68,7 +68,7 @@ const AddToolTypeAction = () => {
       {loading && <UsersListLoading />}
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
-          <span className='card-label fw-bold fs-3 mb-1'>Configure New Tool Type Action</span>
+          <span className='card-label fw-bold fs-3 mb-1'>Add Tool Type Action</span>
         </h3>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>

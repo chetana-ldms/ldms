@@ -26,9 +26,9 @@ const OrganizationTools = () => {
     try {
       const responce = await fetchOrganizationToolsDelete(data);
       if (responce.isSuccess) {
-        notify('Data Deleted');
+        notify('Organizations Tool Deleted');
       } else {
-        notifyFail("Data not Deleted")
+        notifyFail("Organizations Tool not Deleted")
       }
       await reload();
     } catch (error) {

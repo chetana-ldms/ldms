@@ -165,10 +165,10 @@ const UpdateToolAction = () => {
       const { isSuccess } = responseData;
   
       if (isSuccess) {
-        notify('Data Updated');
+        notify('Tool Action Updated');
         navigate('/qradar/tool-actions/updated');
       } else {
-        notifyFail('Failed to update data');
+        notifyFail('Failed to update Tool Action');
       }
     } catch (error) {
       console.log(error);

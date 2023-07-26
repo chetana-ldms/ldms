@@ -147,10 +147,10 @@ const AddPlaybooks = () => {
         .then(function (response) {
           const { isSuccess } = response.data;
           if (isSuccess) {
-            notify('Data Saved');
+            notify('PlayBook Saved');
             navigate('/qradar/playbooks/updated')
           } else {
-            notifyFail('Failed to save data');
+            notifyFail('Failed to save PlayBook');
           }
           // console.log(JSON.stringify(response.data))
           // navigate('/qradar/playbooks/updated')

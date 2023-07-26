@@ -104,10 +104,10 @@ const UpdateOrganizationTools = () => {
       const { isSuccess } = responseData;
   
       if (isSuccess) {
-        notify('Data Updated');
+        notify('Organizations Tool Updated');
         navigate('/qradar/organization-tools/updated');
       } else {
-        notifyFail('Failed to update data');
+        notifyFail('Failed to update Organizations Tool');
       }
     } catch (error) {
       console.log(error);

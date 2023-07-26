@@ -24,9 +24,9 @@ const ToolTypeActions = () => {
     try {
       const responce = await fetchToolTypeActionDelete(data);
       if (responce.isSuccess) {
-        notify('Data Deleted');
+        notify('Tool Type Action Deleted');
       }else{
-        notifyFail("Data not Deleted")
+        notifyFail("Tool Type Action not Deleted")
       }
       await reload();
     } catch (error) {

@@ -70,10 +70,10 @@ const UpdateToolTypeAction = () => {
       const { isSuccess } = responseData;
   
       if (isSuccess) {
-        notify('Data Updated');
+        notify('Tool Type Action Updated');
         navigate('/qradar/tool-type-actions/updated');
       } else {
-        notifyFail('Failed to update data');
+        notifyFail('Failed to update Tool Type Action');
       }
     } catch (error) {
       console.log(error);

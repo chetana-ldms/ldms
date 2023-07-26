@@ -25,9 +25,9 @@ const LdpTools = () => {
     try {
       const responce = await fetchLDPToolsDelete(data);
       if (responce.isSuccess) {
-        notify('Data Deleted');
+        notify('LDP Tool Deleted');
       }else{
-        notifyFail("Data not Deleted")
+        notifyFail("LDP Tool not Deleted")
       }
       await reload();
     } catch (error) {

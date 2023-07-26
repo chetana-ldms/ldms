@@ -26,9 +26,9 @@ const RulesActions = () => {
     try {
       const responce = await fetchRuleActionDelete(data);
       if (responce.isSuccess) {
-        notify('Data Deleted');
+        notify('Rule Action Deleted');
       }else{
-        notifyFail("Data not Deleted")
+        notifyFail("Rule Action not Deleted")
       }
       await reload();
     } catch (error) {

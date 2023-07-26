@@ -97,10 +97,10 @@ const UpdatePlaybooks = () => {
           const { isSuccess } = response.data;
 
           if (isSuccess) {
-            notify('Data Updated');
+            notify('PlayBook Updated');
             navigate('/qradar/playbooks/updated')
           } else {
-            notifyFail('Failed to update data');
+            notifyFail('Failed to update PlayBook');
           }
           // console.log(JSON.stringify(response.data))
           // navigate('/qradar/playbooks/updated')

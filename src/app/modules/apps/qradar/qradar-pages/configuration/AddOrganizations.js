@@ -54,10 +54,10 @@ const AddOrganizations = () => {
       const { isSuccess } = responseData;
 
       if (isSuccess) {
-        notify('Data Saved');
+        notify('Organizations Saved');
         navigate('/qradar/organizations/updated');
       } else {
-        notifyFail('Failed to save data');
+        notifyFail('Failed to save Organizations');
       }
     } catch (error) {
       console.log(error);
