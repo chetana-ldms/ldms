@@ -14,6 +14,9 @@ import { ToastContainer } from "react-toastify";
 import { notify, notifyFail } from "../components/notification/Notification";
 import "react-toastify/dist/ReactToastify.css";
 import ChatApp from "./ChatApp";
+import moment from 'moment-timezone';
+import { getCurrentTimeZone } from "../../../../../../utils/helper";
+
 
 const IncidentsPage = () => {
   const userID = Number(sessionStorage.getItem("userId"));
@@ -145,6 +148,8 @@ const IncidentsPage = () => {
     }
   }, [incident]);
 
+ 
+
   return (
     <>
       <div className="card mb-5 mb-xl-8 bg-red incident-page">
@@ -263,27 +268,10 @@ const IncidentsPage = () => {
                                   </div>
                                   <div className="pt-3 bd-highlight">
                                     <div className="badge text-black fw-normal">
-                                      {item.modifiedDate
-                                        ? new Date(item.modifiedDate).toLocaleDateString(navigator.language, {
-                                          month: "2-digit",
-                                          day: "2-digit",
-                                          year: "numeric",
-                                        }) +
-                                        " " +
-                                        new Date(item.modifiedDate).toLocaleTimeString(navigator.language, {
-                                          hour: "numeric",
-                                          minute: "numeric",
-                                        })
-                                        : new Date(item.createdDate).toLocaleDateString(navigator.language, {
-                                          month: "2-digit",
-                                          day: "2-digit",
-                                          year: "numeric",
-                                        }) +
-                                        " " +
-                                        new Date(item.createdDate).toLocaleTimeString(navigator.language, {
-                                          hour: "numeric",
-                                          minute: "numeric",
-                                        })}
+                                      {item.modifiedDate?
+                                        getCurrentTimeZone(item.modifiedDate):
+                                        getCurrentTimeZone(item.createdDate)
+                                        }
                                     </div>
                                   </div>
 

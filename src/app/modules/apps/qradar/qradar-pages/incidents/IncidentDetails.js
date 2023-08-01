@@ -10,6 +10,7 @@ import {
   fetchIncidents,
   fetchUpdateIncident,
 } from "../../../../../api/IncidentsApi";
+import { getCurrentTimeZone } from "../../../../../../utils/helper";
 
 const IncidentDetails = ({ incident, onRefreshIncidents }) => {
   const { subject, createdDate, incidentID, modifiedDate } = incident;
@@ -491,16 +492,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="badge text-black fw-bold">
-                      {new Date(createdDate).toLocaleDateString(navigator.language, {
-                        month: "2-digit",
-                        day: "2-digit",
-                        year: "numeric"
-                      })}
-                      {" "}
-                      {new Date(createdDate).toLocaleTimeString(navigator.language, {
-                        hour: "numeric",
-                        minute: "numeric"
-                      })}
+                      {createdDate &&
+                        getCurrentTimeZone(createdDate)
+                      }
                     </div>
 
                   </div>
@@ -512,16 +506,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="badge text-black fw-bold">
-                      {new Date(modifiedDate).toLocaleDateString(navigator.language, {
-                        month: "2-digit",
-                        day: "2-digit",
-                        year: "numeric"
-                      })}
-                      {" "}
-                      {new Date(modifiedDate).toLocaleTimeString(navigator.language, {
-                        hour: "numeric",
-                        minute: "numeric"
-                      })}
+                      {modifiedDate &&
+                        getCurrentTimeZone(modifiedDate)
+                      }
                     </div>
                   </div>
                 </div>
@@ -580,16 +567,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                           <div className="p-1 bd-highlight fs-12">
                             {alertsList?.detectedtime && (
                               <div className="badge text-black fw-bold">
-                                {new Date(alertsList.detectedtime).toLocaleDateString(navigator.language, {
-                                  month: "2-digit",
-                                  day: "2-digit",
-                                  year: "numeric"
-                                })}
-                                {" "}
-                                {new Date(alertsList.detectedtime).toLocaleTimeString(navigator.language, {
-                                  hour: "numeric",
-                                  minute: "numeric"
-                                })}
+                                {
+                                  getCurrentTimeZone(alertsList.detectedtime)
+                                }
                               </div>
                             )}
                           </div>
@@ -632,30 +612,18 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   <div className="timeline-label">
                     {incidentHistory && incidentHistory.length > 0 ? (
                       incidentHistory.map((item) => {
-                        const [_date, time] = item.historyDate.split("T");
-                        const formattedDate = new Date(_date).toLocaleDateString(navigator.language, {
-                          month: "2-digit",
-                          day: "2-digit",
-                          year: "numeric"
-                        });
-                        const formattedTime = new Date(`2000-01-01T${time}`).toLocaleTimeString(navigator.language, {
-                          hour: "numeric",
-                          minute: "numeric",
-                          hour12: true
-                        });
+                        const formattedDateTime = getCurrentTimeZone(item.historyDate);
 
                         return (
-                          <div className="timeline-item" >
+                          <div className="timeline-item" key={item.id}>
                             <div className="timeline-label fw-bold text-gray-800 fs-6">
-                              <p>{formattedDate}</p>
-                              <p className="time">{formattedTime}</p>
+                              <p>{formattedDateTime}</p>
+                              {/* <p className="time">{formattedDateTime}</p> */}
                               <p className="text-muted">{item.createdUser}</p>
                             </div>
 
                             <div className="timeline-badge">
-                              <i
-                                className={`fa fa-genderless ${getRandomClass()} fs-1`}
-                              ></i>
+                              <i className={`fa fa-genderless ${getRandomClass()} fs-1`}></i>
                             </div>
                             <div className="fw-semibold text-gray-700 ps-3 fs-7">
                               {item.historyDescription}

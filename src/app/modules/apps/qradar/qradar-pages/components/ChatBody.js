@@ -5,6 +5,7 @@ import {
   fetchGetChatHistory,
 } from "../../../../../api/IncidentsApi";
 import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
+import { getCurrentTimeZone } from "../../../../../../utils/helper";
 
 const ChatBody = ({
   messages: initialMessages,
@@ -93,17 +94,6 @@ const ChatBody = ({
       // notifyFail("Error occurred while downloading the file");
     }
   };
-  const formatDate = (datetimeString) => {
-    const datetime = new Date(datetimeString);
-
-    const dateOptions = { year: "numeric", month: "2-digit", day: "2-digit" };
-    const timeOptions = { hour: "2-digit", minute: "2-digit" };
-
-    const formattedDate = datetime.toLocaleDateString("en-US", dateOptions);
-    const formattedTime = datetime.toLocaleTimeString("en-US", timeOptions);
-
-    return `${formattedDate} ${formattedTime}`;
-  };
 
   return (
     <>
@@ -148,7 +138,7 @@ const ChatBody = ({
                       : "float-left"
                   }`}
                 >
-                  {formatDate(message.messsageDate)}
+                  {getCurrentTimeZone(message.messsageDate)}
                 </div>
                 <div className="clearfix" />
                 <div
@@ -176,15 +166,6 @@ const ChatBody = ({
                         }}
                       >
                         {message.chatMessage}
-                        {/* <div
-                          className={`date-time ${
-                            message.fromUserName === loggedInUserName
-                              ? "float-right"
-                              : "float-left"
-                          }`}
-                        >
-                          {formatDate(message.messsageDate)}
-                        </div> */}
                       </a>
                     </div>
                   )}
@@ -223,7 +204,7 @@ const ChatBody = ({
                           : "float-left"
                       }`}
                     >
-                      {formatDate(message.createdDate)}
+                      {getCurrentTimeZone(message.createdDate)}
                     </div>
                   )}
                   <div className="clearfix" />

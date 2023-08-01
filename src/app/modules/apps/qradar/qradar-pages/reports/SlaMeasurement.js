@@ -7,6 +7,9 @@ function SlaMeasurement() {
   const orgId = Number(sessionStorage.getItem('orgId'))
   const [alertData, setAlertData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [selectedTab, setSelectedTab] = useState(0);
   const [error, setError] = useState(null);
 
   const CanvasJS = CanvasJSReact.CanvasJS;
@@ -27,13 +30,13 @@ function SlaMeasurement() {
   ]);
 
   const filteredData365 = alertData?.filter(
-    (alert) => alert.summeryPeriod === "365-Days"
+    (alert) => alert.summeryPeriod === "365"
   );
   const filteredData7 = alertData?.filter(
-    (alert) => alert.summeryPeriod === "7-Days"
+    (alert) => alert.summeryPeriod === "7"
   );
   const filteredData30 = alertData?.filter(
-    (alert) => alert.summeryPeriod === "30-Days"
+    (alert) => alert.summeryPeriod === "30"
   );
 
   let severityName365 = [],
@@ -44,20 +47,28 @@ function SlaMeasurement() {
     alertCount30 = [];
 
   if (filteredData365) {
-    severityName365 = filteredData365.map((alert) => alert.severityName);
-    alertCount365 = filteredData365.map(
-      (alert) => alert.sevirityWisePercentageValue
-    );
+    // Extract the data from the backend response
+    severityName365 = filteredData365.map((alert) => alert.sevirityName);
+    alertCount365 = filteredData365.map((alert) => alert.sevirityWisePercentageValue);
+
+    // Add custom value at index 0
+    severityName365.unshift(" "); // Replace "Custom Value" with your desired value
+    alertCount365.unshift(0); // Replace 0 with your desired value
   }
 
+
   if (filteredData7) {
-    severityName7 = filteredData7.map((alert) => alert.severityName);
+    severityName7 = filteredData7.map((alert) => alert.sevirityName);
     alertCount7 = filteredData7.map((alert) => alert.sevirityWisePercentageValue);
+    severityName7.unshift(" ");
+    alertCount7.unshift(0);
   }
 
   if (filteredData30) {
-    severityName30 = filteredData30.map((alert) => alert.severityName);
+    severityName30 = filteredData30.map((alert) => alert.sevirityName);
     alertCount30 = filteredData30.map((alert) => alert.sevirityWisePercentageValue);
+    severityName30.unshift(" ");
+    alertCount30.unshift(0);
   }
 
   //SLA measurement Bar chart
@@ -73,9 +84,15 @@ function SlaMeasurement() {
       title: "Severity",
       titleFontSize: 14,
       reversed: true,
-      minimum: -1,
-      maximum: 3,
+      minimum: 0,
+      maximum: 4,
+      labelFormatter: function (e) {
+        const severityLabels = ["", "High", "Medium", "Low", ""];
+        return severityLabels[e.value];
+      },
+
     },
+
     axisY: {
       title: "Alert number",
       titleFontSize: 14,
@@ -83,7 +100,7 @@ function SlaMeasurement() {
       // labelFormatter: this.addSymbols,
       minimum: 0,
       maximum: 100,
-      interval: 50,
+      interval: [20, 40, 60, 80, 100],
     },
     width: 500,
     data: [
@@ -92,7 +109,7 @@ function SlaMeasurement() {
         legendText: "{label}",
         indexLabel: "{y}",
         indexLabelFontColor: "white",
-        indexLabelBackgroundColor: "red",
+        // indexLabelBackgroundColor: "red",
         type: "bar",
         dataPoints: severityName7.map((severityName7, index) => {
           return {
@@ -115,8 +132,13 @@ function SlaMeasurement() {
       title: "Severity",
       titleFontSize: 14,
       reversed: true,
-      minimum: -1,
-      maximum: 3,
+      minimum: 0,
+      maximum: 4,
+      labelFormatter: function (e) {
+        const severityLabels = ["", "High", "Medium", "Low", ""];
+        return severityLabels[e.value];
+      },
+
     },
     axisY: {
       title: "Alert number",
@@ -125,7 +147,7 @@ function SlaMeasurement() {
       // labelFormatter: this.addSymbols,
       minimum: 0,
       maximum: 100,
-      interval: 50,
+      interval: [20, 40, 60, 80, 100],
     },
     width: 500,
     data: [
@@ -134,7 +156,7 @@ function SlaMeasurement() {
         legendText: "{label}",
         indexLabel: "{y}",
         indexLabelFontColor: "white",
-        indexLabelBackgroundColor: "red",
+        // indexLabelBackgroundColor: "red",
         type: "bar",
         dataPoints: severityName30.map((severityName30, index) => {
           return {
@@ -157,8 +179,13 @@ function SlaMeasurement() {
       title: "Severity",
       titleFontSize: 14,
       reversed: true,
-      minimum: -1,
-      maximum: 3,
+      minimum: 0,
+      maximum: 4,
+      labelFormatter: function (e) {
+        const severityLabels = ["", "High", "Medium", "Low", ""];
+        return severityLabels[e.value];
+      },
+
     },
     axisY: {
       title: "Alert number",
@@ -167,7 +194,7 @@ function SlaMeasurement() {
       // labelFormatter: this.addSymbols,
       minimum: 0,
       maximum: 100,
-      interval: 50,
+      interval: [20, 40, 60, 80, 100],
     },
     width: 500,
     data: [
@@ -176,7 +203,7 @@ function SlaMeasurement() {
         legendText: "{label}",
         indexLabel: "{y}",
         indexLabelFontColor: "white",
-        indexLabelBackgroundColor: "red",
+        // indexLabelBackgroundColor: "red",
         type: "bar",
         dataPoints: severityName365.map((severityName365, index) => {
           return {
@@ -194,7 +221,7 @@ function SlaMeasurement() {
       const fromDate = new Date();
       fromDate.setFullYear(fromDate.getFullYear() - 1); // Subtract 1 year from the current year
       const fromDateISO = fromDate.toISOString(); // Convert the fromDate to ISO string format
-  
+
       const requestData = {
         orgId,
         alertFromDate: fromDateISO,
@@ -222,12 +249,34 @@ function SlaMeasurement() {
     fetchData();
   }, []);
 
-  //Date range
-  const today = new Date();
-  const lastYear = new Date();
-  lastYear.setFullYear(lastYear.getFullYear() - 1);
-  const startDate = lastYear.toLocaleDateString("en-GB");
-  const endDate = today.toLocaleDateString("en-GB");
+  useEffect(() => {
+    // ... Existing code ...
+
+    // Declare today and endDate variables here
+    const today = new Date();
+    let startDate, endDate;
+    switch (selectedTab) {
+      case 0: // Last 7 days
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 7);
+        endDate = today;
+        break;
+      case 1: // Last 1 month
+      startDate = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+        endDate = today;
+        break;
+      case 2: // Last 1 year
+        startDate = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+        endDate = today;
+        break;
+      default:
+        break;
+    }
+
+    setStartDate(startDate.toLocaleDateString("en-GB"));
+    setEndDate(endDate.toLocaleDateString("en-GB"));
+  }, [selectedTab]);
+  
 
   return (
     <div>
@@ -238,9 +287,13 @@ function SlaMeasurement() {
       ) : (
         <>
           <h2 className="mb-10">
-            SLA measurement for the last year ({startDate} to {endDate})
+            {selectedTab === 0
+              ? `SLA measurement for the last week (${startDate} to ${endDate})`
+              : selectedTab === 1
+                ? `SLA measurement for the last month (${startDate} to ${endDate})`
+                : `SLA measurement for the last year (${startDate} to ${endDate})`}
           </h2>
-          <Tabs>
+          <Tabs selectedIndex={selectedTab} onSelect={(index) => setSelectedTab(index)}>
             <TabList className="inner-tablist">
               <Tab>Last 7 days</Tab>
               <Tab>Last month</Tab>

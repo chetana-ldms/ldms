@@ -35,6 +35,7 @@ import {
 } from "../../../../../api/AlertsApi";
 import ReactPaginate from "react-paginate";
 import { fetchCreateIncident } from "../../../../../api/IncidentsApi";
+import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import "./Alerts.css";
 
 const AlertsPage = () => {
@@ -1095,10 +1096,9 @@ const AlertsPage = () => {
                             />
                             {/* check incident creation */}
                             <span>
-                              {item.status == "New" &&
-                                item.alertIncidentMappingId == 0 ? (
+                              {item.status === "New" && item.alertIncidentMappingId === 0 ? (
                                 <i
-                                  className="fa fa-circle-exclamation incident-icon orange"
+                                  className="fa fa-circle-exclamation incident-icon red"
                                   title="Alert"
                                 />
                               ) : (
@@ -1107,7 +1107,15 @@ const AlertsPage = () => {
                                   title="Incident created"
                                 />
                               )}
+
+                              {item.status !== "New" && item.alertIncidentMappingId === 0 && (
+                                <i
+                                  className="fa fa-circle-exclamation incident-icon orange"
+                                  title="Incident not created"
+                                />
+                              )}
                             </span>
+
                           </div>
                         </td>
                         <td
@@ -1136,6 +1144,11 @@ const AlertsPage = () => {
                         <td>
                           <span className="text-dark text-hover-primary d-block mb-1">
                             <span>
+                              {item.detectedtime &&
+                            getCurrentTimeZone(item.detectedtime)
+                              }
+                            </span>
+                            {/* <span>
                               {new Date(item.detectedtime).toLocaleDateString(undefined, {
                                 day: '2-digit',
                                 month: '2-digit',
@@ -1149,7 +1162,7 @@ const AlertsPage = () => {
                                 minute: 'numeric',
                                 hour12: true,
                               })}
-                            </span>
+                            </span> */}
 
                           </span>
 
