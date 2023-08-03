@@ -19,25 +19,34 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
     console.log("attachment:", attachment);
     if (message.trim() || attachment) {
       const formData = new FormData();
-      // formData.append("ChatAttachmentFile", attachment ? attachment.data : "");
-      // formData.append("ChatAttachmentFile", attachment ? attachment.data : "");
       formData.append("MesssageDate", date || "");
       formData.append("OrgId", orgId || 0);
       formData.append("FromUserID", userID || 0);
       formData.append("ToUserID", 0);
-      // formData.append("ChatMessage", message || (attachment ? attachment.name : ""));
       formData.append("ChatMessage", message || "");
       formData.append("ChatSubject", "Incident");
       formData.append("SubjectRefID", id || 0);
       if (attachment) {
-        // Create a new File object with the attachment data
-        const file = new File([attachment.data], attachment.name, {
+        // Convert base64 data to binary data
+        const binaryAttachment = atob(attachment.data);
+        const byteArray = new Uint8Array(binaryAttachment.length);
+        for (let i = 0; i < binaryAttachment.length; i++) {
+          byteArray[i] = binaryAttachment.charCodeAt(i);
+        }
+      
+        // Create a new Blob with the binary data
+        const blob = new Blob([byteArray], { type: attachment.type });
+      
+        // Create a new File object from the Blob
+        const file = new File([blob], attachment.name, {
           type: attachment.type,
         });
-  
+      
         // Append the file as an IFormFile
         formData.append("ChatAttachmentFile", file);
       }
+      
+      console.log("formData:", formData);
       try {
         const response = await fetchAddChatMessage(formData);
         console.log(response, "chat Add API");

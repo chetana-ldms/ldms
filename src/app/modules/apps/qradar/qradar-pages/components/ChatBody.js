@@ -68,32 +68,32 @@ const ChatBody = ({
     element.download = filename;
     element.click();
   };
-  const handleDownloadAttachment = async (message) => {
-    try {
-      const data = {
-        fileUrl: message.attachmentUrl,
-        filePhysicalPath: message.attachmentPhysicalPath,
-      };
-      const response = await fetchDownloadAttachmentUrl(data);
-      if (response.ok) {
-        const fileBlob = await response.blob();
-        const url = URL.createObjectURL(fileBlob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = message.fileName;
-        link.target = "_blank";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        // notify("File Downloaded successfully");
-      } else {
-        // notifyFail("File not Downloaded successfully");
-      }
-    } catch (error) {
-      console.log(error);
-      // notifyFail("Error occurred while downloading the file");
-    }
-  };
+  // const handleDownloadAttachment = async (message) => {
+  //   try {
+  //     const data = {
+  //       fileUrl: message.attachmentUrl,
+  //       filePhysicalPath: message.attachmentPhysicalPath,
+  //     };
+  //     const response = await fetchDownloadAttachmentUrl(data);
+  //     if (response.ok) {
+  //       const fileBlob = await response.blob();
+  //       const url = URL.createObjectURL(fileBlob);
+  //       const link = document.createElement("a");
+  //       link.href = url;
+  //       link.download = message.fileName;
+  //       link.target = "_blank";
+  //       document.body.appendChild(link);
+  //       link.click();
+  //       document.body.removeChild(link);
+  //       // notify("File Downloaded successfully");
+  //     } else {
+  //       // notifyFail("File not Downloaded successfully");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     // notifyFail("Error occurred while downloading the file");
+  //   }
+  // };
 
   return (
     <>
@@ -132,11 +132,10 @@ const ChatBody = ({
                   </p>
                 )}
                 <div
-                  className={`date-time ${
-                    message.fromUserName === loggedInUserName
-                      ? "float-right"
-                      : "float-left"
-                  }`}
+                  className={`date-time ${message.fromUserName === loggedInUserName
+                    ? "float-right"
+                    : "float-left"
+                    }`}
                 >
                   {getCurrentTimeZone(message.messsageDate)}
                 </div>
@@ -153,17 +152,28 @@ const ChatBody = ({
                       <p>{message.chatMessage}</p>
                     </>
                   )}
-
+                  {/* {message.messageType === "Attachment" && (
+                    <div>
+                      <a
+                        href={message.attachmentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      // onClick={(e) => {
+                      //   e.preventDefault();
+                      //   handleDownloadAttachment(message);
+                      // }}
+                      >
+                        {message.chatMessage}
+                      </a>
+                    </div>
+                  )} */}
                   {message.messageType === "Attachment" && (
                     <div>
                       <a
                         href={message.attachmentUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleDownloadAttachment(message);
-                        }}
+                        download={message.attachmentName}
                       >
                         {message.chatMessage}
                       </a>
@@ -198,11 +208,10 @@ const ChatBody = ({
                   )}
                   {message.createdDate && (
                     <div
-                      className={`date-time ${
-                        message.name === loggedInUserName
-                          ? "float-right"
-                          : "float-left"
-                      }`}
+                      className={`date-time ${message.name === loggedInUserName
+                        ? "float-right"
+                        : "float-left"
+                        }`}
                     >
                       {getCurrentTimeZone(message.createdDate)}
                     </div>

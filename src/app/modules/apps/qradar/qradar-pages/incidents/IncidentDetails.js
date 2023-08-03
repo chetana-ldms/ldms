@@ -164,11 +164,12 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
       await fetchUpdateIncident(data);
       notify("Incident updated");
       onRefreshIncidents();
+      reloadHistory();
     } catch (error) {
       notifyFail("Failed to update Incident");
     }
   };
-  useEffect(() => {
+  const reloadHistory = () => {
     const data = {
       orgId,
       incidentId: Number(id),
@@ -180,6 +181,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
       .catch((error) => {
         console.log(error);
       });
+  }
+  useEffect(() => {
+    reloadHistory()
   }, [id]);
   useEffect(() => {
     const fetchData = async () => {

@@ -243,6 +243,20 @@ const AlertsPage = () => {
     setAlertDate(response.alertsList != null ? response.alertsList : []);
     const total = response.totalOffenseCount;
     setpageCount(Math.ceil(total / limit));
+    response.alertsList.map((item)=>{
+      let resolvedTime =   item.resolvedtime ? getCurrentTimeZone(item.resolvedtime) : new Date();
+    let detectedTime = item.detectedtime ? getCurrentTimeZone(item.detectedtime) : new Date();
+    let timeDifferenceMs = new Date(resolvedTime) - new Date(detectedTime);
+
+    // Convert milliseconds to days, hours, and minutes
+    let days = Math.floor(timeDifferenceMs / (24 * 60 * 60 * 1000));
+    let hours = Math.floor((timeDifferenceMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+    let minutes = Math.floor((timeDifferenceMs % (60 * 60 * 1000)) / (60 * 1000));
+
+    // Format the time difference
+    let formattedTimeDifference = `${days}d${hours}h${minutes}m`;
+    item.sla = formattedTimeDifference
+    })
     {
       if (userID === 1) {
         setFilteredAlertDate(response.alertsList);
@@ -1145,7 +1159,7 @@ const AlertsPage = () => {
                           <span className="text-dark text-hover-primary d-block mb-1">
                             <span>
                               {item.detectedtime &&
-                            getCurrentTimeZone(item.detectedtime)
+                                getCurrentTimeZone(item.detectedtime)
                               }
                             </span>
                             {/* <span>

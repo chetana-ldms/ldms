@@ -33,6 +33,7 @@ import {
   fetchUserActionsByUser,
 } from "../../api/dashBoardApi";
 import "./Dashboard.css";
+import moment from 'moment-timezone';
 
 const DashboardWrapper = () => {
   const userID = Number(sessionStorage.getItem("userId"));
@@ -54,14 +55,34 @@ const DashboardWrapper = () => {
   const [selectedFilter, setSelectedFilter] = useState(30);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState(1);
-  function formatDateDiff(date) {
-    const diffMs = new Date() - date;
+  // function formatDateDiff(date) {
+  //   const diffMs = new Date() - date;
+  //   const diffMins = Math.floor(diffMs / 60000);
+  //   const days = Math.floor(diffMins / 1440);
+  //   const hours = Math.floor((diffMins % 1440) / 60);
+  //   const minutes = diffMins % 60;
+  //   return `${days}d ${hours}h ${minutes}m`;
+  // }
+
+  const getCurrentTimeZoneDiff = (UTCDate) => {
+    const inputTime = moment.tz(UTCDate, "UTC");
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const localTime = inputTime.tz(userTimeZone);
+    
+    const now = moment(); // Current moment in user's time zone
+    const diffMs = now.diff(inputTime); // Calculate the difference in milliseconds
     const diffMins = Math.floor(diffMs / 60000);
     const days = Math.floor(diffMins / 1440);
     const hours = Math.floor((diffMins % 1440) / 60);
     const minutes = diffMins % 60;
-    return `${days}d ${hours}h ${minutes}m`;
-  }
+    
+    const diffString = `${days}d ${hours}h ${minutes}m`;
+  
+    return diffString;
+  };
+  
+  
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -404,10 +425,11 @@ const DashboardWrapper = () => {
                             <td>
                               <span className="fw-normal">
                                 {" "}
-                                {formatDateDiff(new Date(item?.actionDate))}
+                                {/* {formatDateDiff(new Date(item?.actionDate))} */}
+                                {getCurrentTimeZoneDiff(item?.actionDate)}
                               </span>
                             </td>
-                            <td>{item.score}</td>
+                            <td>{item.score ?? 0}</td>
                             <td>
                               <span>{item?.actionStatusName}</span>
                             </td>
@@ -443,7 +465,8 @@ const DashboardWrapper = () => {
                             <td>{item?.severityName}</td>
                             <td>
                               <span className="fw-normal">
-                                {formatDateDiff(new Date(item?.createdDate))}
+                                {/* {formatDateDiff(new Date(item?.createdDate))} */}
+                                {getCurrentTimeZoneDiff(item?.createdDate)}
                               </span>
                             </td>
                             <td>{item.score ?? 0}</td>
