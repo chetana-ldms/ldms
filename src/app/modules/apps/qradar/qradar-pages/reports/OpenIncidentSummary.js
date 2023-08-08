@@ -36,18 +36,19 @@ function OpenIncidentSummary() {
     },
     data: [
       {
-        type: 'pie',
+        type: "pie",
         startAngle: 220,
-        toolTipContent: '<b>{label}</b>: {y}%',
-        showInLegend: 'true',
-        legendText: '{label}',
+        toolTipContent: "<b>{label}</b>: {y}% ({alertCount})", // Include alertCount in tooltip
+        showInLegend: "true",
+        legendText: "{label}",
         indexLabelFontSize: 13,
-        indexLabel: '{label} - {y}%',
+        indexLabel: "{label} - {y}% ({alertCount})", // Include alertCount in label
         dataPoints: statusNames.map((statusName, index) => {
           return {
             y: alertCounts[index].toFixed(2),
             label: statusName,
-          }
+            alertCount: alertData[index].alertCount, // Access the alertCount from alertData
+          };
         }),
       },
     ],

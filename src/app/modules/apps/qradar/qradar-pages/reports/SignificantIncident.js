@@ -28,18 +28,20 @@ function SignificantIncident() {
 
   if (alertData && alertData.length > 0) {
     statusNames = alertData.map((alert) => alert.statusName)
-    alertCounts = alertData.map((alert) => alert.percentageValue)
+    alertCounts = alertData.map((alert) => alert.alertCount)
   }
 
   const dataPoints =
-    alertData && alertData.length > 0
-      ? alertData.map((alert) => {
-          return {
-            y: alert.percentageValue.toFixed(2),
-            label: alert.statusName,
-          }
-        })
-      : []
+  alertData && alertData.length > 0
+    ? alertData.map((alert, index) => {  
+        return {
+          y: alert.percentageValue.toFixed(2),
+          label: alert.statusName,
+          alertCount: alertCounts[index],
+        };
+      })
+    : [];
+
 
   //Pie chart for Open incident status
   const openstatusoptions = {
@@ -54,11 +56,11 @@ function SignificantIncident() {
       {
         type: 'pie',
         startAngle: 220,
-        toolTipContent: '<b>{label}</b>: {y}%',
+        toolTipContent: '<b>{label}</b>: {y}% ({alertCount})',
         showInLegend: 'true',
         legendText: '{label}',
         indexLabelFontSize: 13,
-        indexLabel: '{label} - {y}%',
+        indexLabel: '{label} - {y}% ({alertCount})',
         dataPoints: dataPoints,
       },
     ],

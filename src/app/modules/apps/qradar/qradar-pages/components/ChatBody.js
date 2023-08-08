@@ -30,21 +30,45 @@ const ChatBody = ({
   useEffect(() => {
     setMessages(initialMessages);
   }, [initialMessages]);
-  useEffect(() => {
-    const fetchData = async () => {
-      // Fetch chat history for the selected incident
-      const data = {
-        orgId: orgId,
-        subject: "Incident",
-        subjectRefId: id,
-      };
-      const chatHistory = await fetchGetChatHistory(data);
-      setChatHistory(chatHistory || []);
-      setRefreshChatHistory(false);
-      setMessages([]);
-      resetMessages();
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     // Fetch chat history for the selected incident
+  //     const data = {
+  //       orgId: orgId,
+  //       subject: "Incident",
+  //       subjectRefId: id,
+  //     };
+  //     const chatHistory = await fetchGetChatHistory(data);
+  //     setChatHistory(chatHistory || []);
+  //     setRefreshChatHistory(false);
+  //     setMessages([]);
+  //     resetMessages();
+  //   };
 
+  //   fetchData();
+  //   setChatHistory([]);
+  //   // const interval = setInterval(() => {
+  //   //   fetchData();
+  //   // }, 1000);
+
+  //   // return () => {
+  //   //   clearInterval(interval);
+  //   // };
+  // }, [id, setRefreshChatHistory]);
+  const fetchData = async () => {
+    // Fetch chat history for the selected incident
+    const data = {
+      orgId: orgId,
+      subject: "Incident",
+      subjectRefId: id,
+    };
+    const chatHistory = await fetchGetChatHistory(data);
+    setChatHistory(chatHistory || []);
+    setRefreshChatHistory(false);
+    setMessages([]);
+    resetMessages();
+  };
+  useEffect(() => {
     fetchData();
     setChatHistory([]);
     // const interval = setInterval(() => {
@@ -55,7 +79,13 @@ const ChatBody = ({
     //   clearInterval(interval);
     // };
   }, [id, setRefreshChatHistory]);
-  const exportChatHistory = () => {
+  const exportChatHistory = async () => {
+    const data = {
+      orgId: orgId,
+      subject: "Incident",
+      subjectRefId: id,
+    };
+    const chatHistory = await fetchGetChatHistory(data);
     const filename = `Chat_History_Incident_${id}.txt`;
     const formattedChatHistory = chatHistory
       .map((message) => `${message.fromUserName}: ${message.chatMessage}`)
@@ -67,33 +97,9 @@ const ChatBody = ({
       encodeURIComponent(formattedChatHistory);
     element.download = filename;
     element.click();
+    
   };
-  // const handleDownloadAttachment = async (message) => {
-  //   try {
-  //     const data = {
-  //       fileUrl: message.attachmentUrl,
-  //       filePhysicalPath: message.attachmentPhysicalPath,
-  //     };
-  //     const response = await fetchDownloadAttachmentUrl(data);
-  //     if (response.ok) {
-  //       const fileBlob = await response.blob();
-  //       const url = URL.createObjectURL(fileBlob);
-  //       const link = document.createElement("a");
-  //       link.href = url;
-  //       link.download = message.fileName;
-  //       link.target = "_blank";
-  //       document.body.appendChild(link);
-  //       link.click();
-  //       document.body.removeChild(link);
-  //       // notify("File Downloaded successfully");
-  //     } else {
-  //       // notifyFail("File not Downloaded successfully");
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     // notifyFail("Error occurred while downloading the file");
-  //   }
-  // };
+
 
   return (
     <>
@@ -152,21 +158,7 @@ const ChatBody = ({
                       <p>{message.chatMessage}</p>
                     </>
                   )}
-                  {/* {message.messageType === "Attachment" && (
-                    <div>
-                      <a
-                        href={message.attachmentUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      // onClick={(e) => {
-                      //   e.preventDefault();
-                      //   handleDownloadAttachment(message);
-                      // }}
-                      >
-                        {message.chatMessage}
-                      </a>
-                    </div>
-                  )} */}
+                
                   {message.messageType === "Attachment" && (
                     <div>
                       <a

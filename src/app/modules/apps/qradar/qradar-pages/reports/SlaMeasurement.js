@@ -105,9 +105,9 @@ function SlaMeasurement() {
     width: 500,
     data: [
       {
-        toolTipContent: "{y}",
+        toolTipContent: "{y}%",
         legendText: "{label}",
-        indexLabel: "{y}",
+        // indexLabel: "{y}%",
         indexLabelFontColor: "white",
         // indexLabelBackgroundColor: "red",
         type: "bar",
@@ -152,9 +152,9 @@ function SlaMeasurement() {
     width: 500,
     data: [
       {
-        toolTipContent: "{y}",
+        toolTipContent: "{y}%",
         legendText: "{label}",
-        indexLabel: "{y}",
+        // indexLabel: "{y}%",
         indexLabelFontColor: "white",
         // indexLabelBackgroundColor: "red",
         type: "bar",
@@ -199,9 +199,9 @@ function SlaMeasurement() {
     width: 500,
     data: [
       {
-        toolTipContent: "{y}",
+        toolTipContent: "{y}%",
         legendText: "{label}",
-        indexLabel: "{y}",
+        // indexLabel: "{y}%",
         indexLabelFontColor: "white",
         // indexLabelBackgroundColor: "red",
         type: "bar",

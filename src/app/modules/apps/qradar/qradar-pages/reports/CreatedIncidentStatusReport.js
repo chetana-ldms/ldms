@@ -37,57 +37,22 @@ function CreatedIncidentStatusReport() {
       {
         type: "pie",
         startAngle: 220,
-        toolTipContent: "<b>{label}</b>: {y}%",
+        toolTipContent: "<b>{label}</b>: {y}% ({alertCount})", // Include alertCount in tooltip
         showInLegend: "true",
         legendText: "{label}",
         indexLabelFontSize: 13,
-        indexLabel: "{label} - {y}%",
+        indexLabel: "{label} - {y}% ({alertCount})", // Include alertCount in label
         dataPoints: statusNames.map((statusName, index) => {
           return {
             y: alertCounts[index].toFixed(2),
             label: statusName,
+            alertCount: alertData[index].alertCount, // Access the alertCount from alertData
           };
         }),
       },
     ],
   };
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         "http://115.110.192.133:502/api/Reports/v1/AllIncidentsSummery",
-  //         {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: JSON.stringify({
-  //             orgId: 1,
-  //             incidentFromDate: "2022-04-13T05:43:48.828Z",
-  //             incidentToDate: "2023-04-13T05:43:48.828Z",
-  //           }),
-  //         }
-  //       );
-
-  //       if (!response.ok) {
-  //         const errorData = await response.json();
-  //         throw new Error(
-  //           `Network response was not ok: ${response.status} - ${errorData.message}`
-  //         );
-  //       }
-
-  //       const { data } = await response.json(); // destructure the 'data' property from the response object
-  //       setAlertData(data);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       setError(error.message);
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
+  
 
   useEffect(() => {
     const fetchData = async () => {

@@ -24,19 +24,21 @@ function AlertsSummary() {
   let alertCounts = null
 
   if (alertData && alertData.length > 0) {
-    statusNames = alertData.map((alert) => alert.statusName)
-    alertCounts = alertData.map((alert) => alert.percentageValue)
+    statusNames = alertData.map((alert) => alert.statusName);
+    alertCounts = alertData.map((alert) => alert.alertCount); // Make sure this matches the actual property name
   }
-
+  
   const dataPoints =
     alertData && alertData.length > 0
-      ? alertData.map((alert) => {
+      ? alertData.map((alert, index) => {
           return {
             y: alert.percentageValue.toFixed(2),
             label: alert.statusName,
-          }
+            alertCount: alertCounts[index], // Include the alertCount here
+          };
         })
-      : []
+      : [];
+  
 
   //Pie chart for Open incident status
   const openstatusoptions = {
@@ -51,11 +53,11 @@ function AlertsSummary() {
       {
         type: 'pie',
         startAngle: 220,
-        toolTipContent: '<b>{label}</b>: {y}%',
+        toolTipContent: '<b>{label}</b>: {y}% ({alertCount})',
         showInLegend: 'true',
         legendText: '{label}',
         indexLabelFontSize: 13,
-        indexLabel: '{label} - {y}%',
+        indexLabel: '{label} - {y}% ({alertCount})',
         dataPoints: dataPoints,
       },
     ],
