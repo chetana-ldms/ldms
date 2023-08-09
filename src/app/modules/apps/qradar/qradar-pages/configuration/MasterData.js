@@ -35,8 +35,8 @@ const MasterData = () => {
               <td className='text-warning fw-bold'>string</td>
               <td>string</td>
               <td>string</td>
-              <td>2022-12-28T07:32:19.375Z</td>
-              <td className='text-warning fw-bold'>2022-12-28T07:32:19.375Z</td>
+              <td>28/12/2022 9:30PM</td>
+              <td className='text-warning fw-bold'>28/12/2022 9:35PM</td>
               <td>
                 <button className='btn btn-danger btn-small'>
                   <Link className='text-white' to={`/qradar/master-data/update`}>

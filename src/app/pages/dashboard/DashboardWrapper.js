@@ -68,21 +68,21 @@ const DashboardWrapper = () => {
     const inputTime = moment.tz(UTCDate, "UTC");
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const localTime = inputTime.tz(userTimeZone);
-    
+
     const now = moment(); // Current moment in user's time zone
     const diffMs = now.diff(inputTime); // Calculate the difference in milliseconds
     const diffMins = Math.floor(diffMs / 60000);
     const days = Math.floor(diffMins / 1440);
     const hours = Math.floor((diffMins % 1440) / 60);
     const minutes = diffMins % 60;
-    
+
     const diffString = `${days}d ${hours}h ${minutes}m`;
-  
+
     return diffString;
   };
-  
-  
-  
+
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -281,7 +281,7 @@ const DashboardWrapper = () => {
         <div className="col-lg-5 fs-11 lh-40 fc-gray text-right ds-reload">
           Dashboard is automatically refreshing every 5 minutes{" "}
           <a href="" onClick={handleRefreshData}>
-          <i className={`fa fa-refresh ${isRefreshing ? "rotate" : ""}`} />
+            <i className={`fa fa-refresh ${isRefreshing ? "rotate" : ""}`} />
           </a>
         </div>
       </div>
@@ -417,15 +417,13 @@ const DashboardWrapper = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {UserActions?.length > 0 &&
+                    {UserActions?.length > 0 ? (
                       UserActions.map((item, index) => {
                         return (
                           <tr key={index}>
                             <td>{item?.severity}</td>
                             <td>
                               <span className="fw-normal">
-                                {" "}
-                                {/* {formatDateDiff(new Date(item?.actionDate))} */}
                                 {getCurrentTimeZoneDiff(item?.actionDate)}
                               </span>
                             </td>
@@ -435,7 +433,13 @@ const DashboardWrapper = () => {
                             </td>
                           </tr>
                         );
-                      })}
+                      })
+                    ) : (
+                      <tr>
+                      <td className="text-center" colSpan="4">No data found</td>
+                    </tr>
+                    )}
+
                   </tbody>
                 </table>
               </div>
@@ -458,7 +462,7 @@ const DashboardWrapper = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {recentIncidents?.length > 0 &&
+                    {recentIncidents?.length > 0 ? (
                       recentIncidents.map((item, index) => {
                         return (
                           <tr key={index}>
@@ -475,7 +479,13 @@ const DashboardWrapper = () => {
                             </td>
                           </tr>
                         );
-                      })}
+                      })
+                    ) : (
+                      <tr>
+                        <td className="text-center" colSpan="4">No data found</td>
+                      </tr>
+                    )}
+
                   </tbody>
                 </table>
               </div>

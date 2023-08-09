@@ -274,7 +274,7 @@ const AlertsPage = () => {
   }, [limit]);
   useEffect(() => {
     const fetchData = async () => {
-      qradaralerts();
+      // qradaralerts();
       setTimeout(() => {
         setDelay((delay) => delay + 1);
       }, 60000);
@@ -349,7 +349,7 @@ const AlertsPage = () => {
     qradaralerts();
     setTimeout(() => setIsRefreshing(false), 2000);
   };
-  const RefreshInterval = 1 * 60 * 1000;
+  const RefreshInterval = 5 * 60 * 1000;
 
   useEffect(() => {
     let isActive = true;
@@ -1223,7 +1223,10 @@ const AlertsPage = () => {
                               {item.status}
                               <br />
                               <b>Detected Date/Time : </b>
-                              {new Date(item.detectedtime).toLocaleString()}
+                              {item.detectedtime &&
+                                getCurrentTimeZone(item.detectedtime)
+                              }
+                              {/* {new Date(item.detectedtime).toLocaleString()} */}
                               <br />
                               <b>Observable Tag : </b>
                               {item.observableTag} <br />
@@ -1251,13 +1254,13 @@ const AlertsPage = () => {
                                       {alertNotesList
                                         .sort(
                                           (a, b) =>
-                                            new Date(b.createdDate) -
-                                            new Date(a.createdDate)
+                                          getCurrentTimeZone(b.createdDate) -
+                                          getCurrentTimeZone(a.createdDate)
                                         ) // Sort the notes based on createdDate
                                         .map((note) => (
                                           <tr key={note.alertsNotesId}>
                                             <td>{note.createdUser}</td>
-                                            <td>{note.createdDate}</td>
+                                            <td>{getCurrentTimeZone(note.createdDate)}</td>
                                             <td>{note.notes}</td>
                                           </tr>
                                         ))}

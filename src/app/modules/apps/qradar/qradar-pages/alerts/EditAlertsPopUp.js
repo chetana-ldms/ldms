@@ -5,6 +5,7 @@ import { fetchUpdateAlert } from "../../../../../api/Api";
 import { toast } from "react-toastify";
 import { notify, notifyFail } from "../components/notification/Notification";
 import "react-toastify/dist/ReactToastify.css";
+import { getCurrentTimeZone } from "../../../../../../utils/helper";
 
 const EditAlertsPopUp = ({
   show,
@@ -253,7 +254,7 @@ const EditAlertsPopUp = ({
             </Form.Group>
             <Form.Group className="row">
               <Form.Label className="col-md-3">Detected Date/Time :</Form.Label>
-              <div className="col-md-9">{detectedtime}</div>
+              <div className="col-md-9">{getCurrentTimeZone(detectedtime)}</div>
             </Form.Group>
             <Form.Group className="row">
               <Form.Label className="col-md-3">Source Name :</Form.Label>
