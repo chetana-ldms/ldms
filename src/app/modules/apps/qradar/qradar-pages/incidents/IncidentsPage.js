@@ -16,6 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ChatApp from "./ChatApp";
 import moment from 'moment-timezone';
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
+import "./IncidentPagination.css";
 
 
 const IncidentsPage = () => {
@@ -148,7 +149,7 @@ const IncidentsPage = () => {
     }
   }, [incident]);
 
- 
+
 
   return (
     <>
@@ -268,10 +269,10 @@ const IncidentsPage = () => {
                                   </div>
                                   <div className="pt-3 bd-highlight">
                                     <div className="badge text-black fw-normal">
-                                      {item.modifiedDate?
-                                        getCurrentTimeZone(item.modifiedDate):
+                                      {item.modifiedDate ?
+                                        getCurrentTimeZone(item.modifiedDate) :
                                         getCurrentTimeZone(item.createdDate)
-                                        }
+                                      }
                                     </div>
                                   </div>
 
@@ -305,39 +306,46 @@ const IncidentsPage = () => {
                       </>
                     </div>
                   </div>
-                  <div className="d-flex align-items-center justify-content-between pagination-bar pt-5 border-top">
-                    <ReactPaginate
-                      previousLabel=<i className="fa fa-chevron-left" />
-                      nextLabel=<i className="fa fa-chevron-right" />
-                      pageCount={pageCount}
-                      marginPagesDisplayed={1}
-                      pageRangeDisplayed={2}
-                      onPageChange={handlePageClick}
-                      containerClassName={"pagination justify-content-end"}
-                      pageClassName={"page-item"}
-                      pageLinkClassName={"page-link"}
-                      previousClassName={"page-item custom-previous"}
-                      previousLinkClassName={"page-link custom-previous-link"}
-                      nextClassName={"page-item custom-next"}
-                      nextLinkClassName={"page-link custom-next-link"}
-                      breakClassName={"page-item"}
-                      breakLinkClassName={"page-link"}
-                      activeClassName={"active"}
-                    />
-                    <div className="d-flex justify-content-end align-items-center">
-                      {/* <span className="col-md-4">Pages:</span> */}
-                      <select
-                        className="form-select form-select-sm"
-                        value={limit}
-                        onChange={handlePageSelect}
-                      >
-                        <option value={5}>5</option>
-                        <option value={10}>10</option>
-                        <option value={15}>15</option>
-                        <option value={20}>20</option>
-                      </select>
+                  <div className="d-flex flex-column align-items-start pagination-bar pagination-incident pt-5 border-top">
+                    {/* Pagination Controls */}
+                    <div className="pagination-controls mb-2">
+                      <ReactPaginate
+                        previousLabel={<i className="fa fa-chevron-left" />}
+                        nextLabel={<i className="fa fa-chevron-right" />}
+                        pageCount={pageCount}
+                        marginPagesDisplayed={1}
+                        pageRangeDisplayed={2}
+                        onPageChange={handlePageClick}
+                        containerClassName={"pagination justify-content-start"}
+                        pageClassName={"page-item"}
+                        pageLinkClassName={"page-link"}
+                        previousClassName={"page-item custom-previous"}
+                        previousLinkClassName={"page-link custom-previous-link"}
+                        nextClassName={"page-item custom-next"}
+                        nextLinkClassName={"page-link custom-next-link"}
+                        breakClassName={"page-item"}
+                        breakLinkClassName={"page-link"}
+                        activeClassName={"active"}
+                      />
+                    </div>
+
+                    {/* Page Size Dropdown */}
+                    <div className="page-size-dropdown">
+                      <div className="d-flex justify-content-start align-items-center">
+                        <select
+                          className="form-select form-select-sm"
+                          value={limit}
+                          onChange={handlePageSelect}
+                        >
+                          <option value={5}>5</option>
+                          <option value={10}>10</option>
+                          <option value={15}>15</option>
+                          <option value={20}>20</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>

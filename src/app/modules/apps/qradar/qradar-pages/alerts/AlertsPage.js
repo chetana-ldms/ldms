@@ -708,7 +708,7 @@ const AlertsPage = () => {
                       </div>
                     </div>
                   </th>
-                  <th className="min-w-80px">
+                  <th className="min-w-70px">
                     Score
                     <div className="m-0 float-right table-filter">
                       <a
@@ -815,7 +815,7 @@ const AlertsPage = () => {
                       </div>
                     </div>
                   </th>
-                  <th className="min-w-120px">
+                  <th className="min-w-120px" style={{width: 140}}>
                     Detected time
                     <div className="m-0 float-right table-filter">
                       <a
@@ -1300,7 +1300,7 @@ const AlertsPage = () => {
               nextLabel=<i className="fa fa-chevron-right" />
               pageCount={pageCount}
               marginPagesDisplayed={1}
-              pageRangeDisplayed={15}
+              pageRangeDisplayed={8}
               onPageChange={handlePageClick}
               containerClassName={"pagination justify-content-end"}
               pageClassName={"page-item"}
