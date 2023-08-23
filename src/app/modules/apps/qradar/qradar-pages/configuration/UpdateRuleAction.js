@@ -5,8 +5,10 @@ import { UsersListLoading } from '../components/loading/UsersListLoading'
 import { notify, notifyFail } from '../components/notification/Notification';
 import { fetchLDPToolsByToolType, fetchRuleActionDetails, fetchRuleActionUpdateUrl, fetchToolActions } from '../../../../../api/ConfigurationApi'
 import { fetchLDPTools, fetchMasterData } from '../../../../../api/Api'
+import { useErrorBoundary } from "react-error-boundary";
 
 const UpdateRuleAction = () => {
+  const handleError = useErrorBoundary();
   const { id } = useParams()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
@@ -48,7 +50,7 @@ const UpdateRuleAction = () => {
           toolActionID: data.toolActionID
         })
       } catch (error) {
-        console.log(error);
+        handleError(error);
       }
     };
 
@@ -60,7 +62,7 @@ const UpdateRuleAction = () => {
         const data = await fetchLDPTools();
         setTools(data);
       } catch (error) {
-        console.log(error)
+        handleError(error);
       }
     };
 
@@ -72,7 +74,7 @@ const UpdateRuleAction = () => {
         const data = await fetchToolActions();
         setToolTypeActions(data);
       } catch (error) {
-        console.log(error)
+        handleError(error);
       }
     };
 
@@ -108,7 +110,7 @@ const UpdateRuleAction = () => {
           const result = response.ldpToolsList
           setTools(result)
         } catch (error) {
-          console.log(error);
+          handleError(error);
         }
       };
   
@@ -127,7 +129,7 @@ const UpdateRuleAction = () => {
         setToolTypes(typeData);
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   }, []);
   const handleSubmit = async (event) => {
@@ -178,7 +180,7 @@ const UpdateRuleAction = () => {
         notifyFail('Failed to update Rule Action');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
     setLoading(false);
   }

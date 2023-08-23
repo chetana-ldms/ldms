@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import CanvasJSReact from "./assets/canvasjs.react";
 import { fetchAllIncidentsSummeryUrl } from "../../../../../api/ReportApi";
+import { useErrorBoundary } from "react-error-boundary";
+ 
 
 function CreatedIncidentStatusReport() {
+  const handleError = useErrorBoundary();
   const orgId = Number(sessionStorage.getItem('orgId'))
   const [alertData, setAlertData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -80,6 +83,7 @@ function CreatedIncidentStatusReport() {
         setAlertData(data);
         setLoading(false);
       } catch (error) {
+        handleError(error);
         setError(error.message);
         setLoading(false);
       }

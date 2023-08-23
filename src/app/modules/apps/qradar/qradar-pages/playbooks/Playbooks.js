@@ -6,7 +6,11 @@ import { notify, notifyFail } from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
 import axios from 'axios'
 import { fetchDelete, fetchPlayBooks } from '../../../../../api/playBookApi'
+import { useErrorBoundary } from "react-error-boundary";
+
+
 const Playbooks = () => {
+  const handleError = useErrorBoundary();
   const orgId = Number(sessionStorage.getItem('orgId'));
   const [loading, setLoading] = useState(false)
   const [playbooks, setPlaybooks] = useState([])
@@ -30,7 +34,7 @@ const Playbooks = () => {
       }
       await reload();
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   }
   const reload = async() => {
@@ -38,7 +42,7 @@ const Playbooks = () => {
       const data = await fetchPlayBooks(orgId);
       setPlaybooks(data);
     } catch (error) {
-      console.log(error)
+      handleError(error);
     }
 }
   useEffect(() => {

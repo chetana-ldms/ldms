@@ -4,8 +4,11 @@ import { fetchLDPToolDetails, fetchMasterData } from '../../../../../api/Api'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import { fetchLDPToolsUpdateUrl } from '../../../../../api/ConfigurationApi';
+import { useErrorBoundary } from "react-error-boundary";
+
 
 const UpdateLdpTools = () => {
+  const handleError = useErrorBoundary();
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
@@ -50,8 +53,7 @@ const UpdateLdpTools = () => {
         notifyFail('Failed to update LDP Tool');
       }
     } catch (error) {
-      console.log(error);
-    }
+      handleError(error);    }
     setLoading(false);
   }
 
@@ -61,8 +63,7 @@ const UpdateLdpTools = () => {
         setToolTypes(typeData);
       })
       .catch((error) => {
-        console.log(error);
-      });
+        handleError(error);      });
   }, []);
   useEffect(() => {
     const fetchData = async () => {
@@ -70,8 +71,7 @@ const UpdateLdpTools = () => {
         const data = await fetchLDPToolDetails(id, toolName);
         setLdpTools(data);
       } catch (error) {
-        console.log(error)
-      }
+        handleError(error);      }
     };
 
     fetchData();

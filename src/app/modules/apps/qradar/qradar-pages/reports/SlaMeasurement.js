@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 import CanvasJSReact from "./assets/canvasjs.react";
 import { fetchSLAMeasurementSummeryUrl } from "../../../../../api/ReportApi";
+import { useErrorBoundary } from "react-error-boundary";
+
 
 function SlaMeasurement() {
+  const handleError = useErrorBoundary();
   const orgId = Number(sessionStorage.getItem('orgId'))
   const [alertData, setAlertData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -241,6 +244,7 @@ function SlaMeasurement() {
         setAlertData(data);
         setLoading(false);
       } catch (error) {
+        handleError(error);
         setError(error.message);
         setLoading(false);
       }

@@ -1,19 +1,20 @@
-import React, {useState, useEffect} from 'react'
-import {Link, useParams} from 'react-router-dom'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
+import React, { useState, useEffect } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { UsersListLoading } from '../components/loading/UsersListLoading'
 import { ToastContainer, toast } from 'react-toastify'
 import { notify, notifyFail } from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
 import { fetchLDPToolsDelete } from "../../../../../api/Api"
 import axios from 'axios'
 import { fetchLDPToolsUrl } from '../../../../../api/ConfigurationApi'
+import { useErrorBoundary } from "react-error-boundary";
+
 const LdpTools = () => {
+  const handleError = useErrorBoundary();
   const [loading, setLoading] = useState(false)
   const [tools, setTools] = useState([])
-  console.log(tools, "tools1111")
-  const {status} = useParams()
 
-  const handleDelete = async (item)  =>{
+  const handleDelete = async (item) => {
     console.log(item, "item")
     const deletedUserId = Number(sessionStorage.getItem('userId'));
     const deletedDate = new Date().toISOString();
@@ -26,25 +27,25 @@ const LdpTools = () => {
       const responce = await fetchLDPToolsDelete(data);
       if (responce.isSuccess) {
         notify('LDP Tool Deleted');
-      }else{
+      } else {
         notifyFail("LDP Tool not Deleted")
       }
       await reload();
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   }
-  const reload = async() => {
+  const reload = async () => {
     const response = await fetchLDPToolsUrl();
     setTools(response)
-   }
+  }
   useEffect(() => {
     reload();
   }, [])
 
   return (
     <div className='card'>
-       <ToastContainer />
+      <ToastContainer />
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
           <span className='card-label fw-bold fs-3 mb-1'>LDP Tools</span>
@@ -71,21 +72,33 @@ const LdpTools = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {tools.map((item, index) => (
-              <tr key={index} className='fs-12'>
-                <td className='text-danger fw-bold'>{item.toolId}</td>
-                <td>{item.toolName}</td>
-                <td className='text-warning fw-bold'>{item.toolType}</td>
-                {/* <td>{item.createdDate}</td> */}
-                <td>
-                  <Link className='text-white' to={`/qradar/ldp-tools/update/${item.toolId}`}>
-                    <button className='btn btn-primary btn-small'>Update</button>
-                  </Link>
-                  <button className="btn btn-sm btn-danger btn-small ms-5" style={{ fontSize: '14px' }} onClick={()=>{handleDelete(item)}}> Delete</button>    
-
-                </td>
+            {tools.length > 0 ? (
+              tools.map((item, index) => (
+                <tr key={index} className='fs-12'>
+                  <td className='text-danger fw-bold'>{item.toolId}</td>
+                  <td>{item.toolName}</td>
+                  <td className='text-warning fw-bold'>{item.toolType}</td>
+                  {/* <td>{item.createdDate}</td> */}
+                  <td>
+                    <Link className='text-white' to={`/qradar/ldp-tools/update/${item.toolId}`}>
+                      <button className='btn btn-primary btn-small'>Update</button>
+                    </Link>
+                    <button
+                      className="btn btn-sm btn-danger btn-small ms-5"
+                      style={{ fontSize: '14px' }}
+                      onClick={() => { handleDelete(item) }}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4">No data found</td>
               </tr>
-            ))}
+            )}
+
           </tbody>
         </table>
       </div>
@@ -93,4 +106,4 @@ const LdpTools = () => {
   )
 }
 
-export {LdpTools}
+export { LdpTools }

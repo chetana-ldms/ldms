@@ -1,12 +1,14 @@
-import React, {useState, useEffect} from 'react'
-import {Link, useParams} from 'react-router-dom'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
+import React, { useState, useEffect } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { UsersListLoading } from '../components/loading/UsersListLoading'
 import axios from 'axios'
+import { useErrorBoundary } from "react-error-boundary";
+
 
 const RoleData = () => {
+  const handleError = useErrorBoundary();
   const [loading, setLoading] = useState(false)
   const [roles, setRoles] = useState([])
-  const {status} = useParams()
   useEffect(() => {
     setLoading(true)
     var config = {
@@ -23,7 +25,7 @@ const RoleData = () => {
         setLoading(false)
       })
       .catch(function (error) {
-        console.log(error)
+        handleError(error);
       })
   }, [])
   return (
@@ -37,20 +39,6 @@ const RoleData = () => {
         </div>
       </div>
       <div className='card-body'>
-        {status === 'updated' && (
-          <div class='alert alert-success d-flex align-items-center p-5'>
-            <div class='d-flex flex-column'>
-              <h4 class='mb-1 text-dark'>Data Saved</h4>
-            </div>
-            <button
-              type='button'
-              class='position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto'
-              data-bs-dismiss='alert'
-            >
-              X<span class='svg-icon svg-icon-2x svg-icon-light'>...</span>
-            </button>
-          </div>
-        )}
 
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
@@ -61,12 +49,19 @@ const RoleData = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {roles.map((item, index) => (
-              <tr key={index} className='fs-12'>
-                <td className='text-danger fw-bold'>{item.roleID}</td>
-                <td>{item.roleName}</td>
+            {roles.length > 0 ? (
+              roles.map((item, index) => (
+                <tr key={index} className='fs-12'>
+                  <td className='text-danger fw-bold'>{item.roleID}</td>
+                  <td>{item.roleName}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="2">No data found</td>
               </tr>
-            ))}
+            )}
+
           </tbody>
         </table>
       </div>
@@ -74,4 +69,4 @@ const RoleData = () => {
   )
 }
 
-export {RoleData}
+export { RoleData }

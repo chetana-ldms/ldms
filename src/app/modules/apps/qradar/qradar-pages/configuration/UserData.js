@@ -7,14 +7,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import { fetchUserDelete } from '../../../../../api/Api';
 import axios from 'axios';
 import { fetchUsersUrl } from '../../../../../api/ConfigurationApi';
-
+import { useErrorBoundary } from "react-error-boundary";
+ 
 const UserData = () => {
+  const handleError = useErrorBoundary();
   const userID = Number(sessionStorage.getItem('userId'));
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   console.log(users, 'users');
-  const { status } = useParams();
-
   const handleDelete = async (item) => {
     const userID = item.userID;
     const deletedUserId = Number(sessionStorage.getItem('userId'));
@@ -29,7 +29,7 @@ const UserData = () => {
       notify('User Deleted');
       await reload();
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   };
 
@@ -39,7 +39,7 @@ const UserData = () => {
       const data = await fetchUsersUrl(orgId);
       setUsers(data);
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   };
 

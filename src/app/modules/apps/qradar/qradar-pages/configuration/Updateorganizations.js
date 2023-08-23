@@ -4,9 +4,11 @@ import { fetchOrganizationDetails } from '../../../../../api/Api'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import { fetchOrganizationUpdateUrl } from '../../../../../api/ConfigurationApi';
-import { async } from 'q';
+import { useErrorBoundary } from "react-error-boundary";
+
 
 const UpdateOrganizations = () => {
+  const handleError = useErrorBoundary();
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const { id } = useParams()
@@ -61,7 +63,7 @@ const UpdateOrganizations = () => {
         notifyFail('Failed to update Organization');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
     setLoading(false)
   }
@@ -71,7 +73,7 @@ const UpdateOrganizations = () => {
         const data = await fetchOrganizationDetails(id, orgName, address, mobileNo, email);
         setOrganizationData(data);
       } catch (error) {
-        console.log(error)
+        handleError(error);
       }
     };
 

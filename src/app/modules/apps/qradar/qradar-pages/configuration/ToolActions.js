@@ -7,7 +7,11 @@ import 'react-toastify/dist/ReactToastify.css'
 import { fetchToolActionDelete } from "../../../../../api/Api"
 import axios from 'axios'
 import { fetchToolActionsUrl } from '../../../../../api/ConfigurationApi'
+import { useErrorBoundary } from "react-error-boundary";
+
+
 const ToolActions = () => {
+  const handleError = useErrorBoundary();
   const [loading, setLoading] = useState(false)
   const [toolActions, setToolActions] = useState([])
   console.log(toolActions, "toolActions")
@@ -26,12 +30,12 @@ const ToolActions = () => {
       const responce = await fetchToolActionDelete(data);
       if (responce.isSuccess) {
         notify('Tool Action Deleted');
-      }else{
+      } else {
         notifyFail("Tool Action not Deleted")
       }
       await reload();
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   }
 
@@ -41,12 +45,12 @@ const ToolActions = () => {
       const response = await fetchToolActionsUrl();
       setToolActions(response);
     } catch (error) {
-      console.log(error);
+      handleError(error);
     } finally {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     reload();
   }, [])
@@ -67,20 +71,6 @@ const ToolActions = () => {
         </div>
       </div>
       <div className='card-body'>
-        {/* {status === 'updated' && (
-          <div class='alert alert-success d-flex align-items-center p-5'>
-            <div class='d-flex flex-column'>
-              <h4 class='mb-1 text-dark'>Data Saved</h4>
-            </div>
-            <button
-              type='button'
-              class='position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto'
-              data-bs-dismiss='alert'
-            >
-              X<span class='svg-icon svg-icon-2x svg-icon-light'>...</span>
-            </button>
-          </div>
-        )} */}
 
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
@@ -93,23 +83,35 @@ const ToolActions = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {toolActions.map((item, index) => (
-              <tr key={index} className='fs-12'>
-                <td>{index + 1}</td>
-                <td>{item.toolName}</td>
-                <td>{item.toolTypeActionName}</td>
-                <td>
-                  <Link
-                    className='text-white'
-                    to={`/qradar/tool-actions/update/${item.toolActionID}`}
-                  >
-                    <button className='btn btn-primary btn-small'>Update</button>
-                  </Link>
-                  <button className="btn btn-sm btn-danger btn-small ms-5" style={{ fontSize: '14px' }} onClick={() => { handleDelete(item) }}> Delete</button>
-
-                </td>
+            {toolActions.length > 0 ? (
+              toolActions.map((item, index) => (
+                <tr key={index} className='fs-12'>
+                  <td>{index + 1}</td>
+                  <td>{item.toolName}</td>
+                  <td>{item.toolTypeActionName}</td>
+                  <td>
+                    <Link
+                      className='text-white'
+                      to={`/qradar/tool-actions/update/${item.toolActionID}`}
+                    >
+                      <button className='btn btn-primary btn-small'>Update</button>
+                    </Link>
+                    <button
+                      className="btn btn-sm btn-danger btn-small ms-5"
+                      style={{ fontSize: '14px' }}
+                      onClick={() => { handleDelete(item) }}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4">No data found</td>
               </tr>
-            ))}
+            )}
+
           </tbody>
         </table>
       </div>

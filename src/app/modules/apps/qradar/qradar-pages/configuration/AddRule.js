@@ -4,8 +4,10 @@ import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import { UsersListLoading } from '../components/loading/UsersListLoading'
 import { fetchRuleCatagoriesUrl, fetchRulesAddUrl } from '../../../../../api/ConfigurationApi';
+import { useErrorBoundary } from "react-error-boundary";
 
 const AddRule = () => {
+  const handleError = useErrorBoundary();
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [ruleCategories, setRuleCatagories] = useState([])
@@ -26,7 +28,7 @@ const AddRule = () => {
 
         setLoading(false);
       } catch (error) {
-        console.log(error);
+        handleError(error);
       }
     };
 
@@ -104,7 +106,7 @@ const AddRule = () => {
         notifyFail('Failed to save Rule');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     } finally {
       setLoading(false);
     }
@@ -115,7 +117,7 @@ const AddRule = () => {
       {loading && <UsersListLoading />}
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
-          <span className='card-label fw-bold fs-3 mb-1'>Configure New Rule</span>
+          <span className='card-label fw-bold fs-3 mb-1'>Add New Rule</span>
         </h3>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
@@ -130,7 +132,7 @@ const AddRule = () => {
           <div className='col-lg-6 mb-4 mb-lg-0'>
             <div className='fv-row mb-0'>
               <label htmlFor='ruleName' className='form-label fs-6 fw-bolder mb-3'>
-                Enter Rule Name
+                 Rule Name
               </label>
               <input
                 type='text'
@@ -143,7 +145,7 @@ const AddRule = () => {
           <div className='col-lg-6 mb-4 mb-lg-0'>
             <div className='fv-row mb-0'>
               <label htmlFor='ruleCatagoryID' className='form-label fs-6 fw-bolder mb-3'>
-                Enter Rule Category
+                 Rule Category
               </label>
               <select
                 className='form-select form-select-solid'
@@ -208,7 +210,7 @@ const AddRule = () => {
                               htmlFor='ruleCatagoryID'
                               className='form-label fs-6 fw-bolder mb-3'
                             >
-                              Enter Condition Text
+                               Condition Text
                             </label>
                             {form.ruleConditionValues.map((act, act_index) => {
                               return (

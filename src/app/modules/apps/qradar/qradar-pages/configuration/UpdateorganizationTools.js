@@ -5,8 +5,10 @@ import axios from 'axios'
 import { fetchLDPToolsByToolType, fetchOrganizationToolDetails, fetchOrganizationToolsUpdateUrl } from '../../../../../api/ConfigurationApi';
 import { fetchLDPTools, fetchMasterData } from '../../../../../api/Api';
 import { fetchOrganizations } from '../../../../../api/dashBoardApi';
+import { useErrorBoundary } from "react-error-boundary";
 
 const UpdateOrganizationTools = () => {
+  const handleError = useErrorBoundary();
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
@@ -36,7 +38,7 @@ const UpdateOrganizationTools = () => {
         const data = await fetchLDPTools();
         setToolName(data);
       } catch (error) {
-        console.log(error)
+        handleError(error);
       }
     };
 
@@ -58,7 +60,7 @@ const UpdateOrganizationTools = () => {
           apiUrl: data.apiUrl
         })
       } catch (error) {
-        console.log(error);
+        handleError(error);
       }
     };
 
@@ -110,7 +112,7 @@ const UpdateOrganizationTools = () => {
         notifyFail('Failed to update Organizations Tool');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
     setLoading(false);
   }
@@ -120,7 +122,7 @@ const UpdateOrganizationTools = () => {
         setToolTypes(typeData);
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   }, []);
   useEffect(() => {
@@ -129,7 +131,7 @@ const UpdateOrganizationTools = () => {
           const organizationsResponse = await fetchOrganizations();
           setOrganizationList(organizationsResponse);
         } catch (error) {
-          console.log(error);
+          handleError(error);
         }
       };
   
@@ -165,7 +167,7 @@ const UpdateOrganizationTools = () => {
           const result = response.ldpToolsList
           setToolName(result)
         } catch (error) {
-          console.log(error);
+          handleError(error);
         }
       };
   

@@ -20,6 +20,7 @@ import CustomNode from './CustomNode'
 import 'reactflow/dist/style.css'
 import './overview.css'
 import Sidebar from './Sidebar'
+import { useErrorBoundary } from "react-error-boundary";
 // DND Start
 let id = 0
 const getId = () => `${id++}`
@@ -28,6 +29,7 @@ const onInit = (reactFlowInstance) => console.log('flow loaded:', reactFlowInsta
 const flowKey = 'playbook_export'
 
 const AddPlaybooks = () => {
+ const handleError = useErrorBoundary();
   ///////////////////// Dynamic Data fetch  //////////////////////////
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
@@ -156,7 +158,7 @@ const AddPlaybooks = () => {
           // navigate('/qradar/playbooks/updated')
         })
         .catch(function (error) {
-          console.log(error)
+          handleError(error);
         })
     },
     [reactFlowInstance]

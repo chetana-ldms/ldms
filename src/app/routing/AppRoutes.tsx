@@ -13,6 +13,10 @@ import {Logout, AuthPage, useAuth} from '../modules/auth'
 import {App} from '../App'
 import { PageLayout } from '../modules/auth/components/components/PageLayout'
 import{TeamsChannel} from "../modules/auth/components/TeamsChannel"
+// import ErrorBoundary from '../../utils/ErrorBoundary'
+import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorFallbackComponent } from '../../utils/ErrorFallbackComponent'
+
 
 /**
  * Base URL of the website.
@@ -23,7 +27,14 @@ const {PUBLIC_URL} = process.env
 
 const AppRoutes: FC = () => {
   // const {currentUser} = useAuth()
+  const handleError = (error: any, info: any) => {
+    console.error("An error occurred:", error, info);
+  };
   return (
+    <ErrorBoundary
+    FallbackComponent={ErrorFallbackComponent}
+    onError={handleError}
+  >
     <BrowserRouter basename={PUBLIC_URL}>
       <Routes>
         <Route element={<App />}>
@@ -52,6 +63,7 @@ const AppRoutes: FC = () => {
         </Route>
       </Routes>
     </BrowserRouter>
+    </ErrorBoundary>
   )
 }
 

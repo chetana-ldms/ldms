@@ -17,9 +17,11 @@ import ChatApp from "./ChatApp";
 import moment from 'moment-timezone';
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import "./IncidentPagination.css";
+import { useErrorBoundary } from "react-error-boundary";
 
 
 const IncidentsPage = () => {
+  const handleError = useErrorBoundary();
   const userID = Number(sessionStorage.getItem("userId"));
   const orgId = Number(sessionStorage.getItem("orgId"));
   const date = new Date().toISOString();
@@ -50,7 +52,7 @@ const IncidentsPage = () => {
         setIncidentSortOptions(sortOptionsData);
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   }, []);
   const incidents = async () => {
@@ -71,7 +73,7 @@ const IncidentsPage = () => {
 
       setpageCount(Math.ceil(total / limit));
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   };
 
@@ -107,7 +109,7 @@ const IncidentsPage = () => {
 
       // incidents();
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   };
   const handleIncidentClick = (item) => {

@@ -6,6 +6,8 @@ import { toast } from "react-toastify";
 import { notify, notifyFail } from "../components/notification/Notification";
 import "react-toastify/dist/ReactToastify.css";
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
+import { useErrorBoundary } from "react-error-boundary";
+
 
 const EditAlertsPopUp = ({
   show,
@@ -43,7 +45,7 @@ const EditAlertsPopUp = ({
     observableTagID: observableTagID,
     ownerUserID: ownerUserID,
   });
-
+  const handleError = useErrorBoundary();
   const { severityName, status, observableTag, ownerusername } = formData;
   const { name, score, sla, detectedtime, source } = row;
   const {
@@ -138,7 +140,7 @@ const EditAlertsPopUp = ({
         notifyFail("Alert data not Updated");
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   };
 

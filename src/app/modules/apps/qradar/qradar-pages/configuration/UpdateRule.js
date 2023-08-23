@@ -4,8 +4,11 @@ import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import {UsersListLoading} from '../components/loading/UsersListLoading' 
 import { fetchRuleCatagoriesUrl, fetchRuleDetails, fetchRulesUpdateUrl } from '../../../../../api/ConfigurationApi';
+import { useErrorBoundary } from "react-error-boundary";
+
 
 const UpdateRule = () => {
+  const handleError = useErrorBoundary();
   const navigate = useNavigate()
   const {id} = useParams()
   const [loading, setLoading] = useState(false)
@@ -31,31 +34,12 @@ const UpdateRule = () => {
           ruleCatagoryName:data.ruleCatagoryName
         });
       } catch (error) {
-        console.log(error)
+        handleError(error);
       }
     };
 
     fetchData();
   }, [id, ruleName]);
-  // useEffect(() => {
-  //   setLoading(true)
-  //   var config = {
-  //     method: 'get',
-  //     url: `http://115.110.192.133:8011/api/RulesConfiguraton/v1/Rules/Rule?ruleID=${id}`,
-  //     headers: {
-  //       Accept: 'text/plain',
-  //     },
-  //   }
-  //   axios(config)
-  //     .then(function (response) {
-  //       setRuleData(response.data.ruleData)
-  //       setFormFields(response.data.ruleData.ruleConditions)
-  //       setLoading(false)
-  //     })
-  //     .catch(function (error) {
-  //       console.log(error)
-  //     })
-  // }, [])
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -69,7 +53,7 @@ const UpdateRule = () => {
 
         setLoading(false);
       } catch (error) {
-        console.log(error);
+        handleError(error);
       }
     };
 
@@ -131,35 +115,6 @@ const UpdateRule = () => {
       ruleConditions: formFields,
     }
 
-    // console.log('Data to be sent', data)
-    // var config = {
-    //   method: 'post',
-    //   url: 'http://115.110.192.133:8011/api/RulesConfiguraton/v1/Rules/Update',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Accept: 'text/plain',
-    //   },
-    //   data: data,
-    // }
-    // setTimeout(() => {
-    //   axios(config)
-    //     .then(function (response) {
-    //       const { isSuccess } = response.data;
-
-    //       if (isSuccess) {
-    //         notify('Data Updated');
-    //         navigate('/qradar/rules-engine/updated');
-    //       } else {
-    //         notifyFail('Failed to update data');
-    //       }
-    //       // console.log(JSON.stringify(response.data))
-    //       // navigate('/qradar/rules-engine/updated')
-    //     })
-    //     .catch(function (error) {
-    //       console.log(error)
-    //     })
-    //   setLoading(false)
-    // }, 1000)
     try {
       const responseData = await fetchRulesUpdateUrl(data);
       const { isSuccess } = responseData;
@@ -171,10 +126,9 @@ const UpdateRule = () => {
         notifyFail('Failed to update Rule');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
     setLoading(false);
-    /// Get Rule Category IDs
   }
 
   return (

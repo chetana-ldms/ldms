@@ -5,8 +5,11 @@ import { notify, notifyFail } from '../components/notification/Notification';
 import { UsersListLoading } from '../components/loading/UsersListLoading'
 import { fetchToolTypeActionDetails, fetchToolTypeActionUpdate } from '../../../../../api/ConfigurationApi'
 import { fetchMasterData } from '../../../../../api/Api';
+import { useErrorBoundary } from "react-error-boundary";
+
 
 const UpdateToolTypeAction = () => {
+  const handleError = useErrorBoundary();
   const navigate = useNavigate()
   const { id } = useParams()
   const [loading, setLoading] = useState(false)
@@ -21,7 +24,7 @@ const UpdateToolTypeAction = () => {
         const data = await fetchToolTypeActionDetails(id, toolAction);
         setToolTypeAction(data);
       } catch (error) {
-        console.log(error)
+        handleError(error);
       }
     };
 
@@ -34,7 +37,7 @@ const UpdateToolTypeAction = () => {
         setToolTypes(typeData);
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   }, []);
   
@@ -76,7 +79,7 @@ const UpdateToolTypeAction = () => {
         notifyFail('Failed to update Tool Type Action');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
     setLoading(false);
   };

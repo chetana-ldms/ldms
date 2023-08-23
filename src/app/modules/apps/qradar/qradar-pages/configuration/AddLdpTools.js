@@ -4,8 +4,10 @@ import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import { fetchMasterData } from '../../../../../api/Api';
 import { fetchLDPToolsAddUrl } from '../../../../../api/ConfigurationApi';
+import { useErrorBoundary } from "react-error-boundary";
 
 const AddLdpTools = () => {
+  const handleError = useErrorBoundary();
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
@@ -50,7 +52,7 @@ const AddLdpTools = () => {
         notifyFail('Failed to save LDP Tools');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     } finally {
       setLoading(false);
     }
@@ -62,7 +64,7 @@ const AddLdpTools = () => {
         setToolTypes(typeData);
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   }, []);
 

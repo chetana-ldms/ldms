@@ -7,8 +7,10 @@ import axios from 'axios'
 import { fetchLDPToolsByToolType, fetchOrganizationToolsAddUrl } from '../../../../../api/ConfigurationApi';
 import { fetchOrganizations } from '../../../../../api/dashBoardApi';
 import { fetchMasterData } from '../../../../../api/Api';
+import { useErrorBoundary } from "react-error-boundary";
 
 const AddOrganizationTools = () => {
+  const handleError = useErrorBoundary();
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
@@ -53,34 +55,7 @@ const AddOrganizationTools = () => {
       createdDate,
       createdUserId
     }
-    // var config = {
-    //   method: 'post',
-    //   url: 'http://115.110.192.133:502/api/LDPlattform/v1/OrganizationTools/Add',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Accept: 'text/plain',
-    //   },
-    //   data: data,
-    // }
-    // setTimeout(() => {
-    //   axios(config)
-    //     .then(function (response) {
-    //       const { isSuccess } = response.data;
-
-    //       if (isSuccess) {
-    //         notify('Data Saved');
-    //         navigate('/qradar/organization-tools/updated');
-    //       } else {
-    //         notifyFail('Failed to save data');
-    //       }
-    //       // console.log(JSON.stringify(response.data))
-    //       // navigate('/qradar/organization-tools/updated')
-    //     })
-    //     .catch(function (error) {
-    //       console.log(error)
-    //     })
-    //   setLoading(false)
-    // }, 1000)
+  
     try {
       const responseData = await fetchOrganizationToolsAddUrl(data);
       const { isSuccess } = responseData;
@@ -92,7 +67,7 @@ const AddOrganizationTools = () => {
         notifyFail('Failed to save Organizations Tools');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     } finally {
       setLoading(false);
     }
@@ -103,7 +78,7 @@ const AddOrganizationTools = () => {
         setToolTypes(typeData);
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   }, []);
   useEffect(() => {
@@ -112,8 +87,7 @@ const AddOrganizationTools = () => {
           const organizationsResponse = await fetchOrganizations();
           setOrganizationList(organizationsResponse);
         } catch (error) {
-          console.log(error);
-        }
+          handleError(error);        }
       };
   
       fetchData();
@@ -130,8 +104,7 @@ const AddOrganizationTools = () => {
           const result = response.ldpToolsList
           setToolName(result)
         } catch (error) {
-          console.log(error);
-        }
+          handleError(error);        }
       };
   
       result();

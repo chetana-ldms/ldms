@@ -5,8 +5,11 @@ import {UsersListLoading} from '../components/loading/UsersListLoading'
 import { notify, notifyFail } from '../components/notification/Notification';
 import { fetchLDPToolsByToolType, fetchRuleActionUrl, fetchToolActions } from '../../../../../api/ConfigurationApi'
 import { fetchMasterData } from '../../../../../api/Api';
+import { useErrorBoundary } from "react-error-boundary";
+ 
 
 const AddRuleAction = () => {
+  const handleError = useErrorBoundary();
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [toolTypeActions, setToolTypeActions] = useState([])
@@ -29,7 +32,7 @@ const AddRuleAction = () => {
         const data = await fetchToolActions();
         setToolTypeActions(data);
       } catch (error) {
-        console.log(error)
+        handleError(error);
       }
     };
 
@@ -46,7 +49,7 @@ const AddRuleAction = () => {
         const result = response.ldpToolsList
         setTools(result)
       } catch (error) {
-        console.log(error);
+        handleError(error);
       }
     };
 
@@ -59,7 +62,7 @@ const AddRuleAction = () => {
         setToolTypes(typeData);
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   }, []);
   const handleSubmit = async (event) => {
@@ -110,7 +113,7 @@ const AddRuleAction = () => {
         notifyFail('Failed to save Rule Action');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     } finally {
       setLoading(false);
     }
@@ -121,7 +124,7 @@ const AddRuleAction = () => {
       {loading && <UsersListLoading />}
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
-          <span className='card-label fw-bold fs-3 mb-1'>Configure New Rule Action</span>
+          <span className='card-label fw-bold fs-3 mb-1'>Add New Rule Action</span>
         </h3>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
@@ -137,7 +140,7 @@ const AddRuleAction = () => {
             <div className='col-lg-6 mb-5'>
               <div className='fv-row mb-0'>
                 <label htmlFor='ruleName' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Rule Action Name
+                   Rule Action Name
                 </label>
                 <input
                   type='text'

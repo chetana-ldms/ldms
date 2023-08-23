@@ -7,8 +7,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Modal, Button, Form } from "react-bootstrap";
 import { fetchChangePasswordUrl, fetchResetPasswordUrl } from "../../../../../api/UserProfileApi";
 import { fetchUserDelete } from "../../../../../api/Api";
+import { useErrorBoundary } from "react-error-boundary";
+ 
 
 function UsersProfile() {
+  const handleError = useErrorBoundary();
   const userID = Number(sessionStorage.getItem('userId'));
   const date = new Date().toISOString();
   const [userProfiles, setUserProfiles] = useState([]);
@@ -24,7 +27,7 @@ function UsersProfile() {
       const data = await fetchUsersUrl(orgId);
       setUserProfiles(data);
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   };
 
@@ -62,7 +65,7 @@ function UsersProfile() {
         notifyFail('Failed to update the Password');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
     setShowChangePwdModal(false);
   };
@@ -83,7 +86,7 @@ function UsersProfile() {
         notifyFail('Failed to reset the Password');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   };
 
@@ -103,7 +106,7 @@ function UsersProfile() {
         notify('User Deleted');
         await reload();
       } catch (error) {
-        console.log(error);
+        handleError(error);
       }
     }
   };

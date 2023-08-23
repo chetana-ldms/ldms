@@ -7,12 +7,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import { fetchOrganizationDelete } from '../../../../../api/Api';
 import axios from 'axios';
 import { fetchOrganizationsUrl } from '../../../../../api/ConfigurationApi';
+import { useErrorBoundary } from "react-error-boundary";
 
 const Organizations = () => {
+  const handleError = useErrorBoundary();
   const [loading, setLoading] = useState(false);
   const [tools, setTools] = useState([]);
   console.log(tools, 'tools222');
-  const { status } = useParams();
   const userID = Number(sessionStorage.getItem('userId'));
   const orgId = Number(sessionStorage.getItem('orgId'));
   const handleDelete = async (item) => {
@@ -32,7 +33,7 @@ const Organizations = () => {
       }
       await reload();
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   };
 
@@ -46,7 +47,7 @@ const Organizations = () => {
           : response.filter((item) => item.orgID === orgId)
       );
     } catch (error) {
-      console.log(error);
+      handleError(error);
     } finally {
       setLoading(false);
     }
@@ -54,7 +55,6 @@ const Organizations = () => {
   useEffect(() => {
     reload();
   }, []);
-
   return (
     <div className="card">
       <ToastContainer />
@@ -90,13 +90,8 @@ const Organizations = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {tools.length === 0 ? (
-              <tr>
-                <td colSpan="6" className="text-center">
-                  No data found.
-                </td>
-              </tr>
-            ) : (
+            
+              {tools.length > 0 ? (
               tools.map((item, index) => (
                 <tr key={index} className="fs-12">
                   <td className="text-warning fw-bold">{item.orgID}</td>
@@ -136,7 +131,14 @@ const Organizations = () => {
                   </td> 
                 </tr>
               ))
-            )}
+            ):(
+              <tr>
+                <td colSpan="6" className="text-center">
+                  No data found.
+                </td>
+              </tr>
+            )
+            }
           </tbody>
         </table>
       </div>

@@ -5,8 +5,10 @@ import { UsersListLoading } from '../components/loading/UsersListLoading';
 import { notify, notifyFail } from '../components/notification/Notification';
 import { fetchMasterData } from '../../../../../api/Api';
 import { fetchToolTypeActionAddUrl } from '../../../../../api/ConfigurationApi';
+import { useErrorBoundary } from "react-error-boundary";
 
 const AddToolTypeAction = () => {
+  const handleError = useErrorBoundary();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [toolTypes, setToolTypes] = useState([]);
@@ -20,7 +22,7 @@ const AddToolTypeAction = () => {
         setToolTypes(typeData);
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   }, []);
 
@@ -57,7 +59,7 @@ const AddToolTypeAction = () => {
         notifyFail('Failed to save  Tool Type Action');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     } finally {
       setLoading(false);
     }

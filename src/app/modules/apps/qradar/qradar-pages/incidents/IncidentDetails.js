@@ -11,8 +11,11 @@ import {
   fetchUpdateIncident,
 } from "../../../../../api/IncidentsApi";
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
+import { useErrorBoundary } from "react-error-boundary";
+
 
 const IncidentDetails = ({ incident, onRefreshIncidents }) => {
+ const handleError = useErrorBoundary();
   const { subject, createdDate, incidentID, modifiedDate } = incident;
   const id = incidentID;
   console.log(id, "id");
@@ -73,7 +76,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
         }));
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   }, []);
   useEffect(() => {
@@ -101,7 +104,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
           }));
         }
       } catch (error) {
-        console.log(error);
+        handleError(error);
       }
     };
 
@@ -167,6 +170,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
       reloadHistory();
     } catch (error) {
       notifyFail("Failed to update Incident");
+      handleError(error);
     }
   };
   const reloadHistory = () => {
@@ -179,7 +183,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
         setIncidentHistory(res);
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   }
   useEffect(() => {
@@ -193,7 +197,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
         console.log(alertsList, "alertsList1111");
         setAlertsList(alertsList);
       } catch (error) {
-        console.log(error);
+        handleError(error);
       }
     };
 

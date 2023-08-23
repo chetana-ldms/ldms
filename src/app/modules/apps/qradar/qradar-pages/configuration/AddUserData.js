@@ -4,9 +4,10 @@ import {fetchRoles} from '../../../../../api/Api'
 import axios from 'axios'
 import { fetchUserAddUrl } from '../../../../../api/ConfigurationApi'
 import { notify, notifyFail } from '../components/notification/Notification';
-
+import { useErrorBoundary } from "react-error-boundary";
 
 const AddUserData = () => {
+  const handleError = useErrorBoundary();
   const orgId = Number(sessionStorage.getItem('orgId'));
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
@@ -61,7 +62,7 @@ const AddUserData = () => {
         notifyFail('Failed to save User');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     } finally {
       setLoading(false);
     }
@@ -72,7 +73,7 @@ const AddUserData = () => {
         const data = await fetchRoles(orgId);
         setRoleTypes(data);
       } catch (error) {
-        console.log(error)
+        handleError(error);
       }
     };
 

@@ -7,6 +7,9 @@ import {MenuTestPage} from '../pages/MenuTestPage'
 import {getCSSVariableValue} from '../../_metronic/assets/ts/_utils'
 import {WithChildren} from '../../_metronic/helpers'
 import BuilderPageWrapper from '../pages/layout-builder/BuilderPageWrapper'
+// import ErrorBoundary from '../../utils/ErrorBoundary'
+import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorFallbackComponent } from '../../utils/ErrorFallbackComponent'
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/apps/qradar/qradar-pages/account/ProfilePage'))
@@ -17,13 +20,22 @@ const PrivateRoutes = () => {
   const UsersPage = lazy(() => import('../modules/apps/user-management/UsersPage'))
   const QradarPages = lazy(() => import('../modules/apps/qradar/Qradar'))
 
+  const handleError = (error: any, info: any) => {
+    console.error("An error occurred:", error, info);
+  };
+
   return (
+    <ErrorBoundary
+    FallbackComponent={ErrorFallbackComponent}
+    onError={handleError}
+  >
     <Routes>
       <Route element={<MasterLayout />}>
         {/* Redirect to Dashboard after success login/registartion */}
         <Route path='auth/*' element={<Navigate to='/dashboard' />} />
         {/* Pages */}
         <Route path='dashboard' element={<DashboardWrapper />} />
+
         <Route path='builder' element={<BuilderPageWrapper />} />
         <Route path='menu-test' element={<MenuTestPage />} />
         {/* Lazy Modules */}
@@ -87,6 +99,7 @@ const PrivateRoutes = () => {
         <Route path='*' element={<Navigate to='/error/404' />} />
       </Route>
     </Routes>
+    </ErrorBoundary>
   )
 }
 

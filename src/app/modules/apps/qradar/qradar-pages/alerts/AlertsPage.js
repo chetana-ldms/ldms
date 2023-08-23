@@ -37,8 +37,11 @@ import ReactPaginate from "react-paginate";
 import { fetchCreateIncident } from "../../../../../api/IncidentsApi";
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import "./Alerts.css";
+import { useErrorBoundary } from "react-error-boundary";
+
 
 const AlertsPage = () => {
+  const handleError = useErrorBoundary();
   const [inputValue, setInputValue] = useState("");
   const [selectedAlert, setselectedAlert] = useState([]);
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false);
@@ -82,7 +85,7 @@ const AlertsPage = () => {
         }));
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   }, []);
   const handleselectedAlert = (item, e) => {
@@ -153,7 +156,7 @@ const AlertsPage = () => {
       setShowForm(false);
       qradaralerts();
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   };
   const handleTableRefresh = () => {
@@ -202,8 +205,8 @@ const AlertsPage = () => {
           name: "comments",
           value: "",
         },
-      }).catch((err) => {
-        console.log(err, "error");
+      }).catch((error) => {
+        handleError(error);
       });
     },
   });
@@ -377,7 +380,7 @@ const AlertsPage = () => {
       const alertNotesList = await fetchGetAlertNotesByAlertID(data);
       setAlertNotesList(alertNotesList);
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   };
 

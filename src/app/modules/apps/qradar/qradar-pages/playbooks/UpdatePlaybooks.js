@@ -4,8 +4,12 @@ import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import { fetchPlaybookByID } from '../../../../../api/playBookApi'
+import { useErrorBoundary } from "react-error-boundary";
+
+
 const flowKey = 'playbook_export'
 const UpdatePlaybooks = () => {
+  const handleError = useErrorBoundary();
   const navigate = useNavigate()
   const {id} = useParams()
   const [loading, setLoading] = useState(false)
@@ -28,7 +32,7 @@ const UpdatePlaybooks = () => {
         //   ruleCatagoryName:data.ruleCatagoryName
         // });
       } catch (error) {
-        console.log(error)
+        handleError(error);
       }
     };
 
@@ -106,7 +110,7 @@ const UpdatePlaybooks = () => {
           // navigate('/qradar/playbooks/updated')
         })
         .catch(function (error) {
-          console.log(error)
+          handleError(error);
         })
     },
     [reactFlowInstance]

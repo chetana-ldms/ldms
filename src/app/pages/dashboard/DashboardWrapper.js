@@ -34,8 +34,11 @@ import {
 } from "../../api/dashBoardApi";
 import "./Dashboard.css";
 import moment from 'moment-timezone';
+import { useErrorBoundary } from "react-error-boundary";
+
 
 const DashboardWrapper = () => {
+  const handleError = useErrorBoundary();
   const userID = Number(sessionStorage.getItem("userId"));
   const orgId = Number(sessionStorage.getItem("orgId"));
   const [unattendedIcount, setUnattendedIncidentcount] = useState({});
@@ -90,7 +93,7 @@ const DashboardWrapper = () => {
         const organizationsResponse = await fetchOrganizations();
         setOrganizations(organizationsResponse);
       } catch (error) {
-        console.log(error);
+        handleError(error);
       }
     };
     fetchData();
@@ -187,7 +190,7 @@ const DashboardWrapper = () => {
       const masterData = masterDataResponse.masterData;
       setAlertstatus(masterData);
     } catch (error) {
-      console.log(error);
+      handleError(error);
     } finally {
       setIsLoaded(true);
     }

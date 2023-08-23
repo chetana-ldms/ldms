@@ -6,13 +6,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import { fetchOrganizationToolsDelete } from "../../../../../api/Api";
 import axios from 'axios';
 import { fetchOrganizationToolsUrl } from '../../../../../api/ConfigurationApi';
+import { useErrorBoundary } from "react-error-boundary";
+
 
 const OrganizationTools = () => {
+  const handleError = useErrorBoundary();
   const userID = Number(sessionStorage.getItem('userId'));
   const orgId = Number(sessionStorage.getItem('orgId'));
   const [tools, setTools] = useState([]);
-
-  const { status } = useParams();
 
   const handleDelete = async (item) => {
     console.log(item, "item")
@@ -32,8 +33,7 @@ const OrganizationTools = () => {
       }
       await reload();
     } catch (error) {
-      console.log(error);
-    }
+      handleError(error);    }
   }
 
   const reload = async () => {
@@ -41,8 +41,7 @@ const OrganizationTools = () => {
       const response = await fetchOrganizationToolsUrl();
       setTools(response);
     } catch (error) {
-      console.log(error);
-    }
+      handleError(error);    }
   };
 
   useEffect(() => {

@@ -7,11 +7,14 @@ import 'react-toastify/dist/ReactToastify.css'
 import { fetchRulesDelete } from "../../../../../api/Api"
 import axios from 'axios'
 import { fetchRules } from '../../../../../api/ConfigurationApi'
+import { useErrorBoundary } from "react-error-boundary";
+
+
 const RulesEngine = () => {
+  const handleError = useErrorBoundary();
   const orgId = Number(sessionStorage.getItem('orgId'));
   const [loading, setLoading] = useState(false)
   const [tools, setTools] = useState([])
-  const { status } = useParams()
 
   const handleDelete = async (item) => {
     console.log(item, "item")
@@ -26,21 +29,23 @@ const RulesEngine = () => {
       const responce = await fetchRulesDelete(data);
       if (responce.isSuccess) {
         notify('Rule Deleted');
-      }else{
+      } else {
         notifyFail("Rule not Deleted")
       }
       await reload();
     } catch (error) {
-      console.log(error);
-    }
+      handleError(error);    }
   }
-  const reload = async() => {
-        try {
-          const data = await fetchRules(orgId);
-          setTools(data);
-        } catch (error) {
-          console.log(error)
-        }
+  const reload = async () => {
+    try {
+      setLoading(true)
+      const data = await fetchRules(orgId);
+      setTools(data);
+      setLoading(false)
+    } catch (error) {
+      handleError(error);
+      setLoading(false)
+    }
   }
   useEffect(() => {
     reload();
@@ -62,21 +67,6 @@ const RulesEngine = () => {
         </div>
       </div>
       <div className='card-body'>
-        {/* {status === 'updated' && (
-          <div class='alert alert-success d-flex align-items-center p-5'>
-            <div class='d-flex flex-column'>
-              <h4 class='mb-1 text-dark'>Data Saved</h4>
-            </div>
-            <button
-              type='button'
-              class='position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto'
-              data-bs-dismiss='alert'
-            >
-              X<span class='svg-icon svg-icon-2x svg-icon-light'>...</span>
-            </button>
-          </div>
-        )} */}
-
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
@@ -87,19 +77,31 @@ const RulesEngine = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {tools.map((item, index) => (
-              <tr key={index} className='fs-12'>
-                <td>{item.ruleName}</td>
-                {/* <td>{item.ruleCatagoryID}</td> */}
-                <td>
-                  <Link className='text-white' to={`/qradar/rules-engine/update/${item.ruleID}`}>
-                    <button className='btn btn-primary btn-small'>Update</button>
-                  </Link>
-                  <button className="btn btn-sm btn-danger btn-small ms-5" style={{ fontSize: '14px' }} onClick={() => { handleDelete(item) }}> Delete</button>
-
-                </td>
+            {tools.length > 0 ? (
+              tools.map((item, index) => (
+                <tr key={index} className='fs-12'>
+                  <td>{item.ruleName}</td>
+                  {/* <td>{item.ruleCatagoryID}</td> */}
+                  <td>
+                    <Link className='text-white' to={`/qradar/rules-engine/update/${item.ruleID}`}>
+                      <button className='btn btn-primary btn-small'>Update</button>
+                    </Link>
+                    <button
+                      className="btn btn-sm btn-danger btn-small ms-5"
+                      style={{ fontSize: '14px' }}
+                      onClick={() => { handleDelete(item) }}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="2">No data found</td>
               </tr>
-            ))}
+            )}
+
           </tbody>
         </table>
       </div>

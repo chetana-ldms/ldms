@@ -11,8 +11,11 @@ import {
   fetchQuestionsUpdate,
 } from "../../../../../api/ChannelApi";
 import { Modal, Button, Form } from "react-bootstrap";
+import { useErrorBoundary } from "react-error-boundary";
+
 
 const QA = ({ channelId, channelName }) => {
+  const handleError = useErrorBoundary();
   const createdUserId = Number(sessionStorage.getItem("userId"));
   const createdDate = new Date().toISOString();
   const orgId = Number(sessionStorage.getItem("orgId"));
@@ -41,7 +44,7 @@ const QA = ({ channelId, channelName }) => {
         setChannelQAList(channelQAList);
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
         setError("Error occurred while fetching channel sub-item data");
       });
   };
@@ -56,7 +59,7 @@ const QA = ({ channelId, channelName }) => {
           setSelectedQuestionData(response);
         })
         .catch((error) => {
-          console.log(error);
+          handleError(error);
         });
     }
     if (showEditModal && selectedAnswerId) {
@@ -65,7 +68,7 @@ const QA = ({ channelId, channelName }) => {
           setSelectedAnswerData(response);
         })
         .catch((error) => {
-          console.log(error);
+          handleError(error);
         });
     }
   }, [
@@ -90,7 +93,7 @@ const QA = ({ channelId, channelName }) => {
         fetchChannelQuestions();
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   };
 
@@ -110,7 +113,7 @@ const QA = ({ channelId, channelName }) => {
         fetchChannelQuestions();
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   };
 
@@ -130,7 +133,7 @@ const QA = ({ channelId, channelName }) => {
         fetchChannelQuestions();
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   };
 
@@ -145,7 +148,7 @@ const QA = ({ channelId, channelName }) => {
       await fetchQuestionsDelete(data);
       fetchChannelQuestions();
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   };
 
@@ -166,7 +169,7 @@ const QA = ({ channelId, channelName }) => {
         fetchChannelQuestions();
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   };
 
@@ -181,7 +184,7 @@ const QA = ({ channelId, channelName }) => {
       await fetchQuestionsAnswerDelete(data);
       fetchChannelQuestions();
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   };
 

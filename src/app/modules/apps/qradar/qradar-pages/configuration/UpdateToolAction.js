@@ -5,8 +5,10 @@ import axios from 'axios'
 import { UsersListLoading } from '../components/loading/UsersListLoading'
 import { fetchLDPTools, fetchMasterData } from '../../../../../api/Api'
 import { fetchLDPToolsByToolType, fetchToolActionDetails, fetchToolActionUpdateUrl, fetchToolTypeActions } from '../../../../../api/ConfigurationApi';
+import { useErrorBoundary } from "react-error-boundary";
 
 const UpdateToolAction = () => {
+  const handleError = useErrorBoundary();
   const navigate = useNavigate()
   const { id } = useParams()
   const [loading, setLoading] = useState(false)
@@ -42,7 +44,7 @@ const UpdateToolAction = () => {
           toolTypeActionID: data.toolTypeActionID //3rd field 
         }));
       } catch (error) {
-        console.log(error);
+        handleError(error);
       }
     };
 
@@ -66,7 +68,7 @@ const UpdateToolAction = () => {
           const result = response.ldpToolsList
           setLdpTools(result)
         } catch (error) {
-          console.log(error);
+          handleError(error);
         }
       };
   
@@ -78,7 +80,7 @@ const UpdateToolAction = () => {
           const result = response.filter((item) => item.toolTypeID === Number(selectedId));
           setToolActionTypes(result);
         } catch (error) {
-          console.log(error);
+          handleError(error);
         } finally {
           setLoading(false);
         }
@@ -105,7 +107,7 @@ const UpdateToolAction = () => {
         const data = await fetchLDPTools();
         setLdpTools(data);
       } catch (error) {
-        console.log(error)
+        handleError(error);
       }
     };
 
@@ -127,7 +129,7 @@ const UpdateToolAction = () => {
         setLoading(false)
       })
       .catch(function (error) {
-        console.log(error)
+        handleError(error);
       })
    
         fetchMasterData("Tool_Types")
@@ -135,7 +137,7 @@ const UpdateToolAction = () => {
             setToolTypes(typeData);
           })
           .catch((error) => {
-            console.log(error);
+            handleError(error);
           });
   }, [])
   const handleSubmit = async(event, toolTypeAction) => {
@@ -171,7 +173,7 @@ const UpdateToolAction = () => {
         notifyFail('Failed to update Tool Action');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
     setLoading(false);
   }

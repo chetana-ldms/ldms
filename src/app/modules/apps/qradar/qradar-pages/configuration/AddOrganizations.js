@@ -4,8 +4,11 @@ import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
 import { async } from 'q';
 import { fetchOrganizationAddUrl } from '../../../../../api/ConfigurationApi';
+import { useErrorBoundary } from "react-error-boundary";
+
 
 const AddOrganizations = () => {
+  const handleError = useErrorBoundary();
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const orgName = useRef()
@@ -60,7 +63,7 @@ const AddOrganizations = () => {
         notifyFail('Failed to save Organizations');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     } finally {
       setLoading(false);
     }

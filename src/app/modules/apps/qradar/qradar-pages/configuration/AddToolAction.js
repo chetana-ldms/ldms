@@ -5,8 +5,10 @@ import axios from 'axios'
 import { UsersListLoading } from '../components/loading/UsersListLoading'
 import { fetchLDPToolsByToolType, fetchToolActionAddUrl, fetchToolTypeActions } from '../../../../../api/ConfigurationApi';
 import { fetchMasterData } from '../../../../../api/Api';
+import { useErrorBoundary } from "react-error-boundary";
 
 const AddToolAction = () => {
+  const handleError = useErrorBoundary();
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
@@ -24,7 +26,7 @@ const AddToolAction = () => {
         setLoading(false)
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   }, []);
   const handleSubmit = async (event) => {
@@ -59,7 +61,7 @@ const AddToolAction = () => {
         notifyFail('Failed to save Tool Action');
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     } finally {
       setLoading(false);
     }
@@ -75,7 +77,7 @@ const AddToolAction = () => {
         const result = response.ldpToolsList
         setLdpTools(result)
       } catch (error) {
-        console.log(error);
+        handleError(error);
       }
     };
 
@@ -87,7 +89,7 @@ const AddToolAction = () => {
         const result = response.filter((item) => item.toolTypeID === Number(selectedValue));
         setToolActionTypes(result);
       } catch (error) {
-        console.log(error);
+        handleError(error);
       } finally {
         setLoading(false);
       }

@@ -4,8 +4,10 @@ import { fetchRoles } from '../../../../../api/Api'
 import { fetchUserDetails, fetchUserUpdateUrl } from '../../../../../api/ConfigurationApi'
 import axios from 'axios'
 import { notify, notifyFail } from '../components/notification/Notification';
+import { useErrorBoundary } from "react-error-boundary";
 
 const UpdateUserData = () => {
+  const handleError = useErrorBoundary();
   const orgId = Number(sessionStorage.getItem('orgId'));
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
@@ -28,7 +30,7 @@ const UpdateUserData = () => {
           roleID: data.roleID
         });
       } catch (error) {
-        console.log(error)
+        handleError(error);
       }
     };
 
@@ -76,7 +78,7 @@ const UpdateUserData = () => {
       //   notifyFail('Failed to update data');
       // }
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
     setLoading(false);
   }
@@ -86,7 +88,7 @@ const UpdateUserData = () => {
         const data = await fetchRoles(orgId);
         setRoleTypes(data);
       } catch (error) {
-        console.log(error)
+        handleError(error);
       }
     };
 
