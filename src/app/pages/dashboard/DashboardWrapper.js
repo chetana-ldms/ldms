@@ -197,22 +197,22 @@ const DashboardWrapper = () => {
   };
 
   useEffect(() => {
-    fetchData(); // Fetch initial data
+    fetchData(); 
 
     const interval = setInterval(() => {
-      fetchData(); // Fetch data every 5 minutes
-    }, 5 * 60 * 1000); // 5 minutes in milliseconds
+      fetchData(); 
+    }, 5 * 60 * 1000); 
 
     return () => {
-      clearInterval(interval); // Clear the interval when the component unmounts
+      clearInterval(interval); 
     };
   }, [selectedFilter, selectedOrganization]);
 
   const handleRefreshData = (e) => {
-    e.preventDefault(); // Prevent the default behavior of the anchor tag
-    setIsLoaded(false); // Reset the loaded state to false
+    e.preventDefault(); 
+    setIsLoaded(false); 
     setIsRefreshing(true);
-    fetchData(); // Fetch the data again
+    fetchData();
     setTimeout(() => setIsRefreshing(false), 2000);
   };
 
