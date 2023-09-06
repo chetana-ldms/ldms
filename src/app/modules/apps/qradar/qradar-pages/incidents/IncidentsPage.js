@@ -18,6 +18,7 @@ import moment from 'moment-timezone';
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import "./IncidentPagination.css";
 import { useErrorBoundary } from "react-error-boundary";
+import { UsersListLoading } from '../components/loading/UsersListLoading';
 
 
 const IncidentsPage = () => {
@@ -42,6 +43,7 @@ const IncidentsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageCount, setpageCount] = useState(0);
   const [limit, setLimit] = useState(20);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     Promise.all([
       fetchMasterData("incident_status"),
@@ -65,6 +67,7 @@ const IncidentsPage = () => {
       loggedInUserId: userID,
     };
     try {
+     setLoading(true)
       const response = await fetchIncidents(data);
       setIncident(response.incidentList);
       setTotalIncidentsCount(response.totalIncidentsCount);
@@ -72,8 +75,10 @@ const IncidentsPage = () => {
       // const total = 40;
 
       setpageCount(Math.ceil(total / limit));
+      setLoading(false)
     } catch (error) {
       handleError(error);
+      setLoading(false)
     }
   };
 
@@ -99,6 +104,7 @@ const IncidentsPage = () => {
       // toolTypeID
     };
     try {
+      setLoading(true)
       const response = await fetchGetIncidentSearchResult(data);
       setIncident(response.incidentList);
       setTotalIncidentsCount(response.totalIncidentsCount);
@@ -108,8 +114,10 @@ const IncidentsPage = () => {
       setpageCount(Math.ceil(total / limit));
 
       // incidents();
+      setLoading(false)
     } catch (error) {
       handleError(error);
+      setLoading(false)
     }
   };
   const handleIncidentClick = (item) => {
@@ -242,6 +250,7 @@ const IncidentsPage = () => {
                   <div className="scroll-y h-350px">
                     <div className="incident-list">
                       <>
+                      {loading && <UsersListLoading />}
                         {incident && incident.length > 0 ? (
                           incident.map((item, index) => (
                             <div

@@ -45,6 +45,7 @@ const AlertsPage = () => {
   const [inputValue, setInputValue] = useState("");
   const [selectedAlert, setselectedAlert] = useState([]);
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [dropdownData, setDropdownData] = useState({
     severityNameDropDownData: [],
     statusDropDown: [],
@@ -131,8 +132,8 @@ const AlertsPage = () => {
   const [ignorVisible, setIgnorVisible] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [limit, setLimit] = useState(20);
-
   const [pageCount, setpageCount] = useState(0);
+  const [source, setSource] = useState([])
 
   const handleCloseForm = () => {
     // notifyFail("Data not Updated");
@@ -210,24 +211,44 @@ const AlertsPage = () => {
       });
     },
   });
-  // const handleEscalateSubmit = (e) => {
-  //   e.preventDefault();
-  //   handleSubmit();
-  // };
+  const slaCal = (data) => {
+    data.map((item) => {
+      let resolvedTime = item.resolvedtime ? getCurrentTimeZone(item.resolvedtime) : new Date();
+      let detectedTime = item.detectedtime ? getCurrentTimeZone(item.detectedtime) : null;
+
+      if (resolvedTime && detectedTime) {
+        let timeDifferenceMs = new Date(resolvedTime) - new Date(detectedTime);
+
+        // Convert milliseconds to days, hours, and minutes
+        let days = Math.floor(timeDifferenceMs / (24 * 60 * 60 * 1000));
+        let hours = Math.floor((timeDifferenceMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+        let minutes = Math.floor((timeDifferenceMs % (60 * 60 * 1000)) / (60 * 1000));
+
+        // Format the time difference
+        let formattedTimeDifference = `${days}d${hours}h${minutes}m`;
+        item.sla = formattedTimeDifference;
+      }
+    });
+  }
+
   const handlePageClick = async (data) => {
     let currentPage = data.selected + 1;
+    setLoading(true)
     const setOfAlertsData = await fetchSetOfAlerts(
       currentPage,
       orgId,
       userID,
       limit
     );
+    slaCal(setOfAlertsData);
     setFilteredAlertDate(
       setOfAlertsData.filter((item) => item.ownerUserID === userID)
     );
     setFilteredAlertDate(setOfAlertsData);
     setCurrentPage(currentPage);
+    setLoading(false)
   };
+
 
   const qradaralerts = async () => {
     let data2 = {
@@ -240,26 +261,16 @@ const AlertsPage = () => {
       },
       loggedInUserId: userID,
     };
+    setLoading(true)
     const response = await fetchAlertData(data2);
 
     setAlertsCount(response.totalOffenseCount);
+    setSource(response.source)
     setAlertDate(response.alertsList != null ? response.alertsList : []);
     const total = response.totalOffenseCount;
     setpageCount(Math.ceil(total / limit));
-    response.alertsList.map((item)=>{
-      let resolvedTime =   item.resolvedtime ? getCurrentTimeZone(item.resolvedtime) : new Date();
-    let detectedTime = item.detectedtime ? getCurrentTimeZone(item.detectedtime) : new Date();
-    let timeDifferenceMs = new Date(resolvedTime) - new Date(detectedTime);
-
-    // Convert milliseconds to days, hours, and minutes
-    let days = Math.floor(timeDifferenceMs / (24 * 60 * 60 * 1000));
-    let hours = Math.floor((timeDifferenceMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-    let minutes = Math.floor((timeDifferenceMs % (60 * 60 * 1000)) / (60 * 1000));
-
-    // Format the time difference
-    let formattedTimeDifference = `${days}d${hours}h${minutes}m`;
-    item.sla = formattedTimeDifference
-    })
+    slaCal(response?.alertsList);
+    setLoading(false)
     {
       if (userID === 1) {
         setFilteredAlertDate(response.alertsList);
@@ -271,6 +282,7 @@ const AlertsPage = () => {
         setFilteredAlertDate(result);
       }
     }
+
   };
   useEffect(() => {
     qradaralerts();
@@ -289,6 +301,21 @@ const AlertsPage = () => {
 
     fetchData();
   }, [delay]);
+  // useEffect(() => {
+  //   if (actionsValue === "1") {
+  //     const data = {
+  //       orgId,
+  //       createDate: modifiedDate,
+  //       createUserId: userID,
+  //       alertIDs: selectedAlert,
+  //     };
+  //     fetchCreateIncident(data);
+  //     notify("Incident Created");
+  //     setTimeout(() => {
+  //       navigate("/qradar/incidents");
+  //     }, 2000);
+  //   }
+  // }, [actionsValue]);
   useEffect(() => {
     if (actionsValue === "1") {
       const data = {
@@ -297,13 +324,21 @@ const AlertsPage = () => {
         createUserId: userID,
         alertIDs: selectedAlert,
       };
-      fetchCreateIncident(data);
-      notify("Incident Created");
-      setTimeout(() => {
-        navigate("/qradar/incidents");
-      }, 2000);
+
+      fetchCreateIncident(data).then((response) => {
+        if (response.isSuccess) {
+          notify("Incident Created");
+          setTimeout(() => {
+            navigate("/qradar/incidents");
+          }, 2000);
+        } else {
+          setShowForm(false);
+          notifyFail("Incident Creation Failed");
+        }
+      });
     }
   }, [actionsValue]);
+
   console.log(filteredAlertData, "filteredAlertData");
   const handleChange = (e, field) => {
     console.log(e.target.value);
@@ -352,7 +387,7 @@ const AlertsPage = () => {
     qradaralerts();
     setTimeout(() => setIsRefreshing(false), 2000);
   };
-  const RefreshInterval = 5 * 60 * 1000;
+  const RefreshInterval = 1 * 60 * 1000;
 
   useEffect(() => {
     let isActive = true;
@@ -818,7 +853,7 @@ const AlertsPage = () => {
                       </div>
                     </div>
                   </th>
-                  <th className="min-w-120px" style={{width: 140}}>
+                  <th className="min-w-120px" style={{ width: 140 }}>
                     Detected time
                     <div className="m-0 float-right table-filter">
                       <a
@@ -1070,13 +1105,15 @@ const AlertsPage = () => {
                                 onChange={(e) => handleChange(e, "source")}
                               >
                                 <option>Select</option>
-                                <option value="QRadar">QRadar</option>
-                                <option value="Microsoft Sentinel">
-                                  Microsoft Sentinel
-                                </option>
-                                <option value="Splunk">Splunk</option>
-                                <option value="LogRhythm">LogRhythm</option>
+                                {source.length > 0 &&
+                                  source.map((item, index) => (
+                                    <option key={index} value={item}>
+                                      {item}
+                                    </option>
+                                  ))}
                               </select>
+
+
                             </div>
                           </div>
                         </div>
@@ -1086,7 +1123,7 @@ const AlertsPage = () => {
                 </tr>
               </thead>
               <tbody id="kt_accordion_1">
-                {alertData.length == 0 ? (
+                {/* {alertData.length == 0 ? (
                   <>
                     <tr>
                       <td>
@@ -1096,7 +1133,8 @@ const AlertsPage = () => {
                   </>
                 ) : (
                   ""
-                )}
+                )} */}
+                {loading && <UsersListLoading />}
                 {filteredAlertData.length > 0 &&
                   filteredAlertData.map((item, index) => (
                     <>
@@ -1154,7 +1192,8 @@ const AlertsPage = () => {
                         </td>
                         <td>
                           <span className="text-dark text-center text-hover-primary d-block mb-1">
-                            {item.score}
+                            {item.score === null || item.score === "" ? "0" : item.score}
+                            {/* {item.score} */}
                           </span>
                         </td>
                         <td>{item.status}</td>
@@ -1214,7 +1253,7 @@ const AlertsPage = () => {
                               {item.name}
                               <br />
                               <b>Score : </b>
-                              {item.score}
+                              {item.score === null || item.score === "" ? "0" : item.score}
                               <br />
                               <b>SLA : </b>
                               {item.sla}
@@ -1257,8 +1296,8 @@ const AlertsPage = () => {
                                       {alertNotesList
                                         .sort(
                                           (a, b) =>
-                                          getCurrentTimeZone(b.createdDate) -
-                                          getCurrentTimeZone(a.createdDate)
+                                            getCurrentTimeZone(b.createdDate) -
+                                            getCurrentTimeZone(a.createdDate)
                                         ) // Sort the notes based on createdDate
                                         .map((note) => (
                                           <tr key={note.alertsNotesId}>

@@ -1,4 +1,5 @@
 const AlertsSummeryUrl = process.env.REACT_APP_ALERTS_SUMMERY_URL
+// const AlertsRuleUrl = process.env.REACT_APP_ALERTS_SUMMERY_URL
 const SLAMeasurementSummeryUrl = process.env.REACT_APP_SLA_MEASURMENT_SUMMERY_URL
 const AllIncidentsSummeryUrl = process.env.REACT_APP_ALL_INCIDENTS_SUMMERY_URL
 const ClosedIncidentsSummeryUrl=process.env.REACT_APP_CLOSED_INCIDENTS_SUMMERY_URL
@@ -9,6 +10,30 @@ const SignificantsIncidentsSummeryUrl= process.env.REACT_APP_SIGNIFICANTS_INCIDE
 export const fetchAlertsSummeryUrl = async (data) => {
   try {
     const response = await fetch(AlertsSummeryUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        `Network response was not ok: ${response.status} - ${errorData.message}`
+      );
+    }
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const AlertsRuleUrl = "http://115.110.192.133:502/api/Reports/v1/AlertsRuleSummery"
+export const fetchAlertsRuleUrl = async (data) => {
+  try {
+    const response = await fetch(AlertsRuleUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

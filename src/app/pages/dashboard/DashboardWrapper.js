@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import { UsersListLoading } from "../../modules/apps/qradar/qradar-pages/components/loading/UsersListLoading";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
 import { ChartsWidget9 } from "../../../_metronic/partials/widgets";
@@ -35,6 +34,7 @@ import {
 import "./Dashboard.css";
 import moment from 'moment-timezone';
 import { useErrorBoundary } from "react-error-boundary";
+import { UsersListLoading } from "../../modules/apps/qradar/qradar-pages/components/loading/UsersListLoading";
 
 
 const DashboardWrapper = () => {
@@ -58,14 +58,7 @@ const DashboardWrapper = () => {
   const [selectedFilter, setSelectedFilter] = useState(30);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState(1);
-  // function formatDateDiff(date) {
-  //   const diffMs = new Date() - date;
-  //   const diffMins = Math.floor(diffMs / 60000);
-  //   const days = Math.floor(diffMins / 1440);
-  //   const hours = Math.floor((diffMins % 1440) / 60);
-  //   const minutes = diffMins % 60;
-  //   return `${days}d ${hours}h ${minutes}m`;
-  // }
+  const [loading, setLoading] = useState(true);
 
   const getCurrentTimeZoneDiff = (UTCDate) => {
     const inputTime = moment.tz(UTCDate, "UTC");
@@ -102,6 +95,7 @@ const DashboardWrapper = () => {
   const fetchData = async () => {
     try {
       // GetAlertsMostUsedTags
+      setLoading(true)
       const mostUsedTagsResponse = await fetchGetAlertsMostUsedTags({
         orgID: selectedOrganization,
         toolID: 0,
@@ -192,7 +186,7 @@ const DashboardWrapper = () => {
     } catch (error) {
       handleError(error);
     } finally {
-      setIsLoaded(true);
+      setLoading(false);
     }
   };
 
@@ -218,7 +212,10 @@ const DashboardWrapper = () => {
 
   return (
     <div className="dashboard-wrapper">
-      {/* Header filter section */}
+       {loading ? (
+        <UsersListLoading />
+      ) : (
+   <div>
       <div className="header-filter row">
         <div className="col-lg-3">
           <div className="row">
@@ -497,6 +494,8 @@ const DashboardWrapper = () => {
         </div>
       </div>
       {/* end::Row */}
+      </div>
+      )}
     </div>
   );
 };

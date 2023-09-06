@@ -7,6 +7,7 @@ import { fetchOrganizationToolsDelete } from "../../../../../api/Api";
 import axios from 'axios';
 import { fetchOrganizationToolsUrl } from '../../../../../api/ConfigurationApi';
 import { useErrorBoundary } from "react-error-boundary";
+import { UsersListLoading } from '../components/loading/UsersListLoading';
 
 
 const OrganizationTools = () => {
@@ -14,6 +15,8 @@ const OrganizationTools = () => {
   const userID = Number(sessionStorage.getItem('userId'));
   const orgId = Number(sessionStorage.getItem('orgId'));
   const [tools, setTools] = useState([]);
+  const [loading, setLoading] = useState(false);
+
 
   const handleDelete = async (item) => {
     console.log(item, "item")
@@ -25,6 +28,7 @@ const OrganizationTools = () => {
       deletedUserId
     }
     try {
+      setLoading(true)
       const responce = await fetchOrganizationToolsDelete(data);
       if (responce.isSuccess) {
         notify('Organizations Tool Deleted');
@@ -32,16 +36,22 @@ const OrganizationTools = () => {
         notifyFail("Organizations Tool not Deleted")
       }
       await reload();
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       handleError(error);    }
   }
 
   const reload = async () => {
     try {
+      setLoading(true)
       const response = await fetchOrganizationToolsUrl();
       setTools(response);
+      setLoading(false)
     } catch (error) {
-      handleError(error);    }
+      setLoading(false)  
+      handleError(error);
+      }
   };
 
   useEffect(() => {
@@ -83,7 +93,11 @@ const OrganizationTools = () => {
             </tr>
           </thead>
           <tbody>
-            {tools.length === 0 ? (
+            {
+            loading ? (
+              <UsersListLoading />
+            ) :
+            tools.length === 0 ? (
               <tr>
                 <td colSpan='6' className='text-center'>
                   No data found.
@@ -100,8 +114,8 @@ const OrganizationTools = () => {
                       <td>{index + 1}</td>
                       <td className='fw-bold'>{item.toolName}</td>
                       <td>{item.orgName}</td>
-                      <td className='text-warning fw-bold'>{item.authKey}</td>
-                      <td style={{ maxWidth: '250px' }}>{item.apiUrl}</td>
+                      <td className='text-warning fw-bold' style={{ maxWidth: '200px' }}>{item.authKey}</td>
+                      <td style={{ maxWidth: '200px' }}>{item.apiUrl}</td>
                       <td>
                         {userID === 1 ? (
                           <button className='btn btn-primary btn-small'>

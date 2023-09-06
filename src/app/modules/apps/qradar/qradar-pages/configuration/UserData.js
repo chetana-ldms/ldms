@@ -25,21 +25,27 @@ const UserData = () => {
       userID,
     };
     try {
+      setLoading(true)
       await fetchUserDelete(data);
       notify('User Deleted');
       await reload();
+      setLoading(false)
     } catch (error) {
       handleError(error);
+      setLoading(false)
     }
   };
 
   const reload = async () => {
     try {
+      setLoading(true)
       const orgId = Number(sessionStorage.getItem('orgId'));
       const data = await fetchUsersUrl(orgId);
       setUsers(data);
+      setLoading(false)
     } catch (error) {
       handleError(error);
+      setLoading(false)
     }
   };
 

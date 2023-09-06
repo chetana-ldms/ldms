@@ -24,6 +24,7 @@ const LdpTools = () => {
       deletedUserId
     }
     try {
+      setLoading(true)
       const responce = await fetchLDPToolsDelete(data);
       if (responce.isSuccess) {
         notify('LDP Tool Deleted');
@@ -31,13 +32,17 @@ const LdpTools = () => {
         notifyFail("LDP Tool not Deleted")
       }
       await reload();
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       handleError(error);
     }
   }
   const reload = async () => {
+    setLoading(true)
     const response = await fetchLDPToolsUrl();
     setTools(response)
+    setLoading(false)
   }
   useEffect(() => {
     reload();

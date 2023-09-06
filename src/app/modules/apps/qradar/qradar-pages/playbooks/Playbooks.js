@@ -26,6 +26,7 @@ const Playbooks = () => {
       deletedUserId
     } 
     try {
+      setLoading(true)
       const responce = await fetchDelete(data);
       if (responce.isSuccess) {
         notify('PlayBook Deleted');
@@ -33,27 +34,26 @@ const Playbooks = () => {
         notifyFail("PlayBook not Deleted")
       }
       await reload();
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       handleError(error);
     }
   }
   const reload = async() => {
     try {
+      setLoading(true)
       const data = await fetchPlayBooks(orgId);
       setPlaybooks(data);
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       handleError(error);
     }
 }
   useEffect(() => {
     reload();
   }, [])
-  // const handleExecute = (item, param) => {
-  //   setTimeout(() => {
-  //     setLoading(false)
-  //   }, 6000)
-  //   setLoading(true)
-  // }
 
   return (
     <div className='card'>
@@ -103,12 +103,6 @@ const Playbooks = () => {
                   </Link>
                   <button className="btn btn-sm btn-danger btn-small ms-5" style={{ fontSize: '14px' }} onClick={() => { handleDelete(item) }}> Delete</button>
 
-                  {/* <button
-                    className='btn btn-warning disable btn-small pt-5'
-                    onClick={() => handleExecute(item, index)}
-                  >
-                    Execute
-                  </button> */}
                 </td>
               </tr>
             ))}

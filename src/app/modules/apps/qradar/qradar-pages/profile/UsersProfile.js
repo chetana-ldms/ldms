@@ -8,6 +8,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { fetchChangePasswordUrl, fetchResetPasswordUrl } from "../../../../../api/UserProfileApi";
 import { fetchUserDelete } from "../../../../../api/Api";
 import { useErrorBoundary } from "react-error-boundary";
+import { UsersListLoading } from "../components/loading/UsersListLoading";
  
 
 function UsersProfile() {
@@ -20,13 +21,18 @@ function UsersProfile() {
   const [selectedUserID, setSelectedUserID] = useState("");
   const oldPasswordRef = useRef();
   const newPasswordRef = useRef();
+  const [loading, setLoading] = useState(false);
+
 
   const reload = async () => {
     try {
+      setLoading(true)
       const orgId = Number(sessionStorage.getItem('orgId'));
       const data = await fetchUsersUrl(orgId);
       setUserProfiles(data);
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       handleError(error);
     }
   };
@@ -56,6 +62,7 @@ function UsersProfile() {
       oldPassword: oldPassword,
     };
     try {
+      setLoading(true)
       const responseData = await fetchChangePasswordUrl(data);
       const { isSuccess } = responseData;
 
@@ -64,7 +71,9 @@ function UsersProfile() {
       } else {
         notifyFail('Failed to update the Password');
       }
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       handleError(error);
     }
     setShowChangePwdModal(false);
@@ -77,6 +86,7 @@ function UsersProfile() {
       userId: selectedUserID,
     };
     try {
+      setLoading(true)
       const responseData = await fetchResetPasswordUrl(data);
       const { isSuccess } = responseData;
 
@@ -85,7 +95,9 @@ function UsersProfile() {
       } else {
         notifyFail('Failed to reset the Password');
       }
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       handleError(error);
     }
   };
@@ -102,10 +114,13 @@ function UsersProfile() {
 
     if (confirmDelete) {
       try {
+        setLoading(true)
         await fetchUserDelete(data);
         notify('User Deleted');
         await reload();
+        setLoading(false)
       } catch (error) {
+        setLoading(false)
         handleError(error);
       }
     }
@@ -116,6 +131,9 @@ function UsersProfile() {
       <h1>Users Profile</h1>
       <div className="alert-table">
         <ToastContainer />
+        {loading ? (
+          <UsersListLoading />
+        ) : (
         <table className="table users-table">
           <thead>
             <tr>
@@ -162,7 +180,8 @@ function UsersProfile() {
             ))}
           </tbody>
 
-        </table>
+        </table>)
+}
       </div>
 
       {/* Change Password Modal */}
