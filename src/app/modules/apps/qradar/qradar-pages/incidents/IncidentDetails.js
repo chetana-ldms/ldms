@@ -15,8 +15,9 @@ import { useErrorBoundary } from "react-error-boundary";
 
 
 const IncidentDetails = ({ incident, onRefreshIncidents }) => {
+  console.log("incident11111", incident)
  const handleError = useErrorBoundary();
-  const { subject, createdDate, incidentID, modifiedDate } = incident;
+  const { subject, createdDate, incidentID, modifiedDate, eventID, destinationUser, sourceIP, vendor } = incident;
   const id = incidentID;
   console.log(id, "id");
   const [activeTab, setActiveTab] = useState("general");
@@ -419,23 +420,23 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                   <div className="bd-highlight">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Event ID : </span> 4625
+                      <span className="fw-bold">Event ID : </span> {eventID}
                     </div>
                   </div>
                   <div className="bd-highlight">
                     <div className="d-flex align-items-center gap-2">
                       <span className="fw-bold"> Destination User : </span>{" "}
-                      James James
+                      {destinationUser}
                     </div>
                   </div>
                   <div className="bd-highlight">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Source IP : </span> 192.168.0.1
+                      <span className="fw-bold">Source IP : </span> {sourceIP}
                     </div>
                   </div>
                   <div className="bd-highlight">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Vendor : </span> Microsoft
+                      <span className="fw-bold">Vendor : </span> {vendor}
                     </div>
                   </div>
                 </div>
