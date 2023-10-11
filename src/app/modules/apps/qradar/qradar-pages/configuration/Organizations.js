@@ -80,8 +80,8 @@ const Organizations = () => {
         <table className="table align-middle gs-0 gy-4 dash-table alert-table">
           <thead>
             <tr className="fw-bold text-muted bg-blue">
-              <th className="min-w-50px fs-12">Org ID</th>
-              <th className="min-w-50px fs-12">Org Name</th>
+              <th className="min-w-50px fs-12">ID</th>
+              <th className="min-w-50px fs-12">Name</th>
               <th className="min-w-50px fs-12">Address</th>
               <th className="min-w-50px fs-12">Mobile No.</th>
               <th className="min-w-50px fs-12">Email</th>

@@ -67,7 +67,7 @@ function IncidentStatus(props) {
       const requestData = {
         statusID: selectedStatus,
         priorityID: selectedPriority,
-        orgId: 1,
+        orgId: orgId,
       };
       const response = await axios.post(apiUrl, requestData);
       const { incidentCount } = response.data;
@@ -85,6 +85,9 @@ function IncidentStatus(props) {
 
   if (error) {
     return <div>Error: {error}</div>;
+  }
+  if (incidentCount === 0) {
+    return <div>No Data Found</div>;
   }
 
   return (
@@ -136,16 +139,21 @@ function IncidentStatus(props) {
           </select>
         </div>
         <div className="row bar-chart mt-10">
-          <>
-            <div className="col-lg-2 fw-bold">Count:</div>
-            <div className="col-lg-7">
-              <span className="bar">{incidentCount}</span>
-            </div>
-            <div className="col-lg-2">
-              <span>Total</span> <span>{incidentCount}</span>
-            </div>
-          </>
+          {incidentCount === 0 ? (
+            <div className="col-lg-12">No data found</div>
+          ) : (
+            <>
+              <div className="col-lg-2 fw-bold">Count:</div>
+              <div className="col-lg-7">
+                <span className="bar">{incidentCount}</span>
+              </div>
+              <div className="col-lg-2">
+                <span>Total</span> <span>{incidentCount}</span>
+              </div>
+            </>
+          )}
         </div>
+
       </div>
     </div>
   );

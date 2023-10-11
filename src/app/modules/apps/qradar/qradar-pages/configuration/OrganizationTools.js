@@ -84,10 +84,10 @@ const OrganizationTools = () => {
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
               <th className='min-w-50px fs-12'>S.NoD</th>
-              <th className='min-w-50px fs-12'>Org Tool Name</th>
-              <th className='min-w-50px fs-12'>Org Organization</th>
-              <th className='min-w-50px fs-12'>Org Auth Key</th>
-              <th className='min-w-50px fs-12'>Org API URL</th>
+              <th className='min-w-50px fs-12'>Tool Name</th>
+              <th className='min-w-50px fs-12'>Organization</th>
+              <th className='min-w-50px fs-12'>Auth Key</th>
+              {/* <th className='min-w-50px fs-12'>API URL</th> */}
               <th className='min-w-50px fs-12'>Actions</th>
               {/* <th></th> */}
             </tr>
@@ -115,7 +115,7 @@ const OrganizationTools = () => {
                       <td className='fw-bold'>{item.toolName}</td>
                       <td>{item.orgName}</td>
                       <td className='text-warning fw-bold' style={{ maxWidth: '200px' }}>{item.authKey}</td>
-                      <td style={{ maxWidth: '200px' }}>{item.apiUrl}</td>
+                      {/* <td style={{ maxWidth: '200px' }}>{item.apiUrl}</td> */}
                       <td>
                         {userID === 1 ? (
                           <button className='btn btn-primary btn-small'>

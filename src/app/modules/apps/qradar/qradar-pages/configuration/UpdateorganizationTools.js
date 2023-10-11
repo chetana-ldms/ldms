@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
-import { fetchLDPToolsByToolType, fetchOrganizationToolDetails, fetchOrganizationToolsUpdateUrl } from '../../../../../api/ConfigurationApi';
+import { fetchLDPToolsByToolType, fetchOrganizationToolDetails, fetchOrganizationToolsUpdateUrl, fetchToolTypeActions } from '../../../../../api/ConfigurationApi';
 import { fetchLDPTools, fetchMasterData } from '../../../../../api/Api';
 import { fetchOrganizations } from '../../../../../api/dashBoardApi';
 import { useErrorBoundary } from "react-error-boundary";
@@ -26,13 +26,18 @@ const UpdateOrganizationTools = () => {
       apiUrl: ""
     }
   );
+  const [selectedToolAction, setSelectedToolAction] = useState('');
+  const [toolActionTypes, setToolActionTypes] = useState([]);
+  const [enteredApiUrl, setEnteredApiUrl] = useState('');
+  const [tableData, setTableData] = useState([]);
+  const [selectedToolType, setSelectedToolType] = useState(null)
   const { id } = useParams()
   const toolID = useRef()
   const orgID = useRef()
   const authKey = useRef()
   const apiUrl = useRef()
   const errors = {}
- useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await fetchLDPTools();
@@ -42,8 +47,27 @@ const UpdateOrganizationTools = () => {
       }
     };
 
+    const fetchActionTypes = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchToolTypeActions();
+        const result = response.filter((item) => item.toolTypeID === Number(selectedToolType));
+        setToolActionTypes(result);
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!selectedToolType) {
+      const initialToolType = toolTypeAction.toolTypeId;  
+      setSelectedToolType(initialToolType);
+    }
+
     fetchData();
-  }, []);
+    fetchActionTypes();
+  }, [selectedToolType, toolTypeAction]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -57,7 +81,7 @@ const UpdateOrganizationTools = () => {
           toolID: data.toolID,
           toolName: data.toolName,
           authKey: data.authKey,
-          apiUrl: data.apiUrl
+          // apiUrl: data.apiUrl
         })
       } catch (error) {
         handleError(error);
@@ -83,11 +107,16 @@ const UpdateOrganizationTools = () => {
       setLoading(false)
       return errors
     }
-    if (!apiUrl.current.value) {
-      errors.apiUrl = 'Enter api url'
+    if (!tableData.length > 0) {
+      errors.tableData = 'Enter Table Data'
       setLoading(false)
       return errors
     }
+    // if (!apiUrl.current.value) {
+    //   errors.apiUrl = 'Enter api url'
+    //   setLoading(false)
+    //   return errors
+    // }
     event.preventDefault()
     const modifiedUserId = Number(sessionStorage.getItem('userId'));
     const modifiedDate = new Date().toISOString();
@@ -96,10 +125,17 @@ const UpdateOrganizationTools = () => {
       orgID: toolTypeAction.orgID,
       authKey: toolTypeAction.authKey,
       orgToolID: Number(id),
-      lastReadPKID: 0,
-      apiUrl: toolTypeAction.apiUrl,
       modifiedDate,
-      modifiedUserId
+      modifiedUserId,
+      lastReadPKID: 0,
+      // apiUrl: toolTypeAction.apiUrl,
+        toolActions: tableData.map(item => ({
+          toolActionId: item.toolTypeActionID,
+          orgToolActionId: 0,
+          apiUrl: item.apiUrl,
+          apiVerson: "string",
+          getDataBatchSize: 0
+        }))
     }
     try {
       const responseData = await fetchOrganizationToolsUpdateUrl(data);
@@ -158,6 +194,7 @@ const UpdateOrganizationTools = () => {
   
     if (field === "toolTypeName") {
       const selectedId = event.target.options[event.target.selectedIndex].getAttribute('data-id');
+      setSelectedToolType(selectedId)
       const fetchData = async () => {
         try {
           const data = {
@@ -178,6 +215,19 @@ const UpdateOrganizationTools = () => {
         toolTypeName: selectedValue,
       }));
     }
+  };
+  const handleAction = (event) => {
+    event.preventDefault();
+    const newToolAction = { toolAction: selectedToolAction, toolTypeActionID: toolActionTypes.find(item => item.toolAction === selectedToolAction)?.toolTypeActionID, apiUrl: enteredApiUrl };
+
+    setTableData([...tableData, newToolAction]);
+    setSelectedToolAction('');
+    setEnteredApiUrl('');
+  };
+  const handleDelete = (index) => {
+    const updatedTableData = [...tableData];
+    updatedTableData.splice(index, 1);
+    setTableData(updatedTableData);
   };
   
   return (
@@ -200,7 +250,7 @@ const UpdateOrganizationTools = () => {
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='orgID' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Organization
+                  Organization
                 </label>
                 <select
                   className='form-select form-select-solid'
@@ -225,7 +275,7 @@ const UpdateOrganizationTools = () => {
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Tool
+                   Tool Type
                 </label>
                 <select
                   className='form-select form-select-solid'
@@ -250,7 +300,7 @@ const UpdateOrganizationTools = () => {
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
-                  Select Tool
+                   Tool
                 </label>
                 <select
                   className='form-select form-select-solid'
@@ -275,7 +325,7 @@ const UpdateOrganizationTools = () => {
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='authKey' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Authentication Key
+                  Authentication Key
                 </label>
                 <input
                   type='text'
@@ -289,10 +339,10 @@ const UpdateOrganizationTools = () => {
                 />
               </div>
             </div>
-            <div className='col-lg-4 mb-4 mb-lg-0'>
+            {/* <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='apiUrl' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter API URL
+                  API URL
                 </label>
                 <input
                   type='text'
@@ -305,7 +355,93 @@ const UpdateOrganizationTools = () => {
                   placeholder='Ex: https://10.100.0.102/api/siem/offences'
                 />
               </div>
+            </div> */}
+            <div className='card-body border-top p-9 mt-5'>
+              <div className='row mb-6'>
+                <div className='col-lg-4 mb-4 mb-lg-0'>
+                  <div className='fv-row mb-0'>
+                    <label htmlFor='toolTypeActionID' className='form-label fs-6 fw-bolder mb-3'>
+                      Tool Action drop down
+                    </label>
+                    <select
+                      className='form-select form-select-solid'
+                      data-kt-select2='true'
+                      data-placeholder='Select option'
+                      data-allow-clear='true'
+                      value={selectedToolAction}
+                      onChange={(e) => setSelectedToolAction(e.target.value)}
+                    // required
+                    >
+                      <option value='' disabled selected>Select</option>
+                      {toolActionTypes.map((item, index) => (
+                        <option value={item.toolAction} key={index}>
+                          {item.toolAction}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className='col-lg-4 mb-4 mb-lg-0'>
+                  <div className='fv-row mb-0'>
+                    <label htmlFor='apiUrl' className='form-label fs-6 fw-bolder mb-3'>
+                      API URL
+                    </label>
+                    <input
+                      type='text'
+                      // required
+                      className='form-control form-control-lg form-control-solid'
+                      id='apiUrl'
+                      ref={apiUrl}
+                      value={enteredApiUrl}
+                      onChange={(e) => setEnteredApiUrl(e.target.value)}
+                      placeholder='Ex: https://10.100.0.102/api/siem/offences'
+                    />
+                  </div>
+                </div>
+                <div className='col-lg-4 mb-4 mb-lg-0 d-flex align-items-end justify-content-center'>
+                  <button className='btn btn-primary' onClick={handleAction} >Add Action</button>
+                </div>
+              </div>
             </div>
+            {tableData.length > 0 && (
+              <div className='card-body border-top p-9'>
+                <h4>List of Tool Actions</h4>
+                <table className='table'>
+                  <thead>
+                    <tr>
+                      <th>Tool Action</th>
+                      <th>API URL</th>
+                      <th>Remove</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tableData.map((item, index) => (
+                      <tr key={index}>
+                        <td style={{ paddingTop: '30px' }}>{item.toolAction}</td>
+                        <td style={{ paddingTop: '30px' }}>{item.apiUrl}</td>
+                        <td>
+                          <td>
+                            <button
+                              className='btn btn-danger'
+                              title="Remove"
+                              onClick={() => handleDelete(index)}
+                              style={{ borderRadius: '50%' }}
+                              type="button"
+                            >
+                              <i className='bi bi-x'></i>
+                            </button>
+                          </td>
+
+                        </td>
+
+
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
         <div className='card-footer d-flex justify-content-end py-6 px-9'>

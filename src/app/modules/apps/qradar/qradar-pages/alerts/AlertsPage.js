@@ -38,6 +38,9 @@ import { fetchCreateIncident } from "../../../../../api/IncidentsApi";
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import "./Alerts.css";
 import { useErrorBoundary } from "react-error-boundary";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
 
 
 const AlertsPage = () => {
@@ -130,6 +133,7 @@ const AlertsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [ignorVisible, setIgnorVisible] = useState(true);
+  const [generateReport, setGenerateReport] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [limit, setLimit] = useState(20);
   const [pageCount, setpageCount] = useState(0);
@@ -290,9 +294,9 @@ const AlertsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       // qradaralerts();
-      setTimeout(() => {
-        setDelay((delay) => delay + 1);
-      }, 60000);
+      // setTimeout(() => {
+      //   setDelay((delay) => delay + 1);
+      // }, 60000);
       const response = await fetchUsers(orgId);
       setldp_security_user(
         response?.usersList != undefined ? response?.usersList : []
@@ -301,21 +305,6 @@ const AlertsPage = () => {
 
     fetchData();
   }, [delay]);
-  // useEffect(() => {
-  //   if (actionsValue === "1") {
-  //     const data = {
-  //       orgId,
-  //       createDate: modifiedDate,
-  //       createUserId: userID,
-  //       alertIDs: selectedAlert,
-  //     };
-  //     fetchCreateIncident(data);
-  //     notify("Incident Created");
-  //     setTimeout(() => {
-  //       navigate("/qradar/incidents");
-  //     }, 2000);
-  //   }
-  // }, [actionsValue]);
   useEffect(() => {
     if (actionsValue === "1") {
       const data = {
@@ -355,6 +344,7 @@ const AlertsPage = () => {
     setShowForm(true);
     setEscalate(true);
     setIgnorVisible(true);
+    setGenerateReport(true)
   };
   const handleSort = (e, field) => {
     let temp = [...alertData];
@@ -417,6 +407,24 @@ const AlertsPage = () => {
     } catch (error) {
       handleError(error);
     }
+  };
+  const handleGenerateReport = () => {
+    const tableData = [selectCheckBox];
+    generatePDFFromTable(tableData);
+    notify('Generated Report Successfully')
+    setGenerateReport(false)
+    setShowForm(false)
+  };
+  
+  const generatePDFFromTable = (tableData) => {
+    const doc = new jsPDF();
+  
+    doc.autoTable({
+      head: [['Severity', 'SLA', 'Score', 'Status', 'Detected time', 'Name', 'Observables tags', 'Owner', 'Source']], 
+      body: tableData.map((item) => [item.severityName, item.sla, item.score === null ? "0" : item.score, item.status, item.detectedtime, item.name, item.observableTag, item.ownerusername, item.source]),
+    });
+  
+    doc.save('Report.pdf');
   };
 
   return (
@@ -592,6 +600,17 @@ const AlertsPage = () => {
                             onClick={handleIgnoreSubmit}
                           >
                             Submit
+                          </button>
+                        </div>
+                      )}
+                      {actionsValue === "4" && generateReport && (
+                        <div className="d-flex justify-content-end">
+                          <button
+                            type="button"
+                            className="btn btn-primary btn-small btn-new"
+                            onClick={handleGenerateReport}
+                          >
+                            Download Report
                           </button>
                         </div>
                       )}
@@ -1123,17 +1142,6 @@ const AlertsPage = () => {
                 </tr>
               </thead>
               <tbody id="kt_accordion_1">
-                {/* {alertData.length == 0 ? (
-                  <>
-                    <tr>
-                      <td>
-                        <UsersListLoading />
-                      </td>
-                    </tr>
-                  </>
-                ) : (
-                  ""
-                )} */}
                 {loading && <UsersListLoading />}
                 {filteredAlertData.length > 0 &&
                   filteredAlertData.map((item, index) => (
@@ -1204,21 +1212,6 @@ const AlertsPage = () => {
                                 getCurrentTimeZone(item.detectedtime)
                               }
                             </span>
-                            {/* <span>
-                              {new Date(item.detectedtime).toLocaleDateString(undefined, {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                              }).replace(/-/g, '/')}
-                            </span>
-                            <br />
-                            <span>
-                              {new Date(item.detectedtime).toLocaleTimeString(undefined, {
-                                hour: 'numeric',
-                                minute: 'numeric',
-                                hour12: true,
-                              })}
-                            </span> */}
 
                           </span>
 
