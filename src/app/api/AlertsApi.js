@@ -3,6 +3,7 @@ const setAlertEscalationStatusUrl =
   process.env.REACT_APP_SET_ALERT_ESCALATION_URL;
 const usersUrl = process.env.REACT_APP_LDP_SECURIY_USER_URL;
 const getAlertNotesByAlertIDUrl = process.env.REACT_APP_ALERTS_NOTES_URL;
+const GetalertHistoryUrl=process.env.REACT_APP_GET_ALERT_HISTORY_URL
 
 export const fetchAlertData = async (data) => {
   try {
@@ -86,6 +87,25 @@ export const fetchGetAlertNotesByAlertID = async (data) => {
     const responseData = await response.json();
     const alertNotesList = responseData.alertNotesList;
     return alertNotesList;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchGetalertHistory = async (data) => {
+  try {
+    const response = await fetch(`${GetalertHistoryUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    const alertHistoryData = responseData.alertHistoryData;
+    return alertHistoryData;
   } catch (error) {
     console.log(error);
   }

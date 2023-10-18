@@ -32,9 +32,10 @@ import {
   fetchSetAlertEscalationStatus,
   fetchSetOfAlerts,
   fetchUsers,
+  fetchGetalertHistory,
 } from "../../../../../api/AlertsApi";
 import ReactPaginate from "react-paginate";
-import { fetchCreateIncident } from "../../../../../api/IncidentsApi";
+import { fetchCreateIncident} from "../../../../../api/IncidentsApi";
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import "./Alerts.css";
 import { useErrorBoundary } from "react-error-boundary";
@@ -138,6 +139,49 @@ const AlertsPage = () => {
   const [limit, setLimit] = useState(20);
   const [pageCount, setpageCount] = useState(0);
   const [source, setSource] = useState([])
+  const [selectedAlertId, setSelectedAlertId] = useState(null);
+  console.log(selectedAlertId, "selectedAlertId")
+
+  const [alertHistory, setAlertHistory] = useState([]);
+  console.log(alertHistory, "alertHistory");
+  const reloadHistory = () => {
+    // Ensure that selectedAlertId is not null or undefined before making the API call
+    if (selectedAlertId !== null && selectedAlertId !== undefined) {
+      const data = {
+        orgId,
+        alertId: Number(selectedAlertId),
+      };
+      fetchGetalertHistory(data)
+        .then((res) => {
+          setAlertHistory(res);
+        })
+        .catch((error) => {
+          handleError(error);
+        });
+    }
+  };
+  
+  useEffect(() => {
+    reloadHistory();
+  }, [selectedAlertId]);
+  useEffect(() => {
+    reloadHistory()
+  }, [selectedAlertId]);
+  const css_classes = [
+    "text-primary",
+    "text-secondary",
+    "text-success",
+    "text-danger",
+    "text-warning",
+    "text-info",
+    "text-dark",
+    "text-muted",
+  ];
+
+  const getRandomClass = () => {
+    const randomIndex = Math.floor(Math.random() * css_classes.length);
+    return css_classes[randomIndex];
+  };
 
   const handleCloseForm = () => {
     // notifyFail("Data not Updated");
@@ -400,10 +444,12 @@ const AlertsPage = () => {
     };
   }, [currentPage]);
   const handleTdClick = async (itemId) => {
+    setSelectedAlertId(itemId);
     try {
       const data = { alertID: itemId };
       const alertNotesList = await fetchGetAlertNotesByAlertID(data);
       setAlertNotesList(alertNotesList);
+      // reloadHistory();
     } catch (error) {
       handleError(error);
     }
@@ -415,15 +461,15 @@ const AlertsPage = () => {
     setGenerateReport(false)
     setShowForm(false)
   };
-  
+
   const generatePDFFromTable = (tableData) => {
     const doc = new jsPDF();
-  
+
     doc.autoTable({
-      head: [['Severity', 'SLA', 'Score', 'Status', 'Detected time', 'Name', 'Observables tags', 'Owner', 'Source']], 
+      head: [['Severity', 'SLA', 'Score', 'Status', 'Detected time', 'Name', 'Observables tags', 'Owner', 'Source']],
       body: tableData.map((item) => [item.severityName, item.sla, item.score === null ? "0" : item.score, item.status, item.detectedtime, item.name, item.observableTag, item.ownerusername, item.source]),
     });
-  
+
     doc.save('Report.pdf');
   };
 
@@ -437,7 +483,7 @@ const AlertsPage = () => {
             {/* <span className='card-label fw-bold fs-3 mb-1'>
               Alerts {'( ' + alertData.length + ' / ' + alertsCount + ')'}
             </span> */}
-            <span className="card-label fw-bold fs-3 mb-1">
+            <span className="card-label fw-bold fs-3">
               Alerts{" "}
               {"( " + filteredAlertData.length + " / " + alertsCount + ")"}
             </span>
@@ -622,7 +668,7 @@ const AlertsPage = () => {
           </div>
         </div>
         <div className="clearfix" />
-        <div className="float-right fs-15 mt-2 lh-40 fc-gray text-right ds-reload">
+        <div className="float-right fs-15 lh-40 fc-gray text-right ds-reload">
           Alerts is automatically refreshing every 5 minutes{" "}
           <a href="#" onClick={handleRefresh}>
             <i className={`fa fa-refresh ${isRefreshing ? "rotate" : ""}`} />
@@ -1201,7 +1247,6 @@ const AlertsPage = () => {
                         <td>
                           <span className="text-dark text-center text-hover-primary d-block mb-1">
                             {item.score === null || item.score === "" ? "0" : item.score}
-                            {/* {item.score} */}
                           </span>
                         </td>
                         <td>{item.status}</td>
@@ -1212,11 +1257,7 @@ const AlertsPage = () => {
                                 getCurrentTimeZone(item.detectedtime)
                               }
                             </span>
-
                           </span>
-
-
-
                         </td>
                         <td className="text-dark text-hover-primary fs-8 alert-name">
                           <span title={item.name}>{item.name}</span>
@@ -1240,80 +1281,124 @@ const AlertsPage = () => {
                       >
                         <td colSpan="10">
                           <div className="row">
-                            <div className="col-md-1"></div>
-                            <div className="col-md-9">
-                              <b>Alert Name : </b>
-                              {item.name}
-                              <br />
-                              <b>Score : </b>
-                              {item.score === null || item.score === "" ? "0" : item.score}
-                              <br />
-                              <b>SLA : </b>
-                              {item.sla}
-                              <br />
-                              <b>Severity : </b>
-                              {item.severityName}
-                              <br />
-                              <b>Status : </b>
-                              {item.status}
-                              <br />
-                              <b>Detected Date/Time : </b>
-                              {item.detectedtime &&
-                                getCurrentTimeZone(item.detectedtime)
-                              }
-                              {/* {new Date(item.detectedtime).toLocaleString()} */}
-                              <br />
-                              <b>Observable Tag : </b>
-                              {item.observableTag} <br />
-                              <b>Owner Name : </b>
-                              {item.ownerusername} <br />
-                              <b>Source Name : </b>
-                              {item.source} <br />
-                              {/* Notes Section */}
-                              {alertNotesList.length > 0 ? (
-                                <div className="notes-container mt-5 pt-5">
-                                  <b>Notes:</b>
-                                  <table className="table">
-                                    <thead>
-                                      <tr>
-                                        <th className="custom-th">
-                                          Created User
-                                        </th>
-                                        <th className="custom-th">
-                                          Created Date
-                                        </th>
-                                        <th className="custom-th">Note</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {alertNotesList
-                                        .sort(
-                                          (a, b) =>
-                                            getCurrentTimeZone(b.createdDate) -
-                                            getCurrentTimeZone(a.createdDate)
-                                        ) // Sort the notes based on createdDate
-                                        .map((note) => (
-                                          <tr key={note.alertsNotesId}>
-                                            <td>{note.createdUser}</td>
-                                            <td>{getCurrentTimeZone(note.createdDate)}</td>
-                                            <td>{note.notes}</td>
+                            <div className="col-md-7">
+                              <div className="row">
+                                <div className="col-md-1"></div>
+                                <div className="col-md-9">
+                                  <b>Alert Name : </b>
+                                  {item.name}
+                                  <br />
+                                  <b>Score : </b>
+                                  {item.score === null || item.score === "" ? "0" : item.score}
+                                  <br />
+                                  <b>SLA : </b>
+                                  {item.sla}
+                                  <br />
+                                  <b>Severity : </b>
+                                  {item.severityName}
+                                  <br />
+                                  <b>Status : </b>
+                                  {item.status}
+                                  <br />
+                                  <b>Detected Date/Time : </b>
+                                  {item.detectedtime &&
+                                    getCurrentTimeZone(item.detectedtime)
+                                  }
+                                  {/* {new Date(item.detectedtime).toLocaleString()} */}
+                                  <br />
+                                  <b>Observable Tag : </b>
+                                  {item.observableTag} <br />
+                                  <b>Owner Name : </b>
+                                  {item.ownerusername} <br />
+                                  <b>Source Name : </b>
+                                  {item.source} <br />
+                                  {/* Notes Section */}
+                                  {alertNotesList.length > 0 ? (
+                                    <div className="notes-container mt-5 pt-5">
+                                      <b>Notes:</b>
+                                      <table className="table">
+                                        <thead>
+                                          <tr>
+                                            <th className="custom-th">
+                                              Created User
+                                            </th>
+                                            <th className="custom-th">
+                                              Created Date
+                                            </th>
+                                            <th className="custom-th">Note</th>
                                           </tr>
-                                        ))}
-                                    </tbody>
-                                  </table>
+                                        </thead>
+                                        <tbody>
+                                          {alertNotesList
+                                            .sort(
+                                              (a, b) =>
+                                                getCurrentTimeZone(b.createdDate) -
+                                                getCurrentTimeZone(a.createdDate)
+                                            ) // Sort the notes based on createdDate
+                                            .map((note) => (
+                                              <tr key={note.alertsNotesId}>
+                                                <td>{note.createdUser}</td>
+                                                <td>{getCurrentTimeZone(note.createdDate)}</td>
+                                                <td>{note.notes}</td>
+                                              </tr>
+                                            ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  ) : (
+                                    <div>No notes available.</div>
+                                  )}
                                 </div>
-                              ) : (
-                                <div>No notes available.</div>
-                              )}
-                            </div>
-                            <div className="col-md-2">
-                              <div
-                                className="btn btn-primary btn-new btn-small"
-                                onClick={() => openEditPopUp(item)}
-                              >
-                                Edit {""}
+                                <div className="col-md-2">
+                                  <div
+                                    className="btn btn-primary btn-new btn-small"
+                                    onClick={() => openEditPopUp(item)}
+                                  >
+                                    Edit {""}
+                                  </div>
+                                </div>
                               </div>
                             </div>
+                            <div className="col-md-5">
+                              <div className="row">
+                                <div className="text-center">
+                                  <h4>Timeline</h4>
+                                </div>
+                                <div className="timeline-section" style={{ maxHeight: '300px', overflowY: 'auto', width:'99%' }}>
+
+                                  <div className="pt-6 h-600px">
+                                    <div className="timeline-label">
+                                      {alertHistory && alertHistory.length > 0 ? (
+                                        alertHistory.map((item) => {
+                                          const formattedDateTime = getCurrentTimeZone(item.historyDate);
+
+                                          return (
+                                            <div className="timeline-item" key={item.id}>
+                                              <div className="timeline-label fw-bold text-gray-800 fs-6">
+                                                <p>{formattedDateTime}</p>
+                                                <p className="text-muted">{item.createdUser}</p>
+                                              </div>
+
+                                              <div className="timeline-badge">
+                                                <i className={`fa fa-genderless ${getRandomClass()} fs-1`}></i>
+                                              </div>
+                                              <div className="fw-semibold text-gray-700 ps-3 fs-7">
+                                                {item.historyDescription}
+                                              </div>
+                                            </div>
+                                          );
+                                        })
+                                      ) : (
+                                        <div className="text-gray-500 text-center">No data found</div>
+                                      )}
+
+
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
                           </div>
                         </td>
                       </tr>

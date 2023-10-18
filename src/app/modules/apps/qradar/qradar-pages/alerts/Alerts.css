@@ -10,4 +10,17 @@
   .rotate {
     animation: rotate 1s linear infinite;
   }
+  /* .timeline-section::-webkit-scrollbar {
+    width: 10px; 
+  }
+  
+  .timeline-section::-webkit-scrollbar-thumb {
+    background-color: #000; 
+    border-radius: 6px;
+  }
+  
+  .timeline-section::-webkit-scrollbar-track {
+    background-color: lightseagreen; 
+  } */
+  
   

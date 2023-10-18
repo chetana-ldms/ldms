@@ -220,7 +220,7 @@ const DashboardWrapper = () => {
         <div className="col-lg-3">
           <div className="row">
             <label className="form-label fw-normal col-lg-7 fs-12 lh-40 fc-gray fs-14">
-              <span>Show info for last:</span>
+              <span>Show info for last days:</span>
             </label>
             <div className="col-lg-5">
               <select

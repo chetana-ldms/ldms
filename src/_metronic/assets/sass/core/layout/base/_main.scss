@@ -464,6 +464,7 @@ form{
   }
   .card-body {
     padding: 20px !important;
+    min-height: auto !important;
   }
   .incident-icon{
     margin-left: 30px;
@@ -1304,13 +1305,14 @@ form{
     p{
       margin-bottom: 0;
       font-weight: normal;
-      font-size: 12px;
+      font-size: 12px ;
       &.time{
         color: blue;
       }
     }
     &::before{
       left: 71px;
+      background-color:#6c757d;
     }
     .timeline-label{
       width: 70px;

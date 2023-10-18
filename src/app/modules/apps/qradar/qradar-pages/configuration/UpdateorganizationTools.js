@@ -16,7 +16,7 @@ const UpdateOrganizationTools = () => {
   const [organizationList, setOrganizationList] = useState([])
   const [toolTypeAction, setToolTypeAction] = useState(
     {
-      orgID:"",
+      orgID: "",
       orgName: "",
       toolTypeId: "",
       toolTypeName: '',
@@ -28,9 +28,14 @@ const UpdateOrganizationTools = () => {
   );
   const [selectedToolAction, setSelectedToolAction] = useState('');
   const [toolActionTypes, setToolActionTypes] = useState([]);
+  console.log(toolActionTypes, "toolActionTypes")
   const [enteredApiUrl, setEnteredApiUrl] = useState('');
   const [tableData, setTableData] = useState([]);
   const [selectedToolType, setSelectedToolType] = useState(null)
+  const [initialToolActions, setInitialToolActions] = useState([]);
+  console.log(initialToolActions, "initialToolActions")
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
   const { id } = useParams()
   const toolID = useRef()
   const orgID = useRef()
@@ -61,7 +66,7 @@ const UpdateOrganizationTools = () => {
     };
 
     if (!selectedToolType) {
-      const initialToolType = toolTypeAction.toolTypeId;  
+      const initialToolType = toolTypeAction.toolTypeId;
       setSelectedToolType(initialToolType);
     }
 
@@ -74,7 +79,7 @@ const UpdateOrganizationTools = () => {
         const data = await fetchOrganizationToolDetails(id);
         setToolTypeAction({
           ...toolTypeAction,
-          orgID:data.orgID,
+          orgID: data.orgID,
           orgName: data.orgName,
           toolTypeId: data.toolTypeId,
           toolTypeName: data.toolTypeName,
@@ -83,6 +88,7 @@ const UpdateOrganizationTools = () => {
           authKey: data.authKey,
           // apiUrl: data.apiUrl
         })
+        setInitialToolActions(data.toolActions || []);
       } catch (error) {
         handleError(error);
       }
@@ -90,7 +96,15 @@ const UpdateOrganizationTools = () => {
 
     fetchData();
   }, [id]);
-  const handleSubmit = async(event, toolTypeAction) => {
+  useEffect(() => {
+    setTableData(initialToolActions.map((item) => ({
+      orgToolActionId: item.orgToolActionId,
+      toolAction: item.toolActionName,
+      toolTypeActionID: item.toolActionId,
+      apiUrl: item.apiUrl,
+    })));
+  }, [initialToolActions]);
+  const handleSubmit = async (event, toolTypeAction) => {
     setLoading(true)
     if (!toolID.current.value) {
       errors.toolID = 'Enter Tool'
@@ -128,19 +142,18 @@ const UpdateOrganizationTools = () => {
       modifiedDate,
       modifiedUserId,
       lastReadPKID: 0,
-      // apiUrl: toolTypeAction.apiUrl,
-        toolActions: tableData.map(item => ({
-          toolActionId: item.toolTypeActionID,
-          orgToolActionId: 0,
-          apiUrl: item.apiUrl,
-          apiVerson: "string",
-          getDataBatchSize: 0
-        }))
+      toolActions: tableData.map(item => ({
+        toolActionId: item.toolTypeActionID,
+        orgToolActionId: item.orgToolActionId,
+        apiUrl: item.apiUrl,
+        apiVerson: "string",
+        getDataBatchSize: 0
+      }))
     }
     try {
       const responseData = await fetchOrganizationToolsUpdateUrl(data);
       const { isSuccess } = responseData;
-  
+
       if (isSuccess) {
         notify('Organizations Tool Updated');
         navigate('/qradar/organization-tools/updated');
@@ -162,27 +175,27 @@ const UpdateOrganizationTools = () => {
       });
   }, []);
   useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const organizationsResponse = await fetchOrganizations();
-          setOrganizationList(organizationsResponse);
-        } catch (error) {
-          handleError(error);
-        }
-      };
-  
-      fetchData();
+    const fetchData = async () => {
+      try {
+        const organizationsResponse = await fetchOrganizations();
+        setOrganizationList(organizationsResponse);
+      } catch (error) {
+        handleError(error);
+      }
+    };
+
+    fetchData();
   }, [])
   const handleChange = (event, field) => {
     const selectedValue = event.target.value;
-  
+
     if (field === "authKey" || field === "apiUrl") {
       setToolTypeAction((prevState) => ({
         ...prevState,
         [field]: selectedValue,
       }));
     }
-  
+
     if (field === "toolName" || field === "orgName") {
       const selectedId = event.target.options[event.target.selectedIndex].getAttribute('data-id');
       setToolTypeAction((prevState) => ({
@@ -191,7 +204,7 @@ const UpdateOrganizationTools = () => {
         [field]: selectedValue,
       }));
     }
-  
+
     if (field === "toolTypeName") {
       const selectedId = event.target.options[event.target.selectedIndex].getAttribute('data-id');
       setSelectedToolType(selectedId)
@@ -207,7 +220,6 @@ const UpdateOrganizationTools = () => {
           handleError(error);
         }
       };
-  
       fetchData();
       setToolTypeAction((prevState) => ({
         ...prevState,
@@ -216,20 +228,51 @@ const UpdateOrganizationTools = () => {
       }));
     }
   };
-  const handleAction = (event) => {
-    event.preventDefault();
-    const newToolAction = { toolAction: selectedToolAction, toolTypeActionID: toolActionTypes.find(item => item.toolAction === selectedToolAction)?.toolTypeActionID, apiUrl: enteredApiUrl };
+const handleAction = (event) => {
+  event.preventDefault();
 
-    setTableData([...tableData, newToolAction]);
-    setSelectedToolAction('');
-    setEnteredApiUrl('');
-  };
+  if (isEditing) {
+    const updatedTableData = [...tableData];
+    const existingItem = updatedTableData[editingIndex];
+    updatedTableData[editingIndex] = {
+      ...existingItem,
+      toolAction: selectedToolAction,
+      toolTypeActionID: toolActionTypes.find(item => item.toolAction === selectedToolAction)?.toolTypeActionID,
+      apiUrl: enteredApiUrl,
+    };
+    setTableData(updatedTableData);
+  } else {
+    const existingItem = tableData.find(item => item.toolAction === selectedToolAction && item.apiUrl === enteredApiUrl);
+    if (!existingItem) {
+      const newToolAction = {
+        toolAction: selectedToolAction,
+        toolTypeActionID: toolActionTypes.find(item => item.toolAction === selectedToolAction)?.toolTypeActionID,
+        apiUrl: enteredApiUrl,
+      };
+      setTableData([...tableData, newToolAction]);
+    } else {
+      console.log("Item already exists");
+    }
+  }
+  setSelectedToolAction('');
+  setEnteredApiUrl('');
+  setIsEditing(false);
+  setEditingIndex(null);
+};
   const handleDelete = (index) => {
     const updatedTableData = [...tableData];
     updatedTableData.splice(index, 1);
     setTableData(updatedTableData);
   };
+  const handleEdit = (index) => {
+    setEditingIndex(index);
+    const editedItem = tableData[index];
+    setSelectedToolAction(editedItem.toolAction);
+    setEnteredApiUrl(editedItem.apiUrl);
+    setIsEditing(true);
+  };
   
+
   return (
     <div className='card'>
       <div className='card-header border-0 pt-5'>
@@ -275,7 +318,7 @@ const UpdateOrganizationTools = () => {
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
-                   Tool Type
+                  Tool Type
                 </label>
                 <select
                   className='form-select form-select-solid'
@@ -300,7 +343,7 @@ const UpdateOrganizationTools = () => {
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
-                   Tool
+                  Tool
                 </label>
                 <select
                   className='form-select form-select-solid'
@@ -339,23 +382,6 @@ const UpdateOrganizationTools = () => {
                 />
               </div>
             </div>
-            {/* <div className='col-lg-4 mb-4 mb-lg-0'>
-              <div className='fv-row mb-0'>
-                <label htmlFor='apiUrl' className='form-label fs-6 fw-bolder mb-3'>
-                  API URL
-                </label>
-                <input
-                  type='text'
-                  required
-                  className='form-control form-control-lg form-control-solid'
-                  id='apiUrl'
-                  value={toolTypeAction.apiUrl}
-                  onChange={(e) => handleChange(e, "apiUrl")}
-                  ref={apiUrl}
-                  placeholder='Ex: https://10.100.0.102/api/siem/offences'
-                />
-              </div>
-            </div> */}
             <div className='card-body border-top p-9 mt-5'>
               <div className='row mb-6'>
                 <div className='col-lg-4 mb-4 mb-lg-0'>
@@ -400,7 +426,9 @@ const UpdateOrganizationTools = () => {
                   </div>
                 </div>
                 <div className='col-lg-4 mb-4 mb-lg-0 d-flex align-items-end justify-content-center'>
-                  <button className='btn btn-primary' onClick={handleAction} >Add Action</button>
+                  <button className='btn btn-primary' onClick={handleAction} >
+                     {isEditing ? 'Update Action' : 'Add Action'}
+                     </button>
                 </div>
               </div>
             </div>
@@ -412,7 +440,7 @@ const UpdateOrganizationTools = () => {
                     <tr>
                       <th>Tool Action</th>
                       <th>API URL</th>
-                      <th>Remove</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -421,23 +449,28 @@ const UpdateOrganizationTools = () => {
                         <td style={{ paddingTop: '30px' }}>{item.toolAction}</td>
                         <td style={{ paddingTop: '30px' }}>{item.apiUrl}</td>
                         <td>
-                          <td>
-                            <button
-                              className='btn btn-danger'
-                              title="Remove"
-                              onClick={() => handleDelete(index)}
-                              style={{ borderRadius: '50%' }}
-                              type="button"
-                            >
-                              <i className='bi bi-x'></i>
-                            </button>
-                          </td>
-
+                          <button
+                            className='btn btn-warning'
+                            title="Edit"
+                            onClick={() => handleEdit(index)}
+                            style={{ borderRadius: '50%', marginRight: '10px' }}
+                            type="button"
+                          >
+                            <i className='bi bi-pencil'></i>
+                          </button>
+                          <button
+                            className='btn btn-danger'
+                            title="Remove"
+                            onClick={() => handleDelete(index)}
+                            style={{ borderRadius: '50%' }}
+                            type="button"
+                          >
+                            <i className='bi bi-x'></i>
+                          </button>
                         </td>
-
-
                       </tr>
                     ))}
+
                   </tbody>
                 </table>
               </div>
