@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
-import { fetchLDPToolsByToolType, fetchOrganizationToolDetails, fetchOrganizationToolsUpdateUrl, fetchToolTypeActions } from '../../../../../api/ConfigurationApi';
+import { fetchGetToolActionsByToolURL, fetchLDPToolsByToolType, fetchOrganizationToolDetails, fetchOrganizationToolsUpdateUrl, fetchToolTypeActions } from '../../../../../api/ConfigurationApi';
 import { fetchLDPTools, fetchMasterData } from '../../../../../api/Api';
 import { fetchOrganizations } from '../../../../../api/dashBoardApi';
 import { useErrorBoundary } from "react-error-boundary";
@@ -12,6 +12,7 @@ const UpdateOrganizationTools = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
+  console.log(toolTypes, "toolTypes111111111")
   const [toolName, setToolName] = useState([])
   const [organizationList, setOrganizationList] = useState([])
   const [toolTypeAction, setToolTypeAction] = useState(
@@ -26,12 +27,15 @@ const UpdateOrganizationTools = () => {
       apiUrl: ""
     }
   );
+  console.log(toolTypeAction, "toolTypeAction11111")
   const [selectedToolAction, setSelectedToolAction] = useState('');
   const [toolActionTypes, setToolActionTypes] = useState([]);
-  console.log(toolActionTypes, "toolActionTypes")
+  console.log(toolActionTypes, "toolActionTypescheck")
   const [enteredApiUrl, setEnteredApiUrl] = useState('');
   const [tableData, setTableData] = useState([]);
   const [selectedToolType, setSelectedToolType] = useState(null)
+  const [selectedToolId, setSelectedToolId] = useState(null);
+  console.log(selectedToolId, "selectedToolId")
   const [initialToolActions, setInitialToolActions] = useState([]);
   console.log(initialToolActions, "initialToolActions")
   const [isEditing, setIsEditing] = useState(false);
@@ -42,37 +46,7 @@ const UpdateOrganizationTools = () => {
   const authKey = useRef()
   const apiUrl = useRef()
   const errors = {}
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchLDPTools();
-        setToolName(data);
-      } catch (error) {
-        handleError(error);
-      }
-    };
 
-    const fetchActionTypes = async () => {
-      try {
-        setLoading(true);
-        const response = await fetchToolTypeActions();
-        const result = response.filter((item) => item.toolTypeID === Number(selectedToolType));
-        setToolActionTypes(result);
-      } catch (error) {
-        handleError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (!selectedToolType) {
-      const initialToolType = toolTypeAction.toolTypeId;
-      setSelectedToolType(initialToolType);
-    }
-
-    fetchData();
-    fetchActionTypes();
-  }, [selectedToolType, toolTypeAction]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -88,19 +62,42 @@ const UpdateOrganizationTools = () => {
           authKey: data.authKey,
           // apiUrl: data.apiUrl
         })
+        handleChange(data, "toolTypeName")
         setInitialToolActions(data.toolActions || []);
+        toolData(data.toolID)
       } catch (error) {
-        handleError(error);
+        console.log(error);
       }
     };
 
     fetchData();
+    
   }, [id]);
+  const toolData = (ToolId)=>{
+    const fetchData1 = async () => {
+      try {
+        setLoading(true);
+
+        const data = {
+          toolId: Number(ToolId),
+        };
+        const response = await fetchGetToolActionsByToolURL(data);
+        setToolActionTypes(response.toolAcationsList);
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData1();
+  }
+  
   useEffect(() => {
     setTableData(initialToolActions.map((item) => ({
       orgToolActionId: item.orgToolActionId,
       toolAction: item.toolActionName,
-      toolTypeActionID: item.toolActionId,
+      toolActionID: item.toolActionId,
       apiUrl: item.apiUrl,
     })));
   }, [initialToolActions]);
@@ -143,7 +140,7 @@ const UpdateOrganizationTools = () => {
       modifiedUserId,
       lastReadPKID: 0,
       toolActions: tableData.map(item => ({
-        toolActionId: item.toolTypeActionID,
+        toolActionId: item.toolActionID,
         orgToolActionId: item.orgToolActionId,
         apiUrl: item.apiUrl,
         apiVerson: "string",
@@ -187,7 +184,7 @@ const UpdateOrganizationTools = () => {
     fetchData();
   }, [])
   const handleChange = (event, field) => {
-    const selectedValue = event.target.value;
+    const selectedValue = event?.target?.value;
 
     if (field === "authKey" || field === "apiUrl") {
       setToolTypeAction((prevState) => ({
@@ -203,10 +200,12 @@ const UpdateOrganizationTools = () => {
         [field === "toolName" ? "toolID" : "orgID"]: selectedId,
         [field]: selectedValue,
       }));
+      setSelectedToolId(selectedId);
+      toolData(selectedId)
     }
 
     if (field === "toolTypeName") {
-      const selectedId = event.target.options[event.target.selectedIndex].getAttribute('data-id');
+      const selectedId = event.toolTypeId ? event.toolTypeId : event.target.options[event.target.selectedIndex].getAttribute('data-id');
       setSelectedToolType(selectedId)
       const fetchData = async () => {
         try {
@@ -224,41 +223,49 @@ const UpdateOrganizationTools = () => {
       setToolTypeAction((prevState) => ({
         ...prevState,
         toolTypeId: selectedId,
-        toolTypeName: selectedValue,
+        toolTypeName: selectedValue || event.toolTypeName ,
       }));
     }
   };
-const handleAction = (event) => {
-  event.preventDefault();
-
-  if (isEditing) {
-    const updatedTableData = [...tableData];
-    const existingItem = updatedTableData[editingIndex];
-    updatedTableData[editingIndex] = {
-      ...existingItem,
-      toolAction: selectedToolAction,
-      toolTypeActionID: toolActionTypes.find(item => item.toolAction === selectedToolAction)?.toolTypeActionID,
-      apiUrl: enteredApiUrl,
-    };
-    setTableData(updatedTableData);
-  } else {
-    const existingItem = tableData.find(item => item.toolAction === selectedToolAction && item.apiUrl === enteredApiUrl);
-    if (!existingItem) {
-      const newToolAction = {
+  const handleAction = (event) => {
+    event.preventDefault();
+  
+    if (!selectedToolAction || !enteredApiUrl) {
+      console.log("Please select Tool Action and enter API URL");
+      return;
+    }
+  
+    const toolActionID = toolActionTypes.find((item) => item.toolTypeActionName === selectedToolAction)?.toolActionID;
+  
+    if (isEditing) {
+      const updatedTableData = [...tableData];
+      const existingItem = updatedTableData[editingIndex];
+      updatedTableData[editingIndex] = {
+        ...existingItem,
         toolAction: selectedToolAction,
-        toolTypeActionID: toolActionTypes.find(item => item.toolAction === selectedToolAction)?.toolTypeActionID,
+        toolActionID: toolActionID,
         apiUrl: enteredApiUrl,
       };
-      setTableData([...tableData, newToolAction]);
+      setTableData(updatedTableData);
     } else {
-      console.log("Item already exists");
+      const existingItem = tableData.find((item) => item.toolAction === selectedToolAction && item.apiUrl === enteredApiUrl);
+      if (!existingItem) {
+        const newToolAction = {
+          toolAction: selectedToolAction,
+          toolActionID: toolActionID,
+          apiUrl: enteredApiUrl,
+        };
+        setTableData([...tableData, newToolAction]);
+      } else {
+        console.log("Item already exists");
+      }
     }
-  }
-  setSelectedToolAction('');
-  setEnteredApiUrl('');
-  setIsEditing(false);
-  setEditingIndex(null);
-};
+    setSelectedToolAction('');
+    setEnteredApiUrl('');
+    setIsEditing(false);
+    setEditingIndex(null);
+  };
+  
   const handleDelete = (index) => {
     const updatedTableData = [...tableData];
     updatedTableData.splice(index, 1);
@@ -398,10 +405,10 @@ const handleAction = (event) => {
                       onChange={(e) => setSelectedToolAction(e.target.value)}
                     // required
                     >
-                      <option value='' disabled selected>Select</option>
-                      {toolActionTypes.map((item, index) => (
-                        <option value={item.toolAction} key={index}>
-                          {item.toolAction}
+                      <option value=''>Select</option>
+                      {toolActionTypes?.map((item, index) => (
+                        <option value={item.toolTypeActionName} key={index}>
+                          {item.toolTypeActionName}
                         </option>
                       ))}
                     </select>

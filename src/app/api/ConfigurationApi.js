@@ -10,6 +10,8 @@ const toolActionsUrl = process.env.REACT_APP_TOOL_ACTIONS_URL;
 const ruleActionDetailsUrl = process.env.REACT_APP_RULE_ACTION_DETAILS_URL;
 
 const ToolTypeActionsUrl = process.env.REACT_APP_TOOL_TYPE_ACTIONS_URL;
+const GetToolActionsByToolURL = process.env.REACT_APP_GET_TOOL_ACTIONS_BY_TOOL_URL;
+
 const ToolTypeActionUpdateUrl = process.env.REACT_APP_TOOL_TYPE_ACTION_UPDATE_URL;
 const ToolTypeActionAddUrl= process.env.REACT_APP_TOOL_TYPE_ACTION_ADD_URL
 const OrganizationsUrl= process.env.REACT_APP_ORGANIZATIONS_URL
@@ -205,6 +207,25 @@ export const fetchRuleActionDetails = async (id) => {
     console.log(error);
   }
 };
+export const fetchGetToolActionsByToolURL = async (data) => {
+  try {
+    const response = await fetch(`${GetToolActionsByToolURL}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const fetchToolTypeActions = async () => {
   try {
     const response = await fetch(`${ToolTypeActionsUrl}`, {

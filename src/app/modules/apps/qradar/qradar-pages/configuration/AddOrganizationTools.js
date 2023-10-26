@@ -4,7 +4,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
-import { fetchLDPToolsByToolType, fetchOrganizationToolsAddUrl, fetchToolTypeActions } from '../../../../../api/ConfigurationApi';
+import { fetchGetToolActionsByToolURL, fetchLDPToolsByToolType, fetchOrganizationToolsAddUrl, fetchToolTypeActions } from '../../../../../api/ConfigurationApi';
 import { fetchOrganizations } from '../../../../../api/dashBoardApi';
 import { fetchMasterData } from '../../../../../api/Api';
 import { useErrorBoundary } from "react-error-boundary";
@@ -16,10 +16,13 @@ const AddOrganizationTools = () => {
   const [toolTypes, setToolTypes] = useState([])
   const [organizationList, setOrganizationList] = useState([])
   const [toolName, setToolName] = useState([])
+  console.log(toolName, "toolName111")
   const [selectedToolAction, setSelectedToolAction] = useState('');
   const [enteredApiUrl, setEnteredApiUrl] = useState('');
   const [tableData, setTableData] = useState([]);
   const [toolActionTypes, setToolActionTypes] = useState([])
+  console.log(toolActionTypes, "toolActionTypes111")
+
   const toolID = useRef()
   const orgID = useRef()
   const authKey = useRef()
@@ -124,29 +127,66 @@ const AddOrganizationTools = () => {
     };
 
     result();
-    const fetch = async () => {
-      try {
-        setLoading(true);
-        const response = await fetchToolTypeActions();
-        const result = response.filter((item) => item.toolTypeID === Number(selectedValue));
-        setToolActionTypes(result);
-      } catch (error) {
-        handleError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetch()
+    // const fetch = async () => {
+    //   try {
+    //     setLoading(true);
+    //     const data = {
+    //       toolId: Number(selectedValue)
+    //     }
+    //     const response = await fetchGetToolActionsByToolURL(data);
+    //     // const result = response.filter((item) => item.toolTypeID === Number(selectedValue));
+    //     setToolActionTypes(response);
+    //   } catch (error) {
+    //     handleError(error);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+    // fetch()
 
   }
+  const handleChangeTool =  (event) => {
+    const fetching = async () => {
+      let selectedToolId = event.target.value;
+    try {
+      setLoading(true);
+      const data = {
+        toolId: Number(selectedToolId)
+      };
+      const response = await fetchGetToolActionsByToolURL(data);
+      setToolActionTypes(response.toolAcationsList);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+    fetching()
+  };
+  
   const handleAction = (event) => {
     event.preventDefault();
-    const newToolAction = { toolAction: selectedToolAction, toolTypeActionID: toolActionTypes.find(item => item.toolAction === selectedToolAction)?.toolTypeActionID, apiUrl: enteredApiUrl };
-
+  
+    const selectedToolActionObject = toolActionTypes.find(item => item.toolTypeActionName === selectedToolAction);
+  
+    if (!selectedToolActionObject) {
+      console.error(`Selected tool action '${selectedToolAction}' not found in toolActionTypes.`);
+      return;
+    }
+    const toolActionID = selectedToolActionObject.toolActionID;
+  
+    const newToolAction = { 
+      toolAction: selectedToolAction, 
+      toolTypeActionID: toolActionID, 
+      apiUrl: enteredApiUrl 
+    };
+  
     setTableData([...tableData, newToolAction]);
     setSelectedToolAction('');
     setEnteredApiUrl('');
   };
+  
+  
   const handleDelete = (index) => {
     const updatedTableData = [...tableData];
     updatedTableData.splice(index, 1);
@@ -195,7 +235,7 @@ const AddOrganizationTools = () => {
             </div>
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-10'>
-                <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
+                <label className='form-label fs-6 fw-bolder mb-3'>
                   Tool Type
                 </label>
                 <select
@@ -203,9 +243,8 @@ const AddOrganizationTools = () => {
                   data-kt-select2='true'
                   data-placeholder='Select option'
                   data-allow-clear='true'
-                  id='toolID'
                   onChange={handleChangeToolType}
-                  ref={toolID}
+                  
                   required
                 >
                   <option value='' disabled selected>Select</option>
@@ -228,16 +267,18 @@ const AddOrganizationTools = () => {
                   data-placeholder='Select option'
                   data-allow-clear='true'
                   id='toolID'
+                  onChange={handleChangeTool}
                   ref={toolID}
                   required
                 >
-                  <option value='' disabled selected>Select </option>
+                  <option value='' disabled selected>Select</option>
                   {toolName.map((item, index) => (
                     <option value={item.toolId} key={index}>
                       {item.toolName}
                     </option>
                   ))}
                 </select>
+
               </div>
             </div>
             <div className='col-lg-4 mb-4 mb-lg-0'>
@@ -261,7 +302,7 @@ const AddOrganizationTools = () => {
                 <div className='col-lg-4 mb-4 mb-lg-0'>
                   <div className='fv-row mb-0'>
                     <label htmlFor='toolTypeActionID' className='form-label fs-6 fw-bolder mb-3'>
-                      Tool Action drop down
+                      Tool Action
                     </label>
                     <select
                       className='form-select form-select-solid'
@@ -274,8 +315,8 @@ const AddOrganizationTools = () => {
                     >
                       <option value='' disabled selected>Select</option>
                       {toolActionTypes.map((item, index) => (
-                        <option value={item.toolAction} key={index}>
-                          {item.toolAction}
+                        <option value={item.toolTypeActionName} key={index}>
+                          {item.toolTypeActionName}
                         </option>
                       ))}
                     </select>

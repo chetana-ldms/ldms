@@ -19,8 +19,8 @@ function AlertsRule() {
     dataPointWidth: 40,
     axisY: {
       minimum: 0,
-      maximum: 15,
-      interval: 5,
+      maximum: 100,
+      interval: 50,
       title: 'alertCount',
       titleFontSize: 14,
     },

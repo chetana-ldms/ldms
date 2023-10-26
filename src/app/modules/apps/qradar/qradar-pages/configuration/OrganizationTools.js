@@ -105,7 +105,6 @@ const OrganizationTools = () => {
               </tr>
             ) : (
               tools.map((item, index) => {
-                // Check if the userID is 1 or the item belongs to the current user (userID === 2)
                 const shouldDisplay = userID === 1 || item.orgID === orgId;
 
                 if (shouldDisplay) {
@@ -155,7 +154,7 @@ const OrganizationTools = () => {
                   );
                 }
 
-                return null; // Skip rendering if the condition is not met
+                return null; 
               })
             )}
           </tbody>
