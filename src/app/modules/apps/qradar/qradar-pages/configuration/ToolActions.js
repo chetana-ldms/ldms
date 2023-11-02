@@ -83,7 +83,7 @@ const ToolActions = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {toolActions.length > 0 ? (
+            {toolActions !== null ? (
               toolActions.map((item, index) => (
                 <tr key={index} className='fs-12'>
                   <td>{index + 1}</td>
@@ -108,7 +108,7 @@ const ToolActions = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="4">No data found</td>
+                <td colSpan='6' className='text-center'>No data found</td>
               </tr>
             )}
 

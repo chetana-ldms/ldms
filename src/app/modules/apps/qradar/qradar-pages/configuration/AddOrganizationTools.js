@@ -119,7 +119,7 @@ const AddOrganizationTools = () => {
           toolTypeId: Number(selectedValue)
         }
         const response = await fetchLDPToolsByToolType(data);
-        const result = response.ldpToolsList
+        const result = response.ldpToolsList 
         setToolName(result)
       } catch (error) {
         handleError(error);
@@ -238,6 +238,21 @@ const AddOrganizationTools = () => {
                 <label className='form-label fs-6 fw-bolder mb-3'>
                   Tool Type
                 </label>
+                <div>
+          {toolTypes === null && (
+            <select
+            className='form-select form-select-solid'
+            data-kt-select2='true'
+            data-placeholder='Select option'
+            data-allow-clear='true'
+            onChange={handleChangeToolType}
+            
+            required
+          >
+            <option value=''>Select</option>
+          </select>
+          )}
+            {toolTypes !== null && (
                 <select
                   className='form-select form-select-solid'
                   data-kt-select2='true'
@@ -254,6 +269,8 @@ const AddOrganizationTools = () => {
                     </option>
                   ))}
                 </select>
+            )}
+            </div>
               </div>
             </div>
             <div className='col-lg-4 mb-4 mb-lg-0'>
@@ -261,6 +278,23 @@ const AddOrganizationTools = () => {
                 <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
                   Tool
                 </label>
+                <div>
+          {toolName === null && (
+            <select
+            className='form-select form-select-solid'
+            data-kt-select2='true'
+            data-placeholder='Select option'
+            data-allow-clear='true'
+            id='toolID'
+            onChange={handleChangeTool}
+            ref={toolID}
+            required
+          >
+            <option value='' disabled selected>Select</option>
+         
+          </select>
+          )}
+           {toolName !== null && (
                 <select
                   className='form-select form-select-solid'
                   data-kt-select2='true'
@@ -278,7 +312,8 @@ const AddOrganizationTools = () => {
                     </option>
                   ))}
                 </select>
-
+           )}
+           </div>
               </div>
             </div>
             <div className='col-lg-4 mb-4 mb-lg-0'>

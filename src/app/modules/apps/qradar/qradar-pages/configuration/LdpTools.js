@@ -77,7 +77,7 @@ const LdpTools = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {tools.length > 0 ? (
+            {tools !== null ? (
               tools.map((item, index) => (
                 <tr key={index} className='fs-12'>
                   <td className='text-danger fw-bold'>{item.toolId}</td>
@@ -100,7 +100,7 @@ const LdpTools = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="4">No data found</td>
+                <td colSpan='6' className='text-center'>No data found</td>
               </tr>
             )}
 

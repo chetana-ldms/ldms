@@ -41,6 +41,7 @@ export function Login() {
   const [loading, setLoading] = useState(false)
   // const { saveAuth, setCurrentUser } = useAuth()
   const [organisation, setOrganisation] = useState([]);
+  console.log(organisation, "organisationtest")
   const navigate = useNavigate()
   useEffect(() => {
     fetchOrganizations()
@@ -62,7 +63,10 @@ export function Login() {
         if (authData.isSuccess) {
           sessionStorage.setItem('userId', authData.userID);
           sessionStorage.setItem('orgId', authData.orgId);
+          sessionStorage.setItem('roleID', authData.roleID);
           sessionStorage.setItem('userName', authData.userName);
+          sessionStorage.setItem('globalAdminRole', authData.globalAdminRole);
+          sessionStorage.setItem('clientAdminRole', authData.clientAdminRole);
           navigate('/dashboard')
         } else {
           setStatus('The login details are incorrect')
@@ -162,35 +166,53 @@ export function Login() {
           </div>
         )}
       </div>
+     
+      {/* begin::Form group */}
       <div className='fv-row mb-8'>
         <label className='form-label fs-6 fw-bolder text-dark'>Organisation Name</label>
-        <select
-          placeholder='Organisation'
-          {...formik.getFieldProps('org')}
-          className={clsx(
-            'form-select form-control bg-transparent',
-            { 'is-invalid': formik.touched.org && formik.errors.org },
-            {
-              'is-valid': formik.touched.org && !formik.errors.org,
-            }
+        <div>
+          {organisation === null && (
+            
+             <select
+             placeholder='Organisation'
+             {...formik.getFieldProps('org')}
+             className={clsx(
+               'form-select form-control bg-transparent',
+               { 'is-invalid': formik.touched.org && formik.errors.org },
+               { 'is-valid': formik.touched.org && !formik.errors.org }
+             )}
+             autoComplete='off'
+           >
+              <option value="" >Select</option>
+            </select>
           )}
-          autoComplete='off'
-        >
-          <option value="" >Select</option>
-          {organisation.length > 0 &&
-            organisation.map((user: Organisation) => (
-              <option key={user.orgID} value={user.orgID}>
-                {user.orgName}
-              </option>
-            ))}
-        </select>
+          {organisation !== null && (
+            
+            <select
+              placeholder='Organisation'
+              {...formik.getFieldProps('org')}
+              className={clsx(
+                'form-select form-control bg-transparent',
+                { 'is-invalid': formik.touched.org && formik.errors.org },
+                { 'is-valid': formik.touched.org && !formik.errors.org }
+              )}
+              autoComplete='off'
+            >
+              <option value=""  >Select</option>
+              {organisation.length >= 0 && organisation.map((user: Organisation) => (
+                <option key={user.orgID} value={user.orgID}>
+                  {user.orgName}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
         {formik.touched.org && formik.errors.org && (
           <div className='fv-plugins-message-container'>
             <span role='alert'>{formik.errors.org}</span>
           </div>
         )}
       </div>
-      {/* end::Form group */}
 
       {/* begin::Wrapper */}
       <div className='d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8'>

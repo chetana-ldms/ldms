@@ -97,7 +97,7 @@ const OrganizationTools = () => {
             loading ? (
               <UsersListLoading />
             ) :
-            tools.length === 0 ? (
+            tools === null ? (
               <tr>
                 <td colSpan='6' className='text-center'>
                   No data found.

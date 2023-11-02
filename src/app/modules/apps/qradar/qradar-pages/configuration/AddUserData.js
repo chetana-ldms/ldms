@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
-import {fetchRoles} from '../../../../../api/Api'
+import {fetchOrganizations, fetchRoles} from '../../../../../api/Api'
 import axios from 'axios'
 import { fetchUserAddUrl } from '../../../../../api/ConfigurationApi'
 import { notify, notifyFail } from '../components/notification/Notification';
@@ -9,14 +9,30 @@ import { useErrorBoundary } from "react-error-boundary";
 const AddUserData = () => {
   const handleError = useErrorBoundary();
   const orgId = Number(sessionStorage.getItem('orgId'));
+  const roleID = Number(sessionStorage.getItem("roleID"));
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [roleTypes, setRoleTypes] = useState([])
   console.log(roleTypes, "roleTypes")
+  const [organizationList, setOrganizationList] = useState([])
+  console.log(organizationList, "organizationList1111")
   const userName = useRef()
-  // const passWord = useRef()
+  const orgID = useRef()
   const roleType = useRef()
   const errors = {}
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const organizationsResponse = await fetchOrganizations();
+        setOrganizationList(organizationsResponse);
+      } catch (error) {
+        handleError(error);
+      }
+    };
+
+    fetchData();
+  }, [])
   const handleSubmit = async(event) => {
     setLoading(true)
 
@@ -26,11 +42,11 @@ const AddUserData = () => {
       return errors
     }
 
-    // if (!passWord.current.value) {
-    //   errors.passWord = 'Enter password'
-    //   setLoading(false)
-    //   return errors
-    // }
+    if (!orgID.current.value) {
+      errors.passWord = 'Enter password'
+      setLoading(false)
+      return errors
+    }
 
     if (!roleType.current.value) {
       errors.roleType = 'Select Role Type'
@@ -41,13 +57,12 @@ const AddUserData = () => {
     event.preventDefault()
     const createdUserId = Number(sessionStorage.getItem('userId'));
     const createdDete = new Date().toISOString();
-    const orgId = sessionStorage.getItem('orgId')
+    // const orgId = sessionStorage.getItem('orgId')
     var data ={
       name: userName.current.value,
       roleID: roleType.current.value,
-      // password: passWord.current.value,
+      orgId: Number(orgID.current.value),
       sysUser:0,
-      orgId,
       createdUserId,
       createdDete
     }
@@ -113,21 +128,42 @@ const AddUserData = () => {
                 />
               </div>
             </div>
-            {/* <div className='col-lg-4 mb-4 mb-lg-0'>
+
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
-                <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter Password
+                <label htmlFor='orgID' className='form-label fs-6 fw-bolder mb-3'>
+                  Organization
                 </label>
-                <input
-                  type='password'
+                <select
+                  className='form-select form-select-solid'
+                  data-kt-select2='true'
+                  data-placeholder='Select option'
+                  data-allow-clear='true'
+                  id='orgID'
+                  ref={orgID}
                   required
-                  className='form-control form-control-lg form-control-solid'
-                  id='password'
-                  ref={passWord}
-                  placeholder='Ex: ***********'
-                />
+                >
+                  <option value='' >Select</option>
+                  {roleID === 1 && 
+                  organizationList?.length > 0 &&
+                  organizationList.map((item, index) => (
+                    <option key={index} value={item.orgID}>
+                      {item.orgName}
+                    </option>
+                  ))}
+
+                {roleID !== 1 &&
+                  organizationList?.length > 0 &&
+                  organizationList
+                    .filter((item) => item.orgID === orgId)
+                    .map((item, index) => (
+                      <option key={index} value={item.orgID}>
+                        {item.orgName}
+                      </option>
+                    ))}
+                </select>
               </div>
-            </div> */}
+            </div>
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='toolType' className='form-label fs-6 fw-bolder mb-3'>

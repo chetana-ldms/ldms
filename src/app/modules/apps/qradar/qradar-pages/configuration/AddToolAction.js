@@ -126,7 +126,6 @@ const AddToolAction = () => {
                   data-placeholder='Select option'
                   data-allow-clear='true'
                   id='toolID'
-                  ref={toolID}
                   onChange={handleChangeToolType}
                   required
                 >
@@ -150,7 +149,7 @@ const AddToolAction = () => {
                   data-placeholder='Select option'
                   data-allow-clear='true'
                   id='toolId'
-                  ref={toolId}
+                  ref={toolID}
                   required
                 >
                   <option value=''>Select</option>

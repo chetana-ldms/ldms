@@ -421,7 +421,7 @@ const AlertsPage = () => {
     qradaralerts();
     setTimeout(() => setIsRefreshing(false), 2000);
   };
-  const RefreshInterval = 1 * 60 * 1000;
+  const RefreshInterval = 2 * 60 * 1000;
 
   useEffect(() => {
     let isActive = true;
@@ -669,7 +669,7 @@ const AlertsPage = () => {
         </div>
         <div className="clearfix" />
         <div className="float-right fs-15 lh-40 fc-gray text-right ds-reload">
-          Alerts is automatically refreshing every 5 minutes{" "}
+          Alerts is automatically refreshing every 2 minutes{" "}
           <a href="#" onClick={handleRefresh}>
             <i className={`fa fa-refresh ${isRefreshing ? "rotate" : ""}`} />
           </a>
