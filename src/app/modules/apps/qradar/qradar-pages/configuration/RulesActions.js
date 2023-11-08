@@ -12,6 +12,8 @@ import { useErrorBoundary } from "react-error-boundary";
 
 const RulesActions = () => {
   const handleError = useErrorBoundary();
+  const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
+  const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
   const orgId = Number(sessionStorage.getItem('orgId'));
   const [loading, setLoading] = useState(false)
   const [tools, setTools] = useState([])
@@ -63,9 +65,16 @@ const RulesActions = () => {
         </h3>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
-            <Link to='/qradar/rules-actions/add' className='btn btn-danger btn-small'>
-              Add
-            </Link>
+          {globalAdminRole === 1 || clientAdminRole === 1 ? (
+              <Link to='/qradar/rules-actions/add' className='btn btn-danger btn-small'>
+                Add
+              </Link>
+            ) : (
+              <button className='btn btn-danger btn-small' disabled>
+                Add
+              </button>
+            )}
+
           </div>
         </div>
       </div>
@@ -81,26 +90,46 @@ const RulesActions = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {tools.length > 0 ? (
+            {tools !== null && tools.length > 0 ? (
               tools.map((item, index) => (
                 <tr key={index} className='fs-12'>
                   <td>{item.ruleActionName}</td>
                   <td>{item.toolTypeName}</td>
                   <td>{item.toolName}</td>
                   <td>
-                    <Link
-                      className='text-white'
-                      to={`/qradar/rules-actions/update/${item.ruleActionID}`}
-                    >
-                      <button className='btn btn-primary btn-small'>Update</button>
-                    </Link>
-                    <button
-                      className="btn btn-sm btn-danger btn-small ms-5"
-                      style={{ fontSize: '14px' }}
-                      onClick={() => { handleDelete(item) }}
-                    >
-                      Delete
-                    </button>
+                  {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                      <button className='btn btn-primary btn-small'>
+                        <Link
+                          className='text-white'
+                          to={`/qradar/rules-actions/update/${item.ruleActionID}`}
+                        >
+                          Update
+                        </Link>
+                      </button>
+                    ) : (
+                      <button className='btn btn-primary btn-small' disabled>
+                        Update
+                      </button>
+                    )}
+                    {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                      <button
+                        className='btn btn-sm btn-danger btn-small ms-5'
+                        style={{ fontSize: '14px' }}
+                        onClick={() => {
+                          handleDelete(item);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    ) : (
+                      <button
+                        className='btn btn-sm btn-danger btn-small ms-5'
+                        style={{ fontSize: '14px' }}
+                        disabled
+                      >
+                        Delete
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))

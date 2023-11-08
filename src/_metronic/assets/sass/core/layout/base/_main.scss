@@ -67,10 +67,10 @@ body {
     font-weight: normal;
   }
   .notes-container{
-    max-height: 150px; 
+    max-height: 200px; 
     overflow-y: auto; 
     overflow-x: hidden; 
-    border-top: 1px solid #ccc;
+    // border-top: 1px solid #ccc;
     th{
       background: none !important;
       color: #333 !important;
@@ -1144,7 +1144,7 @@ form{
   }
 }
 
-.channel-edit{
+.channel-edit {
   &.modal{
     max-width: 90%;
     background: #fff;
@@ -1167,6 +1167,7 @@ form{
       }
     }
   }
+  
   .channel-accordion{
     background-color: #f1f1f1;
     td{

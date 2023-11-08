@@ -1,55 +1,55 @@
-import {Route, Routes, Outlet, Navigate} from 'react-router-dom'
-import {PageLink, PageTitle} from '../../../../_metronic/layout/core'
-import {DemoPage} from './qradar-pages/demo/DemoPage'
-import {IncidentsPagev1} from './qradar-pages/incidents/IncidentsPagev1'
-import {IncidentsPageDemo} from './qradar-pages/incidents/IncidentsPageDemo'
+import { Route, Routes, Outlet, Navigate } from 'react-router-dom'
+import { PageLink, PageTitle } from '../../../../_metronic/layout/core'
+import { DemoPage } from './qradar-pages/demo/DemoPage'
+import { IncidentsPagev1 } from './qradar-pages/incidents/IncidentsPagev1'
+import { IncidentsPageDemo } from './qradar-pages/incidents/IncidentsPageDemo'
 
-import {AlertsPage} from './qradar-pages/alerts/AlertsPage'
-import {ChannelsPage} from './qradar-pages/channels/ChannelsPage'
-import {Reports} from './qradar-pages/reports/Reports'
-import {DemoAlert} from './qradar-pages/demo/DemoAlert'
-import {DemoAlertv1} from './qradar-pages/demo/DemoAlertv1'
-import {DemoPlaybooks} from './qradar-pages/demo/DemoPlaybooks'
-import {LdpTools} from './qradar-pages/configuration/LdpTools'
-import {AddLdpTools} from './qradar-pages/configuration/AddLdpTools'
-import {UpdateLdpTools} from './qradar-pages/configuration/UpdateLdpTools'
+import { AlertsPage } from './qradar-pages/alerts/AlertsPage'
+import { ChannelsPage } from './qradar-pages/channels/ChannelsPage'
+import { Reports } from './qradar-pages/reports/Reports'
+import { DemoAlert } from './qradar-pages/demo/DemoAlert'
+import { DemoAlertv1 } from './qradar-pages/demo/DemoAlertv1'
+import { DemoPlaybooks } from './qradar-pages/demo/DemoPlaybooks'
+import { LdpTools } from './qradar-pages/configuration/LdpTools'
+import { AddLdpTools } from './qradar-pages/configuration/AddLdpTools'
+import { UpdateLdpTools } from './qradar-pages/configuration/UpdateLdpTools'
 
-import {Playbooks} from './qradar-pages/playbooks/Playbooks'
-import {AddPlaybooks} from './qradar-pages/playbooks/AddPlaybooks'
-import {UpdatePlaybooks} from './qradar-pages/playbooks/UpdatePlaybooks'
+import { Playbooks } from './qradar-pages/playbooks/Playbooks'
+import { AddPlaybooks } from './qradar-pages/playbooks/AddPlaybooks'
+import { UpdatePlaybooks } from './qradar-pages/playbooks/UpdatePlaybooks'
 
-import {RulesEngine} from './qradar-pages/configuration/RulesEngine'
-import {AddRule} from './qradar-pages/configuration/AddRule'
-import {UpdateRule} from './qradar-pages/configuration/UpdateRule'
+import { RulesEngine } from './qradar-pages/configuration/RulesEngine'
+import { AddRule } from './qradar-pages/configuration/AddRule'
+import { UpdateRule } from './qradar-pages/configuration/UpdateRule'
 
-import {ToolTypeActions} from './qradar-pages/configuration/ToolTypeActions'
-import {AddToolTypeAction} from './qradar-pages/configuration/AddToolTypeAction'
-import {UpdateToolTypeAction} from './qradar-pages/configuration/UpdateToolTypeAction'
+import { ToolTypeActions } from './qradar-pages/configuration/ToolTypeActions'
+import { AddToolTypeAction } from './qradar-pages/configuration/AddToolTypeAction'
+import { UpdateToolTypeAction } from './qradar-pages/configuration/UpdateToolTypeAction'
 
-import {ToolActions} from './qradar-pages/configuration/ToolActions'
-import {AddToolAction} from './qradar-pages/configuration/AddToolAction'
-import {UpdateToolAction} from './qradar-pages/configuration/UpdateToolAction'
+import { ToolActions } from './qradar-pages/configuration/ToolActions'
+import { AddToolAction } from './qradar-pages/configuration/AddToolAction'
+import { UpdateToolAction } from './qradar-pages/configuration/UpdateToolAction'
 
-import {RulesActions} from './qradar-pages/configuration/RulesActions'
-import {AddRuleAction} from './qradar-pages/configuration/AddRuleAction'
-import {UpdateRuleAction} from './qradar-pages/configuration/UpdateRuleAction'
+import { RulesActions } from './qradar-pages/configuration/RulesActions'
+import { AddRuleAction } from './qradar-pages/configuration/AddRuleAction'
+import { UpdateRuleAction } from './qradar-pages/configuration/UpdateRuleAction'
 
-import {Organizations} from './qradar-pages/configuration/Organizations'
-import {OrganizationTools} from './qradar-pages/configuration/OrganizationTools'
-import {MasterData} from './qradar-pages/configuration/MasterData'
-import {UserData} from './qradar-pages/configuration/UserData'
-import {RoleData} from './qradar-pages/configuration/RoleData'
-import {AddOrganizations} from './qradar-pages/configuration/AddOrganizations'
-import {UpdateOrganizations} from './qradar-pages/configuration/Updateorganizations'
-import {AddMasterData} from './qradar-pages/configuration/AddMasterData'
-import {UpdateMasterData} from './qradar-pages/configuration/UpdateMasterData'
-import {AddUserData} from './qradar-pages/configuration/AddUserData'
-import {UpdateUserData} from './qradar-pages/configuration/UpdateUserData'
-import {AddRoleData} from './qradar-pages/configuration/AddRoleData'
-import {UpdateRoleData} from './qradar-pages/configuration/UpdateRoleData'
-import {AddOrganizationTools} from './qradar-pages/configuration/AddOrganizationTools'
-import {UpdateOrganizationTools} from './qradar-pages/configuration/UpdateorganizationTools'
-import {IncidentsPageCollaboration} from './qradar-pages/incidents/IncidentsPageCollaboration'
+import { Organizations } from './qradar-pages/configuration/Organizations'
+import { OrganizationTools } from './qradar-pages/configuration/OrganizationTools'
+import { MasterData } from './qradar-pages/configuration/MasterData'
+import { UserData } from './qradar-pages/configuration/UserData'
+import { RoleData } from './qradar-pages/configuration/RoleData'
+import { AddOrganizations } from './qradar-pages/configuration/AddOrganizations'
+import { UpdateOrganizations } from './qradar-pages/configuration/Updateorganizations'
+import { AddMasterData } from './qradar-pages/configuration/AddMasterData'
+import { UpdateMasterData } from './qradar-pages/configuration/UpdateMasterData'
+import { AddUserData } from './qradar-pages/configuration/AddUserData'
+import { UpdateUserData } from './qradar-pages/configuration/UpdateUserData'
+import { AddRoleData } from './qradar-pages/configuration/AddRoleData'
+import { UpdateRoleData } from './qradar-pages/configuration/UpdateRoleData'
+import { AddOrganizationTools } from './qradar-pages/configuration/AddOrganizationTools'
+import { UpdateOrganizationTools } from './qradar-pages/configuration/UpdateorganizationTools'
+import { IncidentsPageCollaboration } from './qradar-pages/incidents/IncidentsPageCollaboration'
 import UsersProfile from './qradar-pages/profile/UsersProfile'
 import { IncidentsPage } from './qradar-pages/incidents/IncidentsPage'
 
@@ -153,6 +153,18 @@ const usersBreadcrumbs: Array<PageLink> = [
     isActive: false,
   },
   {
+    title: 'Role Data',
+    path: '/apps/qradar/roles-data',
+    isSeparator: false,
+    isActive: false,
+  },
+  {
+    title: 'Add Role Data',
+    path: '/apps/qradar/roles-data/add',
+    isSeparator: false,
+    isActive: false,
+  },
+  {
     title: '',
     path: '',
     isSeparator: true,
@@ -182,7 +194,7 @@ const QradarPages = () => {
             </>
           }
         />
-          <Route
+        <Route
           path='incidentsDemo'
           element={
             <>
@@ -256,14 +268,14 @@ const QradarPages = () => {
         }
       />
       <Route
-          path='profile'
-          element={
-            <>
-              <PageTitle breadcrumbs={usersBreadcrumbs}>User Profile</PageTitle>
-              <UsersProfile />
-            </>
-          }
-        />
+        path='profile'
+        element={
+          <>
+            <PageTitle breadcrumbs={usersBreadcrumbs}>User Profile</PageTitle>
+            <UsersProfile />
+          </>
+        }
+      />
       <Route
         path='demo/:status'
         element={
@@ -549,7 +561,7 @@ const QradarPages = () => {
         path='roles-data/:status'
         element={
           <>
-            <PageTitle breadcrumbs={usersBreadcrumbs}>Users Data</PageTitle>
+            <PageTitle breadcrumbs={usersBreadcrumbs}>Role Data</PageTitle>
             <RoleData />
           </>
         }
@@ -558,7 +570,7 @@ const QradarPages = () => {
         path='roles-data/add'
         element={
           <>
-            <PageTitle breadcrumbs={usersBreadcrumbs}>Add User Data</PageTitle>
+            <PageTitle breadcrumbs={usersBreadcrumbs}>Add Role Data</PageTitle>
             <AddRoleData />
           </>
         }
@@ -567,11 +579,12 @@ const QradarPages = () => {
         path='/roles-data/update/:id'
         element={
           <>
-            <PageTitle breadcrumbs={usersBreadcrumbs}>Update User Data</PageTitle>
+            <PageTitle breadcrumbs={usersBreadcrumbs}>Update Roles Data</PageTitle>
             <UpdateRoleData />
           </>
         }
       />
+
 
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>

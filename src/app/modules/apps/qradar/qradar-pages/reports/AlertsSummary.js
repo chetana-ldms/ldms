@@ -28,7 +28,7 @@ function AlertsSummary() {
 
   if (alertData && alertData.length > 0) {
     statusNames = alertData.map((alert) => alert.statusName);
-    alertCounts = alertData.map((alert) => alert.alertCount); // Make sure this matches the actual property name
+    alertCounts = alertData.map((alert) => alert.alertCount); 
   }
   
   const dataPoints =
@@ -37,13 +37,12 @@ function AlertsSummary() {
           return {
             y: alert.percentageValue.toFixed(2),
             label: alert.statusName,
-            alertCount: alertCounts[index], // Include the alertCount here
+            alertCount: alertCounts[index], 
           };
         })
       : [];
   
 
-  //Pie chart for Open incident status
   const openstatusoptions = {
     exportEnabled: true,
     animationEnabled: true,
@@ -69,10 +68,10 @@ function AlertsSummary() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const toDate = new Date().toISOString(); // Get the current date and time
+      const toDate = new Date().toISOString(); 
       const fromDate = new Date();
-      fromDate.setFullYear(fromDate.getFullYear() - 1); // Subtract 1 year from the current year
-      const fromDateISO = fromDate.toISOString(); // Convert the fromDate to ISO string format
+      fromDate.setFullYear(fromDate.getFullYear() - 1); 
+      const fromDateISO = fromDate.toISOString(); 
   
       const requestData = {
         orgId,

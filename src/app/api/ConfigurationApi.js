@@ -18,6 +18,7 @@ const OrganizationsUrl= process.env.REACT_APP_ORGANIZATIONS_URL
 const OrganizationAddUrl=  process.env.REACT_APP_ORGANIZATIONS_ADD_URL
 const OrganizationUpdateUrl=  process.env.REACT_APP_ORGANIZATIONS_UPDATE_URL
 const UsersUrl= process.env.REACT_APP_USERS_URL
+const RolesUrl= process.env.REACT_APP_ROLES_URL
 const UserAddUrl= process.env.REACT_APP_USER_ADD_URL
 const UserUpdateUrl= process.env.REACT_APP_USER_UPDATE_URL
 const LDPToolsUrl= process.env.REACT_APP_LDPTOOLS_URL
@@ -342,6 +343,25 @@ export const fetchUsersUrl = async (orgId) => {
     const responseData = await response.json();
     const usersList = responseData.usersList;
     return usersList;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const fetchRolesUrl = async (orgId) => {
+  try {
+    const response = await fetch(`${RolesUrl}?orgId=${orgId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        orgId,
+      }),
+    });
+    const responseData = await response.json();
+    const rolesList = responseData.rolesList;
+    return rolesList;
   } catch (error) {
     console.log(error);
   }

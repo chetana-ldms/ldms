@@ -154,13 +154,9 @@ const IncidentsPage = () => {
     setLimit(selectedPerPage);
   };
   useEffect(() => {
-    if (incident.length > 0) {
-      setSelectedIncident(incident[0]);
-    }
+    setSelectedIncident(incident !== null && incident.length > 0 ? incident[0] : []);
   }, [incident]);
-
-
-
+  
   return (
     <>
       <div className="card mb-5 mb-xl-8 bg-red incident-page">

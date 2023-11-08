@@ -254,7 +254,7 @@ const UserData = () => {
                 value={selectedOrganization}
                 onChange={handleOrganizationChange}
               >
-                {roleID === 1 &&
+                {globalAdminRole=== 1 &&
                   organizations?.length > 0 &&
                   organizations.map((item, index) => (
                     <option key={index} value={item.orgID}>
@@ -262,7 +262,7 @@ const UserData = () => {
                     </option>
                   ))}
 
-                {roleID !== 1 &&
+                {globalAdminRole !== 1 &&
                   organizations?.length > 0 &&
                   organizations
                     .filter((item) => item.orgID === orgId)
@@ -301,7 +301,7 @@ const UserData = () => {
             {loading && <UsersListLoading />}
             {users !== null ? (
             users.map((item, index) => {
-              if (roleID === 1 || (roleID === 2 && item.roleID === 2) || (roleID === 3 && item.roleID === 3)) {
+              if (globalAdminRole === 1 || clientAdminRole === 1 || (userID === item.userID)) {
                 
               return (
                 <tr key={index} className="fs-12">

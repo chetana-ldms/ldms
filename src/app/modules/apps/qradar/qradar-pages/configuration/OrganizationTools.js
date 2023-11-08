@@ -14,6 +14,8 @@ const OrganizationTools = () => {
   const handleError = useErrorBoundary();
   const userID = Number(sessionStorage.getItem('userId'));
   const orgId = Number(sessionStorage.getItem('orgId'));
+  const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
+  const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
   const [tools, setTools] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -67,7 +69,7 @@ const OrganizationTools = () => {
         </h3>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
-            {userID === 1 ? (
+            {globalAdminRole === 1 || clientAdminRole === 1 ? (
               <Link to='/qradar/organization-tools/add' className='btn btn-danger btn-small'>
                 Add
               </Link>
@@ -105,7 +107,7 @@ const OrganizationTools = () => {
               </tr>
             ) : (
               tools.map((item, index) => {
-                const shouldDisplay = userID === 1 || item.orgID === orgId;
+                const shouldDisplay = globalAdminRole === 1 || item.orgID === orgId;
 
                 if (shouldDisplay) {
                   return (
@@ -116,7 +118,7 @@ const OrganizationTools = () => {
                       <td className='text-warning fw-bold' style={{ maxWidth: '200px' }}>{item.authKey}</td>
                       {/* <td style={{ maxWidth: '200px' }}>{item.apiUrl}</td> */}
                       <td>
-                        {userID === 1 ? (
+                        {globalAdminRole === 1 || clientAdminRole === 1 ? (
                           <button className='btn btn-primary btn-small'>
                             <Link
                               className='text-white'
@@ -130,7 +132,7 @@ const OrganizationTools = () => {
                             Update
                           </button>
                         )}
-                        {userID === 1 ? (
+                        {globalAdminRole === 1 || clientAdminRole === 1 ? (
                           <button
                             className='btn btn-sm btn-danger btn-small ms-5'
                             style={{ fontSize: '14px' }}

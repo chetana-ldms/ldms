@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react'
-import {Link, useParams} from 'react-router-dom'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
+import React, { useState, useEffect } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { UsersListLoading } from '../components/loading/UsersListLoading'
 import { ToastContainer, toast } from 'react-toastify'
 import { notify, notifyFail } from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
@@ -14,7 +14,7 @@ const Playbooks = () => {
   const orgId = Number(sessionStorage.getItem('orgId'));
   const [loading, setLoading] = useState(false)
   const [playbooks, setPlaybooks] = useState([])
-  const {status} = useParams()
+  const { status } = useParams()
 
   const handleDelete = async (item) => {
     console.log(item, "item")
@@ -24,13 +24,13 @@ const Playbooks = () => {
       playBookID: item.playBookID,
       deletedDate,
       deletedUserId
-    } 
+    }
     try {
       setLoading(true)
       const responce = await fetchDelete(data);
       if (responce.isSuccess) {
         notify('PlayBook Deleted');
-      }else{
+      } else {
         notifyFail("PlayBook not Deleted")
       }
       await reload();
@@ -40,7 +40,7 @@ const Playbooks = () => {
       handleError(error);
     }
   }
-  const reload = async() => {
+  const reload = async () => {
     try {
       setLoading(true)
       const data = await fetchPlayBooks(orgId);
@@ -50,7 +50,7 @@ const Playbooks = () => {
       setLoading(false)
       handleError(error);
     }
-}
+  }
   useEffect(() => {
     reload();
   }, [])
@@ -84,28 +84,33 @@ const Playbooks = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {playbooks.map((item, index) => (
-              <tr key={index} className='fs-12'>
-                <td className='fs-14'>{item.playBookName}</td>
-                <td className='fs-14'>{item.remarks}</td>
-                <td className='fs-14'>{item.alertCatogory}</td>
-                <td>
-                  {item.active === 1 ? (
-                    <span className='badge badge-success fs-14'>Active</span>
-                  ) : (
-                    <span className='badge badge-danger fs-14'>In Active</span>
-                  )}
-                </td>
-
-                <td className='fs-14'>
-                  <Link className='text-white' to={`/qradar/updateplaybooks/${item.playBookID}`}>
-                    <button className='btn btn-primary btn-small'>Update</button>
-                  </Link>
-                  <button className="btn btn-sm btn-danger btn-small ms-5" style={{ fontSize: '14px' }} onClick={() => { handleDelete(item) }}> Delete</button>
-
-                </td>
+            {playbooks !== null && playbooks.length > 0 ? (
+              playbooks.map((item, index) => (
+                <tr key={index} className='fs-12'>
+                  <td className='fs-14'>{item.playBookName}</td>
+                  <td className='fs-14'>{item.remarks}</td>
+                  <td className='fs-14'>{item.alertCatogory}</td>
+                  <td>
+                    {item.active === 1 ? (
+                      <span className='badge badge-success fs-14'>Active</span>
+                    ) : (
+                      <span className='badge badge-danger fs-14'>Inactive</span>
+                    )}
+                  </td>
+                  <td className='fs-14'>
+                    <Link className='text-white' to={`/qradar/updateplaybooks/${item.playBookID}`}>
+                      <button className='btn btn-primary btn-small'>Update</button>
+                    </Link>
+                    <button className="btn btn-sm btn-danger btn-small ms-5" style={{ fontSize: '14px' }} onClick={() => { handleDelete(item) }}> Delete</button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center">No data found</td>
               </tr>
-            ))}
+            )}
+
           </tbody>
         </table>
       </div>
@@ -113,4 +118,4 @@ const Playbooks = () => {
   )
 }
 
-export {Playbooks}
+export { Playbooks }

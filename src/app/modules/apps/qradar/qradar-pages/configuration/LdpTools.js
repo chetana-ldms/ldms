@@ -11,6 +11,8 @@ import { useErrorBoundary } from "react-error-boundary";
 
 const LdpTools = () => {
   const handleError = useErrorBoundary();
+  const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
+  const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
   const [loading, setLoading] = useState(false)
   const [tools, setTools] = useState([])
 
@@ -57,9 +59,15 @@ const LdpTools = () => {
         </h3>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
-            <Link to='/qradar/ldp-tools/add' className='btn btn-danger btn-small'>
-              Add
-            </Link>
+            {globalAdminRole === 1 || clientAdminRole === 1 ? (
+              <Link to='/qradar/ldp-tools/add' className='btn btn-danger btn-small'>
+                Add
+              </Link>
+            ) : (
+              <button className='btn btn-danger btn-small' disabled>
+                Add
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -85,16 +93,39 @@ const LdpTools = () => {
                   <td className='text-warning fw-bold'>{item.toolType}</td>
                   {/* <td>{item.createdDate}</td> */}
                   <td>
-                    <Link className='text-white' to={`/qradar/ldp-tools/update/${item.toolId}`}>
-                      <button className='btn btn-primary btn-small'>Update</button>
-                    </Link>
-                    <button
-                      className="btn btn-sm btn-danger btn-small ms-5"
-                      style={{ fontSize: '14px' }}
-                      onClick={() => { handleDelete(item) }}
-                    >
-                      Delete
-                    </button>
+                    {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                      <button className='btn btn-primary btn-small'>
+                        <Link
+                          className='text-white'
+                          to={`/qradar/ldp-tools/update/${item.toolId}`}
+                        >
+                          Update
+                        </Link>
+                      </button>
+                    ) : (
+                      <button className='btn btn-primary btn-small' disabled>
+                        Update
+                      </button>
+                    )}
+                    {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                      <button
+                        className='btn btn-sm btn-danger btn-small ms-5'
+                        style={{ fontSize: '14px' }}
+                        onClick={() => {
+                          handleDelete(item);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    ) : (
+                      <button
+                        className='btn btn-sm btn-danger btn-small ms-5'
+                        style={{ fontSize: '14px' }}
+                        disabled
+                      >
+                        Delete
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))

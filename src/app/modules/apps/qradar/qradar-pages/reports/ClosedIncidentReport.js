@@ -21,10 +21,25 @@ function ClosedIncidentReport() {
     '#ffb700',
   ])
 
-  const statusNames = alertData.map((alert) => alert.statusName)
-  const alertCounts = alertData.map((alert) => alert.percentageValue) 
+  let statusNames = null
+  let alertCounts = null
 
-  //Pie chart for closed incidents
+  if (alertData && alertData.length > 0) {
+    statusNames = alertData.map((alert) => alert.statusName)
+    alertCounts = alertData.map((alert) => alert.alertCount)
+  }
+
+  const dataPoints =
+  alertData && alertData.length > 0
+    ? alertData.map((alert, index) => {  
+        return {
+          y: alert.percentageValue.toFixed(2),
+          label: alert.statusName,
+          alertCount: alertCounts[index],
+        };
+      })
+    : [];
+
   const closedoptions = {
     exportEnabled: true,
     animationEnabled: true,
@@ -35,24 +50,17 @@ function ClosedIncidentReport() {
     },
     data: [
       {
-        type: "pie",
+        type: 'pie',
         startAngle: 220,
-        toolTipContent: "<b>{label}</b>: {y}% ({alertCount})", // Include alertCount in tooltip
-        showInLegend: "true",
-        legendText: "{label}",
+        toolTipContent: '<b>{label}</b>: {y}% ({alertCount})',
+        showInLegend: 'true',
+        legendText: '{label}',
         indexLabelFontSize: 13,
-        indexLabel: "{label} - {y}% ({alertCount})", // Include alertCount in label
-        dataPoints: statusNames.map((statusName, index) => {
-          return {
-            y: alertCounts[index].toFixed(2),
-            label: statusName,
-            alertCount: alertData[index].alertCount, // Access the alertCount from alertData
-          };
-        }),
+        indexLabel: '{label} - {y}% ({alertCount})',
+        dataPoints: dataPoints,
       },
     ],
   }
-
   useEffect(() => {
     const fetchData = async () => {
       const toDate = new Date().toISOString(); // Get the current date and time
@@ -94,23 +102,25 @@ function ClosedIncidentReport() {
  const startDate = lastYear.toLocaleDateString("en-GB");
  const endDate = today.toLocaleDateString("en-GB");
 
-  return (
-    <div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>Error: {error}</p>
-      ) : (
-        <>
-          <h2>
-          Closed Incident for the last year ({startDate} to{" "}
-            {endDate})
-          </h2>
-          <CanvasJSChart options={closedoptions} />
-        </>
-      )}
-    </div>
-  )
+ return (
+  <div>
+    {loading ? (
+      <p>Loading...</p>
+    ) : error ? (
+      <p>Error: {error}</p>
+    ) : alertData !== null ? (
+      <>
+        <h2>
+          Closed Incident for the last year ({startDate} to {endDate})
+        </h2>
+        <CanvasJSChart options={closedoptions} />
+      </>
+    ) : (
+      <p>No data found</p>
+    )}
+  </div>
+);
+
 }
 
 export default ClosedIncidentReport

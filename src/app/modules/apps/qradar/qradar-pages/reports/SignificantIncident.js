@@ -45,8 +45,6 @@ function SignificantIncident() {
       })
     : [];
 
-
-  //Pie chart for Open incident status
   const openstatusoptions = {
     exportEnabled: true,
     animationEnabled: true,
@@ -69,47 +67,13 @@ function SignificantIncident() {
     ],
   }
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         'http://115.110.192.133:502/api/Reports/v1/SignificantsIncidentsSummery',
-  //         {
-  //           method: 'POST',
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //           body: JSON.stringify({
-  //             orgId: 1,
-  //             incidentFromDate: '2022-04-20T14:47:08.751Z',
-  //             incidentToDate: '2023-04-20T14:47:08.751Z',
-  //           }),
-  //         }
-  //       )
-
-  //       if (!response.ok) {
-  //         const errorData = await response.json()
-  //         throw new Error(`Network response was not ok: ${response.status} - ${errorData.message}`)
-  //       }
-
-  //       const {data} = await response.json() // destructure the 'data' property from the response object
-  //       setAlertData(data)
-  //       setLoading(false)
-  //     } catch (error) {
-  //       setError(error.message)
-  //       setLoading(false)
-  //     }
-  //   }
-
-  //   fetchData()
-  // }, [])
 
   useEffect(() => {
     const fetchData = async () => {
-      const toDate = new Date().toISOString(); // Get the current date and time
+      const toDate = new Date().toISOString();
       const fromDate = new Date();
-      fromDate.setFullYear(fromDate.getFullYear() - 1); // Subtract 1 year from the current year
-      const fromDateISO = fromDate.toISOString(); // Convert the fromDate to ISO string format
+      fromDate.setFullYear(fromDate.getFullYear() - 1); 
+      const fromDateISO = fromDate.toISOString();
 
       const requestData = {
         orgId,
@@ -126,7 +90,7 @@ function SignificantIncident() {
           );
         }
 
-        const { data } = await response.json(); // destructure the 'data' property from the response object
+        const { data } = await response.json(); 
         setAlertData(data);
         setLoading(false);
       } catch (error) {
@@ -151,17 +115,19 @@ function SignificantIncident() {
         <p>Loading...</p>
       ) : error ? (
         <p>Error: {error}</p>
-      ) : (
+      ) : alertData !== null ? (
         <>
           <h2>
-          Significant Incident for the last year ({startDate} to{" "}
-            {endDate})
+            Significant Incident for the last year ({startDate} to {endDate})
           </h2>
           <CanvasJSChart options={openstatusoptions} />
         </>
+      ) : (
+        <p>No data found</p>
       )}
     </div>
-  )
+  );
+  
 }
 
 export default SignificantIncident

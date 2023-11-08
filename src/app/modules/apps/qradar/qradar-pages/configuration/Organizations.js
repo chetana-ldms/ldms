@@ -16,6 +16,8 @@ const Organizations = () => {
   console.log(tools, 'tools222');
   const userID = Number(sessionStorage.getItem('userId'));
   const orgId = Number(sessionStorage.getItem('orgId'));
+  const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
+  const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
   const handleDelete = async (item) => {
     const deletedUserId = Number(sessionStorage.getItem('userId'));
     const deletedDate = new Date().toISOString();
@@ -102,7 +104,7 @@ const Organizations = () => {
                   <td>{item.mobileNo}</td>
                   <td>{item.email}</td>
                   <td>
-                    {userID === 1 ? (
+                  {globalAdminRole === 1 || clientAdminRole === 1 ? (
                       <button className="btn btn-primary btn-small">
                         <Link className="text-white" to={`/qradar/organizations/update/${item.orgID}`}>
                           Update

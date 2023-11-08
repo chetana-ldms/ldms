@@ -24,11 +24,25 @@ function OpenIncidentSummary() {
     '#ea6a47',
 
   ])
+  let statusNames = null
+  let alertCounts = null
 
-  const statusNames = alertData.map((alert) => alert.statusName)
-  const alertCounts = alertData.map((alert) => alert.percentageValue)
+  if (alertData && alertData.length > 0) {
+    statusNames = alertData.map((alert) => alert.statusName)
+    alertCounts = alertData.map((alert) => alert.alertCount)
+  }
 
-  //Pie chart for Open incident status
+  const dataPoints =
+  alertData && alertData.length > 0
+    ? alertData.map((alert, index) => {  
+        return {
+          y: alert.percentageValue.toFixed(2),
+          label: alert.statusName,
+          alertCount: alertCounts[index],
+        };
+      })
+    : [];
+
   const openstatusoptions = {
     exportEnabled: true,
     animationEnabled: true,
@@ -39,58 +53,18 @@ function OpenIncidentSummary() {
     },
     data: [
       {
-        type: "pie",
+        type: 'pie',
         startAngle: 220,
-        toolTipContent: "<b>{label}</b>: {y}% ({alertCount})", // Include alertCount in tooltip
-        showInLegend: "true",
-        legendText: "{label}",
+        toolTipContent: '<b>{label}</b>: {y}% ({alertCount})',
+        showInLegend: 'true',
+        legendText: '{label}',
         indexLabelFontSize: 13,
-        indexLabel: "{label} - {y}% ({alertCount})", // Include alertCount in label
-        dataPoints: statusNames.map((statusName, index) => {
-          return {
-            y: alertCounts[index].toFixed(2),
-            label: statusName,
-            alertCount: alertData[index].alertCount, // Access the alertCount from alertData
-          };
-        }),
+        indexLabel: '{label} - {y}% ({alertCount})',
+        dataPoints: dataPoints,
       },
     ],
   }
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         'http://115.110.192.133:502/api/Reports/v1/OpenIncidentsSummery',
-  //         {
-  //           method: 'POST',
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //           body: JSON.stringify({
-  //             orgId: 1,
-  //             incidentFromDate: '2022-04-11T14:07:52.759Z',
-  //             incidentToDate: '2023-04-11T14:07:52.759Z',
-  //           }),
-  //         }
-  //       )
-
-  //       if (!response.ok) {
-  //         const errorData = await response.json()
-  //         throw new Error(`Network response was not ok: ${response.status} - ${errorData.message}`)
-  //       }
-
-  //       const {data} = await response.json() // destructure the 'data' property from the response object
-  //       setAlertData(data)
-  //       setLoading(false)
-  //     } catch (error) {
-  //       setError(error.message)
-  //       setLoading(false)
-  //     }
-  //   }
-
-  //   fetchData()
-  // }, [])
   useEffect(() => {
     const fetchData = async () => {
       const toDate = new Date().toISOString(); // Get the current date and time
@@ -132,23 +106,25 @@ function OpenIncidentSummary() {
     const startDate = lastYear.toLocaleDateString("en-GB");
     const endDate = today.toLocaleDateString("en-GB");
 
-  return (
-    <div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>Error: {error}</p>
-      ) : (
-        <>
-          <h2>
-          Open Incident Status for the last year ({startDate} to{" "}
-            {endDate})
-          </h2>
-          <CanvasJSChart options={openstatusoptions} />
-        </>
-      )}
-    </div>
-  )
+    return (
+      <div>
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>Error: {error}</p>
+        ) : alertData !== null ? (
+          <>
+            <h2>
+              Open Incident Status for the last year ({startDate} to {endDate})
+            </h2>
+            <CanvasJSChart options={openstatusoptions} />
+          </>
+        ) : (
+          <p>No data found</p>
+        )}
+      </div>
+    );
+    
 }
 
 export default OpenIncidentSummary

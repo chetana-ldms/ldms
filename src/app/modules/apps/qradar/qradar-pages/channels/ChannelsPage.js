@@ -128,6 +128,8 @@ const ChannelsPage = () => {
   const orgId = Number(sessionStorage.getItem("orgId"));
   const deletedUserId = Number(sessionStorage.getItem("userId"));
   const deletedDate = new Date().toISOString();
+  const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
+  const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
   const [showEditChannel, setShowEditChannel] = useState(false);
   const [dropdownData, setDropdownData] = useState([]);
   console.log(dropdownData, "dropdownData");
@@ -278,14 +280,25 @@ const ChannelsPage = () => {
       <ToastContainer />
       <div className="channel-title">
         <h4 className="float-left">
-          Channels <span>( {channels.length} )</span>
+          Channels <span>({channels !== null && channels.length > 0 ? channels.length : 0})</span>
         </h4>
-        <span
-          className="float-right add-btn"
-          onClick={() => setShowModal(true)}
-        >
-          Add Channel
-        </span>
+
+        {globalAdminRole === 1 ? (
+          <span
+            className="float-right add-btn"
+            onClick={() => setShowModal(true)}
+          >
+            Add Channel
+          </span>
+        ) : (
+          <span
+            className="float-right add-btn" disabled
+            onClick={() => setShowModal(false)}
+          >
+            Add Channel
+          </span>
+        )}
+
         {"  "}
         <span
           className="float-right add-btn ml-5"
@@ -295,27 +308,32 @@ const ChannelsPage = () => {
         </span>
       </div>
       <div className="demo-block">
-        <Tabs className="vertical-tabs">
-          <TabList className="inner-tablist channels-tab">
-            {channels.map((channel) => (
-              <Tab key={channel.channelId}>{channel.channelName}</Tab>
-            ))}
-          </TabList>
+        {channels !== null ? (
+          <Tabs className="vertical-tabs">
+            <TabList className="inner-tablist channels-tab">
+              {channels.map((channel) => (
+                <Tab key={channel.channelId}>{channel.channelName}</Tab>
+              ))}
+            </TabList>
 
-          {channels.map((channel) => (
-            <TabPanel key={channel.channelId} className="channel-chat">
-              <div className="tab-content pt-5">
-                {renderChannelTemplate(channel)}
-              </div>
-            </TabPanel>
-          ))}
-        </Tabs>
+            {channels.map((channel) => (
+              <TabPanel key={channel.channelId} className="channel-chat">
+                <div className="tab-content pt-5">
+                  {renderChannelTemplate(channel)}
+                </div>
+              </TabPanel>
+            ))}
+          </Tabs>
+        ) : (
+          <p>No channels available.</p>
+        )}
         <NewChannelModal
           show={showModal}
           onClose={() => setShowModal(false)}
           onAdd={handleAddChannel}
         />
       </div>
+
       <Modal
         className="channel-edit"
         show={showEditChannel}
@@ -335,136 +353,132 @@ const ChannelsPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {channels.map((channel) => (
-                  <React.Fragment key={channel.channelId}>
-                    <tr>
-                      <td>{channel.channelName}</td>
-                      <td>{channel.channelTypeName}</td>
-                      <td>
-                      {userID === 1 ? (
-                        <button
-                          className="btn btn-small btn-primary"
-                          onClick={() =>
-                            handleAccordionToggle(channel.channelId)
-                          }
-                        >
-                          Edit
-                        </button>
-                         ) : (
-                          <button className="btn btn-primary btn-small" disabled>
-                            Edit
-                          </button>
-                        )}
-                          {userID === 1 ? (
-                        <button
-                          className="btn btn-small btn-danger ml-10"
-                          onClick={() => {
-                            handleDelete(channel);
-                          }}
-                        >
-                          {" "}
-                          Delete
-                        </button>
-                         ) : (
-                          <button className="btn btn-sm btn-danger btn-small ml-10" disabled>
-                          Delete
-                        </button>
-                      )}
-                      </td>
-                    </tr>
-                    {channel.isAccordionOpen && (
-                      <tr className="accordion-content channel-accordion">
-                        <td colSpan="3">
-                          <div className="accordion-header">
+                {channels !== null ? (
+                  channels.map((channel) => (
+                    <React.Fragment key={channel.channelId}>
+                      <tr>
+                        <td>{channel.channelName}</td>
+                        <td>{channel.channelTypeName}</td>
+                        <td>
+                          {globalAdminRole === 1 ? (
                             <button
-                              className="close-button"
-                              onClick={() =>
-                                handleAccordionToggle(channel.channelId)
-                              }
+                              className="btn btn-small btn-primary"
+                              onClick={() => handleAccordionToggle(channel.channelId)}
                             >
-                              x
+                              Edit
                             </button>
-                          </div>
-                          <Form>
-                            <Form.Group controlId="channelName">
-                              <Form.Label>Channel name</Form.Label>
-                              <Form.Control
-                                type="text"
-                                ref={channelNames}
-                                defaultValue={selectedChannel.channelName}
-                              />
-                            </Form.Group>
-                            <br />
-                            <Form.Group>
-                              <Form.Label>Channel Type</Form.Label>
-                              <select
-                                className="form-select form-select-solid"
-                                data-kt-select2="true"
-                                data-placeholder="Select option"
-                                data-allow-clear="true"
-                                ref={channelTypes}
-                                defaultValue={selectedChannel.channelTypeName}
-                                onChange={(e) =>
-                                  setSelectedChannel({
-                                    selectedChannelName: e.target.value,
-                                    selectedChannelID: e.target.options[
-                                      e.target.selectedIndex
-                                    ].getAttribute("data-id"),
-                                  })
-                                }
-                              >
-                                <option value="">Select</option>
-                                {dropdownData &&
-                                  dropdownData.dropdownData &&
-                                  dropdownData.dropdownData.length > 0 &&
-                                  dropdownData.dropdownData.map((item) => (
-                                    <option
-                                      key={item.dataID}
-                                      value={item.channelTypeName}
-                                      data-id={item.dataID}
-                                    >
-                                      {item.dataValue}
-                                    </option>
-                                  ))}
-                              </select>
-                            </Form.Group>
-                            <br />
-                            <Form.Group controlId="channelDescription">
-                              <Form.Label>Channel description</Form.Label>
-                              <Form.Control
-                                as="textarea"
-                                ref={channelDescriptions}
-                                rows={3}
-                                defaultValue={
-                                  selectedChannel.channelDescription
-                                }
-                              />
-                            </Form.Group>
-                            <Form.Group className="mt-5">
-                              <Button
-                                variant="secondary"
-                                className="btn-small"
-                                onClick={() =>
-                                  handleAccordionToggle(channel.channelId)
-                                }
-                              >
-                                Close
-                              </Button>
-                              <Button
-                                variant="primary"
-                                className="btn-small btn-new"
-                                onClick={() => handleSave(channel.channelId)}
-                              >
-                                Save
-                              </Button>
-                            </Form.Group>
-                          </Form>
+                          ) : (
+                            <button className="btn btn-primary btn-small" disabled>
+                              Edit
+                            </button>
+                          )}
+                          {globalAdminRole === 1 ? (
+                            <button
+                              className="btn btn-small btn-danger ml-10"
+                              onClick={() => handleDelete(channel)}
+                            >
+                              Delete
+                            </button>
+                          ) : (
+                            <button className="btn btn-sm btn-danger btn-small ml-10" disabled>
+                              Delete
+                            </button>
+                          )}
                         </td>
                       </tr>
-                    )}
-                  </React.Fragment>
-                ))}
+                      {channel.isAccordionOpen && (
+                        <tr className="accordion-content channel-accordion">
+                          <td colSpan="3">
+                            <div className="accordion-header">
+                              <button
+                                className="close-button"
+                                onClick={() => handleAccordionToggle(channel.channelId)}
+                              >
+                                x
+                              </button>
+                            </div>
+                            <Form>
+                              <Form.Group controlId="channelName">
+                                <Form.Label>Channel name</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  ref={channelNames}
+                                  defaultValue={selectedChannel.channelName}
+                                />
+                              </Form.Group>
+                              <br />
+                              <Form.Group>
+                                <Form.Label>Channel Type</Form.Label>
+                                <select
+                                  className="form-select form-select-solid"
+                                  data-kt-select2="true"
+                                  data-placeholder="Select option"
+                                  data-allow-clear="true"
+                                  ref={channelTypes}
+                                  defaultValue={selectedChannel.channelTypeName}
+                                  onChange={(e) =>
+                                    setSelectedChannel({
+                                      selectedChannelName: e.target.value,
+                                      selectedChannelID: e.target.options[
+                                        e.target.selectedIndex
+                                      ].getAttribute("data-id"),
+                                    })
+                                  }
+                                >
+                                  <option value="">Select</option>
+                                  {dropdownData &&
+                                    dropdownData.dropdownData &&
+                                    dropdownData.dropdownData.length > 0 &&
+                                    dropdownData.dropdownData.map((item) => (
+                                      <option
+                                        key={item.dataID}
+                                        value={item.channelTypeName}
+                                        data-id={item.dataID}
+                                      >
+                                        {item.dataValue}
+                                      </option>
+                                    ))}
+                                </select>
+                              </Form.Group>
+                              <br />
+                              <Form.Group controlId="channelDescription">
+                                <Form.Label>Channel description</Form.Label>
+                                <Form.Control
+                                  as="textarea"
+                                  ref={channelDescriptions}
+                                  rows={3}
+                                  defaultValue={selectedChannel.channelDescription}
+                                />
+                              </Form.Group>
+                              <Form.Group className="mt-5">
+                                <Button
+                                  variant="secondary"
+                                  className="btn-small"
+                                  onClick={() => handleAccordionToggle(channel.channelId)}
+                                >
+                                  Close
+                                </Button>
+                                <Button
+                                  variant="primary"
+                                  className="btn-small btn-new"
+                                  onClick={() => handleSave(channel.channelId)}
+                                >
+                                  Save
+                                </Button>
+                              </Form.Group>
+                            </Form>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="3">No channels available.</td>
+                  </tr>
+                )}
               </tbody>
+
             </table>
           </div>
         </Modal.Body>

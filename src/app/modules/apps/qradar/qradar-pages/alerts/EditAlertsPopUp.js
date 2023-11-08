@@ -263,7 +263,7 @@ const EditAlertsPopUp = ({
               <div className="col-md-9">{source}</div>
             </Form.Group>
             <Form.Group className="row">
-              <Form.Label className="col-md-3">Comment :</Form.Label>
+              <Form.Label className="col-md-3">Note :</Form.Label>
               <div className="col-md-9">
                 <textarea
                   className="form-control"

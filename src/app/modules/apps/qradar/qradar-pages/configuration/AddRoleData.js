@@ -65,11 +65,11 @@ const AddRoleData = () => {
     <div className='card'>
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
-          <span className='card-label fw-bold fs-3 mb-1'>Add New User</span>
+          <span className='card-label fw-bold fs-3 mb-1'>Add User Role </span>
         </h3>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
-            <Link to='/qradar/users-data/list' className='btn btn-primary btn-small'>
+            <Link to='/qradar/roles-data/list' className='btn btn-primary btn-small'>
               Back
             </Link>
           </div>

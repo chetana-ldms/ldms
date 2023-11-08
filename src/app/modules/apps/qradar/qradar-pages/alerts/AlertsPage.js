@@ -18,7 +18,7 @@ import { UsersListPagination } from "../components/pagination/UsersListPaginatio
 import { KTCardBody } from "../../../../../../_metronic/helpers";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FloatingLabel, Form } from "react-bootstrap";
+import { Button, Dropdown, FloatingLabel, Form, Modal } from "react-bootstrap";
 import { useFormik } from "formik";
 import EditAlertsPopUp from "./EditAlertsPopUp";
 import { notify, notifyFail } from "../components/notification/Notification";
@@ -34,13 +34,17 @@ import {
   fetchUsers,
   fetchGetalertHistory,
 } from "../../../../../api/AlertsApi";
+import MitigationModal from './MitigationModal';
 import ReactPaginate from "react-paginate";
-import { fetchCreateIncident} from "../../../../../api/IncidentsApi";
+import { fetchCreateIncident } from "../../../../../api/IncidentsApi";
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import "./Alerts.css";
 import { useErrorBoundary } from "react-error-boundary";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import AddToBlockListModal from "./AddToBlockListModal";
+import AddToExclusionsModal from "./AddToExclusionsModal";
+import AddANoteModal from "./AddANoteModal";
 
 
 
@@ -50,6 +54,8 @@ const AlertsPage = () => {
   const [selectedAlert, setselectedAlert] = useState([]);
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false);
   const [loading, setLoading] = useState(false);
+  const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
+  const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
   const [dropdownData, setDropdownData] = useState({
     severityNameDropDownData: [],
     statusDropDown: [],
@@ -139,13 +145,20 @@ const AlertsPage = () => {
   const [limit, setLimit] = useState(20);
   const [pageCount, setpageCount] = useState(0);
   const [source, setSource] = useState([])
+  const [showMoreActionsModal, setShowMoreActionsModal] = useState(false);
+  const [addToBlockListModal, setAddToBlockListModal] = useState(false);
+  const [addToExclusionsModal, setAddToExclusionsModal] = useState(false);
+  const [addANoteModal, setAddANoteModal] = useState(false);
+
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedValue, setSelectedValue] = useState('');
   const [selectedAlertId, setSelectedAlertId] = useState(null);
   console.log(selectedAlertId, "selectedAlertId")
-
+  const [AnalystVerdictDropDown, setAnalystVerdictDropDown] = useState(false);
+  const [selectedVerdict, setSelectedVerdict] = useState('');
   const [alertHistory, setAlertHistory] = useState([]);
   console.log(alertHistory, "alertHistory");
   const reloadHistory = () => {
-    // Ensure that selectedAlertId is not null or undefined before making the API call
     if (selectedAlertId !== null && selectedAlertId !== undefined) {
       const data = {
         orgId,
@@ -160,7 +173,7 @@ const AlertsPage = () => {
         });
     }
   };
-  
+
   useEffect(() => {
     reloadHistory();
   }, [selectedAlertId]);
@@ -184,7 +197,6 @@ const AlertsPage = () => {
   };
 
   const handleCloseForm = () => {
-    // notifyFail("Data not Updated");
     setShowForm(false);
   };
   const handleIgnoreSubmit = async () => {
@@ -260,23 +272,27 @@ const AlertsPage = () => {
     },
   });
   const slaCal = (data) => {
-    data.map((item) => {
-      let resolvedTime = item.resolvedtime ? getCurrentTimeZone(item.resolvedtime) : new Date();
-      let detectedTime = item.detectedtime ? getCurrentTimeZone(item.detectedtime) : null;
+    if (data !== null) {
+      data.map((item) => {
+        let resolvedTime = item.resolvedtime ? getCurrentTimeZone(item.resolvedtime) : new Date();
+        let detectedTime = item.detectedtime ? getCurrentTimeZone(item.detectedtime) : null;
 
-      if (resolvedTime && detectedTime) {
-        let timeDifferenceMs = new Date(resolvedTime) - new Date(detectedTime);
+        if (resolvedTime && detectedTime) {
+          let timeDifferenceMs = new Date(resolvedTime) - new Date(detectedTime);
 
-        // Convert milliseconds to days, hours, and minutes
-        let days = Math.floor(timeDifferenceMs / (24 * 60 * 60 * 1000));
-        let hours = Math.floor((timeDifferenceMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-        let minutes = Math.floor((timeDifferenceMs % (60 * 60 * 1000)) / (60 * 1000));
+          // Convert milliseconds to days, hours, and minutes
+          let days = Math.floor(timeDifferenceMs / (24 * 60 * 60 * 1000));
+          let hours = Math.floor((timeDifferenceMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+          let minutes = Math.floor((timeDifferenceMs % (60 * 60 * 1000)) / (60 * 1000));
 
-        // Format the time difference
-        let formattedTimeDifference = `${days}d${hours}h${minutes}m`;
-        item.sla = formattedTimeDifference;
-      }
-    });
+          // Format the time difference
+          let formattedTimeDifference = `${days}d${hours}h${minutes}m`;
+          item.sla = formattedTimeDifference;
+        }
+      });
+    } else {
+      console.log('No data available')
+    }
   }
 
   const handlePageClick = async (data) => {
@@ -320,7 +336,7 @@ const AlertsPage = () => {
     slaCal(response?.alertsList);
     setLoading(false)
     {
-      if (userID === 1) {
+      if (globalAdminRole === 1) {
         setFilteredAlertDate(response.alertsList);
       } else {
         let result =
@@ -472,6 +488,77 @@ const AlertsPage = () => {
 
     doc.save('Report.pdf');
   };
+  const handleMoreActionsClick = () => {
+    setShowMoreActionsModal(false);
+  };
+  const handleThreatActions = () => {
+    setShowDropdown(true);
+  }
+  const handleDropdownSelect = (event) => {
+    const value = event.target.value;
+    setSelectedValue(value);
+    if (value === 'MitigationAction') {
+      setShowMoreActionsModal(true);
+    } else if (value === 'AddToBlockList') {
+      setAddToBlockListModal(true);
+    }else if (value === 'AddToExclusions') {
+      setAddToExclusionsModal(true);
+    }else if (value === 'AddANote') {
+      setAddANoteModal(true);
+    }else {
+      setShowDropdown(false);
+    }
+  };
+  const handleShowDropdown = () => {
+    setShowDropdown(false);
+  }
+
+  const handleCloseMoreActionsModal = () => {
+    setShowMoreActionsModal(false);
+    setShowDropdown(false);
+  };
+
+  const handleAction = () => {
+    handleCloseMoreActionsModal();
+  };
+  const handleCloseAddToBlockList = () => {
+    setAddToBlockListModal(false);
+    setShowDropdown(false);
+  };
+
+  const handleActionAddToBlockList = () => {
+    setAddToBlockListModal(false);
+  };
+  const handleCloseAddToExclusions = () => {
+    setAddToExclusionsModal(false);
+    setShowDropdown(false);
+  };
+
+  const handleActionAddToExclusions = () => {
+    setAddToExclusionsModal(false);
+  };
+  const handleCloseAddANote = () => {
+    setAddANoteModal(false);
+    setShowDropdown(false);
+  };
+
+  const handleActionAddANote = () => {
+    setAddANoteModal(false);
+  };
+  const handleAnalystsVerdict = () => {
+    setAnalystVerdictDropDown(!AnalystVerdictDropDown);
+  };
+
+  const handleAnalystsVerdictClose = () => {
+    setAnalystVerdictDropDown(false);
+  };
+
+  const handleAnalystsVerdictDropDown = (event) => {
+    setSelectedVerdict(event.target.value);
+  };
+  const handleSubmitAnalystVerdict = () => {
+    setAnalystVerdictDropDown(false);
+  };
 
   return (
     <KTCardBody className="alert-page">
@@ -480,9 +567,6 @@ const AlertsPage = () => {
       <div className="card mb-5 mb-xl-8">
         <div className="card-header border-0">
           <h3 className="card-title align-items-start flex-column">
-            {/* <span className='card-label fw-bold fs-3 mb-1'>
-              Alerts {'( ' + alertData.length + ' / ' + alertsCount + ')'}
-            </span> */}
             <span className="card-label fw-bold fs-3">
               Alerts{" "}
               {"( " + filteredAlertData.length + " / " + alertsCount + ")"}
@@ -491,6 +575,159 @@ const AlertsPage = () => {
 
           <div className="card-toolbar">
             <div className="d-flex align-items-center gap-2 gap-lg-3">
+              <div className="m-0">
+                <a
+                  href="#"
+                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${!isCheckboxSelected && "disabled"}`}
+                  data-kt-menu-trigger="click"
+                  data-kt-menu-placement="bottom-end"
+                  onClick={handleAnalystsVerdict}
+                >
+                  Analyst Verdict
+                </a>
+
+                <div className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action" data-kt-menu="true">
+                  {AnalystVerdictDropDown && (
+                    <div className="px-5 py-5">
+                      <div className="mb-5">
+                        <div className="d-flex justify-content-end mb-5">
+                          <div>
+                            <div
+                              className="close fs-20 text-muted pointer"
+                              aria-label="Close"
+                              onClick={handleAnalystsVerdictClose}
+                            >
+                              <span
+                                aria-hidden="true"
+                                style={{ color: "inherit", textShadow: "none" }}
+                              >
+                                &times;
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <select
+                          onChange={handleAnalystsVerdictDropDown}
+                          className="form-select form-select-solid"
+                          data-kt-select2="true"
+                          data-control="select2"
+                          data-placeholder="Select option"
+                          data-allow-clear="true"
+                        >
+                          <option value="" className="p-2">Select</option>
+                          <option value="TruePositive" className="mb-2">True Positive</option>
+                          <option value="Suspicious" className="mb-2">Suspicious</option>
+                          <option value="FalsePositive" className="p-2">False Positive</option>
+                          <option value="Undefined" className="p-2">Undefined</option>
+                        </select>
+                      </div>
+                      <div className="text-right"> 
+                      <button className="btn btn-primary"
+                        onClick={handleSubmitAnalystVerdict}
+                      > Submit </button>
+                      </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              <div className="m-0">
+                <a
+                  href="#"
+                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${!isCheckboxSelected && "disabled"}`}
+                  data-kt-menu-trigger="click"
+                  data-kt-menu-placement="bottom-end"
+                  onClick={handleThreatActions}
+                >
+                  Threat Action
+                </a>
+                <div className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action" data-kt-menu="true">
+                  {showDropdown && (
+                    <div className="px-5 py-5">
+                      <div className="mb-5">
+                        <div className="d-flex justify-content-end mb-5">
+                          <div>
+                            <div
+                              className="close fs-20 text-muted pointer"
+                              aria-label="Close"
+                              onClick={handleShowDropdown}
+                            >
+                              <span
+                                aria-hidden="true"
+                                style={{ color: "inherit", textShadow: "none" }}
+                              >
+                                &times;
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <select
+                          onChange={handleDropdownSelect}
+                          className="form-select form-select-solid"
+                          data-kt-select2="true"
+                          data-control="select2"
+                          data-placeholder="Select option"
+                          data-allow-clear="true"
+                        >
+                          <option value="" className="p-2">Select</option>
+                          <option value="MitigationAction" className="mb-2">Mitigation Action</option>
+                          <option value="AddToBlockList" className="mb-2">Add To Blocklist</option>
+                          <option value="AddToExclusions" className="p-2">Add To Exclusions</option>
+                          <option value="Unquarantine" className="p-2">Unquarantine</option>
+                          <option value="AddANote" className="p-2">Add a Note</option>
+                          <option value="ConnectToNetwork" className="p-2">Connect To Network</option>
+                          <option value="DisconnectFromNetwork" className="p-2">Disconnect From Network</option>
+                        </select>
+                      </div>
+
+
+                    </div>
+                  )}
+                </div>
+                {
+                  showMoreActionsModal && (
+                    <MitigationModal
+                      show={showMoreActionsModal}
+                      handleClose={handleCloseMoreActionsModal}
+                      handleAction={handleAction}
+                      selectedValue={selectedValue}
+                      selectedAlert={selectedAlert}
+                    />
+                  )
+                }
+                  {
+                  addToBlockListModal && (
+                    <AddToBlockListModal
+                      show={addToBlockListModal}
+                      handleClose={handleCloseAddToBlockList}
+                      handleAction={handleActionAddToBlockList}
+                      selectedValue={selectedValue}
+                      selectedAlert={selectedAlert}
+                    />
+                  )
+                }
+                 {
+                  addToExclusionsModal && (
+                    <AddToExclusionsModal
+                      show={addToExclusionsModal}
+                      handleClose={handleCloseAddToExclusions}
+                      handleAction={handleActionAddToExclusions}
+                      selectedValue={selectedValue}
+                      selectedAlert={selectedAlert}
+                    />
+                  )
+                }
+                 {
+                  addANoteModal && (
+                    <AddANoteModal
+                      show={addANoteModal}
+                      handleClose={handleCloseAddANote}
+                      handleAction={handleActionAddANote}
+                      selectedValue={selectedValue}
+                      selectedAlert={selectedAlert}
+                    />
+                  )
+                }
+              </div>
               <div className="m-0">
                 <a
                   href="#"
@@ -516,6 +753,7 @@ const AlertsPage = () => {
                   </span>
                   Actions
                 </a>
+
                 <div
                   className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action"
                   data-kt-menu="true"
@@ -525,11 +763,6 @@ const AlertsPage = () => {
                     <div className="px-5 py-5">
                       <div className="mb-5">
                         <div className="d-flex justify-content-end mb-5">
-                          {/* <div>
-                            <label className="form-label fw-bolder">
-                              Select:
-                            </label>
-                          </div> */}
                           <div>
                             <div
                               className="close fs-20 text-muted pointer"
@@ -692,13 +925,6 @@ const AlertsPage = () => {
               <thead>
                 <tr className="fw-bold bg-light">
                   <th className="w-25px">
-                    {/* <div className="form-check form-check-sm form-check-custom form-check-solid">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        value="1"
-                      />
-                    </div> */}
                   </th>
                   <th className="min-w-90px">
                     Severity
@@ -1161,24 +1387,35 @@ const AlertsPage = () => {
                         <div className="px-2 py-5">
                           <div>
                             <div>
-                              <select
-                                className="form-select form-select-solid"
-                                data-kt-select2="true"
-                                data-placeholder="Select option"
-                                data-dropdown-parent="#kt_menu_637dc885a14bb"
-                                data-allow-clear="true"
-                                onChange={(e) => handleChange(e, "source")}
-                              >
-                                <option>Select</option>
-                                {source.length > 0 &&
-                                  source.map((item, index) => (
-                                    <option key={index} value={item}>
-                                      {item}
-                                    </option>
-                                  ))}
-                              </select>
-
-
+                              {source == null ? (
+                                <select
+                                  className="form-select form-select-solid"
+                                  data-kt-select2="true"
+                                  data-placeholder="Select option"
+                                  data-dropdown-parent="#kt_menu_637dc885a14bb"
+                                  data-allow-clear="true"
+                                  onChange={(e) => handleChange(e, "source")}
+                                >
+                                  <option>Select</option>
+                                </select>
+                              ) : (
+                                <select
+                                  className="form-select form-select-solid"
+                                  data-kt-select2="true"
+                                  data-placeholder="Select option"
+                                  data-dropdown-parent="#kt_menu_637dc885a14bb"
+                                  data-allow-clear="true"
+                                  onChange={(e) => handleChange(e, "source")}
+                                >
+                                  <option>Select</option>
+                                  {source.length > 0 &&
+                                    source.map((item, index) => (
+                                      <option key={index} value={item}>
+                                        {item}
+                                      </option>
+                                    ))}
+                                </select>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -1203,7 +1440,6 @@ const AlertsPage = () => {
                               onChange={(e) => handleselectedAlert(item, e)}
                               autoComplete="off"
                             />
-                            {/* check incident creation */}
                             <span>
                               {item.status === "New" && item.alertIncidentMappingId === 0 ? (
                                 <i
@@ -1216,7 +1452,6 @@ const AlertsPage = () => {
                                   title="Incident created"
                                 />
                               )}
-
                               {item.status !== "New" && item.alertIncidentMappingId === 0 && (
                                 <i
                                   className="fa fa-circle-exclamation incident-icon orange"
@@ -1224,7 +1459,6 @@ const AlertsPage = () => {
                                 />
                               )}
                             </span>
-
                           </div>
                         </td>
                         <td
@@ -1281,38 +1515,123 @@ const AlertsPage = () => {
                       >
                         <td colSpan="10">
                           <div className="row">
-                            <div className="col-md-7">
-                              <div className="row">
-                                <div className="col-md-1"></div>
-                                <div className="col-md-9">
-                                  <b>Alert Name : </b>
-                                  {item.name}
-                                  <br />
-                                  <b>Score : </b>
-                                  {item.score === null || item.score === "" ? "0" : item.score}
-                                  <br />
-                                  <b>SLA : </b>
-                                  {item.sla}
-                                  <br />
-                                  <b>Severity : </b>
-                                  {item.severityName}
-                                  <br />
-                                  <b>Status : </b>
-                                  {item.status}
-                                  <br />
-                                  <b>Detected Date/Time : </b>
-                                  {item.detectedtime &&
-                                    getCurrentTimeZone(item.detectedtime)
-                                  }
-                                  {/* {new Date(item.detectedtime).toLocaleString()} */}
-                                  <br />
-                                  <b>Observable Tag : </b>
-                                  {item.observableTag} <br />
-                                  <b>Owner Name : </b>
-                                  {item.ownerusername} <br />
-                                  <b>Source Name : </b>
-                                  {item.source} <br />
-                                  {/* Notes Section */}
+                            <div className="col-md-12">
+                              {/* Tab Navigation */}
+                              <ul className="nav nav-tabs" id={`alertTabs_${index}`} role="tablist">
+                                <li className="nav-item" role="presentation">
+                                  <a
+                                    className="nav-link active"
+                                    id={`detailsTab_${index}`}
+                                    data-bs-toggle="tab"
+                                    href={`#details_${index}`}
+                                    role="tab"
+                                    aria-controls={`details_${index}`}
+                                    aria-selected="true"
+                                  >
+                                    Details
+                                  </a>
+                                </li>
+                                <li className="nav-item" role="presentation">
+                                  <a
+                                    className="nav-link"
+                                    id={`moreDetailsTab_${index}`}
+                                    data-bs-toggle="tab"
+                                    href={`#moreDetails_${index}`}
+                                    role="tab"
+                                    aria-controls={`moreDetails_${index}`}
+                                    aria-selected="false"
+                                  >
+                                    More Details
+                                  </a>
+                                </li>
+                                <li className="nav-item" role="presentation">
+                                  <a
+                                    className="nav-link"
+                                    id={`notesTab_${index}`}
+                                    data-bs-toggle="tab"
+                                    href={`#notes_${index}`}
+                                    role="tab"
+                                    aria-controls={`notes_${index}`}
+                                    aria-selected="false"
+                                  >
+                                    Notes
+                                  </a>
+                                </li>
+                                <li className="nav-item" role="presentation">
+                                  <a
+                                    className="nav-link"
+                                    id={`timelineTab_${index}`}
+                                    data-bs-toggle="tab"
+                                    href={`#timeline_${index}`}
+                                    role="tab"
+                                    aria-controls={`timeline_${index}`}
+                                    aria-selected="false"
+                                  >
+                                    Timeline
+                                  </a>
+                                </li>
+                              </ul>
+                              <div className="tab-content">
+                                <div
+                                  className="tab-pane fade show active"
+                                  id={`details_${index}`}
+                                  role="tabpanel"
+                                  aria-labelledby={`detailsTab_${index}`}
+                                >
+                                  <div className="row">
+                                    <div className="col-md-1"></div>
+                                    <div className="col-md-9">
+                                      <b>Alert Name : </b>
+                                      {item.name}
+                                      <br />
+                                      <b>Score : </b>
+                                      {item.score === null || item.score === "" ? "0" : item.score}
+                                      <br />
+                                      <b>SLA : </b>
+                                      {item.sla}
+                                      <br />
+                                      <b>Severity : </b>
+                                      {item.severityName}
+                                      <br />
+                                      <b>Status : </b>
+                                      {item.status}
+                                      <br />
+                                      <b>Detected Date/Time : </b>
+                                      {item.detectedtime &&
+                                        getCurrentTimeZone(item.detectedtime)
+                                      }
+                                      <br />
+                                      <b>Observable Tag : </b>
+                                      {item.observableTag} <br />
+                                      <b>Owner Name : </b>
+                                      {item.ownerusername} <br />
+                                      <b>Source Name : </b>
+                                      {item.source} <br />
+
+                                    </div>
+                                    <div className="col-md-2">
+                                      <div
+                                        className="btn btn-primary btn-new btn-small"
+                                        onClick={() => openEditPopUp(item)}
+                                      >
+                                        Edit
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div
+                                  className="tab-pane fade"
+                                  id={`moreDetails_${index}`}
+                                  role="tabpanel"
+                                  aria-labelledby={`moreDetailsTab_${index}`}
+                                >
+                                </div>
+                                <div
+                                  className="tab-pane fade"
+                                  id={`notes_${index}`}
+                                  role="tabpanel"
+                                  aria-labelledby={`notesTab_${index}`}
+                                >
                                   {alertNotesList.length > 0 ? (
                                     <div className="notes-container mt-5 pt-5">
                                       <b>Notes:</b>
@@ -1320,10 +1639,10 @@ const AlertsPage = () => {
                                         <thead>
                                           <tr>
                                             <th className="custom-th">
-                                              Created User
+                                              User
                                             </th>
                                             <th className="custom-th">
-                                              Created Date
+                                              Date
                                             </th>
                                             <th className="custom-th">Note</th>
                                           </tr>
@@ -1334,7 +1653,7 @@ const AlertsPage = () => {
                                               (a, b) =>
                                                 getCurrentTimeZone(b.createdDate) -
                                                 getCurrentTimeZone(a.createdDate)
-                                            ) // Sort the notes based on createdDate
+                                            )
                                             .map((note) => (
                                               <tr key={note.alertsNotesId}>
                                                 <td>{note.createdUser}</td>
@@ -1349,56 +1668,58 @@ const AlertsPage = () => {
                                     <div>No notes available.</div>
                                   )}
                                 </div>
-                                <div className="col-md-2">
-                                  <div
-                                    className="btn btn-primary btn-new btn-small"
-                                    onClick={() => openEditPopUp(item)}
-                                  >
-                                    Edit {""}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-md-5">
-                              <div className="row">
-                                <div className="text-center">
-                                  <h4>Timeline</h4>
-                                </div>
-                                <div className="timeline-section" style={{ maxHeight: '300px', overflowY: 'auto', width:'99%' }}>
+                                <div
+                                  className="tab-pane fade"
+                                  id={`timeline_${index}`}
+                                  role="tabpanel"
+                                  aria-labelledby={`timelineTab_${index}`}
+                                >
+                                  <div className="row">
+                                    <div className="">
+                                      <h6>Timeline:</h6>
+                                    </div>
 
-                                  <div className="pt-6 h-600px">
-                                    <div className="timeline-label">
-                                      {alertHistory && alertHistory.length > 0 ? (
-                                        alertHistory.map((item) => {
-                                          const formattedDateTime = getCurrentTimeZone(item.historyDate);
+                                    <div className="row">
+                                      <div className="col-md-1"></div>
+                                      <div className="col-md-11">
+                                        <div className="timeline-section" style={{ maxHeight: '300px', overflowY: 'auto' }}>
 
-                                          return (
-                                            <div className="timeline-item" key={item.id}>
-                                              <div className="timeline-label fw-bold text-gray-800 fs-6">
-                                                <p>{formattedDateTime}</p>
-                                                <p className="text-muted">{item.createdUser}</p>
-                                              </div>
+                                          <div className="pt-6 h-600px">
+                                            <div className="timeline-label">
+                                              {alertHistory && alertHistory.length > 0 ? (
+                                                alertHistory.map((item) => {
+                                                  const formattedDateTime = getCurrentTimeZone(item.historyDate);
 
-                                              <div className="timeline-badge">
-                                                <i className={`fa fa-genderless ${getRandomClass()} fs-1`}></i>
-                                              </div>
-                                              <div className="fw-semibold text-gray-700 ps-3 fs-7">
-                                                {item.historyDescription}
-                                              </div>
+                                                  return (
+                                                    <div className="timeline-item" key={item.id}>
+                                                      <div className="timeline-label fw-bold text-gray-800 fs-6">
+                                                        <p>{formattedDateTime}</p>
+                                                        <p className="text-muted">{item.createdUser}</p>
+                                                      </div>
+
+                                                      <div className="timeline-badge">
+                                                        <i className={`fa fa-genderless ${getRandomClass()} fs-1`}></i>
+                                                      </div>
+                                                      <div className="fw-semibold text-gray-700 ps-3 fs-7">
+                                                        {item.historyDescription}
+                                                      </div>
+                                                    </div>
+                                                  );
+                                                })
+                                              ) : (
+                                                <div className="text-gray-500 text-center">No data found</div>
+                                              )}
+
+
                                             </div>
-                                          );
-                                        })
-                                      ) : (
-                                        <div className="text-gray-500 text-center">No data found</div>
-                                      )}
-
-
+                                          </div>
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-
                           </div>
                         </td>
                       </tr>

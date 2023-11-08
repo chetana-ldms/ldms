@@ -22,5 +22,22 @@
   .timeline-section::-webkit-scrollbar-track {
     background-color: lightseagreen; 
   }
+
+  /* CSS to tabs */
+.nav-tabs {
+  padding-bottom: 28px;
+  border-bottom: 1px solid;
+}
+  .nav-tabs .nav-item  {
+    font-weight: bold;
+  }
+.nav-tabs .nav-item .nav-link.active {
+  border-bottom: 2px solid blue; 
+}
+.tab-content {
+  margin-top: 20px;
+}
+
+
   
   
