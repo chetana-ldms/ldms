@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
+import { fetchThreatNotesUrl } from '../../../../../api/AlertsApi';
+import { notify, notifyFail } from "../components/notification/Notification";
 
 const AddANoteModal =  ({ show, handleClose, handleAction, selectedValue, selectedAlert }) => {
     const data = { selectedValue, selectedAlert }
     const value = data.selectedValue
     const AlertId = data.selectedAlert
     console.log(data, "data")
+    const orgId = Number(sessionStorage.getItem("orgId"));
   const [noteText, setNoteText] = useState('');
 
   const handleNoteChange = (event) => {
@@ -14,15 +17,22 @@ const AddANoteModal =  ({ show, handleClose, handleAction, selectedValue, select
   const handleSubmit = async () => {
     try {
       const data = {
-        selectedValue,
-        selectedAlert,
-        note: noteText,
+        orgID: orgId,
+        alertIds: selectedAlert,
+        notes: noteText
       };
-
-      console.log('Data before API call:', data);
+      
+      const responseData =  await fetchThreatNotesUrl(data);
+      const { isSuccess } = responseData;
+  
+      if (isSuccess) {
+        notify('Note added');
+      } else {
+        notifyFail('Note not added');
+      }
       handleClose();
     } catch (error) {
-      console.error('Error during API call:', error);
+      console.error(error);
     }
   };
 
@@ -47,7 +57,7 @@ const AddANoteModal =  ({ show, handleClose, handleAction, selectedValue, select
           Close
         </Button>
         <Button variant="primary" onClick={handleSubmit}>
-          Apply Action
+          Apply 
         </Button>
       </Modal.Footer>
     </Modal>

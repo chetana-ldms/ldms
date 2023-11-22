@@ -6,7 +6,7 @@ import { notify, notifyFail } from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
 import axios from 'axios'
 import { useErrorBoundary } from "react-error-boundary";
-import { fetchRolesUrl } from '../../../../../api/ConfigurationApi';
+import { fetchRolesDeleteUrl, fetchRolesUrl } from '../../../../../api/ConfigurationApi';
 import { fetchLDPToolsDelete } from '../../../../../api/Api';
 
 
@@ -20,25 +20,6 @@ const RoleData = () => {
   const [loading, setLoading] = useState(false)
   const [roles, setRoles] = useState([])
   console.log(roles, "roles111")
-  // useEffect(() => {
-  //   setLoading(true)
-  //   var config = {
-  //     method: 'post',
-  //     url: 'http://115.110.192.133:502/api/LDPSecurity/v1/Roles?orgId=1',
-  //     headers: {
-  //       Accept: 'text/plain',
-  //     },
-  //   }
-
-  //   axios(config)
-  //     .then(function (response) {
-  //       setRoles(response.data.rolesList)
-  //       setLoading(false)
-  //     })
-  //     .catch(function (error) {
-  //       handleError(error);
-  //     })
-  // }, [])
 
   const reload = async () => {
     try {
@@ -61,17 +42,17 @@ const RoleData = () => {
     const deletedUserId = Number(sessionStorage.getItem('userId'));
     const deletedDate = new Date().toISOString();
     const data = {
-      toolId: item.toolId,
+      roleID: item.roleID,
       deletedDate,
       deletedUserId
     }
     try {
       setLoading(true)
-      const responce = await fetchLDPToolsDelete(data);
+      const responce = await fetchRolesDeleteUrl(data);
       if (responce.isSuccess) {
-        notify('User Deleted');
+        notify('Role Deleted');
       } else {
-        notifyFail("User not Deleted")
+        notifyFail("Role not Deleted")
       }
       await reload();
       setLoading(false)

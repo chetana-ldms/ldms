@@ -1,11 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Modal, Button } from 'react-bootstrap';
+import { notify, notifyFail } from "../components/notification/Notification";
+import { fetchAddToExclusionListUrl } from '../../../../../api/AlertsApi';
 
 const AddToExclusionsModal = ({ show, handleClose, handleAction, selectedValue, selectedAlert }) => {
     const data = { selectedValue, selectedAlert }
     const value = data.selectedValue
     const AlertId = data.selectedAlert
     console.log(data, "data")
+    const osDropdownRef = useRef(null);
+    const scopeDropdownRef = useRef(null);
+    const sha1InputRef = useRef(null);
+    const descriptionTextareaRef = useRef(null);
+    const orgId = Number(sessionStorage.getItem("orgId"));
+    const handleSubmit = async () => {
+        try {
+            const data = {
+                orgID: orgId,
+                alertIds : selectedAlert,
+                targetScope: scopeDropdownRef.current.value,
+                // externalTicketId: "string",
+                description: descriptionTextareaRef.current.value,
+                // note: descriptionTextareaRef.current.value
+              }
+            const responseData = await fetchAddToExclusionListUrl(data);
+            const { isSuccess } = responseData;
+        
+            if (isSuccess) {
+                notify('Add To Exclusions Applied');
+              } else {
+                notifyFail('Add To Exclusions Applied');
+              }
+            handleClose()
+        } catch (error) {
+            console.error('Error during API call:', error);
+        }
+    };
     return (
         <Modal show={show} onHide={handleClose} className="AddToExclusionsModal">
             <Modal.Header closeButton>
@@ -16,10 +46,10 @@ const AddToExclusionsModal = ({ show, handleClose, handleAction, selectedValue, 
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <div className='row'>
+            <div className='row'>
                     <div className='col-md-4'>
                         <label htmlFor="osDropdown" className="form-label">OS</label>
-                        <select className="form-select" id="osDropdown" name="os">
+                        <select ref={osDropdownRef} className="form-select" id="osDropdown" name="os">
                             <option value="windows">Windows</option>
                             <option value="mac">Mac</option>
                             <option value="linux">Linux</option>
@@ -27,7 +57,7 @@ const AddToExclusionsModal = ({ show, handleClose, handleAction, selectedValue, 
                     </div>
                     <div className='col-md-4'>
                         <label htmlFor="osDropdown" className="form-label"> Scope</label>
-                        <select className="form-select" id="scopeDropdown">
+                        <select ref={scopeDropdownRef} className="form-select" id="scopeDropdown">
                             <option value="group">Group</option>
                             <option value="account">Account</option>
                             <option value="site">Site</option>
@@ -38,7 +68,7 @@ const AddToExclusionsModal = ({ show, handleClose, handleAction, selectedValue, 
                     <div className='col-md-6'>
                         <div>
                             <label className="form-label" htmlFor="sha1Input">SHA1:</label>
-                            <input type="text" id="sha1Input" name="sha1" className="form-control" />
+                            <input ref={sha1InputRef} type="text" id="sha1Input" name="sha1" className="form-control" />
                         </div>
 
                     </div>
@@ -49,7 +79,7 @@ const AddToExclusionsModal = ({ show, handleClose, handleAction, selectedValue, 
                 </div>
                 <div className='mt-5'>
                     <label className='form-label'>Description</label>
-                    <textarea rows="1" className="form-control" placeholder='Add Description or Leave empty'></textarea>
+                    <textarea ref={descriptionTextareaRef} rows="1" className="form-control" placeholder='Add Description or Leave empty'></textarea>
                 </div>
                 <div className='mt-5'>
                     Analyst Verdict: False Positive
@@ -59,8 +89,8 @@ const AddToExclusionsModal = ({ show, handleClose, handleAction, selectedValue, 
                 <Button variant="secondary" onClick={handleClose}>
                     Close
                 </Button>
-                <Button variant="primary" onClick={handleAction}>
-                    Apply Action
+                <Button variant="primary" onClick={handleSubmit}>
+                    Apply
                 </Button>
             </Modal.Footer>
         </Modal>

@@ -1,65 +1,48 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import axios from 'axios'
+import { notify, notifyFail } from '../components/notification/Notification';
+import { fetchRolesAddUrl } from '../../../../../api/ConfigurationApi'
 
 const AddRoleData = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const [roleTypes, setRoleTypes] = useState([])
   const userName = useRef()
-  const passWord = useRef()
-  const roleType = useRef()
-  const handleSubmit = (event) => {
+  const roleName = useRef()
+  const handleSubmit = async (event) => {
     setLoading(true)
     event.preventDefault()
-    var data = JSON.stringify({
-      name: userName.current.value,
-      roleID: roleType.current.value,
-      password: passWord.current.value,
-      createdByUserName: 'admin',
-      createdDete: '2023-01-05T16:12:17.058Z',
-    })
-    console.log('data', data)
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPSecurity/v1/User/Add',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'text/plain',
-      },
-      data: data,
+    const createdUserId = Number(sessionStorage.getItem('userId'));
+    const createdDate = new Date().toISOString();
+    const orgId = Number(sessionStorage.getItem("orgId"));
+    var data = {
+      roleName: roleName.current.value,
+      sysrole: 0,
+      orgId,
+      globalAdminRole: 0,
+      clientAdminRole: 0,
+      createdDate,
+      createdUserId
     }
-    setTimeout(() => {
-      axios(config)
-        .then(function (response) {
-          console.log(JSON.stringify(response.data))
-          navigate('/qradar/users-data/list')
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-      setLoading(false)
-    }, 1000)
+    console.log('data', data)
+    try {
+      const responseData = await fetchRolesAddUrl(data);
+      const { isSuccess } = responseData;
+  
+      if (isSuccess) {
+        notify('Role added');
+        navigate('/qradar/roles-data/list')
+      } else {
+        notifyFail('Role add Failed');
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+   
   }
 
-  useEffect(() => {
-    setLoading(true)
-    var config = {
-      method: 'post',
-      url: 'http://115.110.192.133:502/api/LDPSecurity/v1/Roles',
-      headers: {
-        Accept: 'text/plain',
-      },
-    }
-    axios(config)
-      .then(function (response) {
-        setRoleTypes(response.data.rolesList)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }, [])
 
   return (
     <div className='card'>
@@ -77,10 +60,10 @@ const AddRoleData = () => {
       </div>
       <div className='card-body border-top p-9'>
         <div className='row mb-6'>
-          <div className='col-lg-4 mb-4 mb-lg-0'>
+          {/* <div className='col-lg-4 mb-4 mb-lg-0'>
             <div className='fv-row mb-0'>
               <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
-                Enter User Name
+              Enter User Name
               </label>
               <input
                 type='text'
@@ -90,42 +73,19 @@ const AddRoleData = () => {
                 placeholder='Ex: username'
               />
             </div>
-          </div>
+          </div> */}
           <div className='col-lg-4 mb-4 mb-lg-0'>
             <div className='fv-row mb-0'>
               <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
-                Enter Password
+                Enter Role
               </label>
               <input
-                type='password'
+                type='text'
                 className='form-control form-control-lg form-control-solid'
-                id='password'
-                ref={passWord}
-                placeholder='Ex: ***********'
+                id='role'
+                ref={roleName}
+                placeholder='Ex: Client Admin'
               />
-            </div>
-          </div>
-          <div className='col-lg-4 mb-4 mb-lg-0'>
-            <div className='fv-row mb-0'>
-              <label htmlFor='toolType' className='form-label fs-6 fw-bolder mb-3'>
-                Select Role Type
-              </label>
-              <select
-                className='form-select form-select-solid'
-                data-kt-select2='true'
-                data-placeholder='Select option'
-                data-allow-clear='true'
-                id='roleType'
-                ref={roleType}
-                required
-              >
-                <option>Select Role Type</option>
-                {roleTypes.map((item, index) => (
-                  <option value={item.roleID} key={index}>
-                    {item.roleName}
-                  </option>
-                ))}
-              </select>
             </div>
           </div>
         </div>

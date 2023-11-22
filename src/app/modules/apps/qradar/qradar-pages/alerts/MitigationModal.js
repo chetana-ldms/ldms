@@ -2,13 +2,16 @@
 import React, { useState } from 'react';
 
 import { Modal, Button } from 'react-bootstrap';
+import { fetchMitigateActionUrl } from '../../../../../api/AlertsApi';
+import { notify, notifyFail } from "../components/notification/Notification";
 
 const MitigationModal = ({ show, handleClose, handleAction, selectedValue, selectedAlert }) => {
     const data = { selectedValue, selectedAlert }
-    const value = data.selectedValue
-    const AlertId = data.selectedAlert
+    const value = data.selectedValue;
+    const AlertId = data.selectedAlert;
     console.log(data, "data")
     console.log(value, "value")
+    const orgId = Number(sessionStorage.getItem("orgId"));
     const [markAsResolved, setMarkAsResolved] = useState(false);
     const [addToBlocklist, setAddToBlocklist] = useState(false)
     const [groupDropdownVisible, setGroupDropdownVisible] = useState(false);
@@ -16,6 +19,10 @@ const MitigationModal = ({ show, handleClose, handleAction, selectedValue, selec
     const [additionalNote, setAdditionalNote] = useState('');
     const [isChecked1, setIsChecked1] = useState(false);
     const [isChecked2, setIsChecked2] = useState(false);
+    const [killSwitchChecked, setKillSwitchChecked] = useState(false);
+    const [quarantineSwitchChecked, setQuarantineSwitchChecked] = useState(false);
+    const [remediateSwitchChecked, setRemediateSwitchChecked] = useState(false);
+    const [rollbackSwitchChecked, setRollbackSwitchChecked] = useState(false);
 
     const handleCheckboxChange = (checkboxId) => {
         if (checkboxId === 'checkboxButton1') {
@@ -26,21 +33,44 @@ const MitigationModal = ({ show, handleClose, handleAction, selectedValue, selec
             setIsChecked2(true);
         }
     };
+    const handleActionCheckboxChange = (checkboxId) => {
+        if (checkboxId === 'killSwitch') {
+            setKillSwitchChecked(!killSwitchChecked);
+        } else if (checkboxId === 'quarantineSwitch') {
+            setQuarantineSwitchChecked(!quarantineSwitchChecked);
+        } else if (checkboxId === 'remediateSwitch') {
+            setRemediateSwitchChecked(!remediateSwitchChecked);
+        } else if (checkboxId === 'rollbackSwitch') {
+            setRollbackSwitchChecked(!rollbackSwitchChecked);
+        }
+    };
 
     const handleSubmit = async () => {
         try {
             const data = {
-                selectedValue,
-                selectedAlert,
-                markAsResolved,
-                addToBlocklist,
-                scopeValue,
-                additionalNote,
-                truePositive: isChecked1,
-                suspicious: isChecked2,
-            };
-
-            console.log('Data before API call:', data);
+                orgID: orgId,
+                alertIds : selectedAlert,
+                kill: killSwitchChecked,
+                quarantine: quarantineSwitchChecked,
+                remediate: remediateSwitchChecked,
+                rollback: rollbackSwitchChecked,
+                resolvedStatus: markAsResolved,
+                addToBlockedList: addToBlocklist,
+                scope: scopeValue,
+                notes: additionalNote,
+                analystVerdict_TruePositive: isChecked1,
+                analystVerdict_FalsePositive: false,
+                analystVerdict_Suspecious: isChecked2
+              }
+            
+            const responseData = await fetchMitigateActionUrl(data);
+            const { isSuccess } = responseData;
+        
+            if (isSuccess) {
+              notify('MitigateAction Applied');
+            } else {
+              notifyFail('MitigateAction not Applied');
+            }
             handleClose()
         } catch (error) {
             console.error('Error during API call:', error);
@@ -56,29 +86,54 @@ const MitigationModal = ({ show, handleClose, handleAction, selectedValue, selec
                 <div>
                     <label>Select Action:</label>
                     <div className="form-check mb-2">
-                        <input className="form-check-input" type="radio" name="radioGroup" id="killSwitch" />
+                        <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id="killSwitch"
+                            checked={killSwitchChecked}
+                            onChange={() => handleActionCheckboxChange('killSwitch')}
+                        />
                         <label className="form-check-label" htmlFor="killSwitch">
                             Kill
                         </label>
                     </div>
                     <div className="form-check mb-2">
-                        <input className="form-check-input" type="radio" name="radioGroup" id="quarantineSwitch" />
+                        <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id="quarantineSwitch"
+                            checked={quarantineSwitchChecked}
+                            onChange={() => handleActionCheckboxChange('quarantineSwitch')}
+                        />
                         <label className="form-check-label" htmlFor="quarantineSwitch">
                             Quarantine
                         </label>
                     </div>
                     <div className="form-check mb-2">
-                        <input className="form-check-input" type="radio" name="radioGroup" id="remediateSwitch" />
+                        <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id="remediateSwitch"
+                            checked={remediateSwitchChecked}
+                            onChange={() => handleActionCheckboxChange('remediateSwitch')}
+                        />
                         <label className="form-check-label" htmlFor="remediateSwitch">
                             Remediate
                         </label>
                     </div>
                     <div className="form-check mb-2">
-                        <input className="form-check-input" type="radio" name="radioGroup" id="rollbackSwitch" />
+                        <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id="rollbackSwitch"
+                            checked={rollbackSwitchChecked}
+                            onChange={() => handleActionCheckboxChange('rollbackSwitch')}
+                        />
                         <label className="form-check-label" htmlFor="rollbackSwitch">
                             RollBack
                         </label>
                     </div>
+
 
 
 
@@ -195,16 +250,13 @@ const MitigationModal = ({ show, handleClose, handleAction, selectedValue, selec
                     </div>
                 )}
 
-
-
-
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>
                     Close
                 </Button>
                 <Button variant="primary" onClick={handleSubmit}>
-                    Apply Action
+                    Apply
                 </Button>
             </Modal.Footer>
         </Modal>

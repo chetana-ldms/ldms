@@ -19,6 +19,10 @@ const OrganizationAddUrl=  process.env.REACT_APP_ORGANIZATIONS_ADD_URL
 const OrganizationUpdateUrl=  process.env.REACT_APP_ORGANIZATIONS_UPDATE_URL
 const UsersUrl= process.env.REACT_APP_USERS_URL
 const RolesUrl= process.env.REACT_APP_ROLES_URL
+const RolesAddUrl = "http://115.110.192.133:502/api/LDPSecurity/v1/Roles/Add"
+const RolesUpdateUrl = "http://115.110.192.133:502/api/LDPSecurity/v1/Roles/Update"
+const RolesDeleteUrl ="http://115.110.192.133:502/api/LDPSecurity/v1/Roles/Delete"
+const RolesDetailUrl ="http://115.110.192.133:502/api/LDPSecurity/v1/RoleDetails"
 const UserAddUrl= process.env.REACT_APP_USER_ADD_URL
 const UserUpdateUrl= process.env.REACT_APP_USER_UPDATE_URL
 const LDPToolsUrl= process.env.REACT_APP_LDPTOOLS_URL
@@ -366,6 +370,62 @@ export const fetchRolesUrl = async (orgId) => {
     console.log(error);
   }
 };
+export const fetchRolesAddUrl = async (data) => {
+  try {
+    const response = await fetch(`${RolesAddUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchRolesUpdateUrl = async (data) => {
+  try {
+    const response = await fetch(`${RolesUpdateUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchRolesDeleteUrl = async (data) => {
+  try {
+    const response = await fetch(`${RolesDeleteUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
 export const fetchUserAddUrl = async (data) => {
   try {
     const response = await fetch(`${UserAddUrl}`, {

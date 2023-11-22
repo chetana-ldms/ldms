@@ -33,6 +33,12 @@ import {
   fetchSetOfAlerts,
   fetchUsers,
   fetchGetalertHistory,
+  fetchSentinalOneAlert,
+  fetchSentinelOneAlert,
+  fetchAnalystVerdictUpdateUrl,
+  fetchConnectToNetworkUrl,
+  fetchDisConnectFromNetworkUrl,
+  fetchThreatsActionUrl,
 } from "../../../../../api/AlertsApi";
 import MitigationModal from './MitigationModal';
 import ReactPaginate from "react-paginate";
@@ -149,13 +155,22 @@ const AlertsPage = () => {
   const [addToBlockListModal, setAddToBlockListModal] = useState(false);
   const [addToExclusionsModal, setAddToExclusionsModal] = useState(false);
   const [addANoteModal, setAddANoteModal] = useState(false);
-
+  const [sentinalOne, setSentinalOne] = useState([])
+  console.log(sentinalOne, "sentinalOne")
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedValue, setSelectedValue] = useState('');
   const [selectedAlertId, setSelectedAlertId] = useState(null);
   console.log(selectedAlertId, "selectedAlertId")
   const [AnalystVerdictDropDown, setAnalystVerdictDropDown] = useState(false);
   const [selectedVerdict, setSelectedVerdict] = useState('');
+  const [endpointInfo, setEndpointInfo] = useState([])
+  console.log(endpointInfo, "endpointInfo")
+  const [networkHistory, setNetworkHistory] = useState([])
+  console.log(networkHistory, "networkHistory")
+  const [threatHeaderDtls, setThreatHeaderDtls] = useState([])
+  console.log(threatHeaderDtls, "threatHeaderDtls")
+  const [threatInfo, setThreatInfo] = useState([])
+  console.log(threatInfo, "threatInfo")
   const [alertHistory, setAlertHistory] = useState([]);
   console.log(alertHistory, "alertHistory");
   const reloadHistory = () => {
@@ -465,7 +480,23 @@ const AlertsPage = () => {
       const data = { alertID: itemId };
       const alertNotesList = await fetchGetAlertNotesByAlertID(data);
       setAlertNotesList(alertNotesList);
-      // reloadHistory();
+      if (orgId === 2) {
+        const sentinalOneDetails = await fetchSentinelOneAlert(itemId);
+        setSentinalOne(sentinalOneDetails);
+
+        const endpoint_Info = sentinalOneDetails.endpoint_Info;
+        setEndpointInfo(endpoint_Info)
+        const networkHistory = sentinalOneDetails.networkHistory;
+        setNetworkHistory(networkHistory)
+        const threatHeaderDtls = sentinalOneDetails.threatHeaderDtls;
+        setThreatHeaderDtls(threatHeaderDtls)
+        const threatInfo = sentinalOneDetails.threatInfo;
+        setThreatInfo(threatInfo)
+      } else {
+        console.log("No data found")
+      }
+
+
     } catch (error) {
       handleError(error);
     }
@@ -494,18 +525,78 @@ const AlertsPage = () => {
   const handleThreatActions = () => {
     setShowDropdown(true);
   }
-  const handleDropdownSelect = (event) => {
+  const handleDropdownSelect = async (event) => {
     const value = event.target.value;
     setSelectedValue(value);
     if (value === 'MitigationAction') {
       setShowMoreActionsModal(true);
     } else if (value === 'AddToBlockList') {
       setAddToBlockListModal(true);
-    }else if (value === 'AddToExclusions') {
+    } else if (value === 'AddToExclusions') {
       setAddToExclusionsModal(true);
-    }else if (value === 'AddANote') {
+    } else if (value === 'AddANote') {
       setAddANoteModal(true);
-    }else {
+    } else if (value === 'ConnectToNetwork') {
+      const data = {
+        orgID: orgId,
+        alertIds: selectedAlert
+      }
+      try {
+        const responseData = await fetchConnectToNetworkUrl(data);
+        const { isSuccess } = responseData;
+  
+        if (isSuccess) {
+          notify('Add to network');
+        } else {
+          notifyFail('Connect To Network Failed');
+        }
+      } catch (error) {
+        console.error( error);
+      }
+      setShowDropdown(false);
+    }else if (value === 'DisconnectFromNetwork') {
+      const data = {
+        orgID: orgId,
+        alertIds: selectedAlert
+      }
+      try {
+        const responseData = await fetchDisConnectFromNetworkUrl(data);
+        const { isSuccess } = responseData;
+  
+        if (isSuccess) {
+          notify('Disconnect from network');
+        } else {
+          notifyFail('Disconnect from network Failed');
+        }
+      } catch (error) {
+        console.error( error);
+      }
+      setShowDropdown(false);
+    }else if (value === 'Unquarantine') {
+      const data = {
+        orgID: orgId,
+        alertIds: selectedAlert,
+        kill: false,
+        quarantine: false,
+        remediate: false,
+        rollback: false,
+        unQuarantine: true,
+        networkQuarantine: false
+      }
+      try {
+        const responseData = await fetchThreatsActionUrl(data);
+        const { isSuccess } = responseData;
+  
+        if (isSuccess) {
+          notify('UnQuarantine Succesfull');
+        } else {
+          notifyFail('UnQuarantine Failed');
+        }
+      } catch (error) {
+        console.error( error);
+      }
+      setShowDropdown(false);
+    } else {
       setShowDropdown(false);
     }
   };
@@ -555,9 +646,39 @@ const AlertsPage = () => {
 
   const handleAnalystsVerdictDropDown = (event) => {
     setSelectedVerdict(event.target.value);
+
   };
-  const handleSubmitAnalystVerdict = () => {
-    setAnalystVerdictDropDown(false);
+  const handleSubmitAnalystVerdict = async () => {
+    try {
+      const data = {
+        orgID: orgId,
+        alertIds: [selectedAlert],
+        analystsVerdict: selectedVerdict
+        // undefined: false,
+        // truePositive: false,
+        // falsePositive: false,
+        // suspicious: false
+      };
+      await fetchAnalystVerdictUpdateUrl(data);
+      setAnalystVerdictDropDown(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleAnalystsVerdictDetail = (event) => {
+    const { value } = event.target;
+    setThreatHeaderDtls((prevData) => ({
+      ...prevData,
+      analysisVerdict: value
+    }));
+  };
+  const handleChangeIncidentStatus = (e) => {
+    const { value } = e.target;
+    setThreatHeaderDtls((prevData) => ({
+      ...prevData,
+      incidentStatus: value
+    }));
   };
 
   return (
@@ -615,21 +736,21 @@ const AlertsPage = () => {
                           data-allow-clear="true"
                         >
                           <option value="" className="p-2">Select</option>
-                          <option value="TruePositive" className="mb-2">True Positive</option>
-                          <option value="Suspicious" className="mb-2">Suspicious</option>
-                          <option value="FalsePositive" className="p-2">False Positive</option>
-                          <option value="Undefined" className="p-2">Undefined</option>
+                          <option value="truePositive" className="mb-2">True Positive</option>
+                          <option value="suspicious" className="mb-2">Suspicious</option>
+                          <option value="falsePositive" className="p-2">False Positive</option>
+                          <option value="undefined" className="p-2">Undefined</option>
                         </select>
                       </div>
-                      <div className="text-right"> 
-                      <button className="btn btn-primary"
-                        onClick={handleSubmitAnalystVerdict}
-                      > Submit </button>
+                      <div className="text-right">
+                        <button className="btn btn-primary"
+                          onClick={handleSubmitAnalystVerdict}
+                        > Submit </button>
                       </div>
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
+              </div>
               <div className="m-0">
                 <a
                   href="#"
@@ -638,7 +759,7 @@ const AlertsPage = () => {
                   data-kt-menu-placement="bottom-end"
                   onClick={handleThreatActions}
                 >
-                  Threat Action
+                  Other Action
                 </a>
                 <div className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action" data-kt-menu="true">
                   {showDropdown && (
@@ -678,8 +799,6 @@ const AlertsPage = () => {
                           <option value="DisconnectFromNetwork" className="p-2">Disconnect From Network</option>
                         </select>
                       </div>
-
-
                     </div>
                   )}
                 </div>
@@ -694,7 +813,7 @@ const AlertsPage = () => {
                     />
                   )
                 }
-                  {
+                {
                   addToBlockListModal && (
                     <AddToBlockListModal
                       show={addToBlockListModal}
@@ -705,7 +824,7 @@ const AlertsPage = () => {
                     />
                   )
                 }
-                 {
+                {
                   addToExclusionsModal && (
                     <AddToExclusionsModal
                       show={addToExclusionsModal}
@@ -716,7 +835,7 @@ const AlertsPage = () => {
                     />
                   )
                 }
-                 {
+                {
                   addANoteModal && (
                     <AddANoteModal
                       show={addANoteModal}
@@ -1625,6 +1744,273 @@ const AlertsPage = () => {
                                   role="tabpanel"
                                   aria-labelledby={`moreDetailsTab_${index}`}
                                 >
+                                  <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                                    <div className="row">
+                                      <div className="col-md-1 py-4 text-center">
+                                        <i className="bi bi-check-square text-success" style={{ fontSize: '2rem', width: '2em', height: '2em' }}></i>
+
+                                      </div>
+                                      <div className="col-md-8">
+                                        <div className="d-flex ">
+                                          <div className="border-right px-1"> <span className="fs-8">Threat status :</span> {threatHeaderDtls.threatStatus}</div>
+                                          <div className="border-right px-1"><span className="fs-8">AI Confidence level : </span>{threatHeaderDtls.aiConfidenceLevel}</div>
+                                          <div className="border-right px-1">
+                                            <span className="fs-8">Analyst Verdict </span>:
+                                            <select
+                                              onChange={handleAnalystsVerdictDetail}
+                                              // className="form-select form-select-solid"
+                                              data-kt-select2="true"
+                                              data-control="select2"
+                                              data-placeholder="Select option"
+                                              data-allow-clear="true"
+                                              value={threatHeaderDtls.analysisVerdict}
+                                            >
+                                              {/* <option value="" className="p-2">Select</option> */}
+                                              <option value="TruePositive" className="mb-2">True Positive</option>
+                                              <option value="Suspicious" className="mb-2">Suspicious</option>
+                                              <option value="FalsePositive" className="p-2">False Positive</option>
+                                              <option value="Undefined" className="p-2">Undefined</option>
+                                            </select>
+                                          </div>
+
+                                          <div className="px-1">
+                                            <span className="fs-8">Incident Status </span>:
+                                            <select
+                                              // className="form-select form-select-solid"
+                                              data-kt-select2="true"
+                                              data-placeholder="Select option"
+                                              data-dropdown-parent="#kt_menu_637dc885a14bb"
+                                              data-allow-clear="true"
+                                              onChange={(e) => handleChangeIncidentStatus(e)}
+                                              value={threatHeaderDtls.incidentStatus}
+                                            >
+                                              {/* <option value="">Select</option> */}
+                                              {statusDropDown.length > 0 &&
+                                                statusDropDown.map((item) => (
+                                                  <option
+                                                    key={item.dataID}
+                                                    value={item.dataValue}
+                                                  >
+                                                    {item.dataValue}
+                                                  </option>
+                                                ))}
+                                            </select>
+                                          </div>
+                                        </div>
+                                        <hr className="bg-primary" style={{ height: '4px', border: 'none' }} />
+                                        <div><span className="fs-8">Mitigation Actions Taken :</span>
+
+                                          {threatHeaderDtls?.miticationActions ? (
+                                            threatHeaderDtls?.miticationActions.map((item, index) => (
+                                              <span key={index} className="m-2">
+                                                {item} <i className="bi bi-check"></i>
+                                              </span>
+
+                                            ))
+                                          ) : (
+                                            <span>No mitigation actions</span>
+                                          )}
+
+
+
+
+                                        </div>
+                                      </div>
+                                      <div className="col-md-3">
+                                        <div className="row">
+                                          <div className="col-md-2 text-center py-3">
+                                            <i className="bi bi-stopwatch" style={{ fontSize: '3rem', width: '2em', height: '2em' }}></i>
+                                          </div>
+
+
+                                          <div className="col-md-10">
+                                            <p>
+                                              <span className="fs-8">Identified Time : </span>
+                                              <span className="fs-8">
+                                                {
+                                                  getCurrentTimeZone(threatHeaderDtls.identifiedTime)
+                                                }
+                                              </span>
+                                            </p>
+                                            <p>
+                                              <span className="fs-8">Reporting Time : </span>
+                                              <span className="fs-8">
+                                                {
+                                                  getCurrentTimeZone(threatHeaderDtls.reportingTime)
+                                                }
+                                              </span>
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    {/* <div className="fs-12">NETWORK HISTORY</div>
+                                  <hr className="my-2" />
+                                  <div className="row">
+                                    <div className="col-md-4 border-right">
+                                      <div className="row  p-3">
+                                        <div className="col-md-3">
+                                          <i className="bi bi-clock" style={{ fontSize: '3em', lineHeight: 1 }}></i>
+                                        </div>
+                                        <div className="col-md-9">
+                                          <p>First seen <span>Oct 30, 2023 08:41:36</span></p>
+                                          <p>Last seen <span>Oct 30, 2023 08:41:36</span></p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-md-4 border-right">
+                                      <div className="row p-3">
+                                        <div className="col-md-3">
+                                          <i className="bi bi-circle" style={{ fontSize: '3em', lineHeight: 1 }}></i>
+                                        </div>
+                                        <div className="col-md-9">
+                                          <p>Only 1 time on the current endpoint</p>
+                                          <p>1 Account / 1 Set / 1 Group</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-md-4">
+                                      <div className="row p-3">
+                                        <div className="col-md-3">
+                                          <i className="bi bi-search" style={{ fontSize: '3em', lineHeight: 1 }}></i>
+                                        </div>
+                                        <div className="col-md-9">
+                                          <p>Find this Hash on Deep Visibality</p>
+                                          <button className="btn btn-dark btn-sm">Hunt Now</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div> */}
+                                    <hr className="my-1" style={{ borderColor: '#3838a0', borderWidth: '10px' }} />
+                                    <div className="mt-5 row">
+                                      <div className="fs-12 mt-5 col-md-6">THREAT FILE NAME $RN30BDD.exe</div>
+                                      <div className="fs-14 mt-5 text-primary col-md-6 text-end">
+                                        {/* <span className="mx-5"><i className="fas fa-copy mx-3"></i> Copy Details</span>
+                                        <span className="mx-5"><i className="fas fa-file mx-3"></i> Download Threat Files</span> */}
+                                      </div>
+                                    </div>
+                                    <hr className="my-2" />
+                                    <div className="row">
+                                      <div className="col-md-7">
+                                        <div className="row border-right p-5">
+                                          <div className="col-md-3 ">
+                                            <p>Path</p>
+                                            {/* <p>Command Line Arguments</p> */}
+                                            <p>Process User</p>
+                                            {/* <p>Publisher Name</p> */}
+                                            {/* <p> Signer Identity</p> */}
+                                            {/* <p>Signature Verification</p> */}
+                                            <p>Original Process</p>
+                                            <p>SHA1</p>
+                                          </div>
+                                          <div className="col-md-9">
+                                            <p>{threatInfo.path}</p>
+                                            {/* <p>NA</p> */}
+                                            <p>{threatInfo.processUser}</p>
+                                            {/* <p>FH Manager</p> */}
+                                            {/* <p>FH Manager</p> */}
+                                            {/* <p>Signature varified</p> */}
+                                            <p>{threatInfo.originatingProcess}</p>
+                                            <p>{threatInfo.shA1}</p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-md-5">
+                                        <div className="row border-right p-5">
+                                          <div className="col-md-4 ">
+                                            <p>Initiated By</p>
+                                            {/* <p>Engine</p> */}
+                                            <p>Detection Type</p>
+                                            <p>Classification</p>
+                                            <p> File Size</p>
+                                            <p>Storyline</p>
+                                            <p>Threat id</p>
+                                          </div>
+                                          <div className="col-md-6">
+                                            <p>{threatInfo.initiatedBy}</p>
+                                            {/* <p>SentinalOne Cloud</p> */}
+                                            <p>{threatInfo.detectionType}</p>
+                                            <p>{threatInfo.classification}</p>
+                                            <p>{threatInfo.fileSize}</p>
+                                            <p>{threatInfo.storyline}</p>
+                                            <p>{threatInfo.threatId}</p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <hr className="my-1" style={{ borderColor: '#3838a0', borderWidth: '10px' }} />
+                                    <div className="text-primary text-center m-3">END POINT</div>
+                                    <hr className="my-2" />
+
+                                    <div className="row">
+                                      <div className="col-md-4">
+                                        <div className="row  p-5">
+                                          <div>
+                                            <p>Real Time Data about the end point:</p>
+                                          </div>
+                                          <div className="row">
+                                            <div className="col-md-3">
+                                              <span>
+                                                <i className="fab fa-windows" style={{ fontSize: '6em', width: '2em' }}></i>
+                                              </span>
+                                            </div>
+                                            <div className="col-md-9">
+                                              <h6>DESCTOP-UPU1TUD</h6>
+                                              <p className="fs-12">LANCESOFT INDIA PRIVATE LIMITE / Defoult site</p>
+                                              <p className="fs-10">(Connect Homes)/ Defoult Group</p>
+                                            </div>
+                                          </div>
+                                          <hr className="my-2" />
+                                          <div className="col-md-4 ">
+                                            {/* <p>Console connectivity</p> */}
+                                            <p>Full Disc scan</p>
+                                            <p>Pending Reboot</p>
+                                            {/* <p>Number of not Mitigated Threats</p> */}
+                                            <p> Network status</p>
+                                          </div>
+                                          <div className="col-md-8">
+                                            {/* <p>{endpointInfo.consoleConnectivity}</p> */}
+                                            <p>{endpointInfo.fullDiskScan}</p>
+                                            <p>{endpointInfo.pendinRreboot}</p>
+                                            {/* <p>0</p> */}
+                                            <p>{endpointInfo.networkStatus}</p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-md-8">
+                                        <div className="row border-right p-5">
+                                          <div className="col-md-3 ">
+                                            {/* <p>At Detection time :</p> */}
+                                            <p>Scope</p>
+                                            <p>OS Version</p>
+                                            <p>Agent Version</p>
+                                            <p> Policy</p>
+                                            <p>Logged in user</p>
+                                            <p>UUID</p>
+                                            <p>Domain</p>
+                                            <p>IP v4 Address</p>
+                                            <p>IP v6 Address</p>
+                                            <p>Console Visible adress</p>
+                                            <p>Subscription Time</p>
+                                          </div>
+                                          <div className="col-md-9">
+                                            {/* <p>.</p> */}
+                                            <p>{endpointInfo.scope}</p>
+                                            <p>{endpointInfo.osVersion}</p>
+                                            <p>{endpointInfo.agentVersion}</p>
+                                            <p>{endpointInfo.policy}</p>
+                                            <p>{endpointInfo.loggedInUser}</p>
+                                            <p>{endpointInfo.uuid}</p>
+                                            <p>{endpointInfo.domain}</p>
+                                            <p>{endpointInfo.ipV4Address}</p>
+                                            <p>{endpointInfo.ipV6Address}</p>
+                                            <p>{endpointInfo.consoleVisibleIPAddress}</p>
+                                            <p>{endpointInfo.subscriptionTime}</p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
                                 <div
                                   className="tab-pane fade"
