@@ -299,7 +299,7 @@ const UserData = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {users !== null ? (
+            {users !== null && users !== undefined  ? (
             users.map((item, index) => {
               if (globalAdminRole === 1 || clientAdminRole === 1 || (userID === item.userID)) {
                 

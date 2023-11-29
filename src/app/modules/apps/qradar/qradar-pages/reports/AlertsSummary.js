@@ -16,7 +16,6 @@ function AlertsSummary() {
 
   //Pie chart color code
   CanvasJS.addColorSet('colorShades', [
-    //colorSet Array
     '#f0e68c',
     '#ffb700',
     '#008080',
@@ -114,20 +113,22 @@ function AlertsSummary() {
 
   return (
     <div>
-      <h2>
-      Alerts Summary for the last year ({startDate} to{" "}
-            {endDate})
-          </h2>
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>Error: {error}</p>
-      ) : alertData && alertData.length > 0 ? (
-        <CanvasJSChart options={openstatusoptions} />
-      ) : (
-        <p>No data available.</p>
-      )}
-    </div>
+    {loading ? (
+ <p>Loading...</p>
+) : error ? (
+ <p>Error: {error}</p>
+) : alertData !== null  ? (
+ <>
+   <h2>
+   Alerts Summary for the last year ({startDate} to{" "}
+     {endDate})
+   </h2>
+   <CanvasJSChart options={openstatusoptions} />
+ </>
+) : (
+ <p>No data found</p>
+)}
+   </div>
   )
 }
 

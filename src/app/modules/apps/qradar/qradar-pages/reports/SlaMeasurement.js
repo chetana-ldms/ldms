@@ -254,22 +254,19 @@ function SlaMeasurement() {
   }, []);
 
   useEffect(() => {
-    // ... Existing code ...
-
-    // Declare today and endDate variables here
     const today = new Date();
     let startDate, endDate;
     switch (selectedTab) {
-      case 0: // Last 7 days
+      case 0: 
         startDate = new Date(today);
         startDate.setDate(today.getDate() - 7);
         endDate = today;
         break;
-      case 1: // Last 1 month
+      case 1: 
       startDate = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
         endDate = today;
         break;
-      case 2: // Last 1 year
+      case 2: 
         startDate = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
         endDate = today;
         break;

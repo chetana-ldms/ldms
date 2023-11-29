@@ -2,52 +2,35 @@ import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
 import { notify, notifyFail } from '../components/notification/Notification';
 import axios from 'axios'
-import { fetchRolesUpdateUrl } from '../../../../../api/ConfigurationApi'
+import { fetchRolesDetailUrl, fetchRolesUpdateUrl } from '../../../../../api/ConfigurationApi'
 
 const UpdateRoleData = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [role, setRole] = useState([{
+    roleName : ''
+  }])
   const {id} = useParams()
   const roleName = useRef()
   const errors = {}
-  // const handleSubmit = (event) => {
-  //   setLoading(true)
-  //   event.preventDefault()
-  //   const modifiedUserId = Number(sessionStorage.getItem('userId'));
-  //   const modifieddate = new Date().toISOString();
-  //   const orgId = Number(sessionStorage.getItem("orgId"));
-  //   var data = {
-  //     roleName: roleName.current.value,
-  //     sysrole: 0,
-  //     orgId,
-  //     globalAdminRole: 0,
-  //     clientAdminRole: 0,
-  //     modifieddate,
-  //     modifiedUserId,
-  //     roleID: Number(id),
-  //   }
-  //   console.log('data', data)
-  //   var config = {
-  //     method: 'post',
-  //     url: 'http://115.110.192.133:502/api/LDPSecurity/v1/User/Update',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Accept: 'text/plain',
-  //     },
-  //     data: data,
-  //   }
-  //   setTimeout(() => {
-  //     axios(config)
-  //       .then(function (response) {
-  //         console.log(JSON.stringify(response.data))
-  //         navigate('/qradar/roles-data/list')
-  //       })
-  //       .catch(function (error) {
-  //         console.log(error)
-  //       })
-  //     setLoading(false)
-  //   }, 1000)
-  // }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const Response = await fetchRolesDetailUrl(id);
+        setRole(Response);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+  const handleChange = (e) => {
+    setRole({
+      ...role,
+      roleName: e.target.value
+    });
+  };
   const handleSubmit = async (event) => {
     setLoading(true)
     event.preventDefault()
@@ -111,7 +94,8 @@ const UpdateRoleData = () => {
                 className='form-control form-control-lg form-control-solid'
                 id='role'
                 ref={roleName}
-                placeholder='Ex: Client Admin'
+                value={role.roleName}
+                onChange={handleChange}
               />
             </div>
           </div>

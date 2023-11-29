@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { notify, notifyFail } from "../components/notification/Notification";
-import { fetchAddToExclusionListUrl } from '../../../../../api/AlertsApi';
+import { fetchAddToExclusionListUrl, fetchSentinelOneAlert } from '../../../../../api/AlertsApi';
 
 const AddToExclusionsModal = ({ show, handleClose, handleAction, selectedValue, selectedAlert }) => {
     const data = { selectedValue, selectedAlert }
@@ -13,24 +13,50 @@ const AddToExclusionsModal = ({ show, handleClose, handleAction, selectedValue, 
     const sha1InputRef = useRef(null);
     const descriptionTextareaRef = useRef(null);
     const orgId = Number(sessionStorage.getItem("orgId"));
+    const [sentinalOne, setSentinalOne] = useState([])
+    console.log(sentinalOne, "sentinalOne")
+    const [endpointInfo, setEndpointInfo] = useState([{
+        osVersion: ''
+    }])
+    console.log(endpointInfo, "endpointInfo")
+    const [threatInfo, setThreatInfo] = useState([])
+    console.log(threatInfo, "threatInfo")
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                if (AlertId.length > 0 && AlertId.length < 2) {
+                    const sentinalOneDetails = await fetchSentinelOneAlert(AlertId);
+                    setSentinalOne(sentinalOneDetails);
+                    const endpoint_Info = sentinalOneDetails.endpoint_Info;
+                    setEndpointInfo(endpoint_Info)
+                    const threatInfo = sentinalOneDetails.threatInfo;
+                    setThreatInfo(threatInfo)
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchData();
+    }, [AlertId]);
     const handleSubmit = async () => {
         try {
             const data = {
                 orgID: orgId,
-                alertIds : selectedAlert,
+                alertIds: selectedAlert,
                 targetScope: scopeDropdownRef.current.value,
                 // externalTicketId: "string",
                 description: descriptionTextareaRef.current.value,
                 // note: descriptionTextareaRef.current.value
-              }
+            }
             const responseData = await fetchAddToExclusionListUrl(data);
             const { isSuccess } = responseData;
-        
+
             if (isSuccess) {
                 notify('Add To Exclusions Applied');
-              } else {
+            } else {
                 notifyFail('Add To Exclusions Applied');
-              }
+            }
             handleClose()
         } catch (error) {
             console.error('Error during API call:', error);
@@ -46,14 +72,23 @@ const AddToExclusionsModal = ({ show, handleClose, handleAction, selectedValue, 
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-            <div className='row'>
-                    <div className='col-md-4'>
-                        <label htmlFor="osDropdown" className="form-label">OS</label>
-                        <select ref={osDropdownRef} className="form-select" id="osDropdown" name="os">
-                            <option value="windows">Windows</option>
-                            <option value="mac">Mac</option>
-                            <option value="linux">Linux</option>
-                        </select>
+                <div className='row'>
+                    <div className='col-md-6'>
+                        <label htmlFor="osInput" className="form-label">OS</label>
+                        {
+                            AlertId.length > 1 ? (
+                                <p className='p-3'>According to selected Threats</p>
+                            ) : (
+                                <select
+                                    className="form-select"
+                                    id="osInput"
+                                    value={endpointInfo.osVersion}
+                                    disabled
+                                >
+                                    <option value={endpointInfo.osVersion}>{endpointInfo.osVersion}</option>
+                                </select>
+                            )
+                        }
                     </div>
                     <div className='col-md-4'>
                         <label htmlFor="osDropdown" className="form-label"> Scope</label>
@@ -68,7 +103,19 @@ const AddToExclusionsModal = ({ show, handleClose, handleAction, selectedValue, 
                     <div className='col-md-6'>
                         <div>
                             <label className="form-label" htmlFor="sha1Input">SHA1:</label>
-                            <input ref={sha1InputRef} type="text" id="sha1Input" name="sha1" className="form-control" />
+                            {
+                                AlertId.length > 1 ? (
+                                    <p className='pt-5'>According to selected Threats</p>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        // ref={sha1InputRef}
+                                        value={threatInfo.shA1}
+                                        disabled
+                                    />
+                                )
+                            }
                         </div>
 
                     </div>

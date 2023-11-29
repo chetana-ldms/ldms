@@ -39,6 +39,7 @@ import {
   fetchConnectToNetworkUrl,
   fetchDisConnectFromNetworkUrl,
   fetchThreatsActionUrl,
+  fetchAlertsStatusUpdateUrl,
 } from "../../../../../api/AlertsApi";
 import MitigationModal from './MitigationModal';
 import ReactPaginate from "react-paginate";
@@ -66,6 +67,7 @@ const AlertsPage = () => {
     severityNameDropDownData: [],
     statusDropDown: [],
     observableTagDropDown: [],
+    analystVerdictDropDown: [],
   });
   const [openEditPage, setOpenEditPage] = useState(false);
   const [selectedRow, setSelectedRow] = useState({});
@@ -76,6 +78,7 @@ const AlertsPage = () => {
     severityNameDropDownData,
     statusDropDown,
     observableTagDropDown,
+    analystVerdictDropDown,
   } = dropdownData;
   const handleFormSubmit = () => {
     setShowPopup(false);
@@ -92,25 +95,29 @@ const AlertsPage = () => {
       fetchMasterData("alert_Sevirity"),
       fetchMasterData("alert_status"),
       fetchMasterData("alert_Tags"),
+      fetchMasterData("analyst_verdict"),
     ])
-      .then(([severityData, statusData, tagsData]) => {
+      .then(([severityData, statusData, tagsData, verdictData]) => {
         setDropdownData((prevDropdownData) => ({
           ...prevDropdownData,
           severityNameDropDownData: severityData,
           statusDropDown: statusData,
           observableTagDropDown: tagsData,
+          analystVerdictDropDown: verdictData,
         }));
       })
       .catch((error) => {
         handleError(error);
       });
   }, []);
+
   const handleselectedAlert = (item, e) => {
     setSelectCheckBox(item);
-    setIsCheckboxSelected(e.target.checked);
+    // setIsCheckboxSelected(e.target.checked);
     const { value, checked } = e.target;
     if (checked) {
       setselectedAlert([...selectedAlert, value]);
+      setIsCheckboxSelected(true)
     } else {
       setselectedAlert(selectedAlert.filter((e) => e !== value));
     }
@@ -163,6 +170,8 @@ const AlertsPage = () => {
   console.log(selectedAlertId, "selectedAlertId")
   const [AnalystVerdictDropDown, setAnalystVerdictDropDown] = useState(false);
   const [selectedVerdict, setSelectedVerdict] = useState('');
+  const [StatusDropDown, setStatusDropDown] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState('');
   const [endpointInfo, setEndpointInfo] = useState([])
   console.log(endpointInfo, "endpointInfo")
   const [networkHistory, setNetworkHistory] = useState([])
@@ -195,22 +204,12 @@ const AlertsPage = () => {
   useEffect(() => {
     reloadHistory()
   }, [selectedAlertId]);
-  const css_classes = [
-    "text-primary",
-    "text-secondary",
-    "text-success",
-    "text-danger",
-    "text-warning",
-    "text-info",
-    "text-dark",
-    "text-muted",
-  ];
+  const css_classes = ["text-primary", "text-secondary", "text-success", "text-danger", "text-warning", "text-info", "text-dark", "text-muted"];
 
   const getRandomClass = () => {
     const randomIndex = Math.floor(Math.random() * css_classes.length);
     return css_classes[randomIndex];
   };
-
   const handleCloseForm = () => {
     setShowForm(false);
   };
@@ -237,8 +236,8 @@ const AlertsPage = () => {
   };
   const handleTableRefresh = () => {
     qradaralerts();
+    // alertNotesList()
   };
-
   const handlePageSelect = (event) => {
     const selectedPerPage = event.target.value;
     setLimit(selectedPerPage);
@@ -291,15 +290,12 @@ const AlertsPage = () => {
       data.map((item) => {
         let resolvedTime = item.resolvedtime ? getCurrentTimeZone(item.resolvedtime) : new Date();
         let detectedTime = item.detectedtime ? getCurrentTimeZone(item.detectedtime) : null;
-
         if (resolvedTime && detectedTime) {
           let timeDifferenceMs = new Date(resolvedTime) - new Date(detectedTime);
-
           // Convert milliseconds to days, hours, and minutes
           let days = Math.floor(timeDifferenceMs / (24 * 60 * 60 * 1000));
           let hours = Math.floor((timeDifferenceMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
           let minutes = Math.floor((timeDifferenceMs % (60 * 60 * 1000)) / (60 * 1000));
-
           // Format the time difference
           let formattedTimeDifference = `${days}d${hours}h${minutes}m`;
           item.sla = formattedTimeDifference;
@@ -309,7 +305,6 @@ const AlertsPage = () => {
       console.log('No data available')
     }
   }
-
   const handlePageClick = async (data) => {
     let currentPage = data.selected + 1;
     setLoading(true)
@@ -327,8 +322,6 @@ const AlertsPage = () => {
     setCurrentPage(currentPage);
     setLoading(false)
   };
-
-
   const qradaralerts = async () => {
     let data2 = {
       orgID: orgId,
@@ -342,25 +335,26 @@ const AlertsPage = () => {
     };
     setLoading(true)
     const response = await fetchAlertData(data2);
-
     setAlertsCount(response.totalOffenseCount);
     setSource(response.source)
     setAlertDate(response.alertsList != null ? response.alertsList : []);
     const total = response.totalOffenseCount;
     setpageCount(Math.ceil(total / limit));
     slaCal(response?.alertsList);
+    setFilteredAlertDate(response?.alertsList);
     setLoading(false)
-    {
-      if (globalAdminRole === 1) {
-        setFilteredAlertDate(response.alertsList);
-      } else {
-        let result =
-          response.alertsList != null
-            ? response.alertsList.filter((item) => item.ownerUserID === userID)
-            : [];
-        setFilteredAlertDate(result);
-      }
-    }
+    // {
+    //   if (globalAdminRole === 1) {
+    //     setFilteredAlertDate(response.alertsList);
+    //   }
+    //    else {
+    //     let result =
+    //       response.alertsList != null
+    //         ? response.alertsList.filter((item) => item.ownerUserID === userID)
+    //         : [];
+    //     setFilteredAlertDate(result);
+    //   }
+    // }
 
   };
   useEffect(() => {
@@ -377,7 +371,6 @@ const AlertsPage = () => {
         response?.usersList != undefined ? response?.usersList : []
       );
     };
-
     fetchData();
   }, [delay]);
   useEffect(() => {
@@ -388,7 +381,6 @@ const AlertsPage = () => {
         createUserId: userID,
         alertIDs: selectedAlert,
       };
-
       fetchCreateIncident(data).then((response) => {
         if (response.isSuccess) {
           notify("Incident Created");
@@ -453,10 +445,8 @@ const AlertsPage = () => {
     setTimeout(() => setIsRefreshing(false), 2000);
   };
   const RefreshInterval = 2 * 60 * 1000;
-
   useEffect(() => {
     let isActive = true;
-
     const refreshIntervalId = setInterval(() => {
       if (isActive && currentPage === 1) {
         setIsRefreshing(true);
@@ -479,11 +469,13 @@ const AlertsPage = () => {
     try {
       const data = { alertID: itemId };
       const alertNotesList = await fetchGetAlertNotesByAlertID(data);
-      setAlertNotesList(alertNotesList);
+      const alertNoteSort = alertNotesList.sort((a, b) => {
+        return (b.alertsNotesId) - (a.alertsNotesId)
+      })
+      setAlertNotesList(alertNoteSort);
       if (orgId === 2) {
         const sentinalOneDetails = await fetchSentinelOneAlert(itemId);
         setSentinalOne(sentinalOneDetails);
-
         const endpoint_Info = sentinalOneDetails.endpoint_Info;
         setEndpointInfo(endpoint_Info)
         const networkHistory = sentinalOneDetails.networkHistory;
@@ -495,8 +487,6 @@ const AlertsPage = () => {
       } else {
         console.log("No data found")
       }
-
-
     } catch (error) {
       handleError(error);
     }
@@ -508,15 +498,12 @@ const AlertsPage = () => {
     setGenerateReport(false)
     setShowForm(false)
   };
-
   const generatePDFFromTable = (tableData) => {
     const doc = new jsPDF();
-
     doc.autoTable({
       head: [['Severity', 'SLA', 'Score', 'Status', 'Detected time', 'Name', 'Observables tags', 'Owner', 'Source']],
       body: tableData.map((item) => [item.severityName, item.sla, item.score === null ? "0" : item.score, item.status, item.detectedtime, item.name, item.observableTag, item.ownerusername, item.source]),
     });
-
     doc.save('Report.pdf');
   };
   const handleMoreActionsClick = () => {
@@ -544,17 +531,16 @@ const AlertsPage = () => {
       try {
         const responseData = await fetchConnectToNetworkUrl(data);
         const { isSuccess } = responseData;
-  
         if (isSuccess) {
           notify('Add to network');
         } else {
           notifyFail('Connect To Network Failed');
         }
       } catch (error) {
-        console.error( error);
+        console.error(error);
       }
       setShowDropdown(false);
-    }else if (value === 'DisconnectFromNetwork') {
+    } else if (value === 'DisconnectFromNetwork') {
       const data = {
         orgID: orgId,
         alertIds: selectedAlert
@@ -562,17 +548,16 @@ const AlertsPage = () => {
       try {
         const responseData = await fetchDisConnectFromNetworkUrl(data);
         const { isSuccess } = responseData;
-  
         if (isSuccess) {
           notify('Disconnect from network');
         } else {
           notifyFail('Disconnect from network Failed');
         }
       } catch (error) {
-        console.error( error);
+        console.error(error);
       }
       setShowDropdown(false);
-    }else if (value === 'Unquarantine') {
+    } else if (value === 'Unquarantine') {
       const data = {
         orgID: orgId,
         alertIds: selectedAlert,
@@ -586,14 +571,13 @@ const AlertsPage = () => {
       try {
         const responseData = await fetchThreatsActionUrl(data);
         const { isSuccess } = responseData;
-  
         if (isSuccess) {
           notify('UnQuarantine Succesfull');
         } else {
           notifyFail('UnQuarantine Failed');
         }
       } catch (error) {
-        console.error( error);
+        console.error(error);
       }
       setShowDropdown(false);
     } else {
@@ -603,12 +587,10 @@ const AlertsPage = () => {
   const handleShowDropdown = () => {
     setShowDropdown(false);
   }
-
   const handleCloseMoreActionsModal = () => {
     setShowMoreActionsModal(false);
     setShowDropdown(false);
   };
-
   const handleAction = () => {
     handleCloseMoreActionsModal();
   };
@@ -616,7 +598,6 @@ const AlertsPage = () => {
     setAddToBlockListModal(false);
     setShowDropdown(false);
   };
-
   const handleActionAddToBlockList = () => {
     setAddToBlockListModal(false);
   };
@@ -624,7 +605,6 @@ const AlertsPage = () => {
     setAddToExclusionsModal(false);
     setShowDropdown(false);
   };
-
   const handleActionAddToExclusions = () => {
     setAddToExclusionsModal(false);
   };
@@ -632,55 +612,73 @@ const AlertsPage = () => {
     setAddANoteModal(false);
     setShowDropdown(false);
   };
-
   const handleActionAddANote = () => {
     setAddANoteModal(false);
   };
   const handleAnalystsVerdict = () => {
-    setAnalystVerdictDropDown(!AnalystVerdictDropDown);
+    setAnalystVerdictDropDown(true);
   };
-
   const handleAnalystsVerdictClose = () => {
     setAnalystVerdictDropDown(false);
   };
-
   const handleAnalystsVerdictDropDown = (event) => {
     setSelectedVerdict(event.target.value);
-
   };
   const handleSubmitAnalystVerdict = async () => {
     try {
+      const modifiedUserId = Number(sessionStorage.getItem("userId"));
       const data = {
         orgID: orgId,
-        alertIds: [selectedAlert],
-        analystsVerdict: selectedVerdict
-        // undefined: false,
-        // truePositive: false,
-        // falsePositive: false,
-        // suspicious: false
+        alertIds: selectedAlert,
+        analystVerdictId: selectedVerdict,
+        modifiedDate,
+        modifiedUserId
       };
-      await fetchAnalystVerdictUpdateUrl(data);
+      const responseData = await fetchAnalystVerdictUpdateUrl(data);
+      const { isSuccess, message } = responseData;
+      if (isSuccess) {
+        notify(message);
+        qradaralerts();
+      } else {
+        notifyFail(message);
+      }
       setAnalystVerdictDropDown(false);
     } catch (error) {
       console.error(error);
     }
   };
-
-  const handleAnalystsVerdictDetail = (event) => {
-    const { value } = event.target;
-    setThreatHeaderDtls((prevData) => ({
-      ...prevData,
-      analysisVerdict: value
-    }));
+  const handleStatus = () => {
+    setStatusDropDown(!AnalystVerdictDropDown);
   };
-  const handleChangeIncidentStatus = (e) => {
-    const { value } = e.target;
-    setThreatHeaderDtls((prevData) => ({
-      ...prevData,
-      incidentStatus: value
-    }));
+  const handleStatusClose = () => {
+    setStatusDropDown(false);
   };
-
+  const handleStatusDropDown = (event) => {
+    setSelectedStatus(event.target.value);
+  };
+  const handleSubmitStatus = async () => {
+    try {
+      const modifiedUserId = Number(sessionStorage.getItem("userId"));
+      const data = {
+        orgID: orgId,
+        alertIds: selectedAlert,
+        statusId: selectedStatus,
+        modifiedDate,
+        modifiedUserId
+      };
+      const responseData = await fetchAlertsStatusUpdateUrl(data);
+      const { isSuccess, message } = responseData;
+      if (isSuccess) {
+        notify(message);
+        qradaralerts();
+      } else {
+        notifyFail(message);
+      }
+      setStatusDropDown(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <KTCardBody className="alert-page">
       <ToastContainer />
@@ -696,6 +694,67 @@ const AlertsPage = () => {
 
           <div className="card-toolbar">
             <div className="d-flex align-items-center gap-2 gap-lg-3">
+
+              <div className="m-0">
+                <a
+                  href="#"
+                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${!isCheckboxSelected && "disabled"}`}
+                  data-kt-menu-trigger="click"
+                  data-kt-menu-placement="bottom-end"
+                  onClick={handleStatus}
+                >
+                  Status
+                </a>
+
+                <div className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action" data-kt-menu="true">
+                  {StatusDropDown && (
+                    <div className="px-5 py-5">
+                      <div className="mb-5">
+                        <div className="d-flex justify-content-end mb-5">
+                          <div>
+                            <div
+                              className="close fs-20 text-muted pointer"
+                              aria-label="Close"
+                              onClick={handleStatusClose}
+                            >
+                              <span
+                                aria-hidden="true"
+                                style={{ color: "inherit", textShadow: "none" }}
+                              >
+                                &times;
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <select
+                          className="form-select form-select-solid"
+                          data-kt-select2="true"
+                          data-placeholder="Select option"
+                          data-dropdown-parent="#kt_menu_637dc885a14bb"
+                          data-allow-clear="true"
+                          onChange={handleStatusDropDown}
+                        >
+                          <option value="">Select</option>
+                          {statusDropDown.length > 0 &&
+                            statusDropDown.map((item) => (
+                              <option
+                                key={item.dataID}
+                                value={item.dataID}
+                              >
+                                {item.dataValue}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                      <div className="text-right">
+                        <button className="btn btn-primary"
+                          onClick={handleSubmitStatus}
+                        > Submit </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
               <div className="m-0">
                 <a
                   href="#"
@@ -728,18 +787,23 @@ const AlertsPage = () => {
                           </div>
                         </div>
                         <select
-                          onChange={handleAnalystsVerdictDropDown}
                           className="form-select form-select-solid"
                           data-kt-select2="true"
-                          data-control="select2"
                           data-placeholder="Select option"
+                          data-dropdown-parent="#kt_menu_637dc885a14bb"
                           data-allow-clear="true"
+                          onChange={handleAnalystsVerdictDropDown}
                         >
-                          <option value="" className="p-2">Select</option>
-                          <option value="truePositive" className="mb-2">True Positive</option>
-                          <option value="suspicious" className="mb-2">Suspicious</option>
-                          <option value="falsePositive" className="p-2">False Positive</option>
-                          <option value="undefined" className="p-2">Undefined</option>
+                          <option>Select</option>
+                          {analystVerdictDropDown.length > 0 &&
+                            analystVerdictDropDown.map((item) => (
+                              <option
+                                key={item.dataID}
+                                value={item.dataID}
+                              >
+                                {item.dataValue}
+                              </option>
+                            ))}
                         </select>
                       </div>
                       <div className="text-right">
@@ -751,102 +815,106 @@ const AlertsPage = () => {
                   )}
                 </div>
               </div>
-              <div className="m-0">
-                <a
-                  href="#"
-                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${!isCheckboxSelected && "disabled"}`}
-                  data-kt-menu-trigger="click"
-                  data-kt-menu-placement="bottom-end"
-                  onClick={handleThreatActions}
-                >
-                  Other Action
-                </a>
-                <div className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action" data-kt-menu="true">
-                  {showDropdown && (
-                    <div className="px-5 py-5">
-                      <div className="mb-5">
-                        <div className="d-flex justify-content-end mb-5">
-                          <div>
-                            <div
-                              className="close fs-20 text-muted pointer"
-                              aria-label="Close"
-                              onClick={handleShowDropdown}
-                            >
-                              <span
-                                aria-hidden="true"
-                                style={{ color: "inherit", textShadow: "none" }}
-                              >
-                                &times;
-                              </span>
+              {orgId === 2 && (
+                <>
+                  <div className="m-0">
+                    <a
+                      href="#"
+                      className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new ${!isCheckboxSelected && "disabled"}`}
+                      data-kt-menu-trigger="click"
+                      data-kt-menu-placement="bottom-end"
+                      onClick={handleThreatActions}
+                    >
+                      Other Action
+                    </a>
+                    <div className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action" data-kt-menu="true">
+                      {showDropdown && (
+                        <div className="px-5 py-5">
+                          <div className="mb-5">
+                            <div className="d-flex justify-content-end mb-5">
+                              <div>
+                                <div
+                                  className="close fs-20 text-muted pointer"
+                                  aria-label="Close"
+                                  onClick={handleShowDropdown}
+                                >
+                                  <span
+                                    aria-hidden="true"
+                                    style={{ color: "inherit", textShadow: "none" }}
+                                  >
+                                    &times;
+                                  </span>
+                                </div>
+                              </div>
                             </div>
+                            <select
+                              onChange={handleDropdownSelect}
+                              className="form-select form-select-solid"
+                              data-kt-select2="true"
+                              data-control="select2"
+                              data-placeholder="Select option"
+                              data-allow-clear="true"
+                            >
+                              <option value="" className="p-2">Select</option>
+                              <option value="MitigationAction" className="mb-2">Mitigation Action</option>
+                              <option value="AddToBlockList" className="mb-2">Add To Blocklist</option>
+                              <option value="AddToExclusions" className="p-2">Add To Exclusions</option>
+                              <option value="Unquarantine" className="p-2">Unquarantine</option>
+                              <option value="AddANote" className="p-2">Add a Note</option>
+                              <option value="ConnectToNetwork" className="p-2">Connect To Network</option>
+                              <option value="DisconnectFromNetwork" className="p-2">Disconnect From Network</option>
+                            </select>
                           </div>
                         </div>
-                        <select
-                          onChange={handleDropdownSelect}
-                          className="form-select form-select-solid"
-                          data-kt-select2="true"
-                          data-control="select2"
-                          data-placeholder="Select option"
-                          data-allow-clear="true"
-                        >
-                          <option value="" className="p-2">Select</option>
-                          <option value="MitigationAction" className="mb-2">Mitigation Action</option>
-                          <option value="AddToBlockList" className="mb-2">Add To Blocklist</option>
-                          <option value="AddToExclusions" className="p-2">Add To Exclusions</option>
-                          <option value="Unquarantine" className="p-2">Unquarantine</option>
-                          <option value="AddANote" className="p-2">Add a Note</option>
-                          <option value="ConnectToNetwork" className="p-2">Connect To Network</option>
-                          <option value="DisconnectFromNetwork" className="p-2">Disconnect From Network</option>
-                        </select>
-                      </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                {
-                  showMoreActionsModal && (
-                    <MitigationModal
-                      show={showMoreActionsModal}
-                      handleClose={handleCloseMoreActionsModal}
-                      handleAction={handleAction}
-                      selectedValue={selectedValue}
-                      selectedAlert={selectedAlert}
-                    />
-                  )
-                }
-                {
-                  addToBlockListModal && (
-                    <AddToBlockListModal
-                      show={addToBlockListModal}
-                      handleClose={handleCloseAddToBlockList}
-                      handleAction={handleActionAddToBlockList}
-                      selectedValue={selectedValue}
-                      selectedAlert={selectedAlert}
-                    />
-                  )
-                }
-                {
-                  addToExclusionsModal && (
-                    <AddToExclusionsModal
-                      show={addToExclusionsModal}
-                      handleClose={handleCloseAddToExclusions}
-                      handleAction={handleActionAddToExclusions}
-                      selectedValue={selectedValue}
-                      selectedAlert={selectedAlert}
-                    />
-                  )
-                }
-                {
-                  addANoteModal && (
-                    <AddANoteModal
-                      show={addANoteModal}
-                      handleClose={handleCloseAddANote}
-                      handleAction={handleActionAddANote}
-                      selectedValue={selectedValue}
-                      selectedAlert={selectedAlert}
-                    />
-                  )
-                }
-              </div>
+                    {
+                      showMoreActionsModal && (
+                        <MitigationModal
+                          show={showMoreActionsModal}
+                          handleClose={handleCloseMoreActionsModal}
+                          handleAction={handleAction}
+                          selectedValue={selectedValue}
+                          selectedAlert={selectedAlert}
+                        />
+                      )
+                    }
+                    {
+                      addToBlockListModal && (
+                        <AddToBlockListModal
+                          show={addToBlockListModal}
+                          handleClose={handleCloseAddToBlockList}
+                          handleAction={handleActionAddToBlockList}
+                          selectedValue={selectedValue}
+                          selectedAlert={selectedAlert}
+                        />
+                      )
+                    }
+                    {
+                      addToExclusionsModal && (
+                        <AddToExclusionsModal
+                          show={addToExclusionsModal}
+                          handleClose={handleCloseAddToExclusions}
+                          handleAction={handleActionAddToExclusions}
+                          selectedValue={selectedValue}
+                          selectedAlert={selectedAlert}
+                        />
+                      )
+                    }
+                    {
+                      addANoteModal && (
+                        <AddANoteModal
+                          show={addANoteModal}
+                          handleClose={handleCloseAddANote}
+                          handleAction={handleActionAddANote}
+                          selectedValue={selectedValue}
+                          selectedAlert={selectedAlert}
+                        />
+                      )
+                    }
+                  </div>
+                </>
+              )}
               <div className="m-0">
                 <a
                   href="#"
@@ -1650,19 +1718,21 @@ const AlertsPage = () => {
                                     Details
                                   </a>
                                 </li>
-                                <li className="nav-item" role="presentation">
-                                  <a
-                                    className="nav-link"
-                                    id={`moreDetailsTab_${index}`}
-                                    data-bs-toggle="tab"
-                                    href={`#moreDetails_${index}`}
-                                    role="tab"
-                                    aria-controls={`moreDetails_${index}`}
-                                    aria-selected="false"
-                                  >
-                                    More Details
-                                  </a>
-                                </li>
+                                {orgId == 2 &&
+                                  <li className="nav-item" role="presentation">
+                                    <a
+                                      className="nav-link"
+                                      id={`moreDetailsTab_${index}`}
+                                      data-bs-toggle="tab"
+                                      href={`#moreDetails_${index}`}
+                                      role="tab"
+                                      aria-controls={`moreDetails_${index}`}
+                                      aria-selected="false"
+                                    >
+                                      More Details
+                                    </a>
+                                  </li>
+                                }
                                 <li className="nav-item" role="presentation">
                                   <a
                                     className="nav-link"
@@ -1690,7 +1760,7 @@ const AlertsPage = () => {
                                   </a>
                                 </li>
                               </ul>
-                              <div className="tab-content">
+                              <div className="tab-content pt-4">
                                 <div
                                   className="tab-pane fade show active"
                                   id={`details_${index}`}
@@ -1744,107 +1814,72 @@ const AlertsPage = () => {
                                   role="tabpanel"
                                   aria-labelledby={`moreDetailsTab_${index}`}
                                 >
-                                  <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                                    <div className="row">
-                                      <div className="col-md-1 py-4 text-center">
-                                        <i className="bi bi-check-square text-success" style={{ fontSize: '2rem', width: '2em', height: '2em' }}></i>
-
-                                      </div>
-                                      <div className="col-md-8">
-                                        <div className="d-flex ">
-                                          <div className="border-right px-1"> <span className="fs-8">Threat status :</span> {threatHeaderDtls.threatStatus}</div>
-                                          <div className="border-right px-1"><span className="fs-8">AI Confidence level : </span>{threatHeaderDtls.aiConfidenceLevel}</div>
-                                          <div className="border-right px-1">
-                                            <span className="fs-8">Analyst Verdict </span>:
-                                            <select
-                                              onChange={handleAnalystsVerdictDetail}
-                                              // className="form-select form-select-solid"
-                                              data-kt-select2="true"
-                                              data-control="select2"
-                                              data-placeholder="Select option"
-                                              data-allow-clear="true"
-                                              value={threatHeaderDtls.analysisVerdict}
-                                            >
-                                              {/* <option value="" className="p-2">Select</option> */}
-                                              <option value="TruePositive" className="mb-2">True Positive</option>
-                                              <option value="Suspicious" className="mb-2">Suspicious</option>
-                                              <option value="FalsePositive" className="p-2">False Positive</option>
-                                              <option value="Undefined" className="p-2">Undefined</option>
-                                            </select>
-                                          </div>
-
-                                          <div className="px-1">
-                                            <span className="fs-8">Incident Status </span>:
-                                            <select
-                                              // className="form-select form-select-solid"
-                                              data-kt-select2="true"
-                                              data-placeholder="Select option"
-                                              data-dropdown-parent="#kt_menu_637dc885a14bb"
-                                              data-allow-clear="true"
-                                              onChange={(e) => handleChangeIncidentStatus(e)}
-                                              value={threatHeaderDtls.incidentStatus}
-                                            >
-                                              {/* <option value="">Select</option> */}
-                                              {statusDropDown.length > 0 &&
-                                                statusDropDown.map((item) => (
-                                                  <option
-                                                    key={item.dataID}
-                                                    value={item.dataValue}
-                                                  >
-                                                    {item.dataValue}
-                                                  </option>
-                                                ))}
-                                            </select>
-                                          </div>
-                                        </div>
-                                        <hr className="bg-primary" style={{ height: '4px', border: 'none' }} />
-                                        <div><span className="fs-8">Mitigation Actions Taken :</span>
-
-                                          {threatHeaderDtls?.miticationActions ? (
-                                            threatHeaderDtls?.miticationActions.map((item, index) => (
-                                              <span key={index} className="m-2">
-                                                {item} <i className="bi bi-check"></i>
-                                              </span>
-
-                                            ))
-                                          ) : (
-                                            <span>No mitigation actions</span>
-                                          )}
-
-
-
-
-                                        </div>
-                                      </div>
-                                      <div className="col-md-3">
+                                  {
+                                    orgId == 2 ? (
+                                      <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
                                         <div className="row">
-                                          <div className="col-md-2 text-center py-3">
-                                            <i className="bi bi-stopwatch" style={{ fontSize: '3rem', width: '2em', height: '2em' }}></i>
+                                          <div className="col-md-1 py-4 text-center">
+                                            <i className="bi bi-check-square text-success" style={{ fontSize: '2rem', width: '2em', height: '2em' }}></i>
+
                                           </div>
-
-
-                                          <div className="col-md-10">
-                                            <p>
-                                              <span className="fs-8">Identified Time : </span>
-                                              <span className="fs-8">
-                                                {
-                                                  getCurrentTimeZone(threatHeaderDtls.identifiedTime)
-                                                }
-                                              </span>
-                                            </p>
-                                            <p>
-                                              <span className="fs-8">Reporting Time : </span>
-                                              <span className="fs-8">
-                                                {
-                                                  getCurrentTimeZone(threatHeaderDtls.reportingTime)
-                                                }
-                                              </span>
-                                            </p>
+                                          <div className="col-md-8">
+                                            <div className="d-flex ">
+                                              <div className="border-right px-1"> <span className="fs-8">Threat status :</span> {threatHeaderDtls.threatStatus}</div>
+                                              <div className="border-right px-1"><span className="fs-8">AI Confidence level : </span>{threatHeaderDtls.aiConfidenceLevel}</div>
+                                              <div className="border-right px-1 d-flex align-items-center">
+                                                <span className="fs-8">Analyst Verdict:</span>
+                                                <input
+                                                  type="text"
+                                                  className="ml-2"
+                                                  style={{ width: '110px' }}
+                                                  value={threatHeaderDtls.analysisVerdict}
+                                                />
+                                              </div>
+                                              <div className="px-1 d-flex align-items-center">
+                                                <span className="fs-8">Incident Status:</span>
+                                                <input type="text" style={{ width: '110px' }} className="ml-2" value={threatHeaderDtls.incidentStatus} />
+                                              </div>
+                                            </div>
+                                            <hr className="bg-primary" style={{ height: '4px', border: 'none' }} />
+                                            <div><span className="fs-8">Mitigation Actions Taken :</span>
+                                              {threatHeaderDtls?.miticationActions ? (
+                                                threatHeaderDtls?.miticationActions.map((item, index) => (
+                                                  <span key={index} className="m-2">
+                                                    {item} <i className="bi bi-check"></i>
+                                                  </span>
+                                                ))
+                                              ) : (
+                                                <span>No mitigation actions</span>
+                                              )}
+                                            </div>
+                                          </div>
+                                          <div className="col-md-3">
+                                            <div className="row">
+                                              <div className="col-md-2 text-center py-3">
+                                                <i className="bi bi-stopwatch" style={{ fontSize: '3rem', width: '2em', height: '2em' }}></i>
+                                              </div>
+                                              <div className="col-md-10">
+                                                <p>
+                                                  <span className="fs-8">Identified Time : </span>
+                                                  <span className="fs-8">
+                                                    {
+                                                      getCurrentTimeZone(threatHeaderDtls.identifiedTime)
+                                                    }
+                                                  </span>
+                                                </p>
+                                                <p>
+                                                  <span className="fs-8">Reporting Time : </span>
+                                                  <span className="fs-8">
+                                                    {
+                                                      getCurrentTimeZone(threatHeaderDtls.reportingTime)
+                                                    }
+                                                  </span>
+                                                </p>
+                                              </div>
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
-                                    </div>
-                                    {/* <div className="fs-12">NETWORK HISTORY</div>
+                                        {/* <div className="fs-12">NETWORK HISTORY</div>
                                   <hr className="my-2" />
                                   <div className="row">
                                     <div className="col-md-4 border-right">
@@ -1881,136 +1916,140 @@ const AlertsPage = () => {
                                       </div>
                                     </div>
                                   </div> */}
-                                    <hr className="my-1" style={{ borderColor: '#3838a0', borderWidth: '10px' }} />
-                                    <div className="mt-5 row">
-                                      <div className="fs-12 mt-5 col-md-6">THREAT FILE NAME $RN30BDD.exe</div>
-                                      <div className="fs-14 mt-5 text-primary col-md-6 text-end">
-                                        {/* <span className="mx-5"><i className="fas fa-copy mx-3"></i> Copy Details</span>
+                                        <hr className="my-1" style={{ borderColor: '#3838a0', borderWidth: '7px' }} />
+                                        <div className="mt-5 row">
+                                          <div className="fs-12 mt-5 col-md-6">THREAT FILE NAME $RN30BDD.exe</div>
+                                          <div className="fs-14 mt-5 text-primary col-md-6 text-end">
+                                            {/* <span className="mx-5"><i className="fas fa-copy mx-3"></i> Copy Details</span>
                                         <span className="mx-5"><i className="fas fa-file mx-3"></i> Download Threat Files</span> */}
-                                      </div>
-                                    </div>
-                                    <hr className="my-2" />
-                                    <div className="row">
-                                      <div className="col-md-7">
-                                        <div className="row border-right p-5">
-                                          <div className="col-md-3 ">
-                                            <p>Path</p>
-                                            {/* <p>Command Line Arguments</p> */}
-                                            <p>Process User</p>
-                                            {/* <p>Publisher Name</p> */}
-                                            {/* <p> Signer Identity</p> */}
-                                            {/* <p>Signature Verification</p> */}
-                                            <p>Original Process</p>
-                                            <p>SHA1</p>
-                                          </div>
-                                          <div className="col-md-9">
-                                            <p>{threatInfo.path}</p>
-                                            {/* <p>NA</p> */}
-                                            <p>{threatInfo.processUser}</p>
-                                            {/* <p>FH Manager</p> */}
-                                            {/* <p>FH Manager</p> */}
-                                            {/* <p>Signature varified</p> */}
-                                            <p>{threatInfo.originatingProcess}</p>
-                                            <p>{threatInfo.shA1}</p>
                                           </div>
                                         </div>
-                                      </div>
-                                      <div className="col-md-5">
-                                        <div className="row border-right p-5">
-                                          <div className="col-md-4 ">
-                                            <p>Initiated By</p>
-                                            {/* <p>Engine</p> */}
-                                            <p>Detection Type</p>
-                                            <p>Classification</p>
-                                            <p> File Size</p>
-                                            <p>Storyline</p>
-                                            <p>Threat id</p>
+                                        <hr className="my-2" />
+                                        <div className="row">
+                                          <div className="col-md-7">
+                                            <div className="row border-right p-5">
+                                              <div className="col-md-3 ">
+                                                <p>Path</p>
+                                                {/* <p>Command Line Arguments</p> */}
+                                                <p>Process User</p>
+                                                {/* <p>Publisher Name</p> */}
+                                                {/* <p> Signer Identity</p> */}
+                                                {/* <p>Signature Verification</p> */}
+                                                <p>Original Process</p>
+                                                <p>SHA1</p>
+                                              </div>
+                                              <div className="col-md-9">
+                                                <p>{threatInfo.path}</p>
+                                                {/* <p>NA</p> */}
+                                                <p>{threatInfo.processUser}</p>
+                                                {/* <p>FH Manager</p> */}
+                                                {/* <p>FH Manager</p> */}
+                                                {/* <p>Signature varified</p> */}
+                                                <p>{threatInfo.originatingProcess}</p>
+                                                <p>{threatInfo.shA1}</p>
+                                              </div>
+                                            </div>
                                           </div>
-                                          <div className="col-md-6">
-                                            <p>{threatInfo.initiatedBy}</p>
-                                            {/* <p>SentinalOne Cloud</p> */}
-                                            <p>{threatInfo.detectionType}</p>
-                                            <p>{threatInfo.classification}</p>
-                                            <p>{threatInfo.fileSize}</p>
-                                            <p>{threatInfo.storyline}</p>
-                                            <p>{threatInfo.threatId}</p>
+                                          <div className="col-md-5">
+                                            <div className="row border-right p-5">
+                                              <div className="col-md-4 ">
+                                                <p>Initiated By</p>
+                                                {/* <p>Engine</p> */}
+                                                <p>Detection Type</p>
+                                                <p>Classification</p>
+                                                <p> File Size</p>
+                                                <p>Storyline</p>
+                                                <p>Threat id</p>
+                                              </div>
+                                              <div className="col-md-6">
+                                                <p>{threatInfo.initiatedBy}</p>
+                                                {/* <p>SentinalOne Cloud</p> */}
+                                                <p>{threatInfo.detectionType}</p>
+                                                <p>{threatInfo.classification}</p>
+                                                <p>{threatInfo.fileSize}</p>
+                                                <p>{threatInfo.storyline}</p>
+                                                <p>{threatInfo.threatId}</p>
+                                              </div>
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
-                                    </div>
-                                    <hr className="my-1" style={{ borderColor: '#3838a0', borderWidth: '10px' }} />
-                                    <div className="text-primary text-center m-3">END POINT</div>
-                                    <hr className="my-2" />
+                                        <hr className="my-1" style={{ borderColor: '#3838a0', borderWidth: '7px' }} />
+                                        <div className="text-primary text-center m-3">END POINT</div>
+                                        <hr className="my-2" />
 
-                                    <div className="row">
-                                      <div className="col-md-4">
-                                        <div className="row  p-5">
-                                          <div>
-                                            <p>Real Time Data about the end point:</p>
-                                          </div>
-                                          <div className="row">
-                                            <div className="col-md-3">
-                                              <span>
-                                                <i className="fab fa-windows" style={{ fontSize: '6em', width: '2em' }}></i>
-                                              </span>
+                                        <div className="row">
+                                          <div className="col-md-5">
+                                            <div className="row  p-5">
+                                              <div>
+                                                <p>Real Time Data about the end point:</p>
+                                              </div>
+                                              <div className="row">
+                                                <div className="col-md-3">
+                                                  <span>
+                                                    <i className="fab fa-windows" style={{ fontSize: '6em', width: '2em' }}></i>
+                                                  </span>
+                                                </div>
+                                                <div className="col-md-9">
+                                                  <h6>DESCTOP-UPU1TUD</h6>
+                                                  <p className="fs-12">LANCESOFT INDIA PRIVATE LIMITE / Defoult site</p>
+                                                  <p className="fs-10">(Connect Homes)/ Defoult Group</p>
+                                                </div>
+                                              </div>
+                                              <hr className="my-2" />
+                                              <div className="col-md-4 ">
+                                                {/* <p>Console connectivity</p> */}
+                                                <p>Full Disc scan</p>
+                                                <p>Pending Reboot</p>
+                                                {/* <p>Number of not Mitigated Threats</p> */}
+                                                <p> Network status</p>
+                                              </div>
+                                              <div className="col-md-8">
+                                                {/* <p>{endpointInfo.consoleConnectivity}</p> */}
+                                                <p>{endpointInfo.fullDiskScan}</p>
+                                                <p>{endpointInfo.pendinRreboot}</p>
+                                                {/* <p>0</p> */}
+                                                <p>{endpointInfo.networkStatus}</p>
+                                              </div>
                                             </div>
-                                            <div className="col-md-9">
-                                              <h6>DESCTOP-UPU1TUD</h6>
-                                              <p className="fs-12">LANCESOFT INDIA PRIVATE LIMITE / Defoult site</p>
-                                              <p className="fs-10">(Connect Homes)/ Defoult Group</p>
+                                          </div>
+                                          <div className="col-md-7">
+                                            <div className="row border-right p-5">
+                                              <div className="col-md-3 ">
+                                                {/* <p>At Detection time :</p> */}
+                                                <p>Scope</p>
+                                                <p>OS Version</p>
+                                                <p>Agent Version</p>
+                                                <p> Policy</p>
+                                                <p>Logged in user</p>
+                                                <p>UUID</p>
+                                                <p>Domain</p>
+                                                <p>IP v4 Address</p>
+                                                <p>IP v6 Address</p>
+                                                <p>Console Visible adress</p>
+                                                <p>Subscription Time</p>
+                                              </div>
+                                              <div className="col-md-9">
+                                                {/* <p>.</p> */}
+                                                <p>{endpointInfo.scope}</p>
+                                                <p>{endpointInfo.osVersion}</p>
+                                                <p>{endpointInfo.agentVersion}</p>
+                                                <p>{endpointInfo.policy}</p>
+                                                <p>{endpointInfo.loggedInUser}</p>
+                                                <p>{endpointInfo.uuid}</p>
+                                                <p>{endpointInfo.domain}</p>
+                                                <p>{endpointInfo.ipV4Address}</p>
+                                                <p>{endpointInfo.ipV6Address}</p>
+                                                <p>{endpointInfo.consoleVisibleIPAddress}</p>
+                                                <p>{endpointInfo.subscriptionTime}</p>
+                                              </div>
                                             </div>
-                                          </div>
-                                          <hr className="my-2" />
-                                          <div className="col-md-4 ">
-                                            {/* <p>Console connectivity</p> */}
-                                            <p>Full Disc scan</p>
-                                            <p>Pending Reboot</p>
-                                            {/* <p>Number of not Mitigated Threats</p> */}
-                                            <p> Network status</p>
-                                          </div>
-                                          <div className="col-md-8">
-                                            {/* <p>{endpointInfo.consoleConnectivity}</p> */}
-                                            <p>{endpointInfo.fullDiskScan}</p>
-                                            <p>{endpointInfo.pendinRreboot}</p>
-                                            {/* <p>0</p> */}
-                                            <p>{endpointInfo.networkStatus}</p>
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="col-md-8">
-                                        <div className="row border-right p-5">
-                                          <div className="col-md-3 ">
-                                            {/* <p>At Detection time :</p> */}
-                                            <p>Scope</p>
-                                            <p>OS Version</p>
-                                            <p>Agent Version</p>
-                                            <p> Policy</p>
-                                            <p>Logged in user</p>
-                                            <p>UUID</p>
-                                            <p>Domain</p>
-                                            <p>IP v4 Address</p>
-                                            <p>IP v6 Address</p>
-                                            <p>Console Visible adress</p>
-                                            <p>Subscription Time</p>
-                                          </div>
-                                          <div className="col-md-9">
-                                            {/* <p>.</p> */}
-                                            <p>{endpointInfo.scope}</p>
-                                            <p>{endpointInfo.osVersion}</p>
-                                            <p>{endpointInfo.agentVersion}</p>
-                                            <p>{endpointInfo.policy}</p>
-                                            <p>{endpointInfo.loggedInUser}</p>
-                                            <p>{endpointInfo.uuid}</p>
-                                            <p>{endpointInfo.domain}</p>
-                                            <p>{endpointInfo.ipV4Address}</p>
-                                            <p>{endpointInfo.ipV6Address}</p>
-                                            <p>{endpointInfo.consoleVisibleIPAddress}</p>
-                                            <p>{endpointInfo.subscriptionTime}</p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
+                                    ) : (
+                                      <span>No Data found</span>
+                                    )
+                                  }
                                 </div>
                                 <div
                                   className="tab-pane fade"
@@ -2035,11 +2074,6 @@ const AlertsPage = () => {
                                         </thead>
                                         <tbody>
                                           {alertNotesList
-                                            .sort(
-                                              (a, b) =>
-                                                getCurrentTimeZone(b.createdDate) -
-                                                getCurrentTimeZone(a.createdDate)
-                                            )
                                             .map((note) => (
                                               <tr key={note.alertsNotesId}>
                                                 <td>{note.createdUser}</td>
@@ -2073,31 +2107,30 @@ const AlertsPage = () => {
                                           <div className="pt-6 h-600px">
                                             <div className="timeline-label">
                                               {alertHistory && alertHistory.length > 0 ? (
-                                                alertHistory.map((item) => {
-                                                  const formattedDateTime = getCurrentTimeZone(item.historyDate);
+                                                alertHistory
+                                                  .sort((a, b) => b.alertHistoryId - a.alertHistoryId)
+                                                  .map((item) => {
+                                                    const formattedDateTime = getCurrentTimeZone(item.historyDate);
 
-                                                  return (
-                                                    <div className="timeline-item" key={item.id}>
-                                                      <div className="timeline-label fw-bold text-gray-800 fs-6">
-                                                        <p>{formattedDateTime}</p>
-                                                        <p className="text-muted">{item.createdUser}</p>
-                                                      </div>
+                                                    return (
+                                                      <div className="timeline-item" key={item.id}>
+                                                        <div className="timeline-label fw-bold text-gray-800 fs-6">
+                                                          <p>{formattedDateTime}</p>
+                                                          <p className="text-muted">{item.createdUser}</p>
+                                                        </div>
 
-                                                      <div className="timeline-badge">
-                                                        <i className={`fa fa-genderless ${getRandomClass()} fs-1`}></i>
+                                                        <div className="timeline-badge">
+                                                          <i className={`fa fa-genderless ${getRandomClass()} fs-1`}></i>
+                                                        </div>
+                                                        <div className="fw-semibold text-gray-700 ps-3 fs-7">{item.historyDescription}</div>
                                                       </div>
-                                                      <div className="fw-semibold text-gray-700 ps-3 fs-7">
-                                                        {item.historyDescription}
-                                                      </div>
-                                                    </div>
-                                                  );
-                                                })
+                                                    );
+                                                  })
                                               ) : (
                                                 <div className="text-gray-500 text-center">No data found</div>
                                               )}
-
-
                                             </div>
+
                                           </div>
                                         </div>
                                       </div>

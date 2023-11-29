@@ -5,7 +5,7 @@ const usersUrl = process.env.REACT_APP_LDP_SECURIY_USER_URL;
 const getAlertNotesByAlertIDUrl = process.env.REACT_APP_ALERTS_NOTES_URL;
 const GetalertHistoryUrl=process.env.REACT_APP_GET_ALERT_HISTORY_URL
 const getSentinalOneUrl = "http://115.110.192.133:502/api/SentinalOne/v1/Threat/Details"
-const AnalystVerdictUpdateUrl ="http://115.110.192.133:502/api/SentinalOne/v1/Threats/AnalystVerdict/Update"
+const AnalystVerdictUpdateUrl ="http://115.110.192.133:502/api/Alerts/v1/Alert/AnalystVerdict/Update"
 const MitigateActionUrl="http://115.110.192.133:502/api/SentinalOne/v1/Threats/MitigateAction"
 const ThreatNotesUrl= "http://115.110.192.133:502/api/SentinalOne/v1/Threats/Notes/Add"
 const AddToblockListUrl="http://115.110.192.133:502/api/SentinalOne/v1/Threats/AddToblockList"
@@ -13,6 +13,7 @@ const AddToExclusionListUrl="http://115.110.192.133:502/api/SentinalOne/v1/Threa
 const ConnectToNetworkUrl="http://115.110.192.133:502/api/SentinalOne/v1/Agent/ConnectToNetwork"
 const DisConnectFromNetworkUrl="http://115.110.192.133:502/api/SentinalOne/v1/Agent/DisConnectFromNetwork"
 const ThreatsActionUrl="http://115.110.192.133:502/api/SentinalOne/v1/Threats/Action"
+const AlertsStatusUpdateUrl="http://115.110.192.133:502/api/Alerts/v1/Alerts/Status/Update"
 
 export const fetchAlertData = async (data) => {
   try {
@@ -263,6 +264,24 @@ export const fetchDisConnectFromNetworkUrl = async (data) => {
 export const fetchThreatsActionUrl = async (data) => {
   try {
     const response = await fetch(`${ThreatsActionUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchAlertsStatusUpdateUrl = async (data) => {
+  try {
+    const response = await fetch(`${AlertsStatusUpdateUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

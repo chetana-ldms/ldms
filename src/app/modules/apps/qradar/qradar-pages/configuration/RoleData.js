@@ -52,7 +52,7 @@ const RoleData = () => {
       if (responce.isSuccess) {
         notify('Role Deleted');
       } else {
-        notifyFail("Role not Deleted")
+        notifyFail("You cannot delete the system roles")
       }
       await reload();
       setLoading(false)
@@ -66,7 +66,7 @@ const RoleData = () => {
       <ToastContainer />
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
-          <span className='card-label fw-bold fs-3 mb-1'>System Roles</span>
+          <span className='card-label fw-bold fs-3 mb-1'>Roles</span>
         </h3>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>

@@ -703,3 +703,21 @@ export const fetchRuleActionUpdateUrl = async (data) => {
     console.log(error);
   }
 };
+export const fetchRolesDetailUrl = async (id) => {
+  try {
+    const response = await fetch(`${RolesDetailUrl}?id=${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id,
+      }),
+    });
+    const responseData = await response.json();
+    const roleData = responseData.roleData;
+    return roleData;
+  } catch (error) {
+    console.log(error);
+  }
+};
