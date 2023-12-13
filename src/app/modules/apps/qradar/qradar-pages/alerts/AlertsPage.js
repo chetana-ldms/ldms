@@ -221,12 +221,13 @@ const AlertsPage = () => {
       const data = {
         orgId,
         alertIDs: selectedAlert,
-        ownerID: ownerUserID,
+        // ownerID: ownerUserID,
         modifiedUserId,
         modifiedDate,
+        notes: ""
       };
       const response = await fetchUpdatSetAlertIrrelavantStatuseAlert(data);
-      notify("Alert marked as Irrelevant/Ignore");
+      notify("AlertEscalateAction-Success");
       setIgnorVisible(false);
       setShowForm(false);
       qradaralerts();
@@ -259,13 +260,13 @@ const AlertsPage = () => {
         modifiedUserId,
         orgId,
         alertIDs: selectedAlert,
-        ownerID: values.owner,
+        ownerUserId: values.owner,
         notes: values.comments,
       };
       const response = await fetchSetAlertEscalationStatus(data);
       if (response.isSuccess) {
         qradaralerts();
-        notify("Alert Escalated");
+        notify(response.message);
         setEscalate(false);
         setShowForm(false);
       }

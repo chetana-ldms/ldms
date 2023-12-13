@@ -15,20 +15,26 @@ const AddANoteModal =  ({ show, handleClose, handleAction, selectedValue, select
     setNoteText(event.target.value);
   };
   const handleSubmit = async () => {
+    const modifiedUserId = Number(sessionStorage.getItem("userId"));
+    const modifiedDate = new Date().toISOString();
     try {
       const data = {
         orgID: orgId,
-        alertIds: selectedAlert,
-        notes: noteText
+        toolID: 1,
+        toolTypeID: 1,
+        alertIDs: selectedAlert,
+        notes: noteText,
+        modifiedDate,
+        modifiedUserId,
       };
       
       const responseData =  await fetchThreatNotesUrl(data);
-      const { isSuccess } = responseData;
+      const { isSuccess, message } = responseData;
   
       if (isSuccess) {
-        notify('Note added');
+        notify(message);
       } else {
-        notifyFail('Note not added');
+        notifyFail(message);
       }
       handleClose();
     } catch (error) {
