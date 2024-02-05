@@ -18,14 +18,11 @@ const EditAlertsPopUp = ({
   onTableRefresh,
 }) => {
   const [formData, setFormData] = useState({
-    // severityName: row.severityId,
-    // status: row.statusID,
-    // observableTag: row.observableTagID,
-    // ownerusername: row.ownerUserID
     severityName: row.severityName,
     status: row.status,
     observableTag: row.observableTag,
     ownerusername: row.ownerusername,
+    analystVerdict: row.positiveAnalysis,
   });
   const commentRef = useRef(null);
   const [ownerId, setOwnerId] = useState();
@@ -37,6 +34,8 @@ const EditAlertsPopUp = ({
     severityId,
     observableTagID,
     ownerUserID,
+    // positiveAnalysis: analystVerdict,
+    positiveAnalysisId: analystVerdictId,
     modifiedDate,
   } = row;
   const [id, setId] = useState({
@@ -44,16 +43,18 @@ const EditAlertsPopUp = ({
     statusID: statusID,
     observableTagID: observableTagID,
     ownerUserID: ownerUserID,
+    analystVerdictId: analystVerdictId,
   });
   const handleError = useErrorBoundary();
-  const { severityName, status, observableTag, ownerusername } = formData;
+  const { severityName, status, observableTag, ownerusername, analystVerdict } = formData;
   const { name, score, sla, detectedtime, source } = row;
   const {
     severityNameDropDownData,
     statusDropDown,
     observableTagDropDown,
+    analystVerdictDropDown
   } = dropdownData;
-
+  console.log(row, "row111")
   const handleChange = (e, field) => {
     e.preventDefault();
     setFormData({
@@ -97,7 +98,17 @@ const EditAlertsPopUp = ({
           });
         }
       });
+    } else if (field === "analystVerdict") {
+      analystVerdictDropDown.filter((item) => {
+        if (item.dataValue === e.target.value) {
+          setId({
+            ...id,
+            analystVerdictId: item.dataID,
+          });
+        }
+      });
     }
+
   };
   const onClickUpdate = async () => {
     try {
@@ -125,6 +136,7 @@ const EditAlertsPopUp = ({
         statusId: id.statusID,
         observableTagId: id.observableTagID,
         ownerUserId: id.ownerUserID,
+        analystVerdictId: id.analystVerdictId,
         modifiedUserId,
         modifiedDate: date,
         score,
@@ -242,13 +254,35 @@ const EditAlertsPopUp = ({
                 </select>
               </div>
             </Form.Group>
+            <Form.Group className="row mb-2">
+              <Form.Label className="col-md-3">Analyst Verdict :</Form.Label>
+              <div className="col-md-9">
+                <select
+                  className="form-select form-select-solid"
+                  data-kt-select2="true"
+                  data-placeholder="Select option"
+                  data-dropdown-parent="#kt_menu_637dc885a14bb"
+                  data-allow-clear="true"
+                  value={analystVerdict}
+                  onChange={(e) => handleChange(e, "analystVerdict")}
+                >
+                  <option>Select</option>
+                  {analystVerdictDropDown.length > 0 &&
+                    analystVerdictDropDown.map((item) => (
+                      <option key={item.dataID} value={item?.dataValue}>
+                        {item?.dataValue}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </Form.Group>
             <Form.Group className="row">
               <Form.Label className="col-md-3">Alert Name :</Form.Label>
               <div className="col-md-9">{name}</div>
             </Form.Group>
             <Form.Group className="row">
               <Form.Label className="col-md-3">Score :</Form.Label>
-              <div className="col-md-9">{score}</div>
+              <div className="col-md-9"> {score === null || score === "" ? "0" : score}</div>
             </Form.Group>
             <Form.Group className="row">
               <Form.Label className="col-md-3">SLA : </Form.Label>

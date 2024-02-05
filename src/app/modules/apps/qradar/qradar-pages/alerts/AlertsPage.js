@@ -201,9 +201,23 @@ const AlertsPage = () => {
   useEffect(() => {
     reloadHistory();
   }, [selectedAlertId]);
+  const reloadNotes = async () => {
+    try {
+      if (selectedAlertId !== null && selectedAlertId !== undefined) {
+        const data = { alertID: selectedAlertId };
+        const alertNotesList = await fetchGetAlertNotesByAlertID(data);
+        const alertNoteSort = alertNotesList.sort((a, b) => {
+          return (b.alertsNotesId) - (a.alertsNotesId)
+        })
+        setAlertNotesList(alertNoteSort);
+      }
+    } catch (error) {
+      handleError(error);
+    }
+  };
   useEffect(() => {
-    reloadHistory()
-  }, [selectedAlertId]);
+    reloadNotes();
+  }, [selectedAlertId])
   const css_classes = ["text-primary", "text-secondary", "text-success", "text-danger", "text-warning", "text-info", "text-dark", "text-muted"];
 
   const getRandomClass = () => {
@@ -231,13 +245,16 @@ const AlertsPage = () => {
       setIgnorVisible(false);
       setShowForm(false);
       qradaralerts();
+      reloadHistory();
+      reloadNotes();
     } catch (error) {
       handleError(error);
     }
   };
   const handleTableRefresh = () => {
     qradaralerts();
-    // alertNotesList()
+    reloadHistory();
+    reloadNotes();
   };
   const handlePageSelect = (event) => {
     const selectedPerPage = event.target.value;
@@ -266,6 +283,8 @@ const AlertsPage = () => {
       const response = await fetchSetAlertEscalationStatus(data);
       if (response.isSuccess) {
         qradaralerts();
+        reloadHistory();
+        reloadNotes();
         notify(response.message);
         setEscalate(false);
         setShowForm(false);
@@ -468,12 +487,6 @@ const AlertsPage = () => {
   const handleTdClick = async (itemId) => {
     setSelectedAlertId(itemId);
     try {
-      const data = { alertID: itemId };
-      const alertNotesList = await fetchGetAlertNotesByAlertID(data);
-      const alertNoteSort = alertNotesList.sort((a, b) => {
-        return (b.alertsNotesId) - (a.alertsNotesId)
-      })
-      setAlertNotesList(alertNoteSort);
       if (orgId === 2) {
         const sentinalOneDetails = await fetchSentinelOneAlert(itemId);
         setSentinalOne(sentinalOneDetails);
@@ -492,6 +505,9 @@ const AlertsPage = () => {
       handleError(error);
     }
   };
+
+
+
   const handleGenerateReport = () => {
     const tableData = [selectCheckBox];
     generatePDFFromTable(tableData);
@@ -640,6 +656,8 @@ const AlertsPage = () => {
       if (isSuccess) {
         notify(message);
         qradaralerts();
+        reloadHistory();
+        reloadNotes();
       } else {
         notifyFail(message);
       }
@@ -672,6 +690,8 @@ const AlertsPage = () => {
       if (isSuccess) {
         notify(message);
         qradaralerts();
+        reloadHistory();
+        reloadNotes();
       } else {
         notifyFail(message);
       }
@@ -1760,6 +1780,36 @@ const AlertsPage = () => {
                                     Timeline
                                   </a>
                                 </li>
+                                {orgId === 2 && (
+                                  <li className="nav-item" role="presentation">
+                                    <a
+                                      className="nav-link"
+                                      id={`otherActionsTab_${index}`}
+                                      data-bs-toggle="tab"
+                                      href={`#otherActions_${index}`}
+                                      role="tab"
+                                      aria-controls={`otherActions_${index}`}
+                                      aria-selected="false"
+                                    >
+                                      Other Action
+                                    </a>
+                                  </li>
+                                )}
+                                {/* {orgId === 2 && (
+                                  <li className="nav-item" role="presentation">
+                                    <a
+                                      className="nav-link"
+                                      id={`actionsTab_${index}`}
+                                      data-bs-toggle="tab"
+                                      href={`#actions_${index}`}
+                                      role="tab"
+                                      aria-controls={`actions_${index}`}
+                                      aria-selected="false"
+                                    >
+                                      Actions
+                                    </a>
+                                  </li>
+                                )} */}
                               </ul>
                               <div className="tab-content pt-4">
                                 <div
@@ -1795,6 +1845,8 @@ const AlertsPage = () => {
                                       {item.observableTag} <br />
                                       <b>Owner Name : </b>
                                       {item.ownerusername} <br />
+                                      <b>Analysts Verdict : </b>
+                                      {item.positiveAnalysis} <br />
                                       <b>Source Name : </b>
                                       {item.source} <br />
 
@@ -2136,6 +2188,114 @@ const AlertsPage = () => {
                                         </div>
                                       </div>
                                     </div>
+                                  </div>
+                                </div>
+                                <div className="tab-content">
+                                  {orgId === 2 && (
+                                    <div className="tab-pane" id={`otherActions_${index}`} role="tabpanel" aria-labelledby={`otherActionsTab_${index}`}>
+                                      <>
+                                        <div className="m-0 text-center">
+                                          <a
+                                            href="#"
+                                            className="btn btn-sm btn-flex btn-primary fw-bold fs-14 btn-new "
+                                            data-kt-menu-trigger="click"
+                                            data-kt-menu-placement="bottom-end"
+                                            onClick={handleThreatActions}
+                                          >
+                                            Other Action
+                                          </a>
+                                          <div className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action" data-kt-menu="true">
+                                            {showDropdown && (
+                                              <div className="px-5 py-5">
+                                                <div className="mb-5">
+                                                  <div className="d-flex justify-content-end mb-5">
+                                                    <div>
+                                                      <div
+                                                        className="close fs-20 text-muted pointer"
+                                                        aria-label="Close"
+                                                        onClick={handleShowDropdown}
+                                                      >
+                                                        <span
+                                                          aria-hidden="true"
+                                                          style={{ color: "inherit", textShadow: "none" }}
+                                                        >
+                                                          &times;
+                                                        </span>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <select
+                                                    onChange={handleDropdownSelect}
+                                                    className="form-select form-select-solid"
+                                                    data-kt-select2="true"
+                                                    data-control="select2"
+                                                    data-placeholder="Select option"
+                                                    data-allow-clear="true"
+                                                  >
+                                                    <option value="" className="p-2">Select</option>
+                                                    <option value="MitigationAction" className="mb-2">Mitigation Action</option>
+                                                    <option value="AddToBlockList" className="mb-2">Add To Blocklist</option>
+                                                    <option value="AddToExclusions" className="p-2">Add To Exclusions</option>
+                                                    <option value="Unquarantine" className="p-2">Unquarantine</option>
+                                                    <option value="AddANote" className="p-2">Add a Note</option>
+                                                    <option value="ConnectToNetwork" className="p-2">Connect To Network</option>
+                                                    <option value="DisconnectFromNetwork" className="p-2">Disconnect From Network</option>
+                                                  </select>
+                                                </div>
+                                              </div>
+                                            )}
+                                          </div>
+                                          {
+                                            showMoreActionsModal && (
+                                              <MitigationModal
+                                                show={showMoreActionsModal}
+                                                handleClose={handleCloseMoreActionsModal}
+                                                handleAction={handleAction}
+                                                selectedValue={selectedValue}
+                                                selectedAlert={[selectedAlertId]}
+                                              />
+                                            )
+                                          }
+                                          {
+                                            addToBlockListModal && (
+                                              <AddToBlockListModal
+                                                show={addToBlockListModal}
+                                                handleClose={handleCloseAddToBlockList}
+                                                handleAction={handleActionAddToBlockList}
+                                                selectedValue={selectedValue}
+                                                selectedAlert={[selectedAlertId]}
+                                              />
+                                            )
+                                          }
+                                          {
+                                            addToExclusionsModal && (
+                                              <AddToExclusionsModal
+                                                show={addToExclusionsModal}
+                                                handleClose={handleCloseAddToExclusions}
+                                                handleAction={handleActionAddToExclusions}
+                                                selectedValue={selectedValue}
+                                                selectedAlert={[selectedAlertId]}
+                                              />
+                                            )
+                                          }
+                                          {
+                                            addANoteModal && (
+                                              <AddANoteModal
+                                                show={addANoteModal}
+                                                handleClose={handleCloseAddANote}
+                                                handleAction={handleActionAddANote}
+                                                selectedValue={selectedValue}
+                                                selectedAlert={[selectedAlertId]}
+                                              />
+                                            )
+                                          }
+                                        </div>
+                                      </>
+                                    </div>
+                                  )}
+
+                                  <div className="tab-pane" id={`actions_${index}`} role="tabpanel" aria-labelledby={`actionsTab_${index}`}>
+
                                   </div>
                                 </div>
                               </div>
