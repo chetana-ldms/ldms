@@ -10,6 +10,7 @@ import BuilderPageWrapper from '../pages/layout-builder/BuilderPageWrapper'
 // import ErrorBoundary from '../../utils/ErrorBoundary'
 import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallbackComponent } from '../../utils/ErrorFallbackComponent'
+import DashboardCompliance from '../pages/dashboard/DashboardCompliance'
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/apps/qradar/qradar-pages/account/ProfilePage'))
@@ -23,18 +24,31 @@ const PrivateRoutes = () => {
   const handleError = (error: any, info: any) => {
     console.error("An error occurred:", error, info);
   };
+  const platform = sessionStorage.getItem('platform')
 
   return (
     <ErrorBoundary
     FallbackComponent={ErrorFallbackComponent}
-    onError={handleError}
+    onError={handleError} 
   >
     <Routes>
       <Route element={<MasterLayout />}>
         {/* Redirect to Dashboard after success login/registartion */}
-        <Route path='auth/*' element={<Navigate to='/dashboard' />} />
+        {
+        platform === '111' ? (
+          <>
+            <Route path='auth/*' element={<Navigate to='/dashboard' />} />
+            {/* Pages */}
+            <Route path='dashboard' element={<DashboardWrapper />} />
+          </>
+        ) : 
+         <>
+        <Route path='auth/*' element={<Navigate to='/dashboardCompliance' />} />
         {/* Pages */}
-        <Route path='dashboard' element={<DashboardWrapper />} />
+        <Route path='dashboardCompliance' element={<DashboardCompliance />} />
+      </>
+      }
+
 
         <Route path='builder' element={<BuilderPageWrapper />} />
         <Route path='menu-test' element={<MenuTestPage />} />

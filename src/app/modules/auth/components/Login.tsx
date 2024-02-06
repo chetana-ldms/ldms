@@ -20,6 +20,7 @@ const loginSchema = Yup.object().shape({
     .max(50, 'Maximum 50 symbols')
     .required('Password is required'),
   org: Yup.string().required('Organisation is required'),
+  platform: Yup.string().required('Platform is required'),
 });
 
 interface Organisation {
@@ -30,6 +31,7 @@ const initialValues = {
   username: '',
   password: '',
   org: 0,
+  platform:''
 };
 /*
   Formik+YUP+Typescript:
@@ -38,6 +40,17 @@ const initialValues = {
 */
 
 export function Login() {
+  const [platformOptions, setPlatformOptions] = useState<{ name: string; id: string; }[]>([]);
+  const [selectedPlatform, setSelectedPlatform] = useState<string>('');
+  
+  useEffect(() => {
+    const options = [
+      { name: "Cybersecurity", id: "111" },
+      { name: "Compliance", id: "112" }
+    ];
+    setPlatformOptions(options);
+  }, []);
+  
   const [loading, setLoading] = useState(false)
   // const { saveAuth, setCurrentUser } = useAuth()
   const [organisation, setOrganisation] = useState([]);
@@ -52,10 +65,14 @@ export function Login() {
         console.log(error);
       });
   }, []);
+  
+  
   const formik = useFormik({
     initialValues,
     validationSchema: loginSchema,
     onSubmit: async (values, { setStatus, setSubmitting }) => {
+      console.log(values, "values")
+      sessionStorage.setItem('platform', values.platform);
       setLoading(true)
       try {
         const authData = await fetchAuthenticate(values.username, values.password, Number(values.org))
@@ -67,25 +84,22 @@ export function Login() {
           sessionStorage.setItem('userName', authData.userName);
           sessionStorage.setItem('globalAdminRole', authData.globalAdminRole);
           sessionStorage.setItem('clientAdminRole', authData.clientAdminRole);
-          navigate('/dashboard')
+          if (values.platform === '111') {
+            navigate('/dashboard');
+          } else {
+          navigate('/dashboardCompliance');
+          }
         } else {
           setStatus('The login details are incorrect')
         }
-        // saveAuth(auth);
-        // const { data: auth } = await login(values.username, values.password, Number(values.org));
-        // saveAuth(auth);
-        // const { data: user } = await getUserByToken(auth.api_token);
-        // setCurrentUser(user);
       } catch (error) {
         console.error(error)
-        // saveAuth(undefined)
         setStatus('The login details are incorrect')
         setSubmitting(false)
         setLoading(false)
       }
     },
   })
-
   return (
     <form
       className='form w-100 login-form'
@@ -93,15 +107,12 @@ export function Login() {
       noValidate
       id='kt_login_signin_form'
     >
-      {/* begin::Heading */}
       <div className='text-center mb-11'>
         <h1 className='text-dark fw-bolder mb-3'>
           <img src={toAbsoluteUrl('/media/misc/lancesoft_logo.png')} className='h-80px me-3' />
         </h1>
         <div className='text-blue-500 fw-semibold fs-20 login-subtxt'>Defence Centre</div>
       </div>
-      {/* begin::Heading */}
-
       {formik.status ? (
         <div className='mb-lg-15 alert alert-danger'>
           <div className='alert-text font-weight-bold'>{formik.status}</div>
@@ -114,8 +125,6 @@ export function Login() {
           </div>
         </div>
       )}
-
-      {/* begin::Form group */}
       <div className='fv-row mb-8'>
         <label className='form-label fs-6 fw-bolder text-dark'>Username</label>
         <input
@@ -138,9 +147,6 @@ export function Login() {
           </div>
         )}
       </div>
-      {/* end::Form group */}
-
-      {/* begin::Form group */}
       <div className='fv-row mb-3'>
         <label className='form-label fw-bolder text-dark fs-6 mb-0'>Password</label>
         <input
@@ -166,8 +172,6 @@ export function Login() {
           </div>
         )}
       </div>
-     
-      {/* begin::Form group */}
       <div className='fv-row mb-8'>
         <label className='form-label fs-6 fw-bolder text-dark'>Organisation Name</label>
         <div>
@@ -213,20 +217,38 @@ export function Login() {
           </div>
         )}
       </div>
+      <div className='fv-row mb-8'>
+  <label className='form-label fs-6 fw-bolder text-dark'>Platform</label>
+  <select
+  placeholder='Platform'
+  {...formik.getFieldProps('platform')}  
+  className={clsx(
+    'form-select form-control bg-transparent',
+    { 'is-invalid': formik.touched.platform && formik.errors.platform },
+    { 'is-valid': formik.touched.platform && !formik.errors.platform }
+  )}
+  autoComplete='off'
+>
+  <option value=''>Select</option>
+  {platformOptions.map(option => (
+    <option key={option.id} value={option.id}>
+      {option.name}
+    </option>
+  ))}
+</select>
 
-      {/* begin::Wrapper */}
+  {formik.touched.platform && formik.errors.platform && (
+    <div className='fv-plugins-message-container'>
+      <span role='alert'>{formik.errors.platform}</span>
+    </div>
+  )}
+</div>
+
+
+
       <div className='d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8'>
         <div />
-
-        {/* begin::Link */}
-        {/* <Link to='/auth/forgot-password' className='link-primary'>
-          Forgot Password ?
-        </Link> */}
-        {/* end::Link */}
       </div>
-      {/* end::Wrapper */}
-
-      {/* begin::Action */}
       <div className='d-grid mb-10'>
         <button
           type='submit'
@@ -235,24 +257,8 @@ export function Login() {
           disabled={formik.isSubmitting || !formik.isValid}
         >
           <span className='indicator-label' >LOGIN</span>
-          {/* {!loading && <span className='indicator-label' >Continue</span>} */}
-
-          {/* {loading && (
-            <span className='indicator-progress' style={{ display: 'block' }}>
-              Please wait...
-              <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
-            </span>
-          )} */}
         </button>
       </div>
-      {/* end::Action */}
-
-      {/* <div className='text-gray-500 text-center fw-semibold fs-6'>
-        Not a Member yet?{' '}
-        <Link to='/auth/registration' className='link-primary'>
-          Sign up
-        </Link>
-      </div> */}
     </form>
   )
 }
