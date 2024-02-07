@@ -20,7 +20,6 @@ const loginSchema = Yup.object().shape({
     .max(50, 'Maximum 50 symbols')
     .required('Password is required'),
   org: Yup.string().required('Organisation is required'),
-  platform: Yup.string().required('Platform is required'),
 });
 
 interface Organisation {
@@ -31,7 +30,6 @@ const initialValues = {
   username: '',
   password: '',
   org: 0,
-  platform:''
 };
 /*
   Formik+YUP+Typescript:
@@ -40,17 +38,6 @@ const initialValues = {
 */
 
 export function Login() {
-  const [platformOptions, setPlatformOptions] = useState<{ name: string; id: string; }[]>([]);
-  const [selectedPlatform, setSelectedPlatform] = useState<string>('');
-  
-  useEffect(() => {
-    const options = [
-      { name: "Cybersecurity", id: "111" },
-      { name: "Compliance", id: "112" }
-    ];
-    setPlatformOptions(options);
-  }, []);
-  
   const [loading, setLoading] = useState(false)
   // const { saveAuth, setCurrentUser } = useAuth()
   const [organisation, setOrganisation] = useState([]);
@@ -65,14 +52,10 @@ export function Login() {
         console.log(error);
       });
   }, []);
-  
-  
   const formik = useFormik({
     initialValues,
     validationSchema: loginSchema,
     onSubmit: async (values, { setStatus, setSubmitting }) => {
-      console.log(values, "values")
-      sessionStorage.setItem('platform', values.platform);
       setLoading(true)
       try {
         const authData = await fetchAuthenticate(values.username, values.password, Number(values.org))
@@ -84,11 +67,7 @@ export function Login() {
           sessionStorage.setItem('userName', authData.userName);
           sessionStorage.setItem('globalAdminRole', authData.globalAdminRole);
           sessionStorage.setItem('clientAdminRole', authData.clientAdminRole);
-          if (values.platform === '111') {
-            navigate('/dashboard');
-          } else {
-          navigate('/dashboardCompliance');
-          }
+          navigate('/dashboard')
         } else {
           setStatus('The login details are incorrect')
         }
@@ -217,35 +196,6 @@ export function Login() {
           </div>
         )}
       </div>
-      <div className='fv-row mb-8'>
-  <label className='form-label fs-6 fw-bolder text-dark'>Platform</label>
-  <select
-  placeholder='Platform'
-  {...formik.getFieldProps('platform')}  
-  className={clsx(
-    'form-select form-control bg-transparent',
-    { 'is-invalid': formik.touched.platform && formik.errors.platform },
-    { 'is-valid': formik.touched.platform && !formik.errors.platform }
-  )}
-  autoComplete='off'
->
-  <option value=''>Select</option>
-  {platformOptions.map(option => (
-    <option key={option.id} value={option.id}>
-      {option.name}
-    </option>
-  ))}
-</select>
-
-  {formik.touched.platform && formik.errors.platform && (
-    <div className='fv-plugins-message-container'>
-      <span role='alert'>{formik.errors.platform}</span>
-    </div>
-  )}
-</div>
-
-
-
       <div className='d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8'>
         <div />
       </div>

@@ -107,6 +107,11 @@ const SidebarMenuMain = () => {
           to='/qradar/profile'
           title='Users Profile'
         />
+         <SidebarMenuItem
+          icon='/media/icons/duotune/communication/com008.svg'
+          to='/DashboardCompliance'
+          title='Compliance'
+        />
     
     </>
           ) : 

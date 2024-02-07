@@ -24,32 +24,19 @@ const PrivateRoutes = () => {
   const handleError = (error: any, info: any) => {
     console.error("An error occurred:", error, info);
   };
-  const platform = sessionStorage.getItem('platform')
 
   return (
     <ErrorBoundary
     FallbackComponent={ErrorFallbackComponent}
-    onError={handleError} 
+    onError={handleError}
   >
     <Routes>
       <Route element={<MasterLayout />}>
         {/* Redirect to Dashboard after success login/registartion */}
-
-        {
-          platform === '111' ? (
-            <>
-              <Route path='auth/*' element={<Navigate to='/dashboard' />} />
-                {/* Pages */}
-                <Route path='dashboard' element={<DashboardWrapper />} />
-            </>
-          ) : 
-          <>
-            <Route path='auth/*' element={<Navigate to='/dashboardCompliance' />} />
-            {/* Pages */}
-            <Route path='dashboardCompliance' element={<DashboardCompliance />} />
-          </>
-        }
-
+        <Route path='auth/*' element={<Navigate to='/dashboard' />} />
+        {/* Pages */}
+        <Route path='dashboard' element={<DashboardWrapper />} />
+        <Route path='dashboardCompliance' element={<DashboardCompliance />} />
 
         <Route path='builder' element={<BuilderPageWrapper />} />
         <Route path='menu-test' element={<MenuTestPage />} />
