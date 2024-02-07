@@ -1,6 +1,9 @@
+import { SidebarMenuMainCompiance } from '../../../../../compliance/SidebarCompliance'
 import {SidebarMenuMain} from './SidebarMenuMain'
 
 const SidebarMenu = () => {
+  
+  const compliance = sessionStorage.getItem('compliance');
   return (
     <div className='app-sidebar-menu scroll-y'>
       <div
@@ -20,7 +23,15 @@ const SidebarMenu = () => {
           data-kt-menu='true'
           data-kt-menu-expand='false'
         >
-          <SidebarMenuMain />
+          {/* <SidebarMenuMain />
+          <SidebarMenuMainCompiance /> */}
+          {/* {
+              !compliance && <SidebarMenuMain />
+             }
+             {
+              compliance && <SidebarMenuMainCompiance /> 
+             } */}
+               {compliance === 'true' ? <SidebarMenuMainCompiance /> : <SidebarMenuMain />}
         </div>
       </div>
     </div>

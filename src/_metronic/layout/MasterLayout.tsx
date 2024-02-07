@@ -16,13 +16,14 @@ import {
 import {PageDataProvider} from './core'
 import {reInitMenu} from '../helpers'
 import {ToolbarWrapper} from './components/toolbar'
+import { SidebarMenuMainCompiance } from '../../compliance/SidebarCompliance'
 
 const MasterLayout = () => {
   const location = useLocation()
   useEffect(() => {
     reInitMenu()
   }, [location.key])
-  const compliance = sessionStorage.getItem('compliance');
+  // const compliance = sessionStorage.getItem('compliance');
 
   return (
     <PageDataProvider>
@@ -31,14 +32,14 @@ const MasterLayout = () => {
           <div className='app-page flex-column flex-column-fluid' id='kt_app_page'>
             <HeaderWrapper />
             <div className='app-wrapper flex-column flex-row-fluid' id='kt_app_wrapper'>
-            {
+            {/* {
               !compliance && <Sidebar />
              }
              {
-              compliance && null 
-             }
+              compliance && <SidebarMenuMainCompiance /> 
+             } */}
             
-              {/* <Sidebar /> */}
+              <Sidebar />
               <div className='app-main flex-column flex-row-fluid' id='kt_app_main'>
                 <div className='d-flex flex-column flex-column-fluid'>
                   {/* <ToolbarWrapper /> */}

@@ -8,14 +8,8 @@ import { SidebarMenuItem } from './SidebarMenuItem'
 const SidebarMenuMain = () => {
   const intl = useIntl()
 
-  const platform = sessionStorage.getItem('platform')
-
-
   return (
     <>
-    {
-          platform === '111' ? (
-             <>
       <SidebarMenuItem
         to='/dashboard'
         icon='/media/icons/duotune/general/gen001.svg'
@@ -107,25 +101,8 @@ const SidebarMenuMain = () => {
           to='/qradar/profile'
           title='Users Profile'
         />
-         <SidebarMenuItem
-          icon='/media/icons/duotune/communication/com008.svg'
-          to='/DashboardCompliance'
-          title='Compliance'
-        />
     
     </>
-          ) : 
-          <>
-            <SidebarMenuItem
-        to='/qradar/reports'
-        icon='/media/icons/duotune/general/gen005.svg'
-        title='Compliance Partners'
-        fontIcon='bi-layers'  
-      />
-          </>
-        }
-    </>
-   
   )
 }
 

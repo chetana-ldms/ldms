@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { KTSVG, toAbsoluteUrl } from "../../../_metronic/helpers";
 
-const DashboardWrapper = () => {
+const DashboardCompliance = () => {
   const [loading, setLoading] = useState(true);
 
   return (
     <div className="dashboard-wrapper compliance incident-box">
+      
       <div>
         {/* begin::Row */}
         <div className="row py-lg-3">
@@ -190,4 +191,4 @@ const DashboardWrapper = () => {
   );
 };
 
-export default DashboardWrapper;
+export default DashboardCompliance;
