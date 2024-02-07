@@ -64,7 +64,7 @@ const SidebarLogo = () => {
               src={toAbsoluteUrl('/media/logos/MicrosoftTeams-image.png')}
               className='h-30px app-sidebar-logo-default bg-light'
             />
-            <span className='sub-txt app-sidebar-logo-default'>Compliance Tool</span>
+            <span className='sub-txt app-sidebar-logo-default'>Defence Center</span>
           </>
         }
 

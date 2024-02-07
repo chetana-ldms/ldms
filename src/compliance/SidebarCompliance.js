@@ -21,7 +21,7 @@ const SidebarMenuMainCompiance = () => {
         title='Quick Start'
         fontIcon='bi-layers'
       />
-      <SidebarMenuItem
+      {/* <SidebarMenuItem
         to='/dashboard'
         icon='/media/icons/duotune/general/gen001.svg'
         title='Dashboard'
@@ -74,7 +74,7 @@ const SidebarMenuMainCompiance = () => {
         icon='/media/icons/duotune/general/gen001.svg'
         title='Connected Person'
         fontIcon='bi-layers'
-      />
+      /> */}
     
     </>
   )
