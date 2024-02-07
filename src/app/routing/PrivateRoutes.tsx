@@ -34,20 +34,21 @@ const PrivateRoutes = () => {
     <Routes>
       <Route element={<MasterLayout />}>
         {/* Redirect to Dashboard after success login/registartion */}
+
         {
-        platform === '111' ? (
+          platform === '111' ? (
+            <>
+              <Route path='auth/*' element={<Navigate to='/dashboard' />} />
+                {/* Pages */}
+                <Route path='dashboard' element={<DashboardWrapper />} />
+            </>
+          ) : 
           <>
-            <Route path='auth/*' element={<Navigate to='/dashboard' />} />
+            <Route path='auth/*' element={<Navigate to='/dashboardCompliance' />} />
             {/* Pages */}
-            <Route path='dashboard' element={<DashboardWrapper />} />
+            <Route path='dashboardCompliance' element={<DashboardCompliance />} />
           </>
-        ) : 
-         <>
-        <Route path='auth/*' element={<Navigate to='/dashboardCompliance' />} />
-        {/* Pages */}
-        <Route path='dashboardCompliance' element={<DashboardCompliance />} />
-      </>
-      }
+        }
 
 
         <Route path='builder' element={<BuilderPageWrapper />} />

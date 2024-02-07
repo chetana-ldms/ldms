@@ -195,6 +195,10 @@
   border-radius: 8px;
   font-size: 15px;
 }
+.message__recipient a{
+  color: #fff;
+  text-decoration: underline;
+}
 .message__recipient p{
   margin-bottom: 0;
 }

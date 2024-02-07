@@ -16,10 +16,14 @@ const SidebarLogo = () => {
     : ''
   const toggleState = appSidebarDefaultMinimizeDesktopEnabled ? 'active' : ''
   const appSidebarDefaultMinimizeDefault = config.app?.sidebar?.default?.minimize?.desktop?.default
+
+    const platform = sessionStorage.getItem('platform')
+
+
   return (
     <div className='app-sidebar-logo px-6' id='kt_app_sidebar_logo'>
       <Link to='/dashboard'>
-        {config.layoutType === 'dark-sidebar' ? (
+        {/* {config.layoutType === 'dark-sidebar' ? (
           <>
             <img
               alt='Logo'
@@ -41,7 +45,28 @@ const SidebarLogo = () => {
               className='h-25px app-sidebar-logo-default theme-dark-show'
             />
           </>
-        )}
+        )} */}
+
+        {
+          platform === '111' ? (
+            <>
+             <img
+              alt='Logo'
+              src={toAbsoluteUrl('/media/logos/MicrosoftTeams-image.png')}
+              className='h-30px app-sidebar-logo-default bg-light'
+            />
+            <span className='sub-txt app-sidebar-logo-default'>Defence Centre</span>
+            </>
+          ) : 
+          <>
+            <img
+              alt='Logo'
+              src={toAbsoluteUrl('/media/logos/MicrosoftTeams-image.png')}
+              className='h-30px app-sidebar-logo-default bg-light'
+            />
+            <span className='sub-txt app-sidebar-logo-default'>Compliance Tool</span>
+          </>
+        }
 
         <img
           alt='Logo'
