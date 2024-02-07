@@ -3,7 +3,7 @@ import React from 'react';
 const DashboardCompliance = () => {
   return (
     <div>
-      <h2>Dashboard Compliance</h2>
+      {/* <h2>Dashboard Compliance</h2> */}
       <iframe
         title="Embedded Website"
         src="https://themewagon.github.io/connect-plus/#"

@@ -22,8 +22,7 @@ const MasterLayout = () => {
   useEffect(() => {
     reInitMenu()
   }, [location.key])
-  
-  const platform = sessionStorage.getItem('platform')
+  const compliance = sessionStorage.getItem('compliance');
 
   return (
     <PageDataProvider>
@@ -32,8 +31,14 @@ const MasterLayout = () => {
           <div className='app-page flex-column flex-column-fluid' id='kt_app_page'>
             <HeaderWrapper />
             <div className='app-wrapper flex-column flex-row-fluid' id='kt_app_wrapper'>
-            {platform === '111' && <Sidebar />}
-            {/* <Sidebar /> */}
+            {
+              !compliance && <Sidebar />
+             }
+             {
+              compliance && null 
+             }
+            
+              {/* <Sidebar /> */}
               <div className='app-main flex-column flex-row-fluid' id='kt_app_main'>
                 <div className='d-flex flex-column flex-column-fluid'>
                   {/* <ToolbarWrapper /> */}
