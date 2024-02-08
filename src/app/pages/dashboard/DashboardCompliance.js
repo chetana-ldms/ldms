@@ -233,7 +233,7 @@ const DashboardCompliance = () => {
                     </tr>
                     <tr>
                       <td>
-                        <i className="fa fa-cube" /> In Drata
+                        <i className="fa fa-cube" /> In ldc
                       </td>
                       <td className="red bold fs-15">13</td>
                       <td className="red fs-12">
@@ -257,7 +257,7 @@ const DashboardCompliance = () => {
                     </tr>
                     <tr>
                       <td>
-                        <i className="fa fa-cube" /> In Drata
+                        <i className="fa fa-cube" /> In ldc
                       </td>
                       <td className="red bold fs-15">13</td>
                       <td className="red fs-12">
@@ -281,7 +281,7 @@ const DashboardCompliance = () => {
                     </tr>
                     <tr>
                       <td>
-                        <i className="fa fa-cube" /> In Drata
+                        <i className="fa fa-cube" /> In ldc
                       </td>
                       <td className="red bold fs-15">13</td>
                       <td className="red fs-12">

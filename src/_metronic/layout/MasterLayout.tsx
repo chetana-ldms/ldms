@@ -16,7 +16,7 @@ import {
 import {PageDataProvider} from './core'
 import {reInitMenu} from '../helpers'
 import {ToolbarWrapper} from './components/toolbar'
-import { SidebarMenuMainCompiance } from '../../complianceModules/SidebarMenuMainCompiance'
+import { SidebarMenuMainCompiance } from '../../complianceModules/app/SidebarMenuMainCompiance'
 
 const MasterLayout = () => {
   const location = useLocation()
