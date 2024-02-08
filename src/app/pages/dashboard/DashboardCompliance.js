@@ -52,7 +52,6 @@ const DashboardCompliance = () => {
           { label: "March", y: 15 },
           { label: "April", y: 25 },
           { label: "May", y: 30 },
-          { label: "June", y: 28 },
         ],
       },
     ],
