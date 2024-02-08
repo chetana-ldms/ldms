@@ -30,6 +30,14 @@ body {
   }
 }
 
+.bold{
+  font-weight: bold;
+}
+
+.no-margin{
+  margin: 0;;
+}
+
 //logo
 .app-sidebar-logo {
   .app-sidebar-logo-default {
@@ -317,6 +325,10 @@ form{
 
 .fs-14 {
   font-size: 14px !important;
+}
+
+.fs-15 {
+  font-size: 15px !important;
 }
 
 .fs-20 {
@@ -1398,8 +1410,23 @@ td{
 }
 
 
+.upper-tab{
+  .btn{
+    background-color: #ccc !important;
+    &.active{
+      background-color: #005cbf !important;
+    }
+  }
+}
+
 //Compliance CSS
 .compliance{
+  .canvasjs-chart-canvas,#canvasjs-react-chart-container-2{
+    height: 200px !important;
+  }
+  p{
+    margin: 0;
+  }
   .card{
     padding: 10px;
     margin-bottom: 10px;
@@ -1452,6 +1479,12 @@ td{
     .not-section{
       margin-bottom: 10px;
       overflow: hidden;
+    }
+  }
+  .inner-table{
+    td{
+      font-size: 13px;
+      font-weight: 600;
     }
   }
 }

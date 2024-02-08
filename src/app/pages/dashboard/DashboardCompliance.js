@@ -1,12 +1,65 @@
 import React, { useState } from "react";
 import { KTSVG, toAbsoluteUrl } from "../../../_metronic/helpers";
+import CanvasJSReact from "./assets/canvasjs.react";
 
 const DashboardCompliance = () => {
   const [loading, setLoading] = useState(true);
 
+  const CanvasJS = CanvasJSReact.CanvasJS;
+  const CanvasJSChart = CanvasJSReact.CanvasJSChart;
+
+  const options = {
+    animationEnabled: true,
+    // title: {
+    //   text: "Customer Satisfaction",
+    // },
+    subtitles: [
+      {
+        // text: "71% Positive",
+        verticalAlign: "center",
+        fontSize: 24,
+        dockInsidePlotArea: true,
+      },
+    ],
+    height: 200,
+    data: [
+      {
+        type: "doughnut",
+        showInLegend: true,
+        indexLabel: "{name}: {y}",
+        yValueFormatString: "#,###'%'",
+        dataPoints: [
+          { name: "Active", y: 5 },
+          { name: "Renews soon", y: 31 },
+          { name: "Needs approval", y: 40 },
+        ],
+      },
+    ],
+  };
+
+  const options1 = {
+    title: {
+      // text: "Basic Column Chart",
+    },
+    data: [
+      {
+        // Change type to "doughnut", "line", "splineArea", etc.
+        type: "column",
+        height: 200,
+        width: 200,
+        dataPoints: [
+          { label: "Feb", y: 10 },
+          { label: "March", y: 15 },
+          { label: "April", y: 25 },
+          { label: "May", y: 30 },
+          { label: "June", y: 28 },
+        ],
+      },
+    ],
+  };
+
   return (
     <div className="dashboard-wrapper compliance incident-box">
-      
       <div>
         {/* begin::Row */}
         <div className="row py-lg-3">
@@ -152,30 +205,136 @@ const DashboardCompliance = () => {
           <div className="col-lg-4">
             <div className="card">
               <h4>Test trend</h4>
+              <div className="table">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Total failing tests</th>
+                      <th className="red bold fs-15">48</th>
+                      <th className="red fs-12">9%</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="inner-table">
+                      <td>Category</td>
+                      <td>Failing tests</td>
+                      <td>info</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <i className="fa fa-file" /> Policy
+                      </td>
+                      <td className="red bold fs-15">16</td>
+                      <td className="red fs-12">
+                        33%{" "}
+                        <span>
+                          <i className="fa fa-chevron-right" />
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <i className="fa fa-cube" /> In Drata
+                      </td>
+                      <td className="red bold fs-15">13</td>
+                      <td className="red fs-12">
+                        0%{" "}
+                        <span>
+                          <i className="fa fa-chevron-right" />
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <i className="fa fa-file" /> Policy
+                      </td>
+                      <td className="red bold fs-15">16</td>
+                      <td className="red fs-12">
+                        33%{" "}
+                        <span>
+                          <i className="fa fa-chevron-right" />
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <i className="fa fa-cube" /> In Drata
+                      </td>
+                      <td className="red bold fs-15">13</td>
+                      <td className="red fs-12">
+                        0%{" "}
+                        <span>
+                          <i className="fa fa-chevron-right" />
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <i className="fa fa-file" /> Policy
+                      </td>
+                      <td className="red bold fs-15">16</td>
+                      <td className="red fs-12">
+                        33%{" "}
+                        <span>
+                          <i className="fa fa-chevron-right" />
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <i className="fa fa-cube" /> In Drata
+                      </td>
+                      <td className="red bold fs-15">13</td>
+                      <td className="red fs-12">
+                        0%{" "}
+                        <span>
+                          <i className="fa fa-chevron-right" />
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
           <div className="col-lg-5">
             <div className="row">
               <div className="col-lg-6">
                 <div className="card">
-                  <h4>Policy status</h4> 1
+                  <h4>Policy status</h4> <CanvasJSChart options={options} />
                 </div>
               </div>
               <div className="col-lg-6">
                 <div className="card">
-                  <h4>Vendor risks</h4>2
+                  <h4>Vendor risks</h4>
+                  <CanvasJSChart
+                    options={options}
+                    /* onRef={ref => this.chart = ref} */
+                  />
                 </div>
               </div>
             </div>
             <div className="row">
               <div className="col-lg-6">
                 <div className="card">
-                  <h4>Connections</h4>3
+                  <h4>Connections</h4>
+                  <p>Errors</p>
+                  <p>
+                    <span className="red bold fs-20">3</span>
+                  </p>
+                  <hr />
+                  <p>Out of 9 total</p>
                 </div>
               </div>
               <div className="col-lg-6">
                 <div className="card">
-                  <h4>Personnel</h4>4
+                  <h4>Personnel</h4>
+                  <p>Non compliant</p>
+                  <p>
+                    <span className="red bold fs-20">321</span>
+                  </p>
+                  <hr />
+                  <p>Out of 321 total</p>
                 </div>
               </div>
             </div>
@@ -183,6 +342,18 @@ const DashboardCompliance = () => {
           <div className="col-lg-3">
             <div className="card">
               <h4>Task forecast</h4>
+              <CanvasJSChart options={options1} style="height:140px" />
+              <hr />
+              <div className="task-list">
+                <h4>Task list</h4>
+                <ul>
+                  <li>Content</li>
+                  <li>Content</li>
+                  <li>Content</li>
+                  <li>Content</li>
+                  <li>Content</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
