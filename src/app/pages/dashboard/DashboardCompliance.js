@@ -67,14 +67,14 @@ const DashboardCompliance = () => {
               <h4>Readiness Overview</h4>
               <div className="row">
                 <div className="col-xl-4">
-                  <div className="card readiness">
+                  <div className="card readiness bg-secondary">
                     <div className="readiness-top">
                       <img
                         alt="Logo"
                         src={toAbsoluteUrl("/media/icons/misc.png")}
                         className="h-40px w-40px"
                       />
-                      <p className="blue-txt">FedRAMP</p>
+                      <p className="blue-txt">SOC 2</p>
                       <p>Progress bar</p>
                       <p>26% ready</p>
                     </div>
@@ -89,7 +89,7 @@ const DashboardCompliance = () => {
                 </div>
 
                 <div className="col-xl-4">
-                  <div className="card readiness">
+                  <div className="card readiness bg-light-success">
                     <div className="readiness-top">
                       <img
                         alt="Logo"
@@ -111,7 +111,7 @@ const DashboardCompliance = () => {
                 </div>
 
                 <div className="col-xl-4">
-                  <div className="card readiness">
+                  <div className="card readiness bg-light-danger">
                     <div className="readiness-top">
                       <img
                         alt="Logo"

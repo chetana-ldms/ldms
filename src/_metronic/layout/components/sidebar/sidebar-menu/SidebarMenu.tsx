@@ -1,4 +1,4 @@
-import { SidebarMenuMainCompiance } from '../../../../../compliance/SidebarCompliance'
+import { SidebarMenuMainCompiance } from '../../../../../complianceModules/app/SidebarMenuMainCompiance';
 import {SidebarMenuMain} from './SidebarMenuMain'
 
 const SidebarMenu = () => {
@@ -25,12 +25,7 @@ const SidebarMenu = () => {
         >
           {/* <SidebarMenuMain />
           <SidebarMenuMainCompiance /> */}
-          {/* {
-              !compliance && <SidebarMenuMain />
-             }
-             {
-              compliance && <SidebarMenuMainCompiance /> 
-             } */}
+         
                {compliance === 'true' ? <SidebarMenuMainCompiance /> : <SidebarMenuMain />}
         </div>
       </div>

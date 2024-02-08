@@ -25,7 +25,7 @@ export function MenuInner() {
   return (
     <div className='upper-tab'>
      <button className={`btn btn-small btn-primary m-4 ${activeButton === 'Dashboard' ? 'active' : ''}`} onClick={handleDashboard}>Dashboard</button>
-      <button className={`btn btn-small btn-primary m-4 ${activeButton === 'Compliance' ? 'active' : ''}`} onClick={handleCompliance}>Compliance</button>
+      <button className={`btn btn-small btn-primary m-4 ${activeButton === 'Compliance' ? 'active' : ''}`} onClick={handleCompliance}>Compliance Dashboard</button>
     {/* <MenuItem /> */}
       {/* <MenuItem title={intl.formatMessage({id: 'MENU.DASHBOARD'})} to='/dashboard' />
       <MenuItem title="Compliance" to='/dashboardCompliance' /> */}
