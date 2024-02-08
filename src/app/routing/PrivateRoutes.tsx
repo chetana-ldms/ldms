@@ -20,7 +20,6 @@ const PrivateRoutes = () => {
   const ChatPage = lazy(() => import('../modules/apps/chat/ChatPage'))
   const UsersPage = lazy(() => import('../modules/apps/user-management/UsersPage'))
   const QradarPages = lazy(() => import('../modules/apps/qradar/Qradar'))
-  const CompliancePages = lazy(() => import('../../complianceModules/app/CompliancePages'))
 
   const handleError = (error: any, info: any) => {
     console.error("An error occurred:", error, info);
@@ -47,14 +46,6 @@ const PrivateRoutes = () => {
           element={
             <SuspensedView>
               <QradarPages />
-            </SuspensedView>
-          }
-        />
-         <Route
-          path='compliance/*'
-          element={
-            <SuspensedView>
-              <CompliancePages />
             </SuspensedView>
           }
         />

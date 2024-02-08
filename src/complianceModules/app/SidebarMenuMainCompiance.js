@@ -8,67 +8,67 @@ const SidebarMenuMainCompiance = () => {
   return (
     <>
       <SidebarMenuItem
-        to="/dashboardCompliance"
+        to="dashboardCompliance"
         icon="/media/icons/duotune/general/gen001.svg"
         title="Compliance Partners >"
         fontIcon="bi-layers"
       />
       <SidebarMenuItem
-        to="/compliance/quickstart"
+        to="/qradar/quickstart"
         icon="/media/icons/duotune/general/gen002.svg"
         title="Quick Start"
         fontIcon="bi-layers"
       />
       <SidebarMenuItem
-        to='/dashboardCompliance'
+        to='dashboardCompliance'
         icon='/media/icons/duotune/general/gen003.svg'
         title='Dashboard'
         fontIcon='bi-layers'
       />
       <SidebarMenuItem
-        to='/compliance/tasks'
+        to='/qradar/tasks'
         icon='/media/icons/duotune/general/gen004.svg'
         title='Tasks'
         fontIcon='bi-layers'
       />
       <SidebarMenuItem
-        to='/compliance/compliance'
+        to='/qradar/compliance'
         icon='/media/icons/duotune/general/gen005.svg'
         title='Compliance'
         fontIcon='bi-layers'
       />
       <SidebarMenuItem
-        to='/compliance/controle'
+        to='/qradar/controle'
         icon='/media/icons/duotune/general/gen006.svg'
         title='Controle'
         fontIcon='bi-layers'
       />
       <SidebarMenuItem
-        to='/compliance/frameworks'
+        to='/qradar/frameworks'
         icon='/media/icons/duotune/general/gen007.svg'
         title='Frameworks'
         fontIcon='bi-layers'
       />
       <SidebarMenuItem
-        to='/compliance/quickstart'
+        to='/qradar/Monitoring'
         icon='/media/icons/duotune/general/gen008.svg'
         title='Monitoring'
         fontIcon='bi-layers'
       />
       <SidebarMenuItem
-        to='/compliance/quickstart'
+        to='/qradar/eventtracking'
         icon='/media/icons/duotune/general/gen009.svg'
         title='Event Tracking'
         fontIcon='bi-layers'
       />
       <SidebarMenuItem
-        to='/compliance/quickstart'
+        to='/qradar/connections'
         icon='/media/icons/duotune/general/gen003.svg'
         title='Connections'
         fontIcon='bi-layers'
       />
       <SidebarMenuItem
-        to='/compliance/quickstart'
+        to='/qradar/username'
         icon='/media/icons/duotune/general/gen002.svg'
         title='User Name'
         fontIcon='bi-layers'
