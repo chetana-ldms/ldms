@@ -55,6 +55,33 @@ const data = [
       "total": 270
     },
     "bg_color": "bg-light-primary",
+  },
+  {
+    "type": "ISO 27001",
+    "progress": 30,
+    "remaining_controls": {
+      "current": 95,
+      "total": 150
+    },
+    "bg_color": "bg-light-warning",
+  },
+  {
+    "type": "HIPAA",
+    "progress": 40,
+    "remaining_controls": {
+      "current": 62,
+      "total": 100
+    },
+    "bg_color": "bg-secondary",
+  },
+  {
+    "type": "PCI DSS",
+    "progress": 18,
+    "remaining_controls": {
+      "current": 220,
+      "total": 270
+    },
+    "bg_color": "bg-light-success",
   }
 ];
 function ReadinessCard() {

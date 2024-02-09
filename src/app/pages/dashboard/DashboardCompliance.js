@@ -7,6 +7,8 @@ import TestTrendComponent from '../../../complianceModules/app/TestTrendComponen
 import PolicyStatus from '../../../complianceModules/app/PolicyStatus'
 import VendorRisks from '../../../complianceModules/app/VendorRisks'
 import TaskForecast from '../../../complianceModules/app/TaskForecast'
+import ConnectionsCard from '../../../complianceModules/app/ConnectionsCard'
+import PersonnelCard from '../../../complianceModules/app/PersonnelCard'
 
 const DashboardCompliance = () => {
   const [loading, setLoading] = useState(true)
@@ -43,8 +45,6 @@ const DashboardCompliance = () => {
     ],
   }
 
-  
-
   return (
     <div className='dashboard-wrapper compliance incident-box'>
       <div>
@@ -80,28 +80,8 @@ const DashboardCompliance = () => {
               </div>
             </div>
             <div className='row'>
-              <div className='col-lg-6'>
-                <div className='card'>
-                  <h4>Connections</h4>
-                  <p>Errors</p>
-                  <p>
-                    <span className='red bold fs-20'>3</span>
-                  </p>
-                  <hr />
-                  <p>Out of 9 total</p>
-                </div>
-              </div>
-              <div className='col-lg-6'>
-                <div className='card'>
-                  <h4>Personnel</h4>
-                  <p>Non compliant</p>
-                  <p>
-                    <span className='red bold fs-20'>321</span>
-                  </p>
-                  <hr />
-                  <p>Out of 321 total</p>
-                </div>
-              </div>
+             <ConnectionsCard />
+             <PersonnelCard />
             </div>
           </div>
           < TaskForecast/>

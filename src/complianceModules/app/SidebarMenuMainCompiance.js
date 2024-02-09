@@ -10,7 +10,7 @@ const SidebarMenuMainCompiance = () => {
       <SidebarMenuItem
         to="dashboardCompliance"
         icon="/media/icons/duotune/general/gen001.svg"
-        title="Compliance Partners >"
+        title="Dashboard"
         fontIcon="bi-layers"
       />
       <SidebarMenuItem
@@ -18,12 +18,6 @@ const SidebarMenuMainCompiance = () => {
         icon="/media/icons/duotune/general/gen002.svg"
         title="Quick Start"
         fontIcon="bi-layers"
-      />
-      <SidebarMenuItem
-        to='dashboardCompliance'
-        icon='/media/icons/duotune/general/gen003.svg'
-        title='Dashboard'
-        fontIcon='bi-layers'
       />
       <SidebarMenuItem
         to='/qradar/tasks'
