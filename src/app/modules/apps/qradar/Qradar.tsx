@@ -67,8 +67,6 @@ const QradarPages = () => {
         <Route path='incidentscollaboration' element={<IncidentsPageCollaboration />} />
         <Route path='channels' element={<ChannelsPage />} />
         <Route path='reports' element={<Reports />} />
-        
-
     <Route path='quickstart' element={<QuickStart />} />
     <Route path='tasks' element={<Tasks />} />
     <Route path='compliance' element={<ComplianceCompliance />} />
@@ -78,12 +76,6 @@ const QradarPages = () => {
     <Route path='eventtracking' element={<EventTracking />} />
     <Route path='connections' element={<Connections />} />
     <Route path='username' element={<UserName />} />
- 
-
-
-
-
-
       </Route>
       <Route path='demoalert/:status' element={<DemoAlert />} />
       <Route path='demoalertv1/:status' element={<DemoAlertv1 />} />
