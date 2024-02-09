@@ -38,6 +38,7 @@
     "react-chat-plugin": "^0.1.17",
     "react-chat-ui": "^0.4.0",
     "react-chat-widget": "^3.1.4",
+    "react-circular-progressbar": "^2.1.0",
     "react-copy-to-clipboard": "5.1.0",
     "react-dom": "18.0.0",
     "react-error-boundary": "^4.0.11",
