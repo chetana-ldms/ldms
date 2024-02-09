@@ -14,7 +14,7 @@ const TestTrendComponent = () => {
       },
       {
         icon: "fa fa-cube",
-        name: "In Drata",
+        name: "In LDC",
         failingTests: 13,
         failurePercentage: "0%"
       },
@@ -26,7 +26,7 @@ const TestTrendComponent = () => {
       },
       {
         icon: "fa fa-cube",
-        name: "In Drata",
+        name: "In LDC",
         failingTests: 13,
         failurePercentage: "0%"
       },
@@ -38,7 +38,7 @@ const TestTrendComponent = () => {
       },
       {
         icon: "fa fa-cube",
-        name: "In Drata",
+        name: "In LDC",
         failingTests: 13,
         failurePercentage: "0%"
       }
