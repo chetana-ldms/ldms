@@ -1521,6 +1521,38 @@ td{
   }
 }
 
+.compliance-controls{
+  // .sort-section{
+  //   border-top: 1px solid #ccc;
+  //   border-bottom: 1px solid #ccc;
+  // }
+  .controls-left{
+    border-right: 1px solid #ccc;
+  }
+  .table{
+    .checkbox{
+      input{
+        padding: 0px 10px;
+        vertical-align: middle;
+        
+      }
+    }
+    i{
+      vertical-align: middle;
+      margin-left: 10px;
+    }
+    tr{
+      border-top: 1px solid #ccc;
+    }
+    .right-icons{
+      i{
+        color: #b2d4ab;
+        margin-left: 10px;
+      }
+    }
+  }
+}
+
 //Circular progress bar
 .CircularProgressbar {
   /*

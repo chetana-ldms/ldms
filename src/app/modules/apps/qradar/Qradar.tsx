@@ -50,7 +50,7 @@ import Connections from '../../../../complianceModules/app/Connections'
 import EventTracking from '../../../../complianceModules/app/EventTracking'
 import Monitoring from '../../../../complianceModules/app/Monitoring'
 import Frameworks from '../../../../complianceModules/app/Frameworks'
-import Controle from '../../../../complianceModules/app/Controle'
+import Controls from '../../../../complianceModules/app/Controls'
 import ComplianceCompliance from '../../../../complianceModules/app/ComplianceCompliance'
 import Tasks from '../../../../complianceModules/app/Tasks'
 import QuickStart from '../../../../complianceModules/app/QuickStart'
@@ -70,7 +70,7 @@ const QradarPages = () => {
     <Route path='quickstart' element={<QuickStart />} />
     <Route path='tasks' element={<Tasks />} />
     <Route path='compliance' element={<ComplianceCompliance />} />
-    <Route path='controle' element={<Controle />} />
+    <Route path='controls' element={<Controls />} />
     <Route path='frameworks' element={<Frameworks />} />
     <Route path='monitoring' element={<Monitoring />} />
     <Route path='eventtracking' element={<EventTracking />} />
