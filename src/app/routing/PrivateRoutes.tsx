@@ -10,7 +10,7 @@ import BuilderPageWrapper from '../pages/layout-builder/BuilderPageWrapper'
 // import ErrorBoundary from '../../utils/ErrorBoundary'
 import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallbackComponent } from '../../utils/ErrorFallbackComponent'
-import DashboardCompliance from '../pages/dashboard/DashboardCompliance'
+// import DashboardCompliance from '../pages/dashboard/DashboardCompliance'
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/apps/qradar/qradar-pages/account/ProfilePage'))
@@ -20,6 +20,7 @@ const PrivateRoutes = () => {
   const ChatPage = lazy(() => import('../modules/apps/chat/ChatPage'))
   const UsersPage = lazy(() => import('../modules/apps/user-management/UsersPage'))
   const QradarPages = lazy(() => import('../modules/apps/qradar/Qradar'))
+  const DashboardCompliance = lazy(() => import('../pages/dashboard/DashboardCompliance'))
 
   const handleError = (error: any, info: any) => {
     console.error("An error occurred:", error, info);
@@ -36,7 +37,7 @@ const PrivateRoutes = () => {
         <Route path='auth/*' element={<Navigate to='/dashboard' />} />
         {/* Pages */}
         <Route path='dashboard' element={<DashboardWrapper />} />
-        <Route path='dashboardCompliance' element={<DashboardCompliance />} />
+        {/* <Route path='dashboardCompliance' element={<DashboardCompliance />} /> */}
 
         <Route path='builder' element={<BuilderPageWrapper />} />
         <Route path='menu-test' element={<MenuTestPage />} />
@@ -50,10 +51,10 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-          path='qradar/user/profile/*'
+          path='dashboardCompliance'
           element={
             <SuspensedView>
-              <ProfilePage />
+              <DashboardCompliance />
             </SuspensedView>
           }
         />

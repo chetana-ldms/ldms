@@ -63,12 +63,7 @@ const DashboardCompliance = () => {
           <TestTrendComponent />
           <div className='col-lg-5'>
             <div className='row'>
-              {/* < PolicyStatus /> */}
-              <div className='col-lg-6'>
-                <div className='card'>
-                  <h4>Policy status</h4> <CanvasJSChart options={options} />
-                </div>
-              </div>
+              < PolicyStatus />
               {/* < VendorRisks /> */}
               <div className='col-lg-6'>
                 <div className='card'>
