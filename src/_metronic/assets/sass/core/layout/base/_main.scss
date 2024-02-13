@@ -1521,13 +1521,51 @@ td{
   }
 }
 
+.monitor-card{
+  i{
+    font-size: 15px;
+    background-color: #a3d4ed;
+    border-radius: 50%;
+    text-align: center;
+    padding: 10px 10px;
+    margin-right: 10px;
+  }
+  p{
+    font-size: 30px;
+    font-weight: bold;
+  }
+}
+
 .compliance-controls{
-  // .sort-section{
-  //   border-top: 1px solid #ccc;
-  //   border-bottom: 1px solid #ccc;
-  // }
+  .sort-section{
+    padding-bottom: 10px;
+  }
   .controls-left{
     border-right: 1px solid #ccc;
+    h4{
+      padding: 5px 0;
+    }
+    ul{
+      list-style: none;
+      padding-left: 0;
+      li{
+        cursor: pointer;
+        margin-bottom: 10px;
+        background: #eee;
+        padding: 10px;
+        i{
+          color: #008cba;
+          margin-right: 10px;
+        }
+        &:hover{
+          background-color: #008cba;
+          color: #fff;
+          i{
+            color: #fff;
+          }
+        }
+      }
+    }
   }
   .table{
     .checkbox{
@@ -1548,6 +1586,26 @@ td{
       i{
         color: #b2d4ab;
         margin-left: 10px;
+      }
+    }
+  }
+  input,select{
+    border: 1px solid #ccc;
+    height: 33px;
+    border-radius: 4px;
+    padding: 0 10px;
+  }
+  .nav-tabs {
+    .nav-item {
+      .nav-link{
+        &.active{
+          color: white;
+          border: 0;
+          border-radius: 4px;
+          cursor: default;
+          background-color: #008cba
+        }
+        cursor: pointer;
       }
     }
   }
