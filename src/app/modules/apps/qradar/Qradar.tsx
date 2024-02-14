@@ -51,9 +51,19 @@ import EventTracking from '../../../../complianceModules/app/EventTracking'
 import Monitoring from '../../../../complianceModules/app/Monitoring'
 import Frameworks from '../../../../complianceModules/app/Frameworks'
 import Controls from '../../../../complianceModules/app/Controls'
-import ComplianceCompliance from '../../../../complianceModules/app/ComplianceCompliance'
 import Tasks from '../../../../complianceModules/app/Tasks'
 import QuickStart from '../../../../complianceModules/app/QuickStart'
+import EvidenceLibrary from '../../../../complianceModules/app/EvidenceLibrary'
+import AuditHub from '../../../../complianceModules/app/AuditHub'
+import TrustCenter from '../../../../complianceModules/app/TrustCenter'
+import RiskAssessment from '../../../../complianceModules/app/RiskAssessment'
+import RiskManagement from '../../../../complianceModules/app/RiskManagement'
+import Vendors from '../../../../complianceModules/app/Vendors'
+import Assets from '../../../../complianceModules/app/Assets'
+import Personnel from '../../../../complianceModules/app/Personnel'
+import PolicyCenter from '../../../../complianceModules/app/PolicyCenter'
+import AccessReview from '../../../../complianceModules/app/AccessReview'
+import SecurityReport from '../../../../complianceModules/app/SecurityReport'
 
 
 const QradarPages = () => {
@@ -69,11 +79,21 @@ const QradarPages = () => {
         <Route path='reports' element={<Reports />} />
     <Route path='quickstart' element={<QuickStart />} />
     <Route path='tasks' element={<Tasks />} />
-    <Route path='compliance' element={<ComplianceCompliance />} />
     <Route path='controls' element={<Controls />} />
     <Route path='frameworks' element={<Frameworks />} />
     <Route path='monitoring' element={<Monitoring />} />
     <Route path='eventtracking' element={<EventTracking />} />
+    <Route path='evidencelibrary' element={<EvidenceLibrary />} />
+    <Route path='audithub' element={<AuditHub />} />
+    <Route path='trustcenter' element={<TrustCenter />} />
+    <Route path='riskassessment' element={<RiskAssessment />} />
+    <Route path='riskmanagement' element={<RiskManagement />} />
+    <Route path='vendors' element={<Vendors />} />
+    <Route path='assets' element={<Assets />} />
+    <Route path='personnel' element={<Personnel />} />
+    <Route path='policycenter' element={<PolicyCenter />} />
+    <Route path='accessreview' element={<AccessReview />} />
+    <Route path='securityreport' element={<SecurityReport />} />
     <Route path='connections' element={<Connections />} />
     <Route path='username' element={<UserName />} />
       </Route>
