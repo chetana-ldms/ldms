@@ -63,6 +63,7 @@ function Monitoring() {
         <div className="col-lg-9">
           <div className="sort-section row">
             <div className="col-lg-11">
+              {/* <i className="fa fa-search" /> */}
               <input
                 type="text"
                 placeholder="Search automated tests..."
