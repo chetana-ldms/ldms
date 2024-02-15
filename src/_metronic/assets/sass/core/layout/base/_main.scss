@@ -58,6 +58,10 @@ body {
   margin-top: 20px;
 }
 
+.mg-left-10{
+  margin-left: 10px;
+}
+
 //logo
 .app-sidebar-logo {
   .app-sidebar-logo-default {
@@ -137,6 +141,11 @@ body {
 
 .btn-small {
   padding: 6px 18px !important;
+}
+
+.btn-border{
+  border: 1px solid #008cba !important;
+  color: #008cba;
 }
 
 .bg-blue {
@@ -1440,6 +1449,11 @@ td{
 }
 
 //Compliance CSS
+.compliance-modal{
+  .modal-dialog{
+    max-width: 50%;
+  }
+}
 .compliance{
   .canvasjs-chart-canvas,#canvasjs-react-chart-container-2{
     height: 200px !important;
@@ -1508,6 +1522,7 @@ td{
     }
   }
   .inner-table{
+    
     td{
       font-size: 13px;
       font-weight: 600;
@@ -1568,6 +1583,9 @@ td{
     }
   }
   .table{
+    tr{
+      cursor: pointer;
+    }
     .checkbox{
       input{
         padding: 0px 10px;
