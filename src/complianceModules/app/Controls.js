@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import ControlesPopUp from './ControlesPopUp';
 import CreateNewControlPopUp from './CreateNewControlPopUp';
 
@@ -9,19 +9,20 @@ const Controle = () => {
   const [showModalCreateNewControl, setShowModalCreateNewControl] = useState(false);
 
   const inScopeData = [
-    {id: 1, description: 'Description 1', icons: ['fa-paperclip', 'fa-indent', 'fa-users']},
-    {id: 2, description: 'Description 2', icons: ['fa-paperclip', 'fa-indent', 'fa-users']},
+    { id: 1, description: 'Description 1', icons: ['fa-paperclip', 'fa-indent', 'fa-users'] },
+    { id: 2, description: 'Description 2', icons: ['fa-paperclip', 'fa-indent', 'fa-users'] },
   ];
 
   const outScopeData = [
-    {id: 1, description: 'Description Change 1', icons: ['fa-paperclip', 'fa-indent', 'fa-users']},
-    {id: 2, description: 'Description Change 2', icons: ['fa-paperclip', 'fa-indent', 'fa-users']},
+    { id: 1, description: 'Description Change 1', icons: ['fa-paperclip', 'fa-indent', 'fa-users'] },
+    { id: 2, description: 'Description Change 2', icons: ['fa-paperclip', 'fa-indent', 'fa-users'] },
   ];
 
-  const handleRowClick = (item) => {
+  const handleDescriptionClick = (item) => {
     setSelectedItem(item);
     setShowModal(true);
   };
+
   const handleCreateNewControl = () => {
     setShowModalCreateNewControl(true);
   };
@@ -32,7 +33,7 @@ const Controle = () => {
       <div className='row'>
         <div className='col-lg-12'>
           <div className='float-right'>
-          <button className='btn btn-primary btn-new btn-small' onClick={handleCreateNewControl}>
+            <button className='btn btn-primary btn-new btn-small' onClick={handleCreateNewControl}>
               Create New Control
             </button>
           </div>
@@ -90,7 +91,7 @@ const Controle = () => {
               <input
                 type='text'
                 placeholder='Search controls by name, description, code'
-                style={{width: '100%'}}
+                style={{ width: '100%' }}
               />
             </div>
             <div className='col-lg-3'>
@@ -111,14 +112,14 @@ const Controle = () => {
                 <table className='table'>
                   <tbody>
                     {inScopeData.map((item) => (
-                      <tr key={item.id} onClick={() => handleRowClick(item)}>
+                      <tr key={item.id}>
                         <td>
                           <div className='checkbox'>
                             <input type='checkbox' />
                             <i className='fa fa-check-square' />
                           </div>
                         </td>
-                        <td>{item.description}</td>
+                        <td onClick={() => handleDescriptionClick(item)}>{item.description}</td>
                         <td>
                           <div className='float-right right-icons'>
                             {item.icons.map((icon, index) => (
@@ -137,14 +138,14 @@ const Controle = () => {
                 <table className='table'>
                   <tbody>
                     {outScopeData.map((item) => (
-                      <tr key={item.id} onClick={() => handleRowClick(item)}>
+                      <tr key={item.id}>
                         <td>
                           <div className='checkbox'>
                             <input type='checkbox' />
                             <i className='fa fa-check-square' />
                           </div>
                         </td>
-                        <td>{item.description}</td>
+                        <td onClick={() => handleDescriptionClick(item)}>{item.description}</td>
                         <td>
                           <div className='float-right right-icons'>
                             {item.icons.map((icon, index) => (
