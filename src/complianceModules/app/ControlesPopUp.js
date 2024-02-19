@@ -1,13 +1,50 @@
-import React, { useState } from 'react'
+import React, {useState} from 'react'
 import {Modal, Button} from 'react-bootstrap'
 import AddRequirementsPopUp from './AddRequirementsPopUp'
 
 const ControlesPopUp = ({showModal, setShowModal, selectedItem}) => {
-  const [showSecondModal, setShowSecondModal] = useState(false);
+  const [showSecondModal, setShowSecondModal] = useState(false)
+  const [activeIndex, setActiveIndex] = useState(null)
 
   const handleOpenSecondModal = () => {
-    setShowSecondModal(true);
-  };
+    setShowSecondModal(true)
+  }
+  const handleAccordionToggle = (index) => {
+    setActiveIndex(activeIndex === index ? null : index)
+  }
+  const mappedRequirementsData = [
+    {
+      logo: 'logo1',
+      version: 'CCM v4',
+      count: 2,
+      items: [
+        {
+          name: 'STA-08',
+          description: 'Incident Responce plan: Breaches',
+        },
+        {
+          name: 'UEM-09',
+          description: 'Incident Reporting : Supply Chain coordination',
+        },
+      ],
+    },
+    {
+      logo: 'logo2',
+      version: 'CCM v5',
+      count: 3,
+      items: [
+        {
+          name: 'STA-07',
+          description: 'Incident Responce plan: Breaches',
+        },
+        {
+          name: 'UEM-08',
+          description: 'Incident Reporting : Supply Chain coordination',
+        },
+      ],
+    },
+  ]
+
   return (
     <Modal className='compliance-modal' show={showModal} onHide={() => setShowModal(false)}>
       <Modal.Header closeButton>
@@ -66,33 +103,74 @@ const ControlesPopUp = ({showModal, setShowModal, selectedItem}) => {
             <hr />
             <div className='mt-5'>
               <h2>MAPPED REQUIREMENTS</h2>
-              <div className='card'>
-                <div className='card-body'>
-                  <div className='d-flex justify-content-between '>
-                    <div>
-                      <p>
-                        CCM v4{' '}
-                        <span
-                          className='bg-primary p-2 ms-4 text-white '
-                          style={{borderRadius: '50%'}}
-                        >
-                          {' '}
-                          2
-                        </span>
-                      </p>
+              {mappedRequirementsData.map((item, index) => (
+                <div key={index} className='card'>
+                  <div className='card-body'>
+                    <div
+                      className='d-flex justify-content-between'
+                      onClick={() => handleAccordionToggle(index)}
+                      style={{cursor: 'pointer'}}
+                    >
                       <div>
-                        <span className='bg-secondary p-2'>STA-08</span>
-                        <span className='bg-secondary p-2 ms-5'>UEM-09</span>
+                        <p>
+                          <span className='me-3'>{item.logo}</span>
+                          {item.version}{' '}
+                          <span
+                            className='bg-primary p-2 ms-4 text-white'
+                            style={{borderRadius: '50%'}}
+                          >
+                            {' '}
+                            {item.count}
+                          </span>
+                        </p>
+                        <div>
+                          {item.items.map((subItem, subIndex) => (
+                            <span key={subIndex} className='bg-secondary p-2 me-2'>
+                              {subItem.name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className=''>
+                        <button
+                          className='btn btn-small btn-primary'
+                          onClick={handleOpenSecondModal}
+                        >
+                          add
+                        </button>{' '}
+                        <span>
+                          {' '}
+                          <i
+                            className={`fas ${
+                              activeIndex === index ? 'fa-chevron-down' : 'fa-chevron-right'
+                            }`}
+                          ></i>
+                        </span>
                       </div>
                     </div>
-                  <div className=''>
-                    <button className='btn btn-small btn-primary ' onClick={handleOpenSecondModal}>add  </button>
                   </div>
-                  </div>
+                  {activeIndex === index && (
+                    <div
+                      id={`kt_accordion_1_body_${index}`}
+                      className='accordion-collapse collapse show'
+                    >
+                      <div className='accordion-body'>
+                        {item.items.map((subItem, subIndex) => (
+                          <div key={subIndex} className='border-bottom'>
+                            <p>{subItem.name}</p>
+                            <p>{subItem.description}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
+              ))}
             </div>
-            <AddRequirementsPopUp showSecondModal={showSecondModal} setShowSecondModal={setShowSecondModal} />
+            <AddRequirementsPopUp
+              showSecondModal={showSecondModal}
+              setShowSecondModal={setShowSecondModal}
+            />
           </>
         )}
       </Modal.Body>
@@ -102,7 +180,6 @@ const ControlesPopUp = ({showModal, setShowModal, selectedItem}) => {
         </Button>
       </Modal.Footer>
     </Modal>
-    
   )
 }
 
