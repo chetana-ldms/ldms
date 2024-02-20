@@ -35,7 +35,7 @@ body {
 }
 
 .bold{
-  font-weight: bold;
+  font-weight: bold !important;
 }
 
 .no-margin{
@@ -1245,6 +1245,16 @@ form{
   left: 0 !important;
   right: 0 !important;
   max-width: 100% !important;
+  padding: 0 !important;
+  .modal-header{
+    background-color: #32326e;
+    // border-radius: 0;
+    padding: 10px 20px;
+    .modal-title{
+      color: white;
+      font-size: 20px;
+    }
+  }
 }
 
 //Common Tab CSS
