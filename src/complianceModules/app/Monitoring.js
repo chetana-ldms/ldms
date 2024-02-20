@@ -6,31 +6,31 @@ function Monitoring() {
   const [selectedItem, setSelectedItem] = useState(null);
   const testData = [
     {
-      "id": 1,
-      "testName": "MFA on Identity Provider",
-      "lastTested": "11 hours ago",
-      "icon": "fa fa-users"
+      id: 1,
+      testName: "MFA on Identity Provider",
+      lastTested: "11 hours ago",
+      icon: "fa fa-users",
     },
     {
-      "id": 2,
-      "testName": "Password Manager Required",
-      "lastTested": "11 hours ago",
-      "icon": "fa fa-file-text"
+      id: 2,
+      testName: "Password Manager Required",
+      lastTested: "11 hours ago",
+      icon: "fa fa-file-text",
     },
     {
-      "id": 3,
-      "testName": "Has a Backup Policy",
-      "lastTested": "11 hours ago",
-      "icon": "fa fa-file-text"
+      id: 3,
+      testName: "Has a Backup Policy",
+      lastTested: "11 hours ago",
+      icon: "fa fa-file-text",
     },
     {
-      "id": 4,
-      "testName": "Daily Database Backup",
-      "lastTested": "11 hours ago",
-      "icon": "fa fa-file-text"
-    }
-  ]
-  
+      id: 4,
+      testName: "Daily Database Backup",
+      lastTested: "11 hours ago",
+      icon: "fa fa-file-text",
+    },
+  ];
+
   const handleRowClick = (item) => {
     setSelectedItem(item);
     setShowModal(true);
@@ -108,10 +108,10 @@ function Monitoring() {
           <br />
           <div className="controls-content">
             <div className="tab-pane fade show active" id="inScope">
-            <table className="table">
+              <table className="table">
                 <tbody>
                   {testData.map((test) => (
-                      <tr key={test.id} onClick={() => handleRowClick(test)}>
+                    <tr key={test.id} onClick={() => handleRowClick(test)}>
                       <td>
                         <h4>{test.testName}</h4>
                       </td>
@@ -124,7 +124,8 @@ function Monitoring() {
                       <td>
                         <div className="float-right right-icons">
                           <button className="btn btn-danger btn-small">
-                            <i className="fa fa-exclamation-circle" /> Fix Now
+                            <i className="fa fa-exclamation-circle white" /> Fix
+                            Now
                           </button>
                         </div>
                       </td>
@@ -136,10 +137,10 @@ function Monitoring() {
           </div>
         </div>
       </div>
-      <MonitoringPopUp 
-        showModal={showModal} 
-        setShowModal={setShowModal} 
-        selectedItem={selectedItem} 
+      <MonitoringPopUp
+        showModal={showModal}
+        setShowModal={setShowModal}
+        selectedItem={selectedItem}
       />
     </div>
   );

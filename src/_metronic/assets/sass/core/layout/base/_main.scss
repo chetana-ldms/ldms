@@ -41,6 +41,10 @@ body {
   color: gray;
 }
 
+.white{
+  color: white !important;
+}
+
 .initial{
   padding: 5px 8px;
   border-radius: 50%;
@@ -48,6 +52,7 @@ body {
   background-color: #008cba;
   color: white;
   margin-right: 3px;
+  // line-height: normal;
 }
 
 //Form
