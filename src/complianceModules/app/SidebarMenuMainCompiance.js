@@ -6,7 +6,7 @@ const SidebarMenuMainCompiance = () => {
   const intl = useIntl();
 
   return (
-    <>
+    <div className="compliance-menu">
       <SidebarMenuItem
         to="dashboardCompliance"
         icon="/media/icons/duotune/general/gen001.svg"
@@ -25,7 +25,7 @@ const SidebarMenuMainCompiance = () => {
         title="Tasks"
         fontIcon="bi-layers"
       />
-        <p className="text-white mt-3 mb-0">Compliance</p>
+      <div className="text-white mt-3 mb-0 main-head">Compliance</div>
       <SidebarMenuItem
         to="/qradar/controls"
         icon="/media/icons/duotune/general/gen006.svg"
@@ -62,27 +62,27 @@ const SidebarMenuMainCompiance = () => {
         title="Audit Hub"
         fontIcon="bi-layers"
       />
-      <p className="text-white mt-3 mb-0">Trust</p>
+      <div className="text-white mt-3 mb-0 main-head">Trust</div>
       <SidebarMenuItem
         to="/qradar/trustcenter"
         icon="/media/icons/duotune/general/gen003.svg"
         title="Trust Center"
         fontIcon="bi-layers"
       />
-       <p className="text-white mt-3 mb-0">Risk</p>
+      <div className="text-white mt-3 mb-0 main-head">Risk</div>
       <SidebarMenuItem
         to="/qradar/riskassessment"
         icon="/media/icons/duotune/general/gen004.svg"
         title="Risk Assessment"
         fontIcon="bi-layers"
       />
-       <SidebarMenuItem
+      <SidebarMenuItem
         to="/qradar/riskmanagement"
         icon="/media/icons/duotune/general/gen005.svg"
         title="Risk Management"
         fontIcon="bi-layers"
       />
-       <SidebarMenuItem
+      <SidebarMenuItem
         to="/qradar/vendors"
         icon="/media/icons/duotune/general/gen006.svg"
         title="Vendors"
@@ -94,7 +94,7 @@ const SidebarMenuMainCompiance = () => {
         title="Assets"
         fontIcon="bi-layers"
       />
-       <p className="text-white mt-3 mb-0">Governance</p>
+      <div className="text-white mt-3 mb-0 main-head">Governance</div>
       <SidebarMenuItem
         to="/qradar/personnel"
         icon="/media/icons/duotune/general/gen008.svg"
@@ -113,7 +113,7 @@ const SidebarMenuMainCompiance = () => {
         title="Access Review"
         fontIcon="bi-layers"
       />
-      <p className="text-white mt-3 mb-0">Trust</p>
+      <div className="text-white mt-3 mb-0 main-head">Trust</div>
       <SidebarMenuItem
         to="/qradar/securityreport"
         icon="/media/icons/duotune/general/gen005.svg"
@@ -132,7 +132,7 @@ const SidebarMenuMainCompiance = () => {
         title="User Name"
         fontIcon="bi-layers"
       />
-    </>
+    </div>
   );
 };
 

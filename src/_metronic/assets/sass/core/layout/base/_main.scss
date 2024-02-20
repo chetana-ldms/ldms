@@ -1185,6 +1185,15 @@ form{
   }
 }
 
+.compliance-menu{
+  .main-head{
+    // background-color: #3a414e;
+    border-bottom: 1px solid #3a414e;
+    padding: 5px 10px;
+    font-size: 14px;
+  }
+}
+
 .channel-edit, .compliance-modal {
   &.modal{
     max-width: 90%;

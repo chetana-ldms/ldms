@@ -1,6 +1,11 @@
-import React from "react";
+import { React, useState } from "react";
 
 function EventTracking() {
+  const [showModal, setShowModal] = useState(false);
+
+  const handleRowClick = (item) => {
+    setShowModal(true);
+  };
   return (
     <div className="compliance">
       <h2>Events</h2>
@@ -40,6 +45,30 @@ function EventTracking() {
                 </tr>
               </thead>
               <tbody>
+                <tr onClick={() => handleRowClick()}>
+                  <td>Arunachalam</td>
+                  <td>Feb 14, 2024 @9:30:31 AM</td>
+                  <td>Evidence</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>Evidence Created</td>
+                  <td>
+                    Arunachalam created new evidence
+                    <i className="fa fa-chevron-right float-right" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Chetana</td>
+                  <td>Nov 20, 2024 @7:20:05 AM</td>
+                  <td>Company</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>Company Roles Updated</td>
+                  <td>
+                    Chetana granted/revoked role access to users within the
+                    company. <i className="fa fa-chevron-right float-right" />
+                  </td>
+                </tr>
                 <tr>
                   <td>Arunachalam</td>
                   <td>Feb 14, 2024 @9:30:31 AM</td>
