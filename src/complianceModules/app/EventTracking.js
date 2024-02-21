@@ -134,7 +134,7 @@ function EventTracking() {
                 <div>
                   <p className="bold no-margin">Response:</p>
                   <p className="link">Show raw evidence</p>
-                  <div className="card pad-10 mg-btm-10">
+                  <div className="box-border pad-10 mg-btm-10">
                     <div className="row">
                       <div className="col-lg-8">
                         <p className="bold no-margin">
@@ -152,7 +152,7 @@ function EventTracking() {
                       </div>
                     </div>
                   </div>
-                  <div className="card pad-10">
+                  <div className="box-border pad-10">
                     <div className="row">
                       <div className="col-lg-8">
                         <p className="bold no-margin">Raw Evidence .txt</p>
