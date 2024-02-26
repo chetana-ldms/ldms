@@ -119,20 +119,34 @@ function AlertsSummary() {
 
   // Function to handle export to Excel
   const exportToExcel = () => {
-    const header = "Status,Percentage Value,Alert Count\n";
-    const content = alertData
-      .map(
-        (alert) =>
-          `${alert.statusName},${alert.percentageValue.toFixed(2)}%,${
-            alert.alertCount
-          }`
+    // Define header text
+    const headerText = `Alerts Summary for the last year (${startDate} to ${endDate})`;
+
+    // Define header row
+    const headerRow = ["Status Name", "Percentage Value", "Alert Count"];
+
+    // Format data into CSV content
+    const content = [headerText]
+      .concat([""]) // Add an empty line for separation
+      .concat([headerRow])
+      .concat(
+        alertData
+          .map((alert) => [
+            alert.statusName,
+            `${alert.percentageValue.toFixed(2)}%`,
+            alert.alertCount,
+          ])
+          .map((row) => row.join(","))
       )
       .join("\n");
-    const csvContent = header + content;
-    const blob = new Blob([csvContent], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
+
+    // Create CSV file
+    const csvContent =
+      "data:text/csv;charset=utf-8," + encodeURIComponent(content);
+
+    // Create link and trigger download
     const link = document.createElement("a");
-    link.href = url;
+    link.href = csvContent;
     link.setAttribute("download", "alerts_summary.csv");
     document.body.appendChild(link);
     link.click();
