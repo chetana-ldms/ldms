@@ -125,7 +125,6 @@ const Reports = () => {
 
   return (
     <div className="row reports-page">
-      {/* Begin Col */}
       <div className="col-lg-12">
         <div className="mb-5 mb-xl-12">
           <h2>Reports</h2>
@@ -185,8 +184,6 @@ const Reports = () => {
           </div>
         </div>
       </div>
-
-      {/* End Col */}
     </div>
   );
 };

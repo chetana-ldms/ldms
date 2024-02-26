@@ -1,12 +1,59 @@
-import { React, useState } from "react";
-import { Modal, Button } from "react-bootstrap";
+import React, { useState } from "react";
+import { Modal } from "react-bootstrap";
+import EventTrackingPopUp from "./EventTrackingPopUp";
 
 function EventTracking() {
   const [showModal, setShowModal] = useState(false);
 
+  const eventData = [
+    {
+      id: 1,
+      user: "Arunachalam R",
+      timestamp: "Feb 14, 2024 @9:30:31 AM",
+      category: "Evidence",
+      connection: "-",
+      result: "-",
+      type: "Evidence Created",
+      description: "Arunachalam created new evidence",
+    },
+    {
+      id: 2,
+      user: "Chetana S",
+      timestamp: "Nov 20, 2024 @7:20:05 AM",
+      category: "Company",
+      connection: "-",
+      result: "-",
+      type: "Company Roles Updated",
+      description:
+        "Chetana granted/revoked role access to users within the company.",
+    },
+    {
+      id: 3,
+      user: "Arunachalam R",
+      timestamp: "Feb 14, 2024 @9:30:31 AM",
+      category: "Evidence",
+      connection: "-",
+      result: "-",
+      type: "Evidence Created",
+      description: "Arunachalam created new evidence",
+    },
+    {
+      id: 4,
+      user: "Chetana S",
+      timestamp: "Nov 20, 2024 @7:20:05 AM",
+      category: "Company",
+      connection: "-",
+      result: "-",
+      type: "Company Roles Updated",
+      description:
+        "Chetana granted/revoked role access to users within the company.",
+    },
+  ];
+
   const handleRowClick = (item) => {
     setShowModal(true);
   };
+
   return (
     <div className="compliance">
       <h2>Events</h2>
@@ -46,136 +93,34 @@ function EventTracking() {
                 </tr>
               </thead>
               <tbody>
-                <tr onClick={() => handleRowClick()}>
-                  <td>
-                    <span className="initial">AR</span> Arunachalam R
-                  </td>
-                  <td>Feb 14, 2024 @9:30:31 AM</td>
-                  <td>Evidence</td>
-                  <td>-</td>
-                  <td>-</td>
-                  <td>Evidence Created</td>
-                  <td>
-                    Arunachalam created new evidence
-                    <i className="fa fa-chevron-right float-right" />
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <span className="initial">CS</span> Chetana S
-                  </td>
-                  <td>Nov 20, 2024 @7:20:05 AM</td>
-                  <td>Company</td>
-                  <td>-</td>
-                  <td>-</td>
-                  <td>Company Roles Updated</td>
-                  <td>
-                    Chetana granted/revoked role access to users within the
-                    company. <i className="fa fa-chevron-right float-right" />
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <span className="initial">AR</span> Arunachalam R
-                  </td>
-                  <td>Feb 14, 2024 @9:30:31 AM</td>
-                  <td>Evidence</td>
-                  <td>-</td>
-                  <td>-</td>
-                  <td>Evidence Created</td>
-                  <td>
-                    Arunachalam created new evidence
-                    <i className="fa fa-chevron-right float-right" />
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <span className="initial">CS</span> Chetana S
-                  </td>
-                  <td>Nov 20, 2024 @7:20:05 AM</td>
-                  <td>Company</td>
-                  <td>-</td>
-                  <td>-</td>
-                  <td>Company Roles Updated</td>
-                  <td>
-                    Chetana granted/revoked role access to users within the
-                    company. <i className="fa fa-chevron-right float-right" />
-                  </td>
-                </tr>
+                {eventData.map((event) => (
+                  <tr key={event.id} onClick={() => handleRowClick(event)}>
+                    <td>
+                      <span className="initial">
+                        {event.user
+                          .split(" ")
+                          .map((name) => name.charAt(0))
+                          .join("")}
+                      </span>{" "}
+                      {event.user}
+                    </td>
+                    <td>{event.timestamp}</td>
+                    <td>{event.category}</td>
+                    <td>{event.connection}</td>
+                    <td>{event.result}</td>
+                    <td>{event.type}</td>
+                    <td>
+                      {event.description}
+                      <i className="fa fa-chevron-right float-right" />
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-            <Modal
-              className="modal"
-              show={showModal}
-              onHide={() => setShowModal(false)}
-            >
-              <Modal.Header closeButton>
-                <Modal.Title>
-                  <h2>Audit Event</h2>
-                </Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <h4>Event Details</h4>
-                <div>
-                  <span className="initial">AR</span> Arunachalam
-                  <span>arunachalam@lancesoft.com</span>
-                </div>
-                <br />
-                <div>
-                  <p className="bold no-margin">Timestamp:</p>
-                  <p>Feb 14, 2024 @9:30:31 AM</p>
-                </div>
-                <br />
-                <div>
-                  <p className="bold no-margin">Description:</p>
-                  <p>Arunachalam created new evidence.</p>
-                </div>
-                <br />
-                <div>
-                  <p className="bold no-margin">Response:</p>
-                  <p className="link">Show raw evidence</p>
-                  <div className="box-border pad-10 mg-btm-10">
-                    <div className="row">
-                      <div className="col-lg-8">
-                        <p className="bold no-margin">
-                          Raw Evidence and Event Details .pdf
-                        </p>
-                        <p className="no-margin">
-                          Get a .pdf file that contains raw evidence along with
-                          event details
-                        </p>
-                      </div>
-                      <div className="col-lg-4">
-                        <button className="btn btn-border btn-small float-right">
-                          <i className="fa fa-download link" /> Download
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="box-border pad-10">
-                    <div className="row">
-                      <div className="col-lg-8">
-                        <p className="bold no-margin">Raw Evidence .txt</p>
-                        <p className="no-margin">
-                          Get a .txt file that only shows raw evidence
-                        </p>
-                      </div>
-                      <div className="col-lg-4">
-                        <button className="btn btn-border btn-small float-right">
-                          <i className="fa fa-download link" /> Download
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <br />
-                <div>
-                  <h4>Notes</h4>
-                  <p className="no-margin gray">Add a new message</p>
-                  <textarea className="form-textarea"></textarea>
-                </div>
-              </Modal.Body>
-            </Modal>
+            <EventTrackingPopUp
+              showModal={showModal}
+              setShowModal={setShowModal}
+            />
           </div>
         </div>
       </div>

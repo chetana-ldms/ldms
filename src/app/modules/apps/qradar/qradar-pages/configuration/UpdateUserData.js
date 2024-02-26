@@ -18,7 +18,7 @@ const UpdateUserData = () => {
   console.log(toolTypeAction, "toolTypeAction1111")
   const { id } = useParams()
   const userName = useRef()
-  console.log(userName, "userName")
+  const userEmail = useRef()
   const orgID = useRef()
   const roleType = useRef()
   const errors = {}
@@ -26,7 +26,7 @@ const UpdateUserData = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchUserDetails(id, userName);
+        const data = await fetchUserDetails(id, userName, userEmail);
         setToolTypeAction({
           ...toolTypeAction,
           roleID: data.roleID,
@@ -38,7 +38,7 @@ const UpdateUserData = () => {
     };
 
     fetchData();
-  }, [id, userName]);
+  }, [id, userName, userEmail]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -58,6 +58,11 @@ const UpdateUserData = () => {
       setLoading(false)
       return errors
     }
+    if (!userEmail.current.value) {
+      errors.passWord = 'Enter Email'
+      setLoading(false)
+      return errors
+    }
     if (!orgID.current.value) {
       errors.passWord = 'Enter password'
       setLoading(false)
@@ -74,6 +79,7 @@ const UpdateUserData = () => {
     const orgId = sessionStorage.getItem('orgId')
     var data = {
       name: userName.current.value,
+      emailId: userEmail.current.value,
       roleID: roleType.current.value,
       orgId: Number(orgID.current.value),
       // password: passWord.current.value,
@@ -143,50 +149,28 @@ const UpdateUserData = () => {
                 />
               </div>
             </div>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
+                   User Email
+                </label>
+                <input
+                  type='email'
+                  className='form-control form-control-lg form-control-solid'
+                  required
+                  aria-required='true'
+                  id='userEmail'
+                  ref={userEmail}
+                  placeholder='Ex: UserEmail'
+                />
+              </div>
+            </div>
 
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='orgID' className='form-label fs-6 fw-bolder mb-3'>
                   Organization
                 </label>
-                {/* {toolTypeAction.roleID !== 1 ? (
-                  <select
-                    className='form-select form-select-solid'
-                    data-kt-select2='true'
-                    data-placeholder='Select option'
-                    data-allow-clear='true'
-                    id='orgID'
-                    ref={orgID}
-                    value={toolTypeAction.orgId}
-                    onChange={(e) =>
-                      setToolTypeAction({
-                        toolTypeID: e.target.options[e.target.selectedIndex].getAttribute('data-id'),
-                      })}
-                    required
-                  >
-                    <option value='' disabled selected>Select</option>
-                    {organizationList.map((item, index) => (
-                      <option value={item.orgID} key={index} data-id={item.orgID}>
-                        {item.orgName}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <select
-                    className='form-select form-select-solid'
-                    data-kt-select2='true'
-                    data-placeholder='Select option'
-                    data-allow-clear='true'
-                    id='orgID'
-                    ref={orgID}
-                    value={toolTypeAction.orgId}
-                    disabled // Disable the dropdown
-                  >
-                    <option value={toolTypeAction.orgId} data-id={toolTypeAction.orgId}>
-                      {organizationList.find(item => item.orgID === toolTypeAction.orgId)?.orgName}
-                    </option>
-                  </select>
-                )} */}
                 <select
                 className="form-select form-select-solid bg-blue-light"
                 data-kt-select2="true"
