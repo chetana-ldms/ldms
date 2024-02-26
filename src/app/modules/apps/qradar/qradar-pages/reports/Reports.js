@@ -116,12 +116,12 @@ const Reports = () => {
   //     },
   //   ],
   // };
-   //Date range
-   const today = new Date();
-   const lastYear = new Date();
-   lastYear.setFullYear(lastYear.getFullYear() - 1);
-   const startDate = lastYear.toLocaleDateString("en-GB");
-   const endDate = today.toLocaleDateString("en-GB");
+  //Date range
+  const today = new Date();
+  const lastYear = new Date();
+  lastYear.setFullYear(lastYear.getFullYear() - 1);
+  const startDate = lastYear.toLocaleDateString("en-GB");
+  const endDate = today.toLocaleDateString("en-GB");
 
   return (
     <div className="row reports-page">
@@ -132,7 +132,7 @@ const Reports = () => {
           <div className="demo-block">
             <Tabs className="report-tabs">
               <div className="card">
-                <div className="card-body">
+                <div className="card-body1">
                   <TabPanel className="main-tab">
                     <AlertsSummary />
                   </TabPanel>
@@ -150,7 +150,7 @@ const Reports = () => {
                       </TabPanel>
                     </Tabs>
                   </TabPanel> */}
-                   <TabPanel className="main-tab">
+                  <TabPanel className="main-tab">
                     <AlertsRule />
                   </TabPanel>
                   <TabPanel className="main-tab">

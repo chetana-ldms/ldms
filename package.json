@@ -58,6 +58,7 @@
     "socicon": "3.0.5",
     "socket.io-client": "^4.6.2",
     "twilio": "^4.9.0",
+    "xlsx": "^0.18.5",
     "yup": "0.32.11"
   },
   "devDependencies": {

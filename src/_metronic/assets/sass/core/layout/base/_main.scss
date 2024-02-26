@@ -658,6 +658,7 @@ form{
   select {
     font-size: 13px;
     font-weight: normal !important;
+    height: 35px;
   }
   .nav-line-tabs {
     .nav-item {
@@ -952,6 +953,34 @@ form{
   .canvasjs-chart-toolbar,
   .canvasjs-chart-credit {
     display: none;
+  }
+}
+
+.export-report{
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  button{
+    padding: 5px 10px !important;
+    background: none;
+    &.btn-secondary{
+      &:focus,&:hover,&:hover:not(.btn-active),&:active,&.btn-secondary{
+        background-color: white !important;
+      }
+    }
+    
+  }
+  .show > .btn.btn-secondary{
+    background-color: white !important;
+  }
+  .dropdown-menu{
+    &.show{
+      // top: 1px !important;
+      width: 100%;
+      border: 1px solid #ccc;
+    }
   }
 }
 
