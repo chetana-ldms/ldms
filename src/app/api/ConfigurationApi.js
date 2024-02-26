@@ -78,7 +78,7 @@ export const fetchToolTypeActionDetails = async (id, toolNameRef) => {
   }
 };
 
-export const fetchUserDetails = async (id, toolNameRef) => {
+export const fetchUserDetails = async (id, userName, emailId ) => {
   try {
     const response = await fetch(`${userDetailsUrl}?id=${id}`, {
       method: "GET",
@@ -89,9 +89,8 @@ export const fetchUserDetails = async (id, toolNameRef) => {
     const responseData = await response.json();
     const userdata = responseData.userdata;
     console.log(userdata, "userdata");
-    // Populate the form fields with the retrieved data
-    toolNameRef.current.value = userdata.name;
-    //   passwordRef.current.value = userdata.password;
+    userName.current.value = userdata.name;
+    emailId.current.value = userdata.emailId;
     return userdata;
   } catch (error) {
     console.log(error);

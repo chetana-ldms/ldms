@@ -5,6 +5,7 @@ import axios from 'axios'
 import { fetchUserAddUrl } from '../../../../../api/ConfigurationApi'
 import { notify, notifyFail } from '../components/notification/Notification';
 import { useErrorBoundary } from "react-error-boundary";
+import { UsersListLoading } from '../components/loading/UsersListLoading'
 
 const AddUserData = () => {
   const handleError = useErrorBoundary();
@@ -17,6 +18,7 @@ const AddUserData = () => {
   const [organizationList, setOrganizationList] = useState([])
   console.log(organizationList, "organizationList1111")
   const userName = useRef()
+  const userEmail = useRef()
   const orgID = useRef()
   const roleType = useRef()
   const errors = {}
@@ -41,9 +43,13 @@ const AddUserData = () => {
       setLoading(false)
       return errors
     }
-
+    if (!userEmail.current.value) {
+      errors.passWord = 'Enter Email'
+      setLoading(false)
+      return errors
+    }
     if (!orgID.current.value) {
-      errors.passWord = 'Enter password'
+      errors.passWord = 'Enter Organization'
       setLoading(false)
       return errors
     }
@@ -60,6 +66,7 @@ const AddUserData = () => {
     // const orgId = sessionStorage.getItem('orgId')
     var data ={
       name: userName.current.value,
+      emailId: userEmail.current.value,
       roleID: roleType.current.value,
       orgId: Number(orgID.current.value),
       sysUser:0,
@@ -97,6 +104,7 @@ const AddUserData = () => {
 
   return (
     <div className='card'>
+      {loading && <UsersListLoading />}
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
           <span className='card-label fw-bold fs-3 mb-1'>Add New User</span>
@@ -115,7 +123,7 @@ const AddUserData = () => {
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
-                  Enter User Name
+                   User Name
                 </label>
                 <input
                   type='text'
@@ -125,6 +133,22 @@ const AddUserData = () => {
                   id='userName'
                   ref={userName}
                   placeholder='Ex: username'
+                />
+              </div>
+            </div>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
+                   User Email
+                </label>
+                <input
+                  type='email'
+                  className='form-control form-control-lg form-control-solid'
+                  required
+                  aria-required='true'
+                  id='userEmail'
+                  ref={userEmail}
+                  placeholder='Ex: UserEmail'
                 />
               </div>
             </div>
@@ -178,7 +202,7 @@ const AddUserData = () => {
                   ref={roleType}
                   required
                 >
-                  <option>Select Role Type</option>
+                  <option value=''>Select Role Type</option>
                   {roleTypes.map((item, index) => (
                     <option value={item.roleID} key={index}>
                       {item.roleName}
