@@ -16,6 +16,7 @@ import{TeamsChannel} from "../modules/auth/components/TeamsChannel"
 // import ErrorBoundary from '../../utils/ErrorBoundary'
 import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallbackComponent } from '../../utils/ErrorFallbackComponent'
+import ForgotPasswordForm from '../modules/auth/components/ForgotPasswordForm'
 
 
 /**
@@ -40,6 +41,7 @@ const AppRoutes: FC = () => {
         <Route element={<App />}>
           <Route path='error/*' element={<ErrorsPage />} />
           <Route path='logout' element={<Logout />} />
+          {/* <Route path='forgotpassword' element={<ForgotPasswordForm />} /> */}
           {/* {currentUser ? (
             <> */}
               <Route path='/*' element={<PrivateRoutes />} />

@@ -41,7 +41,6 @@ const initialValues = {
 export function Login() {
   const [loading, setLoading] = useState(false)
   const [organisation, setOrganisation] = useState([]);
-  const [showModal, setShowModal] = useState(false);
   console.log(organisation, "organisationtest")
   const navigate = useNavigate()
   useEffect(() => {
@@ -54,7 +53,7 @@ export function Login() {
       });
   }, []);
   const handlePassword = () => {
-    setShowModal(true);
+    navigate('/auth/forgotpassword')
   };
   const formik = useFormik({
     initialValues,
@@ -202,10 +201,6 @@ export function Login() {
           <span className='indicator-label' >LOGIN</span>
         </button>
       </div>
-      <ForgotPasswordForm 
-        showModal={showModal} 
-        setShowModal={setShowModal} 
-      />
     </form>
     
   )

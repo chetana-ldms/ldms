@@ -10,7 +10,6 @@ import BuilderPageWrapper from '../pages/layout-builder/BuilderPageWrapper'
 // import ErrorBoundary from '../../utils/ErrorBoundary'
 import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallbackComponent } from '../../utils/ErrorFallbackComponent'
-// import DashboardCompliance from '../pages/dashboard/DashboardCompliance'
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/apps/qradar/qradar-pages/account/ProfilePage'))
@@ -37,8 +36,6 @@ const PrivateRoutes = () => {
         <Route path='auth/*' element={<Navigate to='/dashboard' />} />
         {/* Pages */}
         <Route path='dashboard' element={<DashboardWrapper />} />
-        {/* <Route path='dashboardCompliance' element={<DashboardCompliance />} /> */}
-
         <Route path='builder' element={<BuilderPageWrapper />} />
         <Route path='menu-test' element={<MenuTestPage />} />
         {/* Lazy Modules */}
