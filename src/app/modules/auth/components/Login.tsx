@@ -11,6 +11,7 @@ import { toAbsoluteUrl } from '../../../../_metronic/helpers'
 import { fetchAuthenticate, fetchOrganizations } from '../../../api/Api'
 // import { useAuth } from '../core/Auth'
 import axios from 'axios'
+import ForgotPasswordForm from './ForgotPasswordForm'
 const loginSchema = Yup.object().shape({
   username: Yup.string()
     .min(3, 'Minimum 3 symbols')
@@ -39,8 +40,8 @@ const initialValues = {
 
 export function Login() {
   const [loading, setLoading] = useState(false)
-  // const { saveAuth, setCurrentUser } = useAuth()
   const [organisation, setOrganisation] = useState([]);
+  const [showModal, setShowModal] = useState(false);
   console.log(organisation, "organisationtest")
   const navigate = useNavigate()
   useEffect(() => {
@@ -52,6 +53,9 @@ export function Login() {
         console.log(error);
       });
   }, []);
+  const handlePassword = () => {
+    setShowModal(true);
+  };
   const formik = useFormik({
     initialValues,
     validationSchema: loginSchema,
@@ -92,18 +96,6 @@ export function Login() {
         </h1>
         <div className='text-blue-500 fw-semibold fs-20 login-subtxt'>Defence Centre</div>
       </div>
-      {formik.status ? (
-        <div className='mb-lg-15 alert alert-danger'>
-          <div className='alert-text font-weight-bold'>{formik.status}</div>
-        </div>
-      ) : (
-        <div className='mb-10 bg-light-info p-8 rounded d-none'>
-          <div className='text-info'>
-            Use account <strong>admin@demo.com</strong> and password <strong>demo</strong> to
-            continue.
-          </div>
-        </div>
-      )}
       <div className='fv-row mb-8'>
         <label className='form-label fs-6 fw-bolder text-dark'>Username</label>
         <input
@@ -181,7 +173,7 @@ export function Login() {
               )}
               autoComplete='off'
             >
-              <option value=""  >Select</option>
+              <option value="">Select</option>
               {organisation.length >= 0 && organisation.map((user: Organisation) => (
                 <option key={user.orgID} value={user.orgID}>
                   {user.orgName}
@@ -196,8 +188,9 @@ export function Login() {
           </div>
         )}
       </div>
-      <div className='d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8'>
-        <div />
+      <div className='d-flex justyContent-end mb-8'>
+      
+     <p onClick={handlePassword}>Forgot Password</p>
       </div>
       <div className='d-grid mb-10'>
         <button
@@ -209,6 +202,11 @@ export function Login() {
           <span className='indicator-label' >LOGIN</span>
         </button>
       </div>
+      <ForgotPasswordForm 
+        showModal={showModal} 
+        setShowModal={setShowModal} 
+      />
     </form>
+    
   )
 }

@@ -16,6 +16,7 @@ const ldpToolsUrl = process.env.REACT_APP_LDP_TOOLS_URL;
 const rolesUrl = process.env.REACT_APP_ROLES_URL;
 const organizationDetailsUrl = process.env.REACT_APP_ORGANIZATION_DETAILS_URL;
 const ldpToolDetailsUrl = process.env.REACT_APP_LDP_TOOL_DETAILS_URL;
+const forgatePasswordUrl = "http://115.110.192.133:502/api/Task/v1/Tasks/PasswordReset/Add"
 
 export const fetchMasterData = async (maserDataType) => {
   try {
@@ -330,6 +331,26 @@ export const fetchRoles = async (orgId) => {
     const rolesList = responseData.rolesList;
     console.log(rolesList, "rolesList");
     return rolesList;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchForgatePassword = async (userName, orgId,  createdDate) => {
+  try {
+    const response = await fetch(`${forgatePasswordUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userName: userName,
+        orgId: orgId,
+        createdDate:createdDate,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
   } catch (error) {
     console.log(error);
   }
