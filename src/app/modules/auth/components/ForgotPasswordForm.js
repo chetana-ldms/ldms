@@ -54,7 +54,9 @@ const ForgotPasswordForm = () => {
         const {isSuccess, message} = authData
         if (isSuccess) {
           notify(message)
-          navigate("/auth")
+          setTimeout(() => {
+            navigate("/auth");
+          }, 2000);
         } else {
           notifyFail(message)
           setStatus('Given details are incorrect')

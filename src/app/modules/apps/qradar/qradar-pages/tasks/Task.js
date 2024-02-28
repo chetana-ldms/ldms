@@ -59,7 +59,7 @@ function Task() {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {tasks.map((task) => (
+            {tasks?(tasks.map((task) => (
               <tr key={task.taskId}>
                 <td>{task.taskId}</td>
                 <td>{task.creadatedUser}</td>
@@ -84,7 +84,10 @@ function Task() {
                   </button>
                 </td>
               </tr>
-            ))}
+            ))):(<tr>
+              <td colSpan="7">No data found</td>
+            </tr>)}
+            
           </tbody>
         </table>
       </div>
