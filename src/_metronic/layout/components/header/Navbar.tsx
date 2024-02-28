@@ -1,9 +1,10 @@
+import React, { useState } from 'react';
 import clsx from 'clsx'
 import {KTSVG, toAbsoluteUrl} from '../../../helpers'
 import {HeaderNotificationsMenu, HeaderUserMenu, Search, ThemeModeSwitcher} from '../../../partials'
 import {useLayout} from '../../core'
 import { Link, useNavigate } from 'react-router-dom'
-
+import { Dropdown, Button } from 'react-bootstrap';
 
 const itemClass = 'ms-1 ms-lg-3'
 const btnClass =
@@ -19,6 +20,7 @@ const Navbar = () => {
     navigate('/auth');
   };
   const userName = sessionStorage.getItem('userName');
+
   return (
     <div className='app-navbar flex-shrink-0'>
       <p className='d-flex m-5'>Welcome &nbsp;<b>{" "} { userName}!</b></p>
@@ -41,6 +43,20 @@ const Navbar = () => {
         <HeaderUserMenu />
       </div>
 
+      <div className='notification'>
+        <Dropdown>
+          <Dropdown.Toggle as={Button} variant="link" id="dropdown-basic" className='bell'>
+            <i className='fa fa-bell link'/>
+            {" "}<span className='count'>1</span>
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu>
+            <Dropdown.Item href="#/action-1">Notification 1</Dropdown.Item>
+            <Dropdown.Item href="#/action-2">Notification 2</Dropdown.Item>
+            <Dropdown.Item href="#/action-3">Notification 3</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
       
     </div>
   )
