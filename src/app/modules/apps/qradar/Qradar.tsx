@@ -64,6 +64,9 @@ import Personnel from '../../../../complianceModules/app/Personnel'
 import PolicyCenter from '../../../../complianceModules/app/PolicyCenter'
 import AccessReview from '../../../../complianceModules/app/AccessReview'
 import SecurityReport from '../../../../complianceModules/app/SecurityReport'
+import Task from './qradar-pages/tasks/Task'
+import AddTask from './qradar-pages/tasks/AddTask'
+import UpdateTask from './qradar-pages/tasks/UpdateTask'
 
 
 const QradarPages = () => {
@@ -135,6 +138,9 @@ const QradarPages = () => {
       <Route path='roles-data/:status' element={<RoleData />} />
       <Route path='roles-data/add' element={<AddRoleData />} />
       <Route path='/roles-data/update/:id' element={<UpdateRoleData />} />
+      <Route path='tasks/:status' element={<Task />} />
+      <Route path='tasks/add' element={<AddTask />} />
+      <Route path='/tasks/update/:id' element={<UpdateTask />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )
