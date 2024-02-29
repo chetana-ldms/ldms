@@ -1,48 +1,64 @@
-import React, { useEffect, useState } from 'react';
-import clsx from 'clsx'
-import { KTSVG, toAbsoluteUrl } from '../../../helpers'
-import { HeaderNotificationsMenu, HeaderUserMenu, Search, ThemeModeSwitcher } from '../../../partials'
-import { useLayout } from '../../core'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useContext, useEffect, useState } from 'react';
+import clsx from 'clsx';
 import { Dropdown, Button } from 'react-bootstrap';
+import { KTSVG, toAbsoluteUrl } from '../../../helpers';
+import { HeaderNotificationsMenu, HeaderUserMenu } from '../../../partials';
+import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../../../../app/modules/apps/qradar/qradar-pages/context/AppContextProvider';
 import { fetchTasksUrl } from '../../../../app/api/TasksApi';
 
-const itemClass = 'ms-1 ms-lg-3'
-const btnClass = 'btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px w-md-40px h-md-40px'
-const userAvatarClass = 'symbol-35px symbol-md-40px'
-const btnIconClass = 'svg-icon-1'
+interface Task {
+  taskId: string;
+  taskTitle: string;
+}
+
+const itemClass = 'ms-1 ms-lg-3';
+const userAvatarClass = 'symbol-35px symbol-md-40px';
 
 const Navbar = () => {
-  const { config } = useLayout()
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const userID = Number(sessionStorage.getItem('userId'));
+  const date = new Date().toISOString();
+  const [tasksData, setTasksData] = useState([]);
+  const ownerUserId = Number(sessionStorage.getItem('userId'));
+
+  const reload = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchTasksUrl(ownerUserId);
+      setTasksData(data);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    reload();
+  }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      reload();
+    }, 2 * 60000);
+
+    return () => clearTimeout(timer);
+  }, [tasksData]);
+
+  const userName = sessionStorage.getItem('userName');
 
   const handleLogout = () => {
     navigate('/auth');
   };
-  const userName = sessionStorage.getItem('userName');
-  const [tasks, setTasks] = useState<any[]>([]); 
 
-  const ownerUserId = Number(sessionStorage.getItem('userId'))
+  const handleNotification = (taskId: string) => {
+    navigate(`/qradar/tasks/update/${taskId}`);
+  };
 
-  const reload = async () => {
-    try {
-      const data = await fetchTasksUrl(ownerUserId)
-      setTasks(data || []); 
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(() => {
-    reload()
-  }, [])
-  const handleNotification = () =>{
-    navigate(`/qradar/tasks/list`)
-  }
-  
   return (
     <div className='app-navbar flex-shrink-0'>
-      <p className='d-flex m-5'>Welcome &nbsp;<b>{" "} { userName}!</b></p>
+      <p className='d-flex m-5'>Welcome &nbsp;<b>{" "} {userName}!</b></p>
       <div className={clsx('app-navbar-item', itemClass)}>
         <HeaderNotificationsMenu />
       </div>
@@ -60,24 +76,28 @@ const Navbar = () => {
       </div>
 
       <div className='notification'>
-        <Dropdown>
-          <Dropdown.Toggle as={Button} variant="link" id="dropdown-basic" className='bell'>
+          <Dropdown>
+            <Dropdown.Toggle as={Button} variant="link" id="dropdown-basic" className='bell'>
             <i className='fa fa-bell link'/>
-            {" "}<span className='count'>{tasks.length}</span>
+            {" "}
+            <span className={tasksData?.length > 0 ? 'count' : 'count-zero'}></span>
           </Dropdown.Toggle>
 
-          <Dropdown.Menu>
-            {tasks.map(task => (
-               <Dropdown.Item onClick={handleNotification}>
-                 {task.taskType}
-               </Dropdown.Item>
-            ))}
-          </Dropdown.Menu>
-        </Dropdown>
+            <Dropdown.Menu>
+              {tasksData ? (
+                tasksData.map((task: Task) => (
+                  <Dropdown.Item key={task.taskId} onClick={() => handleNotification(task.taskId)}>
+                    {task.taskTitle}
+                  </Dropdown.Item>
+                ))
+              ) : (
+                <Dropdown.Item disabled>No data found</Dropdown.Item>
+              )}
+            </Dropdown.Menu>
+          </Dropdown>
       </div>
-      
     </div>
-  )
-}
+  );
+};
 
-export { Navbar }
+export { Navbar };

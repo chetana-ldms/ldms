@@ -16,7 +16,7 @@ const ldpToolsUrl = process.env.REACT_APP_LDP_TOOLS_URL;
 const rolesUrl = process.env.REACT_APP_ROLES_URL;
 const organizationDetailsUrl = process.env.REACT_APP_ORGANIZATION_DETAILS_URL;
 const ldpToolDetailsUrl = process.env.REACT_APP_LDP_TOOL_DETAILS_URL;
-const forgatePasswordUrl = "http://115.110.192.133:502/api/Task/v1/Tasks/PasswordReset/Add"
+const forgatePasswordUrl = "http://115.110.192.133:502/api/Task/v1/PasswordReset/Add"
 
 export const fetchMasterData = async (maserDataType) => {
   try {
