@@ -1,17 +1,12 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-// import { AES } from 'crypto-js';
+
 import { useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import clsx from 'clsx'
 import { Link, useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik'
-// import { getUserByToken, login } from '../core/_requests'
-import { getUserByToken } from '../core/_requests'
 import { toAbsoluteUrl } from '../../../../_metronic/helpers'
 import { fetchAuthenticate, fetchOrganizations } from '../../../api/Api'
-// import { useAuth } from '../core/Auth'
-import axios from 'axios'
-import ForgotPasswordForm from './ForgotPasswordForm'
+import TasksPopUp from './TasksPopUp';
 const loginSchema = Yup.object().shape({
   username: Yup.string()
     .min(3, 'Minimum 3 symbols')
@@ -41,7 +36,7 @@ const initialValues = {
 export function Login() {
   const [loading, setLoading] = useState(false)
   const [organisation, setOrganisation] = useState([]);
-  console.log(organisation, "organisationtest")
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate()
   useEffect(() => {
     fetchOrganizations()
@@ -70,7 +65,13 @@ export function Login() {
           sessionStorage.setItem('userName', authData.userName);
           sessionStorage.setItem('globalAdminRole', authData.globalAdminRole);
           sessionStorage.setItem('clientAdminRole', authData.clientAdminRole);
-          navigate('/dashboard')
+          sessionStorage.setItem('clientAdminRole', authData.openTaskCount);
+          const openTaskCount = authData.openTaskCount;
+          if (openTaskCount > 0) {
+            setShowModal(true);
+          } else {
+            navigate('/dashboard');
+          }
         } else {
           setStatus('The login details are incorrect')
         }
@@ -82,7 +83,11 @@ export function Login() {
       }
     },
   })
+  const navigateToDashboard = () => {
+    navigate('/dashboard');
+  };
   return (
+    <>
     <form
       className='form w-100 login-form'
       onSubmit={formik.handleSubmit}
@@ -202,6 +207,7 @@ export function Login() {
         </button>
       </div>
     </form>
-    
+    <TasksPopUp showModal={showModal} setShowModal={setShowModal}  navigateToDashboard={navigateToDashboard}/>
+    </>
   )
 }

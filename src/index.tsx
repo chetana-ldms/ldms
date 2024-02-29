@@ -19,6 +19,7 @@ import { AppRoutes } from './app/routing/AppRoutes'
 import { AuthProvider, setupAxios } from './app/modules/auth'
 import { MsalProvider } from '@azure/msal-react';
 import { msalConfig } from '../src/app/modules/auth/components/authConfig';
+import { AppContext, AppContextProvider } from './app/modules/apps/qradar/qradar-pages/context/AppContextProvider'
 const msalInstance = new PublicClientApplication(msalConfig);
 
 /**
@@ -39,6 +40,7 @@ const queryClient = new QueryClient()
 const container = document.getElementById('root')
 if (container) {
   createRoot(container).render(
+    <AppContextProvider>
     <MsalProvider instance={msalInstance}>
       <QueryClientProvider client={queryClient}>
         <MetronicI18nProvider>
@@ -49,5 +51,6 @@ if (container) {
         {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </MsalProvider>
+    </AppContextProvider>
   )
 }

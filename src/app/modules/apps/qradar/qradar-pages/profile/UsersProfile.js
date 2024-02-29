@@ -223,7 +223,7 @@ function UsersProfile() {
                         <td>{profile.name}</td>
                         <td>{profile.roleName}</td>
                         <td align='right'>
-                          {globalAdminRole !== 1 && (
+                          {userID == profile.userID && (
                             <span
                               className='btn btn-small btn-new btn-primary'
                               onClick={() => handleShowChangePwdModal(profile.userID)}
@@ -231,14 +231,14 @@ function UsersProfile() {
                               Change pwd <i className='fa fa-pencil' />
                             </span>
                           )}{'  '}
-                          {globalAdminRole == 1 && (
+                          {/* {globalAdminRole == 1 && (
                             <span
                               className='btn btn-small btn-new btn-primary'
                               onClick={() => handleResetPassword(profile.userID)}
                             >
                               Reset pwd <i className='fa fa-pencil' />
                             </span>
-                          )}{'  '}
+                          )}{'  '} */}
                           {globalAdminRole === 1 ? (
                             <span
                               className='btn btn-small btn-danger'
