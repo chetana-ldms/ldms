@@ -41,6 +41,7 @@ const Navbar = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       reload();
+      sessionStorage.removeItem('tasks');
     }, 2 * 60000);
 
     return () => clearTimeout(timer);
@@ -55,9 +56,12 @@ const Navbar = () => {
   const handleNotification = (taskId: string) => {
     navigate(`/qradar/tasks/update/${taskId}`);
   };
-if (tasksValue == "true"){
+  useEffect(() => {
+    if (tasksValue === "true") {
+      setTasksData([]);
+    }
+  }, [tasksValue]);
 
-}
   return (
     <div className='app-navbar flex-shrink-0'>
       <p className='d-flex m-5'>Welcome &nbsp;<b>{" "} {userName}!</b></p>

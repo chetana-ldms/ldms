@@ -67,7 +67,7 @@ export function Login() {
         console.log(authData, "authData")
         setMessage(authData.message);
         if (authData.isSuccess) {
-            notify('Login succesful');
+            // notify('Login succesful');
           sessionStorage.setItem('userId', authData.userID);
           sessionStorage.setItem('orgId', authData.orgId);
           sessionStorage.setItem('roleID', authData.roleID);

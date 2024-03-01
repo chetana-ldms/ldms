@@ -10,6 +10,7 @@ import { useNavigate } from "react-router";
 import TasksPopUp from "./TasksPopUp";
 
 function ChangePasswordPopUp({ showChangePwdModal, setShowChangePwdModal }) {
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const oldPasswordRef = useRef(null);
   const newPasswordRef = useRef(null);
@@ -41,16 +42,16 @@ function ChangePasswordPopUp({ showChangePwdModal, setShowChangePwdModal }) {
         return;
       }
       const responseData = await fetchChangePasswordUrl(data);
-      const { isSuccess } = responseData;
-
+      const { isSuccess, message } = responseData;
+      setMessage(message);
       if (isSuccess) {
-        notify("Password Updated");
+        // notify("Password Updated");
         setShowChangePwdModal(false);
         setTimeout(() => {
           navigate("/dashboard");
         }, 2000);
       } else {
-        notifyFail("Failed to update the Password");
+        // notifyFail("Failed to update the Password");
       }
     } catch (error) {
       console.log(error);
@@ -61,10 +62,13 @@ function ChangePasswordPopUp({ showChangePwdModal, setShowChangePwdModal }) {
       <ToastContainer />
       {/* <Modal show={showChangePwdModal} onHide={handleCloseChangePwdModal}> */}
       <Modal show={showChangePwdModal}>
-        {/* <Modal.Header closeButton>
-          <Modal.Title>Change Password</Modal.Title>
-        </Modal.Header> */}
+     
         <Modal.Body>
+        {message && (
+          <div className="alert alert-success mb-5">
+            <i className="fa fa-exclamation-circle green" /> {message}
+          </div>
+        )}
           <h2 className="mb-5">Change Password</h2>
           <Form>
             <Form.Group controlId="oldPassword">

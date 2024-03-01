@@ -89,10 +89,14 @@ function Task() {
   };
   if (LoginCheck === "true" && tasks === null) {
     sessionStorage.removeItem("openTaskCount");
-    navigate("/dashboard");
+    setTimeout(()=>{
+      navigate("/dashboard");},2000);
     sessionStorage.removeItem("clickedButton");
   }
   
+  if(tasks == null){
+    sessionStorage.setItem('tasks', "true");
+  }
   return (
     <div className="no-pad">
       <ToastContainer />
