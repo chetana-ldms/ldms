@@ -22,7 +22,7 @@ const Navbar = () => {
   const date = new Date().toISOString();
   const [tasksData, setTasksData] = useState([]);
   const ownerUserId = Number(sessionStorage.getItem('userId'));
-
+  const tasksValue = sessionStorage.getItem('tasks');
   const reload = async () => {
     try {
       setLoading(true);
@@ -55,7 +55,9 @@ const Navbar = () => {
   const handleNotification = (taskId: string) => {
     navigate(`/qradar/tasks/update/${taskId}`);
   };
+if (tasksValue == "true"){
 
+}
   return (
     <div className='app-navbar flex-shrink-0'>
       <p className='d-flex m-5'>Welcome &nbsp;<b>{" "} {userName}!</b></p>

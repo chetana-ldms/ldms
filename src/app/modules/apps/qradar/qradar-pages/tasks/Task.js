@@ -52,7 +52,9 @@ function Task() {
       const {isSuccess, message} = responseData
 
       if (isSuccess) {
+        setTimeout(()=>{
         notify(message)
+        },2000)
         reload();
       } else {
         notifyFail(message)
@@ -91,6 +93,9 @@ function Task() {
     sessionStorage.removeItem('openTaskCount');
     navigate('/dashboard');
     sessionStorage.removeItem('clickedButton');
+  }
+  if(tasks == null){
+    sessionStorage.setItem('tasks', 'true');
   }
   
   return (
