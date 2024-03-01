@@ -45,6 +45,10 @@ body {
   color: white !important;
 }
 
+.w-100{
+  width: 100%;
+}
+
 .initial{
   padding: 5px 8px;
   border-radius: 50%;
@@ -113,6 +117,9 @@ body {
 //Header notificaion bell icon
 .notification{
   position: relative;
+  .dropdown-menu{
+    border: 1px solid #ccc;
+  }
   .bell{
     display: inline-block;
     // background: #ccc;
@@ -133,12 +140,13 @@ body {
   .count{
     position: absolute;
     top: 2px;
-    background: #e42a4a;
+    background: #3ca422;
     border-radius: 50%;
-    padding: 0px 5px;
+    width: 10px;
+    height: 10px;
     font-size: 11px;
     color: white;
-    right: 0;
+    left: 16px;
     font-weight: bold;;
   }
 }
@@ -275,6 +283,12 @@ body {
 //   margin: 0;
 //   max-width: 100%;
 // }
+
+.modal-small{
+  .modal-dialog{
+    width: 30%;
+  }  
+}
 
 .demo-modal {
   transition: none !important;
@@ -430,6 +444,10 @@ form{
 
 .pointer{
   cursor: pointer;
+}
+
+.no-pointer{
+  cursor: default;
 }
 
 .fs-10 {

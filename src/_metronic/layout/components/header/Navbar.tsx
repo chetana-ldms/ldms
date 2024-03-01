@@ -91,7 +91,7 @@ const Navbar = () => {
                   </Dropdown.Item>
                 ))
               ) : (
-                <Dropdown.Item disabled>No data found</Dropdown.Item>
+                <Dropdown.Item className='no-pointer'>No new notifications.</Dropdown.Item>
               )}
             </Dropdown.Menu>
           </Dropdown>
