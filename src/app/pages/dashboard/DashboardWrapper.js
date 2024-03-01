@@ -35,6 +35,7 @@ import "./Dashboard.css";
 import moment from 'moment-timezone';
 import { useErrorBoundary } from "react-error-boundary";
 import { UsersListLoading } from "../../modules/apps/qradar/qradar-pages/components/loading/UsersListLoading";
+import TasksPopUp from "../../modules/auth/components/TasksPopUp";
 
 
 const DashboardWrapper = () => {
@@ -42,6 +43,7 @@ const DashboardWrapper = () => {
   const userID = Number(sessionStorage.getItem("userId"));
   const roleID = Number(sessionStorage.getItem("roleID"));
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const openTaskCount = Number(sessionStorage.getItem('openTaskCount'))
   const [unattendedIcount, setUnattendedIncidentcount] = useState({});
   const [unattendedAcount, setUnattendedAlertcount] = useState({});
   const [falsePAcount, setFalsePAcount] = useState({}); //GetFalsePositiveAlertsCount
@@ -61,6 +63,7 @@ const DashboardWrapper = () => {
   const orgIdFromSession = Number(sessionStorage.getItem("orgId"));
   const [selectedOrganization, setSelectedOrganization] = useState(orgIdFromSession || 1);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false)
 
   const getCurrentTimeZoneDiff = (UTCDate) => {
     const inputTime = moment.tz(UTCDate, "UTC");
@@ -207,6 +210,14 @@ const DashboardWrapper = () => {
     fetchData();
     setTimeout(() => setIsRefreshing(false), 2000);
   };
+  useEffect(()=>{
+    if (openTaskCount > 0) {
+      setShowModal(true)
+    } else {
+      setShowModal(false)
+    }
+  },[])
+ 
 
   return (
     <div className="dashboard-wrapper">
@@ -493,6 +504,10 @@ const DashboardWrapper = () => {
           {/* end::Row */}
         </div>
       )}
+      <TasksPopUp
+        showModal={showModal}
+        setShowModal={setShowModal}
+      />
     </div>
   );
 };

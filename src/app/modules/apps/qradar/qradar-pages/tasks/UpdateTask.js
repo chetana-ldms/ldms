@@ -46,7 +46,8 @@ function UpdateTask() {
 
       if (isSuccess) {
         notify(message)
-        reload()
+        navigate('/qradar/tasks/list');
+        reload();
       } else {
         notifyFail(message)
       }
@@ -70,7 +71,8 @@ function UpdateTask() {
 
       if (isSuccess) {
         notify(message)
-        reload()
+        navigate('/qradar/tasks/list');
+        reload();
       } else {
         notifyFail(message)
       }
