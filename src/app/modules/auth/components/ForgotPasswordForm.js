@@ -26,6 +26,7 @@ const initialValues = {
 const ForgotPasswordForm = () => {
   const [loading, setLoading] = useState(false)
   const [organisation, setOrganisation] = useState([])
+  const [message, setMessage] = useState('')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -51,15 +52,18 @@ const ForgotPasswordForm = () => {
           createdDate
         )
         console.log(authData, 'authData')
-        const {isSuccess, message} = authData
+        const {isSuccess, message} = authData;
+        setMessage(message);
         if (isSuccess) {
-          notify(message)
+          // notify(message)
           setTimeout(() => {
             navigate("/auth");
-          }, 2000);
+          }, 6000);
         } else {
-          notifyFail(message)
-          setStatus('Given details are incorrect')
+          // notifyFail(message)
+          setTimeout(() => {
+            navigate("/auth");
+          }, 6000);
         }
       } catch (error) {
         console.error(error)
@@ -80,6 +84,7 @@ const ForgotPasswordForm = () => {
         id='kt_login_signin_form'
       >
         <div className='text-center mb-11'>
+          <div>{message}</div>
           <h1 className='text-dark fw-bolder mb-3'>
             <img src={toAbsoluteUrl('/media/misc/lancesoft_logo.png')} className='h-80px me-3' />
           </h1>
