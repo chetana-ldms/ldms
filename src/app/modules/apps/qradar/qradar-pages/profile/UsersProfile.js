@@ -103,28 +103,28 @@ function UsersProfile() {
     setShowChangePwdModal(false)
   }
 
-  const handleResetPassword = async (selectedUserID) => {
-    var data = {
-      modifiedUserId: userID,
-      modifiedDate: date,
-      userId: selectedUserID,
-    }
-    try {
-      setLoading(true)
-      const responseData = await fetchResetPasswordUrl(data)
-      const {isSuccess} = responseData
+  // const handleResetPassword = async (selectedUserID) => {
+  //   var data = {
+  //     modifiedUserId: userID,
+  //     modifiedDate: date,
+  //     userId: selectedUserID,
+  //   }
+  //   try {
+  //     setLoading(true)
+  //     const responseData = await fetchResetPasswordUrl(data)
+  //     const {isSuccess} = responseData
 
-      if (isSuccess) {
-        notify('Password Reset Successful')
-      } else {
-        notifyFail('Failed to reset the Password')
-      }
-      setLoading(false)
-    } catch (error) {
-      setLoading(false)
-      handleError(error)
-    }
-  }
+  //     if (isSuccess) {
+  //       notify('Password Reset Successful')
+  //     } else {
+  //       notifyFail('Failed to reset the Password')
+  //     }
+  //     setLoading(false)
+  //   } catch (error) {
+  //     setLoading(false)
+  //     handleError(error)
+  //   }
+  // }
 
   const handleDelete = async (userID) => {
     const deletedUserId = Number(sessionStorage.getItem('userId'))

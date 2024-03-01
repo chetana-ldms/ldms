@@ -7,6 +7,7 @@ import { useFormik } from 'formik'
 import { toAbsoluteUrl } from '../../../../_metronic/helpers'
 import { fetchAuthenticate, fetchOrganizations } from '../../../api/Api'
 import TasksPopUp from './TasksPopUp';
+import ChangePasswordPopUp from './ChangePasswordPopUp'
 const loginSchema = Yup.object().shape({
   username: Yup.string()
     .min(3, 'Minimum 3 symbols')
@@ -36,7 +37,7 @@ const initialValues = {
 export function Login() {
   const [loading, setLoading] = useState(false)
   const [organisation, setOrganisation] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  const [showChangePwdModal, setShowChangePwdModal] = useState(false);
   const navigate = useNavigate()
   useEffect(() => {
     fetchOrganizations()
@@ -65,10 +66,11 @@ export function Login() {
           sessionStorage.setItem('userName', authData.userName);
           sessionStorage.setItem('globalAdminRole', authData.globalAdminRole);
           sessionStorage.setItem('clientAdminRole', authData.clientAdminRole);
-          sessionStorage.setItem('clientAdminRole', authData.openTaskCount);
-          const openTaskCount = authData.openTaskCount;
-          if (openTaskCount > 0) {
-            setShowModal(true);
+          sessionStorage.setItem('openTaskCount', authData.openTaskCount);
+          sessionStorage.setItem('defaultPassword', authData.defaultPassword);
+          const defaultPassword = authData.defaultPassword;
+          if (defaultPassword) {
+            setShowChangePwdModal(true);
           } else {
             navigate('/dashboard');
           }
@@ -83,9 +85,6 @@ export function Login() {
       }
     },
   })
-  const navigateToDashboard = () => {
-    navigate('/dashboard');
-  };
   return (
     <>
     <form
@@ -207,7 +206,8 @@ export function Login() {
         </button>
       </div>
     </form>
-    <TasksPopUp showModal={showModal} setShowModal={setShowModal}  navigateToDashboard={navigateToDashboard}/>
+    <ChangePasswordPopUp showChangePwdModal={showChangePwdModal} setShowChangePwdModal={setShowChangePwdModal}/>
+
     </>
   )
 }
