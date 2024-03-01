@@ -1,23 +1,29 @@
+import { Modal, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
-import { Modal, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-
-const TasksPopUp = ({ showModal, setShowModal, navigateToDashboard  }) => {
-    const handleClose = () => {
-        setShowModal(false);
-        navigateToDashboard();
-      };
-      const handleButtonClick = () => {
-        sessionStorage.setItem('clickedButton', 'true');
-      };
+const TasksPopUp = ({ showModal, setShowModal, navigateToDashboard }) => {
+  const handleClose = () => {
+    setShowModal(false);
+    navigateToDashboard();
+  };
+  const handleButtonClick = () => {
+    sessionStorage.setItem("clickedButton", "true");
+  };
   return (
-    <Modal show={showModal} onHide={handleClose}>
+    <Modal className="modal-small" show={showModal} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Here some important tasks are pending from you!!!</Modal.Title>
+        {/* <Modal.Title>Here some important tasks are pending from you!!!</Modal.Title> */}
       </Modal.Header>
-      <Modal.Body className="d-flex justify-content-center">
-        <Link to='/qradar/tasks/list'>
-        <Button onClick={handleButtonClick}>Click Here</Button>
+      <Modal.Body className="text-center no-pad">
+        <p className="fs-15">
+          You have some significant tasks that require your immediate
+          attention!!!
+        </p>
+        <br />
+        <Link to="/qradar/tasks/list">
+          <Button onClick={handleButtonClick} className="btn-login w-100">
+            Click Here
+          </Button>
         </Link>
       </Modal.Body>
     </Modal>
