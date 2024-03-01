@@ -19,7 +19,9 @@ const loginSchema = Yup.object().shape({
     .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
     .required('Password is required'),
-  org: Yup.string().required('Organisation is required'),
+  org: Yup.string()
+    .notOneOf(['0'], 'Please select an organisation') 
+    .required('Organisation is required'),
 });
 
 interface Organisation {
@@ -191,7 +193,7 @@ export function Login() {
               )}
               autoComplete='off'
             >
-              <option value="" disabled>Select Organisation</option>
+              <option value="" >Select Organisation</option>
               {organisation.length >= 0 && organisation.map((user: Organisation) => (
                 <option key={user.orgID} value={user.orgID}>
                   {user.orgName}

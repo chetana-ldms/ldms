@@ -15,8 +15,10 @@ import {toAbsoluteUrl} from '../../../../_metronic/helpers'
 
 const loginSchema = Yup.object().shape({
   username: Yup.string().min(3, 'Minimum 3 symbols').required('Username is required'),
-  org: Yup.string().required('Organisation is required'),
-})
+  org: Yup.string()
+  .notOneOf(['0'], 'Please select an organisation') 
+  .required('Organisation is required'),
+});
 
 const initialValues = {
   username: '',
@@ -151,7 +153,7 @@ const ForgotPasswordForm = () => {
                 )}
                 autoComplete='off'
               >
-                <option value='' disabled>
+                <option value='' >
                   Select organisation
                 </option>
                 {organisation.length >= 0 &&
