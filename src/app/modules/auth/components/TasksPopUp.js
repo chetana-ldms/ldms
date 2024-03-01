@@ -7,6 +7,9 @@ const TasksPopUp = ({ showModal, setShowModal, navigateToDashboard  }) => {
         setShowModal(false);
         navigateToDashboard();
       };
+      const handleButtonClick = () => {
+        sessionStorage.setItem('clickedButton', 'true');
+      };
   return (
     <Modal show={showModal} onHide={handleClose}>
       <Modal.Header closeButton>
@@ -14,7 +17,7 @@ const TasksPopUp = ({ showModal, setShowModal, navigateToDashboard  }) => {
       </Modal.Header>
       <Modal.Body className="d-flex justify-content-center">
         <Link to='/qradar/tasks/list'>
-          <Button>Click Here</Button>
+        <Button onClick={handleButtonClick}>Click Here</Button>
         </Link>
       </Modal.Body>
     </Modal>

@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react'
-import {Link, useParams} from 'react-router-dom'
+import {Link, useNavigate, useParams} from 'react-router-dom'
 import {fetchTaskCancelUrl, fetchTasksUrl} from '../../../../../api/TasksApi'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {AppContext} from '../context/AppContextProvider'
@@ -12,7 +12,10 @@ function Task() {
   const [loading, setLoading] = useState(false)
   const userID = Number(sessionStorage.getItem('userId'))
   const date = new Date().toISOString()
-  const {id} = useParams()
+  const {id} = useParams();
+  const LoginCheck = sessionStorage.getItem('clickedButton');
+  console.log(LoginCheck, "LoginCheck")
+  const navigate = useNavigate()
   // const {tasksData} = useContext(AppContext)
   // console.log(tasksData)
   // const [tasks, setTasks] = useState(tasksData)
@@ -84,6 +87,12 @@ function Task() {
       console.log(error)
     }
   }
+  if (LoginCheck === "true" && tasks === null) {
+    sessionStorage.removeItem('openTaskCount');
+    navigate('/dashboard');
+    sessionStorage.removeItem('clickedButton');
+  }
+  
   return (
     <div className='card'>
       <ToastContainer />

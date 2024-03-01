@@ -109,9 +109,11 @@ export function Login() {
       </div>
       <h1 className='mb-2 text-blue'>Login</h1>
       <hr/>
+      { message &&
       <div className="alert alert-danger mb-5">
           <i className="fa fa-exclamation-circle red" /> {message}
         </div>
+      }
       <div className='fv-row mb-8'>
         <label className='form-label fs-6 fw-bolder text-dark'>Username</label>
         <input
