@@ -92,21 +92,26 @@ export function Login() {
     },
   })
   return (
-    <>  
+    <div className='card pad-20'>  
     <ToastContainer />
-    <div>{message}</div>
+    
     <form
       className='form w-100 login-form'
       onSubmit={formik.handleSubmit}
       noValidate
       id='kt_login_signin_form'
     >
-      <div className='text-center mb-11'>
+      <div className='text-center'>
         <h1 className='text-dark fw-bolder mb-3'>
           <img src={toAbsoluteUrl('/media/misc/lancesoft_logo.png')} className='h-80px me-3' />
         </h1>
         <div className='text-blue-500 fw-semibold fs-20 login-subtxt'>Defence Centre</div>
       </div>
+      <h1 className='mb-2 text-blue'>Login</h1>
+      <hr/>
+      <div className="alert alert-danger mb-5">
+          <i className="fa fa-exclamation-circle red" /> {message}
+        </div>
       <div className='fv-row mb-8'>
         <label className='form-label fs-6 fw-bolder text-dark'>Username</label>
         <input
@@ -125,7 +130,7 @@ export function Login() {
         />
         {formik.touched.username && formik.errors.username && (
           <div className='fv-plugins-message-container'>
-            <span role='alert'>{formik.errors.username}</span>
+            <span className='red' role='alert'>{formik.errors.username}</span>
           </div>
         )}
       </div>
@@ -149,7 +154,7 @@ export function Login() {
         {formik.touched.password && formik.errors.password && (
           <div className='fv-plugins-message-container'>
             <div className='fv-help-block'>
-              <span role='alert'>{formik.errors.password}</span>
+              <span className='red' role='alert'>{formik.errors.password}</span>
             </div>
           </div>
         )}
@@ -169,7 +174,7 @@ export function Login() {
              )}
              autoComplete='off'
            >
-              <option value="" >Select</option>
+              <option value="">Select Organisation</option>
             </select>
           )}
           {organisation !== null && (
@@ -184,7 +189,7 @@ export function Login() {
               )}
               autoComplete='off'
             >
-              <option value="">Select</option>
+              <option value="" disabled>Select Organisation</option>
               {organisation.length >= 0 && organisation.map((user: Organisation) => (
                 <option key={user.orgID} value={user.orgID}>
                   {user.orgName}
@@ -195,13 +200,13 @@ export function Login() {
         </div>
         {formik.touched.org && formik.errors.org && (
           <div className='fv-plugins-message-container'>
-            <span role='alert'>{formik.errors.org}</span>
+            <span className='red' role='alert'>{formik.errors.org}</span>
           </div>
         )}
       </div>
       <div className='d-flex justyContent-end mb-8'>
       
-     <p onClick={handlePassword}>Forgot Password</p>
+     <p onClick={handlePassword} className='link pointer'>Forgot Password</p>
       </div>
       <div className='d-grid mb-10'>
         <button
@@ -216,6 +221,6 @@ export function Login() {
     </form>
     <ChangePasswordPopUp showChangePwdModal={showChangePwdModal} setShowChangePwdModal={setShowChangePwdModal}/>
 
-    </>
+    </div>
   )
 }

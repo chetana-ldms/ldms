@@ -104,7 +104,7 @@ const SidebarMenuMain = () => {
         <SidebarMenuItem
           icon='/media/icons/duotune/communication/com007.svg'
           to='/qradar/tasks/list'
-          title='Tasks'
+          title='My Tasks'
         />
     
     </>

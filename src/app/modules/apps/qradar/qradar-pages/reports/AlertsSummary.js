@@ -16,7 +16,6 @@ function AlertsSummary() {
   const [alertData, setAlertData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [exportFormat, setExportFormat] = useState(""); // State to store export format
   const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
 
   const CanvasJS = CanvasJSReact.CanvasJS;
