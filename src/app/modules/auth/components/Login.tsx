@@ -8,6 +8,9 @@ import { toAbsoluteUrl } from '../../../../_metronic/helpers'
 import { fetchAuthenticate, fetchOrganizations } from '../../../api/Api'
 import TasksPopUp from './TasksPopUp';
 import ChangePasswordPopUp from './ChangePasswordPopUp'
+import { ToastContainer } from 'react-toastify'
+import { notify, notifyFail } from '../../apps/qradar/qradar-pages/components/notification/Notification'
+import 'react-toastify/dist/ReactToastify.css';
 const loginSchema = Yup.object().shape({
   username: Yup.string()
     .min(3, 'Minimum 3 symbols')
@@ -60,6 +63,7 @@ export function Login() {
         const authData = await fetchAuthenticate(values.username, values.password, Number(values.org))
         console.log(authData, "authData")
         if (authData.isSuccess) {
+            notify('Login succesful');
           sessionStorage.setItem('userId', authData.userID);
           sessionStorage.setItem('orgId', authData.orgId);
           sessionStorage.setItem('roleID', authData.roleID);
@@ -71,11 +75,13 @@ export function Login() {
           const defaultPassword = authData.defaultPassword;
           if (defaultPassword) {
             setShowChangePwdModal(true);
-          } else {
-            navigate('/dashboard');
+          } else{
+            setTimeout(()=>{
+              navigate('/dashboard');
+            },2000)
           }
         } else {
-          setStatus('The login details are incorrect')
+          notifyFail('Authentication failed');
         }
       } catch (error) {
         console.error(error)
@@ -86,7 +92,8 @@ export function Login() {
     },
   })
   return (
-    <>
+    <>  
+    <ToastContainer />
     <form
       className='form w-100 login-form'
       onSubmit={formik.handleSubmit}

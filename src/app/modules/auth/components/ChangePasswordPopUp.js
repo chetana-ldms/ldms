@@ -6,25 +6,28 @@ import {
 } from '../../apps/qradar/qradar-pages/components/notification/Notification'
 import {fetchChangePasswordUrl} from '../../../api/UserProfileApi'
 import {ToastContainer} from 'react-toastify'
-import { useNavigate } from 'react-router'
+import {useNavigate} from 'react-router'
 import TasksPopUp from './TasksPopUp'
 
 function ChangePasswordPopUp({showChangePwdModal, setShowChangePwdModal}) {
-    const navigate = useNavigate()
+  const navigate = useNavigate()
   const oldPasswordRef = useRef(null)
   const newPasswordRef = useRef(null)
+  const confirmPasswordRef = useRef(null);
+  const [confirmPassword, setConfirmPassword] = useState('');
   const userID = Number(sessionStorage.getItem('userId'))
   const openTaskCount = Number(sessionStorage.getItem('openTaskCount'))
   const date = new Date().toISOString()
 
-//   const handleCloseChangePwdModal = () => {
-//     setShowChangePwdModal(false)
-//   }
+  //   const handleCloseChangePwdModal = () => {
+  //     setShowChangePwdModal(false)
+  //   }
 
   const handlePostChangePwd = async (event) => {
     event.preventDefault()
     const oldPassword = oldPasswordRef.current.value
     const newPassword = newPasswordRef.current.value
+    const confirmPass = confirmPasswordRef.current.value;
     const data = {
       modifiedUserId: userID,
       modifiedDate: date,
@@ -33,13 +36,19 @@ function ChangePasswordPopUp({showChangePwdModal, setShowChangePwdModal}) {
       oldPassword: oldPassword,
     }
     try {
+      if (newPassword !== confirmPass) { 
+        notifyFail('New password and confirm password do not match');
+        return;
+    }
       const responseData = await fetchChangePasswordUrl(data)
       const {isSuccess} = responseData
 
       if (isSuccess) {
         notify('Password Updated')
         setShowChangePwdModal(false)
+        setTimeout(()=>{
           navigate('/dashboard')
+        },2000)
       } else {
         notifyFail('Failed to update the Password')
       }
@@ -64,6 +73,14 @@ function ChangePasswordPopUp({showChangePwdModal, setShowChangePwdModal}) {
             <Form.Group controlId='newPassword'>
               <Form.Label>New Password</Form.Label>
               <Form.Control type='password' ref={newPasswordRef} />
+            </Form.Group>
+            <Form.Group controlId='confirmPassword'>
+              <Form.Label>Confirm Password</Form.Label>
+              <Form.Control
+                type='password'
+                ref={confirmPasswordRef}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
             </Form.Group>
           </Form>
         </Modal.Body>
