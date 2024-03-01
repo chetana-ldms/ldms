@@ -61,9 +61,9 @@ const ForgotPasswordForm = () => {
           }, 6000);
         } else {
           // notifyFail(message)
-          setTimeout(() => {
-            navigate("/auth");
-          }, 6000);
+          // setTimeout(() => {
+          //   navigate("/auth");
+          // }, 6000);
         }
       } catch (error) {
         console.error(error)

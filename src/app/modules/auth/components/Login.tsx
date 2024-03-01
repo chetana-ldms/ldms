@@ -40,6 +40,7 @@ const initialValues = {
 export function Login() {
   const [loading, setLoading] = useState(false)
   const [organisation, setOrganisation] = useState([]);
+  const [message, setMessage] = useState('')
   const [showChangePwdModal, setShowChangePwdModal] = useState(false);
   const navigate = useNavigate()
   useEffect(() => {
@@ -62,6 +63,7 @@ export function Login() {
       try {
         const authData = await fetchAuthenticate(values.username, values.password, Number(values.org))
         console.log(authData, "authData")
+        setMessage(authData.message);
         if (authData.isSuccess) {
             notify('Login succesful');
           sessionStorage.setItem('userId', authData.userID);
@@ -76,12 +78,10 @@ export function Login() {
           if (defaultPassword) {
             setShowChangePwdModal(true);
           } else{
-            setTimeout(()=>{
               navigate('/dashboard');
-            },2000)
           }
         } else {
-          notifyFail('Authentication failed');
+          // notifyFail('Authentication failed');
         }
       } catch (error) {
         console.error(error)
@@ -94,6 +94,7 @@ export function Login() {
   return (
     <>  
     <ToastContainer />
+    <div>{message}</div>
     <form
       className='form w-100 login-form'
       onSubmit={formik.handleSubmit}
