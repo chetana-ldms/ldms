@@ -67,6 +67,7 @@ import SecurityReport from '../../../../complianceModules/app/SecurityReport'
 import Task from './qradar-pages/tasks/Task'
 import AddTask from './qradar-pages/tasks/AddTask'
 import UpdateTask from './qradar-pages/tasks/UpdateTask'
+import Application from './qradar-pages/application-management/Application'
 
 
 const QradarPages = () => {
@@ -141,6 +142,7 @@ const QradarPages = () => {
       <Route path='tasks/:status' element={<Task />} />
       <Route path='tasks/add' element={<AddTask />} />
       <Route path='/tasks/update/:id' element={<UpdateTask />} />
+      <Route path='application/:status' element={<Application />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )

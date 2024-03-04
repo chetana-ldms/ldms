@@ -68,7 +68,7 @@ const Controle = () => {
         <div className='col-lg-9'>
           <div className='sort-section row'>
             <div className='col-lg-3 d-flex '>
-              <ul className='nav nav-tabs p-0 border-0 fs-8'>
+            <ul className='nav nav-tabs p-0 border-0 fs-8'>
                 <li className='nav-item'>
                   <a
                     className={`nav-link ${activeTab === 'inScope' ? 'active' : ''}`}
