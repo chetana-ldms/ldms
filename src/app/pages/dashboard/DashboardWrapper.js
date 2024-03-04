@@ -32,24 +32,23 @@ import {
   fetchUserActionsByUser,
 } from "../../api/dashBoardApi";
 import "./Dashboard.css";
-import moment from 'moment-timezone';
+import moment from "moment-timezone";
 import { useErrorBoundary } from "react-error-boundary";
 import { UsersListLoading } from "../../modules/apps/qradar/qradar-pages/components/loading/UsersListLoading";
 import TasksPopUp from "../../modules/auth/components/TasksPopUp";
-
 
 const DashboardWrapper = () => {
   const handleError = useErrorBoundary();
   const userID = Number(sessionStorage.getItem("userId"));
   const roleID = Number(sessionStorage.getItem("roleID"));
   const orgId = Number(sessionStorage.getItem("orgId"));
-  const openTaskCount = Number(sessionStorage.getItem('openTaskCount'))
+  const openTaskCount = Number(sessionStorage.getItem("openTaskCount"));
   const [unattendedIcount, setUnattendedIncidentcount] = useState({});
   const [unattendedAcount, setUnattendedAlertcount] = useState({});
   const [falsePAcount, setFalsePAcount] = useState({}); //GetFalsePositiveAlertsCount
   const [alertsResolvedMeanTime, setAlertsResolvedMeanTime] = useState({}); //GetFalsePositiveAlertsCount
-  const [organizations, setOrganizations] = useState([]); 
-  const [alertstatus, setAlertstatus] = useState([]); 
+  const [organizations, setOrganizations] = useState([]);
+  const [alertstatus, setAlertstatus] = useState([]);
   const [UserActions, setUseractions] = useState([]);
   console.log(UserActions, "UserActions");
   const [error, setError] = useState(null);
@@ -61,9 +60,11 @@ const DashboardWrapper = () => {
   const [selectedFilter, setSelectedFilter] = useState(30);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const orgIdFromSession = Number(sessionStorage.getItem("orgId"));
-  const [selectedOrganization, setSelectedOrganization] = useState(orgIdFromSession || 1);
+  const [selectedOrganization, setSelectedOrganization] = useState(
+    orgIdFromSession || 1
+  );
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false);
 
   const getCurrentTimeZoneDiff = (UTCDate) => {
     const inputTime = moment.tz(UTCDate, "UTC");
@@ -96,7 +97,7 @@ const DashboardWrapper = () => {
   const fetchData = async () => {
     try {
       // GetAlertsMostUsedTags
-      setLoading(true)
+      setLoading(true);
       const mostUsedTagsResponse = await fetchGetAlertsMostUsedTags({
         orgID: selectedOrganization,
         toolID: 0,
@@ -139,15 +140,13 @@ const DashboardWrapper = () => {
       setUnattendedIncidentcount(unattendedIncidentsCountData);
 
       // GetUnAttendedAletsCount
-      const unattendedAlertsCountResponse = await fetchGetUnAttendedAletsCount(
-        {
-          orgID: selectedOrganization,
-          toolID: 1,
-          toolTypeID: 1,
-          userID: userID,
-          numberofDays: selectedFilter,
-        }
-      );
+      const unattendedAlertsCountResponse = await fetchGetUnAttendedAletsCount({
+        orgID: selectedOrganization,
+        toolID: 1,
+        toolTypeID: 1,
+        userID: userID,
+        numberofDays: selectedFilter,
+      });
       const unattendedAlertsCountData = unattendedAlertsCountResponse;
       setUnattendedAlertcount(unattendedAlertsCountData);
 
@@ -210,14 +209,13 @@ const DashboardWrapper = () => {
     fetchData();
     setTimeout(() => setIsRefreshing(false), 2000);
   };
-  useEffect(()=>{
+  useEffect(() => {
     if (openTaskCount > 0) {
-      setShowModal(true)
+      setShowModal(true);
     } else {
-      setShowModal(false)
+      setShowModal(false);
     }
-  },[])
- 
+  }, []);
 
   return (
     <div className="dashboard-wrapper">
@@ -228,7 +226,7 @@ const DashboardWrapper = () => {
           <div className="header-filter row">
             <div className="col-lg-3">
               <div className="row">
-                <label className="form-label fw-normal col-lg-7 fs-12 lh-40 fc-gray fs-14">
+                <label className="form-label fw-normal col-lg-7 fs-12 lh-40 fs-14">
                   <span>Show info for last days:</span>
                 </label>
                 <div className="col-lg-5">
@@ -251,7 +249,7 @@ const DashboardWrapper = () => {
             </div>
             <div className="col-lg-4">
               <div className="row">
-                <label className="form-label fw-normal fs-12 col-lg-4 lh-40 fc-gray fs-14">
+                <label className="form-label fw-normal fs-12 col-lg-4 lh-40 fs-14">
                   <span>Organization:</span>
                 </label>
                 <div className="col-lg-7">
@@ -289,7 +287,11 @@ const DashboardWrapper = () => {
             <div className="col-lg-5 fs-11 lh-40 fc-gray text-right ds-reload">
               Dashboard is automatically refreshing every 5 minutes{" "}
               <a href="" onClick={handleRefreshData}>
-                <i className={`fa fa-refresh ${isRefreshing ? "rotate" : ""}`} />
+                <i
+                  className={`fa fa-refresh link ${
+                    isRefreshing ? "rotate" : ""
+                  }`}
+                />
               </a>
             </div>
           </div>
@@ -303,7 +305,7 @@ const DashboardWrapper = () => {
                     <h6 className="text-gray-800 text-hover-primary mb-1 fs-12 uppercase">
                       Unhandeled Incidents
                     </h6>
-                    <span className="fc-gray fw-bold fs-40 mt-5 mb-5">
+                    <span className="fw-bold fs-40 mt-5 mb-5">
                       {unattendedIcount.unattendedIncidentCount
                         ? unattendedIcount.unattendedIncidentCount
                         : "0"}
@@ -319,7 +321,7 @@ const DashboardWrapper = () => {
                     <h6 className="text-gray-800 text-hover-primary mb-1 fs-12 uppercase">
                       Unhandeled Alerts
                     </h6>
-                    <span className="fc-gray fw-bold fs-40 mt-5 mb-5">
+                    <span className="fw-bold fs-40 mt-5 mb-5">
                       {unattendedAcount.unattendedAlertsCount
                         ? unattendedAcount.unattendedAlertsCount
                         : "0"}
@@ -335,8 +337,10 @@ const DashboardWrapper = () => {
                     <h6 className="text-gray-800 text-hover-primary mb-1 fs-12 uppercase">
                       False Positive Alerts
                     </h6>
-                    <span className="fc-gray fw-bold fs-40 mt-5 mb-5">
-                      {falsePAcount.alertsCount ? falsePAcount.alertsCount : "0"}
+                    <span className="fw-bold fs-40 mt-5 mb-5">
+                      {falsePAcount.alertsCount
+                        ? falsePAcount.alertsCount
+                        : "0"}
                     </span>
                     <span className="span-red">
                       <i className="v-hidden fa fa-arrow-down"></i>
@@ -349,7 +353,7 @@ const DashboardWrapper = () => {
                     <h6 className="text-gray-800 text-hover-primary mb-1 fs-12 uppercase">
                       Mean Time to Resolve
                     </h6>
-                    <span className="fc-gray fw-bold fs-22 mt-10 mb-8">
+                    <span className="fw-bold fs-22 mt-10 mb-8">
                       {alertsResolvedMeanTime.alertsResolvedMeanTime
                         ? alertsResolvedMeanTime.alertsResolvedMeanTime
                         : "0"}
@@ -363,7 +367,10 @@ const DashboardWrapper = () => {
             </div>
             <div className="col-lg-6">
               <div className="card bg-default alert-chart">
-                <AlertsTrends days={selectedFilter} orgId={selectedOrganization} />
+                <AlertsTrends
+                  days={selectedFilter}
+                  orgId={selectedOrganization}
+                />
               </div>
             </div>
           </div>
@@ -412,7 +419,9 @@ const DashboardWrapper = () => {
             <div className="col-lg-6">
               <div className="card bg-default">
                 <div className="card-body">
-                  <h6 className="uppercase text-center">Actions assigned to me</h6>
+                  <h6 className="uppercase text-center">
+                    Actions assigned to me
+                  </h6>
                   <div className="table-responsive alert-table">
                     {/* begin::Table */}
                     <table className="table align-middle gs-0 gy-5 ds-table mt-2">
@@ -444,10 +453,11 @@ const DashboardWrapper = () => {
                           })
                         ) : (
                           <tr>
-                            <td className="text-center" colSpan="4">No data found</td>
+                            <td className="text-center" colSpan="4">
+                              No data found
+                            </td>
                           </tr>
                         )}
-
                       </tbody>
                     </table>
                   </div>
@@ -490,10 +500,11 @@ const DashboardWrapper = () => {
                           })
                         ) : (
                           <tr>
-                            <td className="text-center" colSpan="4">No data found</td>
+                            <td className="text-center" colSpan="4">
+                              No data found
+                            </td>
                           </tr>
                         )}
-
                       </tbody>
                     </table>
                   </div>
@@ -504,10 +515,7 @@ const DashboardWrapper = () => {
           {/* end::Row */}
         </div>
       )}
-      <TasksPopUp
-        showModal={showModal}
-        setShowModal={setShowModal}
-      />
+      <TasksPopUp showModal={showModal} setShowModal={setShowModal} />
     </div>
   );
 };

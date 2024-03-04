@@ -162,6 +162,9 @@ export function Login() {
             </div>
           </div>
         )}
+        <div className='text-right mt-3'>
+          <p onClick={handlePassword} className='link pointer text-underline'>Forgot password</p>
+        </div>
       </div>
       <div className='fv-row mb-8'>
         <label className='form-label fs-6 fw-bolder text-dark'>Organisation Name</label>
@@ -208,10 +211,7 @@ export function Login() {
           </div>
         )}
       </div>
-      <div className='d-flex justyContent-end mb-8'>
       
-     <p onClick={handlePassword} className='link pointer'>Forgot Password</p>
-      </div>
       <div className='d-grid mb-10'>
         <button
           type='submit'

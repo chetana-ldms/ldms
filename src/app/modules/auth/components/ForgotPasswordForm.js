@@ -186,7 +186,7 @@ const ForgotPasswordForm = () => {
             </div>
           )}
         </div>
-        <div className="d-grid mb-10">
+        <div className="d-grid mb-5">
           <button
             type="submit"
             id="kt_sign_in_submit"
@@ -198,10 +198,10 @@ const ForgotPasswordForm = () => {
         </div>
       </form>
 
-      <p className="fs-12 text-right">
+      <p className="fs-13 text-right">
         Click here to{" "}
         <Link to="/auth">
-          <span className="link pointer">login</span>
+          <span className="link pointer text-underline">Login</span>
         </Link>
       </p>
     </div>

@@ -182,10 +182,18 @@ body {
 
 .alert-table {
   th {
-    background: #1580af !important;
+    background: #0EB0BF !important;
     color: #fff !important;
-    border-right: 1px solid #1294be !important;
+    border-right: 1px solid #12bccb !important;
     font-weight: normal;
+    padding: 10px !important;
+  }
+  tr{
+    &.table-row{
+      &:nth-of-type(4n+1),&:nth-of-type(4n+2) {
+        background-color: #f4f4f4 !important;
+      }
+    }
   }
   .notes-container{
     max-height: 200px; 
@@ -204,7 +212,7 @@ body {
         td{
           border-bottom: 1px solid #333 !important;
         }
-      }
+      }      
     }
     td{
       border: 1px solid #333;
@@ -353,8 +361,8 @@ form{
     &:focus {
       border: 1px solid #ccc !important;
     }
-    .form-select-sm{
-      padding: 4px 10px;
+    &.form-select-sm{
+      padding: 4px 10px !important;
     }
   }
 }
@@ -401,25 +409,25 @@ form{
     box-shadow: 0px 0px 2px 2px #e5e5e5;
   }
   .bg-secondary {
-    background-color: #c0e3ff !important;
+    background-color: #FFE2E5 !important;
     // color: white !important;
     box-shadow: none;
     height: 157px;
   }
   .bg-light-warning {
-    background-color: #b0dfe4 !important;
+    background-color: #F3E8FF !important;
     box-shadow: none;
     height: 157px;
   }
 
   .bg-light-success {
-    background-color: #cae7d3 !important;
+    background-color: #DCFCE7 !important;
     box-shadow: none;
     height: 157px;
   }
 
   .bg-light-danger {
-    background-color: #cad6e2 !important;
+    background-color: #FFF4DE !important;
     box-shadow: none;
     height: 157px;
   }
@@ -448,6 +456,10 @@ form{
 
 .no-pointer{
   cursor: default;
+}
+
+.fs-8 {
+  font-size: $fs-8 !important;
 }
 
 .fs-10 {
@@ -527,6 +539,10 @@ form{
   text-align: right;
 }
 
+.text-underline{
+  text-decoration: underline;
+}
+
 .float-left {
   float: left;
 }
@@ -581,7 +597,7 @@ form{
       width: 100%;
       content: '';
       display: inline-block;
-      background-color: #ec6641;
+      background-color: #ffa229;
       color: white;
       margin-bottom: 10px;
       height: 30px;
@@ -1494,11 +1510,17 @@ form{
 }
 
 //Sidebar menu CSS
+.app-sidebar{
+  background-color: #2A3F54 !important; 
+}
 .app-sidebar-menu {
   overflow-x: hidden;
+  .menu-title{
+    color: #fff !important;
+  }
   .menu-link {
     &:hover {
-      background-color: #3a414e;
+      background-color: #35475D;
       margin: 0 !important;
     }
   }
@@ -1604,11 +1626,8 @@ td{
 
 
 .upper-tab{
-  .btn{
-    background-color: #ccc !important;
-    &.active{
-      background-color: #005cbf !important;
-    }
+  .btn-new{
+    color: #fff !important;
   }
 }
 
