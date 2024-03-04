@@ -701,7 +701,14 @@ const AlertsPage = () => {
         <div className='card-header border-0'>
           <h3 className='card-title align-items-start flex-column'>
             <span className='card-label fw-bold fs-3'>
-              Alerts {'( ' + filteredAlertData.length + ' / ' + alertsCount + ')'}
+              Alerts{' '}
+              {'( ' +
+                (filteredAlertData !== null && filteredAlertData.length !== null
+                  ? filteredAlertData.length
+                  : 0) +
+                ' / ' +
+                alertsCount +
+                ')'}
             </span>
           </h3>
 
@@ -1611,7 +1618,7 @@ const AlertsPage = () => {
               </thead>
               <tbody id='kt_accordion_1'>
                 {loading && <UsersListLoading />}
-                {filteredAlertData.length > 0 &&
+                {filteredAlertData !== null  ?(
                   filteredAlertData.map((item, index) => (
                     <>
                       <tr key={item.alertID}>
@@ -2348,8 +2355,7 @@ const AlertsPage = () => {
                         </td>
                       </tr>
                     </>
-                  ))}
-                {filteredAlertData.length === 0 && (
+                  ))):(              
                   <tr>
                     <td colSpan='10' className='text-center'>
                       Data not found

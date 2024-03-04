@@ -7,6 +7,7 @@ import { SidebarMenuItem } from './SidebarMenuItem'
 
 const SidebarMenuMain = () => {
   const intl = useIntl()
+  const orgId = Number(sessionStorage.getItem('orgId'));
 
   return (
     <>
@@ -106,11 +107,15 @@ const SidebarMenuMain = () => {
           to='/qradar/tasks/list'
           title='My Tasks'
         />
+        {
+        orgId == 2 &&
        <SidebarMenuItem
           icon='/media/icons/duotune/communication/com008.svg'
           to='/qradar/application/list'
           title='Applications'
         />
+        
+      }
     </>
   )
 }
