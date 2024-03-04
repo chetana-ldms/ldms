@@ -93,10 +93,6 @@ function Task() {
       navigate("/dashboard");},2000);
     sessionStorage.removeItem("clickedButton");
   }
-  
-  if(tasks == null){
-    sessionStorage.setItem('tasks', "true");
-  }
   return (
     <div className="no-pad">
       <ToastContainer />

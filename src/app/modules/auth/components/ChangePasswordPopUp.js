@@ -37,8 +37,12 @@ function ChangePasswordPopUp({ showChangePwdModal, setShowChangePwdModal }) {
       oldPassword: oldPassword,
     };
     try {
+      if (!oldPassword || !newPassword || !confirmPass) {
+        setMessage("All fields are required");
+        return;
+      }
       if (newPassword !== confirmPass) {
-        notifyFail("New password and confirm password do not match");
+        setMessage("New password and confirm password do not match");
         return;
       }
       const responseData = await fetchChangePasswordUrl(data);
@@ -60,7 +64,6 @@ function ChangePasswordPopUp({ showChangePwdModal, setShowChangePwdModal }) {
   return (
     <div>
       <ToastContainer />
-      {/* <Modal show={showChangePwdModal} onHide={handleCloseChangePwdModal}> */}
       <Modal show={showChangePwdModal}>
      
         <Modal.Body>

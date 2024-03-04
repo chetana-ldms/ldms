@@ -22,7 +22,6 @@ const Navbar = () => {
   const date = new Date().toISOString();
   const [tasksData, setTasksData] = useState([]);
   const ownerUserId = Number(sessionStorage.getItem('userId'));
-  const tasksValue = sessionStorage.getItem('tasks');
   const reload = async () => {
     try {
       setLoading(true);
@@ -41,7 +40,6 @@ const Navbar = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       reload();
-      sessionStorage.removeItem('tasks');
     }, 2 * 60000);
 
     return () => clearTimeout(timer);
@@ -56,11 +54,9 @@ const Navbar = () => {
   const handleNotification = (taskId: string) => {
     navigate(`/qradar/tasks/update/${taskId}`);
   };
-  useEffect(() => {
-    if (tasksValue === "true") {
-      setTasksData([]);
-    }
-  }, [tasksValue]);
+  const handleBellIcon = async () =>{
+   await reload();
+  }
 
   return (
     <div className='app-navbar flex-shrink-0'>
@@ -81,7 +77,7 @@ const Navbar = () => {
         <HeaderUserMenu />
       </div>
 
-      <div className='notification'>
+      <div className='notification' onClick={handleBellIcon}>
           <Dropdown>
             <Dropdown.Toggle as={Button} variant="link" id="dropdown-basic" className='bell'>
             <i className='fa fa-bell link'/>
