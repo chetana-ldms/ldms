@@ -68,6 +68,7 @@ import Task from './qradar-pages/tasks/Task'
 import AddTask from './qradar-pages/tasks/AddTask'
 import UpdateTask from './qradar-pages/tasks/UpdateTask'
 import Application from './qradar-pages/application-management/Application'
+import RiskComponentUpdate from './qradar-pages/application-management/RiskComponentUpdate'
 
 
 const QradarPages = () => {
@@ -143,6 +144,7 @@ const QradarPages = () => {
       <Route path='tasks/add' element={<AddTask />} />
       <Route path='/tasks/update/:id' element={<UpdateTask />} />
       <Route path='application/:status' element={<Application />} />
+      <Route path='/application/update/:id' element={<RiskComponentUpdate />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )

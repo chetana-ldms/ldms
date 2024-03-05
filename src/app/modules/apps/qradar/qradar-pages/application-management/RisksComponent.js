@@ -3,6 +3,7 @@ import {fetchApplicationsAndRisksUrl} from '../../../../../api/ApplicationSectio
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import CanvasJSReact from '../reports/assets/canvasjs.react'
+import { Link } from 'react-router-dom'
 
 function RisksComponent() {
   const [loading, setLoading] = useState(false)
@@ -145,9 +146,10 @@ function RisksComponent() {
         </thead>
         <tbody>
           {loading && <UsersListLoading />}
-          {risk.map((item) => (
+          {risk !==null?(
+          risk.map((item) => (
             <tr>
-              <td>{item.name}</td>
+              <td><Link to={`/qradar/application/update/${item.name}`}>{item.name}</Link></td>
               <td>{item.applicationType}</td>
               <td>{item.versionCount}</td>
               <td>{item.vendor}</td>
@@ -170,7 +172,9 @@ function RisksComponent() {
               <td>{getCurrentTimeZone(item.detectionDate)}</td>
               <td></td>
             </tr>
-          ))}
+          ))):(
+            <tr><td>No data found</td></tr>
+          )}
         </tbody>
       </table>
     </div>
