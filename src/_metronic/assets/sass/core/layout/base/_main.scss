@@ -30,6 +30,14 @@ body {
   }
 }
 
+.black{
+  color: #333 !important;
+}
+
+.orange{
+  color: rgb(255, 140, 0) !important;
+}
+
 .green{
   color: green !important;
 }
@@ -47,6 +55,13 @@ body {
 
 .w-100{
   width: 100%;
+}
+
+.border-btm{
+  border-bottom:  1px solid #ccc;
+}
+.border-top{
+  border-top:  1px solid #ccc;
 }
 
 .initial{
@@ -67,6 +82,10 @@ body {
 
 .bold{
   font-weight: bold !important;
+}
+
+.normal{
+  font-weight: normal;
 }
 
 .no-pad{
@@ -93,8 +112,16 @@ body {
   margin-top: 20px;
 }
 
+.mg-top-30{
+  margin-top: 30px;
+}
+
 .mg-left-10{
   margin-left: 10px;
+}
+
+.mg-left-20{
+  margin-left: 20px;
 }
 
 .pad-10{
@@ -352,7 +379,7 @@ form{
 }
 
 //Dashboard CSS
-.header-filter {
+.header-filter,.form-section {
   .form-select {
     // padding: 4px 10px;
     font-size: 13px;
@@ -398,16 +425,27 @@ form{
   }
 }
 
+//LDC Application
+.ldc-application{
+  .card{
+    min-height: 200px;
+  }
+  .card-body{
+    padding: 10px !important;
+  }
+}
+
 #kt_app_content {
   background-color: white !important;
 }
 
-.incident-box {
+.incident-box,.ldc-application {
   .card {
     padding-left: 2px;
     padding-right: 2px;
     box-shadow: 0px 0px 2px 2px #e5e5e5;
   }
+ 
   .bg-secondary {
     background-color: #FFE2E5 !important;
     // color: white !important;
@@ -483,15 +521,15 @@ form{
 }
 
 .fs-20 {
-  font-size: 20px;
+  font-size: 20px !important;
 }
 
 .fs-22 {
-  font-size: 22px;
+  font-size: 22px !important;
 }
 
 .fs-30 {
-  font-size: 30px;
+  font-size: 30px !important;
 }
 
 .fs-40 {
@@ -669,6 +707,10 @@ form{
 .btn-new {
   background-color: #008cba !important;
   font-weight: normal !important;
+  color: #fff !important;
+  &:hover{
+    background-color: #076280 !important;
+  }
 }
 
 //Demo Alert CSS
@@ -1021,6 +1063,7 @@ form{
     width: 100% !important;
     height: 40px;
     border-radius: 6px;
+    background-color: #fff !important;
   }
   input{
     &:focus{
@@ -1519,7 +1562,7 @@ form{
     color: #fff !important;
   }
   .menu-link {
-    &:hover {
+    &:hover,&.active {
       background-color: #35475D;
       margin: 0 !important;
     }

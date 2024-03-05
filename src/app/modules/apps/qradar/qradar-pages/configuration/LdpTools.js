@@ -62,7 +62,7 @@ const LdpTools = () => {
             {globalAdminRole === 1 || clientAdminRole === 1 ? (
               <Link
                 to="/qradar/ldp-tools/add"
-                className="btn btn-danger btn-small"
+                className="btn btn-new btn-small"
               >
                 Add
               </Link>
@@ -96,30 +96,43 @@ const LdpTools = () => {
                   {/* <td>{item.createdDate}</td> */}
                   <td>
                     {globalAdminRole === 1 || clientAdminRole === 1 ? (
-                      <button className="btn btn-primary btn-small btn-new">
-                        <Link
-                          className="text-white"
-                          to={`/qradar/ldp-tools/update/${item.toolId}`}
-                        >
-                          <i className="fa fa-pencil" />
-                        </Link>
-                      </button>
+                      // <button className="btn btn-primary btn-small btn-new">
+                      <Link
+                        className="text-white"
+                        to={`/qradar/ldp-tools/update/${item.toolId}`}
+                        title="Edit"
+                      >
+                        <i className="fa fa-pencil orange pointer fs-15" />
+                      </Link>
                     ) : (
+                      // </button>
                       <button className="btn btn-primary btn-small" disabled>
-                        <i className="fa fa-pencil" />
+                        <i
+                          className="fa fa-pencil orange pointer"
+                          title="Edit"
+                        />
                       </button>
                     )}
+
+                    {/* <span> | </span> */}
+
                     {globalAdminRole === 1 || clientAdminRole === 1 ? (
-                      <button
-                        className="btn btn-sm btn-danger btn-small ms-5"
-                        style={{ fontSize: "14px" }}
+                      // <button
+                      //   className="btn btn-sm btn-danger btn-small ms-5"
+                      //   style={{ fontSize: "14px" }}
+                      //   onClick={() => {
+                      //     handleDelete(item);
+                      //   }}
+                      // >
+                      <i
                         onClick={() => {
                           handleDelete(item);
                         }}
-                      >
-                        <i className="fa fa-trash" />
-                      </button>
+                        title="Delete"
+                        className="fa fa-trash pointer red mg-left-20 fs-15"
+                      />
                     ) : (
+                      // </button>
                       <button
                         className="btn btn-sm btn-danger btn-small ms-5"
                         style={{ fontSize: "14px" }}
