@@ -6,11 +6,13 @@ function Application() {
   const [activeTab, setActiveTab] = useState('risks');
 
   return (
-    <div className='d-flex'>
+    
+    <div className='row'>
       <div className='col-md-2'>
         <div>Application Management</div>
       </div>
-      <div className='col-md-10'>
+      <div className='row'>
+      <div className='col-md-12'>
         <div className='d-flex'>
           <ul className='nav nav-tabs p-0 border-0 fs-8'>
             <li className='nav-item'>
@@ -33,6 +35,7 @@ function Application() {
         </div>
         {activeTab === 'risks' && <RisksComponent /> }
         {activeTab === 'inventory' && <InventoryComponent /> }
+      </div>
       </div>
     </div>
   );
