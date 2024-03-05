@@ -16,7 +16,7 @@ function Application() {
         <div className="col-md-12">
           <div className="d-flex border-btm mg-btm-10 mg-top-10">
             <ul className="nav nav-tabs p-0 border-0 fs-12">
-              <li className="nav-item">
+              <li className="nav-item text-center">
                 <a
                   className={`nav-link normal pointer ${
                     activeTab === "risks" ? "active" : ""
@@ -26,7 +26,7 @@ function Application() {
                   RISKS
                 </a>
               </li>
-              <li className="nav-item">
+              <li className="nav-item text-center">
                 <a
                   className={`nav-link normal pointer ${
                     activeTab === "inventory" ? "active" : ""
