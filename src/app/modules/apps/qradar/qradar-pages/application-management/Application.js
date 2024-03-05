@@ -1,80 +1,9 @@
 import React, { useState } from "react";
 import RisksComponent from "./RisksComponent";
 import InventoryComponent from "./InventoryComponent";
-import CanvasJSReact from "../reports/assets/canvasjs.react";
 
 function Application() {
   const [activeTab, setActiveTab] = useState("risks");
-
-  //severities chart
-  const CanvasJS = CanvasJSReact.CanvasJS;
-  const CanvasJSChart = CanvasJSReact.CanvasJSChart;
-
-  const severities = {
-    animationEnabled: true,
-
-    subtitles: [
-      {
-        verticalAlign: "center",
-        fontSize: 24,
-        dockInsidePlotArea: true,
-      },
-    ],
-    height: 150,
-    data: [
-      {
-        type: "doughnut",
-        showInLegend: true,
-        indexLabel: "{name}: {y}",
-        yValueFormatString: "#,###'%'",
-        dataPoints: [{ name: "Medium", y: 100 }],
-      },
-    ],
-  };
-
-  //Impactfull application bar chart
-  //Pie chart color code
-  CanvasJS.addColorSet("colorShades", [
-    //colorSet Array
-    "#f0e68c",
-    "#ffb700",
-    "#008080",
-  ]);
-
-  const options = {
-    animationEnabled: true,
-    // title: {
-    //   text: 'Monthly Sales - 2017',
-    // },
-    axisX: {
-      valueFormatString: "HH",
-      title: "",
-    },
-    axisY: {
-      title: "",
-      prefix: "",
-      scaleBreaks: {
-        customBreaks: [
-          {
-            spacing: "10",
-          },
-        ],
-      },
-    },
-    height: 140,
-    borderColor: "#ccc",
-    data: [
-      {
-        // Change type to "doughnut", "line", "splineArea", etc.
-        type: "column",
-        dataPoints: [
-          { label: "Adobe Acrobat", y: 10 },
-          { label: "MySQL Server", y: 15 },
-          { label: "Splunk", y: 25 },
-        ],
-      },
-    ],
-  };
 
   return (
     <div className="ldc-application">
@@ -108,50 +37,6 @@ function Application() {
                 </a>
               </li>
             </ul>
-          </div>
-          <div className="application-section mg-top-20 mg-btm-20">
-            <div className="header-filter mg-btm-20">
-              <form>
-                <select className="form-select">
-                  <option>Select filter</option>
-                </select>
-              </form>
-            </div>
-            <div className="row">
-              <div className="col-lg-4">
-                <div className="card">
-                  <div className="card-body">
-                    <h4 className="uppercase normal">severities</h4>
-                    <CanvasJSChart
-                      style={{ height: "150px" }}
-                      options={severities}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4">
-                <div className="card">
-                  <div className="card-body">
-                    <h4 className="uppercase normal">exploitation</h4>
-                    <div className="mg-top-30 text-center">
-                      <i className="fa fa-info-circle green fs-30 mg-btm-10" />
-                      <br />
-                      <p className="fs-15 gray">No notifications found</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4">
-                <div className="card">
-                  <div className="card-body">
-                    <h4 className="uppercase normal">
-                      most impactful applications
-                    </h4>
-                    <CanvasJSChart options={options} style="height:140px" />
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
           {activeTab === "risks" && <RisksComponent />}
           {activeTab === "inventory" && <InventoryComponent />}
