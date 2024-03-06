@@ -153,7 +153,7 @@ function RisksComponent() {
           {loading && <UsersListLoading />}
           {risk !== null ? (
             risk.map((item) => (
-              <tr>
+              <tr className="table-row">
                 <td>
                   <Link to={`/qradar/application/update/${item.name}`}>
                     {item.name}

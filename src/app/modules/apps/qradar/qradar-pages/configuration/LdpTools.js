@@ -96,16 +96,16 @@ const LdpTools = () => {
                   {/* <td>{item.createdDate}</td> */}
                   <td>
                     {globalAdminRole === 1 || clientAdminRole === 1 ? (
-                      // <button className="btn btn-primary btn-small btn-new">
-                      <Link
-                        className="text-white"
-                        to={`/qradar/ldp-tools/update/${item.toolId}`}
-                        title="Edit"
-                      >
-                        <i className="fa fa-pencil orange pointer fs-15" />
-                      </Link>
+                      <button className="btn btn-primary btn-small btn-new">
+                        <Link
+                          className="text-white"
+                          to={`/qradar/ldp-tools/update/${item.toolId}`}
+                          title="Edit"
+                        >
+                          <i className="fa fa-pencil orange pointer fs-15" />
+                        </Link>
+                      </button>
                     ) : (
-                      // </button>
                       <button className="btn btn-primary btn-small" disabled>
                         <i
                           className="fa fa-pencil orange pointer"
@@ -117,22 +117,19 @@ const LdpTools = () => {
                     {/* <span> | </span> */}
 
                     {globalAdminRole === 1 || clientAdminRole === 1 ? (
-                      // <button
-                      //   className="btn btn-sm btn-danger btn-small ms-5"
-                      //   style={{ fontSize: "14px" }}
-                      //   onClick={() => {
-                      //     handleDelete(item);
-                      //   }}
-                      // >
-                      <i
+                      <button
+                        className="btn btn-sm btn-danger btn-small ms-5"
+                        style={{ fontSize: "14px" }}
                         onClick={() => {
                           handleDelete(item);
                         }}
-                        title="Delete"
-                        className="fa fa-trash pointer red mg-left-20 fs-15"
-                      />
+                      >
+                        <i
+                          title="Delete"
+                          className="fa fa-trash pointer red mg-left-20 fs-15"
+                        />
+                      </button>
                     ) : (
-                      // </button>
                       <button
                         className="btn btn-sm btn-danger btn-small ms-5"
                         style={{ fontSize: "14px" }}
