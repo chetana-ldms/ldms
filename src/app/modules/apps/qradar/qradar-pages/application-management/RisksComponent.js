@@ -8,7 +8,10 @@ import { Link } from "react-router-dom";
 function RisksComponent() {
   const [loading, setLoading] = useState(false);
   const [risk, setRisk] = useState([]);
-  console.log(risk, "risk");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "ascending" });
+
   const orgId = Number(sessionStorage.getItem("orgId"));
   const CanvasJS = CanvasJSReact.CanvasJS;
   const CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -65,6 +68,7 @@ function RisksComponent() {
       },
     ],
   };
+
   const fetchData = async () => {
     const data = {
       orgID: orgId,
@@ -79,9 +83,59 @@ function RisksComponent() {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchData();
   }, []);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = risk.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const sortTable = (key) => {
+    const direction =
+      key === sortConfig.key && sortConfig.direction === "ascending" ? "descending" : "ascending";
+    setSortConfig({ key, direction });
+  };
+
+  const sortedItems = () => {
+    if (sortConfig.key !== null) {
+      return [...currentItems].sort((a, b) => {
+        const valueA = getValueForSorting(a, sortConfig.key);
+        const valueB = getValueForSorting(b, sortConfig.key);
+        if (typeof valueA === "string" && typeof valueB === "string") {
+          return sortConfig.direction === "ascending" ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+        } else {
+          return sortConfig.direction === "ascending" ? valueA - valueB : valueB - valueA;
+        }
+      });
+    }
+    return currentItems;
+  };
+
+  const renderSortIcon = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === "ascending" ? (
+        <i className="bi bi-caret-up-fill"></i>
+      ) : (
+        <i className="bi bi-caret-down-fill"></i>
+      );
+    }
+    return null;
+  };
+
+  const getValueForSorting = (item, key) => {
+    if (key === "label") {
+      const mostCommonStatus = item.statuses.reduce((prev, current) => {
+        return prev.count > current.count ? prev : current;
+      });
+      return mostCommonStatus.label;
+    } else {
+      return item[key];
+    }
+  };
 
   return (
     <div>
@@ -98,10 +152,7 @@ function RisksComponent() {
             <div className="card">
               <div className="card-body">
                 <h4 className="uppercase normal">severities</h4>
-                <CanvasJSChart
-                  style={{ height: "150px" }}
-                  options={severities}
-                />
+                <CanvasJSChart style={{ height: "150px" }} options={severities} />
               </div>
             </div>
           </div>
@@ -120,9 +171,7 @@ function RisksComponent() {
           <div className="col-lg-4">
             <div className="card">
               <div className="card-body">
-                <h4 className="uppercase normal">
-                  most impactful applications
-                </h4>
+                <h4 className="uppercase normal">most impactful applications</h4>
                 <CanvasJSChart options={options} style="height:140px" />
               </div>
             </div>
@@ -132,55 +181,64 @@ function RisksComponent() {
       <table className="table alert-table scroll-x">
         <thead>
           <tr className="fw-bold text-muted bg-blue">
-            <th className="fs-12">Application Name</th>
-            <th className="fs-12">Type </th>
-            <th className="fs-12">Versions </th>
-            <th className="fs-12">Vendor </th>
-            <th className="fs-12"> Highest Severity </th>
-            <th className="fs-12">Highest Vulnerability score </th>
-            <th className="fs-12">Highest NVD base score </th>
-            <th className="fs-12">Most common Status </th>
-            <th className="fs-12">Exploited in the Wild </th>
-            <th className="fs-12">Exploited Maturity </th>
-            <th className="fs-12">Remediation Level </th>
-            <th className="fs-12">Number of CVEs</th>
-            <th className="fs-12">Number of Endpoints </th>
-            <th className="fs-12">Application Detection Date </th>
-            <th className="fs-12">Date from Detection </th>
+            <th className="fs-12" onClick={() => sortTable("name")}>
+              Application Name {renderSortIcon("name")}
+            </th>
+            <th className="fs-12" onClick={() => sortTable("applicationType")}>
+              Type {renderSortIcon("applicationType")}
+            </th>
+            <th className="fs-12" onClick={() => sortTable("versionCount")}>
+              Versions {renderSortIcon("versionCount")}
+            </th>
+            <th className="fs-12" onClick={() => sortTable("vendor")}>
+              Vendor {renderSortIcon("vendor")}
+            </th>
+            <th className="fs-12" onClick={() => sortTable("highestSeverity")}>
+              Highest Severity {renderSortIcon("highestSeverity")}
+            </th>
+            <th className="fs-12" onClick={() => sortTable("highestNvdBaseScore")}>
+              Highest NVD base score {renderSortIcon("highestNvdBaseScore")}
+            </th>
+            <th className="fs-12" onClick={() => sortTable("label")}>
+              Most common Status {renderSortIcon("label")}
+            </th>
+            <th className="fs-12" onClick={() => sortTable("remediationLevel")}>
+              Remediation Level {renderSortIcon("remediationLevel")}
+            </th>
+            <th className="fs-12" onClick={() => sortTable("cveCount")}>
+              Number of CVEs {renderSortIcon("cveCount")}
+            </th>
+            <th className="fs-12" onClick={() => sortTable("endpointCount")}>
+              Number of Endpoints {renderSortIcon("endpointCount")}
+            </th>
+            <th className="fs-12" onClick={() => sortTable("detectionDate")}>
+              Application Detection Date {renderSortIcon("detectionDate")}
+            </th>
           </tr>
         </thead>
         <tbody>
           {loading && <UsersListLoading />}
-          {risk !== null ? (
-            risk.map((item) => (
-              <tr className="table-row">
+          {sortedItems() !== null ? (
+            sortedItems().map((item, index) => (
+              <tr key={index} className="table-row">
                 <td>
-                  <Link to={`/qradar/application/update/${item.name}`}>
-                    {item.name}
-                  </Link>
+                  <Link to={`/qradar/application/update/${item.name}`}>{item.name}</Link>
                 </td>
                 <td>{item.applicationType}</td>
                 <td>{item.versionCount}</td>
                 <td>{item.vendor}</td>
                 <td>{item.highestSeverity}</td>
-                <td></td>
                 <td>{item.highestNvdBaseScore ?? 0}</td>
                 <td>
-                  {
-                    item.statuses.find(
-                      (status) =>
-                        status.count ===
-                        Math.max(...item.statuses.map((status) => status.count))
-                    ).label
-                  }
+                  {item.statuses.find(
+                    (status) =>
+                      status.count === Math.max(...item.statuses.map((status) => status.count))
+                  ).label}
                 </td>
-                <td></td>
-                <td></td>
                 <td>{item.remediationLevel ?? 0}</td>
                 <td>{item.cveCount}</td>
                 <td>{item.endpointCount}</td>
                 <td>{getCurrentTimeZone(item.detectionDate)}</td>
-                <td></td>
               </tr>
             ))
           ) : (
@@ -190,6 +248,20 @@ function RisksComponent() {
           )}
         </tbody>
       </table>
+      <nav>
+        <ul className="pagination">
+          {[...Array(Math.ceil(risk.length / itemsPerPage)).keys()].map((number) => (
+            <li key={number + 1} className="page-item">
+              <button
+                onClick={() => paginate(number + 1)}
+                className={`page-link ${currentPage === number + 1 ? "active" : ""}`}
+              >
+                {number + 1}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </div>
   );
 }

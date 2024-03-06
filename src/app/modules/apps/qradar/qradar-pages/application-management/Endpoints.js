@@ -1,7 +1,11 @@
-import React from 'react';
+import React from "react";
 
-function Endpoints({ id }) {
-  const endpointId = id; 
+function Endpoints({ id, shouldRender }) {
+  const endpointId = id;
+
+  if (!shouldRender) {
+    return null;
+  }
 
   return (
     <div>

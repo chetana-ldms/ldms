@@ -1,17 +1,85 @@
-import React from "react";
+import React, {useEffect, useState} from 'react'
+import {fetchApplicationInventoryUrl} from '../../../../../api/ApplicationSectionApi'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
 
 function InventoryComponent() {
+  const [loading, setLoading] = useState(false)
+  const [risk, setRisk] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [sortConfig, setSortConfig] = useState({key: null, direction: 'ascending'})
+  const itemsPerPage = 10
+  const orgId = Number(sessionStorage.getItem('orgId'))
+
+  const fetchData = async () => {
+    const data = {
+      orgID: orgId,
+    }
+    try {
+      setLoading(true)
+      const response = await fetchApplicationInventoryUrl(data)
+      setRisk(response)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = risk.slice(indexOfFirstItem, indexOfLastItem)
+
+  const sortTable = (key) => {
+    let direction = 'ascending'
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending'
+    }
+    setSortConfig({key, direction})
+  }
+
+  const sortedItems = () => {
+    if (sortConfig.key !== null) {
+      return [...currentItems].sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1
+        }
+        return 0
+      })
+    }
+    return currentItems
+  }
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber)
+
+  const renderSortIcon = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === 'ascending' ? (
+        <i className='bi bi-caret-up-fill'></i>
+      ) : (
+        <i className='bi bi-caret-down-fill'></i>
+      )
+    }
+    return null
+  }
+
   return (
-    <div className="application-section mg-top-20 mg-btm-20">
-      <div className="header-filter mg-btm-20">
+    <div className='application-section mg-top-20 mg-btm-20'>
+      <div className='header-filter mg-btm-20'>
         <form>
-          <select className="form-select">
+          <select className='form-select'>
             <option>Select filter</option>
           </select>
         </form>
       </div>
-      <div className="actions">
-        <div className="row">
+      <div className='actions'>
+        {/* <div className="row">
           <div className="col-lg-6">
             <button className="btn btn-new btn-small float-left">
               Actions <i className="fa fa-chevron-down white" />
@@ -44,28 +112,63 @@ function InventoryComponent() {
               Export <i className="fas fa-file-export link" />
             </span>
           </div>
-        </div>
-        <table className="table alert-table mg-top-20">
+        </div> */}
+        <table className='table alert-table mg-top-20'>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Vendor</th>
-              <th>Number of Versions</th>
-              <th>Number of Endpoints</th>
+              <th onClick={() => sortTable('applicationName')}>
+                Name {sortConfig.key === 'applicationName' && renderSortIcon('applicationName')}
+              </th>
+              <th onClick={() => sortTable('applicationVendor')}>
+                Vendor{' '}
+                {sortConfig.key === 'applicationVendor' && renderSortIcon('applicationVendor')}
+              </th>
+              <th onClick={() => sortTable('applicationVersionsCount')}>
+                Number of Versions{' '}
+                {sortConfig.key === 'applicationVersionsCount' &&
+                  renderSortIcon('applicationVersionsCount')}
+              </th>
+              <th onClick={() => sortTable('endpointsCount')}>
+                Number of Endpoints{' '}
+                {sortConfig.key === 'endpointsCount' && renderSortIcon('endpointsCount')}
+              </th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>text</td>
-              <td>text</td>
-              <td>text</td>
-              <td>text</td>
-            </tr>
+            {loading && <UsersListLoading />}
+            {sortedItems() !== null ? (
+              sortedItems().map((item, index) => (
+                <tr key={index}>
+                  <td>{item.applicationName}</td>
+                  <td>{item.applicationVendor}</td>
+                  <td>{item.applicationVersionsCount}</td>
+                  <td>{item.endpointsCount}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan='4'>No data found</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
+      <nav>
+        <ul className='pagination'>
+          {[...Array(Math.ceil(risk.length / itemsPerPage)).keys()].map((number) => (
+            <li key={number + 1} className='page-item'>
+              <button
+                onClick={() => paginate(number + 1)}
+                className={`page-link ${currentPage === number + 1 ? 'active' : ''}`}
+              >
+                {number + 1}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </div>
-  );
+  )
 }
 
-export default InventoryComponent;
+export default InventoryComponent
