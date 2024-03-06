@@ -147,7 +147,7 @@ function RisksComponent() {
             </select>
           </form>
         </div>
-        <div className="row">
+        {/* <div className="row">
           <div className="col-lg-4">
             <div className="card">
               <div className="card-body">
@@ -176,7 +176,7 @@ function RisksComponent() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
       <table className="table alert-table scroll-x">
         <thead>
