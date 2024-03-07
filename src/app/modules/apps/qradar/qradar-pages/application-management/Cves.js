@@ -1,12 +1,15 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 
-function Cves({ id }) {
-  const cvesId = id;
+function Cves() {
+  let { name, vendor } = useParams();
+  name = decodeURIComponent(name);
+  vendor = decodeURIComponent(vendor);
 
   return (
     <div>
-      <h2>Cves</h2>
-      <p>ID: {cvesId}</p>
+      <h2>Cves : {vendor}</h2>
+      <p>ID: {name}</p>
     </div>
   );
 }
