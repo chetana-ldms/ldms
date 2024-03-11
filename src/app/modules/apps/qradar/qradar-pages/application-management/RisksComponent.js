@@ -90,7 +90,7 @@ function RisksComponent() {
 
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = risk.slice(indexOfFirstItem, indexOfLastItem)
+  const currentItems = risk !== null ? risk.slice(indexOfFirstItem, indexOfLastItem) : null
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
@@ -258,20 +258,22 @@ function RisksComponent() {
           )}
         </tbody>
       </table>
-      <nav>
-        <ul className='pagination'>
-          {[...Array(Math.ceil(risk.length / itemsPerPage)).keys()].map((number) => (
-            <li key={number + 1} className='page-item'>
-              <button
-                onClick={() => paginate(number + 1)}
-                className={`page-link ${currentPage === number + 1 ? 'active' : ''}`}
-              >
-                {number + 1}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      {currentItems !== null && (
+        <nav>
+          <ul className='pagination'>
+            {[...Array(Math.ceil(risk.length / itemsPerPage)).keys()].map((number) => (
+              <li key={number + 1} className='page-item'>
+                <button
+                  onClick={() => paginate(number + 1)}
+                  className={`page-link ${currentPage === number + 1 ? 'active' : ''}`}
+                >
+                  {number + 1}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
     </div>
   )
 }
