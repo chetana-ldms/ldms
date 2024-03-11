@@ -119,17 +119,16 @@ const UserData = () => {
             </select>
           </span>
         </div>
-        <div className="col-lg-2 fs-11 text-right">
-          {globalAdminRole === 1 || clientAdminRole === 1 ? (
+
+        {globalAdminRole === 1 || clientAdminRole === 1 ? (
+          <div className="col-lg-2 fs-11 text-right">
             <Link to="/qradar/users-data/add" className="btn btn-new btn-small">
               Add New User
             </Link>
-          ) : (
-            <button className="btn btn-danger btn-small" disabled>
-              Add New User
-            </button>
-          )}
-        </div>
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
       <div className="card-body no-pad mt-5">
         <table className="table align-middle gs-0 gy-4 dash-table alert-table">
@@ -139,7 +138,11 @@ const UserData = () => {
               <th className="min-w-50px">User Name</th>
               <th className="min-w-50px">User Email</th>
               <th className="min-w-50px">User Role</th>
-              <th className="min-w-50px">Action</th>
+              {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                <th className="min-w-50px">Action</th>
+              ) : (
+                <></>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -157,8 +160,9 @@ const UserData = () => {
                       <td>{item.name}</td>
                       <td>{item.emailId}</td>
                       <td>{item.roleName}</td>
-                      <td>
-                        {globalAdminRole === 1 || clientAdminRole === 1 ? (
+
+                      {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                        <td>
                           <Link
                             className="text-white"
                             to={`/qradar/users-data/update/${item.userID}`}
@@ -168,15 +172,13 @@ const UserData = () => {
                               <i className="fa fa-pencil" />
                             </button>
                           </Link>
-                        ) : (
+                          ) : (
                           <button
                             className="btn btn-primary btn-circle"
                             disabled
                           >
                             <i className="fa fa-pencil" />
                           </button>
-                        )}
-                        {globalAdminRole === 1 || clientAdminRole === 1 ? (
                           <button
                             className="btn btn-danger btn-circle ms-5"
                             onClick={() => {
@@ -186,15 +188,10 @@ const UserData = () => {
                           >
                             <i className="fa fa-trash" />
                           </button>
-                        ) : (
-                          <button
-                            className="btn btn-danger btn-circle ms-5"
-                            disabled
-                          >
-                            <i className="fa fa-trash" />
-                          </button>
-                        )}
-                      </td>
+                        </td>
+                      ) : (
+                        <></>
+                      )}
                     </tr>
                   );
                 }

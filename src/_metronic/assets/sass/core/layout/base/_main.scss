@@ -331,7 +331,7 @@ body {
 
 .bg-header{
   background: #0EB0BF !important;
-  padding: 0 10px !important;
+  padding: 2px 10px !important;
   border-radius: 0 !important;
 }
 
@@ -1202,6 +1202,16 @@ form{
       width: 100%;
       border: 1px solid #ccc;
     }
+  }
+}
+
+//Configuration page
+.condition-text{
+  .btn-danger{
+    position: absolute;
+    right: 0;
+    border-radius: 0px;
+    top: 1px;
   }
 }
 

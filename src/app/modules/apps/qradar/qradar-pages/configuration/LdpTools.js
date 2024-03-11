@@ -69,9 +69,7 @@ const LdpTools = () => {
                 Add
               </Link>
             ) : (
-              <button className="btn btn-danger btn-small" disabled>
-                Add
-              </button>
+              <></>
             )}
           </div>
         </div>
@@ -80,11 +78,14 @@ const LdpTools = () => {
         <table className="table align-middle gs-0 gy-4 dash-table alert-table">
           <thead>
             <tr className="fw-bold text-muted bg-blue">
-              <th className="min-w-50px">Tool ID</th>
-              <th className="min-w-50px">Tool Name</th>
-              <th className="min-w-50px">Tool Type</th>
-              {/* <th className='min-w-50px'>Created Date</th> */}
-              <th className="min-w-50px">Action</th>
+              <th>Tool ID</th>
+              <th>Tool Name</th>
+              <th>Tool Type</th>
+              {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                <th>Action</th>
+              ) : (
+                <></>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -92,12 +93,13 @@ const LdpTools = () => {
             {tools !== null ? (
               tools.map((item, index) => (
                 <tr key={index} className="fs-12">
-                  <td className="text-danger fw-bold">{item.toolId}</td>
+                  <td>{item.toolId}</td>
                   <td>{item.toolName}</td>
-                  <td className="text-warning fw-bold">{item.toolType}</td>
+                  <td>{item.toolType}</td>
                   {/* <td>{item.createdDate}</td> */}
-                  <td>
-                    {globalAdminRole === 1 || clientAdminRole === 1 ? (
+
+                  {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                    <td>
                       <button
                         className="btn btn-primary btn-circle"
                         title="Edit"
@@ -109,19 +111,6 @@ const LdpTools = () => {
                           <i className="fa fa-pencil white pointer fs-15" />
                         </Link>
                       </button>
-                    ) : (
-                      <button
-                        className="btn btn-primary btn-small"
-                        title="Edit"
-                        disabled
-                      >
-                        <i className="fa fa-pencil white pointer" />
-                      </button>
-                    )}
-
-                    {/* <span> | </span> */}
-
-                    {globalAdminRole === 1 || clientAdminRole === 1 ? (
                       <button
                         className="btn btn-danger btn-circle ms-5"
                         style={{ fontSize: "14px" }}
@@ -132,16 +121,10 @@ const LdpTools = () => {
                       >
                         <i className="fa fa-trash pointer white fs-15" />
                       </button>
-                    ) : (
-                      <button
-                        className="btn btn-danger btn-circle ms-5"
-                        style={{ fontSize: "14px" }}
-                        disabled
-                      >
-                        <i className="fa fa-trash pointer white fs-15" />
-                      </button>
-                    )}
-                  </td>
+                    </td>
+                  ) : (
+                    <></>
+                  )}
                 </tr>
               ))
             ) : (
