@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import {useParams} from 'react-router-dom'
 import {fetchApplicationEndPointsUrl} from '../../../../../api/ApplicationSectionApi'
-import { getCurrentTimeZone } from '../../../../../../utils/helper'
-import { UsersListLoading } from '../components/loading/UsersListLoading'
+import {getCurrentTimeZone} from '../../../../../../utils/helper'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
+import EndpointPopup from './EndpointPopup'
 
 function Endpoints({shouldRender}) {
   let {name, vendor} = useParams()
@@ -10,6 +11,8 @@ function Endpoints({shouldRender}) {
   vendor = decodeURIComponent(vendor)
   const [loading, setLoading] = useState(false)
   const [endpoints, setEndpoints] = useState([])
+  const [selectedEndpoint, setSelectedEndpoint] = useState(null)
+  const [showPopup, setShowPopup] = useState(false)
   const orgId = Number(sessionStorage.getItem('orgId'))
 
   const fetchData = async () => {
@@ -34,7 +37,10 @@ function Endpoints({shouldRender}) {
       fetchData()
     }
   }, [shouldRender])
-
+  const handleEndpointClick = (endpointName) => {
+    setSelectedEndpoint(endpointName)
+    setShowPopup(true)
+  }
   return (
     <>
       {shouldRender && (
@@ -58,21 +64,23 @@ function Endpoints({shouldRender}) {
             </tr>
           </thead>
           <tbody>
-          {loading && <UsersListLoading />}
+            {loading && <UsersListLoading />}
             {endpoints !== undefined ? (
               endpoints.map((item) => (
                 <tr key={item.id}>
-                  <td>{item.applicationName}</td>
+                  <td onClick={() => handleEndpointClick(item.applicationName)}>
+                    {item.applicationName}
+                  </td>
                   {/* <td>{item.status}</td> */}
-                  <td>{item.version}</td> 
+                  <td>{item.version}</td>
                   <td>{item.osName}</td>
                   <td>{item.osVersion}</td>
                   <td>{item.osType}</td>
                   <td>{item.accountName}</td>
                   <td>{item.siteName}</td>
-                  <td>{getCurrentTimeZone(item.groupName)}</td>
+                  <td>{item.groupName}</td>
                   {/* <td>{item.domain}</td> */}
-                  <td>{item.detectionDate}</td>
+                  <td>{getCurrentTimeZone(item.detectionDate)}</td>
                   {/* <td>{item.dayFromDetection}</td> */}
                   {/* <td>{item.lastSuccessfulScan}</td>
                   <td>{item.lastScanResult}</td> */}
@@ -80,12 +88,17 @@ function Endpoints({shouldRender}) {
               ))
             ) : (
               <tr>
-               <td colSpan="12">No data found</td>
+                <td colSpan='12'>No data found</td>
               </tr>
             )}
           </tbody>
         </table>
       )}
+      <EndpointPopup
+        endpointName={selectedEndpoint}
+        showModal={showPopup}
+        setShowModal={setShowPopup}
+      />
     </>
   )
 }

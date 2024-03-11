@@ -6,11 +6,286 @@ import CanvasJSReact from '../reports/assets/canvasjs.react'
 import {Link} from 'react-router-dom'
 
 function RisksComponent() {
-  const [loading, setLoading] = useState(false)
-  const [risk, setRisk] = useState([])
+  const [loading, setLoading] = useState(false);
+  const [risk, setRisk] = useState([]);
+console.log(risk, "risk")
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
   const [sortConfig, setSortConfig] = useState({key: null, direction: 'ascending'})
+  const data = [
+		{
+			"applicationType": "Application",
+			"cveCount": 0,
+			"daysDetected": 230,
+			"detectionDate": "2023-07-17T15:34:56.424775Z",
+			"endpointCount": 23,
+			"endpointsWithoutTicket": 0,
+			"estimate": true,
+			"exploitCodeMaturity": null,
+			"exploitedInTheWild": null,
+			"highestNvdBaseScore": null,
+			"highestRiskScore": null,
+			"highestSeverity": "FALSE_POSITIVE",
+			"name": "Zoom",
+			"remediationLevel": null,
+			"statuses": [
+				{
+					"count": 13,
+					"key": "ON_HOLD",
+					"label": "On hold",
+					"ticketCategory": null
+				},
+				{
+					"count": 10,
+					"key": "NOT_MITIGATED",
+					"label": "Not mitigated",
+					"ticketCategory": null
+				}
+			],
+			"vendor": "Zoom Video Communications, Inc.",
+			"versionCount": 14
+		},
+		{
+			"applicationType": "Application",
+			"cveCount": 0,
+			"daysDetected": 12,
+			"detectionDate": "2024-02-20T21:10:57.495330Z",
+			"endpointCount": 1,
+			"endpointsWithoutTicket": 0,
+			"estimate": true,
+			"exploitCodeMaturity": null,
+			"exploitedInTheWild": null,
+			"highestNvdBaseScore": null,
+			"highestRiskScore": null,
+			"highestSeverity": "FALSE_POSITIVE",
+			"name": "WinSCP",
+			"remediationLevel": null,
+			"statuses": [
+				{
+					"count": 1,
+					"key": "NOT_MITIGATED",
+					"label": "Not mitigated",
+					"ticketCategory": null
+				}
+			],
+			"vendor": "Martin Prikryl",
+			"versionCount": 1
+		},
+		{
+			"applicationType": "OS",
+			"cveCount": 0,
+			"daysDetected": 180,
+			"detectionDate": "2023-09-05T14:40:10.077332Z",
+			"endpointCount": 43,
+			"endpointsWithoutTicket": 0,
+			"estimate": true,
+			"exploitCodeMaturity": null,
+			"exploitedInTheWild": null,
+			"highestNvdBaseScore": null,
+			"highestRiskScore": null,
+			"highestSeverity": "FALSE_POSITIVE",
+			"name": "Windows 11 Enterprise",
+			"remediationLevel": null,
+			"statuses": [
+				{
+					"count": 41,
+					"key": "ON_HOLD",
+					"label": "On hold",
+					"ticketCategory": null
+				},
+				{
+					"count": 2,
+					"key": "NOT_MITIGATED",
+					"label": "Not mitigated",
+					"ticketCategory": null
+				}
+			],
+			"vendor": "Microsoft",
+			"versionCount": 1
+		},
+		{
+			"applicationType": "OS",
+			"cveCount": 0,
+			"daysDetected": 180,
+			"detectionDate": "2023-09-05T14:40:34.515765Z",
+			"endpointCount": 3,
+			"endpointsWithoutTicket": 0,
+			"estimate": true,
+			"exploitCodeMaturity": null,
+			"exploitedInTheWild": null,
+			"highestNvdBaseScore": null,
+			"highestRiskScore": null,
+			"highestSeverity": "FALSE_POSITIVE",
+			"name": "Windows 10 Enterprise",
+			"remediationLevel": null,
+			"statuses": [
+				{
+					"count": 3,
+					"key": "ON_HOLD",
+					"label": "On hold",
+					"ticketCategory": null
+				}
+			],
+			"vendor": "Microsoft",
+			"versionCount": 1
+		},
+		{
+			"applicationType": "Application",
+			"cveCount": 0,
+			"daysDetected": 18,
+			"detectionDate": "2024-02-14T18:20:52.806728Z",
+			"endpointCount": 4,
+			"endpointsWithoutTicket": 0,
+			"estimate": true,
+			"exploitCodeMaturity": null,
+			"exploitedInTheWild": null,
+			"highestNvdBaseScore": null,
+			"highestRiskScore": null,
+			"highestSeverity": "FALSE_POSITIVE",
+			"name": "WebAdvisor by McAfee",
+			"remediationLevel": null,
+			"statuses": [
+				{
+					"count": 4,
+					"key": "ON_HOLD",
+					"label": "On hold",
+					"ticketCategory": null
+				}
+			],
+			"vendor": "McAfee, LLC",
+			"versionCount": 1
+		},
+		{
+			"applicationType": "Application",
+			"cveCount": 0,
+			"daysDetected": 164,
+			"detectionDate": "2023-09-21T19:22:13.368957Z",
+			"endpointCount": 1,
+			"endpointsWithoutTicket": 0,
+			"estimate": true,
+			"exploitCodeMaturity": null,
+			"exploitedInTheWild": null,
+			"highestNvdBaseScore": null,
+			"highestRiskScore": null,
+			"highestSeverity": "FALSE_POSITIVE",
+			"name": "Visual Studio Professional 2022",
+			"remediationLevel": null,
+			"statuses": [
+				{
+					"count": 1,
+					"key": "NOT_MITIGATED",
+					"label": "Not mitigated",
+					"ticketCategory": null
+				}
+			],
+			"vendor": "Microsoft Corporation",
+			"versionCount": 1
+		},
+		{
+			"applicationType": "Application",
+			"cveCount": 0,
+			"daysDetected": 12,
+			"detectionDate": "2024-02-20T16:43:50.354371Z",
+			"endpointCount": 1,
+			"endpointsWithoutTicket": 0,
+			"estimate": true,
+			"exploitCodeMaturity": null,
+			"exploitedInTheWild": null,
+			"highestNvdBaseScore": null,
+			"highestRiskScore": null,
+			"highestSeverity": "FALSE_POSITIVE",
+			"name": "Visual Studio Community 2022",
+			"remediationLevel": null,
+			"statuses": [
+				{
+					"count": 1,
+					"key": "NOT_MITIGATED",
+					"label": "Not mitigated",
+					"ticketCategory": null
+				}
+			],
+			"vendor": "Microsoft Corporation",
+			"versionCount": 1
+		},
+		{
+			"applicationType": "Application",
+			"cveCount": 0,
+			"daysDetected": 177,
+			"detectionDate": "2023-09-08T15:03:27.632803Z",
+			"endpointCount": 1,
+			"endpointsWithoutTicket": 0,
+			"estimate": true,
+			"exploitCodeMaturity": null,
+			"exploitedInTheWild": null,
+			"highestNvdBaseScore": null,
+			"highestRiskScore": null,
+			"highestSeverity": "FALSE_POSITIVE",
+			"name": "Visual Studio Community 2019",
+			"remediationLevel": null,
+			"statuses": [
+				{
+					"count": 1,
+					"key": "NOT_MITIGATED",
+					"label": "Not mitigated",
+					"ticketCategory": null
+				}
+			],
+			"vendor": "Microsoft Corporation",
+			"versionCount": 1
+		},
+		{
+			"applicationType": "Application",
+			"cveCount": 0,
+			"daysDetected": 200,
+			"detectionDate": "2023-08-16T17:50:42.439123Z",
+			"endpointCount": 1,
+			"endpointsWithoutTicket": 0,
+			"estimate": true,
+			"exploitCodeMaturity": null,
+			"exploitedInTheWild": null,
+			"highestNvdBaseScore": null,
+			"highestRiskScore": null,
+			"highestSeverity": "FALSE_POSITIVE",
+			"name": "TeamSpeak Overlay",
+			"remediationLevel": null,
+			"statuses": [
+				{
+					"count": 1,
+					"key": "NOT_MITIGATED",
+					"label": "Not mitigated",
+					"ticketCategory": null
+				}
+			],
+			"vendor": "Overwolf app",
+			"versionCount": 1
+		},
+		{
+			"applicationType": "Application",
+			"cveCount": 0,
+			"daysDetected": 230,
+			"detectionDate": "2023-07-18T00:41:48.110369Z",
+			"endpointCount": 1,
+			"endpointsWithoutTicket": 0,
+			"estimate": true,
+			"exploitCodeMaturity": null,
+			"exploitedInTheWild": null,
+			"highestNvdBaseScore": null,
+			"highestRiskScore": null,
+			"highestSeverity": "FALSE_POSITIVE",
+			"name": "TeamSpeak 3 Client",
+			"remediationLevel": null,
+			"statuses": [
+				{
+					"count": 1,
+					"key": "NOT_MITIGATED",
+					"label": "Not mitigated",
+					"ticketCategory": null
+				}
+			],
+			"vendor": "TeamSpeak Systems GmbH",
+			"versionCount": 1
+		}
+	];
 
   const orgId = Number(sessionStorage.getItem('orgId'))
   const CanvasJS = CanvasJSReact.CanvasJS
@@ -70,13 +345,14 @@ function RisksComponent() {
   }
 
   const fetchData = async () => {
-    const data = {
-      orgID: orgId,
-    }
+    // const data = {
+    //   orgID: orgId,
+    // }
     try {
       setLoading(true)
-      const response = await fetchApplicationsAndRisksUrl(data)
-      setRisk(response)
+      // const response = await fetchApplicationsAndRisksUrl(data)
+      // setRisk(response)
+      setRisk(data)
     } catch (error) {
       console.error(error)
     } finally {
