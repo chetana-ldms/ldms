@@ -124,6 +124,10 @@ body {
   margin-top: 30px;
 }
 
+.mg-left-5{
+  margin-left: 5ox;
+}
+
 .mg-left-10{
   margin-left: 10px;
 }
@@ -132,16 +136,20 @@ body {
   margin-left: 20px;
 }
 
+.mg-right-5{
+  margin-right: 5px;
+}
+
 .mg-right-10{
-  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .mg-right-20{
-  margin-left: 20px;
+  margin-right: 20px;
 }
 
 .pad-10{
-  padding: 10px;
+  padding: 10px !important;
 }
 
 .pad-20{
@@ -319,6 +327,12 @@ body {
 .bg-blue {
   background-color: #e0eafc;
   color: #369340 !important;
+}
+
+.bg-header{
+  background: #0EB0BF !important;
+  padding: 0 10px !important;
+  border-radius: 0 !important;
 }
 
 .app-header {
@@ -778,6 +792,20 @@ form{
   color: #fff !important;
   &:hover{
     background-color: #076280 !important;
+  }
+}
+
+.btn-circle{
+  border-radius: 50%;
+  padding: 0 !important;
+  width: 40px;
+  height: 40px;
+  a{
+    display: block;
+    line-height: 40px;
+  }
+  i{
+    padding: 0;
   }
 }
 

@@ -1,23 +1,24 @@
-
-import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { UsersListLoading } from '../components/loading/UsersListLoading';
-import { ToastContainer, toast } from 'react-toastify';
-import { notify, notifyFail } from '../components/notification/Notification';
-import 'react-toastify/dist/ReactToastify.css';
-import { fetchOrganizations, fetchUserDelete } from '../../../../../api/Api';
-import { fetchUsersUrl } from '../../../../../api/ConfigurationApi';
+import React, { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { UsersListLoading } from "../components/loading/UsersListLoading";
+import { ToastContainer, toast } from "react-toastify";
+import { notify, notifyFail } from "../components/notification/Notification";
+import "react-toastify/dist/ReactToastify.css";
+import { fetchOrganizations, fetchUserDelete } from "../../../../../api/Api";
+import { fetchUsersUrl } from "../../../../../api/ConfigurationApi";
 import { useErrorBoundary } from "react-error-boundary";
 
 const UserData = () => {
   const handleError = useErrorBoundary();
-  const userID = Number(sessionStorage.getItem('userId'));
+  const userID = Number(sessionStorage.getItem("userId"));
   const roleID = Number(sessionStorage.getItem("roleID"));
   const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
   const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
-  const orgId = Number(sessionStorage.getItem('orgId'));
+  const orgId = Number(sessionStorage.getItem("orgId"));
   const orgIdFromSession = Number(sessionStorage.getItem("orgId"));
-  const [selectedOrganization, setSelectedOrganization] = useState(orgIdFromSession);
+  const [selectedOrganization, setSelectedOrganization] = useState(
+    orgIdFromSession
+  );
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [organizations, setOrganizations] = useState([]);
@@ -35,7 +36,7 @@ const UserData = () => {
   }, []);
   const handleDelete = async (item) => {
     const userID = item.userID;
-    const deletedUserId = Number(sessionStorage.getItem('userId'));
+    const deletedUserId = Number(sessionStorage.getItem("userId"));
     const deletedDate = new Date().toISOString();
     const data = {
       deletedUserId,
@@ -43,27 +44,27 @@ const UserData = () => {
       userID,
     };
     try {
-      setLoading(true)
+      setLoading(true);
       await fetchUserDelete(data);
-      notify('User Deleted');
+      notify("User Deleted");
       await reload();
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       handleError(error);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
   const reload = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       // const orgId = Number(sessionStorage.getItem('orgId'));
       const data = await fetchUsersUrl(selectedOrganization);
       setUsers(data);
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       handleError(error);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -73,70 +74,64 @@ const UserData = () => {
   const handleOrganizationChange = (e) => {
     const newOrganizationId = Number(e.target.value);
     setSelectedOrganization(newOrganizationId);
-    reload(); 
+    reload();
   };
 
   return (
     <div className="card">
       <ToastContainer />
-    
+
       <div className="header-filter row">
-        <div className="col-lg-2 d-flex justify-content-center align-items-center">
-          <div className="text-center">
-            <h3 className="align-items-end flex-column">
-              <span className="">Users:</span>
-            </h3>
-          </div>
+        <div className="col-lg-7">
+          <h3 className="uppercase lh-40">Users</h3>
         </div>
 
-        <div className="col-lg-7">
-          <div className="row">
-            <label className="form-label fw-normal fs-12 col-lg-2 lh-40 fc-gray fs-14">
-              <span>Organization:</span>
-            </label>
-            <div className="col-lg-5">
-              <select
-                className="form-select form-select-solid bg-blue-light"
-                data-kt-select2="true"
-                data-placeholder="Select option"
-                data-allow-clear="true"
-                value={selectedOrganization}
-                onChange={handleOrganizationChange}
-              >
-                {globalAdminRole=== 1 &&
-                  organizations?.length > 0 &&
-                  organizations.map((item, index) => (
+        <div className="col-lg-3">
+          <label className="form-label fw-normal fc-gray fs-14 lh-40 float-left">
+            <span>Organization: </span>
+          </label>
+          <span className="float-left">
+            <select
+              className="form-select form-select-solid bg-blue-light mg-left-10"
+              data-kt-select2="true"
+              data-placeholder="Select option"
+              data-allow-clear="true"
+              value={selectedOrganization}
+              onChange={handleOrganizationChange}
+            >
+              {globalAdminRole === 1 &&
+                organizations?.length > 0 &&
+                organizations.map((item, index) => (
+                  <option key={index} value={item.orgID}>
+                    {item.orgName}
+                  </option>
+                ))}
+
+              {globalAdminRole !== 1 &&
+                organizations?.length > 0 &&
+                organizations
+                  .filter((item) => item.orgID === orgId)
+                  .map((item, index) => (
                     <option key={index} value={item.orgID}>
                       {item.orgName}
                     </option>
                   ))}
-
-                {globalAdminRole !== 1 &&
-                  organizations?.length > 0 &&
-                  organizations
-                    .filter((item) => item.orgID === orgId)
-                    .map((item, index) => (
-                      <option key={index} value={item.orgID}>
-                        {item.orgName}
-                      </option>
-                    ))}
-              </select>
-            </div>
-          </div>
+            </select>
+          </span>
         </div>
-        <div className="col-lg-3 fs-11 lh-40 fc-gray text-center ds-reload">
+        <div className="col-lg-2 fs-11 text-right">
           {globalAdminRole === 1 || clientAdminRole === 1 ? (
-            <Link to="/qradar/users-data/add" className="btn btn-danger btn-small">
+            <Link to="/qradar/users-data/add" className="btn btn-new btn-small">
               Add New User
             </Link>
           ) : (
-            <button className='btn btn-danger btn-small' disabled>
+            <button className="btn btn-danger btn-small" disabled>
               Add New User
             </button>
           )}
         </div>
       </div>
-      <div className="card-body">
+      <div className="card-body no-pad mt-5">
         <table className="table align-middle gs-0 gy-4 dash-table alert-table">
           <thead>
             <tr className="fw-bold text-muted bg-blue">
@@ -149,62 +144,73 @@ const UserData = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {users !== null && users !== undefined  ? (
-            users.map((item, index) => {
-              if (globalAdminRole === 1 || clientAdminRole === 1 || (userID === item.userID)) {
-                
-              return (
-                <tr key={index} className="fs-12">
-                  <td className="text-danger fw-bold">{item.userID}</td>
-                  <td>{item.name}</td>
-                  <td>{item.emailId}</td>
-                  <td className="text-warning fw-bold">{item.roleName}</td>
-                  <td>
-                  {globalAdminRole === 1 || clientAdminRole === 1? (
-                      <Link className="text-white" to={`/qradar/users-data/update/${item.userID}`}>
-                        <button className="btn btn-primary btn-small">Update</button>
-                      </Link>
-                    ) : (
-                      <button className='btn btn-primary btn-small' disabled>
-                        Update
-                      </button>
-                    )}
-                   {globalAdminRole === 1 || clientAdminRole === 1 ? (
-                      <button
-                        className="btn btn-sm btn-danger btn-small ms-5"
-                        style={{ fontSize: '14px' }}
-                        onClick={() => {
-                          handleDelete(item);
-                        }}
-                      >
-                        Delete
-                      </button>
-                    ) : (
-                      <button
-                        className='btn btn-sm btn-danger btn-small ms-5'
-                        style={{ fontSize: '14px' }}
-                        disabled
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              );
-                    }
-
-            }) ) : (
+            {users !== null && users !== undefined ? (
+              users.map((item, index) => {
+                if (
+                  globalAdminRole === 1 ||
+                  clientAdminRole === 1 ||
+                  userID === item.userID
+                ) {
+                  return (
+                    <tr key={index} className="fs-12">
+                      <td>{item.userID}</td>
+                      <td>{item.name}</td>
+                      <td>{item.emailId}</td>
+                      <td>{item.roleName}</td>
+                      <td>
+                        {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                          <Link
+                            className="text-white"
+                            to={`/qradar/users-data/update/${item.userID}`}
+                            title="Update"
+                          >
+                            <button className="btn btn-primary btn-circle">
+                              <i className="fa fa-pencil" />
+                            </button>
+                          </Link>
+                        ) : (
+                          <button
+                            className="btn btn-primary btn-circle"
+                            disabled
+                          >
+                            <i className="fa fa-pencil" />
+                          </button>
+                        )}
+                        {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                          <button
+                            className="btn btn-danger btn-circle ms-5"
+                            onClick={() => {
+                              handleDelete(item);
+                            }}
+                            title="Delete"
+                          >
+                            <i className="fa fa-trash" />
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-danger btn-circle ms-5"
+                            disabled
+                          >
+                            <i className="fa fa-trash" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                }
+              })
+            ) : (
               <tr>
-                <td colSpan='6' className='text-center'>No data found</td>
+                <td colSpan="6" className="text-center">
+                  No data found
+                </td>
               </tr>
             )}
           </tbody>
         </table>
-
       </div>
     </div>
   );
 };
 
 export { UserData };
-

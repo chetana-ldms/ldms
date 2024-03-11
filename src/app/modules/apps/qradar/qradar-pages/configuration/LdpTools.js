@@ -53,9 +53,11 @@ const LdpTools = () => {
   return (
     <div className="card">
       <ToastContainer />
-      <div className="card-header border-0 pt-5">
+      <div className="card-header no-pad mb-5 border-0">
         <h3 className="card-title align-items-start flex-column">
-          <span className="card-label fw-bold fs-3 mb-1">LDP Tools</span>
+          <span className="card-label fw-bold fs-3 mb-1 uppercase">
+            LDP Tools
+          </span>
         </h3>
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">
@@ -74,7 +76,7 @@ const LdpTools = () => {
           </div>
         </div>
       </div>
-      <div className="card-body">
+      <div className="card-body no-pad">
         <table className="table align-middle gs-0 gy-4 dash-table alert-table">
           <thead>
             <tr className="fw-bold text-muted bg-blue">
@@ -96,21 +98,24 @@ const LdpTools = () => {
                   {/* <td>{item.createdDate}</td> */}
                   <td>
                     {globalAdminRole === 1 || clientAdminRole === 1 ? (
-                      <button className="btn btn-primary btn-small btn-new">
+                      <button
+                        className="btn btn-primary btn-circle"
+                        title="Edit"
+                      >
                         <Link
                           className="text-white"
                           to={`/qradar/ldp-tools/update/${item.toolId}`}
-                          title="Edit"
                         >
-                          <i className="fa fa-pencil orange pointer fs-15" />
+                          <i className="fa fa-pencil white pointer fs-15" />
                         </Link>
                       </button>
                     ) : (
-                      <button className="btn btn-primary btn-small" disabled>
-                        <i
-                          className="fa fa-pencil orange pointer"
-                          title="Edit"
-                        />
+                      <button
+                        className="btn btn-primary btn-small"
+                        title="Edit"
+                        disabled
+                      >
+                        <i className="fa fa-pencil white pointer" />
                       </button>
                     )}
 
@@ -118,24 +123,22 @@ const LdpTools = () => {
 
                     {globalAdminRole === 1 || clientAdminRole === 1 ? (
                       <button
-                        className="btn btn-sm btn-danger btn-small ms-5"
+                        className="btn btn-danger btn-circle ms-5"
                         style={{ fontSize: "14px" }}
                         onClick={() => {
                           handleDelete(item);
                         }}
+                        title="Delete"
                       >
-                        <i
-                          title="Delete"
-                          className="fa fa-trash pointer red mg-left-20 fs-15"
-                        />
+                        <i className="fa fa-trash pointer white fs-15" />
                       </button>
                     ) : (
                       <button
-                        className="btn btn-sm btn-danger btn-small ms-5"
+                        className="btn btn-danger btn-circle ms-5"
                         style={{ fontSize: "14px" }}
                         disabled
                       >
-                        Delete
+                        <i className="fa fa-trash pointer white fs-15" />
                       </button>
                     )}
                   </td>

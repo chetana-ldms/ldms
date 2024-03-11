@@ -69,9 +69,9 @@ const AddLdpTools = () => {
 
   return (
     <div className="card">
-      <div className="card-header border-0 pt-5">
-        <h3 className="card-title align-items-start flex-column">
-          <span className="card-label fw-bold fs-3 mb-1">
+      <div className="card-header bg-header mb-5">
+        <h3 className="card-title">
+          <span className="card-label white fs-3 mb-1">
             Configure New LDP Tool
           </span>
         </h3>
@@ -79,16 +79,16 @@ const AddLdpTools = () => {
           <div className="d-flex align-items-center gap-2 gap-lg-3">
             <Link
               to="/qradar/ldp-tools/list"
-              className="btn btn-border btn-small"
+              className="white fs-15 text-underline"
             >
-              <i className="fa fa-chevron-left fs-20" />
+              <i className="fa fa-chevron-left white fs-15 mg-right-5" />
               Back
             </Link>
           </div>
         </div>
       </div>
-      <form>
-        <div className="card-body border-top p-9">
+      <form className="table-filter">
+        <div className="card-body pad-10">
           <div className="row mb-6">
             <div className="col-lg-6 mb-4 mb-lg-0">
               <div className="fv-row mb-0">
