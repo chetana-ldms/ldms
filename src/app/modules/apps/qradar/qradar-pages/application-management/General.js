@@ -83,8 +83,8 @@ function General({ id }) {
               <td>{general?.externalIp}</td>
             </tr>
             <tr>
-              <td className="bold">Locations :</td>
-              <td>{general?.locations[0]?.name}</td>
+              {/* <td className="bold">Locations :</td>
+              <td>{general?.locations[0]?.name}</td> */}
               <td className="bold">Serial Number :</td>
               <td>{general?.serialNumber}</td>
             </tr>
