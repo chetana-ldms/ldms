@@ -33,7 +33,7 @@ const EndpointPopup = ({ selectedEndpoint, showModal, setShowModal }) => {
         <div className="row">
           <div className="col-md-12">
             <div className="d-flex border-btm mg-btm-10 mg-top-10">
-              <ul className="nav nav-tabs p-0 border-0 fs-12">
+              <ul className="nav nav-tabs p-0 border-0 fs-14">
                 <li className="nav-item text-center">
                   <a
                     className={`nav-link normal pointer ${
@@ -105,11 +105,11 @@ const EndpointPopup = ({ selectedEndpoint, showModal, setShowModal }) => {
           </div>
         </div>
       </Modal.Body>
-      <Modal.Footer>
+      {/* <Modal.Footer>
         <Button variant="secondary" onClick={() => setShowModal(false)}>
           Close
         </Button>
-      </Modal.Footer>
+      </Modal.Footer> */}
     </Modal>
   );
 };
