@@ -366,6 +366,35 @@ body {
 //   max-width: 100%;
 // }
 
+//Application modal
+.application-modal{
+  .modal-dialog{
+    max-width: 60%;
+  }
+  .modal-header{
+    background: #1b2f69;
+    color: white;
+    padding: 15px;
+    .modal-title{
+      color: white;
+    }
+    .btn-close{
+      background: none;
+      z-index: 1;
+    }
+  }
+  .application-modal-close{
+    background: none;
+    border: 0;
+    position: absolute;
+    right: 10px;
+    i{
+      color: white;
+      font-size: 20px;
+    }
+  }
+}
+
 .modal-small{
   .modal-dialog{
     width: 30%;

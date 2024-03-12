@@ -92,7 +92,11 @@ const OrganizationTools = () => {
               <th>Organization</th>
               <th>Auth Key</th>
               {/* <th className='min-w-50px fs-12'>API URL</th> */}
-              <th>Actions</th>
+              {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                <th>Actions</th>
+              ) : (
+                <></>
+              )}
             </tr>
           </thead>
           <tbody>

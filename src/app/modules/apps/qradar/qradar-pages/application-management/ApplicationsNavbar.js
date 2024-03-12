@@ -9,7 +9,7 @@ function ApplicationsNavbar({ setShowRiskComponent }) {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     if (tab === "inventory") {
-      setShowRiskComponent(false); 
+      setShowRiskComponent(false);
     } else {
       setShowRiskComponent(true);
     }
@@ -27,7 +27,7 @@ function ApplicationsNavbar({ setShowRiskComponent }) {
           <div className="d-flex border-btm mg-btm-10 mg-top-10">
             <ul className="nav nav-tabs p-0 border-0 fs-12">
               <li className="nav-item text-center">
-              <a
+                <a
                   className={`nav-link normal pointer ${
                     activeTab === "risks" ? "active" : ""
                   }`}
