@@ -7,16 +7,16 @@ import Inventory from './Inventory';
 import TasksApplication from './TasksApplication';
 import Updates from './Updates';
 import Tags from './Tags';
-import RisksComponent from './RisksComponent';
-import InventoryComponent from './InventoryComponent';
 
-const EndpointPopup = ({ endpointName, showModal, setShowModal }) => {
+const EndpointPopup = ({selectedEndpoint, showModal, setShowModal }) => {
     const [activeTab, setActiveTab] = useState("general");
+    console.log(selectedEndpoint, "selectedEndpoint");
+    const id = selectedEndpoint?.endpointId
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
       <Modal.Header closeButton>
-        <Modal.Title>{endpointName}</Modal.Title>
+        <Modal.Title>{selectedEndpoint?.applicationName}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
       <div className="row">
@@ -85,12 +85,12 @@ const EndpointPopup = ({ endpointName, showModal, setShowModal }) => {
               </li>
             </ul>
           </div>
-          {activeTab === "general" && <General />}
-          {activeTab === "app" &&  <App />}
-          {activeTab === "inventory" && <Inventory/>}
-          {activeTab === "tasks" && <TasksApplication/>} 
-          {activeTab === "updates" && <Updates/>}
-          {activeTab === "tags" && <Tags/>}
+          {activeTab === "general" && <General id ={id}/>}
+          {activeTab === "app" &&  <App id ={id}/>}
+          {activeTab === "inventory" && <Inventory id ={id}/>}
+          {activeTab === "tasks" && <TasksApplication id ={id}/>} 
+          {activeTab === "updates" && <Updates id ={id}/>}
+          {activeTab === "tags" && <Tags id ={id}/>}
         </div>
       </div>
       </Modal.Body>

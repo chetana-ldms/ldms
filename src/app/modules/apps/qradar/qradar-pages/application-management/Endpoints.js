@@ -11,6 +11,7 @@ function Endpoints({shouldRender}) {
   vendor = decodeURIComponent(vendor)
   const [loading, setLoading] = useState(false)
   const [endpoints, setEndpoints] = useState([])
+  console.log(endpoints, "endpoints")
   const [selectedEndpoint, setSelectedEndpoint] = useState(null)
   const [showPopup, setShowPopup] = useState(false)
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -37,8 +38,8 @@ function Endpoints({shouldRender}) {
       fetchData()
     }
   }, [shouldRender])
-  const handleEndpointClick = (endpointName) => {
-    setSelectedEndpoint(endpointName)
+  const handleEndpointClick = (item) => {
+    setSelectedEndpoint(item)
     setShowPopup(true)
   }
   return (
@@ -68,7 +69,7 @@ function Endpoints({shouldRender}) {
             {endpoints !== undefined ? (
               endpoints.map((item) => (
                 <tr key={item.id}>
-                  <td onClick={() => handleEndpointClick(item.applicationName)}>
+                  <td onClick={() => handleEndpointClick(item)}>
                     {item.applicationName}
                   </td>
                   {/* <td>{item.status}</td> */}
@@ -95,7 +96,7 @@ function Endpoints({shouldRender}) {
         </table>
       )}
       <EndpointPopup
-        endpointName={selectedEndpoint}
+        selectedEndpoint={selectedEndpoint}
         showModal={showPopup}
         setShowModal={setShowPopup}
       />
