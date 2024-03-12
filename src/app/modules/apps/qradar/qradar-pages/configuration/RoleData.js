@@ -87,7 +87,7 @@ const RoleData = () => {
           </div>
         </div>
       </div>
-      <div className="card-body pad-10">
+      <div className="card-body no-pad">
         <table className="table align-middle gs-0 gy-4 dash-table alert-table">
           <thead>
             <tr className="fw-bold text-muted bg-blue">

@@ -201,7 +201,10 @@ const UpdateRuleAction = () => {
         </h3>
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">
-            <Link to="/qradar/rules-actions/list" className="white fs-15">
+            <Link
+              to="/qradar/rules-actions/list"
+              className="white fs-15 text-underline"
+            >
               <i className="fa fa-chevron-left white mg-right-5" />
               Back
             </Link>

@@ -1,8 +1,8 @@
-import React, {useCallback, useRef, useState, useEffect} from 'react'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
-import { notify, notifyFail } from '../components/notification/Notification';
-import axios from 'axios'
-import {Link, useNavigate} from 'react-router-dom'
+import React, { useCallback, useRef, useState, useEffect } from "react";
+import { UsersListLoading } from "../components/loading/UsersListLoading";
+import { notify, notifyFail } from "../components/notification/Notification";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import ReactFlow, {
   ReactFlowProvider,
   addEdge,
@@ -12,34 +12,38 @@ import ReactFlow, {
   updateEdge,
   useNodesState,
   useEdgesState,
-} from 'reactflow'
+} from "reactflow";
 
-import {dndinitialNodes as initialNodes, edges as initialEdges} from './initial-elements'
-import CustomNode from './CustomNode'
+import {
+  dndinitialNodes as initialNodes,
+  edges as initialEdges,
+} from "./initial-elements";
+import CustomNode from "./CustomNode";
 
-import 'reactflow/dist/style.css'
-import './overview.css'
-import Sidebar from './Sidebar'
+import "reactflow/dist/style.css";
+import "./overview.css";
+import Sidebar from "./Sidebar";
 import { useErrorBoundary } from "react-error-boundary";
 // DND Start
-let id = 0
-const getId = () => `${id++}`
+let id = 0;
+const getId = () => `${id++}`;
 // DND End
-const onInit = (reactFlowInstance) => console.log('flow loaded:', reactFlowInstance)
-const flowKey = 'playbook_export'
+const onInit = (reactFlowInstance) =>
+  console.log("flow loaded:", reactFlowInstance);
+const flowKey = "playbook_export";
 
 const AddPlaybooks = () => {
- const handleError = useErrorBoundary();
+  const handleError = useErrorBoundary();
   ///////////////////// Dynamic Data fetch  //////////////////////////
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   // const [rules, setRules] = useState([])
   // console.log(rules, "rules")
   // const [actions, setActions] = useState([])
   // console.log(actions, "actions")
-  const [rulesData, setRulesData] = useState([])
+  const [rulesData, setRulesData] = useState([]);
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
     ////// Fetch Rules From API
     // var rules_config = {
     //   method: 'get',
@@ -77,213 +81,223 @@ const AddPlaybooks = () => {
     //   .catch(function (error) {
     //     console.log(error)
     //   })
-  }, [])
+  }, []);
   ///////////////////// Dynamic Data fetch  //////////////////////////
-  const reactFlowWrapper = useRef(null)
-  const edgeUpdateSuccessful = useRef(true)
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
-  const [reactFlowInstance, setReactFlowInstance] = useState(null)
-  const [dynamicid, setDynamicid] = useState([])
-  const playBookName = useRef()
-  const remarks = useRef()
-  const errors = {}
+  const reactFlowWrapper = useRef(null);
+  const edgeUpdateSuccessful = useRef(true);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  const [dynamicid, setDynamicid] = useState([]);
+  const playBookName = useRef();
+  const remarks = useRef();
+  const errors = {};
   const onSave = useCallback(
     (event) => {
-      setLoading(true)
+      setLoading(true);
       if (!playBookName.current.value) {
-        errors.playBookName = 'Enter Playbook Name'
-        setLoading(false)
-        return errors
+        errors.playBookName = "Enter Playbook Name";
+        setLoading(false);
+        return errors;
       }
       if (!remarks.current.value) {
-        errors.remarks = 'Enter Remarks'
-        setLoading(false)
-        return errors
+        errors.remarks = "Enter Remarks";
+        setLoading(false);
+        return errors;
       }
-      event.preventDefault()
+      event.preventDefault();
       var data = JSON.stringify({
         playBookName: playBookName.current.value,
         remarks: remarks.current.value,
-      })
+      });
       if (reactFlowInstance) {
-        const flow = reactFlowInstance.toObject()
-        localStorage.setItem(flowKey, JSON.stringify(flow))
-        let localdata = JSON.parse(localStorage.getItem('playbook_export'))
+        const flow = reactFlowInstance.toObject();
+        localStorage.setItem(flowKey, JSON.stringify(flow));
+        let localdata = JSON.parse(localStorage.getItem("playbook_export"));
         localdata.nodes.map((ruleactiondata, index) => {
-          let split_data = ruleactiondata.id.split('@')
+          let split_data = ruleactiondata.id.split("@");
 
           let object = {
             playBookItemType: split_data[1],
             playBookItemTypeRefID: split_data[2],
             executionSequenceNumber: split_data[0],
-          }
-          rulesData.push(object)
-        })
+          };
+          rulesData.push(object);
+        });
       }
       /// Send Data to Server :
-      var axios = require('axios')
-      const createdUserId = Number(sessionStorage.getItem('userId'));
-    const orgId = Number(sessionStorage.getItem('orgId'));
-    const createdDate = new Date().toISOString();
+      var axios = require("axios");
+      const createdUserId = Number(sessionStorage.getItem("userId"));
+      const orgId = Number(sessionStorage.getItem("orgId"));
+      const createdDate = new Date().toISOString();
       var data = JSON.stringify({
-        alertCatogory: 'category_1',
+        alertCatogory: "category_1",
         playBookName: playBookName.current.value,
         remarks: remarks.current.value,
         orgId,
         createdDate,
         createdUserId,
         playbookDtls: rulesData,
-      })
+      });
 
       var playbook_config = {
-        method: 'post',
-        url: 'http://115.110.192.133:8011/api/PlayBook/v1/Playbook/Add',
+        method: "post",
+        url: "http://115.110.192.133:8011/api/PlayBook/v1/Playbook/Add",
         headers: {
-          'Content-Type': 'application/json',
-          Accept: 'text/plain',
+          "Content-Type": "application/json",
+          Accept: "text/plain",
         },
         data: data,
-      }
+      };
       axios(playbook_config)
         .then(function (response) {
           const { isSuccess } = response.data;
           if (isSuccess) {
-            notify('PlayBook Saved');
-            navigate('/qradar/playbooks/updated')
+            notify("PlayBook Saved");
+            navigate("/qradar/playbooks/updated");
           } else {
-            notifyFail('Failed to save PlayBook');
+            notifyFail("Failed to save PlayBook");
           }
           // console.log(JSON.stringify(response.data))
           // navigate('/qradar/playbooks/updated')
         })
         .catch(function (error) {
           handleError(error);
-        })
+        });
     },
     [reactFlowInstance]
-  )
+  );
 
-  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [])
+  const onConnect = useCallback(
+    (params) => setEdges((eds) => addEdge(params, eds)),
+    []
+  );
 
   const onDragOver = useCallback((event) => {
-    console.log('onDragOver')
-    event.preventDefault()
-    event.dataTransfer.dropEffect = 'move'
-  }, [])
+    console.log("onDragOver");
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+  }, []);
 
   const onDragStart = (event, ruleType, ruleLable, ruleID, nodeType) => {
-    console.log('onDragStart')
+    console.log("onDragStart");
     // onDragStart(event, 'rule', item.ruleName, item.ruleID, 'default')
-    event.dataTransfer.setData('application/ruleType', ruleType)
-    event.dataTransfer.setData('application/ruleLable', ruleLable)
-    event.dataTransfer.setData('application/ruleID', ruleID)
-    event.dataTransfer.setData('application/nodeType', nodeType)
-    event.dataTransfer.effectAllowed = 'move'
-  }
+    event.dataTransfer.setData("application/ruleType", ruleType);
+    event.dataTransfer.setData("application/ruleLable", ruleLable);
+    event.dataTransfer.setData("application/ruleID", ruleID);
+    event.dataTransfer.setData("application/nodeType", nodeType);
+    event.dataTransfer.effectAllowed = "move";
+  };
 
   const onEdgeUpdateStart = useCallback(() => {
-    console.log('onEdgeUpdateStart')
-    edgeUpdateSuccessful.current = false
-  }, [])
+    console.log("onEdgeUpdateStart");
+    edgeUpdateSuccessful.current = false;
+  }, []);
 
   const onEdgeUpdate = useCallback((oldEdge, newConnection) => {
-    console.log('onEdgeUpdate')
-    edgeUpdateSuccessful.current = true
-    setEdges((els) => updateEdge(oldEdge, newConnection, els))
-  }, [])
+    console.log("onEdgeUpdate");
+    edgeUpdateSuccessful.current = true;
+    setEdges((els) => updateEdge(oldEdge, newConnection, els));
+  }, []);
 
   const onEdgeUpdateEnd = useCallback((_, edge) => {
-    console.log('onEdgeUpdateEnd')
+    console.log("onEdgeUpdateEnd");
     if (!edgeUpdateSuccessful.current) {
-      setEdges((eds) => eds.filter((e) => e.id !== edge.id))
+      setEdges((eds) => eds.filter((e) => e.id !== edge.id));
     }
-    edgeUpdateSuccessful.current = true
-  }, [])
+    edgeUpdateSuccessful.current = true;
+  }, []);
 
   const onDrop = useCallback(
     (event) => {
-      console.log('onDrop')
-      event.preventDefault()
-      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect()
+      console.log("onDrop");
+      event.preventDefault();
+      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
 
-      const ruletype = event.dataTransfer.getData('application/ruleType')
-      const lable = event.dataTransfer.getData('application/ruleLable')
-      const id = event.dataTransfer.getData('application/ruleID')
-      const type = event.dataTransfer.getData('application/nodeType')
+      const ruletype = event.dataTransfer.getData("application/ruleType");
+      const lable = event.dataTransfer.getData("application/ruleLable");
+      const id = event.dataTransfer.getData("application/ruleID");
+      const type = event.dataTransfer.getData("application/nodeType");
 
-      console.log('Event', event.target.value)
+      console.log("Event", event.target.value);
       // check if the dropped element is valid
-      if (typeof type === 'undefined' || !type) {
-        return
+      if (typeof type === "undefined" || !type) {
+        return;
       }
       const position = reactFlowInstance.project({
         x: event.clientX - reactFlowBounds.left,
         y: event.clientY - reactFlowBounds.top,
-      })
+      });
 
       const newNode = {
-        id: `${getId() + '@' + ruletype + '@' + id + '@' + lable}`,
+        id: `${getId() + "@" + ruletype + "@" + id + "@" + lable}`,
         type,
         position,
-        data: {label: `${lable}`}, // Node name is callng here
-      }
+        data: { label: `${lable}` }, // Node name is callng here
+      };
 
-      setNodes((nds) => nds.concat(newNode))
+      setNodes((nds) => nds.concat(newNode));
 
-      console.log('nodes', nodes)
+      console.log("nodes", nodes);
     },
     [reactFlowInstance]
-  )
+  );
 
   return (
     <form>
-      <div className='card'>
-      <div className='card-header border-0 pt-5'>
-        <h3 className='card-title align-items-start flex-column'>
-          <span className='card-label fw-bold fs-3 mb-1'>Add Playbooks</span>
-        </h3>
-        <div className='card-toolbar'>
-          <div className='d-flex align-items-center gap-2 gap-lg-3'>
-            <Link to='/qradar/playbooks/list' className='btn btn-primary btn-small'>
-              Back
-            </Link>
+      <div className="card">
+        <div className="card-header bg-header">
+          <h3 className="card-title align-items-start flex-column">
+            <span className="white uppercase">Add Playbooks</span>
+          </h3>
+          <div className="card-toolbar">
+            <div className="d-flex align-items-center gap-2 gap-lg-3">
+              <Link to="/qradar/playbooks/list" className="white fs-15">
+                <i className="fa fa-chevron-left mg-right-5 white" />
+                Back
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
-        <div className='card-header border-0'></div>
-        <div className='row mb-6'>
-          <div className='col-lg-6 mb-4 mb-lg-0'>
-            <div className='fv-row mb-0'>
-              <label htmlFor='playBookName' className='form-label fs-6 fw-bolder mb-3'>
+        <div className="card-body pad-10"></div>
+        <div className="row mb-6 table-filter">
+          <div className="col-lg-6 mb-4 mb-lg-0">
+            <div className="fv-row mb-0">
+              <label
+                htmlFor="playBookName"
+                className="form-label fs-6 fw-bolder mb-3"
+              >
                 Enter Playbook Name
               </label>
               <input
-                type='text'
+                type="text"
                 required
-                className='form-control form-control-lg form-control'
-                placeholder='Ex: PlayBook Name'
+                className="form-control form-control-lg form-control"
+                placeholder="Ex: PlayBook Name"
                 ref={playBookName}
               />
             </div>
           </div>
 
-          <div className='col-lg-6 mb-4 mb-lg-0'>
-            <div className='fv-row mb-0'>
-              <label htmlFor='remarks' className='form-label fs-6 fw-bolder mb-3'>
+          <div className="col-lg-6 mb-4 mb-lg-0">
+            <div className="fv-row mb-0">
+              <label
+                htmlFor="remarks"
+                className="form-label fs-6 fw-bolder mb-3"
+              >
                 Playbook Description
               </label>
               <input
-                type='text'
+                type="text"
                 required
-                className='form-control form-control-lg form-control'
-                placeholder='Ex: Some Explanation About Playbook'
+                className="form-control form-control-lg form-control"
+                placeholder="Ex: Some Explanation About Playbook"
                 ref={remarks}
               />
             </div>
           </div>
         </div>
-        <div className='card mb-5 mb-xl-8'>
+        <div className="card mb-5 mb-xl-8">
           {/* <div className='row'>
             <div className='col-lg-3'>
               <div className='card-body highlight h-100'>
@@ -362,10 +376,12 @@ const AddPlaybooks = () => {
               </div>
             </div>
           </div> */}
-          <div className='row mb-6'>
-            <div className='col-lg-10 mb-4 mb-lg-0'></div>
-            <div className='col-lg-2 mb-4 mb-lg-0'>
-              <button className='btn btn-primary btn-sm mb-1 save' onClick={onSave}>
+          <div className="row mb-6">
+            <div className="col-12 mb-4 mb-lg-0">
+              <button
+                className="btn btn-new btn-small float-right"
+                onClick={onSave}
+              >
                 Save Playbook
               </button>
             </div>
@@ -373,7 +389,7 @@ const AddPlaybooks = () => {
         </div>
       </div>
     </form>
-  )
-}
+  );
+};
 
-export {AddPlaybooks}
+export { AddPlaybooks };

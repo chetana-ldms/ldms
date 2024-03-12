@@ -98,7 +98,7 @@ const RulesEngine = () => {
 
                   {globalAdminRole === 1 || clientAdminRole === 1 ? (
                     <td>
-                      <button className="btn btn-circle btn-new">
+                      <button className="btn btn-circle btn-primary">
                         <Link
                           className="text-white"
                           to={`/qradar/rules-engine/update/${item.ruleID}`}
