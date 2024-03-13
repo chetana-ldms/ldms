@@ -1,13 +1,11 @@
 import React, {useEffect, useState} from 'react'
 import {useParams} from 'react-router-dom'
-import {fetchApplicationEndPointsUrl} from '../../../../../api/ApplicationSectionApi'
+import {fetchApplicationCVSUrl} from '../../../../../api/ApplicationSectionApi'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
 
 function Cves() {
-  let {name, vendor} = useParams()
-  name = decodeURIComponent(name)
-  vendor = decodeURIComponent(vendor)
+  let {id} = useParams()
   const [loading, setLoading] = useState(false)
   const [endpoints, setEndpoints] = useState([])
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -15,12 +13,11 @@ function Cves() {
   const fetchData = async () => {
     const data = {
       orgID: orgId,
-      applicationName: name,
-      applicationVendor: vendor,
+      applicationId: id,
     }
     try {
       setLoading(true)
-      const response = await fetchApplicationEndPointsUrl(data)
+      const response = await fetchApplicationCVSUrl(data)
       setEndpoints(response)
     } catch (error) {
       console.error(error)
@@ -43,32 +40,26 @@ function Cves() {
             </th>
             <th className='fs-12'>CVE ID</th>
             <th className='fs-12'>Severity</th>
-            <th className='fs-12'>Vulnerability Score</th>
             <th className='fs-12'>NDV Base Score</th>
-            <th className='fs-12'>Exploited in the Wild</th>
-            <th className='fs-12'>Exploit Maturity</th>
-            <th className='fs-12'>Remediation Level</th>
-            <th className='fs-12'>Report confidence</th>
             <th className='fs-12'>Published Date</th>
+            <th className='fs-12'>Discription</th>
+            <th className='fs-12'>Links</th>
           </tr>
         </thead>
         <tbody>
           {loading && <UsersListLoading />}
           {endpoints !== undefined ? (
             endpoints.map((item) => (
-              <tr key={item.id}>
+              <tr key={item.cveId}>
                 <td>
                   <input type='checkbox' />
                 </td>
-                <td>{item.applicationName}</td>
-                <td>{item.version}</td>
-                <td>{item.osName}</td>
-                <td>{item.osVersion}</td>
-                <td>{item.osType}</td>
-                <td>{item.accountName}</td>
-                <td>{item.siteName}</td>
-                <td>{item.groupName}</td>
-                <td>{getCurrentTimeZone(item.detectionDate)}</td>
+                <td>{item.cveId}</td>
+                <td>{item.severity}</td>
+                <td>{item.nvdBaseScore}</td>
+                <td>{getCurrentTimeZone(item.publishedDate)}</td>
+                <td>{item.description}</td>
+                <td>{item.mitreUrl}</td>
               </tr>
             ))
           ) : (

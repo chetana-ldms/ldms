@@ -20,7 +20,7 @@ const EndpointPopup = ({ selectedEndpoint, showModal, setShowModal }) => {
       onHide={() => setShowModal(false)}
     >
       <Modal.Header closeButton>
-        <Modal.Title>{selectedEndpoint?.applicationName}</Modal.Title>
+        <Modal.Title>{selectedEndpoint?.endpointName}</Modal.Title>
         <button
           type="button"
           class="application-modal-close"
