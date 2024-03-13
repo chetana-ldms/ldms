@@ -42,7 +42,7 @@ function Endpoints({ shouldRender }) {
   return (
     <>
       {shouldRender && (
-        <table className="table alert-table mg-top-20">
+        <table className="table alert-table scroll-x mg-top-20">
           <thead>
             <tr>
               <th className="fs-12">Endpoint Name</th>
