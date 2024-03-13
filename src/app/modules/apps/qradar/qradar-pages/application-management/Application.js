@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import RisksComponent from "./RisksComponent";
 import InventoryComponent from "./InventoryComponent";
+import Policy from "./Policy";
 
 function Application() {
   const [activeTab, setActiveTab] = useState("risks");
@@ -36,10 +37,21 @@ function Application() {
                   INVENTORY
                 </a>
               </li>
+              <li className="nav-item text-center">
+                <a
+                  className={`nav-link normal pointer ${
+                    activeTab === "policy" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("policy")}
+                >
+                  POLICY
+                </a>
+              </li>
             </ul>
           </div>
           {activeTab === "risks" && <RisksComponent />}
           {activeTab === "inventory" && <InventoryComponent />}
+          {activeTab === "policy" && <Policy />}
         </div>
       </div>
     </div>

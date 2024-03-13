@@ -144,7 +144,7 @@ const QradarPages = () => {
       <Route path='tasks/add' element={<AddTask />} />
       <Route path='/tasks/update/:id' element={<UpdateTask />} />
       <Route path='application/:status' element={<Application />} />
-      <Route path="/application/update/:name/:vendor" element={<RiskComponentUpdate />} />
+      <Route path="/application/update/:id" element={<RiskComponentUpdate />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )

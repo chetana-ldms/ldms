@@ -6,8 +6,8 @@ function InventoryComponent() {
   const [loading, setLoading] = useState(false)
   const [risk, setRisk] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(20); 
   const [sortConfig, setSortConfig] = useState({key: null, direction: 'ascending'})
-  const itemsPerPage = 10
   const orgId = Number(sessionStorage.getItem('orgId'))
 
   const fetchData = async () => {
@@ -68,7 +68,10 @@ function InventoryComponent() {
     }
     return null
   }
-
+  const handlePageSelect = (event) => {
+    setItemsPerPage(Number(event.target.value)); 
+    setCurrentPage(1); 
+  };
   return (
     <div className='application-section mg-top-20 mg-btm-20'>
       <div className='header-filter mg-btm-20'>
@@ -154,19 +157,34 @@ function InventoryComponent() {
         </table>
       </div>
       <nav>
-        <ul className='pagination'>
-          {[...Array(Math.ceil(risk.length / itemsPerPage)).keys()].map((number) => (
-            <li key={number + 1} className='page-item'>
-              <button
-                onClick={() => paginate(number + 1)}
-                className={`page-link ${currentPage === number + 1 ? 'active' : ''}`}
-              >
-                {number + 1}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </nav>
+		<div className="d-flex align-items-right">
+		  <ul className='pagination'>
+			{[...Array(Math.ceil(risk.length / itemsPerPage)).keys()].map((number) => (
+			  <li key={number + 1} className='page-item'>
+				<button
+				  onClick={() => paginate(number + 1)}
+				  className={`page-link ${currentPage === number + 1 ? 'active' : ''}`}
+				>
+				  {number + 1}
+				</button>
+			  </li>
+			))}
+		  </ul>
+		  <div className="col-md-3 d-flex justify-content-end align-items-center">
+			<span className="col-md-4">Count: </span>
+			<select
+			  className="form-select form-select-sm col-md-4"
+			  value={itemsPerPage}
+			  onChange={handlePageSelect}
+			>
+			  <option value={5}>5</option>
+			  <option value={10}>10</option>
+			  <option value={15}>15</option>
+			  <option value={20}>20</option>
+			</select>
+		  </div>
+		</div>
+	  </nav>
     </div>
   )
 }
