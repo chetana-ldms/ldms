@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import Endpoints from "./Endpoints";
 import InventoryComponent from "./InventoryComponent";
+import Policy from "./Policy";
 
 function ApplicationsNavbar({ setShowRiskComponent }) {
   const { id } = useParams();
@@ -9,6 +10,8 @@ function ApplicationsNavbar({ setShowRiskComponent }) {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     if (tab === "inventory") {
+      setShowRiskComponent(false);
+    } else if (tab === "policy") {
       setShowRiskComponent(false);
     } else {
       setShowRiskComponent(true);
@@ -46,10 +49,21 @@ function ApplicationsNavbar({ setShowRiskComponent }) {
                   INVENTORY
                 </a>
               </li>
+              <li className="nav-item text-center">
+                <a
+                  className={`nav-link normal pointer ${
+                    activeTab === "policy" ? "active" : ""
+                  }`}
+                  onClick={() => handleTabClick("policy")}
+                >
+                  POLICY
+                </a>
+              </li>
             </ul>
           </div>
           {activeTab === "risks" && <Endpoints id={id} shouldRender={false} />}
           {activeTab === "inventory" && <InventoryComponent />}
+          {activeTab === "policy" && <Policy />}
         </div>
       </div>
     </div>
