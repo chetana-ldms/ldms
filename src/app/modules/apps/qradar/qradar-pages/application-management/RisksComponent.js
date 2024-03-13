@@ -77,8 +77,8 @@ function RisksComponent() {
     }
   }
   const handlePageSelect = (event) => {
-    setItemsPerPage(Number(event.target.value)); // Update items per page
-    setCurrentPage(1); // Reset to the first page when changing items per page
+    setItemsPerPage(Number(event.target.value)); 
+    setCurrentPage(1); 
   };
 
   return (
