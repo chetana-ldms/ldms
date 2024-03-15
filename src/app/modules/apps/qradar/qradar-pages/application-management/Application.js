@@ -8,7 +8,6 @@ function Application() {
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-    sessionStorage.setItem("activeTab", tab);
   };
 
 

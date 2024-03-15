@@ -1,12 +1,14 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { fetchInventoryApplicationsEndpointsUrl } from "../../../../../api/ApplicationSectionApi";
-import { useEffect, useState } from "react";
-import { UsersListLoading } from "../components/loading/UsersListLoading";
-import { getCurrentTimeZone } from "../../../../../../utils/helper";
-import EndpointPopup from "./EndpointPopup";
+import React, { useEffect, useState } from 'react';
+import { Modal, Button } from 'react-bootstrap';
+import { fetchInventoryApplicationsEndpointsUrl } from '../../../../../api/ApplicationSectionApi';
+import EndpointPopup from './EndpointPopup';
+import { getCurrentTimeZone } from '../../../../../../utils/helper';
+import { UsersListLoading } from '../components/loading/UsersListLoading';
 
-function InventoryComponentUpdate() {
-    const { name, vendor } = useParams(); 
+const InventoryEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
+    console.log(selectedItem, "selectedItem")
+    const name = selectedItem?.applicationName;
+    const vendor = selectedItem?.applicationVendor;
     const orgId = Number(sessionStorage.getItem("orgId"));
     const [loading, setLoading] = useState(false);
     const [endpoints, setEndpoints] = useState([]);
@@ -31,42 +33,19 @@ function InventoryComponentUpdate() {
       };
       useEffect(() => {
           fetchData();
-      }, []);
-    const navigate = useNavigate();
-
-    const goToRiskPage = () => {
-        navigate("/qradar/application/list");
-    };
-
-    const goToPolicyPage = () => {
-        navigate("/qradar/application/policy");
-        const activeTab = sessionStorage.getItem("activeTab");
-        if (activeTab === "policy") {
-            sessionStorage.removeItem("activeTab");
-        }
-    };
+      }, [name, vendor]);
+   
     const handleEndpointClick = (item) => {
         setSelectedEndpoint(item);
         setShowPopup(true);
       };
-
-    return (
-        <div className="">
-        <div className="">
-          <h1>Application Management</h1>
-        </div>
-        <div className="d-flex">
-                <div className="button btn btn-primary text-bg-light" onClick={goToRiskPage}>
-                    Risk
-                </div>
-                <div className="button btn btn-primary text-bg-light" >
-                    Inventory
-                </div>
-                <div className="button btn btn-primary text-bg-light"onClick={goToPolicyPage}>
-                    Policy
-                </div>
-            </div>
-            <table className="table alert-table scroll-x mg-top-20">
+  return (
+    <Modal show={showModal} onHide={() => setShowModal(false)}>
+      <Modal.Header closeButton>
+        <Modal.Title>Inventory Details</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+      <table className="table alert-table scroll-x mg-top-20">
           <thead>
             <tr>
               <th className="fs-12">Endpoint Name</th>
@@ -118,8 +97,14 @@ function InventoryComponentUpdate() {
         showModal={showPopup}
         setShowModal={setShowPopup}
       />
-        </div>
-    );
-}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant='secondary' onClick={() => setShowModal(false)}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
 
-export default InventoryComponentUpdate;
+export default InventoryEndpointPopUp;

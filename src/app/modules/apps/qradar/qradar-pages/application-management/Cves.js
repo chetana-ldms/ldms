@@ -4,8 +4,8 @@ import { fetchApplicationCVSUrl } from "../../../../../api/ApplicationSectionApi
 import { UsersListLoading } from "../components/loading/UsersListLoading";
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 
-function Cves() {
-  let { id } = useParams();
+function Cves({id}) {
+  // let { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [endpoints, setEndpoints] = useState([]);
   const orgId = Number(sessionStorage.getItem("orgId"));
@@ -49,7 +49,7 @@ function Cves() {
         <tbody>
           {loading && <UsersListLoading />}
           {endpoints !== undefined ? (
-            endpoints.map((item) => (
+            endpoints?.map((item) => (
               <tr key={item.cveId}>
                 <td>
                   <input type="checkbox" />

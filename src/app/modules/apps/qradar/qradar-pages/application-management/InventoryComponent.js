@@ -1,26 +1,15 @@
 import React, {useEffect, useState} from 'react'
 import {fetchApplicationInventoryUrl} from '../../../../../api/ApplicationSectionApi'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
-import {Link, useNavigate} from 'react-router-dom'
+import ReactPaginate from "react-paginate";
+import InventoryEndpointPopUp from './InventoryEndpointPopUp'
 
 function InventoryComponent() {
-  const activeTab = sessionStorage.getItem("activeTab");
-  const navigate = useNavigate();
-
-  const goToRiskPage = () => {
-      navigate("/qradar/application/list");
-  };
-
-  const goToPolicyPage = () => {
-    navigate("/qradar/application/policy");
-    const activeTab = sessionStorage.getItem("activeTab");
-    if (activeTab === "policy") {
-        sessionStorage.removeItem("activeTab");
-    }
-};
   const [loading, setLoading] = useState(false)
   const [risk, setRisk] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(20)
   const [sortConfig, setSortConfig] = useState({
     key: null,
@@ -48,7 +37,7 @@ function InventoryComponent() {
     fetchData()
   }, [])
 
-  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = risk.slice(indexOfFirstItem, indexOfLastItem)
 
@@ -89,28 +78,17 @@ function InventoryComponent() {
   }
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value))
-    setCurrentPage(1)
+    setCurrentPage(0)
   }
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+    setShowPopup(true);
+  };
+  const handlePageClick = (selected) => {
+    setCurrentPage(selected.selected);
+  }; 
   return (
     <div className='application-section mg-top-20 mg-btm-20'>
-       {activeTab == "inventory" ? null : (
-                <>
-                    <div className="">
-                        <h1>Application Management</h1>
-                    </div>
-                    <div className="d-flex">
-                <div className="button btn btn-primary text-bg-light" onClick={goToRiskPage}>
-                    Risk
-                </div>
-                <div className="button btn btn-primary text-bg-light" >
-                    Inventory
-                </div>
-                <div className="button btn btn-primary text-bg-light"onClick={goToPolicyPage}>
-                    Policy
-                </div>
-            </div>
-                </>
-            )}
       <div className='header-filter mg-btm-20 row'>
         <div className='col-lg-4'>
           <form>
@@ -121,40 +99,6 @@ function InventoryComponent() {
         </div>
       </div>
       <div className='actions'>
-        {/* <div className="row">
-          <div className="col-lg-6">
-            <button className="btn btn-new btn-small float-left">
-              Actions <i className="fa fa-chevron-down white" />
-            </button>
-            <div className="float-left mg-left-20">
-              <span className="fs-12 gray mg-right-10 inline-block">
-                Last Scanned:
-              </span>{" "}
-              <span>Feb 28, 2024 9:30 AM</span>
-              <br />
-              <span className="fs-12 gray mg-right-10 inline-block">
-                Next Scanned:
-              </span>{" "}
-              <span>Feb 28, 2024 9:30 AM</span>
-            </div>
-          </div>
-          <div className="col-lg-6 text-right">
-            <span className="gray inline-block mg-righ-20">530 Items</span>
-            <span className="inline-block mg-left-10">
-              <select className="form-select form-select-sm">
-                <option>50 Results</option>
-              </select>
-            </span>
-            <span className="inline-block mg-left-10">
-              <select className="form-select form-select-sm">
-                <option>Columns</option>
-              </select>
-            </span>
-            <span className="inline-block mg-left-10 link">
-              Export <i className="fas fa-file-export link" />
-            </span>
-          </div>
-        </div> */}
         <table className='table alert-table mg-top-20'>
           <thead>
             <tr>
@@ -181,15 +125,9 @@ function InventoryComponent() {
             {sortedItems() !== null ? (
               sortedItems().map((item, index) => (
                 <tr className='table-row' key={index}>
-                  <td>
-                    <Link
-                      to={`/qradar/application/update/${encodeURIComponent(
-                        item.applicationName
-                      )}/${encodeURIComponent(item.applicationVendor)}`}
-                    >
-                      {item.applicationName}
-                    </Link>
-                  </td>
+                  <td onClick={() => handleItemClick(item)}>      
+                    {item.applicationName}
+                </td>
                   <td>{item.applicationVendor}</td>
                   <td>{item.applicationVersionsCount}</td>
                   <td>{item.endpointsCount}</td>
@@ -202,37 +140,46 @@ function InventoryComponent() {
             )}
           </tbody>
         </table>
+      <InventoryEndpointPopUp
+        selectedItem={selectedItem}
+        showModal={showPopup}
+        setShowModal={setShowPopup}
+      />
       </div>
       <hr />
-      <nav>
-        <div className='mt-5'>
-          <ul className='pagination float-left'>
-            {[...Array(Math.ceil(risk.length / itemsPerPage)).keys()].map((number) => (
-              <li key={number + 1} className='page-item'>
-                <button
-                  onClick={() => paginate(number + 1)}
-                  className={`page-link ${currentPage === number + 1 ? 'active' : ''}`}
-                >
-                  {number + 1}
-                </button>
-              </li>
-            ))}
-          </ul>
-          <div className='float-right'>
-            <span className='float-left lh-30 mg-right-5'>Count: </span>
-            <select
-              className='form-select form-select-sm w-100px'
-              value={itemsPerPage}
-              onChange={handlePageSelect}
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={15}>15</option>
-              <option value={20}>20</option>
-            </select>
-          </div>
+      <div className="d-flex justify-content-end align-items-center pagination-bar">
+        <ReactPaginate
+          previousLabel={<i className="fa fa-chevron-left" />}
+          nextLabel={<i className="fa fa-chevron-right" />}
+          pageCount={Math.ceil(risk.length / itemsPerPage)}
+          marginPagesDisplayed={1}
+          pageRangeDisplayed={8}
+          onPageChange={handlePageClick}
+          containerClassName={"pagination justify-content-end"}
+          pageClassName={"page-item"}
+          pageLinkClassName={"page-link"}
+          previousClassName={"page-item custom-previous"}
+          previousLinkClassName={"page-link custom-previous-link"}
+          nextClassName={"page-item custom-next"}
+          nextLinkClassName={"page-link custom-next-link"}
+          breakClassName={"page-item"}
+          breakLinkClassName={"page-link"}
+          activeClassName={"active"}
+        />
+        <div className="col-md-3 d-flex justify-content-end align-items-center">
+          <span className="col-md-4">Count: </span>
+          <select
+            className="form-select form-select-sm col-md-4"
+            value={itemsPerPage}
+            onChange={handlePageSelect}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20}>20</option>
+          </select>
         </div>
-      </nav>
+      </div>
     </div>
   )
 }

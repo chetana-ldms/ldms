@@ -5,8 +5,7 @@ import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import { UsersListLoading } from "../components/loading/UsersListLoading";
 import EndpointPopup from "./EndpointPopup";
 
-function Endpoints({ shouldRender }) {
-  let { id } = useParams();
+function Endpoints({ shouldRender, id }) {
   const [loading, setLoading] = useState(false);
   const [endpoints, setEndpoints] = useState([]);
   console.log(endpoints, "endpoints");
@@ -64,8 +63,8 @@ function Endpoints({ shouldRender }) {
           <tbody>
             {loading && <UsersListLoading />}
             {endpoints !== undefined ? (
-              endpoints.map((item) => (
-                <tr key={item.id}>
+              endpoints?.map((item) => (
+                <tr key={item.applicationId}>
                   <td onClick={() => handleEndpointClick(item)}>
                     {item.endpointName}
                   </td>

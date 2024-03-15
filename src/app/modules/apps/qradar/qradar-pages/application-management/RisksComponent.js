@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
+import ReactPaginate from "react-paginate";
 import { fetchApplicationsAndRisksUrl } from "../../../../../api/ApplicationSectionApi";
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import { UsersListLoading } from "../components/loading/UsersListLoading";
-import { Link } from "react-router-dom";
+import RiskEndpointPopUp from "./RiskEndpointPopUp";
 
 function RisksComponent() {
   const [loading, setLoading] = useState(false);
   const [risk, setRisk] = useState([]);
   console.log(risk, "risk");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [sortConfig, setSortConfig] = useState({
     key: null,
@@ -31,9 +34,9 @@ function RisksComponent() {
   };
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [currentPage]);
 
-  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems =
     risk !== null ? risk.slice(indexOfFirstItem, indexOfLastItem) : null;
@@ -86,8 +89,15 @@ function RisksComponent() {
   };
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value));
-    setCurrentPage(1);
+    setCurrentPage(0);
   };
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+    setShowPopup(true);
+  };
+  const handlePageClick = (selected) => {
+    setCurrentPage(selected.selected);
+  }; 
 
   return (
     <div>
@@ -139,14 +149,8 @@ function RisksComponent() {
           {sortedItems() !== null ? (
             sortedItems().map((item, index) => (
               <tr key={index} className="table-row">
-                <td>
-                  <Link
-                    to={`/qradar/application/update/${encodeURIComponent(
-                      item.applicationId
-                    )}`}
-                  >
+                <td onClick={() => handleItemClick(item)}>      
                     {item.name}
-                  </Link>
                 </td>
                 <td>{item.vendor}</td>
                 <td>{item.highestSeverity}</td>
@@ -164,42 +168,45 @@ function RisksComponent() {
           )}
         </tbody>
       </table>
-      {currentItems !== null && (
-        <nav>
-          <hr />
-          <div className="mt-5">
-            <ul className="pagination float-left">
-              {[...Array(Math.ceil(risk.length / itemsPerPage)).keys()].map(
-                (number) => (
-                  <li key={number + 1} className="page-item">
-                    <button
-                      onClick={() => paginate(number + 1)}
-                      className={`page-link ${
-                        currentPage === number + 1 ? "active" : ""
-                      }`}
-                    >
-                      {number + 1}
-                    </button>
-                  </li>
-                )
-              )}
-            </ul>
-            <div className="float-right">
-              <span className="float-left lh-30 mg-right-5">Count: </span>
-              <select
-                className="form-select form-select-sm w-100px"
-                value={itemsPerPage}
-                onChange={handlePageSelect}
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={15}>15</option>
-                <option value={20}>20</option>
-              </select>
-            </div>
-          </div>
-        </nav>
-      )}
+      <RiskEndpointPopUp
+        selectedItem={selectedItem}
+        showModal={showPopup}
+        setShowModal={setShowPopup}
+      />
+      <div className="d-flex justify-content-end align-items-center pagination-bar">
+        <ReactPaginate
+          previousLabel={<i className="fa fa-chevron-left" />}
+          nextLabel={<i className="fa fa-chevron-right" />}
+          pageCount={Math.ceil(risk.length / itemsPerPage)}
+          marginPagesDisplayed={1}
+          pageRangeDisplayed={8}
+          onPageChange={handlePageClick}
+          containerClassName={"pagination justify-content-end"}
+          pageClassName={"page-item"}
+          pageLinkClassName={"page-link"}
+          previousClassName={"page-item custom-previous"}
+          previousLinkClassName={"page-link custom-previous-link"}
+          nextClassName={"page-item custom-next"}
+          nextLinkClassName={"page-link custom-next-link"}
+          breakClassName={"page-item"}
+          breakLinkClassName={"page-link"}
+          activeClassName={"active"}
+        />
+        <div className="col-md-3 d-flex justify-content-end align-items-center">
+          <span className="col-md-4">Count: </span>
+          <select
+            className="form-select form-select-sm col-md-4"
+            value={itemsPerPage}
+            onChange={handlePageSelect}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20}>20</option>
+          </select>
+        </div>
+      </div>
+       
     </div>
   );
 }

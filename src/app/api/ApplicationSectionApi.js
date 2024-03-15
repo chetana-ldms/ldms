@@ -5,6 +5,8 @@ const ApplicationCVSUrl="http://115.110.192.133:502/api/SentinalOne/v1/Risks/App
 const EndPointDetailsUrl ="http://115.110.192.133:502/api/SentinalOne/v1/EndPoint/Details"
 const EndPointApplicationsUrl = "http://115.110.192.133:502/api/SentinalOne/v1/EndPoint/Applications"
 const InventoryApplicationsEndpointsUrl= "http://115.110.192.133:502/api/SentinalOne/v1/Inventory/Applications/Endpoints"
+const EndPointUpdatesUrl= "http://115.110.192.133:502/api/SentinalOne/v1/EndPoint/Updates"
+const ApplicationManagementSettingsUrl="http://115.110.192.133:502/api/SentinalOne/v1/ApplicationManagement/Settings"
 
 export const fetchApplicationsAndRisksUrl = async (data) => {
     try {
@@ -135,6 +137,44 @@ export const fetchApplicationsAndRisksUrl = async (data) => {
       const responseData = await response.json();
       const endPoints = responseData.endPoints;
       return endPoints;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchEndPointUpdatesUrl = async (data) => {
+    try {
+      const response = await fetch(`${EndPointUpdatesUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      const endPointUpdateList = responseData.endPointUpdateList;
+      return endPointUpdateList;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchApplicationManagementSettingsUrl = async (data) => {
+    try {
+      const response = await fetch(`${ApplicationManagementSettingsUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      // const appSettings = responseData.appSettings;
+      return responseData;
     } catch (error) {
       console.log(error);
     }
