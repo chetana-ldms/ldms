@@ -1,92 +1,126 @@
-import React, { useEffect, useState } from "react";
-import { fetchApplicationInventoryUrl } from "../../../../../api/ApplicationSectionApi";
-import { UsersListLoading } from "../components/loading/UsersListLoading";
+import React, {useEffect, useState} from 'react'
+import {fetchApplicationInventoryUrl} from '../../../../../api/ApplicationSectionApi'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
+import {Link, useNavigate} from 'react-router-dom'
 
 function InventoryComponent() {
-  const [loading, setLoading] = useState(false);
-  const [risk, setRisk] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const activeTab = sessionStorage.getItem("activeTab");
+  const navigate = useNavigate();
+
+  const goToRiskPage = () => {
+      navigate("/qradar/application/list");
+  };
+
+  const goToPolicyPage = () => {
+    navigate("/qradar/application/policy");
+    const activeTab = sessionStorage.getItem("activeTab");
+    if (activeTab === "policy") {
+        sessionStorage.removeItem("activeTab");
+    }
+};
+  const [loading, setLoading] = useState(false)
+  const [risk, setRisk] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(20)
   const [sortConfig, setSortConfig] = useState({
     key: null,
-    direction: "ascending",
-  });
-  const orgId = Number(sessionStorage.getItem("orgId"));
+    direction: 'ascending',
+  })
+  const orgId = Number(sessionStorage.getItem('orgId'))
 
   const fetchData = async () => {
     const data = {
       orgID: orgId,
-    };
-    try {
-      setLoading(true);
-      const response = await fetchApplicationInventoryUrl(data);
-      setRisk(response);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+      siteId: '',
     }
-  };
+    try {
+      setLoading(true)
+      const response = await fetchApplicationInventoryUrl(data)
+      setRisk(response)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = risk.slice(indexOfFirstItem, indexOfLastItem);
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = risk.slice(indexOfFirstItem, indexOfLastItem)
 
   const sortTable = (key) => {
-    let direction = "ascending";
-    if (sortConfig.key === key && sortConfig.direction === "ascending") {
-      direction = "descending";
+    let direction = 'ascending'
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending'
     }
-    setSortConfig({ key, direction });
-  };
+    setSortConfig({key, direction})
+  }
 
   const sortedItems = () => {
     if (sortConfig.key !== null) {
       return [...currentItems].sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === "ascending" ? -1 : 1;
+          return sortConfig.direction === 'ascending' ? -1 : 1
         }
         if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === "ascending" ? 1 : -1;
+          return sortConfig.direction === 'ascending' ? 1 : -1
         }
-        return 0;
-      });
+        return 0
+      })
     }
-    return currentItems;
-  };
+    return currentItems
+  }
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
   const renderSortIcon = (key) => {
     if (sortConfig.key === key) {
-      return sortConfig.direction === "ascending" ? (
-        <i className="bi bi-caret-up-fill"></i>
+      return sortConfig.direction === 'ascending' ? (
+        <i className='bi bi-caret-up-fill'></i>
       ) : (
-        <i className="bi bi-caret-down-fill"></i>
-      );
+        <i className='bi bi-caret-down-fill'></i>
+      )
     }
-    return null;
-  };
+    return null
+  }
   const handlePageSelect = (event) => {
-    setItemsPerPage(Number(event.target.value));
-    setCurrentPage(1);
-  };
+    setItemsPerPage(Number(event.target.value))
+    setCurrentPage(1)
+  }
   return (
-    <div className="application-section mg-top-20 mg-btm-20">
-      <div className="header-filter mg-btm-20 row">
-        <div className="col-lg-4">
+    <div className='application-section mg-top-20 mg-btm-20'>
+       {activeTab == "inventory" ? null : (
+                <>
+                    <div className="">
+                        <h1>Application Management</h1>
+                    </div>
+                    <div className="d-flex">
+                <div className="button btn btn-primary text-bg-light" onClick={goToRiskPage}>
+                    Risk
+                </div>
+                <div className="button btn btn-primary text-bg-light" >
+                    Inventory
+                </div>
+                <div className="button btn btn-primary text-bg-light"onClick={goToPolicyPage}>
+                    Policy
+                </div>
+            </div>
+                </>
+            )}
+      <div className='header-filter mg-btm-20 row'>
+        <div className='col-lg-4'>
           <form>
-            <select className="form-select">
+            <select className='form-select'>
               <option>Select filter</option>
             </select>
           </form>
         </div>
       </div>
-      <div className="actions">
+      <div className='actions'>
         {/* <div className="row">
           <div className="col-lg-6">
             <button className="btn btn-new btn-small float-left">
@@ -121,28 +155,24 @@ function InventoryComponent() {
             </span>
           </div>
         </div> */}
-        <table className="table alert-table mg-top-20">
+        <table className='table alert-table mg-top-20'>
           <thead>
             <tr>
-              <th onClick={() => sortTable("applicationName")}>
-                Name{" "}
-                {sortConfig.key === "applicationName" &&
-                  renderSortIcon("applicationName")}
+              <th onClick={() => sortTable('applicationName')}>
+                Name {sortConfig.key === 'applicationName' && renderSortIcon('applicationName')}
               </th>
-              <th onClick={() => sortTable("applicationVendor")}>
-                Vendor{" "}
-                {sortConfig.key === "applicationVendor" &&
-                  renderSortIcon("applicationVendor")}
+              <th onClick={() => sortTable('applicationVendor')}>
+                Vendor{' '}
+                {sortConfig.key === 'applicationVendor' && renderSortIcon('applicationVendor')}
               </th>
-              <th onClick={() => sortTable("applicationVersionsCount")}>
-                Number of Versions{" "}
-                {sortConfig.key === "applicationVersionsCount" &&
-                  renderSortIcon("applicationVersionsCount")}
+              <th onClick={() => sortTable('applicationVersionsCount')}>
+                Number of Versions{' '}
+                {sortConfig.key === 'applicationVersionsCount' &&
+                  renderSortIcon('applicationVersionsCount')}
               </th>
-              <th onClick={() => sortTable("endpointsCount")}>
-                Number of Endpoints{" "}
-                {sortConfig.key === "endpointsCount" &&
-                  renderSortIcon("endpointsCount")}
+              <th onClick={() => sortTable('endpointsCount')}>
+                Number of Endpoints{' '}
+                {sortConfig.key === 'endpointsCount' && renderSortIcon('endpointsCount')}
               </th>
             </tr>
           </thead>
@@ -150,8 +180,16 @@ function InventoryComponent() {
             {loading && <UsersListLoading />}
             {sortedItems() !== null ? (
               sortedItems().map((item, index) => (
-                <tr className="table-row" key={index}>
-                  <td>{item.applicationName}</td>
+                <tr className='table-row' key={index}>
+                  <td>
+                    <Link
+                      to={`/qradar/application/update/${encodeURIComponent(
+                        item.applicationName
+                      )}/${encodeURIComponent(item.applicationVendor)}`}
+                    >
+                      {item.applicationName}
+                    </Link>
+                  </td>
                   <td>{item.applicationVendor}</td>
                   <td>{item.applicationVersionsCount}</td>
                   <td>{item.endpointsCount}</td>
@@ -159,7 +197,7 @@ function InventoryComponent() {
               ))
             ) : (
               <tr>
-                <td colSpan="4">No data found</td>
+                <td colSpan='4'>No data found</td>
               </tr>
             )}
           </tbody>
@@ -167,27 +205,23 @@ function InventoryComponent() {
       </div>
       <hr />
       <nav>
-        <div className="mt-5">
-          <ul className="pagination float-left">
-            {[...Array(Math.ceil(risk.length / itemsPerPage)).keys()].map(
-              (number) => (
-                <li key={number + 1} className="page-item">
-                  <button
-                    onClick={() => paginate(number + 1)}
-                    className={`page-link ${
-                      currentPage === number + 1 ? "active" : ""
-                    }`}
-                  >
-                    {number + 1}
-                  </button>
-                </li>
-              )
-            )}
+        <div className='mt-5'>
+          <ul className='pagination float-left'>
+            {[...Array(Math.ceil(risk.length / itemsPerPage)).keys()].map((number) => (
+              <li key={number + 1} className='page-item'>
+                <button
+                  onClick={() => paginate(number + 1)}
+                  className={`page-link ${currentPage === number + 1 ? 'active' : ''}`}
+                >
+                  {number + 1}
+                </button>
+              </li>
+            ))}
           </ul>
-          <div className="float-right">
-            <span className="float-left lh-30 mg-right-5">Count: </span>
+          <div className='float-right'>
+            <span className='float-left lh-30 mg-right-5'>Count: </span>
             <select
-              className="form-select form-select-sm w-100px"
+              className='form-select form-select-sm w-100px'
               value={itemsPerPage}
               onChange={handlePageSelect}
             >
@@ -200,7 +234,7 @@ function InventoryComponent() {
         </div>
       </nav>
     </div>
-  );
+  )
 }
 
-export default InventoryComponent;
+export default InventoryComponent

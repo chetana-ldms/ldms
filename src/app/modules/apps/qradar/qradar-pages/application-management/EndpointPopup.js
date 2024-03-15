@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { Modal, Button, Nav, Tab } from "react-bootstrap";
 import General from "./General";
-import App from "./App";
 import Inventory from "./Inventory";
 import TasksApplication from "./TasksApplication";
 import Updates from "./Updates";
@@ -47,21 +46,11 @@ const EndpointPopup = ({ selectedEndpoint, showModal, setShowModal }) => {
                 <li className="nav-item text-center">
                   <a
                     className={`nav-link normal pointer ${
-                      activeTab === "app" ? "active" : ""
-                    }`}
-                    onClick={() => setActiveTab("app")}
-                  >
-                    App
-                  </a>
-                </li>
-                <li className="nav-item text-center">
-                  <a
-                    className={`nav-link normal pointer ${
                       activeTab === "inventory" ? "active" : ""
                     }`}
                     onClick={() => setActiveTab("inventory")}
                   >
-                    Inventory
+                   App Inventory
                   </a>
                 </li>
                 <li className="nav-item text-center">
@@ -97,7 +86,6 @@ const EndpointPopup = ({ selectedEndpoint, showModal, setShowModal }) => {
               </ul>
             </div>
             {activeTab === "general" && <General id={id} />}
-            {activeTab === "app" && <App id={id} />}
             {activeTab === "inventory" && <Inventory id={id} />}
             {activeTab === "tasks" && <TasksApplication id={id} />}
             {activeTab === "updates" && <Updates id={id} />}

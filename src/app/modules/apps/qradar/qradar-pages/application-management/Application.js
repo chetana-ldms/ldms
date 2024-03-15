@@ -6,6 +6,12 @@ import Policy from "./Policy";
 function Application() {
   const [activeTab, setActiveTab] = useState("risks");
 
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    sessionStorage.setItem("activeTab", tab);
+  };
+
+
   return (
     <div className="ldc-application">
       <div className="row">
@@ -22,7 +28,7 @@ function Application() {
                   className={`nav-link normal pointer ${
                     activeTab === "risks" ? "active" : ""
                   }`}
-                  onClick={() => setActiveTab("risks")}
+                  onClick={() => handleTabClick("risks")}
                 >
                   RISKS
                 </a>
@@ -32,7 +38,7 @@ function Application() {
                   className={`nav-link normal pointer ${
                     activeTab === "inventory" ? "active" : ""
                   }`}
-                  onClick={() => setActiveTab("inventory")}
+                  onClick={() => handleTabClick("inventory")}
                 >
                   INVENTORY
                 </a>
@@ -42,7 +48,7 @@ function Application() {
                   className={`nav-link normal pointer ${
                     activeTab === "policy" ? "active" : ""
                   }`}
-                  onClick={() => setActiveTab("policy")}
+                  onClick={() => handleTabClick("policy")}
                 >
                   POLICY
                 </a>

@@ -6,7 +6,7 @@ function General({ id }) {
   const orgId = Number(sessionStorage.getItem("orgId"));
   const [loading, setLoading] = useState(false);
   const [general, setGeneral] = useState([]);
-  console.log(general, "general");
+  console.log(id, "id");
   const fetchData = async () => {
     const data = {
       orgID: orgId,
@@ -83,30 +83,12 @@ function General({ id }) {
               <td>{general?.externalIp}</td>
             </tr>
             <tr>
-              {/* <td className="bold">Locations :</td>
-              <td>{general?.locations[0]?.name}</td> */}
               <td className="bold">Serial Number :</td>
               <td>{general?.serialNumber}</td>
             </tr>
           </table>
-          {/* <p></p>
-          <p>Last Logged In {general?.lastLoggedInUserName}</p>
-          <p>Agent Version {general?.agentVersion}</p>
-          <p>Full disc scan {general?.fullDiskScanLastUpdatedAt}</p>
-          <p>CPU {general?.cpuId}</p>
-          <p>Core Count {general?.coreCount}</p>
-          <p>Ranger Version {general?.rangerVersion}</p>
-          <p>Installer Type {general?.installerType}</p> */}
         </div>
-        {/* <div className="col-md-6">
-          <p>UUID {general?.uuid}</p>
-          <p>Installer Type {general?.installerType}</p>
-          <p>Network Status {general?.networkStatus}</p>
-          <p>Domain{general?.domain}</p>
-          <p>IP Address {general?.externalIp}</p>
-          <p>Locations {general?.locations[0]?.name}</p>
-          <p>Serial Number {general?.serialNumber}</p>
-        </div> */}
+       
       </div>
       <div className="bold fs-14 mt-3">Network Adapter</div>
       <table className="table align-middle gs-0 gy-4 dash-table alert-table mt-2">

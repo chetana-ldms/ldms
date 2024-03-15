@@ -29,9 +29,7 @@ function Tags({id}) {
   }, [])
   return (
     <div>
-    {tags === null && (
         <p>No data found</p>
-    )}
 </div>
 
   )
