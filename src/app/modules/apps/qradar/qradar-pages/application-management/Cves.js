@@ -4,7 +4,7 @@ import { fetchApplicationCVSUrl } from "../../../../../api/ApplicationSectionApi
 import { UsersListLoading } from "../components/loading/UsersListLoading";
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 
-function Cves({id}) {
+function Cves({ id }) {
   // let { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [endpoints, setEndpoints] = useState([]);
@@ -35,15 +35,15 @@ function Cves({id}) {
       <table className="table alert-table scroll-x mg-top-20">
         <thead>
           <tr>
-            <th className="fs-12">
+            <th>
               <input type="checkbox" />
             </th>
-            <th className="fs-12">CVE ID</th>
-            <th className="fs-12">Severity</th>
-            <th className="fs-12">NDV Base Score</th>
-            <th className="fs-12">Published Date</th>
-            <th className="fs-12">Discription</th>
-            <th className="fs-12">Links</th>
+            <th>CVE ID</th>
+            <th>Severity</th>
+            <th>NDV Base Score</th>
+            <th>Published Date</th>
+            <th>Discription</th>
+            <th>Links</th>
           </tr>
         </thead>
         <tbody>

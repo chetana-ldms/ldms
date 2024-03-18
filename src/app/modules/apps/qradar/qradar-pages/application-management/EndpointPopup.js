@@ -18,7 +18,7 @@ const EndpointPopup = ({ selectedEndpoint, showModal, setShowModal }) => {
       show={showModal}
       onHide={() => setShowModal(false)}
     >
-      <Modal.Header closeButton>
+      <Modal.Header closeButton className="pad-10">
         <Modal.Title>{selectedEndpoint?.endpointName}</Modal.Title>
         <button
           type="button"
@@ -50,7 +50,7 @@ const EndpointPopup = ({ selectedEndpoint, showModal, setShowModal }) => {
                     }`}
                     onClick={() => setActiveTab("inventory")}
                   >
-                   App Inventory
+                    App Inventory
                   </a>
                 </li>
                 <li className="nav-item text-center">

@@ -97,7 +97,7 @@ function RisksComponent() {
   };
   const handlePageClick = (selected) => {
     setCurrentPage(selected.selected);
-  }; 
+  };
 
   return (
     <div>
@@ -115,42 +115,40 @@ function RisksComponent() {
       <table className="table alert-table scroll-x">
         <thead>
           <tr className="fw-bold text-muted bg-blue">
-            <th className="fs-12" onClick={() => sortTable("name")}>
+            <th onClick={() => sortTable("name")}>
               Application Name {renderSortIcon("name")}
             </th>
-            <th className="fs-12" onClick={() => sortTable("vendor")}>
+            <th onClick={() => sortTable("vendor")}>
               Vendor {renderSortIcon("vendor")}
             </th>
-            <th className="fs-12" onClick={() => sortTable("highestSeverity")}>
+            <th onClick={() => sortTable("highestSeverity")}>
               Highest Severity {renderSortIcon("highestSeverity")}
             </th>
-            <th
-              className="fs-12"
-              onClick={() => sortTable("highestNvdBaseScore")}
-            >
+            <th onClick={() => sortTable("highestNvdBaseScore")}>
               Highest NVD base score {renderSortIcon("highestNvdBaseScore")}
             </th>
-            <th className="fs-12" onClick={() => sortTable("cveCount")}>
+            <th onClick={() => sortTable("cveCount")}>
               Number of CVEs {renderSortIcon("cveCount")}
             </th>
-            <th className="fs-12" onClick={() => sortTable("endpointCount")}>
+            <th onClick={() => sortTable("endpointCount")}>
               Number of Endpoints {renderSortIcon("endpointCount")}
             </th>
-            <th className="fs-12" onClick={() => sortTable("detectionDate")}>
+            <th onClick={() => sortTable("detectionDate")}>
               Application Detection Date {renderSortIcon("detectionDate")}
             </th>
-            <th className="fs-12" onClick={() => sortTable("daysDetected")}>
+            <th onClick={() => sortTable("daysDetected")}>
               Days from Detection {renderSortIcon("daysDetected")}
             </th>
           </tr>
         </thead>
+
         <tbody>
           {loading && <UsersListLoading />}
           {sortedItems() !== null ? (
             sortedItems().map((item, index) => (
               <tr key={index} className="table-row">
-                <td onClick={() => handleItemClick(item)}>      
-                    {item.name}
+                <td onClick={() => handleItemClick(item)} className="link-txt">
+                  {item.name}
                 </td>
                 <td>{item.vendor}</td>
                 <td>{item.highestSeverity}</td>
@@ -206,7 +204,6 @@ function RisksComponent() {
           </select>
         </div>
       </div>
-       
     </div>
   );
 }

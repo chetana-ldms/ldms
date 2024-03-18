@@ -1,122 +1,126 @@
-import React, {useEffect, useState} from 'react'
-import {fetchApplicationInventoryUrl} from '../../../../../api/ApplicationSectionApi'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
+import React, { useEffect, useState } from "react";
+import { fetchApplicationInventoryUrl } from "../../../../../api/ApplicationSectionApi";
+import { UsersListLoading } from "../components/loading/UsersListLoading";
 import ReactPaginate from "react-paginate";
-import InventoryEndpointPopUp from './InventoryEndpointPopUp'
+import InventoryEndpointPopUp from "./InventoryEndpointPopUp";
 
 function InventoryComponent() {
-  const [loading, setLoading] = useState(false)
-  const [risk, setRisk] = useState([])
+  const [loading, setLoading] = useState(false);
+  const [risk, setRisk] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0)
-  const [itemsPerPage, setItemsPerPage] = useState(20)
+  const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
   const [sortConfig, setSortConfig] = useState({
     key: null,
-    direction: 'ascending',
-  })
-  const orgId = Number(sessionStorage.getItem('orgId'))
+    direction: "ascending",
+  });
+  const orgId = Number(sessionStorage.getItem("orgId"));
 
   const fetchData = async () => {
     const data = {
       orgID: orgId,
-      siteId: '',
-    }
+      siteId: "",
+    };
     try {
-      setLoading(true)
-      const response = await fetchApplicationInventoryUrl(data)
-      setRisk(response)
+      setLoading(true);
+      const response = await fetchApplicationInventoryUrl(data);
+      setRisk(response);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = risk.slice(indexOfFirstItem, indexOfLastItem)
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = risk.slice(indexOfFirstItem, indexOfLastItem);
 
   const sortTable = (key) => {
-    let direction = 'ascending'
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending'
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
     }
-    setSortConfig({key, direction})
-  }
+    setSortConfig({ key, direction });
+  };
 
   const sortedItems = () => {
     if (sortConfig.key !== null) {
       return [...currentItems].sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? -1 : 1
+          return sortConfig.direction === "ascending" ? -1 : 1;
         }
         if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? 1 : -1
+          return sortConfig.direction === "ascending" ? 1 : -1;
         }
-        return 0
-      })
+        return 0;
+      });
     }
-    return currentItems
-  }
+    return currentItems;
+  };
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber)
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const renderSortIcon = (key) => {
     if (sortConfig.key === key) {
-      return sortConfig.direction === 'ascending' ? (
-        <i className='bi bi-caret-up-fill'></i>
+      return sortConfig.direction === "ascending" ? (
+        <i className="bi bi-caret-up-fill"></i>
       ) : (
-        <i className='bi bi-caret-down-fill'></i>
-      )
+        <i className="bi bi-caret-down-fill"></i>
+      );
     }
-    return null
-  }
+    return null;
+  };
   const handlePageSelect = (event) => {
-    setItemsPerPage(Number(event.target.value))
-    setCurrentPage(0)
-  }
+    setItemsPerPage(Number(event.target.value));
+    setCurrentPage(0);
+  };
   const handleItemClick = (item) => {
     setSelectedItem(item);
     setShowPopup(true);
   };
   const handlePageClick = (selected) => {
     setCurrentPage(selected.selected);
-  }; 
+  };
   return (
-    <div className='application-section mg-top-20 mg-btm-20'>
-      <div className='header-filter mg-btm-20 row'>
-        <div className='col-lg-4'>
+    <div className="application-section mg-top-20 mg-btm-20">
+      <div className="header-filter mg-btm-20 row">
+        <div className="col-lg-4">
           <form>
-            <select className='form-select'>
+            <select className="form-select">
               <option>Select filter</option>
             </select>
           </form>
         </div>
       </div>
-      <div className='actions'>
-        <table className='table alert-table mg-top-20'>
+      <div className="actions">
+        <table className="table alert-table mg-top-20">
           <thead>
             <tr>
-              <th onClick={() => sortTable('applicationName')}>
-                Name {sortConfig.key === 'applicationName' && renderSortIcon('applicationName')}
+              <th onClick={() => sortTable("applicationName")}>
+                Name{" "}
+                {sortConfig.key === "applicationName" &&
+                  renderSortIcon("applicationName")}
               </th>
-              <th onClick={() => sortTable('applicationVendor')}>
-                Vendor{' '}
-                {sortConfig.key === 'applicationVendor' && renderSortIcon('applicationVendor')}
+              <th onClick={() => sortTable("applicationVendor")}>
+                Vendor{" "}
+                {sortConfig.key === "applicationVendor" &&
+                  renderSortIcon("applicationVendor")}
               </th>
-              <th onClick={() => sortTable('applicationVersionsCount')}>
-                Number of Versions{' '}
-                {sortConfig.key === 'applicationVersionsCount' &&
-                  renderSortIcon('applicationVersionsCount')}
+              <th onClick={() => sortTable("applicationVersionsCount")}>
+                Number of Versions{" "}
+                {sortConfig.key === "applicationVersionsCount" &&
+                  renderSortIcon("applicationVersionsCount")}
               </th>
-              <th onClick={() => sortTable('endpointsCount')}>
-                Number of Endpoints{' '}
-                {sortConfig.key === 'endpointsCount' && renderSortIcon('endpointsCount')}
+              <th onClick={() => sortTable("endpointsCount")}>
+                Number of Endpoints{" "}
+                {sortConfig.key === "endpointsCount" &&
+                  renderSortIcon("endpointsCount")}
               </th>
             </tr>
           </thead>
@@ -124,10 +128,13 @@ function InventoryComponent() {
             {loading && <UsersListLoading />}
             {sortedItems() !== null ? (
               sortedItems().map((item, index) => (
-                <tr className='table-row' key={index}>
-                  <td onClick={() => handleItemClick(item)}>      
+                <tr className="table-row" key={index}>
+                  <td
+                    onClick={() => handleItemClick(item)}
+                    className="link-txt"
+                  >
                     {item.applicationName}
-                </td>
+                  </td>
                   <td>{item.applicationVendor}</td>
                   <td>{item.applicationVersionsCount}</td>
                   <td>{item.endpointsCount}</td>
@@ -135,16 +142,16 @@ function InventoryComponent() {
               ))
             ) : (
               <tr>
-                <td colSpan='4'>No data found</td>
+                <td colSpan="4">No data found</td>
               </tr>
             )}
           </tbody>
         </table>
-      <InventoryEndpointPopUp
-        selectedItem={selectedItem}
-        showModal={showPopup}
-        setShowModal={setShowPopup}
-      />
+        <InventoryEndpointPopUp
+          selectedItem={selectedItem}
+          showModal={showPopup}
+          setShowModal={setShowPopup}
+        />
       </div>
       <hr />
       <div className="d-flex justify-content-end align-items-center pagination-bar">
@@ -181,7 +188,7 @@ function InventoryComponent() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default InventoryComponent
+export default InventoryComponent;

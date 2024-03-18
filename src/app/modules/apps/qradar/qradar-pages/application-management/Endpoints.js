@@ -44,20 +44,20 @@ function Endpoints({ shouldRender, id }) {
         <table className="table alert-table scroll-x mg-top-20">
           <thead>
             <tr>
-              <th className="fs-12">Endpoint Name</th>
+              <th>Endpoint Name</th>
               {/* <th className='fs-12'>Status</th> */}
               {/* <th className='fs-12'>Version</th> */}
-              <th className="fs-12">OS</th>
-              <th className="fs-12">OS Version</th>
-              <th className="fs-12">Type</th>
-              <th className="fs-12">Account</th>
-              <th className="fs-12">Site</th>
-              <th className="fs-12">Group</th>
-              <th className="fs-12">Domain</th>
-              <th className="fs-12">Application Detection Date</th>
-              <th className="fs-12">Day from Detection</th>
-              <th className="fs-12">Last successful scan</th>
-              <th className="fs-12">Last scan result</th>
+              <th>OS</th>
+              <th>OS Version</th>
+              <th>Type</th>
+              <th>Account</th>
+              <th>Site</th>
+              <th>Group</th>
+              <th>Domain</th>
+              <th>Application Detection Date</th>
+              <th>Day from Detection</th>
+              <th>Last successful scan</th>
+              <th>Last scan result</th>
             </tr>
           </thead>
           <tbody>
@@ -65,7 +65,10 @@ function Endpoints({ shouldRender, id }) {
             {endpoints !== undefined ? (
               endpoints?.map((item) => (
                 <tr key={item.applicationId}>
-                  <td onClick={() => handleEndpointClick(item)}>
+                  <td
+                    onClick={() => handleEndpointClick(item)}
+                    className="link-txt"
+                  >
                     {item.endpointName}
                   </td>
                   {/* <td>{item.status}</td> */}

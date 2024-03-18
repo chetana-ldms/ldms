@@ -29,10 +29,10 @@ function General({ id }) {
   }, []);
   return (
     <div>
-      <div className="row mb-2">
+      <div className="row mb-2 pad-10">
         {loading && <UsersListLoading />}
         <div className="col-md-2">
-          <p>icon</p>
+          <p className="bold">OS :</p>
         </div>
         <div className="col-md-10">
           <div>
@@ -88,7 +88,6 @@ function General({ id }) {
             </tr>
           </table>
         </div>
-       
       </div>
       <div className="bold fs-14 mt-3">Network Adapter</div>
       <table className="table align-middle gs-0 gy-4 dash-table alert-table mt-2">
