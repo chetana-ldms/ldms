@@ -15,6 +15,7 @@ function InventoryComponent() {
     key: null,
     direction: "ascending",
   });
+  const [filterValue, setFilterValue] = useState("");
   const orgId = Number(sessionStorage.getItem("orgId"));
 
   const fetchData = async () => {
@@ -39,7 +40,11 @@ function InventoryComponent() {
 
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = risk.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = risk
+    .filter((item) =>
+      item.applicationName.toLowerCase().includes(filterValue.toLowerCase())
+    )
+    .slice(indexOfFirstItem, indexOfLastItem);
 
   const sortTable = (key) => {
     let direction = "ascending";
@@ -76,26 +81,36 @@ function InventoryComponent() {
     }
     return null;
   };
+
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value));
     setCurrentPage(0);
   };
+
   const handleItemClick = (item) => {
     setSelectedItem(item);
     setShowPopup(true);
   };
+
   const handlePageClick = (selected) => {
     setCurrentPage(selected.selected);
   };
+
+  const handleFilterChange = (event) => {
+    setFilterValue(event.target.value);
+  };
+
   return (
     <div className="application-section mg-top-20 mg-btm-20">
       <div className="header-filter mg-btm-20 row">
         <div className="col-lg-4">
-          <form>
-            <select className="form-select">
-              <option>Select filter</option>
-            </select>
-          </form>
+          <input
+            type="text"
+            placeholder="Enter filter"
+            className="form-control"
+            value={filterValue}
+            onChange={handleFilterChange}
+          />
         </div>
       </div>
       <div className="actions">
@@ -126,7 +141,7 @@ function InventoryComponent() {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {sortedItems() !== null ? (
+            {sortedItems().length > 0 ? (
               sortedItems().map((item, index) => (
                 <tr className="table-row" key={index}>
                   <td
