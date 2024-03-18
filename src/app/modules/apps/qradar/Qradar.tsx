@@ -73,6 +73,7 @@ import InventoryComponentUpdate from './qradar-pages/application-management/Inve
 import Policy from './qradar-pages/application-management/Policy'
 import RisksComponent from './qradar-pages/application-management/RisksComponent'
 import InventoryComponent from './qradar-pages/application-management/InventoryComponent'
+import Setinels from './qradar-pages/Setinels/Setinels'
 
 
 const QradarPages = () => {
@@ -153,6 +154,7 @@ const QradarPages = () => {
       <Route path="/application/policy" element={<Policy />} />
       <Route path="/application/risk" element={<RisksComponent />} />
       <Route path="/application/inventory" element={<InventoryComponent />} />
+      <Route path='setinels/:status' element={<Setinels />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )

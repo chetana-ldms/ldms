@@ -114,7 +114,14 @@ const SidebarMenuMain = () => {
           to='/qradar/application/list'
           title='Applications'
         />
-        
+      }
+      {
+         orgId == 2 &&
+        <SidebarMenuItem
+          icon='/media/icons/duotune/communication/com009.svg'
+          to='/qradar/setinels/list'
+          title='Setinels'
+        />
       }
     </>
   )
