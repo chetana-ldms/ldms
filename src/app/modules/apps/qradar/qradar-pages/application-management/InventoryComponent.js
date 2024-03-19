@@ -99,9 +99,6 @@ function InventoryComponent() {
   const handleFilterChange = (event) => {
     setFilterValue(event.target.value);
   };
-  if (loading) {
-    return <UsersListLoading />; 
-  }
 
   return (
     <div className="application-section mg-top-20 mg-btm-20">
@@ -117,7 +114,10 @@ function InventoryComponent() {
         </div>
       </div>
       <div className="actions">
-        <table className="table alert-table">
+      {loading ? (
+        <UsersListLoading />
+      ) : (
+        <table className="table alert-table mg-top-20">
           <thead>
             <tr>
               <th onClick={() => sortTable("applicationName")}>
@@ -143,6 +143,7 @@ function InventoryComponent() {
             </tr>
           </thead>
           <tbody>
+            {loading && <UsersListLoading />}
             {sortedItems().length > 0 ? (
               sortedItems().map((item, index) => (
                 <tr className="table-row" key={index}>
@@ -164,6 +165,7 @@ function InventoryComponent() {
             )}
           </tbody>
         </table>
+         )}
         <InventoryEndpointPopUp
           selectedItem={selectedItem}
           showModal={showPopup}

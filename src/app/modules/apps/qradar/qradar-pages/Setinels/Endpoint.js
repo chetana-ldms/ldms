@@ -1,25 +1,25 @@
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react';
 import ReactPaginate from 'react-paginate';
-import {fetchAEndPointDetailsUrl} from '../../../../../api/ApplicationSectionApi'
-import { UsersListLoading } from '../components/loading/UsersListLoading'
+import { fetchAEndPointDetailsUrl } from '../../../../../api/ApplicationSectionApi';
+import { UsersListLoading } from '../components/loading/UsersListLoading';
 import Pagination from '../../../../../../utils/Pagination';
 
 function Endpoint() {
-  const orgId = Number(sessionStorage.getItem('orgId'))
-  const [loading, setLoading] = useState(false)
-  const [endpoints, setEndpoints] = useState([])
+  const orgId = Number(sessionStorage.getItem('orgId'));
+  const [loading, setLoading] = useState(false);
+  const [endpoints, setEndpoints] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(20);
 
   const fetchData = async () => {
     const data = {
       orgID: orgId,
-      endPiontId: "",
+      endPiontId: '',
     };
     try {
       setLoading(true);
       const response = await fetchAEndPointDetailsUrl(data);
-    //   const [firstEndpoint] = response;
+      //   const [firstEndpoint] = response;
       setEndpoints(response);
     } catch (error) {
       console.error(error);
@@ -29,57 +29,60 @@ function Endpoint() {
   };
 
   useEffect(() => {
-    fetchData()
-  }, [])
-  const handlePageSelect = (event) => {
+    fetchData();
+  }, []);
+
+  const handlePageSelect = event => {
     setItemsPerPage(Number(event.target.value));
     setCurrentPage(0);
   };
+
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = endpoints.slice(indexOfFirstItem, indexOfLastItem);
 
-  const handlePageClick = (selected) => {
+  const handlePageClick = selected => {
     setCurrentPage(selected.selected);
   };
-  if (loading) {
-    return <UsersListLoading />; 
-  }
+
   return (
     <div>
-      <table className='table alert-table scroll-x'>
-        <thead>
-          <tr>
-            <th>Endpoint Name</th>
-            <th>Account </th>
-            <th> Site</th>
-            <th>Last Logged in user</th>
-            <th>Group</th>
-            <th>Domain</th>
-            <th>Console Visible Ip</th>
-            <th>Agent Version</th>
-            <th>Last Active</th>
-            <th>Register on</th>
-            <th>Device Type</th>
-            <th>Os</th>
-            <th>Os Version</th>
-            <th>Architecture</th>
-            <th>CPU Count</th>
-            <th>Core count</th>
-            <th>Network Status</th>
-            <th>Full Disk Scan</th>
-            <th>IP Adress</th>
-            <th>Installer type</th>
-            <th>Storage name</th>
-            <th>Storage type</th>
-            <th>Last successful scan time</th>
-            <th>Locations</th>
-          </tr>
-        </thead>
-        <tbody>
+      {loading ? (
+        <UsersListLoading />
+      ) : (
+        <table className='table alert-table scroll-x'>
+          <thead>
+            <tr>
+              <th>Endpoint Name</th>
+              <th>Account </th>
+              <th>Site</th>
+              <th>Last Logged in user</th>
+              <th>Group</th>
+              <th>Domain</th>
+              <th>Console Visible Ip</th>
+              <th>Agent Version</th>
+              <th>Last Active</th>
+              <th>Register on</th>
+              <th>Device Type</th>
+              <th>Os</th>
+              <th>Os Version</th>
+              <th>Architecture</th>
+              <th>CPU Count</th>
+              <th>Core count</th>
+              <th>Network Status</th>
+              <th>Full Disk Scan</th>
+              <th>IP Adress</th>
+              <th>Installer type</th>
+              <th>Storage name</th>
+              <th>Storage type</th>
+              <th>Last successful scan time</th>
+              <th>Locations</th>
+            </tr>
+          </thead>
+          <tbody>
             {currentItems !== null ? (
               currentItems?.map((item, index) => (
-                <tr className="table-row" key={index}>
+                <tr className='table-row' key={index}>
                   <td>{item.computerName}</td>
                   <td>{item.accountName}</td>
                   <td>{item.siteName}</td>
@@ -108,11 +111,12 @@ function Endpoint() {
               ))
             ) : (
               <tr>
-                <td colSpan="4">No data found</td>
+                <td colSpan='24'>No data found</td>
               </tr>
             )}
           </tbody>
-      </table>
+        </table>
+      )}
       <Pagination
         pageCount={Math.ceil(endpoints.length / itemsPerPage)}
         handlePageClick={handlePageClick}
@@ -120,7 +124,7 @@ function Endpoint() {
         handlePageSelect={handlePageSelect}
       />
     </div>
-  )
+  );
 }
 
-export default Endpoint
+export default Endpoint;
