@@ -1,12 +1,15 @@
 import {useEffect, useState} from 'react'
+import ReactPaginate from 'react-paginate';
 import {fetchAEndPointDetailsUrl} from '../../../../../api/ApplicationSectionApi'
 import { UsersListLoading } from '../components/loading/UsersListLoading'
+import Pagination from '../../../../../../utils/Pagination';
 
 function Endpoint() {
   const orgId = Number(sessionStorage.getItem('orgId'))
   const [loading, setLoading] = useState(false)
   const [endpoints, setEndpoints] = useState([])
-  console.log(endpoints, "endpoints11111")
+  const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
 
   const fetchData = async () => {
     const data = {
@@ -28,9 +31,23 @@ function Endpoint() {
   useEffect(() => {
     fetchData()
   }, [])
+  const handlePageSelect = (event) => {
+    setItemsPerPage(Number(event.target.value));
+    setCurrentPage(0);
+  };
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = endpoints.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageClick = (selected) => {
+    setCurrentPage(selected.selected);
+  };
+  if (loading) {
+    return <UsersListLoading />; 
+  }
   return (
     <div>
-      <table className='table alert-table mg-top-20'>
+      <table className='table alert-table scroll-x'>
         <thead>
           <tr>
             <th>Endpoint Name</th>
@@ -60,9 +77,8 @@ function Endpoint() {
           </tr>
         </thead>
         <tbody>
-            {loading && <UsersListLoading />}
-            {endpoints !== null ? (
-              endpoints?.map((item, index) => (
+            {currentItems !== null ? (
+              currentItems?.map((item, index) => (
                 <tr className="table-row" key={index}>
                   <td>{item.computerName}</td>
                   <td>{item.accountName}</td>
@@ -97,6 +113,12 @@ function Endpoint() {
             )}
           </tbody>
       </table>
+      <Pagination
+        pageCount={Math.ceil(endpoints.length / itemsPerPage)}
+        handlePageClick={handlePageClick}
+        itemsPerPage={itemsPerPage}
+        handlePageSelect={handlePageSelect}
+      />
     </div>
   )
 }

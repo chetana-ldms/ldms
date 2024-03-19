@@ -1,127 +1,108 @@
-import React, { useState, useEffect } from 'react';
-import ReactPaginate from 'react-paginate';
-import { fetchApplicationsAndRisksUrl } from '../../../../../api/ApplicationSectionApi';
-import { getCurrentTimeZone } from '../../../../../../utils/helper';
-import { UsersListLoading } from '../components/loading/UsersListLoading';
-import RiskEndpointPopUp from './RiskEndpointPopUp';
+import React, {useState, useEffect} from 'react'
+import ReactPaginate from 'react-paginate'
+import {fetchApplicationsAndRisksUrl} from '../../../../../api/ApplicationSectionApi'
+import {getCurrentTimeZone} from '../../../../../../utils/helper'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
+import RiskEndpointPopUp from './RiskEndpointPopUp'
 
 function RisksComponent() {
-  const [loading, setLoading] = useState(false);
-  const [risk, setRisk] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [showPopup, setShowPopup] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [loading, setLoading] = useState(false)
+  const [risk, setRisk] = useState([])
+  console.log(risk, 'risk')
+  const [selectedItem, setSelectedItem] = useState(null)
+  const [showPopup, setShowPopup] = useState(false)
+  const [currentPage, setCurrentPage] = useState(0)
+  const [itemsPerPage, setItemsPerPage] = useState(20)
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: 'ascending',
-  });
-  const [filterValue, setFilterValue] = useState('');
-  const orgId = Number(sessionStorage.getItem('orgId'));
-
+  })
+  const orgId = Number(sessionStorage.getItem('orgId'))
   const fetchData = async () => {
     const data = {
       orgID: orgId,
-    };
-    try {
-      setLoading(true);
-      const response = await fetchApplicationsAndRisksUrl(data);
-      setRisk(response.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
     }
-  };
-
+    try {
+      setLoading(true)
+      const response = await fetchApplicationsAndRisksUrl(data)
+      setRisk(response.data)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
   useEffect(() => {
-    fetchData();
-  }, [currentPage]);
+    fetchData()
+  }, [currentPage])
 
-  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems =
-    risk !== null
-      ? risk.filter(item => item.name.toLowerCase().includes(filterValue.toLowerCase())).slice(indexOfFirstItem, indexOfLastItem)
-      : null;
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = risk !== null ? risk.slice(indexOfFirstItem, indexOfLastItem) : null
+  const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
   const sortTable = (key) => {
     const direction =
-      key === sortConfig.key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending';
-    setSortConfig({ key, direction });
-  };
-
+      key === sortConfig.key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending'
+    setSortConfig({key, direction})
+  }
   const sortedItems = () => {
     if (sortConfig.key !== null) {
       return [...currentItems].sort((a, b) => {
-        const valueA = getValueForSorting(a, sortConfig.key);
-        const valueB = getValueForSorting(b, sortConfig.key);
+        const valueA = getValueForSorting(a, sortConfig.key)
+        const valueB = getValueForSorting(b, sortConfig.key)
         if (typeof valueA === 'string' && typeof valueB === 'string') {
           return sortConfig.direction === 'ascending'
             ? valueA.localeCompare(valueB)
-            : valueB.localeCompare(valueA);
+            : valueB.localeCompare(valueA)
         } else {
-          return sortConfig.direction === 'ascending' ? valueA - valueB : valueB - valueA;
+          return sortConfig.direction === 'ascending' ? valueA - valueB : valueB - valueA
         }
-      });
+      })
     }
-    return currentItems;
-  };
-
+    return currentItems
+  }
   const renderSortIcon = (key) => {
     if (sortConfig.key === key) {
       return sortConfig.direction === 'ascending' ? (
         <i className='fa fa-caret-up white' />
       ) : (
         <i className='fa fa-caret-down white' />
-      );
+      )
     }
-    return null;
-  };
-
+    return null
+  }
   const getValueForSorting = (item, key) => {
     if (key === 'label') {
       const mostCommonStatus = item.statuses.reduce((prev, current) => {
-        return prev.count > current.count ? prev : current;
-      });
-      return mostCommonStatus.label;
+        return prev.count > current.count ? prev : current
+      })
+      return mostCommonStatus.label
     } else {
-      return item[key];
+      return item[key]
     }
-  };
-
+  }
   const handlePageSelect = (event) => {
-    setItemsPerPage(Number(event.target.value));
-    setCurrentPage(0);
-  };
-
+    setItemsPerPage(Number(event.target.value))
+    setCurrentPage(0)
+  }
   const handleItemClick = (item) => {
-    setSelectedItem(item);
-    setShowPopup(true);
-  };
-
+    setSelectedItem(item)
+    setShowPopup(true)
+  }
   const handlePageClick = (selected) => {
-    setCurrentPage(selected.selected);
-  };
-
-  const handleFilterChange = (event) => {
-    setFilterValue(event.target.value);
-  };
+    setCurrentPage(selected.selected)
+  }
+  if (loading) {
+    return <UsersListLoading />; 
+  }
 
   return (
     <div>
       <div className='application-section mg-top-20 mg-btm-20'>
         <div className='header-filter mg-btm-20 row'>
           <div className='col-lg-4'>
-            <input
-              type='text'
-              placeholder='Enter filter'
-              className='form-control'
-              value={filterValue}
-              onChange={handleFilterChange}
-            />
+            <input type='text' placeholder='Enter filter' className='form-control' />
           </div>
         </div>
       </div>
@@ -153,7 +134,6 @@ function RisksComponent() {
         </thead>
 
         <tbody>
-          {loading && <UsersListLoading />}
           {sortedItems() !== null ? (
             sortedItems().map((item, index) => (
               <tr key={index} className='table-row'>
@@ -215,7 +195,7 @@ function RisksComponent() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default RisksComponent;
+export default RisksComponent

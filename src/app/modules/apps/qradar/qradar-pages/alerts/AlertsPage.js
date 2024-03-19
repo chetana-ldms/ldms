@@ -1701,25 +1701,22 @@ const AlertsPage = () => {
                               autoComplete="off"
                             />
                             <span>
-                              {item.status === "New" &&
-                              item.alertIncidentMappingId === 0 ? (
+                              {item.status === 'New' && item.alertIncidentMappingId === 0 ? (
                                 <i
-                                  className="fa fa-circle-exclamation incident-icon red"
-                                  title="Alert"
+                                  className='fa fa-circle-exclamation incident-icon red'
+                                  title='No Action Innitiated'
+                                />
+                              ) : item.status !== 'New' && item.alertIncidentMappingId === 0 ? (
+                                <i
+                                  className='fa fa-circle-exclamation incident-icon orange'
+                                  title='Incident not created'
                                 />
                               ) : (
                                 <i
-                                  className="fa fa-circle-exclamation incident-icon green"
-                                  title="Incident created"
+                                  className='fa fa-circle-exclamation incident-icon green'
+                                  title='Incident created'
                                 />
                               )}
-                              {item.status !== "New" &&
-                                item.alertIncidentMappingId === 0 && (
-                                  <i
-                                    className="fa fa-circle-exclamation incident-icon orange"
-                                    title="Incident not created"
-                                  />
-                                )}
                             </span>
                           </div>
                         </td>
