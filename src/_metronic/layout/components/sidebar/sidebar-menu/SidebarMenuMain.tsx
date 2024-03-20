@@ -78,22 +78,22 @@ const SidebarMenuMain = () => {
 
       </SidebarMenuItemWithSub>
 
-      <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen004.svg' title='Demo'>
-        <SidebarMenuItem hasBullet={true} to='/qradar/demo/v1' title='Demo' />
-        <SidebarMenuItem hasBullet={true} to='/qradar/demoalert/updated' title='Demo Alert' />
-        <SidebarMenuItem hasBullet={true} to='/qradar/demoplaybooks' title='Demo Playbooks' />
+      <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen004.svg' title='Playbook'>
+        <SidebarMenuItem hasBullet={true} to='/qradar/demo/v1' title='Alert Types' />
+        <SidebarMenuItem hasBullet={true} to='/qradar/demoalert/updated' title='Playbook Alert' />
+        <SidebarMenuItem hasBullet={true} to='/qradar/demoplaybooks' title='Alert Playbooks' />
       </SidebarMenuItemWithSub>
       {/* <SidebarMenuItem
         icon='/media/icons/duotune/communication/com012.svg'
         to='/apps/chat/group-chat'
         title='Chat'
       /> */}
-      <SidebarMenuItem
+      {/* <SidebarMenuItem
         to='/qradar/playbooks/list'
         title='Playbooks'
         fontIcon='bi-archive'
         icon='/media/icons/duotune/general/gen017.svg'
-      />
+      /> */}
 
 
     
