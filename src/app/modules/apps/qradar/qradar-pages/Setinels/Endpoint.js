@@ -3,6 +3,7 @@ import ReactPaginate from 'react-paginate';
 import { fetchAEndPointDetailsUrl } from '../../../../../api/ApplicationSectionApi';
 import { UsersListLoading } from '../components/loading/UsersListLoading';
 import Pagination from '../../../../../../utils/Pagination';
+import { getCurrentTimeZone } from '../../../../../../utils/helper';
 
 function Endpoint() {
   const orgId = Number(sessionStorage.getItem('orgId'));
@@ -50,6 +51,7 @@ function Endpoint() {
       {loading ? (
         <UsersListLoading />
       ) : (
+        <>
         <table className='table alert-table scroll-x'>
           <thead>
             <tr>
@@ -91,8 +93,8 @@ function Endpoint() {
                   <td>{item.domain}</td>
                   <td>{item.externalIp}</td>
                   <td>{item.agentVersion}</td>
-                  <td>{item.lastActiveDate}</td>
-                  <td>{item.registeredAt}</td>
+                  <td>{getCurrentTimeZone(item.lastActiveDate)}</td>
+                  <td>{getCurrentTimeZone(item.registeredAt)}</td>
                   <td>{item.machineType}</td>
                   <td>{item.osName}</td>
                   <td>{item.osRevision}</td>
@@ -100,12 +102,12 @@ function Endpoint() {
                   <td>{item.cpuCount}</td>
                   <td>{item.coreCount}</td>
                   <td>{item.networkStatus}</td>
-                  <td>{item.lastSuccessfulScanDate}</td>
+                  <td>{getCurrentTimeZone(item.lastSuccessfulScanDate)}</td>
                   <td>{item.lastIpToMgmt}</td>
                   <td>{item.installerType}</td>
                   <td>{item.storageName ?? null}</td>
                   <td>{item.storageType ?? null}</td>
-                  <td>{item.lastSuccessfulScanDate}</td>
+                  <td>{getCurrentTimeZone(item.lastSuccessfulScanDate)}</td>
                   <td>{item.locations[0].name}</td>
                 </tr>
               ))
@@ -116,13 +118,15 @@ function Endpoint() {
             )}
           </tbody>
         </table>
+         <Pagination
+         pageCount={Math.ceil(endpoints.length / itemsPerPage)}
+         handlePageClick={handlePageClick}
+         itemsPerPage={itemsPerPage}
+         handlePageSelect={handlePageSelect}
+       />
+       </>
       )}
-      <Pagination
-        pageCount={Math.ceil(endpoints.length / itemsPerPage)}
-        handlePageClick={handlePageClick}
-        itemsPerPage={itemsPerPage}
-        handlePageSelect={handlePageSelect}
-      />
+     
     </div>
   );
 }

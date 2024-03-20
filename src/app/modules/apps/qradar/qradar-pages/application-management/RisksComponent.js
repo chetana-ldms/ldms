@@ -96,6 +96,10 @@ function RisksComponent() {
 
   return (
     <div>
+      {loading ? (
+        <UsersListLoading />
+      ) : (
+        <>
       <div className='application-section mg-top-20 mg-btm-20'>
         <div className='header-filter mg-btm-20 row'>
           <div className='col-lg-4'>
@@ -103,9 +107,7 @@ function RisksComponent() {
           </div>
         </div>
       </div>
-      {loading ? (
-        <UsersListLoading />
-      ) : (
+      
       <table className='table alert-table scroll-x'>
         <thead>
           <tr className='fw-bold text-muted bg-blue'>
@@ -156,7 +158,6 @@ function RisksComponent() {
           )}
         </tbody>
       </table>
-      )}
       <RiskEndpointPopUp
         selectedItem={selectedItem}
         showModal={showPopup}
@@ -195,6 +196,8 @@ function RisksComponent() {
           </select>
         </div>
       </div>
+      </>
+      )}
     </div>
   )
 }

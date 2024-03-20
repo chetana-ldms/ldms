@@ -1,6 +1,7 @@
 import React, { useState } from "react";    
 import Endpoint from "./Endpoint";
 import BlockList from "./BlockList";
+import Exclusions from "./Exclusions";
 
 function Setinels() {
   const [activeTab, setActiveTab] = useState("endpoint");
@@ -41,10 +42,21 @@ function Setinels() {
                   BlockList
                 </a>
               </li>
+              <li className="nav-item text-center">
+                <a
+                  className={`nav-link normal pointer ${
+                    activeTab === "exclusions" ? "active" : ""
+                  }`}
+                  onClick={() => handleTabClick("exclusions")}
+                >
+                  Exclusions
+                </a>
+              </li>
             </ul>
           </div>
           {activeTab === "endpoint" && <Endpoint />}
           {activeTab === "blockList" && <BlockList />}
+          {activeTab === "exclusions" && <Exclusions />}
         </div>
       </div>
     </div>

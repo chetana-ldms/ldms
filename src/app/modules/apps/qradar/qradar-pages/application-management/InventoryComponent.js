@@ -102,6 +102,10 @@ function InventoryComponent() {
 
   return (
     <div className="application-section mg-top-20 mg-btm-20">
+      {loading ? (
+        <UsersListLoading />
+      ) : (
+        <>
       <div className="header-filter mg-btm-20 row">
         <div className="col-lg-4">
           <input
@@ -114,9 +118,6 @@ function InventoryComponent() {
         </div>
       </div>
       <div className="actions">
-      {loading ? (
-        <UsersListLoading />
-      ) : (
         <table className="table alert-table mg-top-20">
           <thead>
             <tr>
@@ -165,7 +166,6 @@ function InventoryComponent() {
             )}
           </tbody>
         </table>
-         )}
         <InventoryEndpointPopUp
           selectedItem={selectedItem}
           showModal={showPopup}
@@ -206,6 +206,8 @@ function InventoryComponent() {
           </select>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }
