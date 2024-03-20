@@ -1286,7 +1286,7 @@ form{
   border: 1px solid #ccc;
   border-radius: 4px;
   button{
-    padding: 5px 10px !important;
+    padding: 5px 10px;
     background: none;
     &.btn-secondary{
       &:focus,&:hover,&:hover:not(.btn-active),&:active,&.btn-secondary{
@@ -1708,6 +1708,11 @@ form{
 }
 
 .reports-page {
+  .export-report{
+    button{
+      padding: 5px 10px !important;
+    }
+  }
   .react-tabs__tab-panel--selected {
     min-height: 150px;
   }

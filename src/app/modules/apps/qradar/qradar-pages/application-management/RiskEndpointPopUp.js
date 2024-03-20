@@ -6,8 +6,63 @@ import { UsersListLoading } from "../components/loading/UsersListLoading";
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import Endpoints from "./Endpoints";
 import Cves from "./Cves";
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from "reactstrap";
 
 const RiskEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
+  // Function to extract table data
+  const extractTableData = (items) => {
+    return items.map((item) => ({
+      "Endpoint Name": item.endpointName,
+      OS: item.osType,
+      "OS Version": item.osVersion,
+      Account: item.accountName,
+      Site: item.siteName,
+      Group: item.groupName,
+      Domain: item.domain,
+      "Application Detection Date": getCurrentTimeZone(item.detectionDate),
+      "Day from Detection": getCurrentTimeZone(item.applicationDaysDetected),
+      "Last successful scan": item.lastScanDate,
+      "Last scan result": item.lastScanResult,
+    }));
+  };
+  // Function to convert data to CSV format
+  const convertToCSV = (data) => {
+    const header = Object.keys(data[0]).join(",") + "\n";
+    const body = data.map((item) => Object.values(item).join(",")).join("\n");
+    return header + body;
+  };
+
+  const exportToCSV = (data) => {
+    const csvData = convertToCSV(data);
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+    const fileName = "risk_data.csv";
+    if (navigator.msSaveBlob) {
+      // IE 10+
+      navigator.msSaveBlob(blob, fileName);
+    } else {
+      const link = document.createElement("a");
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
+  };
+
+  const exportTableToCSV = () => {
+    const tableData = extractTableData(endpoints);
+    exportToCSV(tableData);
+  };
+
   const id = selectedItem?.applicationId;
   console.log(id, "id1111");
   const [loading, setLoading] = useState(false);
@@ -71,6 +126,24 @@ const RiskEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
                     >
                       CVEs
                     </a>
+                  </li>
+                  <li className="float-right">
+                    <div className="export-report border-0">
+                      <Dropdown
+                        isOpen={dropdownOpen}
+                        toggle={() => setDropdownOpen(!dropdownOpen)}
+                      >
+                        <DropdownToggle className="no-pad">
+                          <div className="btn btn-new btn-small">Actions</div>
+                        </DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem onClick={exportTableToCSV}>
+                            Export to Excel{" "}
+                            <i className="fa fa-file-excel link float-right" />
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
+                    </div>
                   </li>
                 </ul>
               </div>

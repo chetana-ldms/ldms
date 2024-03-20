@@ -3,8 +3,55 @@ import { fetchApplicationInventoryUrl } from "../../../../../api/ApplicationSect
 import { UsersListLoading } from "../components/loading/UsersListLoading";
 import ReactPaginate from "react-paginate";
 import InventoryEndpointPopUp from "./InventoryEndpointPopUp";
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from "reactstrap";
 
 function InventoryComponent() {
+  const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
+  // Function to extract table data
+  const extractTableData = (items) => {
+    return items.map((item) => ({
+      Name: item.applicationName,
+      Vendor: item.applicationVendor,
+      "Number of Versions": item.applicationVersionsCount,
+      "Number of Endpoints": item.endpointsCount,
+    }));
+  };
+  // Function to convert data to CSV format
+  const convertToCSV = (data) => {
+    const header = Object.keys(data[0]).join(",") + "\n";
+    const body = data.map((item) => Object.values(item).join(",")).join("\n");
+    return header + body;
+  };
+
+  const exportToCSV = (data) => {
+    const csvData = convertToCSV(data);
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+    const fileName = "risk_data.csv";
+    if (navigator.msSaveBlob) {
+      // IE 10+
+      navigator.msSaveBlob(blob, fileName);
+    } else {
+      const link = document.createElement("a");
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
+  };
+
+  const exportTableToCSV = () => {
+    const tableData = extractTableData(currentItems);
+    exportToCSV(tableData);
+  };
   const [loading, setLoading] = useState(false);
   const [risk, setRisk] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -103,7 +150,7 @@ function InventoryComponent() {
   return (
     <div className="application-section mg-top-20 mg-btm-20">
       <div className="header-filter mg-btm-20 row">
-        <div className="col-lg-4">
+        <div className="col-lg-10">
           <input
             type="text"
             placeholder="Enter filter"
@@ -112,60 +159,78 @@ function InventoryComponent() {
             onChange={handleFilterChange}
           />
         </div>
+        <div className="col-lg-2">
+          <div className="export-report border-0">
+            <Dropdown
+              isOpen={dropdownOpen}
+              toggle={() => setDropdownOpen(!dropdownOpen)}
+            >
+              <DropdownToggle className="no-pad">
+                <div className="btn btn-new btn-small">Actions</div>
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem onClick={exportTableToCSV}>
+                  Export to Excel{" "}
+                  <i className="fa fa-file-excel link float-right" />
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        </div>
       </div>
       <div className="actions">
-      {loading ? (
-        <UsersListLoading />
-      ) : (
-        <table className="table alert-table mg-top-20">
-          <thead>
-            <tr>
-              <th onClick={() => sortTable("applicationName")}>
-                Name{" "}
-                {sortConfig.key === "applicationName" &&
-                  renderSortIcon("applicationName")}
-              </th>
-              <th onClick={() => sortTable("applicationVendor")}>
-                Vendor{" "}
-                {sortConfig.key === "applicationVendor" &&
-                  renderSortIcon("applicationVendor")}
-              </th>
-              <th onClick={() => sortTable("applicationVersionsCount")}>
-                Number of Versions{" "}
-                {sortConfig.key === "applicationVersionsCount" &&
-                  renderSortIcon("applicationVersionsCount")}
-              </th>
-              <th onClick={() => sortTable("endpointsCount")}>
-                Number of Endpoints{" "}
-                {sortConfig.key === "endpointsCount" &&
-                  renderSortIcon("endpointsCount")}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading && <UsersListLoading />}
-            {sortedItems().length > 0 ? (
-              sortedItems().map((item, index) => (
-                <tr className="table-row" key={index}>
-                  <td
-                    onClick={() => handleItemClick(item)}
-                    className="link-txt"
-                  >
-                    {item.applicationName}
-                  </td>
-                  <td>{item.applicationVendor}</td>
-                  <td>{item.applicationVersionsCount}</td>
-                  <td>{item.endpointsCount}</td>
-                </tr>
-              ))
-            ) : (
+        {loading ? (
+          <UsersListLoading />
+        ) : (
+          <table className="table alert-table mg-top-20">
+            <thead>
               <tr>
-                <td colSpan="4">No data found</td>
+                <th onClick={() => sortTable("applicationName")}>
+                  Name{" "}
+                  {sortConfig.key === "applicationName" &&
+                    renderSortIcon("applicationName")}
+                </th>
+                <th onClick={() => sortTable("applicationVendor")}>
+                  Vendor{" "}
+                  {sortConfig.key === "applicationVendor" &&
+                    renderSortIcon("applicationVendor")}
+                </th>
+                <th onClick={() => sortTable("applicationVersionsCount")}>
+                  Number of Versions{" "}
+                  {sortConfig.key === "applicationVersionsCount" &&
+                    renderSortIcon("applicationVersionsCount")}
+                </th>
+                <th onClick={() => sortTable("endpointsCount")}>
+                  Number of Endpoints{" "}
+                  {sortConfig.key === "endpointsCount" &&
+                    renderSortIcon("endpointsCount")}
+                </th>
               </tr>
-            )}
-          </tbody>
-        </table>
-         )}
+            </thead>
+            <tbody>
+              {loading && <UsersListLoading />}
+              {sortedItems().length > 0 ? (
+                sortedItems().map((item, index) => (
+                  <tr className="table-row" key={index}>
+                    <td
+                      onClick={() => handleItemClick(item)}
+                      className="link-txt"
+                    >
+                      {item.applicationName}
+                    </td>
+                    <td>{item.applicationVendor}</td>
+                    <td>{item.applicationVersionsCount}</td>
+                    <td>{item.endpointsCount}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4">No data found</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
         <InventoryEndpointPopUp
           selectedItem={selectedItem}
           showModal={showPopup}
