@@ -138,8 +138,8 @@ const RiskEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
                         </DropdownToggle>
                         <DropdownMenu>
                           <DropdownItem onClick={exportTableToCSV}>
-                            Export to Excel{" "}
-                            <i className="fa fa-file-excel link float-right" />
+                            Generate Report{" "}
+                            <i className="fa fa-file-excel link float-right report-icon" />
                           </DropdownItem>
                         </DropdownMenu>
                       </Dropdown>
