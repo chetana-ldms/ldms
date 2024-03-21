@@ -13,50 +13,6 @@ import {
 
 function RisksComponent() {
   const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
-  // Function to extract table data
-  const extractTableData = (items) => {
-    return items.map((item) => ({
-      Name: item.name,
-      Vendor: item.vendor,
-      "Highest Severity": item.highestSeverity,
-      "Highest NVD Base Score": item.highestNvdBaseScore ?? 0,
-      "Number of CVEs": item.cveCount,
-      "Number of Endpoints": item.endpointCount,
-      "Application Detection Date": getCurrentTimeZone(item.detectionDate),
-      "Days from Detection": item.daysDetected,
-    }));
-  };
-  // Function to convert data to CSV format
-  const convertToCSV = (data) => {
-    const header = Object.keys(data[0]).join(",") + "\n";
-    const body = data.map((item) => Object.values(item).join(",")).join("\n");
-    return header + body;
-  };
-
-  const exportToCSV = (data) => {
-    const csvData = convertToCSV(data);
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    const fileName = "risk_data.csv";
-    if (navigator.msSaveBlob) {
-      // IE 10+
-      navigator.msSaveBlob(blob, fileName);
-    } else {
-      const link = document.createElement("a");
-      if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-    }
-  };
-
-  const exportTableToCSV = () => {
-    const tableData = extractTableData(currentItems);
-    exportToCSV(tableData);
-  };
 
   const [loading, setLoading] = useState(false);
   const [risk, setRisk] = useState([]);
@@ -151,6 +107,56 @@ function RisksComponent() {
     setCurrentPage(selected.selected);
   };
 
+  // Function to extract full table data
+  const exportTableToCSV = () => {
+    const tableData = extractTableData(risk);
+    exportToCSV(tableData);
+  };
+
+  // Function to extract current pagination table data
+  const exportCurrentTableToCSV = () => {
+    const tableData = extractTableData(currentItems);
+    exportToCSV(tableData);
+  };
+
+  const extractTableData = (items) => {
+    return items.map((item) => ({
+      Name: item.name,
+      Vendor: item.vendor,
+      "Highest Severity": item.highestSeverity,
+      "Highest NVD Base Score": item.highestNvdBaseScore ?? 0,
+      "Number of CVEs": item.cveCount,
+      "Number of Endpoints": item.endpointCount,
+      "Application Detection Date": getCurrentTimeZone(item.detectionDate),
+      "Days from Detection": item.daysDetected,
+    }));
+  };
+
+  const convertToCSV = (data) => {
+    const header = Object.keys(data[0]).join(",") + "\n";
+    const body = data.map((item) => Object.values(item).join(",")).join("\n");
+    return header + body;
+  };
+
+  const exportToCSV = (data) => {
+    const csvData = convertToCSV(data);
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+    const fileName = "risk_data.csv";
+    if (navigator.msSaveBlob) {
+      navigator.msSaveBlob(blob, fileName);
+    } else {
+      const link = document.createElement("a");
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
+  };
+
   return (
     <div>
       {loading ? (
@@ -175,10 +181,17 @@ function RisksComponent() {
                     <DropdownToggle className="no-pad">
                       <div className="btn btn-new btn-small">Actions</div>
                     </DropdownToggle>
-                    <DropdownMenu>
-                      <DropdownItem onClick={exportTableToCSV}>
-                        Generate Report{" "}
-                        <i className="fa fa-file-excel link float-right report-icon" />
+                    <DropdownMenu className="w-auto">
+                      <DropdownItem
+                        onClick={exportTableToCSV}
+                        className="border-btm"
+                      >
+                        <i className="fa fa-file-excel link mg-right-5" />{" "}
+                        Export full report
+                      </DropdownItem>
+                      <DropdownItem onClick={exportCurrentTableToCSV}>
+                        <i className="fa fa-file-excel link mg-right-5" />{" "}
+                        Export current page report
                       </DropdownItem>
                     </DropdownMenu>
                   </Dropdown>

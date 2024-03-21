@@ -5,68 +5,20 @@ import { UsersListLoading } from "../components/loading/UsersListLoading";
 import Pagination from "../../../../../../utils/Pagination";
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import { fetchExclusionListUrl } from "../../../../../api/SentinalApi";
-import {
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
+import { useAbsoluteLayout } from "react-table";
+import MitigationModal from "../alerts/MitigationModal";
+import AddToBlockListModal from "../alerts/AddToBlockListModal";
+import CreateExclusionModal from "./CreateExclusionModal";
+import AddFromExclusionsCatalogModal from "./AddFromExclusionsCatalogModal";
 
 function Exclusions() {
-  const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
-  // Function to extract table data
-  const extractTableData = (items) => {
-    return items.map((item) => ({
-      "Exclusion Type": null,
-      OS: item.osType,
-      "Application Type": item.applicationName,
-      "Inventory Listed": null,
-      Description: item.description,
-      Value: item.value,
-      "Scope Path": item.scopePath,
-      User: item.userName,
-      Mode: item.mode,
-      "Last Updated": getCurrentTimeZone(item.updatedAt),
-      Source: item.source,
-      Scope: item.scopeName,
-      Imported: item.imported ? "Yes" : "No",
-    }));
-  };
-  // Function to convert data to CSV format
-  const convertToCSV = (data) => {
-    const header = Object.keys(data[0]).join(",") + "\n";
-    const body = data.map((item) => Object.values(item).join(",")).join("\n");
-    return header + body;
-  };
-
-  const exportToCSV = (data) => {
-    const csvData = convertToCSV(data);
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    const fileName = "risk_data.csv";
-    if (navigator.msSaveBlob) {
-      // IE 10+
-      navigator.msSaveBlob(blob, fileName);
-    } else {
-      const link = document.createElement("a");
-      if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-    }
-  };
-
-  const exportTableToCSV = () => {
-    const tableData = extractTableData(currentItems);
-    exportToCSV(tableData);
-  };
-
   const orgId = Number(sessionStorage.getItem("orgId"));
   const [loading, setLoading] = useState(false);
   const [exlusions, setExlusions] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showMoreActionsModal, setShowMoreActionsModal] = useState(false);
+  const [addToBlockListModal, setAddToBlockListModal] = useState(false);
+  const [selectedValue, setSelectedValue] = useState("");
   console.log(exlusions, "exlusions111");
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(20);
@@ -103,6 +55,38 @@ function Exclusions() {
     setCurrentPage(selected.selected);
   };
 
+  const handleThreatActions = () => {
+    setShowDropdown(true);
+    console.log(showDropdown, "showDropdown");
+  };
+  const handleShowDropdown = () => {
+    setShowDropdown(false);
+  };
+  const handleCloseMoreActionsModal = () => {
+    setShowMoreActionsModal(false);
+    setShowDropdown(false);
+  };
+  const handleAction = () => {
+    handleCloseMoreActionsModal();
+  };
+  const handleCloseAddToBlockList = () => {
+    setAddToBlockListModal(false);
+    setShowDropdown(false);
+  };
+  const handleActionAddToBlockList = () => {
+    setAddToBlockListModal(false);
+  };
+  const handleDropdownSelect = async (event) => {
+    const value = event.target.value;
+    setSelectedValue(value);
+    if (value === "CreateExclusion") {
+      setShowMoreActionsModal(true);
+    } else if (value === "AddFromExclusionsCatalog") {
+      setAddToBlockListModal(true);
+    } else {
+      setShowDropdown(false);
+    }
+  };
   return (
     <div>
       {loading ? (
@@ -110,9 +94,87 @@ function Exclusions() {
       ) : (
         <>
           <div className="row">
-            <div className="col-lg-6">
-              <button className="btn btn-new btn-small float-left mb-3">
-                New Exclusion <i className="fa fa-chevron-down white" />
+            <div className="col-lg-6 d-flex">
+              <div className="mb-3">
+                <a
+                  href="#"
+                  className="btn btn-small btn-border "
+                  data-kt-menu-trigger="click"
+                  data-kt-menu-placement="bottom-end"
+                  onClick={handleThreatActions}
+                >
+                  New Exclusion <i className="fa fa-chevron-down" />
+                </a>
+                <div
+                  className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action"
+                  data-kt-menu="true"
+                >
+                  {showDropdown && (
+                    <div className="px-5 py-5">
+                      <div className="mb-5">
+                        <div className="d-flex justify-content-end mb-5">
+                          <div>
+                            <div
+                              className="close fs-20 text-muted pointer"
+                              aria-label="Close"
+                              onClick={handleShowDropdown}
+                            >
+                              <span
+                                aria-hidden="true"
+                                style={{
+                                  color: "inherit",
+                                  textShadow: "none",
+                                }}
+                              >
+                                &times;
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <select
+                          onChange={handleDropdownSelect}
+                          className="form-select form-select-solid"
+                          data-kt-select2="true"
+                          data-control="select2"
+                          data-placeholder="Select option"
+                          data-allow-clear="true"
+                        >
+                          <option value="" className="p-2">
+                            Select
+                          </option>
+                          <option value="CreateExclusion" className="mb-2">
+                            Create Exclusion
+                          </option>
+                          <option
+                            value="AddFromExclusionsCatalog"
+                            className="mb-2"
+                          >
+                            Add from exclusions Catalog
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {showMoreActionsModal && (
+                  <CreateExclusionModal
+                    show={showMoreActionsModal}
+                    handleClose={handleCloseMoreActionsModal}
+                    handleAction={handleAction}
+                    selectedValue={selectedValue}
+                  />
+                )}
+                {addToBlockListModal && (
+                  <AddFromExclusionsCatalogModal
+                    show={addToBlockListModal}
+                    handleClose={handleCloseAddToBlockList}
+                    handleAction={handleActionAddToBlockList}
+                    selectedValue={selectedValue}
+                  />
+                )}
+              </div>
+              <button className="btn btn-small btn-primary ms-2 ">
+                Delete selection
               </button>
             </div>
             <div className="col-lg-6 text-right">
@@ -120,22 +182,7 @@ function Exclusions() {
                 {exlusions.length} Items
               </span>
               <span className="inline-block mg-left-10 link">
-                <div className="export-report border-0">
-                  <Dropdown
-                    isOpen={dropdownOpen}
-                    toggle={() => setDropdownOpen(!dropdownOpen)}
-                  >
-                    <DropdownToggle className="no-pad">
-                      <div className="btn btn-new btn-small">Actions</div>
-                    </DropdownToggle>
-                    <DropdownMenu>
-                      <DropdownItem onClick={exportTableToCSV}>
-                        Generate Report{" "}
-                        <i className="fa fa-file-excel link float-right report-icon" />
-                      </DropdownItem>
-                    </DropdownMenu>
-                  </Dropdown>
-                </div>
+                Export <i className="fas fa-file-export link" />
               </span>
             </div>
           </div>

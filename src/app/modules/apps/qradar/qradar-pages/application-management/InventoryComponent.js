@@ -48,10 +48,18 @@ function InventoryComponent() {
     }
   };
 
+  // Function to extract full table data
   const exportTableToCSV = () => {
+    const tableData = extractTableData(risk);
+    exportToCSV(tableData);
+  };
+
+  // Function to extract current pagination table data
+  const exportCurrentTableToCSV = () => {
     const tableData = extractTableData(currentItems);
     exportToCSV(tableData);
   };
+
   const [loading, setLoading] = useState(false);
   const [risk, setRisk] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -172,10 +180,17 @@ function InventoryComponent() {
                   <DropdownToggle className="no-pad">
                     <div className="btn btn-new btn-small">Actions</div>
                   </DropdownToggle>
-                  <DropdownMenu>
-                    <DropdownItem onClick={exportTableToCSV}>
-                      Generate Report{" "}
-                      <i className="fa fa-file-excel link float-right report-icon" />
+                  <DropdownMenu className="w-auto">
+                    <DropdownItem
+                      onClick={exportTableToCSV}
+                      className="border-btm"
+                    >
+                      <i className="fa fa-file-excel link mg-right-5" /> Export
+                      full report
+                    </DropdownItem>
+                    <DropdownItem onClick={exportCurrentTableToCSV}>
+                      <i className="fa fa-file-excel link mg-right-5" /> Export
+                      current page report
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
