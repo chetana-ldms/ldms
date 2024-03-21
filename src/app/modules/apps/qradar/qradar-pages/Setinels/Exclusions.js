@@ -10,6 +10,12 @@ import MitigationModal from "../alerts/MitigationModal";
 import AddToBlockListModal from "../alerts/AddToBlockListModal";
 import CreateExclusionModal from "./CreateExclusionModal";
 import AddFromExclusionsCatalogModal from "./AddFromExclusionsCatalogModal";
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from "reactstrap";
 
 function Exclusions() {
   const orgId = Number(sessionStorage.getItem("orgId"));
@@ -87,6 +93,78 @@ function Exclusions() {
       setShowDropdown(false);
     }
   };
+
+  const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
+  // Function to extract table data
+  const extractTableData = (items) => {
+    return items.map((item) => ({
+      "Endpoint Name": item.computerName,
+      Account: item.accountName,
+      Site: item.siteName,
+      "Last loged in user": item.lastLoggedInUserName,
+      Group: item.groupName,
+      Domain: item.domain,
+      "Console Visible Ip": item.externalIp,
+      "Agent Version": item.agentVersion,
+      "Last Active": getCurrentTimeZone(item.lastActiveDate),
+      "Register on": getCurrentTimeZone(item.registeredAt),
+      "Device Type": item.machineType,
+      OS: item.osName,
+      "OS Version": item.osRevision,
+      Architecture: item.osArch,
+      "CPU Count": item.cpuCount,
+      "Core Count": item.coreCount,
+      "Network Status": item.networkStatus,
+      "Full Disk Scan": getCurrentTimeZone(item.lastSuccessfulScanDate),
+      "IP Address": item.lastIpToMgmt,
+      "Installer Type": item.installerType,
+      "Storage Name": item.storageName ?? null,
+      "Storage Type": item.storageType ?? null,
+      "Last successfull scan time": getCurrentTimeZone(
+        item.lastSuccessfulScanDate
+      ),
+      Locations: item.locations[0].name,
+    }));
+  };
+  // Function to convert data to CSV format
+  const convertToCSV = (data) => {
+    const header = Object.keys(data[0]).join(",") + "\n";
+    const body = data.map((item) => Object.values(item).join(",")).join("\n");
+    return header + body;
+  };
+
+  const exportToCSV = (data) => {
+    const csvData = convertToCSV(data);
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+    const fileName = "risk_data.csv";
+    if (navigator.msSaveBlob) {
+      // IE 10+
+      navigator.msSaveBlob(blob, fileName);
+    } else {
+      const link = document.createElement("a");
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
+  };
+
+  // Function to extract full table data
+  const exportTableToCSV = () => {
+    const tableData = extractTableData(exlusions);
+    exportToCSV(tableData);
+  };
+
+  // Function to extract current pagination table data
+  const exportCurrentTableToCSV = () => {
+    const tableData = extractTableData(currentItems);
+    exportToCSV(tableData);
+  };
+
   return (
     <div>
       {loading ? (
@@ -172,18 +250,38 @@ function Exclusions() {
                     selectedValue={selectedValue}
                   />
                 )}
+                <button className="btn btn-new btn-small ms-2 ">
+                  Delete selection
+                </button>
               </div>
-              <button className="btn btn-small btn-primary ms-2 ">
-                Delete selection
-              </button>
             </div>
             <div className="col-lg-6 text-right">
-              <span className="gray inline-block mg-righ-20">
+              {/* <span className="gray inline-block mg-righ-20">
                 {exlusions.length} Items
-              </span>
-              <span className="inline-block mg-left-10 link">
-                Export <i className="fas fa-file-export link" />
-              </span>
+              </span> */}
+              <div className="export-report border-0">
+                <Dropdown
+                  isOpen={dropdownOpen}
+                  toggle={() => setDropdownOpen(!dropdownOpen)}
+                >
+                  <DropdownToggle className="no-pad">
+                    <div className="btn btn-new btn-small">Actions</div>
+                  </DropdownToggle>
+                  <DropdownMenu className="w-auto">
+                    <DropdownItem
+                      onClick={exportTableToCSV}
+                      className="border-btm"
+                    >
+                      <i className="fa fa-file-excel link mg-right-5" /> Export
+                      full report
+                    </DropdownItem>
+                    <DropdownItem onClick={exportCurrentTableToCSV}>
+                      <i className="fa fa-file-excel link mg-right-5" /> Export
+                      current page report
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
             </div>
           </div>
           <table className="table alert-table scroll-x">

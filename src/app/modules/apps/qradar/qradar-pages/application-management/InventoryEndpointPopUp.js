@@ -107,31 +107,22 @@ const InventoryEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
         </div>
       </Modal.Header>
       <Modal.Body>
-        <div className="header-filter mg-btm-20 row">
-          <div className="col-lg-10">
-            <input
-              type="text"
-              placeholder="Enter filter"
-              className="form-control"
-            />
-          </div>
-          <div className="col-lg-2">
-            <div className="export-report border-0">
-              <Dropdown
-                isOpen={dropdownOpen}
-                toggle={() => setDropdownOpen(!dropdownOpen)}
-              >
-                <DropdownToggle className="no-pad">
-                  <div className="btn btn-new btn-small">Actions</div>
-                </DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem onClick={exportTableToCSV}>
-                    Generate Report{" "}
-                    <i className="fa fa-file-excel link float-right report-icon" />
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </div>
+        <div className="header-filter">
+          <div className="border-0 float-right mb-5">
+            <Dropdown
+              isOpen={dropdownOpen}
+              toggle={() => setDropdownOpen(!dropdownOpen)}
+            >
+              <DropdownToggle className="no-pad">
+                <div className="btn btn-new btn-small">Actions</div>
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem onClick={exportTableToCSV}>
+                  Generate Report{" "}
+                  <i className="fa fa-file-excel link float-right report-icon" />
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </div>
         </div>
         <table className="table alert-table scroll-x mg-top-20">
