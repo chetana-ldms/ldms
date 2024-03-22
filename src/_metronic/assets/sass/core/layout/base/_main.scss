@@ -346,6 +346,7 @@ body {
 .btn-border{
   border: 1px solid #008cba !important;
   color: #008cba;
+  background: transparent !important;
 }
 
 .btn-login{
@@ -997,6 +998,7 @@ form{
         margin: 0 5px;
         font-size: 13px;
         color: black;
+        font-weight: normal;
         &.active {
           font-weight: 600;
         }
