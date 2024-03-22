@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import IncidentChat from "./IncidentChat";
-import IncidentDetails from "./IncidentDetails";
+import IncidentDetailsDemo from "./IncidentDetailsDemo";
 import { useLocation } from "react-router-dom";
 import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
 import Chat from "./Chat";
@@ -326,7 +326,7 @@ const IncidentsPageDemo = () => {
               )}
             </div>
 
-            <IncidentDetails />
+            <IncidentDetailsDemo />
           </div>
         </div>
       </div>
