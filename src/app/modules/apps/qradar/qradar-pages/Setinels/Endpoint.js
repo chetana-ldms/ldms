@@ -10,6 +10,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import EndpointPopup from "../application-management/EndpointPopup";
 
 function Endpoint() {
   const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
@@ -86,6 +87,8 @@ function Endpoint() {
   const orgId = Number(sessionStorage.getItem("orgId"));
   const [loading, setLoading] = useState(false);
   const [endpoints, setEndpoints] = useState([]);
+  const [selectedEndpoint, setSelectedEndpoint] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(20);
 
@@ -121,6 +124,10 @@ function Endpoint() {
 
   const handlePageClick = (selected) => {
     setCurrentPage(selected.selected);
+  };
+  const handleEndpointClick = (item) => {
+    setSelectedEndpoint(item);
+    setShowPopup(true);
   };
 
   return (
@@ -196,7 +203,12 @@ function Endpoint() {
               {currentItems !== null ? (
                 currentItems?.map((item, index) => (
                   <tr className="table-row" key={index}>
-                    <td>{item.computerName}</td>
+                    <td
+                    onClick={() => handleEndpointClick(item)}
+                    className="link-txt"
+                  >
+                    {item.computerName}
+                  </td>
                     <td>{item.accountName}</td>
                     <td>{item.siteName}</td>
                     <td>{item.lastLoggedInUserName}</td>
@@ -237,6 +249,11 @@ function Endpoint() {
           />
         </>
       )}
+      <EndpointPopup
+        selectedEndpoint={selectedEndpoint}
+        showModal={showPopup}
+        setShowModal={setShowPopup}
+      />
     </div>
   );
 }
