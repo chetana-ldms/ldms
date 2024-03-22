@@ -48,10 +48,18 @@ function InventoryComponent() {
     }
   };
 
+  // Function to extract full table data
   const exportTableToCSV = () => {
+    const tableData = extractTableData(risk);
+    exportToCSV(tableData);
+  };
+
+  // Function to extract current pagination table data
+  const exportCurrentTableToCSV = () => {
     const tableData = extractTableData(currentItems);
     exportToCSV(tableData);
   };
+
   const [loading, setLoading] = useState(false);
   const [risk, setRisk] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -153,129 +161,136 @@ function InventoryComponent() {
         <UsersListLoading />
       ) : (
         <>
-      <div className="header-filter mg-btm-20 row">
-        <div className="col-lg-10">
-          <input
-            type="text"
-            placeholder="Enter filter"
-            className="form-control"
-            value={filterValue}
-            onChange={handleFilterChange}
-          />
-        </div>
-        <div className="col-lg-2">
-          <div className="export-report border-0">
-            <Dropdown
-              isOpen={dropdownOpen}
-              toggle={() => setDropdownOpen(!dropdownOpen)}
-            >
-              <DropdownToggle className="no-pad">
-                <div className="btn btn-new btn-small">Actions</div>
-              </DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem onClick={exportTableToCSV}>
-                  Export to Excel{" "}
-                  <i className="fa fa-file-excel link float-right" />
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+          <div className="header-filter mg-btm-20 row">
+            <div className="col-lg-10">
+              <input
+                type="text"
+                placeholder="Enter filter"
+                className="form-control"
+                value={filterValue}
+                onChange={handleFilterChange}
+              />
+            </div>
+            <div className="col-lg-2">
+              <div className="export-report border-0">
+                <Dropdown
+                  isOpen={dropdownOpen}
+                  toggle={() => setDropdownOpen(!dropdownOpen)}
+                >
+                  <DropdownToggle className="no-pad">
+                    <div className="btn btn-new btn-small">Actions</div>
+                  </DropdownToggle>
+                  <DropdownMenu className="w-auto">
+                    <DropdownItem
+                      onClick={exportTableToCSV}
+                      className="border-btm"
+                    >
+                      <i className="fa fa-file-excel link mg-right-5" /> Export
+                      full report
+                    </DropdownItem>
+                    <DropdownItem onClick={exportCurrentTableToCSV}>
+                      <i className="fa fa-file-excel link mg-right-5" /> Export
+                      current page report
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="actions">
-      {loading ? (
-        <UsersListLoading />
-      ) : (
-        <table className="table alert-table mg-top-20">
-          <thead>
-            <tr>
-              <th onClick={() => sortTable("applicationName")}>
-                Name{" "}
-                {sortConfig.key === "applicationName" &&
-                  renderSortIcon("applicationName")}
-              </th>
-              <th onClick={() => sortTable("applicationVendor")}>
-                Vendor{" "}
-                {sortConfig.key === "applicationVendor" &&
-                  renderSortIcon("applicationVendor")}
-              </th>
-              <th onClick={() => sortTable("applicationVersionsCount")}>
-                Number of Versions{" "}
-                {sortConfig.key === "applicationVersionsCount" &&
-                  renderSortIcon("applicationVersionsCount")}
-              </th>
-              <th onClick={() => sortTable("endpointsCount")}>
-                Number of Endpoints{" "}
-                {sortConfig.key === "endpointsCount" &&
-                  renderSortIcon("endpointsCount")}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading && <UsersListLoading />}
-            {sortedItems().length > 0 ? (
-              sortedItems().map((item, index) => (
-                <tr className="table-row" key={index}>
-                  <td
-                    onClick={() => handleItemClick(item)}
-                    className="link-txt"
-                  >
-                    {item.applicationName}
-                  </td>
-                  <td>{item.applicationVendor}</td>
-                  <td>{item.applicationVersionsCount}</td>
-                  <td>{item.endpointsCount}</td>
-                </tr>
-              ))
+          <div className="actions">
+            {loading ? (
+              <UsersListLoading />
             ) : (
-              <tr>
-                <td colSpan="4">No data found</td>
-              </tr>
+              <table className="table alert-table mg-top-20">
+                <thead>
+                  <tr>
+                    <th onClick={() => sortTable("applicationName")}>
+                      Name{" "}
+                      {sortConfig.key === "applicationName" &&
+                        renderSortIcon("applicationName")}
+                    </th>
+                    <th onClick={() => sortTable("applicationVendor")}>
+                      Vendor{" "}
+                      {sortConfig.key === "applicationVendor" &&
+                        renderSortIcon("applicationVendor")}
+                    </th>
+                    <th onClick={() => sortTable("applicationVersionsCount")}>
+                      Number of Versions{" "}
+                      {sortConfig.key === "applicationVersionsCount" &&
+                        renderSortIcon("applicationVersionsCount")}
+                    </th>
+                    <th onClick={() => sortTable("endpointsCount")}>
+                      Number of Endpoints{" "}
+                      {sortConfig.key === "endpointsCount" &&
+                        renderSortIcon("endpointsCount")}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading && <UsersListLoading />}
+                  {sortedItems().length > 0 ? (
+                    sortedItems().map((item, index) => (
+                      <tr className="table-row" key={index}>
+                        <td
+                          onClick={() => handleItemClick(item)}
+                          className="link-txt"
+                        >
+                          {item.applicationName}
+                        </td>
+                        <td>{item.applicationVendor}</td>
+                        <td>{item.applicationVersionsCount}</td>
+                        <td>{item.endpointsCount}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4">No data found</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             )}
-          </tbody>
-        </table>
-         )}
-        <InventoryEndpointPopUp
-          selectedItem={selectedItem}
-          showModal={showPopup}
-          setShowModal={setShowPopup}
-        />
-      </div>
-      <hr />
-      <div className="d-flex justify-content-end align-items-center pagination-bar">
-        <ReactPaginate
-          previousLabel={<i className="fa fa-chevron-left" />}
-          nextLabel={<i className="fa fa-chevron-right" />}
-          pageCount={Math.ceil(risk.length / itemsPerPage)}
-          marginPagesDisplayed={1}
-          pageRangeDisplayed={8}
-          onPageChange={handlePageClick}
-          containerClassName={"pagination justify-content-end"}
-          pageClassName={"page-item"}
-          pageLinkClassName={"page-link"}
-          previousClassName={"page-item custom-previous"}
-          previousLinkClassName={"page-link custom-previous-link"}
-          nextClassName={"page-item custom-next"}
-          nextLinkClassName={"page-link custom-next-link"}
-          breakClassName={"page-item"}
-          breakLinkClassName={"page-link"}
-          activeClassName={"active"}
-        />
-        <div className="col-md-3 d-flex justify-content-end align-items-center">
-          <span className="col-md-4">Count: </span>
-          <select
-            className="form-select form-select-sm col-md-4"
-            value={itemsPerPage}
-            onChange={handlePageSelect}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={15}>15</option>
-            <option value={20}>20</option>
-          </select>
-        </div>
-      </div>
-      </>
+            <InventoryEndpointPopUp
+              selectedItem={selectedItem}
+              showModal={showPopup}
+              setShowModal={setShowPopup}
+            />
+          </div>
+          <hr />
+          <div className="d-flex justify-content-end align-items-center pagination-bar">
+            <ReactPaginate
+              previousLabel={<i className="fa fa-chevron-left" />}
+              nextLabel={<i className="fa fa-chevron-right" />}
+              pageCount={Math.ceil(risk.length / itemsPerPage)}
+              marginPagesDisplayed={1}
+              pageRangeDisplayed={8}
+              onPageChange={handlePageClick}
+              containerClassName={"pagination justify-content-end"}
+              pageClassName={"page-item"}
+              pageLinkClassName={"page-link"}
+              previousClassName={"page-item custom-previous"}
+              previousLinkClassName={"page-link custom-previous-link"}
+              nextClassName={"page-item custom-next"}
+              nextLinkClassName={"page-link custom-next-link"}
+              breakClassName={"page-item"}
+              breakLinkClassName={"page-link"}
+              activeClassName={"active"}
+            />
+            <div className="col-md-3 d-flex justify-content-end align-items-center">
+              <span className="col-md-4">Count: </span>
+              <select
+                className="form-select form-select-sm col-md-4"
+                value={itemsPerPage}
+                onChange={handlePageSelect}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={15}>15</option>
+                <option value={20}>20</option>
+              </select>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

@@ -1,24 +1,30 @@
-import {useEffect, useState} from 'react'
-import ReactPaginate from 'react-paginate'
-import {fetchAEndPointDetailsUrl} from '../../../../../api/ApplicationSectionApi'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
-import Pagination from '../../../../../../utils/Pagination'
-import {getCurrentTimeZone} from '../../../../../../utils/helper'
-import {fetchExclusionListUrl} from '../../../../../api/SentinalApi'
-import {useAbsoluteLayout} from 'react-table'
-import MitigationModal from '../alerts/MitigationModal'
-import AddToBlockListModal from '../alerts/AddToBlockListModal'
-import CreateExclusionModal from './CreateExclusionModal'
-import AddFromExclusionsCatalogModal from './AddFromExclusionsCatalogModal'
+import { useEffect, useState } from "react";
+import ReactPaginate from "react-paginate";
+import { fetchAEndPointDetailsUrl } from "../../../../../api/ApplicationSectionApi";
+import { UsersListLoading } from "../components/loading/UsersListLoading";
+import Pagination from "../../../../../../utils/Pagination";
+import { getCurrentTimeZone } from "../../../../../../utils/helper";
+import { fetchExclusionListUrl } from "../../../../../api/SentinalApi";
+import { useAbsoluteLayout } from "react-table";
+import MitigationModal from "../alerts/MitigationModal";
+import AddToBlockListModal from "../alerts/AddToBlockListModal";
+import CreateExclusionModal from "./CreateExclusionModal";
+import AddFromExclusionsCatalogModal from "./AddFromExclusionsCatalogModal";
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from "reactstrap";
 
 function Exclusions() {
   const orgId = Number(sessionStorage.getItem('orgId'))
   const [loading, setLoading] = useState(false)
-  const [exlusions, setExlusions] = useState([])
-  const [showDropdown, setShowDropdown] = useState(false)
-  const [showMoreActionsModal, setShowMoreActionsModal] = useState(false)
-  const [addToBlockListModal, setAddToBlockListModal] = useState(false)
-  const [selectedValue, setSelectedValue] = useState('')
+  const [exlusions, setExlusions] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showMoreActionsModal, setShowMoreActionsModal] = useState(false);
+  const [addToBlockListModal, setAddToBlockListModal] = useState(false);
+  const [selectedValue, setSelectedValue] = useState("");
   console.log(exlusions, 'exlusions111')
   const [currentPage, setCurrentPage] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(20)
@@ -26,39 +32,39 @@ function Exclusions() {
   const fetchData = async () => {
     const data = {
       orgID: orgId,
-    }
+    };
     try {
-      setLoading(true)
-      const response = await fetchExclusionListUrl(data)
-      setExlusions(response)
+      setLoading(true);
+      const response = await fetchExclusionListUrl(data);
+      setExlusions(response);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const handlePageSelect = (event) => {
-    setItemsPerPage(Number(event.target.value))
-    setCurrentPage(0)
-  }
+    setItemsPerPage(Number(event.target.value));
+    setCurrentPage(0);
+  };
 
-  const indexOfLastItem = (currentPage + 1) * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = exlusions.slice(indexOfFirstItem, indexOfLastItem)
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = exlusions.slice(indexOfFirstItem, indexOfLastItem);
 
   const handlePageClick = (selected) => {
-    setCurrentPage(selected.selected)
-  }
+    setCurrentPage(selected.selected);
+  };
 
   const handleThreatActions = () => {
-    setShowDropdown(true)
-    console.log(showDropdown, 'showDropdown')
-  }
+    setShowDropdown(true);
+    console.log(showDropdown, "showDropdown")
+  };
   const handleShowDropdown = () => {
     setShowDropdown(false)
   }
@@ -67,63 +73,63 @@ function Exclusions() {
     setShowDropdown(false)
   }
   const handleAction = () => {
-    handleCloseMoreActionsModal()
-  }
-  const handleCloseAddToBlockList = () => {
-    setAddToBlockListModal(false)
-    setShowDropdown(false)
-  }
+    handleCloseMoreActionsModal();
+  };
+   const handleCloseAddToBlockList = () => {
+    setAddToBlockListModal(false);
+    setShowDropdown(false);
+  };
   const handleActionAddToBlockList = () => {
     setAddToBlockListModal(false)
   }
   const handleDropdownSelect = async (event) => {
-    const value = event.target.value
-    setSelectedValue(value)
-    if (value === 'CreateExclusion') {
-      setShowMoreActionsModal(true)
-    } else if (value === 'AddFromExclusionsCatalog') {
-      setAddToBlockListModal(true)
-    } else {
-      setShowDropdown(false)
+    const value = event.target.value;
+    setSelectedValue(value);
+    if (value === "CreateExclusion") {
+      setShowMoreActionsModal(true);
+    } else if (value === "AddFromExclusionsCatalog") {
+      setAddToBlockListModal(true);
+    }  else {
+      setShowDropdown(false);
     }
-  }
+  };
   return (
     <div>
       {loading ? (
         <UsersListLoading />
       ) : (
         <>
-          <div className='row'>
-            <div className='col-lg-6 d-flex'>
-              <div className='mb-3'>
+          <div className="row">
+            <div className="col-lg-6 d-flex">
+              <div className="mb-3">
                 <a
-                  href='#'
-                  className='btn btn-small btn-primary '
-                  data-kt-menu-trigger='click'
-                  data-kt-menu-placement='bottom-end'
+                  href="#"
+                  className="btn btn-small btn-border "
+                  data-kt-menu-trigger="click"
+                  data-kt-menu-placement="bottom-end"
                   onClick={handleThreatActions}
                 >
-                  New Exclusion
+                  New Exclusion <i className="fa fa-chevron-down" />
                 </a>
                 <div
-                  className='menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action'
-                  data-kt-menu='true'
+                  className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action"
+                  data-kt-menu="true"
                 >
                   {showDropdown && (
-                    <div className='px-5 py-5'>
-                      <div className='mb-5'>
-                        <div className='d-flex justify-content-end mb-5'>
+                    <div className="px-5 py-5">
+                      <div className="mb-5">
+                        <div className="d-flex justify-content-end mb-5">
                           <div>
                             <div
-                              className='close fs-20 text-muted pointer'
-                              aria-label='Close'
+                              className="close fs-20 text-muted pointer"
+                              aria-label="Close"
                               onClick={handleShowDropdown}
                             >
                               <span
-                                aria-hidden='true'
+                                aria-hidden="true"
                                 style={{
-                                  color: 'inherit',
-                                  textShadow: 'none',
+                                  color: "inherit",
+                                  textShadow: "none",
                                 }}
                               >
                                 &times;
@@ -133,19 +139,22 @@ function Exclusions() {
                         </div>
                         <select
                           onChange={handleDropdownSelect}
-                          className='form-select form-select-solid'
-                          data-kt-select2='true'
-                          data-control='select2'
-                          data-placeholder='Select option'
-                          data-allow-clear='true'
+                          className="form-select form-select-solid"
+                          data-kt-select2="true"
+                          data-control="select2"
+                          data-placeholder="Select option"
+                          data-allow-clear="true"
                         >
-                          <option value='' className='p-2'>
+                          <option value="" className="p-2">
                             Select
                           </option>
                           <option value='CreateExclusion' className='mb-2'>
-                            Create Exclusion
+                           Create Exclusion
                           </option>
-                          <option value='AddFromExclusionsCatalog' className='mb-2'>
+                          <option
+                            value="AddFromExclusionsCatalog"
+                            className="mb-2"
+                          >
                             Add from exclusions Catalog
                           </option>
                         </select>
@@ -169,17 +178,41 @@ function Exclusions() {
                     selectedValue={selectedValue}
                   />
                 )}
+                <button className="btn btn-new btn-small ms-2 ">
+                  Delete selection
+                </button>
               </div>
-              <button className='btn btn-small btn-primary ms-2 '>Delete selection</button>
             </div>
-            <div className='col-lg-6 text-right'>
-              <span className='gray inline-block mg-righ-20'>{exlusions.length} Items</span>
-              <span className='inline-block mg-left-10 link'>
-                Export <i className='fas fa-file-export link' />
-              </span>
+            <div className="col-lg-6 text-right">
+              {/* <span className="gray inline-block mg-righ-20">
+                {exlusions.length} Items
+              </span> */}
+              <div className="export-report border-0">
+                <Dropdown
+                  isOpen={dropdownOpen}
+                  toggle={() => setDropdownOpen(!dropdownOpen)}
+                >
+                  <DropdownToggle className="no-pad">
+                    <div className="btn btn-new btn-small">Actions</div>
+                  </DropdownToggle>
+                  <DropdownMenu className="w-auto">
+                    <DropdownItem
+                      onClick={exportTableToCSV}
+                      className="border-btm"
+                    >
+                      <i className="fa fa-file-excel link mg-right-5" /> Export
+                      full report
+                    </DropdownItem>
+                    <DropdownItem onClick={exportCurrentTableToCSV}>
+                      <i className="fa fa-file-excel link mg-right-5" /> Export
+                      current page report
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
             </div>
           </div>
-          <table className='table alert-table scroll-x'>
+          <table className="table alert-table scroll-x">
             <thead>
               <tr>
                 <th>
@@ -204,9 +237,6 @@ function Exclusions() {
               {currentItems !== null ? (
                 currentItems?.map((item, index) => (
                   <tr className='table-row' key={index}>
-                    <td>
-                      <input type='checkbox' name={`checkbox_${item.id}`} />
-                    </td>
                     <td></td>
                     <td>{item.osType}</td>
                     <td>{item.applicationName}</td>
@@ -219,12 +249,12 @@ function Exclusions() {
                     <td>{getCurrentTimeZone(item.updatedAt)}</td>
                     <td>{item.source}</td>
                     <td>{item.scopeName}</td>
-                    <td>{item.imported ? 'Yes' : 'No'}</td>
+                    <td>{item.imported ? "Yes" : "No"}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan='24'>No data found</td>
+                  <td colSpan="24">No data found</td>
                 </tr>
               )}
             </tbody>
@@ -238,7 +268,7 @@ function Exclusions() {
         </>
       )}
     </div>
-  )
+  );
 }
 
-export default Exclusions
+export default Exclusions;

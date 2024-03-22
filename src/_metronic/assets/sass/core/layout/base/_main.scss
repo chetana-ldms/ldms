@@ -71,6 +71,10 @@ body {
   }
 }
 
+.w-auto{
+  width: auto;
+}
+
 .w-100{
   width: 100%;
 }
@@ -462,6 +466,11 @@ body {
   .btn-close{
     padding-left: 50px;
   }
+}
+
+.report-icon{
+    position: relative;
+    top: 3px;
 }
 
 .modal-small{
