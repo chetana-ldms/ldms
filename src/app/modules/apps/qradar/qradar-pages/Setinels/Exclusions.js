@@ -5,7 +5,7 @@ import {UsersListLoading} from '../components/loading/UsersListLoading'
 import Pagination from '../../../../../../utils/Pagination'
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import {fetchExclusionListUrl} from '../../../../../api/SentinalApi'
-import { useAbsoluteLayout } from 'react-table'
+import {useAbsoluteLayout} from 'react-table'
 import MitigationModal from '../alerts/MitigationModal'
 import AddToBlockListModal from '../alerts/AddToBlockListModal'
 import CreateExclusionModal from './CreateExclusionModal'
@@ -14,11 +14,11 @@ import AddFromExclusionsCatalogModal from './AddFromExclusionsCatalogModal'
 function Exclusions() {
   const orgId = Number(sessionStorage.getItem('orgId'))
   const [loading, setLoading] = useState(false)
-  const [exlusions, setExlusions] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [showMoreActionsModal, setShowMoreActionsModal] = useState(false);
-  const [addToBlockListModal, setAddToBlockListModal] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("");
+  const [exlusions, setExlusions] = useState([])
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [showMoreActionsModal, setShowMoreActionsModal] = useState(false)
+  const [addToBlockListModal, setAddToBlockListModal] = useState(false)
+  const [selectedValue, setSelectedValue] = useState('')
   console.log(exlusions, 'exlusions111')
   const [currentPage, setCurrentPage] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(20)
@@ -56,37 +56,37 @@ function Exclusions() {
   }
 
   const handleThreatActions = () => {
-    setShowDropdown(true);
-    console.log(showDropdown, "showDropdown")
-  };
+    setShowDropdown(true)
+    console.log(showDropdown, 'showDropdown')
+  }
   const handleShowDropdown = () => {
-    setShowDropdown(false);
-  };
+    setShowDropdown(false)
+  }
   const handleCloseMoreActionsModal = () => {
-    setShowMoreActionsModal(false);
-    setShowDropdown(false);
-  };
+    setShowMoreActionsModal(false)
+    setShowDropdown(false)
+  }
   const handleAction = () => {
-    handleCloseMoreActionsModal();
-  };
-   const handleCloseAddToBlockList = () => {
-    setAddToBlockListModal(false);
-    setShowDropdown(false);
-  };
+    handleCloseMoreActionsModal()
+  }
+  const handleCloseAddToBlockList = () => {
+    setAddToBlockListModal(false)
+    setShowDropdown(false)
+  }
   const handleActionAddToBlockList = () => {
-    setAddToBlockListModal(false);
-  };
+    setAddToBlockListModal(false)
+  }
   const handleDropdownSelect = async (event) => {
-    const value = event.target.value;
-    setSelectedValue(value);
-    if (value === "CreateExclusion") {
-      setShowMoreActionsModal(true);
-    } else if (value === "AddFromExclusionsCatalog") {
-      setAddToBlockListModal(true);
-    }  else {
-      setShowDropdown(false);
+    const value = event.target.value
+    setSelectedValue(value)
+    if (value === 'CreateExclusion') {
+      setShowMoreActionsModal(true)
+    } else if (value === 'AddFromExclusionsCatalog') {
+      setAddToBlockListModal(true)
+    } else {
+      setShowDropdown(false)
     }
-  };
+  }
   return (
     <div>
       {loading ? (
@@ -143,7 +143,7 @@ function Exclusions() {
                             Select
                           </option>
                           <option value='CreateExclusion' className='mb-2'>
-                           Create Exclusion
+                            Create Exclusion
                           </option>
                           <option value='AddFromExclusionsCatalog' className='mb-2'>
                             Add from exclusions Catalog
@@ -182,6 +182,9 @@ function Exclusions() {
           <table className='table alert-table scroll-x'>
             <thead>
               <tr>
+                <th>
+                  <input type='checkbox' name='selectAll' />
+                </th>
                 <th>Exclusion Type</th>
                 <th>OS</th>
                 <th>Application Name</th>
@@ -201,6 +204,9 @@ function Exclusions() {
               {currentItems !== null ? (
                 currentItems?.map((item, index) => (
                   <tr className='table-row' key={index}>
+                    <td>
+                      <input type='checkbox' name={`checkbox_${item.id}`} />
+                    </td>
                     <td></td>
                     <td>{item.osType}</td>
                     <td>{item.applicationName}</td>

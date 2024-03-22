@@ -86,10 +86,10 @@ const AddToBlockListModal = ({ show, handleClose, handleAction, selectedValue, s
                                 <select
                                     className="form-select"
                                     id="osInput"
-                                    value={endpointInfo.osVersion}
+                                    value={endpointInfo?.osVersion}
                                     disabled
                                 >
-                                    <option value={endpointInfo.osVersion}>{endpointInfo.osVersion}</option>
+                                    <option value={endpointInfo?.osVersion}>{endpointInfo?.osVersion}</option>
                                 </select>
                             )
                         }
@@ -116,7 +116,7 @@ const AddToBlockListModal = ({ show, handleClose, handleAction, selectedValue, s
                                 type="text"
                                 className="form-control"
                                 // ref={sha1InputRef}
-                                value={threatInfo.shA1}
+                                value={threatInfo?.shA1}
                                 disabled
                             />
                             )
