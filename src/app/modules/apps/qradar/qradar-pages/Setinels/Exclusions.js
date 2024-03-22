@@ -28,6 +28,7 @@ function Exclusions() {
   console.log(exlusions, 'exlusions111')
   const [currentPage, setCurrentPage] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(20)
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const fetchData = async () => {
     const data = {
@@ -92,6 +93,16 @@ function Exclusions() {
     }  else {
       setShowDropdown(false);
     }
+  };
+  const exportTableToCSV = () => {
+    const tableData = extractTableData(exlusions);
+    exportToCSV(tableData);
+  };
+
+  // Function to extract current pagination table data
+  const exportCurrentTableToCSV = () => {
+    const tableData = extractTableData(currentItems);
+    exportToCSV(tableData);
   };
   return (
     <div>
