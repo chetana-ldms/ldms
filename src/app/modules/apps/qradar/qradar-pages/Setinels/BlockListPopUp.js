@@ -42,7 +42,7 @@ const BlockListPopUp = ({ show, onClose }) => {
         <Modal.Title>
           <div>
             {" "}
-            <i className="bi bi-shield-slash mr-2"></i> Add To Blocklist
+            <i className="bi bi-shield-slash mr-2 white"></i> Add To Blocklist
           </div>
         </Modal.Title>
         <button
