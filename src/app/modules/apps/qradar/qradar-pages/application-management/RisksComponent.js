@@ -70,17 +70,17 @@ function RisksComponent() {
     if (sortConfig.key === key) {
       return sortConfig.direction === 'ascending' ? (
         <>
-          <i className='fa fa-caret-up white' />
+          <i className='fa fa-caret-up white ps-3' />
         </>
       ) : (
         <>
-          <i className='fa fa-caret-down white' />
+          <i className='fa fa-caret-down white ps-3' />
         </>
       )
     }
     return (
       <>
-        <i className='fa fa-sort white' />
+        <i className='fa fa-sort white ps-3' />
       </>
     )
   }
