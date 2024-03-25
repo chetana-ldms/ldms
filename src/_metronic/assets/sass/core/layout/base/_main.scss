@@ -414,6 +414,14 @@ body {
   }
 }
 
+//account details
+.account-details{
+  .card{
+    min-height: 100px !important;
+    height: 100%;
+  }
+}
+
 //Application modal
 .application-modal{
   .modal-dialog{
