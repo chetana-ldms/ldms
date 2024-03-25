@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Endpoint from "./Endpoint";
 import BlockList from "./BlockList";
 import Exclusions from "./Exclusions";
+import AccountDetalis from "./AccountDetalis";
 
 function Setinels() {
   const [activeTab, setActiveTab] = useState("endpoint");
@@ -52,11 +53,22 @@ function Setinels() {
                   Exclusions
                 </a>
               </li>
+              <li className="nav-item text-center">
+                <a
+                  className={`nav-link normal pointer ${
+                    activeTab === "accountDetalis" ? "active" : ""
+                  }`}
+                  onClick={() => handleTabClick("accountDetalis")}
+                >
+                  AccountDetalis
+                </a>
+              </li>
             </ul>
           </div>
           {activeTab === "endpoint" && <Endpoint />}
           {activeTab === "blockList" && <BlockList />}
           {activeTab === "exclusions" && <Exclusions />}
+          {activeTab === "accountDetalis" && <AccountDetalis />}
         </div>
       </div>
     </div>
