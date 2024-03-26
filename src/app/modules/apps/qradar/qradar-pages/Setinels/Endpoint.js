@@ -1,134 +1,143 @@
-import { useEffect, useState } from "react";
-import ReactPaginate from "react-paginate";
-import { fetchAEndPointDetailsUrl } from "../../../../../api/ApplicationSectionApi";
-import { UsersListLoading } from "../components/loading/UsersListLoading";
-import Pagination from "../../../../../../utils/Pagination";
-import { getCurrentTimeZone } from "../../../../../../utils/helper";
-import {
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
-import EndpointPopup from "../application-management/EndpointPopup";
+import {useEffect, useState} from 'react'
+import ReactPaginate from 'react-paginate'
+import {fetchAEndPointDetailsUrl} from '../../../../../api/ApplicationSectionApi'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
+import Pagination from '../../../../../../utils/Pagination'
+import {getCurrentTimeZone} from '../../../../../../utils/helper'
+import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
+import EndpointPopup from '../application-management/EndpointPopup'
+import { renderSortIcon, sortedItems } from '../../../../../../utils/Sorting'
 
 function Endpoint() {
-  const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
-  // Function to extract table data
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [filterValue, setFilterValue] = useState('')
   const extractTableData = (items) => {
     return items.map((item) => ({
-      "Endpoint Name": item.computerName,
+      'Endpoint Name': item.computerName,
       Account: item.accountName,
       Site: item.siteName,
-      "Last loged in user": item.lastLoggedInUserName,
+      'Last loged in user': item.lastLoggedInUserName,
       Group: item.groupName,
       Domain: item.domain,
-      "Console Visible Ip": item.externalIp,
-      "Agent Version": item.agentVersion,
-      "Last Active": getCurrentTimeZone(item.lastActiveDate),
-      "Register on": getCurrentTimeZone(item.registeredAt),
-      "Device Type": item.machineType,
+      'Console Visible Ip': item.externalIp,
+      'Agent Version': item.agentVersion,
+      'Last Active': getCurrentTimeZone(item.lastActiveDate),
+      'Register on': getCurrentTimeZone(item.registeredAt),
+      'Device Type': item.machineType,
       OS: item.osName,
-      "OS Version": item.osRevision,
+      'OS Version': item.osRevision,
       Architecture: item.osArch,
-      "CPU Count": item.cpuCount,
-      "Core Count": item.coreCount,
-      "Network Status": item.networkStatus,
-      "Full Disk Scan": getCurrentTimeZone(item.lastSuccessfulScanDate),
-      "IP Address": item.lastIpToMgmt,
-      "Installer Type": item.installerType,
-      "Storage Name": item.storageName ?? null,
-      "Storage Type": item.storageType ?? null,
-      "Last successfull scan time": getCurrentTimeZone(
-        item.lastSuccessfulScanDate
-      ),
+      'CPU Count': item.cpuCount,
+      'Core Count': item.coreCount,
+      'Network Status': item.networkStatus,
+      'Full Disk Scan': getCurrentTimeZone(item.lastSuccessfulScanDate),
+      'IP Address': item.lastIpToMgmt,
+      'Installer Type': item.installerType,
+      'Storage Name': item.storageName ?? null,
+      'Storage Type': item.storageType ?? null,
+      'Last successfull scan time': getCurrentTimeZone(item.lastSuccessfulScanDate),
       Locations: item.locations[0].name,
-    }));
-  };
+    }))
+  }
   // Function to convert data to CSV format
   const convertToCSV = (data) => {
-    const header = Object.keys(data[0]).join(",") + "\n";
-    const body = data.map((item) => Object.values(item).join(",")).join("\n");
-    return header + body;
-  };
+    const header = Object.keys(data[0]).join(',') + '\n'
+    const body = data.map((item) => Object.values(item).join(',')).join('\n')
+    return header + body
+  }
 
   const exportToCSV = (data) => {
-    const csvData = convertToCSV(data);
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    const fileName = "risk_data.csv";
+    const csvData = convertToCSV(data)
+    const blob = new Blob([csvData], {type: 'text/csv;charset=utf-8;'})
+    const fileName = 'risk_data.csv'
     if (navigator.msSaveBlob) {
       // IE 10+
-      navigator.msSaveBlob(blob, fileName);
+      navigator.msSaveBlob(blob, fileName)
     } else {
-      const link = document.createElement("a");
+      const link = document.createElement('a')
       if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const url = URL.createObjectURL(blob)
+        link.setAttribute('href', url)
+        link.setAttribute('download', fileName)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       }
     }
-  };
+  }
 
   // Function to extract full table data
   const exportTableToCSV = () => {
-    const tableData = extractTableData(endpoints);
-    exportToCSV(tableData);
-  };
+    const tableData = extractTableData(endpoints)
+    exportToCSV(tableData)
+  }
 
   // Function to extract current pagination table data
   const exportCurrentTableToCSV = () => {
-    const tableData = extractTableData(currentItems);
-    exportToCSV(tableData);
-  };
+    const tableData = extractTableData(currentItems)
+    exportToCSV(tableData)
+  }
 
-  const orgId = Number(sessionStorage.getItem("orgId"));
-  const [loading, setLoading] = useState(false);
-  const [endpoints, setEndpoints] = useState([]);
-  const [selectedEndpoint, setSelectedEndpoint] = useState(null);
-  const [showPopup, setShowPopup] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const [loading, setLoading] = useState(false)
+  const [endpoints, setEndpoints] = useState([])
+  const [selectedEndpoint, setSelectedEndpoint] = useState(null)
+  const [showPopup, setShowPopup] = useState(false)
+  const [currentPage, setCurrentPage] = useState(0)
+  const [itemsPerPage, setItemsPerPage] = useState(20)
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: 'ascending',
+  })
 
   const fetchData = async () => {
     const data = {
       orgID: orgId,
-      endPiontId: "",
-    };
-    try {
-      setLoading(true);
-      const response = await fetchAEndPointDetailsUrl(data);
-      //   const [firstEndpoint] = response;
-      setEndpoints(response);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+      endPiontId: '',
     }
-  };
+    try {
+      setLoading(true)
+      const response = await fetchAEndPointDetailsUrl(data)
+      //   const [firstEndpoint] = response;
+      setEndpoints(response)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   const handlePageSelect = (event) => {
-    setItemsPerPage(Number(event.target.value));
-    setCurrentPage(0);
-  };
+    setItemsPerPage(Number(event.target.value))
+    setCurrentPage(0)
+  }
 
-  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = endpoints.slice(indexOfFirstItem, indexOfLastItem);
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = sortedItems(
+    endpoints.filter((item) => item.computerName.toLowerCase().includes(filterValue.toLowerCase())),
+    sortConfig
+  ).slice(indexOfFirstItem, indexOfLastItem)
+  const handleSort = (key) => {
+    const direction =
+      sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending'
+    setSortConfig({key, direction})
+  }
 
   const handlePageClick = (selected) => {
-    setCurrentPage(selected.selected);
-  };
+    setCurrentPage(selected.selected)
+  }
   const handleEndpointClick = (item) => {
-    setSelectedEndpoint(item);
-    setShowPopup(true);
-  };
+    setSelectedEndpoint(item)
+    setShowPopup(true)
+  }
+  const handleFilterChange = (event) => {
+    setFilterValue(event.target.value)
+  }
 
   return (
     <div>
@@ -136,79 +145,118 @@ function Endpoint() {
         <UsersListLoading />
       ) : (
         <>
-          <div className="header-filter mg-btm-20 row">
-            <div className="col-lg-10">
+          <div className='header-filter mg-btm-20 row'>
+            <div className='col-lg-10'>
               <input
-                type="text"
-                placeholder="Enter filter"
-                className="form-control"
+                type='text'
+                placeholder='Enter filter'
+                className='form-control'
+                value={filterValue}
+                onChange={handleFilterChange}
               />
             </div>
-            <div className="col-lg-2">
-              <div className="export-report border-0">
-                <Dropdown
-                  isOpen={dropdownOpen}
-                  toggle={() => setDropdownOpen(!dropdownOpen)}
-                >
-                  <DropdownToggle className="no-pad">
-                    <div className="btn btn-new btn-small">Actions</div>
+            <div className='col-lg-2'>
+              <div className='export-report border-0'>
+                <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
+                  <DropdownToggle className='no-pad'>
+                    <div className='btn btn-new btn-small'>Actions</div>
                   </DropdownToggle>
-                  <DropdownMenu className="w-auto">
-                    <DropdownItem
-                      onClick={exportTableToCSV}
-                      className="border-btm"
-                    >
-                      <i className="fa fa-file-excel link mg-right-5" /> Export
-                      full report
+                  <DropdownMenu className='w-auto'>
+                    <DropdownItem onClick={exportTableToCSV} className='border-btm'>
+                      <i className='fa fa-file-excel link mg-right-5' /> Export full report
                     </DropdownItem>
                     <DropdownItem onClick={exportCurrentTableToCSV}>
-                      <i className="fa fa-file-excel link mg-right-5" /> Export
-                      current page report
+                      <i className='fa fa-file-excel link mg-right-5' /> Export current page report
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </div>
             </div>
           </div>
-          <table className="table alert-table scroll-x">
+          <table className='table alert-table scroll-x'>
             <thead>
               <tr>
-                <th>Endpoint Name</th>
-                <th>Account </th>
-                <th>Site</th>
-                <th>Last Logged in user</th>
-                <th>Group</th>
-                <th>Domain</th>
-                <th>Console Visible Ip</th>
-                <th>Agent Version</th>
-                <th>Last Active</th>
-                <th>Register on</th>
-                <th>Device Type</th>
-                <th>Os</th>
-                <th>Os Version</th>
-                <th>Architecture</th>
-                <th>CPU Count</th>
-                <th>Core count</th>
-                <th>Network Status</th>
-                <th>Full Disk Scan</th>
-                <th>IP Adress</th>
-                <th>Installer type</th>
-                <th>Storage name</th>
-                <th>Storage type</th>
-                <th>Last successful scan time</th>
-                <th>Locations</th>
+                <th onClick={() => handleSort('computerName')}>
+                  Endpoint Name {renderSortIcon(sortConfig, 'computerName')}
+                </th>
+                <th onClick={() => handleSort('accountName')}>
+                  Account {renderSortIcon(sortConfig, 'accountName')}
+                </th>
+                <th onClick={() => handleSort('siteName')}>
+                  Site {renderSortIcon(sortConfig, 'siteName')}
+                </th>
+                <th onClick={() => handleSort('lastLoggedInUserName')}>
+                  Last Logged in user {renderSortIcon(sortConfig, 'lastLoggedInUserName')}
+                </th>
+                <th onClick={() => handleSort('groupName')}>
+                  Group {renderSortIcon(sortConfig, 'groupName')}
+                </th>
+                <th onClick={() => handleSort('domain')}>
+                  Domain {renderSortIcon(sortConfig, 'domain')}
+                </th>
+                <th onClick={() => handleSort('externalIp')}>
+                  Console Visible Ip {renderSortIcon(sortConfig, 'externalIp')}
+                </th>
+                <th onClick={() => handleSort('agentVersion')}>
+                  Agent Version {renderSortIcon(sortConfig, 'agentVersion')}
+                </th>
+                <th onClick={() => handleSort('lastActiveDate')}>
+                  Last Active {renderSortIcon(sortConfig, 'lastActiveDate')}
+                </th>
+                <th onClick={() => handleSort('registeredAt')}>
+                  Register on {renderSortIcon(sortConfig, 'registeredAt')}
+                </th>
+                <th onClick={() => handleSort('machineType')}>
+                  Device Type {renderSortIcon(sortConfig, 'machineType')}
+                </th>
+                <th onClick={() => handleSort('osName')}>
+                  Os {renderSortIcon(sortConfig, 'osName')}
+                </th>
+                <th onClick={() => handleSort('osRevision')}>
+                  Os Version {renderSortIcon(sortConfig, 'osRevision')}
+                </th>
+                <th onClick={() => handleSort('osArch')}>
+                  Architecture {renderSortIcon(sortConfig, 'osArch')}
+                </th>
+                <th onClick={() => handleSort('cpuCount')}>
+                  CPU Count {renderSortIcon(sortConfig, 'cpuCount')}
+                </th>
+                <th onClick={() => handleSort('coreCount')}>
+                  Core count {renderSortIcon(sortConfig, 'coreCount')}
+                </th>
+                <th onClick={() => handleSort('networkStatus')}>
+                  Network Status {renderSortIcon(sortConfig, 'networkStatus')}
+                </th>
+                <th onClick={() => handleSort('lastSuccessfulScanDate')}>
+                  Full Disk Scan {renderSortIcon(sortConfig, 'lastSuccessfulScanDate')}
+                </th>
+                <th onClick={() => handleSort('lastIpToMgmt')}>
+                  IP Adress {renderSortIcon(sortConfig, 'lastIpToMgmt')}
+                </th>
+                <th onClick={() => handleSort('installerType')}>
+                  Installer type {renderSortIcon(sortConfig, 'installerType')}
+                </th>
+                <th onClick={() => handleSort('storageName')}>
+                  Storage name {renderSortIcon(sortConfig, 'storageName')}
+                </th>
+                <th onClick={() => handleSort('storageType')}>
+                  Storage type {renderSortIcon(sortConfig, 'storageType')}
+                </th>
+                <th onClick={() => handleSort('lastSuccessfulScanDate')}>
+                  Last successful scan time {renderSortIcon(sortConfig, 'lastSuccessfulScanDate')}
+                </th>
+                <th onClick={() => handleSort('locations')}>
+                Locations {renderSortIcon(sortConfig, 'locations')}
+                </th>
               </tr>
             </thead>
             <tbody>
               {currentItems !== null ? (
                 currentItems?.map((item, index) => (
-                  <tr className="table-row" key={index}>
-                    <td
-                    onClick={() => handleEndpointClick(item)}
-                    className="link-txt"
-                  >
-                    {item.computerName}
-                  </td>
+                  <tr className='table-row' key={index}>
+                    <td onClick={() => handleEndpointClick(item)} className='link-txt'>
+                      {item.computerName}
+                    </td>
                     <td>{item.accountName}</td>
                     <td>{item.siteName}</td>
                     <td>{item.lastLoggedInUserName}</td>
@@ -236,7 +284,7 @@ function Endpoint() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="24">No data found</td>
+                  <td colSpan='24'>No data found</td>
                 </tr>
               )}
             </tbody>
@@ -255,7 +303,7 @@ function Endpoint() {
         setShowModal={setShowPopup}
       />
     </div>
-  );
+  )
 }
 
-export default Endpoint;
+export default Endpoint
