@@ -4,6 +4,8 @@ import {UsersListLoading} from '../components/loading/UsersListLoading'
 import ReactPaginate from 'react-paginate'
 import InventoryEndpointPopUp from './InventoryEndpointPopUp'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
+import {renderSortIcon, sortTable, sortedItems} from '../../../../../../utils/Sorting'
+import Pagination from '../../../../../../utils/Pagination'
 
 function InventoryComponent() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -89,46 +91,11 @@ function InventoryComponent() {
 
   const indexOfLastItem = (currentPage + 1) * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = risk
-    .filter((item) => item.applicationName.toLowerCase().includes(filterValue.toLowerCase()))
-    .slice(indexOfFirstItem, indexOfLastItem)
-
-  const sortTable = (key) => {
-    let direction = 'ascending'
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending'
-    }
-    setSortConfig({key, direction})
-  }
-
-  const sortedItems = () => {
-    if (sortConfig.key !== null) {
-      return [...currentItems].sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? -1 : 1
-        }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? 1 : -1
-        }
-        return 0
-      })
-    }
-    return currentItems
-  }
-
+  const currentItems = sortedItems(
+    risk.filter((item) => item.applicationName.toLowerCase().includes(filterValue.toLowerCase())),
+    sortConfig
+  ).slice(indexOfFirstItem, indexOfLastItem)
   const paginate = (pageNumber) => setCurrentPage(pageNumber)
-
-  const renderSortIcon = (key) => {
-    if (sortConfig.key === key) {
-      return sortConfig.direction === 'ascending' ? (
-        <i className='fa fa-caret-up white ps-3' />
-      ) : (
-        <i className='fa fa-caret-down white ps-3' />
-      )
-    } else {
-      return <i className='fa fa-sort white ps-3' />
-    }
-  }
 
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value))
@@ -146,6 +113,11 @@ function InventoryComponent() {
 
   const handleFilterChange = (event) => {
     setFilterValue(event.target.value)
+  }
+  const handleSort = (key) => {
+    const direction =
+      sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending'
+    setSortConfig({key, direction})
   }
 
   return (
@@ -189,36 +161,36 @@ function InventoryComponent() {
               <table className='table alert-table mg-top-20'>
                 <thead>
                   <tr>
-                    <th onClick={() => sortTable('applicationName')}>
-                      Name {renderSortIcon('applicationName')}
+                    <th onClick={() => handleSort('applicationName')}>
+                      Name {renderSortIcon(sortConfig, 'applicationName')}
                     </th>
-                    <th onClick={() => sortTable('applicationVendor')}>
-                      Vendor {renderSortIcon('applicationVendor')}
+                    <th onClick={() => handleSort('applicationVendor')}>
+                      Vendor {renderSortIcon(sortConfig, 'applicationVendor')}
                     </th>
-                    <th onClick={() => sortTable('applicationVersionsCount')}>
-                      Number of Versions {renderSortIcon('applicationVersionsCount')}
+                    <th onClick={() => handleSort('applicationVersionsCount')}>
+                      Number of Versions {renderSortIcon(sortConfig, 'applicationVersionsCount')}
                     </th>
-                    <th onClick={() => sortTable('endpointsCount')}>
-                      Number of Endpoints {renderSortIcon('endpointsCount')}
+                    <th onClick={() => handleSort('endpointsCount')}>
+                      Number of Endpoints {renderSortIcon(sortConfig, 'endpointsCount')}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {loading && <UsersListLoading />}
-                  {sortedItems().length > 0 ? (
-                    sortedItems().map((item, index) => (
-                      <tr className='table-row' key={index}>
-                        <td onClick={() => handleItemClick(item)} className='link-txt'>
-                          {item.applicationName}
-                        </td>
-                        <td>{item.applicationVendor}</td>
-                        <td>{item.applicationVersionsCount}</td>
-                        <td>{item.endpointsCount}</td>
-                      </tr>
-                    ))
+                  {
+                  currentItems !== null ? (
+                  currentItems.map((item, index) => (
+                    <tr className='table-row' key={index}>
+                      <td onClick={() => handleItemClick(item)} className='link-txt'>
+                        {item.applicationName}
+                      </td>
+                      <td>{item.applicationVendor}</td>
+                      <td>{item.applicationVersionsCount}</td>
+                      <td>{item.endpointsCount}</td>
+                    </tr>
+                  ))
                   ) : (
                     <tr>
-                      <td colSpan='4'>No data found</td>
+                      <td>No data found</td>
                     </tr>
                   )}
                 </tbody>
@@ -231,39 +203,12 @@ function InventoryComponent() {
             />
           </div>
           <hr />
-          <div className='d-flex justify-content-end align-items-center pagination-bar'>
-            <ReactPaginate
-              previousLabel={<i className='fa fa-chevron-left' />}
-              nextLabel={<i className='fa fa-chevron-right' />}
-              pageCount={Math.ceil(risk.length / itemsPerPage)}
-              marginPagesDisplayed={1}
-              pageRangeDisplayed={8}
-              onPageChange={handlePageClick}
-              containerClassName={'pagination justify-content-end'}
-              pageClassName={'page-item'}
-              pageLinkClassName={'page-link'}
-              previousClassName={'page-item custom-previous'}
-              previousLinkClassName={'page-link custom-previous-link'}
-              nextClassName={'page-item custom-next'}
-              nextLinkClassName={'page-link custom-next-link'}
-              breakClassName={'page-item'}
-              breakLinkClassName={'page-link'}
-              activeClassName={'active'}
-            />
-            <div className='col-md-3 d-flex justify-content-end align-items-center'>
-              <span className='col-md-4'>Count: </span>
-              <select
-                className='form-select form-select-sm col-md-4'
-                value={itemsPerPage}
-                onChange={handlePageSelect}
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={15}>15</option>
-                <option value={20}>20</option>
-              </select>
-            </div>
-          </div>
+           <Pagination
+            pageCount={Math.ceil(risk.length / itemsPerPage)}
+            handlePageClick={handlePageClick}
+            itemsPerPage={itemsPerPage}
+            handlePageSelect={handlePageSelect}
+          />
         </>
       )}
     </div>

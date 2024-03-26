@@ -5,6 +5,8 @@ import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import RiskEndpointPopUp from './RiskEndpointPopUp'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
+import {renderSortIcon, sortedItems} from '../../../../../../utils/Sorting'
+import Pagination from '../../../../../../utils/Pagination'
 
 function RisksComponent() {
   const [dropdownOpen, setDropdownOpen] = useState(false) // State to manage dropdown toggle
@@ -41,59 +43,15 @@ function RisksComponent() {
 
   const indexOfLastItem = (currentPage + 1) * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = risk
-    .filter((item) => item.name.toLowerCase().includes(filterValue.toLowerCase()))
-    .slice(indexOfFirstItem, indexOfLastItem)
+  const currentItems = sortedItems(
+    risk.filter((item) => item.name.toLowerCase().includes(filterValue.toLowerCase())),
+    sortConfig
+  ).slice(indexOfFirstItem, indexOfLastItem)
 
-  const sortTable = (key) => {
+  const handleSort = (key) => {
     const direction =
-      key === sortConfig.key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending'
+      sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending'
     setSortConfig({key, direction})
-  }
-  const sortedItems = () => {
-    if (sortConfig.key !== null) {
-      return [...currentItems].sort((a, b) => {
-        const valueA = getValueForSorting(a, sortConfig.key)
-        const valueB = getValueForSorting(b, sortConfig.key)
-        if (typeof valueA === 'string' && typeof valueB === 'string') {
-          return sortConfig.direction === 'ascending'
-            ? valueA.localeCompare(valueB)
-            : valueB.localeCompare(valueA)
-        } else {
-          return sortConfig.direction === 'ascending' ? valueA - valueB : valueB - valueA
-        }
-      })
-    }
-    return currentItems
-  }
-  const renderSortIcon = (key) => {
-    if (sortConfig.key === key) {
-      return sortConfig.direction === 'ascending' ? (
-        <>
-          <i className='fa fa-caret-up white ps-3' />
-        </>
-      ) : (
-        <>
-          <i className='fa fa-caret-down white ps-3' />
-        </>
-      )
-    }
-    return (
-      <>
-        <i className='fa fa-sort white ps-3' />
-      </>
-    )
-  }
-
-  const getValueForSorting = (item, key) => {
-    if (key === 'label') {
-      const mostCommonStatus = item.statuses.reduce((prev, current) => {
-        return prev.count > current.count ? prev : current
-      })
-      return mostCommonStatus.label
-    } else {
-      return item[key]
-    }
   }
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value))
@@ -200,33 +158,36 @@ function RisksComponent() {
           <table className='table alert-table scroll-x'>
             <thead>
               <tr className='fw-bold text-muted bg-blue'>
-                <th onClick={() => sortTable('name')}>Application Name {renderSortIcon('name')}</th>
-                <th onClick={() => sortTable('vendor')}>Vendor {renderSortIcon('vendor')}</th>
-                <th onClick={() => sortTable('highestSeverity')}>
-                  Highest Severity {renderSortIcon('highestSeverity')}
+                <th onClick={() => handleSort('name')}>
+                  Name {renderSortIcon(sortConfig, 'name')}
                 </th>
-                <th onClick={() => sortTable('highestNvdBaseScore')}>
-                  Highest NVD base score {renderSortIcon('highestNvdBaseScore')}
+                <th onClick={() => handleSort('vendor')}>
+                  Vendor {renderSortIcon(sortConfig, 'vendor')}
                 </th>
-                <th onClick={() => sortTable('cveCount')}>
-                  Number of CVEs {renderSortIcon('cveCount')}
+                <th onClick={() => handleSort('highestSeverity')}>
+                  Highest Severity {renderSortIcon(sortConfig, 'highestSeverity')}
                 </th>
-                <th onClick={() => sortTable('endpointCount')}>
-                  Number of Endpoints {renderSortIcon('endpointCount')}
+                <th onClick={() => handleSort('highestNvdBaseScore')}>
+                  Highest NVD base score {renderSortIcon(sortConfig, 'highestNvdBaseScore')}
                 </th>
-                <th onClick={() => sortTable('detectionDate')}>
-                  Application Detection Date {renderSortIcon('detectionDate')}
+                <th onClick={() => handleSort('cveCount')}>
+                  Number of CVEs {renderSortIcon(sortConfig, 'cveCount')}
                 </th>
-                <th onClick={() => sortTable('daysDetected')}>
-                  Days from Detection {renderSortIcon('daysDetected')}
+                <th onClick={() => handleSort('endpointCount')}>
+                  Number of Endpoints {renderSortIcon(sortConfig, 'endpointCount')}
+                </th>
+                <th onClick={() => handleSort('detectionDate')}>
+                  Application Detection Date {renderSortIcon(sortConfig, 'detectionDate')}
+                </th>
+                <th onClick={() => handleSort('daysDetected')}>
+                  Days from Detection {renderSortIcon(sortConfig, 'daysDetected')}
                 </th>
               </tr>
             </thead>
 
             <tbody>
-              {/* {loading && <UsersListLoading />} */}
-              {sortedItems() !== null ? (
-                sortedItems().map((item, index) => (
+              {currentItems !== null ? (
+                currentItems.map((item, index) => (
                   <tr key={index} className='table-row'>
                     <td onClick={() => handleItemClick(item)} className='link-txt'>
                       {item.name}
@@ -252,39 +213,12 @@ function RisksComponent() {
             showModal={showPopup}
             setShowModal={setShowPopup}
           />
-          <div className='d-flex justify-content-end align-items-center pagination-bar'>
-            <ReactPaginate
-              previousLabel={<i className='fa fa-chevron-left' />}
-              nextLabel={<i className='fa fa-chevron-right' />}
-              pageCount={Math.ceil(risk.length / itemsPerPage)}
-              marginPagesDisplayed={1}
-              pageRangeDisplayed={8}
-              onPageChange={handlePageClick}
-              containerClassName={'pagination justify-content-end'}
-              pageClassName={'page-item'}
-              pageLinkClassName={'page-link'}
-              previousClassName={'page-item custom-previous'}
-              previousLinkClassName={'page-link custom-previous-link'}
-              nextClassName={'page-item custom-next'}
-              nextLinkClassName={'page-link custom-next-link'}
-              breakClassName={'page-item'}
-              breakLinkClassName={'page-link'}
-              activeClassName={'active'}
-            />
-            <div className='col-md-3 d-flex justify-content-end align-items-center'>
-              <span className='col-md-4'>Count: </span>
-              <select
-                className='form-select form-select-sm col-md-4'
-                value={itemsPerPage}
-                onChange={handlePageSelect}
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={15}>15</option>
-                <option value={20}>20</option>
-              </select>
-            </div>
-          </div>
+          <Pagination
+            pageCount={Math.ceil(risk.length / itemsPerPage)}
+            handlePageClick={handlePageClick}
+            itemsPerPage={itemsPerPage}
+            handlePageSelect={handlePageSelect}
+          />
         </>
       )}
     </div>
