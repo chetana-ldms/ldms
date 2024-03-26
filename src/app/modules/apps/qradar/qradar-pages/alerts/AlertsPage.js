@@ -227,12 +227,16 @@ const AlertsPage = () => {
         notes: "",
       };
       const response = await fetchUpdatSetAlertIrrelavantStatuseAlert(data);
-      notify("AlertEscalateAction-Success");
+      if (response.isSuccess) {
+      notify(response.message);
       setIgnorVisible(false);
       setShowForm(false);
       qradaralerts();
       reloadHistory();
       reloadNotes();
+      }else{
+        notifyFail(response.message);
+      }
     } catch (error) {
       handleError(error);
     }

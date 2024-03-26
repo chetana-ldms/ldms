@@ -5,7 +5,7 @@ import Pagination from '../../../../../../utils/Pagination'
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import BlockListPopUp from './BlockListPopUp'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
-import { renderSortIcon, sortedItems } from '../../../../../../utils/Sorting'
+import {renderSortIcon, sortedItems} from '../../../../../../utils/Sorting'
 
 function BlockList() {
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -56,10 +56,14 @@ function BlockList() {
 
   const indexOfLastItem = (currentPage + 1) * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = sortedItems(
-    blockList.filter((item) => item.osType.toLowerCase().includes(filterValue.toLowerCase())),
-    sortConfig
-  ).slice(indexOfFirstItem, indexOfLastItem)
+  const currentItems =
+    blockList !== null
+      ? sortedItems(
+          blockList.filter((item) => item.osType.toLowerCase().includes(filterValue.toLowerCase())),
+          sortConfig
+        ).slice(indexOfFirstItem, indexOfLastItem)
+      : null
+
   const handleSort = (key) => {
     const direction =
       sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending'
@@ -248,7 +252,7 @@ function BlockList() {
               />
             </div>
           </div>
-          {currentItems.length > 0 && (
+          {currentItems !== null && (
             <>
               <table className='table alert-table scroll-x'>
                 <thead>
