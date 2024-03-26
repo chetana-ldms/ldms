@@ -11,7 +11,7 @@ const TasksPopUp = ({ showModal, setShowModal, navigateToDashboard }) => {
   };
   return (
     <Modal className="modal-small" show={showModal} onHide={handleClose}>
-      <Modal.Header closeButton>
+      <Modal.Header closeButton className="border-0">
         {/* <Modal.Title>Here some important tasks are pending from you!!!</Modal.Title> */}
       </Modal.Header>
       <Modal.Body className="text-center no-pad">
