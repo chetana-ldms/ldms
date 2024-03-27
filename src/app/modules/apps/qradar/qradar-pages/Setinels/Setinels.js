@@ -3,6 +3,7 @@ import Endpoint from "./Endpoint";
 import BlockList from "./BlockList";
 import Exclusions from "./Exclusions";
 import AccountDetalis from "./AccountDetalis";
+import Policy from "./Policy";
 
 function Setinels() {
   const [activeTab, setActiveTab] = useState("endpoint");
@@ -63,12 +64,23 @@ function Setinels() {
                   AccountDetalis
                 </a>
               </li>
+              <li className="nav-item text-center">
+                <a
+                  className={`nav-link normal pointer ${
+                    activeTab === "policy" ? "active" : ""
+                  }`}
+                  onClick={() => handleTabClick("policy")}
+                >
+                  Policy
+                </a>
+              </li>
             </ul>
           </div>
           {activeTab === "endpoint" && <Endpoint />}
           {activeTab === "blockList" && <BlockList />}
           {activeTab === "exclusions" && <Exclusions />}
           {activeTab === "accountDetalis" && <AccountDetalis />}
+          {activeTab === "policy" && <Policy />}
         </div>
       </div>
     </div>

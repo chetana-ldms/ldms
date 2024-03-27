@@ -5,8 +5,8 @@ import {UsersListLoading} from '../components/loading/UsersListLoading'
 import Pagination from '../../../../../../utils/Pagination'
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
-import EndpointPopup from '../application-management/EndpointPopup'
 import { renderSortIcon, sortedItems } from '../../../../../../utils/Sorting'
+import EndpointPopupSentinal from './EndpointPopupSentinal'
 
 function Endpoint() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -297,7 +297,7 @@ function Endpoint() {
           />
         </>
       )}
-      <EndpointPopup
+      <EndpointPopupSentinal
         selectedEndpoint={selectedEndpoint}
         showModal={showPopup}
         setShowModal={setShowPopup}
