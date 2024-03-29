@@ -1736,15 +1736,17 @@ const AlertsPage = () => {
                           style={{ cursor: "pointer" }}
                           onClick={() => handleTdClick(item.alertID)}
                         >
-                          {item.severityName}
+                          <span className="link underline">
+                            {item.severityName}
+                          </span>
                         </td>
                         <td>
-                          <span className="text-dark text-hover-primary d-block mb-1">
+                          <span className="text-dark d-block mb-1">
                             {item.sla}
                           </span>
                         </td>
                         <td>
-                          <span className="text-dark text-center text-hover-primary d-block mb-1">
+                          <span className="text-dark text-center d-block mb-1">
                             {item.score === null || item.score === ""
                               ? "0"
                               : item.score}
@@ -1752,24 +1754,24 @@ const AlertsPage = () => {
                         </td>
                         <td>{item.status}</td>
                         <td>
-                          <span className="text-dark text-hover-primary d-block mb-1">
+                          <span className="text-dark d-block mb-1">
                             <span>
                               {item.detectedtime &&
                                 getCurrentTimeZone(item.detectedtime)}
                             </span>
                           </span>
                         </td>
-                        <td className="text-dark text-hover-primary fs-8 alert-name">
+                        <td className="text-dark fs-8 alert-name">
                           <span title={item.name}>{item.name}</span>
                         </td>
-                        <td className="text-dark text-hover-primary fs-8">
+                        <td className="text-dark fs-8">
                           {item.observableTag}
                         </td>
-                        <td className="text-dark text-hover-primary fs-8">
+                        <td className="text-dark fs-8">
                           {" "}
                           {item.ownerusername}
                         </td>
-                        <td className="text-dark fw-bold text-hover-primary fs-8">
+                        <td className="text-dark fw-bold fs-8">
                           {item.source}
                         </td>
                       </tr>
@@ -1782,82 +1784,89 @@ const AlertsPage = () => {
                         <td colSpan="10">
                           <div className="row">
                             <div className="col-md-12">
-                              {/* Tab Navigation */}
-                              <ul
-                                className="nav nav-tabs"
-                                id={`alertTabs_${index}`}
-                                role="tablist"
-                              >
-                                <li className="nav-item" role="presentation">
-                                  <a
-                                    className="nav-link active"
-                                    id={`detailsTab_${index}`}
-                                    data-bs-toggle="tab"
-                                    href={`#details_${index}`}
-                                    role="tab"
-                                    aria-controls={`details_${index}`}
-                                    aria-selected="true"
-                                  >
-                                    Details
-                                  </a>
-                                </li>
-                                {orgId == 2 && (
+                              <div className="card pad-10">
+                                {/* Tab Navigation */}
+                                <ul
+                                  className="nav nav-tabs"
+                                  id={`alertTabs_${index}`}
+                                  role="tablist"
+                                >
+                                  <li className="nav-item" role="presentation">
+                                    <a
+                                      className="nav-link active"
+                                      id={`detailsTab_${index}`}
+                                      data-bs-toggle="tab"
+                                      href={`#details_${index}`}
+                                      role="tab"
+                                      aria-controls={`details_${index}`}
+                                      aria-selected="true"
+                                    >
+                                      Details
+                                    </a>
+                                  </li>
+                                  {orgId == 2 && (
+                                    <li
+                                      className="nav-item"
+                                      role="presentation"
+                                    >
+                                      <a
+                                        className="nav-link"
+                                        id={`moreDetailsTab_${index}`}
+                                        data-bs-toggle="tab"
+                                        href={`#moreDetails_${index}`}
+                                        role="tab"
+                                        aria-controls={`moreDetails_${index}`}
+                                        aria-selected="false"
+                                      >
+                                        More Details
+                                      </a>
+                                    </li>
+                                  )}
                                   <li className="nav-item" role="presentation">
                                     <a
                                       className="nav-link"
-                                      id={`moreDetailsTab_${index}`}
+                                      id={`notesTab_${index}`}
                                       data-bs-toggle="tab"
-                                      href={`#moreDetails_${index}`}
+                                      href={`#notes_${index}`}
                                       role="tab"
-                                      aria-controls={`moreDetails_${index}`}
+                                      aria-controls={`notes_${index}`}
                                       aria-selected="false"
                                     >
-                                      More Details
+                                      Notes
                                     </a>
                                   </li>
-                                )}
-                                <li className="nav-item" role="presentation">
-                                  <a
-                                    className="nav-link"
-                                    id={`notesTab_${index}`}
-                                    data-bs-toggle="tab"
-                                    href={`#notes_${index}`}
-                                    role="tab"
-                                    aria-controls={`notes_${index}`}
-                                    aria-selected="false"
-                                  >
-                                    Notes
-                                  </a>
-                                </li>
-                                <li className="nav-item" role="presentation">
-                                  <a
-                                    className="nav-link"
-                                    id={`timelineTab_${index}`}
-                                    data-bs-toggle="tab"
-                                    href={`#timeline_${index}`}
-                                    role="tab"
-                                    aria-controls={`timeline_${index}`}
-                                    aria-selected="false"
-                                  >
-                                    Timeline
-                                  </a>
-                                </li>
-                                {orgId === 2 && (
                                   <li className="nav-item" role="presentation">
                                     <a
                                       className="nav-link"
-                                      id={`otherActionsTab_${index}`}
+                                      id={`timelineTab_${index}`}
                                       data-bs-toggle="tab"
-                                      href={`#otherActions_${index}`}
+                                      href={`#timeline_${index}`}
                                       role="tab"
-                                      aria-controls={`otherActions_${index}`}
+                                      aria-controls={`timeline_${index}`}
                                       aria-selected="false"
                                     >
-                                      Other Action
+                                      Timeline
                                     </a>
                                   </li>
-                                )}
-                                {/* {orgId === 2 && (
+                                  {orgId === 2 && (
+                                    <li
+                                      className="nav-item"
+                                      role="presentation"
+                                    >
+                                      <a
+                                        className="nav-link"
+                                        id={`otherActionsTab_${index}`}
+                                        data-bs-toggle="tab"
+                                        href={`#otherActions_${index}`}
+                                        role="tab"
+                                        aria-controls={`otherActions_${index}`}
+                                        aria-selected="false"
+                                      >
+                                        Other Action
+                                      </a>
+                                    </li>
+                                  )}
+                                  {/* {orgId === 2 && (
                                   <li className="nav-item" role="presentation">
                                     <a
                                       className="nav-link"
@@ -1872,191 +1881,213 @@ const AlertsPage = () => {
                                     </a>
                                   </li>
                                 )} */}
-                              </ul>
-                              <div className="tab-content pt-4">
-                                <div
-                                  className="tab-pane fade show active"
-                                  id={`details_${index}`}
-                                  role="tabpanel"
-                                  aria-labelledby={`detailsTab_${index}`}
-                                >
-                                  <div className="row">
-                                    <div className="col-md-1"></div>
-                                    <div className="col-md-9">
-                                      <b>Alert Name : </b>
-                                      {item.name}
-                                      <br />
-                                      <b>Score : </b>
-                                      {item.score === null || item.score === ""
-                                        ? "0"
-                                        : item.score}
-                                      <br />
-                                      <b>SLA : </b>
-                                      {item.sla}
-                                      <br />
-                                      <b>Severity : </b>
-                                      {item.severityName}
-                                      <br />
-                                      <b>Status : </b>
-                                      {item.status}
-                                      <br />
-                                      <b>Detected Date/Time : </b>
-                                      {item.detectedtime &&
-                                        getCurrentTimeZone(item.detectedtime)}
-                                      <br />
-                                      <b>Observable Tag : </b>
-                                      {item.observableTag} <br />
-                                      <b>Owner Name : </b>
-                                      {item.ownerusername} <br />
-                                      <b>Analysts Verdict : </b>
-                                      {item.positiveAnalysis} <br />
-                                      <b>Source Name : </b>
-                                      {item.source} <br />
-                                    </div>
-                                    <div className="col-md-2">
-                                      <div
-                                        className="btn btn-primary btn-new btn-small"
-                                        onClick={() => openEditPopUp(item)}
-                                      >
-                                        Edit
+                                </ul>
+                                <div className="tab-content pt-4">
+                                  <div
+                                    className="tab-pane fade show active"
+                                    id={`details_${index}`}
+                                    role="tabpanel"
+                                    aria-labelledby={`detailsTab_${index}`}
+                                  >
+                                    <div className="row alert-accordion">
+                                      <div className="col-md-10">
+                                        <div className="alert-details">
+                                          <b>Alert Name : </b>
+                                          <span>{item.name}</span>
+                                        </div>
+                                        <div className="alert-details">
+                                          <b>Score : </b>
+                                          <span>
+                                            {item.score === null ||
+                                            item.score === ""
+                                              ? "0"
+                                              : item.score}
+                                          </span>
+                                        </div>
+                                        <div className="alert-details">
+                                          <b>SLA : </b>
+                                          <span>{item.sla}</span>
+                                        </div>
+                                        <div className="alert-details">
+                                          <b>Severity : </b>
+                                          <span>{item.severityName}</span>
+                                        </div>
+                                        <div className="alert-details">
+                                          <b>Status : </b>
+                                          <span>{item.status}</span>
+                                        </div>
+                                        <div className="alert-details">
+                                          <b>Detected Date/Time : </b>
+                                          <span>
+                                            {item.detectedtime &&
+                                              getCurrentTimeZone(
+                                                item.detectedtime
+                                              )}
+                                          </span>
+                                        </div>
+                                        <div className="alert-details">
+                                          <b>Observable Tag : </b>
+                                          <span>{item.observableTag} </span>
+                                        </div>
+                                        <div className="alert-details">
+                                          <b>Owner Name : </b>
+                                          <span>{item.ownerusername}</span>
+                                        </div>
+                                        <div className="alert-details">
+                                          <b>Analysts Verdict : </b>
+                                          <span>{item.positiveAnalysis} </span>
+                                        </div>
+                                        <div className="alert-details">
+                                          <b>Source Name : </b>
+                                          <span>{item.source}</span>{" "}
+                                        </div>
+                                      </div>
+                                      <div className="col-md-2">
+                                        <div
+                                          className="btn btn-primary btn-new btn-small"
+                                          onClick={() => openEditPopUp(item)}
+                                        >
+                                          Edit
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
-                                </div>
-                                <div
-                                  className="tab-pane fade"
-                                  id={`moreDetails_${index}`}
-                                  role="tabpanel"
-                                  aria-labelledby={`moreDetailsTab_${index}`}
-                                >
-                                  {orgId == 2 ? (
-                                    <div
-                                      style={{
-                                        maxHeight: "300px",
-                                        overflowY: "auto",
-                                      }}
-                                    >
-                                      <div className="row">
-                                        <div className="col-md-1 py-4 text-center">
-                                          <i
-                                            className="bi bi-check-square text-success"
-                                            style={{
-                                              fontSize: "2rem",
-                                              width: "2em",
-                                              height: "2em",
-                                            }}
-                                          ></i>
-                                        </div>
-                                        <div className="col-md-8">
-                                          <div className="d-flex ">
-                                            <div className="border-right px-1">
-                                              {" "}
-                                              <span className="fs-8">
-                                                Threat status :
-                                              </span>{" "}
-                                              {threatHeaderDtls.threatStatus}
-                                            </div>
-                                            <div className="border-right px-1">
-                                              <span className="fs-8">
-                                                AI Confidence level :{" "}
-                                              </span>
-                                              {
-                                                threatHeaderDtls.aiConfidenceLevel
-                                              }
-                                            </div>
-                                            <div className="border-right px-1 d-flex align-items-center">
-                                              <span className="fs-8">
-                                                Analyst Verdict:
-                                              </span>
-                                              <input
-                                                type="text"
-                                                className="ml-2"
-                                                style={{ width: "110px" }}
-                                                value={
-                                                  threatHeaderDtls.analysisVerdict
-                                                }
-                                              />
-                                            </div>
-                                            <div className="px-1 d-flex align-items-center">
-                                              <span className="fs-8">
-                                                Incident Status:
-                                              </span>
-                                              <input
-                                                type="text"
-                                                style={{ width: "110px" }}
-                                                className="ml-2"
-                                                value={
-                                                  threatHeaderDtls.incidentStatus
-                                                }
-                                              />
-                                            </div>
+                                  <div
+                                    className="tab-pane fade"
+                                    id={`moreDetails_${index}`}
+                                    role="tabpanel"
+                                    aria-labelledby={`moreDetailsTab_${index}`}
+                                  >
+                                    {orgId == 2 ? (
+                                      <div
+                                        style={{
+                                          maxHeight: "300px",
+                                          overflowY: "auto",
+                                        }}
+                                      >
+                                        <div className="row">
+                                          <div className="col-md-1 py-4 text-center">
+                                            <i
+                                              className="bi bi-check-square text-success"
+                                              style={{
+                                                fontSize: "2rem",
+                                                width: "2em",
+                                                height: "2em",
+                                              }}
+                                            ></i>
                                           </div>
-                                          <hr
-                                            className="bg-primary"
-                                            style={{
-                                              height: "4px",
-                                              border: "none",
-                                            }}
-                                          />
-                                          <div>
-                                            <span className="fs-8">
-                                              Mitigation Actions Taken :
-                                            </span>
-                                            {threatHeaderDtls?.miticationActions ? (
-                                              threatHeaderDtls?.miticationActions.map(
-                                                (item, index) => (
-                                                  <span
-                                                    key={index}
-                                                    className="m-2"
-                                                  >
-                                                    {item}{" "}
-                                                    <i className="bi bi-check"></i>
-                                                  </span>
+                                          <div className="col-md-8">
+                                            <div className="d-flex ">
+                                              <div className="border-right px-1">
+                                                {" "}
+                                                <span className="fs-8">
+                                                  Threat status :
+                                                </span>{" "}
+                                                {threatHeaderDtls.threatStatus}
+                                              </div>
+                                              <div className="border-right px-1">
+                                                <span className="fs-8">
+                                                  AI Confidence level :{" "}
+                                                </span>
+                                                {
+                                                  threatHeaderDtls.aiConfidenceLevel
+                                                }
+                                              </div>
+                                              <div className="border-right px-1 d-flex align-items-center">
+                                                <span className="fs-8">
+                                                  Analyst Verdict:
+                                                </span>
+                                                <input
+                                                  type="text"
+                                                  className="ml-2"
+                                                  style={{ width: "110px" }}
+                                                  value={
+                                                    threatHeaderDtls.analysisVerdict
+                                                  }
+                                                />
+                                              </div>
+                                              <div className="px-1 d-flex align-items-center">
+                                                <span className="fs-8">
+                                                  Incident Status:
+                                                </span>
+                                                <input
+                                                  type="text"
+                                                  style={{ width: "110px" }}
+                                                  className="ml-2"
+                                                  value={
+                                                    threatHeaderDtls.incidentStatus
+                                                  }
+                                                />
+                                              </div>
+                                            </div>
+                                            <hr
+                                              className="bg-primary"
+                                              style={{
+                                                height: "4px",
+                                                border: "none",
+                                              }}
+                                            />
+                                            <div>
+                                              <span className="fs-8">
+                                                Mitigation Actions Taken :
+                                              </span>
+                                              {threatHeaderDtls?.miticationActions ? (
+                                                threatHeaderDtls?.miticationActions.map(
+                                                  (item, index) => (
+                                                    <span
+                                                      key={index}
+                                                      className="m-2"
+                                                    >
+                                                      {item}{" "}
+                                                      <i className="bi bi-check"></i>
+                                                    </span>
+                                                  )
                                                 )
-                                              )
-                                            ) : (
-                                              <span>No mitigation actions</span>
-                                            )}
-                                          </div>
-                                        </div>
-                                        <div className="col-md-3">
-                                          <div className="row">
-                                            <div className="col-md-2 text-center py-3">
-                                              <i
-                                                className="bi bi-stopwatch"
-                                                style={{
-                                                  fontSize: "3rem",
-                                                  width: "2em",
-                                                  height: "2em",
-                                                }}
-                                              ></i>
-                                            </div>
-                                            <div className="col-md-10">
-                                              <p>
-                                                <span className="fs-8">
-                                                  Identified Time :{" "}
+                                              ) : (
+                                                <span>
+                                                  No mitigation actions
                                                 </span>
-                                                <span className="fs-8">
-                                                  {getCurrentTimeZone(
-                                                    threatHeaderDtls.identifiedTime
-                                                  )}
-                                                </span>
-                                              </p>
-                                              <p>
-                                                <span className="fs-8">
-                                                  Reporting Time :{" "}
-                                                </span>
-                                                <span className="fs-8">
-                                                  {getCurrentTimeZone(
-                                                    threatHeaderDtls.reportingTime
-                                                  )}
-                                                </span>
-                                              </p>
+                                              )}
                                             </div>
                                           </div>
+                                          <div className="col-md-3">
+                                            <div className="row">
+                                              <div className="col-md-2 text-center py-3">
+                                                <i
+                                                  className="bi bi-stopwatch"
+                                                  style={{
+                                                    fontSize: "3rem",
+                                                    width: "2em",
+                                                    height: "2em",
+                                                  }}
+                                                ></i>
+                                              </div>
+                                              <div className="col-md-10">
+                                                <p>
+                                                  <span className="fs-8">
+                                                    Identified Time :{" "}
+                                                  </span>
+                                                  <span className="fs-8">
+                                                    {getCurrentTimeZone(
+                                                      threatHeaderDtls.identifiedTime
+                                                    )}
+                                                  </span>
+                                                </p>
+                                                <p>
+                                                  <span className="fs-8">
+                                                    Reporting Time :{" "}
+                                                  </span>
+                                                  <span className="fs-8">
+                                                    {getCurrentTimeZone(
+                                                      threatHeaderDtls.reportingTime
+                                                    )}
+                                                  </span>
+                                                </p>
+                                              </div>
+                                            </div>
+                                          </div>
                                         </div>
-                                      </div>
-                                      {/* <div className="fs-12">NETWORK HISTORY</div>
+                                        {/* <div className="fs-12">NETWORK HISTORY</div>
                                   <hr className="my-2" />
                                   <div className="row">
                                     <div className="col-md-4 border-right">
@@ -2093,462 +2124,495 @@ const AlertsPage = () => {
                                       </div>
                                     </div>
                                   </div> */}
-                                      <hr
-                                        className="my-1"
-                                        style={{
-                                          borderColor: "#3838a0",
-                                          borderWidth: "7px",
-                                        }}
-                                      />
-                                      <div className="mt-5 row">
-                                        <div className="fs-12 mt-5 col-md-6">
-                                          THREAT FILE NAME $RN30BDD.exe
-                                        </div>
-                                        <div className="fs-14 mt-5 text-primary col-md-6 text-end">
-                                          {/* <span className="mx-5"><i className="fas fa-copy mx-3"></i> Copy Details</span>
+                                        <hr
+                                          className="my-1"
+                                          style={{
+                                            borderColor: "#3838a0",
+                                            borderWidth: "7px",
+                                          }}
+                                        />
+                                        <div className="mt-5 row">
+                                          <div className="fs-12 mt-5 col-md-6">
+                                            THREAT FILE NAME $RN30BDD.exe
+                                          </div>
+                                          <div className="fs-14 mt-5 text-primary col-md-6 text-end">
+                                            {/* <span className="mx-5"><i className="fas fa-copy mx-3"></i> Copy Details</span>
                                         <span className="mx-5"><i className="fas fa-file mx-3"></i> Download Threat Files</span> */}
-                                        </div>
-                                      </div>
-                                      <hr className="my-2" />
-                                      <div className="row">
-                                        <div className="col-md-7">
-                                          <div className="row border-right p-5">
-                                            <div className="col-md-3 ">
-                                              <p>Path</p>
-                                              {/* <p>Command Line Arguments</p> */}
-                                              <p>Process User</p>
-                                              {/* <p>Publisher Name</p> */}
-                                              {/* <p> Signer Identity</p> */}
-                                              {/* <p>Signature Verification</p> */}
-                                              <p>Original Process</p>
-                                              <p>SHA1</p>
-                                            </div>
-                                            <div className="col-md-9">
-                                              <p>{threatInfo.path}</p>
-                                              {/* <p>NA</p> */}
-                                              <p>{threatInfo.processUser}</p>
-                                              {/* <p>FH Manager</p> */}
-                                              {/* <p>FH Manager</p> */}
-                                              {/* <p>Signature varified</p> */}
-                                              <p>
-                                                {threatInfo.originatingProcess}
-                                              </p>
-                                              <p>{threatInfo.shA1}</p>
-                                            </div>
                                           </div>
                                         </div>
-                                        <div className="col-md-5">
-                                          <div className="row border-right p-5">
-                                            <div className="col-md-4 ">
-                                              <p>Initiated By</p>
-                                              {/* <p>Engine</p> */}
-                                              <p>Detection Type</p>
-                                              <p>Classification</p>
-                                              <p> File Size</p>
-                                              <p>Storyline</p>
-                                              <p>Threat id</p>
-                                            </div>
-                                            <div className="col-md-6">
-                                              <p>{threatInfo.initiatedBy}</p>
-                                              {/* <p>SentinalOne Cloud</p> */}
-                                              <p>{threatInfo.detectionType}</p>
-                                              <p>{threatInfo.classification}</p>
-                                              <p>{threatInfo.fileSize}</p>
-                                              <p>{threatInfo.storyline}</p>
-                                              <p>{threatInfo.threatId}</p>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <hr
-                                        className="my-1"
-                                        style={{
-                                          borderColor: "#3838a0",
-                                          borderWidth: "7px",
-                                        }}
-                                      />
-                                      <div className="text-primary text-center m-3">
-                                        END POINT
-                                      </div>
-                                      <hr className="my-2" />
-
-                                      <div className="row">
-                                        <div className="col-md-5">
-                                          <div className="row  p-5">
-                                            <div>
-                                              <p>
-                                                Real Time Data about the end
-                                                point:
-                                              </p>
-                                            </div>
-                                            <div className="row">
-                                              <div className="col-md-3">
-                                                <span>
-                                                  <i
-                                                    className="fab fa-windows"
-                                                    style={{
-                                                      fontSize: "6em",
-                                                      width: "2em",
-                                                    }}
-                                                  ></i>
-                                                </span>
+                                        <hr className="my-2" />
+                                        <div className="row">
+                                          <div className="col-md-7">
+                                            <div className="row border-right p-5">
+                                              <div className="col-md-3 ">
+                                                <p>Path</p>
+                                                {/* <p>Command Line Arguments</p> */}
+                                                <p>Process User</p>
+                                                {/* <p>Publisher Name</p> */}
+                                                {/* <p> Signer Identity</p> */}
+                                                {/* <p>Signature Verification</p> */}
+                                                <p>Original Process</p>
+                                                <p>SHA1</p>
                                               </div>
                                               <div className="col-md-9">
-                                                <h6>DESCTOP-UPU1TUD</h6>
-                                                <p className="fs-12">
-                                                  LANCESOFT INDIA PRIVATE LIMITE
-                                                  / Defoult site
+                                                <p>{threatInfo.path}</p>
+                                                {/* <p>NA</p> */}
+                                                <p>{threatInfo.processUser}</p>
+                                                {/* <p>FH Manager</p> */}
+                                                {/* <p>FH Manager</p> */}
+                                                {/* <p>Signature varified</p> */}
+                                                <p>
+                                                  {
+                                                    threatInfo.originatingProcess
+                                                  }
                                                 </p>
-                                                <p className="fs-10">
-                                                  (Connect Homes)/ Defoult Group
-                                                </p>
+                                                <p>{threatInfo.shA1}</p>
                                               </div>
                                             </div>
-                                            <hr className="my-2" />
-                                            <div className="col-md-4 ">
-                                              {/* <p>Console connectivity</p> */}
-                                              <p>Full Disc scan</p>
-                                              <p>Pending Reboot</p>
-                                              {/* <p>Number of not Mitigated Threats</p> */}
-                                              <p> Network status</p>
-                                            </div>
-                                            <div className="col-md-8">
-                                              {/* <p>{endpointInfo.consoleConnectivity}</p> */}
-                                              <p>{endpointInfo.fullDiskScan}</p>
-                                              <p>
-                                                {endpointInfo.pendinRreboot}
-                                              </p>
-                                              {/* <p>0</p> */}
-                                              <p>
-                                                {endpointInfo.networkStatus}
-                                              </p>
+                                          </div>
+                                          <div className="col-md-5">
+                                            <div className="row border-right p-5">
+                                              <div className="col-md-4 ">
+                                                <p>Initiated By</p>
+                                                {/* <p>Engine</p> */}
+                                                <p>Detection Type</p>
+                                                <p>Classification</p>
+                                                <p> File Size</p>
+                                                <p>Storyline</p>
+                                                <p>Threat id</p>
+                                              </div>
+                                              <div className="col-md-6">
+                                                <p>{threatInfo.initiatedBy}</p>
+                                                {/* <p>SentinalOne Cloud</p> */}
+                                                <p>
+                                                  {threatInfo.detectionType}
+                                                </p>
+                                                <p>
+                                                  {threatInfo.classification}
+                                                </p>
+                                                <p>{threatInfo.fileSize}</p>
+                                                <p>{threatInfo.storyline}</p>
+                                                <p>{threatInfo.threatId}</p>
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
-                                        <div className="col-md-7">
-                                          <div className="row border-right p-5">
-                                            <div className="col-md-3 ">
-                                              {/* <p>At Detection time :</p> */}
-                                              <p>Scope</p>
-                                              <p>OS Version</p>
-                                              <p>Agent Version</p>
-                                              <p> Policy</p>
-                                              <p>Logged in user</p>
-                                              <p>UUID</p>
-                                              <p>Domain</p>
-                                              <p>IP v4 Address</p>
-                                              <p>IP v6 Address</p>
-                                              <p>Console Visible adress</p>
-                                              <p>Subscription Time</p>
+                                        <hr
+                                          className="my-1"
+                                          style={{
+                                            borderColor: "#3838a0",
+                                            borderWidth: "7px",
+                                          }}
+                                        />
+                                        <div className="text-primary text-center m-3">
+                                          END POINT
+                                        </div>
+                                        <hr className="my-2" />
+
+                                        <div className="row">
+                                          <div className="col-md-5">
+                                            <div className="row  p-5">
+                                              <div>
+                                                <p>
+                                                  Real Time Data about the end
+                                                  point:
+                                                </p>
+                                              </div>
+                                              <div className="row">
+                                                <div className="col-md-3">
+                                                  <span>
+                                                    <i
+                                                      className="fab fa-windows"
+                                                      style={{
+                                                        fontSize: "6em",
+                                                        width: "2em",
+                                                      }}
+                                                    ></i>
+                                                  </span>
+                                                </div>
+                                                <div className="col-md-9">
+                                                  <h6>DESCTOP-UPU1TUD</h6>
+                                                  <p className="fs-12">
+                                                    LANCESOFT INDIA PRIVATE
+                                                    LIMITE / Defoult site
+                                                  </p>
+                                                  <p className="fs-10">
+                                                    (Connect Homes)/ Defoult
+                                                    Group
+                                                  </p>
+                                                </div>
+                                              </div>
+                                              <hr className="my-2" />
+                                              <div className="col-md-4 ">
+                                                {/* <p>Console connectivity</p> */}
+                                                <p>Full Disc scan</p>
+                                                <p>Pending Reboot</p>
+                                                {/* <p>Number of not Mitigated Threats</p> */}
+                                                <p> Network status</p>
+                                              </div>
+                                              <div className="col-md-8">
+                                                {/* <p>{endpointInfo.consoleConnectivity}</p> */}
+                                                <p>
+                                                  {endpointInfo.fullDiskScan}
+                                                </p>
+                                                <p>
+                                                  {endpointInfo.pendinRreboot}
+                                                </p>
+                                                {/* <p>0</p> */}
+                                                <p>
+                                                  {endpointInfo.networkStatus}
+                                                </p>
+                                              </div>
                                             </div>
-                                            <div className="col-md-9">
-                                              {/* <p>.</p> */}
-                                              <p>{endpointInfo.scope}</p>
-                                              <p>{endpointInfo.osVersion}</p>
-                                              <p>{endpointInfo.agentVersion}</p>
-                                              <p>{endpointInfo.policy}</p>
-                                              <p>{endpointInfo.loggedInUser}</p>
-                                              <p>{endpointInfo.uuid}</p>
-                                              <p>{endpointInfo.domain}</p>
-                                              <p>{endpointInfo.ipV4Address}</p>
-                                              <p>{endpointInfo.ipV6Address}</p>
-                                              <p>
-                                                {
-                                                  endpointInfo.consoleVisibleIPAddress
-                                                }
-                                              </p>
-                                              <p>
-                                                {endpointInfo.subscriptionTime}
-                                              </p>
+                                          </div>
+                                          <div className="col-md-7">
+                                            <div className="row border-right p-5">
+                                              <div className="col-md-3 ">
+                                                {/* <p>At Detection time :</p> */}
+                                                <p>Scope</p>
+                                                <p>OS Version</p>
+                                                <p>Agent Version</p>
+                                                <p> Policy</p>
+                                                <p>Logged in user</p>
+                                                <p>UUID</p>
+                                                <p>Domain</p>
+                                                <p>IP v4 Address</p>
+                                                <p>IP v6 Address</p>
+                                                <p>Console Visible adress</p>
+                                                <p>Subscription Time</p>
+                                              </div>
+                                              <div className="col-md-9">
+                                                {/* <p>.</p> */}
+                                                <p>{endpointInfo.scope}</p>
+                                                <p>{endpointInfo.osVersion}</p>
+                                                <p>
+                                                  {endpointInfo.agentVersion}
+                                                </p>
+                                                <p>{endpointInfo.policy}</p>
+                                                <p>
+                                                  {endpointInfo.loggedInUser}
+                                                </p>
+                                                <p>{endpointInfo.uuid}</p>
+                                                <p>{endpointInfo.domain}</p>
+                                                <p>
+                                                  {endpointInfo.ipV4Address}
+                                                </p>
+                                                <p>
+                                                  {endpointInfo.ipV6Address}
+                                                </p>
+                                                <p>
+                                                  {
+                                                    endpointInfo.consoleVisibleIPAddress
+                                                  }
+                                                </p>
+                                                <p>
+                                                  {
+                                                    endpointInfo.subscriptionTime
+                                                  }
+                                                </p>
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  ) : (
-                                    <span>No Data found</span>
-                                  )}
-                                </div>
-                                <div
-                                  className="tab-pane fade"
-                                  id={`notes_${index}`}
-                                  role="tabpanel"
-                                  aria-labelledby={`notesTab_${index}`}
-                                >
-                                  {alertNotesList.length > 0 ? (
-                                    <div className="notes-container mt-5 pt-5">
-                                      <b>Notes:</b>
-                                      <table className="table">
-                                        <thead>
-                                          <tr>
-                                            <th className="custom-th">User</th>
-                                            <th className="custom-th">Date</th>
-                                            <th className="custom-th">Note</th>
-                                          </tr>
-                                        </thead>
-                                        <tbody>
-                                          {alertNotesList.map((note) => (
-                                            <tr key={note.alertsNotesId}>
-                                              <td>{note.createdUser}</td>
-                                              <td>
-                                                {getCurrentTimeZone(
-                                                  note.createdDate
-                                                )}
-                                              </td>
-                                              <td>{note.notes}</td>
+                                    ) : (
+                                      <span>No Data found</span>
+                                    )}
+                                  </div>
+                                  <div
+                                    className="tab-pane fade"
+                                    id={`notes_${index}`}
+                                    role="tabpanel"
+                                    aria-labelledby={`notesTab_${index}`}
+                                  >
+                                    {alertNotesList.length > 0 ? (
+                                      <div className="notes-container pt-5 alert-table">
+                                        {/* <b>Notes:</b> */}
+                                        <table className="table">
+                                          <thead>
+                                            <tr className="bg-header">
+                                              <th className="custom-th">
+                                                User
+                                              </th>
+                                              <th className="custom-th">
+                                                Date
+                                              </th>
+                                              <th className="custom-th">
+                                                Note
+                                              </th>
                                             </tr>
-                                          ))}
-                                        </tbody>
-                                      </table>
-                                    </div>
-                                  ) : (
-                                    <div>No notes available.</div>
-                                  )}
-                                </div>
-                                <div
-                                  className="tab-pane fade"
-                                  id={`timeline_${index}`}
-                                  role="tabpanel"
-                                  aria-labelledby={`timelineTab_${index}`}
-                                >
-                                  <div className="row">
-                                    <div className="">
-                                      <h6>Timeline:</h6>
-                                    </div>
-
+                                          </thead>
+                                          <tbody>
+                                            {alertNotesList.map((note) => (
+                                              <tr key={note.alertsNotesId}>
+                                                <td>{note.createdUser}</td>
+                                                <td>
+                                                  {getCurrentTimeZone(
+                                                    note.createdDate
+                                                  )}
+                                                </td>
+                                                <td>{note.notes}</td>
+                                              </tr>
+                                            ))}
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    ) : (
+                                      <div>No notes available.</div>
+                                    )}
+                                  </div>
+                                  <div
+                                    className="tab-pane fade"
+                                    id={`timeline_${index}`}
+                                    role="tabpanel"
+                                    aria-labelledby={`timelineTab_${index}`}
+                                  >
                                     <div className="row">
-                                      <div className="col-md-1"></div>
-                                      <div className="col-md-11">
-                                        <div
-                                          className="timeline-section"
-                                          style={{
-                                            maxHeight: "300px",
-                                            overflowY: "auto",
-                                          }}
-                                        >
-                                          <div className="pt-6 h-600px">
-                                            <div className="timeline-label">
-                                              {alertHistory &&
-                                              alertHistory.length > 0 ? (
-                                                alertHistory
-                                                  .sort(
-                                                    (a, b) =>
-                                                      b.alertHistoryId -
-                                                      a.alertHistoryId
-                                                  )
-                                                  .map((item) => {
-                                                    const formattedDateTime = getCurrentTimeZone(
-                                                      item.historyDate
-                                                    );
+                                      {/* <div className="">
+                                        <h6>Timeline:</h6>
+                                      </div> */}
 
-                                                    return (
-                                                      <div
-                                                        className="timeline-item"
-                                                        key={item.id}
-                                                      >
-                                                        <div className="timeline-label fw-bold text-gray-800 fs-6">
-                                                          <p>
-                                                            {formattedDateTime}
-                                                          </p>
-                                                          <p className="text-muted">
-                                                            {item.createdUser}
-                                                          </p>
-                                                        </div>
+                                      <div className="row">
+                                        <div className="col-md-1"></div>
+                                        <div className="col-md-11">
+                                          <div className="timeline-section h-300 scroll-y">
+                                            <div className="pt-6 h-600px">
+                                              <div className="timeline-label">
+                                                {alertHistory &&
+                                                alertHistory.length > 0 ? (
+                                                  alertHistory
+                                                    .sort(
+                                                      (a, b) =>
+                                                        b.alertHistoryId -
+                                                        a.alertHistoryId
+                                                    )
+                                                    .map((item) => {
+                                                      const formattedDateTime = getCurrentTimeZone(
+                                                        item.historyDate
+                                                      );
 
-                                                        <div className="timeline-badge">
-                                                          <i
-                                                            className={`fa fa-genderless ${getRandomClass()} fs-1`}
-                                                          ></i>
+                                                      return (
+                                                        <div
+                                                          className="timeline-item"
+                                                          key={item.id}
+                                                        >
+                                                          <div className="timeline-label fw-bold text-gray-800 fs-6">
+                                                            <p className="semi-bold">
+                                                              {
+                                                                formattedDateTime
+                                                              }
+                                                            </p>
+                                                            <p className="text-muted normal">
+                                                              {item.createdUser}
+                                                            </p>
+                                                          </div>
+
+                                                          <div className="timeline-badge">
+                                                            <i
+                                                              className={`fa fa-genderless ${getRandomClass()} fs-1`}
+                                                            ></i>
+                                                          </div>
+                                                          <div className="fw-semibold text-gray-700 ps-3 fs-7">
+                                                            {
+                                                              item.historyDescription
+                                                            }
+                                                          </div>
                                                         </div>
-                                                        <div className="fw-semibold text-gray-700 ps-3 fs-7">
-                                                          {
-                                                            item.historyDescription
-                                                          }
-                                                        </div>
-                                                      </div>
-                                                    );
-                                                  })
-                                              ) : (
-                                                <div className="text-gray-500 text-center">
-                                                  No data found
-                                                </div>
-                                              )}
+                                                      );
+                                                    })
+                                                ) : (
+                                                  <div className="text-gray-500 text-center">
+                                                    No data found
+                                                  </div>
+                                                )}
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
-                                </div>
-                                <div className="tab-content">
-                                  {orgId === 2 && (
-                                    <div
-                                      className="tab-pane"
-                                      id={`otherActions_${index}`}
-                                      role="tabpanel"
-                                      aria-labelledby={`otherActionsTab_${index}`}
-                                    >
-                                      <>
-                                        <div className="m-0 text-center">
-                                          <a
-                                            href="#"
-                                            className="btn btn-small btn-flex btn-primary fw-bold fs-14 btn-new "
-                                            data-kt-menu-trigger="click"
-                                            data-kt-menu-placement="bottom-end"
-                                            onClick={handleThreatActions}
-                                          >
-                                            Other Action
-                                          </a>
-                                          <div
-                                            className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action"
-                                            data-kt-menu="true"
-                                          >
-                                            {showDropdown && (
-                                              <div className="px-5 py-5">
-                                                <div className="mb-5">
-                                                  <div className="d-flex justify-content-end mb-5">
-                                                    <div>
-                                                      <div
-                                                        className="close fs-20 text-muted pointer"
-                                                        aria-label="Close"
-                                                        onClick={
-                                                          handleShowDropdown
-                                                        }
-                                                      >
-                                                        <span
-                                                          aria-hidden="true"
-                                                          style={{
-                                                            color: "inherit",
-                                                            textShadow: "none",
-                                                          }}
+                                  <div className="tab-content">
+                                    {orgId === 2 && (
+                                      <div
+                                        className="tab-pane"
+                                        id={`otherActions_${index}`}
+                                        role="tabpanel"
+                                        aria-labelledby={`otherActionsTab_${index}`}
+                                      >
+                                        <>
+                                          <div className="m-0 text-center">
+                                            <a
+                                              href="#"
+                                              className="btn btn-small btn-flex btn-primary fw-bold fs-14 btn-new "
+                                              data-kt-menu-trigger="click"
+                                              data-kt-menu-placement="bottom-end"
+                                              onClick={handleThreatActions}
+                                            >
+                                              Other Action
+                                            </a>
+                                            <div
+                                              className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action"
+                                              data-kt-menu="true"
+                                            >
+                                              {showDropdown && (
+                                                <div className="px-5 py-5">
+                                                  <div className="mb-5">
+                                                    <div className="d-flex justify-content-end mb-5">
+                                                      <div>
+                                                        <div
+                                                          className="close fs-20 text-muted pointer"
+                                                          aria-label="Close"
+                                                          onClick={
+                                                            handleShowDropdown
+                                                          }
                                                         >
-                                                          &times;
-                                                        </span>
+                                                          <span
+                                                            aria-hidden="true"
+                                                            style={{
+                                                              color: "inherit",
+                                                              textShadow:
+                                                                "none",
+                                                            }}
+                                                          >
+                                                            &times;
+                                                          </span>
+                                                        </div>
                                                       </div>
                                                     </div>
+                                                    <select
+                                                      onChange={
+                                                        handleDropdownSelect
+                                                      }
+                                                      className="form-select form-select-solid"
+                                                      data-kt-select2="true"
+                                                      data-control="select2"
+                                                      data-placeholder="Select option"
+                                                      data-allow-clear="true"
+                                                    >
+                                                      <option
+                                                        value=""
+                                                        className="p-2"
+                                                      >
+                                                        Select
+                                                      </option>
+                                                      <option
+                                                        value="MitigationAction"
+                                                        className="mb-2"
+                                                      >
+                                                        Mitigation Action
+                                                      </option>
+                                                      <option
+                                                        value="AddToBlockList"
+                                                        className="mb-2"
+                                                      >
+                                                        Add To Blocklist
+                                                      </option>
+                                                      <option
+                                                        value="AddToExclusions"
+                                                        className="p-2"
+                                                      >
+                                                        Add To Exclusions
+                                                      </option>
+                                                      <option
+                                                        value="Unquarantine"
+                                                        className="p-2"
+                                                      >
+                                                        Unquarantine
+                                                      </option>
+                                                      <option
+                                                        value="AddANote"
+                                                        className="p-2"
+                                                      >
+                                                        Add a Note
+                                                      </option>
+                                                      <option
+                                                        value="ConnectToNetwork"
+                                                        className="p-2"
+                                                      >
+                                                        Connect To Network
+                                                      </option>
+                                                      <option
+                                                        value="DisconnectFromNetwork"
+                                                        className="p-2"
+                                                      >
+                                                        Disconnect From Network
+                                                      </option>
+                                                    </select>
                                                   </div>
-                                                  <select
-                                                    onChange={
-                                                      handleDropdownSelect
-                                                    }
-                                                    className="form-select form-select-solid"
-                                                    data-kt-select2="true"
-                                                    data-control="select2"
-                                                    data-placeholder="Select option"
-                                                    data-allow-clear="true"
-                                                  >
-                                                    <option
-                                                      value=""
-                                                      className="p-2"
-                                                    >
-                                                      Select
-                                                    </option>
-                                                    <option
-                                                      value="MitigationAction"
-                                                      className="mb-2"
-                                                    >
-                                                      Mitigation Action
-                                                    </option>
-                                                    <option
-                                                      value="AddToBlockList"
-                                                      className="mb-2"
-                                                    >
-                                                      Add To Blocklist
-                                                    </option>
-                                                    <option
-                                                      value="AddToExclusions"
-                                                      className="p-2"
-                                                    >
-                                                      Add To Exclusions
-                                                    </option>
-                                                    <option
-                                                      value="Unquarantine"
-                                                      className="p-2"
-                                                    >
-                                                      Unquarantine
-                                                    </option>
-                                                    <option
-                                                      value="AddANote"
-                                                      className="p-2"
-                                                    >
-                                                      Add a Note
-                                                    </option>
-                                                    <option
-                                                      value="ConnectToNetwork"
-                                                      className="p-2"
-                                                    >
-                                                      Connect To Network
-                                                    </option>
-                                                    <option
-                                                      value="DisconnectFromNetwork"
-                                                      className="p-2"
-                                                    >
-                                                      Disconnect From Network
-                                                    </option>
-                                                  </select>
                                                 </div>
-                                              </div>
+                                              )}
+                                            </div>
+                                            {showMoreActionsModal && (
+                                              <MitigationModal
+                                                show={showMoreActionsModal}
+                                                handleClose={
+                                                  handleCloseMoreActionsModal
+                                                }
+                                                handleAction={handleAction}
+                                                selectedValue={selectedValue}
+                                                selectedAlert={[
+                                                  selectedAlertId,
+                                                ]}
+                                              />
+                                            )}
+                                            {addToBlockListModal && (
+                                              <AddToBlockListModal
+                                                show={addToBlockListModal}
+                                                handleClose={
+                                                  handleCloseAddToBlockList
+                                                }
+                                                handleAction={
+                                                  handleActionAddToBlockList
+                                                }
+                                                selectedValue={selectedValue}
+                                                selectedAlert={[
+                                                  selectedAlertId,
+                                                ]}
+                                              />
+                                            )}
+                                            {addToExclusionsModal && (
+                                              <AddToExclusionsModal
+                                                show={addToExclusionsModal}
+                                                handleClose={
+                                                  handleCloseAddToExclusions
+                                                }
+                                                handleAction={
+                                                  handleActionAddToExclusions
+                                                }
+                                                selectedValue={selectedValue}
+                                                selectedAlert={[
+                                                  selectedAlertId,
+                                                ]}
+                                              />
+                                            )}
+                                            {addANoteModal && (
+                                              <AddANoteModal
+                                                show={addANoteModal}
+                                                handleClose={
+                                                  handleCloseAddANote
+                                                }
+                                                handleAction={
+                                                  handleActionAddANote
+                                                }
+                                                selectedValue={selectedValue}
+                                                selectedAlert={[
+                                                  selectedAlertId,
+                                                ]}
+                                              />
                                             )}
                                           </div>
-                                          {showMoreActionsModal && (
-                                            <MitigationModal
-                                              show={showMoreActionsModal}
-                                              handleClose={
-                                                handleCloseMoreActionsModal
-                                              }
-                                              handleAction={handleAction}
-                                              selectedValue={selectedValue}
-                                              selectedAlert={[selectedAlertId]}
-                                            />
-                                          )}
-                                          {addToBlockListModal && (
-                                            <AddToBlockListModal
-                                              show={addToBlockListModal}
-                                              handleClose={
-                                                handleCloseAddToBlockList
-                                              }
-                                              handleAction={
-                                                handleActionAddToBlockList
-                                              }
-                                              selectedValue={selectedValue}
-                                              selectedAlert={[selectedAlertId]}
-                                            />
-                                          )}
-                                          {addToExclusionsModal && (
-                                            <AddToExclusionsModal
-                                              show={addToExclusionsModal}
-                                              handleClose={
-                                                handleCloseAddToExclusions
-                                              }
-                                              handleAction={
-                                                handleActionAddToExclusions
-                                              }
-                                              selectedValue={selectedValue}
-                                              selectedAlert={[selectedAlertId]}
-                                            />
-                                          )}
-                                          {addANoteModal && (
-                                            <AddANoteModal
-                                              show={addANoteModal}
-                                              handleClose={handleCloseAddANote}
-                                              handleAction={
-                                                handleActionAddANote
-                                              }
-                                              selectedValue={selectedValue}
-                                              selectedAlert={[selectedAlertId]}
-                                            />
-                                          )}
-                                        </div>
-                                      </>
-                                    </div>
-                                  )}
+                                        </>
+                                      </div>
+                                    )}
 
-                                  <div
-                                    className="tab-pane"
-                                    id={`actions_${index}`}
-                                    role="tabpanel"
-                                    aria-labelledby={`actionsTab_${index}`}
-                                  ></div>
+                                    <div
+                                      className="tab-pane"
+                                      id={`actions_${index}`}
+                                      role="tabpanel"
+                                      aria-labelledby={`actionsTab_${index}`}
+                                    ></div>
+                                  </div>
                                 </div>
                               </div>
                             </div>

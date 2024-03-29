@@ -172,6 +172,10 @@ body {
   font-weight: bold !important;
 }
 
+.semi-bold{
+  font-weight: 600;
+}
+
 .normal{
   font-weight: normal;
 }
@@ -360,8 +364,8 @@ body {
     }
   }
   .form-check-input{
-    background-color: white !important;
-    border: 1px solid #aaa !important;
+    cursor: pointer;
+    border: 1px solid #538ed6 !important;
   }
   .notes-container{
     max-height: 200px; 
@@ -1043,7 +1047,7 @@ form{
     }
   }
   input[type='checkbox'] {
-    border: 1px solid #d6d4d4 !important;
+    border: 1px solid #538ed6 !important;
   }
 }
 
@@ -1074,10 +1078,38 @@ form{
 //Demo Alert CSS
 .demo-alert,
 .alert-table {
+  .alert-accordion{
+    .alert-details{
+      display: flex;
+      margin-bottom: 5px;
+    }
+    b{
+      width: 20%;
+      display: inline-block;
+      font-weight: 600;
+    }
+    span{
+      display: inline-block;
+      width: 40%;
+      text-wrap: wrap;
+    }
+  }
   .accordion-collapse {
     &.show {
-      background-color: #f3f3f3;
+      background-color: #d9e9f8;
       border: 1px solid #e2e1e1;
+      
+      .nav-tabs{
+        padding-bottom: 2px;
+        border-bottom: 1px solid #ccc;
+        .nav-link{
+          &.active{
+            border-radius: 0;
+            border-color: #008cba;
+            border-bottom: 1px solid #1b2f69;
+          }
+        }
+      }
     }
   }
 
@@ -1239,6 +1271,14 @@ form{
     }
   }
 }
+
+.scroll-y{
+    scrollbar-color: #68aef3 transparent;
+    scrollbar-width: 2px;
+    &::-webkit-scrollbar-thumb {
+      border-radius: 8px;
+    }
+  }
 
 .chat-section {
   padding: 0;
@@ -1988,7 +2028,7 @@ form{
     
     p{
       margin-bottom: 0;
-      font-weight: normal;
+      // font-weight: normal;
       font-size: 11px ;
       &.time{
         color: blue;

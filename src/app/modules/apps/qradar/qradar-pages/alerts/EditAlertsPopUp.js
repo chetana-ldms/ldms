@@ -8,7 +8,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import { useErrorBoundary } from "react-error-boundary";
 
-
 const EditAlertsPopUp = ({
   show,
   onClose,
@@ -46,15 +45,21 @@ const EditAlertsPopUp = ({
     analystVerdictId: analystVerdictId,
   });
   const handleError = useErrorBoundary();
-  const { severityName, status, observableTag, ownerusername, analystVerdict } = formData;
+  const {
+    severityName,
+    status,
+    observableTag,
+    ownerusername,
+    analystVerdict,
+  } = formData;
   const { name, score, sla, detectedtime, source } = row;
   const {
     severityNameDropDownData,
     statusDropDown,
     observableTagDropDown,
-    analystVerdictDropDown
+    analystVerdictDropDown,
   } = dropdownData;
-  console.log(row, "row111")
+  console.log(row, "row111");
   const handleChange = (e, field) => {
     e.preventDefault();
     setFormData({
@@ -108,7 +113,6 @@ const EditAlertsPopUp = ({
         }
       });
     }
-
   };
   const onClickUpdate = async () => {
     try {
@@ -159,11 +163,11 @@ const EditAlertsPopUp = ({
   return (
     <div>
       <Modal show={show} onHide={onClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Alert</Modal.Title>
+        <Modal.Header closeButton className="bg-heading">
+          <Modal.Title className="white pad-10">Edit Alert</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form className="header-filter">
             <Form.Group className="row mb-2">
               <Form.Label className="col-md-3">Severity :</Form.Label>
               <div className="col-md-9">
@@ -282,7 +286,10 @@ const EditAlertsPopUp = ({
             </Form.Group>
             <Form.Group className="row">
               <Form.Label className="col-md-3">Score :</Form.Label>
-              <div className="col-md-9"> {score === null || score === "" ? "0" : score}</div>
+              <div className="col-md-9">
+                {" "}
+                {score === null || score === "" ? "0" : score}
+              </div>
             </Form.Group>
             <Form.Group className="row">
               <Form.Label className="col-md-3">SLA : </Form.Label>
