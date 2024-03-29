@@ -101,7 +101,7 @@ const Playbooks = () => {
                       to={`/qradar/updateplaybooks/${item.playBookID}`}
                       title="Edit"
                     >
-                      <button className="btn btn-primary btn-circle">
+                      <button className="btn btn-new btn-circle">
                         <i className="fa fa-pencil white" />
                       </button>
                     </Link>

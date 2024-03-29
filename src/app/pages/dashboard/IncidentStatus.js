@@ -93,7 +93,7 @@ function IncidentStatus(props) {
   return (
     <div className="card-body">
       <div className="row">
-        <label className="form-label fw-bold fs-12 col-lg-5 lh-40 fs-14">
+        <label className="form-label fw-bold fs-12 col-lg-5 lh-40">
           <span>Incident by Status & Priority:</span>
         </label>
         <div className="col-lg-4 header-filter">
@@ -179,17 +179,16 @@ function IncidentStatus(props) {
             </>
           ) : (
             <>
-            <div className="col-lg-2 fw-bold">Count:</div>
+              <div className="col-lg-2 fw-bold">Count:</div>
               <div className="col-lg-7">
                 <span className="bar">{incidentCount ?? 0}</span>
               </div>
               <div className="col-lg-2">
                 <span>Total</span> <span>{incidentCount ?? 0}</span>
               </div>
-              </>
+            </>
           )}
         </div>
-
       </div>
     </div>
   );

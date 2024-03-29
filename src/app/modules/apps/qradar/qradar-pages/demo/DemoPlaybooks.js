@@ -155,17 +155,18 @@ const DemoPlaybooks = () => {
     <>
       <ToastContainer />
       <div className="card-header border-0"></div>
-      <div className="card mb-5 mb-xl-8 demo-playbook">
+      <h2>PlayBook</h2>
+      <div className="card mb-5 mt-5 demo-playbook pad-0">
         {/* <DemoSMS /> */}
-        <h2>PlayBook</h2>
+
         <br />
         <div className="row">
           <div className="col-lg-3">
-            <div className="card-body highlight">
+            <div className="card-body bg-heading pad-10">
               <div className="col">
                 <div
                   onClick={executePlaybooks}
-                  className="btn btn-danger btn-sm mb-1 dndnode"
+                  className="btn btn-danger btn-sm mb-1 mt-5 dndnode"
                 >
                   {/* <i className='fas fa-arrow-right'></i> */}
                   <span className="fs-14"> Save</span>

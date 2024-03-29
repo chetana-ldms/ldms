@@ -2,9 +2,63 @@
 // Main
 //
 
+@font-face {
+    font-family: SegoeUI;
+    src:
+        local("Segoe UI Light"),
+        url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.woff2) format("woff2"),
+        url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.woff) format("woff"),
+        url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.ttf) format("truetype");
+    font-weight: 100;
+}
+
+@font-face {
+    font-family: SegoeUI;
+    src:
+        local("Segoe UI Semilight"),
+        url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semilight/latest.woff2) format("woff2"),
+        url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semilight/latest.woff) format("woff"),
+        url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semilight/latest.ttf) format("truetype");
+    font-weight: 200;
+}
+
+@font-face {
+    font-family: SegoeUI;
+    src:
+        local("Segoe UI"),
+        url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.woff2) format("woff2"),
+        url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.woff) format("woff"),
+        url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.ttf) format("truetype");
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: SegoeUI;
+    src:
+        local("Segoe UI Bold"),
+        url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.woff2) format("woff2"),
+        url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.woff) format("woff"),
+        url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.ttf) format("truetype");
+    font-weight: 600;
+}
+
+@font-face {
+    font-family: SegoeUI;
+    src:
+        local("Segoe UI Semibold"),
+        url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.woff2) format("woff2"),
+        url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.woff) format("woff"),
+        url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.ttf) format("truetype");
+    font-weight: 700;
+}
+
 body {
-  font-family: calibri;
-  font-size: 14px;
+  // font-family: calibri;
+  // font-family: "Lexend", sans-serif;
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
+  font-size: 12px !important;
+  background-color: #dee8fc !important;
 }
 
 .hidden {
@@ -199,6 +253,15 @@ body {
   padding: 10px;
 }
 
+.overflow-hidden{
+  overflow: hidden;
+}
+
+.app-footer{
+  background-color: #dee8fc !important;
+  border-top: 1px solid #ccc !important;
+}
+
 //Table pagination
 .pagination-bar{
   .page-item{
@@ -278,20 +341,27 @@ body {
 //Table CSS
 
 .alert-table {
-  min-height: 200px;
+  // min-height: 200px;
+  background-color: #fff;
   th {
-    background: #0EB0BF !important;
+    // background: #0EB0BF !important;
     color: #fff !important;
-    border-right: 1px solid #12bccb !important;
+    // border-right: 1px solid #12bccb !important;
+    background-color: #1b2f69;
     font-weight: normal;
     padding: 10px !important;
   }
   tr{
     &.table-row{
+      border-bottom: 1px solid #ddd !important;
       &:nth-of-type(4n+1),&:nth-of-type(4n+2) {
         background-color: #f4f4f4 !important;
       }
     }
+  }
+  .form-check-input{
+    background-color: white !important;
+    border: 1px solid #aaa !important;
   }
   .notes-container{
     max-height: 200px; 
@@ -356,6 +426,10 @@ body {
   border-radius: 0;
 }
 
+.bg-white{
+  background-color: white;
+}
+
 .bg-gray{
   background-color: #f2f1f1;
 }
@@ -369,6 +443,12 @@ body {
   background: #0EB0BF !important;
   padding: 0 10px !important;
   border-radius: 0 !important;
+}
+.bg-heading{
+  background: #1b2f69 !important;
+  padding: 0 10px !important;
+  border-top-left-radius: 5px !important;
+  border-top-right-radius: 5px !important;
 }
 
 .app-header {
@@ -401,6 +481,25 @@ body {
 //   margin: 0;
 //   max-width: 100%;
 // }
+
+//Sentinel
+.account-policy{
+  .card{
+    min-height: auto;
+    border-radius: 5px !important;
+    .form-switch{
+      margin-bottom: 10px;
+    }
+    label{
+      color: #333;
+    }
+    input[type="checkbox"]{
+      position: relative;
+      top: 2px;
+      margin-right: 4px;
+    }
+  }
+}
 
 .application-policy{
   .form-check-input{
@@ -546,7 +645,7 @@ form{
 
 //Dashboard CSS
 .header-filter,.form-section {
-  .form-select {
+  .form-select,.form-control {
     // padding: 4px 10px;
     font-size: 13px;
     border: 1px solid #ccc !important;
@@ -561,6 +660,10 @@ form{
 }
 
 .dashboard-wrapper {
+  .card{
+    border-radius: 5px !important;
+    // background-color: #ddfcf9;
+  }
   .card-body {
     padding: 20px;
   }
@@ -591,13 +694,23 @@ form{
   }
 }
 
+// .bg-section{
+// background-color: #ddfcf9;
+// }
+
+.card{
+  background-color: #fff;
+}
+
 //LDC Application
 .ldc-application{
   .nav-tabs{
     .nav-item{
       // width: 15%;
       .nav-link{
+
         &.active{
+          border-radius: 0;
           font-weight: bold;
           border-bottom: 2px solid #2f2f74;
         }
@@ -609,15 +722,16 @@ form{
       }
     }
   }
-  .card{
-    min-height: 200px;
-  }
+  // .card{
+  //   min-height: 200px;
+  // }
   .card-body{
     padding: 10px !important;
   }
   table{
     tr{
       &.table-row{
+        border-bottom: 1px solid #ddd;
         &:nth-of-type(even) {
           background-color: #f4f4f4 !important;
         }
@@ -637,36 +751,55 @@ form{
 }
 
 #kt_app_content {
-  background-color: white !important;
+  background-color: #dee8fc !important;
+  padding-top: 20px;
 }
 
-.incident-box,.ldc-application {
+.incident-box,.ldc-application,.incident-page {
+
+  .scroll-y{
+    scrollbar-color: #68aef3 transparent;
+    scrollbar-width: 2px;
+    &::-webkit-scrollbar-thumb {
+      border-radius: 8px;
+    }
+  }
+
   .card {
-    padding-left: 2px;
-    padding-right: 2px;
-    box-shadow: 0px 0px 2px 2px #e5e5e5;
+    // padding-left: 2px;
+    // padding-right: 2px;
+    // box-shadow: 0px 0px 2px 2px #e5e5e5;
+    box-shadow: 0px 1px 2px 1px #afc7c5;
+    background-color: #fff;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .card-title{
+    padding-left: 5px;
+    padding-right: 5px;
   }
  
   .bg-secondary {
-    background-color: #FFE2E5 !important;
+    background-color: #f4d9dc !important;
     // color: white !important;
     box-shadow: none;
     height: 157px;
   }
   .bg-light-warning {
-    background-color: #F3E8FF !important;
+    background-color: #dbc4f5 !important;
     box-shadow: none;
     height: 157px;
   }
 
   .bg-light-success {
-    background-color: #DCFCE7 !important;
+    background-color: #b6eac8 !important;
     box-shadow: none;
     height: 157px;
   }
 
   .bg-light-danger {
-    background-color: #FFF4DE !important;
+    background-color: #fce9c4 !important;
     box-shadow: none;
     height: 157px;
   }
@@ -861,7 +994,7 @@ form{
 .alert-page {
   table {
     td {
-      font-size: 13px !important;
+      font-size: 12px !important;
     }
   }
   .alert-name {
@@ -871,6 +1004,11 @@ form{
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     padding-bottom: 0 !important;
+    width: 220px;
+    text-wrap: initial;
+    position: relative;
+    top: -5px;
+    border: 0;
   }
   .card-body {
     padding: 20px !important;
@@ -921,14 +1059,15 @@ form{
 .btn-circle{
   border-radius: 50%;
   padding: 0 !important;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   a{
     display: block;
-    line-height: 40px;
+    line-height: 30px;
   }
   i{
     padding: 0;
+    font-size: 12px !important;
   }
 }
 
@@ -976,6 +1115,12 @@ form{
   }
 }
 
+.demo-playbook{
+  .btn{
+    padding: 10px;
+  }
+}
+
 .ds-table {
   th,
   td {
@@ -997,17 +1142,22 @@ form{
     font-size: 14px;
     padding: 6px 14px;
     border-radius: 4px;
+    .nav-tabs{
+      border: 0;
+    }
   }
   select {
     font-size: 13px;
     font-weight: normal !important;
     height: 35px;
+    padding: 0 25px 0 10px;
+    min-width: 100px;
   }
   .nav-line-tabs {
     .nav-item {
       .nav-link {
         margin: 0 5px;
-        font-size: 13px;
+        font-size: 12px;
         color: black;
         font-weight: normal;
         &.active {
@@ -1018,10 +1168,11 @@ form{
   }
 
   .incident-section {
-    box-shadow: rgba(0, 0, 0, 0.14) 1px 4px 8px;
-    border: 1px solid #eee;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.14) 1px 1px 2px 0px;
+    border: 1px solid #e6e3e3;
     border-radius: 5px;
-    // margin-left: 10px;
+    cursor: pointer;
     padding: 10px;
     margin-bottom: 6px;
     &:hover,
@@ -1029,7 +1180,17 @@ form{
       background-color: #e1e9f5;
     }
     &.selected {
-      background-color: #e1e9f5;
+      background-color: #0EB0BF;
+      color: white;
+      .incident-name,.badge{
+        color: white;
+      }
+      .badge-light-primary{
+        color: #009ef7;
+      }
+      .badge-light-danger{
+        color: red;
+      }
     }
     .incident-name{
       display: block;
@@ -1041,12 +1202,12 @@ form{
     }
   }
 
-  .incident-tabs{
-    .incident-details{
-      width: 95%;
-      // select{
-      //     padding: 0 10px;
-      // }
+  .incident-details{
+    .card{
+      padding: 0;
+    }
+    .scroll-y{
+      overflow-x: hidden;
     }
   }
 
@@ -1081,8 +1242,12 @@ form{
 
 .chat-section {
   padding: 0;
-  border-color: #2b2b4c80 !important;
-  border-bottom: 1px solid #ddd;
+  // box-shadow: 0px 0px 2px 2px #e5e5e5;
+  box-shadow: 0px 1px 2px 1px #afc7c5;
+  border-radius: 5px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  background-color: #fff;
   .chat-text {
     display: none !important;
     &:nth-last-child(2) {
@@ -1096,9 +1261,10 @@ form{
   }
   .scroll-y {
     margin-left: -8px;
+    overflow-x: hidden;
   }
   .chat-header {
-    background: #2b2b4c;
+    background: #6180F4;
     color: #fff;
     padding: 3px 10px;
     overflow: hidden;
@@ -1114,7 +1280,7 @@ form{
     .icon-right {
       i {
         padding: 10px;
-        background-color: #474767;
+        // background-color: #474767;
         margin-left: 5px;
       }
     }
@@ -1176,6 +1342,15 @@ form{
     }
     .react-chat-viewerBox {
       height: 380px !important;
+      border: 0 !important;
+      background-color: transparent !important;
+    }
+    .react-chat-messagesList{
+      border: 0;
+    }
+    .react-chat-inputBox{
+      border: 1px solid #ccc;
+      border-radius: 5px;
     }
     .react-chat-messageBox {
       align-items: flex-start;
@@ -1206,14 +1381,14 @@ form{
       }
       .react-chat-additional {
         font-weight: bold;
-        font-size: 14px;
+        font-size: 13px;
         &:last-child {
           position: absolute;
           right: 0;
           width: auto;
           top: 0;
           font-weight: normal;
-          font-size: 13px;
+          font-size: 12px;
         }
         &:first-child {
           &::first-line {
@@ -1298,6 +1473,9 @@ form{
   .canvasjs-chart-toolbar,
   .canvasjs-chart-credit {
     display: none;
+  }
+  .canvasjs-chart-canvas{
+    width: 100% !important;
   }
 }
 
@@ -1465,7 +1643,7 @@ form{
     .chat-header {
       position: absolute;
       top: 0;
-      background-color: #1e1e2d;
+      background-color: #6180F4;
       padding: 9px 9px 10px 20px;
       right: 0;
       left: 25%;
@@ -1811,19 +1989,21 @@ form{
     p{
       margin-bottom: 0;
       font-weight: normal;
-      font-size: 12px ;
+      font-size: 11px ;
       &.time{
         color: blue;
       }
     }
     &::before{
-      left: 71px;
-      background-color:#6c757d;
+      left: 132px;
+      background-color:#c7cdd2;
+      width: 1px
     }
     .timeline-label{
-      width: 70px;
+      width: 130px;
       &::before{
-        left: 71px;
+        left: 132px;
+        width: 1px
       }
     }
   }

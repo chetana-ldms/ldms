@@ -223,76 +223,80 @@ const DashboardWrapper = () => {
         <UsersListLoading />
       ) : (
         <div>
-          <div className="header-filter row">
-            <div className="col-lg-3">
+          <div className="header-filter">
+            <div className="card pad-10">
               <div className="row">
-                <label className="form-label fw-normal col-lg-7 fs-12 lh-40 fs-14">
-                  <span>Show info for last days:</span>
-                </label>
-                <div className="col-lg-5">
-                  <select
-                    className="form-select form-select-solid bg-blue-light"
-                    data-kt-select2="true"
-                    data-placeholder="Select option"
-                    data-allow-clear="true"
-                    value={selectedFilter}
-                    onChange={(e) => setSelectedFilter(e.target.value)}
-                  >
-                    <option value="">Days</option>
-                    <option value="30">30</option>
-                    <option value="60">60</option>
-                    <option value="90">90</option>
-                    <option value="120">120</option>
-                  </select>
+                <div className="col-lg-4">
+                  <div className="row">
+                    <label className="form-label fw-normal col-lg-7 fs-12 lh-40 fs-14">
+                      <span>Show info for last days:</span>
+                    </label>
+                    <div className="col-lg-5">
+                      <select
+                        className="form-select form-select-solid bg-blue-light"
+                        data-kt-select2="true"
+                        data-placeholder="Select option"
+                        data-allow-clear="true"
+                        value={selectedFilter}
+                        onChange={(e) => setSelectedFilter(e.target.value)}
+                      >
+                        <option value="">Days</option>
+                        <option value="30">30</option>
+                        <option value="60">60</option>
+                        <option value="90">90</option>
+                        <option value="120">120</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="col-lg-4">
-              <div className="row">
-                <label className="form-label fw-normal fs-12 col-lg-4 lh-40 fs-14">
-                  <span>Organization:</span>
-                </label>
-                <div className="col-lg-7">
-                  <select
-                    className="form-select form-select-solid bg-blue-light"
-                    data-kt-select2="true"
-                    data-placeholder="Select option"
-                    data-allow-clear="true"
-                    value={selectedOrganization}
-                    onChange={(e) =>
-                      setSelectedOrganization(Number(e.target.value))
-                    }
-                  >
-                    {roleID === 1 &&
-                      organizations?.length > 0 &&
-                      organizations.map((item, index) => (
-                        <option key={index} value={item.orgID}>
-                          {item.orgName}
-                        </option>
-                      ))}
+                <div className="col-lg-4">
+                  <div className="row">
+                    <label className="form-label fw-normal fs-12 col-lg-4 lh-40 fs-14">
+                      <span>Organization:</span>
+                    </label>
+                    <div className="col-lg-7">
+                      <select
+                        className="form-select form-select-solid bg-blue-light"
+                        data-kt-select2="true"
+                        data-placeholder="Select option"
+                        data-allow-clear="true"
+                        value={selectedOrganization}
+                        onChange={(e) =>
+                          setSelectedOrganization(Number(e.target.value))
+                        }
+                      >
+                        {roleID === 1 &&
+                          organizations?.length > 0 &&
+                          organizations.map((item, index) => (
+                            <option key={index} value={item.orgID}>
+                              {item.orgName}
+                            </option>
+                          ))}
 
-                    {roleID !== 1 &&
-                      organizations?.length > 0 &&
-                      organizations
-                        .filter((item) => item.orgID === orgId)
-                        .map((item, index) => (
-                          <option key={index} value={item.orgID}>
-                            {item.orgName}
-                          </option>
-                        ))}
-                  </select>
+                        {roleID !== 1 &&
+                          organizations?.length > 0 &&
+                          organizations
+                            .filter((item) => item.orgID === orgId)
+                            .map((item, index) => (
+                              <option key={index} value={item.orgID}>
+                                {item.orgName}
+                              </option>
+                            ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-lg-4 fs-11 lh-40 fc-gray text-right ds-reload">
+                  Dashboard is automatically refreshing every 5 minutes{" "}
+                  <a href="" onClick={handleRefreshData}>
+                    <i
+                      className={`fa fa-refresh link ${
+                        isRefreshing ? "rotate" : ""
+                      }`}
+                    />
+                  </a>
                 </div>
               </div>
-            </div>
-            <div className="col-lg-5 fs-11 lh-40 fc-gray text-right ds-reload">
-              Dashboard is automatically refreshing every 5 minutes{" "}
-              <a href="" onClick={handleRefreshData}>
-                <i
-                  className={`fa fa-refresh link ${
-                    isRefreshing ? "rotate" : ""
-                  }`}
-                />
-              </a>
             </div>
           </div>
 
@@ -303,7 +307,7 @@ const DashboardWrapper = () => {
                 <div className="col-xl-3">
                   <div className="card bg-default py-5 text-center bg-secondary">
                     <h6 className="text-gray-800 text-hover-primary mb-1 fs-12 uppercase">
-                      Unhandeled Incidents
+                      Unhandled Incidents
                     </h6>
                     <span className="fw-bold fs-40 mt-5 mb-5">
                       {unattendedIcount.unattendedIncidentCount
@@ -317,9 +321,9 @@ const DashboardWrapper = () => {
                 </div>
 
                 <div className="col-xl-3">
-                  <div className="card bg-default py-5 text-center bg-light-warning">
+                  <div className="card bg-default pad-20 text-center bg-light-warning">
                     <h6 className="text-gray-800 text-hover-primary mb-1 fs-12 uppercase">
-                      Unhandeled Alerts
+                      Unhandled Alerts
                     </h6>
                     <span className="fw-bold fs-40 mt-5 mb-5">
                       {unattendedAcount.unattendedAlertsCount
@@ -400,7 +404,7 @@ const DashboardWrapper = () => {
                         );
                       })
                     ) : (
-                      <p>
+                      <p className="mb-5 mt-5">
                         No data found. <br />
                         <br />
                         <br />

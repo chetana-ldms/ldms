@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 
 const MasterData = () => {
   return (
-    <div className="card">
+    <div className="card pad-10">
       <div className="card-header no-pad">
         <h3 className="card-title align-items-start flex-column">
           <span className="card-label fw-bold fs-3 mb-1">Master Data</span>
@@ -41,7 +41,7 @@ const MasterData = () => {
               <td>28/12/2022 9:30PM</td>
               <td>28/12/2022 9:35PM</td>
               <td>
-                <button className="btn btn-primary btn-circle">
+                <button className="btn btn-new btn-circle">
                   <Link
                     className="text-white"
                     to={`/qradar/master-data/update`}

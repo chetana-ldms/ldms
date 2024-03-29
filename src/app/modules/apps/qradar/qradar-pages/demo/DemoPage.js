@@ -288,7 +288,7 @@ const DemoPage = () => {
           onClick={() => {
             localStorage.setItem("alertData", JSON.stringify([]));
           }}
-          className="btn btn-danger"
+          className="btn btn-danger btn-small"
         >
           Reset
         </a>

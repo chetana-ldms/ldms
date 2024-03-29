@@ -128,9 +128,9 @@ const Reports = () => {
       <div className="col-lg-12">
         <div className="mb-5 mb-xl-12">
           <h2>Reports</h2>
-          <div className="demo-block">
+          <div className="demo-block card mt-5">
             <Tabs className="report-tabs">
-              <div className="card">
+              <div className="ps-5 pe-10">
                 <div className="card-body1">
                   <TabPanel className="main-tab">
                     <AlertsSummary />
@@ -171,7 +171,7 @@ const Reports = () => {
                   </TabPanel>
                 </div>
               </div>
-              <TabList className="tab-list">
+              <TabList className="tab-list mt-5">
                 <Tab>Alert summary</Tab>
                 <Tab>Alerts rule</Tab>
                 <Tab>SLA measurement</Tab>

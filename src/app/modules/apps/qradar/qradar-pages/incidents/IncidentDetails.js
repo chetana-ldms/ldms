@@ -13,11 +13,19 @@ import {
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import { useErrorBoundary } from "react-error-boundary";
 
-
 const IncidentDetails = ({ incident, onRefreshIncidents }) => {
-  console.log("incident11111", incident)
- const handleError = useErrorBoundary();
-  const { subject, createdDate, incidentID, modifiedDate, eventID, destinationUser, sourceIP, vendor } = incident;
+  console.log("incident11111", incident);
+  const handleError = useErrorBoundary();
+  const {
+    subject,
+    createdDate,
+    incidentID,
+    modifiedDate,
+    eventID,
+    destinationUser,
+    sourceIP,
+    vendor,
+  } = incident;
   const id = incidentID;
   console.log(id, "id");
   const [activeTab, setActiveTab] = useState("general");
@@ -186,9 +194,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
       .catch((error) => {
         handleError(error);
       });
-  }
+  };
   useEffect(() => {
-    reloadHistory()
+    reloadHistory();
   }, [id]);
   useEffect(() => {
     const fetchData = async () => {
@@ -223,24 +231,23 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
   };
 
   return (
-    <div className="col-md-4 border-1 border-gray-600">
+    <div className="col-md-4 border-1 border-gray-600 incident-details">
       <div className="card">
-        <div className="d-flex justify-content-between bd-highlight mb-3">
-          <div className="p-2 bd-highlight">
-            <h6 className="card-title align-items-start flex-column pt-2">
-              <span className="card-label fw-bold fs-3 mb-1">
-                Incidents Details
-              </span>
-            </h6>
-          </div>
+        <div className="bg-heading">
+          <h4 className="no-margin no-pad">
+            <span className="white fw-bold block pt-3 pb-3">
+              Incidents Details
+            </span>
+          </h4>
         </div>
-        <div className="d-flex justify-content-between bd-highlight mb-3 incident-tabs h-500px scroll-y">
-          <div className="p-2 bd-highlight incident-details">
-            <ul className="nav nav-tabs nav-line-tabs mb-5 fs-8">
+        <div className="mb-3 incident-tabs">
+          <div className="p-2 bd-highlight">
+            <ul className="nav nav-tabs nav-line-tabs mb-5 fs-8 no-pad">
               <li className="nav-item">
                 <a
-                  className={`nav-link ${activeTab === "general" ? "active" : ""
-                    }`}
+                  className={`nav-link ${
+                    activeTab === "general" ? "active" : ""
+                  }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_1"
                   onClick={() => setActiveTab("general")}
@@ -250,8 +257,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${activeTab === "alerts" ? "active" : ""
-                    }`}
+                  className={`nav-link ${
+                    activeTab === "alerts" ? "active" : ""
+                  }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_2"
                   onClick={() => setActiveTab("alerts")}
@@ -261,8 +269,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${activeTab === "playbooks" ? "active" : ""
-                    }`}
+                  className={`nav-link ${
+                    activeTab === "playbooks" ? "active" : ""
+                  }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_3"
                   onClick={() => setActiveTab("playbooks")}
@@ -272,8 +281,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${activeTab === "observables" ? "active" : ""
-                    }`}
+                  className={`nav-link ${
+                    activeTab === "observables" ? "active" : ""
+                  }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_4"
                   onClick={() => setActiveTab("observables")}
@@ -283,8 +293,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </li>
               <li className="nav-item">
                 <a
-                  className={`nav-link ${activeTab === "timeline" ? "active" : ""
-                    }`}
+                  className={`nav-link ${
+                    activeTab === "timeline" ? "active" : ""
+                  }`}
                   data-bs-toggle="tab"
                   href="#kt_tab_pane_5"
                   onClick={() => setActiveTab("timeline")}
@@ -294,7 +305,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </li>
             </ul>
 
-            <div className="tab-content" id="myTabContent">
+            <div className="tab-content h-500px scroll-y" id="myTabContent">
               <div
                 className="tab-pane fade show active me-n5 pe-5 h-500px"
                 id="kt_tab_pane_1"
@@ -412,29 +423,29 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                 </div>
                 {/* Text */}
                 <div className="bd-highlight mb-3 bdr-top pt-5 mt-5">
-                  <div className="bd-highlight">
-                    <div className="d-flex align-items-center gap-2">
+                  <div className="bd-highlight mb-3">
+                    <div className="d-flex align-items-top gap-2">
                       <span className="fw-bold">Incident Name : </span>{" "}
                       {subject}
                     </div>
                   </div>
-                  <div className="bd-highlight">
+                  <div className="bd-highlight mb-3">
                     <div className="d-flex align-items-center gap-2">
                       <span className="fw-bold">Event ID : </span> {eventID}
                     </div>
                   </div>
-                  <div className="bd-highlight">
+                  <div className="bd-highlight mb-3">
                     <div className="d-flex align-items-center gap-2">
                       <span className="fw-bold"> Destination User : </span>{" "}
                       {destinationUser}
                     </div>
                   </div>
-                  <div className="bd-highlight">
+                  <div className="bd-highlight mb-3">
                     <div className="d-flex align-items-center gap-2">
                       <span className="fw-bold">Source IP : </span> {sourceIP}
                     </div>
                   </div>
-                  <div className="bd-highlight">
+                  <div className="bd-highlight mb-3">
                     <div className="d-flex align-items-center gap-2">
                       <span className="fw-bold">Vendor : </span> {vendor}
                     </div>
@@ -445,9 +456,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                     <div className="fs-13">Incident ID</div>
                   </div>
                   <div className="p-2 bd-highlight">
-                    <div className="badge text-black fs-13">
-                      {incidentID}{" "}
-                    </div>
+                    <div className="badge text-black fs-13">{incidentID} </div>
                   </div>
                 </div>
 
@@ -501,11 +510,8 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="badge text-black fw-bold">
-                      {createdDate &&
-                        getCurrentTimeZone(createdDate)
-                      }
+                      {createdDate && getCurrentTimeZone(createdDate)}
                     </div>
-
                   </div>
                 </div>
 
@@ -515,9 +521,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="badge text-black fw-bold">
-                      {modifiedDate &&
-                        getCurrentTimeZone(modifiedDate)
-                      }
+                      {modifiedDate && getCurrentTimeZone(modifiedDate)}
                     </div>
                   </div>
                 </div>
@@ -525,7 +529,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
 
               <div className="tab-pane fade" id="kt_tab_pane_2" role="tabpanel">
                 <table
-                  className="scroll-y me-n5 pe-5 table table-hover table-row-dashed fs-6 gy-5 my-0 dataTable no-footer"
+                  className="me-n5 pe-5 table table-hover table-row-dashed fs-6 gy-5 my-0 dataTable no-footer"
                   id="kt_inbox_listing"
                 >
                   <tbody>
@@ -533,14 +537,12 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                       <td className="p-2 pb-8">
                         <div className="d-flex justify-content-between bd-highlight">
                           <div
-                            className="p-1 bd-highlight fw-bold fs-12"
+                            className="p-1 fs-12"
                             style={{ width: "190px", textAlign: "left" }}
                           >
                             <div className="text-dark mb-1">
                               <a href="#" className="text-dark">
-                                <span className="fw-bold">
-                                  {alertsList?.name}
-                                </span>
+                                <span className="">{alertsList?.name}</span>
                               </a>
                             </div>
                           </div>
@@ -570,15 +572,13 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                           </div>
                         </div>
                         <div className="d-flex justify-content-between align-text-left bd-highlight">
-                          <div className="p-1 bd-highlight fw-bold fs-12">
+                          <div className="p-1 bd-highlight fs-12">
                             Detected date
                           </div>
-                          <div className="p-1 bd-highlight fs-12">
+                          <div className="p-1 fs-12">
                             {alertsList?.detectedtime && (
-                              <div className="badge text-black fw-bold">
-                                {
-                                  getCurrentTimeZone(alertsList.detectedtime)
-                                }
+                              <div className="gray">
+                                {getCurrentTimeZone(alertsList.detectedtime)}
                               </div>
                             )}
                           </div>
@@ -621,10 +621,12 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   <div className="timeline-label">
                     {incidentHistory && incidentHistory.length > 0 ? (
                       incidentHistory.map((item) => {
-                        const formattedDateTime = getCurrentTimeZone(item.historyDate);
+                        const formattedDateTime = getCurrentTimeZone(
+                          item.historyDate
+                        );
 
                         return (
-                          <div className="timeline-item" key={item.id}>
+                          <div className="timeline-item mb-5" key={item.id}>
                             <div className="timeline-label fw-bold text-gray-800 fs-6">
                               <p>{formattedDateTime}</p>
                               {/* <p className="time">{formattedDateTime}</p> */}
@@ -632,7 +634,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                             </div>
 
                             <div className="timeline-badge">
-                              <i className={`fa fa-genderless ${getRandomClass()} fs-1`}></i>
+                              <i
+                                className={`fa fa-genderless ${getRandomClass()} fs-1`}
+                              ></i>
                             </div>
                             <div className="fw-semibold text-gray-700 ps-3 fs-7">
                               {item.historyDescription}
@@ -643,8 +647,6 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                     ) : (
                       <div className="text-gray-500">No data found</div>
                     )}
-
-
                   </div>
                 </div>
               </div>

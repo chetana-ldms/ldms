@@ -97,16 +97,14 @@ const ChatBody = ({
       encodeURIComponent(formattedChatHistory);
     element.download = filename;
     element.click();
-    
   };
-
 
   return (
     <>
       <header className="chat__mainHeader">
         <span>{loggedInUserName}</span>
         <span className="pointer" onClick={exportChatHistory}>
-          <i className="fa fa-download" title="download chat history" />
+          <i className="fa fa-download white" title="download chat history" />
         </span>
       </header>
       <div className="message__container">
@@ -138,10 +136,11 @@ const ChatBody = ({
                   </p>
                 )}
                 <div
-                  className={`date-time ${message.fromUserName === loggedInUserName
-                    ? "float-right"
-                    : "float-left"
-                    }`}
+                  className={`date-time ${
+                    message.fromUserName === loggedInUserName
+                      ? "float-right"
+                      : "float-left"
+                  }`}
                 >
                   {getCurrentTimeZone(message.messsageDate)}
                 </div>
@@ -158,7 +157,7 @@ const ChatBody = ({
                       <p>{message.chatMessage}</p>
                     </>
                   )}
-                
+
                   {message.messageType === "Attachment" && (
                     <div>
                       <a
@@ -200,10 +199,11 @@ const ChatBody = ({
                   )}
                   {message.createdDate && (
                     <div
-                      className={`date-time ${message.name === loggedInUserName
-                        ? "float-right"
-                        : "float-left"
-                        }`}
+                      className={`date-time ${
+                        message.name === loggedInUserName
+                          ? "float-right"
+                          : "float-left"
+                      }`}
                     >
                       {getCurrentTimeZone(message.createdDate)}
                     </div>

@@ -99,21 +99,19 @@ const IncidentsPageDemo = () => {
 
   return (
     <>
-      <div className="card mb-5 mb-xl-8 bg-red incident-page">
+      <div className="mb-5 mb-xl-8 bg-red incident-page">
         <div className="card-body1 py-3">
           <div className="row">
             <div className="col-md-4 border-1 border-gray-300 border-end">
               <div className="card">
-                <div className="d-flex justify-content-between bd-highlight mb-3">
-                  <div className="p-1 bd-highlight">
-                    <h6 className="card-title align-items-start flex-column pt-2">
-                      <span className="card-label fw-bold fs-5 mb-1">
-                        Incidents <span className="text-black-50">(2)</span>
-                      </span>
-                    </h6>
-                  </div>
-                  <div className="p-1 bd-highlight"></div>
+                <div className="bg-heading">
+                  <h4 className="no-margin no-pad">
+                    <span className="white fw-bold block pt-3 pb-3">
+                      Incidents <span className="white">(135)</span>
+                    </span>
+                  </h4>
                 </div>
+                <div className="p-1 bd-highlight"></div>
 
                 <div className="card-title">
                   {/* begin::Search */}
@@ -294,7 +292,7 @@ const IncidentsPageDemo = () => {
                     <p>
                       {selectedAlert ? (
                         <>
-                          <div className="chat-header">
+                          <div className="chat-header bg-heading">
                             <ChatHeader selectedAlert={selectedAlert} />
                           </div>
                           <div className="chat-box scroll-y me-n5">
@@ -316,7 +314,7 @@ const IncidentsPageDemo = () => {
                           </div>
                         </>
                       ) : (
-                        <div className="chat-header">
+                        <div className="chat-header bg-heading">
                           <ChatHeader selectedAlert={selectedAlert} />
                         </div>
                       )}

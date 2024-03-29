@@ -1,27 +1,31 @@
-import React, {useState, useEffect} from 'react'
-import CanvasJSReact from './assets/canvasjs.react'
-import { fetchGetAlertsTrendData } from '../../api/dashBoardApi';
-const CanvasJSChart = CanvasJSReact.CanvasJSChart
+import React, { useState, useEffect } from "react";
+import CanvasJSReact from "./assets/canvasjs.react";
+import { fetchGetAlertsTrendData } from "../../api/dashBoardApi";
+const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 function AlertsTrends(props) {
   const { days, orgId } = props;
-  const [alertData, setAlertData] = useState([])
-  console.log(alertData, "alertData")
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [alertData, setAlertData] = useState([]);
+  console.log(alertData, "alertData");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const CanvasJS = CanvasJSReact.CanvasJS
+  const CanvasJS = CanvasJSReact.CanvasJS;
 
   //Pie chart color code
-  CanvasJS.addColorSet('colorShades', [
+  CanvasJS.addColorSet("colorShades", [
     //colorSet Array
-    '#f0e68c',
-    '#ffb700',
-    '#008080',
-  ])
+    "#f0e68c",
+    "#ffb700",
+    "#008080",
+  ]);
 
-  const trendHours = alertData ? alertData.map((alert) => alert.trendHours) : []
-  const alertsCount = alertData ? alertData.map((alert) => alert.alertsCount) : []
+  const trendHours = alertData
+    ? alertData.map((alert) => alert.trendHours)
+    : [];
+  const alertsCount = alertData
+    ? alertData.map((alert) => alert.alertsCount)
+    : [];
 
   const options = {
     animationEnabled: true,
@@ -29,16 +33,16 @@ function AlertsTrends(props) {
     //   text: 'Monthly Sales - 2017',
     // },
     axisX: {
-      valueFormatString: 'HH',
-      title: 'Trend Hours',
+      valueFormatString: "HH",
+      title: "Trend Hours",
     },
     axisY: {
-      title: 'Alert Count',
-      prefix: '',
+      title: "Alert Count",
+      prefix: "",
       scaleBreaks: {
         customBreaks: [
           {
-            spacing: '2%',
+            spacing: "2%",
           },
         ],
       },
@@ -46,24 +50,24 @@ function AlertsTrends(props) {
     height: 140,
     data: [
       {
-        yValueFormatString: '#',
-        xValueFormatString: 'HH',
-        type: 'spline',
+        yValueFormatString: "#",
+        xValueFormatString: "HH",
+        type: "spline",
         dataPoints: trendHours.map((trendHours, index) => {
           return {
             y: alertsCount[index],
             label: trendHours,
-          }
+          };
         }),
       },
     ],
-  }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const GetAlertsTrendDataResponse = await fetchGetAlertsTrendData({
-          orgId: orgId
+          orgId: orgId,
         });
         const { alertsTrendDatas } = await GetAlertsTrendDataResponse;
 
@@ -73,33 +77,33 @@ function AlertsTrends(props) {
         // }
 
         // const {alertsTrendDatas} = await response.json() // destructure the 'alertsTrendDatas' property from the response object
-        setAlertData(alertsTrendDatas)
-        setLoading(false)
+        setAlertData(alertsTrendDatas);
+        setLoading(false);
       } catch (error) {
-        setError(error.message)
-        setLoading(false)
+        setError(error.message);
+        setLoading(false);
       }
-    }
+    };
 
-    fetchData()
-  }, [orgId])
+    fetchData();
+  }, [orgId]);
 
-  console.log(alertData) // Log the alertData to the console
+  console.log(alertData); // Log the alertData to the console
 
   return (
     <div>
-      <h4 className='mt-2 text-center uppercase'>Alerts Trendline</h4>
+      <h6 className="mt-5 text-center uppercase">Alerts Trendline</h6>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
         <p>Error: {error}</p>
       ) : (
         <>
-          <CanvasJSChart options={options} style='height:140px' />
+          <CanvasJSChart options={options} style="height:140px" />
         </>
       )}
     </div>
-  )
+  );
 }
 
-export default AlertsTrends
+export default AlertsTrends;

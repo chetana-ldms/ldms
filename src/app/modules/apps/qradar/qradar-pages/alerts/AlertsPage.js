@@ -228,13 +228,13 @@ const AlertsPage = () => {
       };
       const response = await fetchUpdatSetAlertIrrelavantStatuseAlert(data);
       if (response.isSuccess) {
-      notify(response.message);
-      setIgnorVisible(false);
-      setShowForm(false);
-      qradaralerts();
-      reloadHistory();
-      reloadNotes();
-      }else{
+        notify(response.message);
+        setIgnorVisible(false);
+        setShowForm(false);
+        qradaralerts();
+        reloadHistory();
+        reloadNotes();
+      } else {
         notifyFail(response.message);
       }
     } catch (error) {
@@ -722,7 +722,7 @@ const AlertsPage = () => {
     <KTCardBody className="alert-page">
       <ToastContainer />
 
-      <div className="card mb-5 mb-xl-8">
+      <div className="card mb-5 mb-xl-8 pad-10">
         <div className="card-header border-0">
           <h3 className="card-title align-items-start flex-column">
             <span className="card-label fw-bold fs-3">
@@ -1185,14 +1185,14 @@ const AlertsPage = () => {
           />
         ) : null}
         <div className="card-body1 py-3" id="kt_accordion_1">
-          <div className="table-responsive alert-table">
+          <div className="table-responsive alert-table scroll-x">
             <table className="table align-middle gs-0 gy-4">
               <thead>
                 <tr className="fw-bold bg-light">
                   <th className="w-25px"></th>
-                  <th className="min-w-90px">
+                  <th>
                     Severity
-                    <div className="m-0 float-right table-filter">
+                    <span className="m-0 table-filter">
                       <a
                         href="#"
                         className=""
@@ -1247,11 +1247,11 @@ const AlertsPage = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </span>
                   </th>
-                  <th className="min-wd-60px">
+                  <th>
                     SLA
-                    <div className="m-0 float-right table-filter">
+                    <span className="m-0 table-filter">
                       <a
                         href="#"
                         className=""
@@ -1299,11 +1299,11 @@ const AlertsPage = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </span>
                   </th>
-                  <th className="min-w-70px">
+                  <th>
                     Score
-                    <div className="m-0 float-right table-filter">
+                    <span className="m-0 table-filter">
                       <a
                         href="#"
                         className=""
@@ -1349,11 +1349,11 @@ const AlertsPage = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </span>
                   </th>
-                  <th className="min-w-90px">
+                  <th>
                     Status
-                    <div className="m-0 float-right table-filter">
+                    <span className="m-0 table-filter">
                       <a
                         href="#"
                         className=""
@@ -1406,11 +1406,11 @@ const AlertsPage = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </span>
                   </th>
-                  <th className="min-w-120px" style={{ width: 140 }}>
+                  <th style={{ width: 140 }}>
                     Detected time
-                    <div className="m-0 float-right table-filter">
+                    <span className="m-0 table-filter">
                       <a
                         href="#"
                         className=""
@@ -1458,11 +1458,11 @@ const AlertsPage = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </span>
                   </th>
-                  <th className="min-w-50px">
+                  <th>
                     Name
-                    <div className="m-0 float-right table-filter">
+                    <span className="m-0 table-filter">
                       <a
                         href="#"
                         className=""
@@ -1500,11 +1500,11 @@ const AlertsPage = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </span>
                   </th>
-                  <th className="min-w-130px">
+                  <th>
                     Observables tags
-                    <div className="m-0 float-right table-filter">
+                    <span className="m-0 table-filter">
                       <a
                         href="#"
                         className=""
@@ -1559,11 +1559,11 @@ const AlertsPage = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </span>
                   </th>
-                  <th className="min-w-80px">
+                  <th>
                     Owner
-                    <div className="m-0 float-right table-filter">
+                    <span className="m-0 table-filter">
                       <a
                         href="#"
                         className=""
@@ -1617,11 +1617,11 @@ const AlertsPage = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </span>
                   </th>
-                  <th className="min-w-80px">
+                  <th>
                     Source{" "}
-                    <div className="m-0 float-right table-filter">
+                    <span className="m-0 table-filter">
                       <a
                         href="#"
                         className=""
@@ -1684,7 +1684,7 @@ const AlertsPage = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </span>
                   </th>
                 </tr>
               </thead>
@@ -1705,20 +1705,22 @@ const AlertsPage = () => {
                               autoComplete="off"
                             />
                             <span>
-                              {item.status === 'New' && item.alertIncidentMappingId === 0 ? (
+                              {item.status === "New" &&
+                              item.alertIncidentMappingId === 0 ? (
                                 <i
-                                  className='fa fa-circle-exclamation incident-icon red'
-                                  title='No Action Innitiated'
+                                  className="fa fa-circle-exclamation incident-icon red"
+                                  title="No Action Innitiated"
                                 />
-                              ) : item.status !== 'New' && item.alertIncidentMappingId === 0 ? (
+                              ) : item.status !== "New" &&
+                                item.alertIncidentMappingId === 0 ? (
                                 <i
-                                  className='fa fa-circle-exclamation incident-icon orange'
-                                  title='Incident not created'
+                                  className="fa fa-circle-exclamation incident-icon orange"
+                                  title="Incident not created"
                                 />
                               ) : (
                                 <i
-                                  className='fa fa-circle-exclamation incident-icon green'
-                                  title='Incident created'
+                                  className="fa fa-circle-exclamation incident-icon green"
+                                  title="Incident created"
                                 />
                               )}
                             </span>
@@ -2565,7 +2567,7 @@ const AlertsPage = () => {
               </tbody>
             </table>
           </div>
-          <div className="d-flex justify-content-end align-items-center pagination-bar">
+          <div className="d-flex justify-content-end align-items-center pagination-bar mt-5">
             <ReactPaginate
               previousLabel=<i className="fa fa-chevron-left" />
               nextLabel=<i className="fa fa-chevron-right" />

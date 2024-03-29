@@ -18,20 +18,18 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
   const handleError = useErrorBoundary();
 
   return (
-    <div className="col-md-4 border-1 border-gray-600">
+    <div className="col-md-4 border-1 border-gray-600  incident-details">
       <div className="card">
-        <div className="d-flex justify-content-between bd-highlight mb-3">
-          <div className="p-2 bd-highlight">
-            <h6 className="card-title align-items-start flex-column pt-2">
-              <span className="card-label fw-bold fs-3 mb-1">
-                Incidents Details
-              </span>
-            </h6>
-          </div>
+        <div className="bg-heading">
+          <h4 className="no-margin no-pad">
+            <span className="white fw-bold block pt-3 pb-3">
+              Incidents Details
+            </span>
+          </h4>
         </div>
-        <div className="d-flex justify-content-between bd-highlight mb-3 incident-tabs">
+        <div className="mb-3 incident-tabs">
           <div className="p-2 bd-highlight">
-            <ul className="nav nav-tabs nav-line-tabs mb-5 fs-8">
+            <ul className="nav nav-tabs nav-line-tabs mb-5 fs-8 no-pad">
               <li className="nav-item">
                 <a
                   className="nav-link active"
@@ -165,30 +163,30 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                     </div>
                   </div>
                 </div>
-                <div className="bd-highlight mb-3 bdr-top">
-                  <div className="col-md-12 bd-highlight">
+                <div className="bd-highlight mb-3 mt-5 pt-5 bdr-top">
+                  <div className="bd-highlight">
                     <div className="d-flex align-items-center gap-2">
                       <span className="fw-bold">Alert Name - </span> Multiple
                       failed login for same IP
                     </div>
                   </div>
-                  <div className="col-md-12 bd-highlight">
+                  <div className="bd-highlight">
                     <div className="d-flex align-items-center gap-2">
                       <span className="fw-bold">Event ID - </span> 4625
                     </div>
                   </div>
-                  <div className="col-md-12 bd-highlight">
+                  <div className="bd-highlight">
                     <div className="d-flex align-items-center gap-2">
                       <span className="fw-bold"> Destination User - </span>{" "}
                       James James
                     </div>
                   </div>
-                  <div className="col-md-12 bd-highlight">
+                  <div className="bd-highlight">
                     <div className="d-flex align-items-center gap-2">
                       <span className="fw-bold">Source IP - </span> 192.168.0.1
                     </div>
                   </div>
-                  <div className="col-md-12 bd-highlight">
+                  <div className="bd-highlight">
                     <div className="d-flex align-items-center gap-2">
                       <span className="fw-bold">Vendor - </span> Microsoft
                     </div>
@@ -199,9 +197,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                     <div className="fs-13">Incident ID</div>
                   </div>
                   <div className="p-2 bd-highlight">
-                    <div className="badge text-black fs-13">
-                      20210728-00056{" "}
-                    </div>
+                    <div className="badge gray fs-13">20210728-00056 </div>
                   </div>
                 </div>
                 <div className="d-flex justify-content-between bd-highlight">
@@ -373,7 +369,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               <div className="tab-pane fade" id="kt_tab_pane_5" role="tabpanel">
                 <div className="card-body pt-6 h-600px">
                   <div className="timeline-label">
-                    <div className="timeline-item">
+                    <div className="timeline-item mb-5">
                       <div className="timeline-label fw-bold text-gray-800 fs-6">
                         08:42
                       </div>

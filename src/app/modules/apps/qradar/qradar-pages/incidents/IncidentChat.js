@@ -6,8 +6,14 @@ const IncidentChat = () => {
   //Chat fullscreen
   const [show, setShow] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleClose = () => {
+    console.log("Closing modal");
+    setShow(false);
+  };
+  const handleShow = () => {
+    console.log("Opening modal");
+    setShow(true);
+  };
   const ref = useRef(null);
   const message_1 = useRef(null);
   const message_2 = useRef(null);
@@ -28,6 +34,7 @@ const IncidentChat = () => {
   };
 
   const ChatHeader = () => {
+    console.log("Show state:", show); // Debugging show state
     return (
       <>
         <div className="mt-2 float-left">
@@ -39,13 +46,13 @@ const IncidentChat = () => {
         </div>
         <div className="badge text-black fw-normal icon-right float-right">
           <a href="#" onClick={handleShow}>
-            <i className="far fa-window-restore"></i>
+            <i className="far fa-window-restore white"></i>
           </a>
           <a
             href={toAbsoluteUrl("/media/reports/Report.docx")}
             download="myFile"
           >
-            <i className="fas fa-download"></i>
+            <i className="fas fa-download white"></i>
           </a>
         </div>
       </>
@@ -93,7 +100,7 @@ const IncidentChat = () => {
               Pluto{" "}
               <span className="sub-txt text-gray float-right">2:02:17 PM</span>
             </p>
-            <p className="fs-14 text-gray-900 mb-2">
+            <p className="fs-12 text-gray-900 mb-2">
               A failed login attempt was detected at Wed Jul 28 2022 21:02:17
               GMT +0000 (UTC)
             </p>
@@ -275,7 +282,7 @@ const IncidentChat = () => {
           data-kt-scroll-wrappers="#kt_content, #kt_chat_contacts_body"
           data-kt-scroll-offset="0px"
         >
-          <div className="chat-header">
+          <div className="chat-header bg-heading">
             <ChatHeader />
           </div>
           <div className="chat-box scroll-y me-n5 h-500px">
@@ -317,17 +324,17 @@ const IncidentChat = () => {
             <div className="separator separator-dashed"></div>
           </div>
         </div>
-        <form onSubmit={handleSend} className="chat-form">
+        <form onSubmit={handleSend} className="chat-form pad-10">
           <div className="input-group">
             <input
               type="text"
-              className="form-control"
+              className="form-control bg-white"
               name="message"
               placeholder="Type your message here..."
             />
             <button type="submit" className="btn-chat">
-              <span className="input-group-text">
-                <i className="fas fa-paper-plane"></i>
+              <span className="input-group-text btn-new">
+                <i className="fas fa-paper-plane white"></i>
               </span>
             </button>
           </div>
@@ -346,7 +353,7 @@ const IncidentChat = () => {
             data-kt-scroll-wrappers="#kt_content, #kt_chat_contacts_body"
             data-kt-scroll-offset="0px"
           >
-            <div className="chat-header">
+            <div className="chat-header bg-heading">
               <ChatHeader />
             </div>
             <div className="chat-box scroll-y me-n5 h-600px">

@@ -14,12 +14,11 @@ import { ToastContainer } from "react-toastify";
 import { notify, notifyFail } from "../components/notification/Notification";
 import "react-toastify/dist/ReactToastify.css";
 import ChatApp from "./ChatApp";
-import moment from 'moment-timezone';
+import moment from "moment-timezone";
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import "./IncidentPagination.css";
 import { useErrorBoundary } from "react-error-boundary";
-import { UsersListLoading } from '../components/loading/UsersListLoading';
-
+import { UsersListLoading } from "../components/loading/UsersListLoading";
 
 const IncidentsPage = () => {
   const handleError = useErrorBoundary();
@@ -67,7 +66,7 @@ const IncidentsPage = () => {
       loggedInUserId: userID,
     };
     try {
-     setLoading(true)
+      setLoading(true);
       const response = await fetchIncidents(data);
       setIncident(response.incidentList);
       setTotalIncidentsCount(response.totalIncidentsCount);
@@ -75,10 +74,10 @@ const IncidentsPage = () => {
       // const total = 40;
 
       setpageCount(Math.ceil(total / limit));
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       handleError(error);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -104,7 +103,7 @@ const IncidentsPage = () => {
       // toolTypeID
     };
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await fetchGetIncidentSearchResult(data);
       setIncident(response.incidentList);
       setTotalIncidentsCount(response.totalIncidentsCount);
@@ -114,10 +113,10 @@ const IncidentsPage = () => {
       setpageCount(Math.ceil(total / limit));
 
       // incidents();
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       handleError(error);
-      setLoading(false)
+      setLoading(false);
     }
   };
   const handleIncidentClick = (item) => {
@@ -154,21 +153,32 @@ const IncidentsPage = () => {
     setLimit(selectedPerPage);
   };
   useEffect(() => {
-    setSelectedIncident(incident !== null && incident.length > 0 ? incident[0] : []);
+    setSelectedIncident(
+      incident !== null && incident.length > 0 ? incident[0] : []
+    );
   }, [incident]);
-  
+
   return (
     <>
-      <div className="card mb-5 mb-xl-8 bg-red incident-page">
+      <div className="mb-5 mb-xl-8 bg-red incident-page">
         <ToastContainer />
         <div className="card-body1 py-3">
           <div className="row">
             <div className="col-md-4 border-1 border-gray-300 border-end">
               <div className="card">
-                <div className="d-flex justify-content-between bd-highlight mb-3">
+                <div className="bg-heading">
+                  <h4 className="no-margin no-pad">
+                    <span className="white fw-bold block pt-3 pb-3">
+                      Incidents{" "}
+                      <span className="white">({totalIncidentsCount})</span>
+                    </span>
+                  </h4>
+                </div>
+                <div className="p-1 bd-highlight"></div>
+                {/* <div className="d-flex justify-content-between bd-highlight mb-3">
                   <div className="p-1 bd-highlight">
-                    <h6 className="card-title align-items-start flex-column pt-2">
-                      <span className="card-label fw-bold fs-5 mb-1">
+                    <h6 className="card-title pt-3 pb-3 bg-header no-margin">
+                      <span className="white fw-bold fs-5 mb-1">
                         Incidents{" "}
                         <span className="text-black-50">
                           ({totalIncidentsCount})
@@ -177,7 +187,7 @@ const IncidentsPage = () => {
                     </h6>
                   </div>
                   <div className="p-1 bd-highlight"></div>
-                </div>
+                </div> */}
 
                 <div className="card-title">
                   {/* begin::Search */}
@@ -199,7 +209,7 @@ const IncidentsPage = () => {
                   {/* end::Search */}
                   <div className="d-flex justify-content-between bd-highlight mb-3">
                     <div className="mt-2 bd-highlight">
-                      <div className="w-110px me-2">
+                      <div className="w-100px me-2">
                         <div>
                           <select
                             className="form-select form-select-sm"
@@ -208,7 +218,7 @@ const IncidentsPage = () => {
                             data-dropdown-parent="#kt_menu_637dc885a14bb"
                             data-allow-clear="true"
                             ref={status}
-                          // onChange={handleStatusChange}
+                            // onChange={handleStatusChange}
                           >
                             <option value="">Select</option>
                             {statusDropDown.length > 0 &&
@@ -232,7 +242,6 @@ const IncidentsPage = () => {
                           data-allow-clear="true"
                           ref={sortOption}
                         >
-
                           {incidentSortOptions.length > 0 &&
                             incidentSortOptions.map((item) => (
                               <option key={item.dataID} value={item.dataID}>
@@ -243,15 +252,16 @@ const IncidentsPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="scroll-y h-350px">
+                  <div className="scroll-y h-400px">
                     <div className="incident-list">
                       <>
-                      {loading && <UsersListLoading />}
+                        {loading && <UsersListLoading />}
                         {incident && incident.length > 0 ? (
                           incident.map((item, index) => (
                             <div
-                              className={`incident-section${selectedIncident === item ? " selected" : ""
-                                }`}
+                              className={`incident-section${
+                                selectedIncident === item ? " selected" : ""
+                              }`}
                               key={item.incidentID}
                               onClick={() => handleIncidentClick(item)}
                             >
@@ -259,7 +269,7 @@ const IncidentsPage = () => {
                                 <div className="text-dark">
                                   <a href="#" className="text-dark">
                                     <span
-                                      className="fw-bold incident-name"
+                                      className="incident-name"
                                       title={item.description}
                                     >
                                       {item.description}
@@ -270,19 +280,17 @@ const IncidentsPage = () => {
                               <div className="row">
                                 <div className="d-flex justify-content-between">
                                   <div className="pt-2 bd-highlight">
-                                    <div className="text-black fw-normal">
+                                    <div className="fw-bold">
                                       {item.incidentStatusName}
                                     </div>
                                   </div>
                                   <div className="pt-3 bd-highlight">
-                                    <div className="badge text-black fw-normal">
-                                      {item.modifiedDate ?
-                                        getCurrentTimeZone(item.modifiedDate) :
-                                        getCurrentTimeZone(item.createdDate)
-                                      }
+                                    <div className="badge gray fw-normal">
+                                      {item.modifiedDate
+                                        ? getCurrentTimeZone(item.modifiedDate)
+                                        : getCurrentTimeZone(item.createdDate)}
                                     </div>
                                   </div>
-
                                 </div>
                               </div>
                               <hr className="my-0" />
@@ -352,11 +360,10 @@ const IncidentsPage = () => {
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
-            <div className="col-md-4 border-1 border-gray-300 border-end chat-section border-top border-start">
+            <div className="col-md-4 chat-section">
               <ChatApp
                 userId={sessionStorage.getItem("userId")}
                 userName={sessionStorage.getItem("userName")}

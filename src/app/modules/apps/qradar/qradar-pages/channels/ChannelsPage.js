@@ -124,7 +124,7 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
 const ChannelsPage = () => {
   const [channels, setChannels] = useState([]);
   console.log(channels, "channels11");
-  const userID = Number(sessionStorage.getItem('userId'));
+  const userID = Number(sessionStorage.getItem("userId"));
   const orgId = Number(sessionStorage.getItem("orgId"));
   const deletedUserId = Number(sessionStorage.getItem("userId"));
   const deletedDate = new Date().toISOString();
@@ -280,7 +280,10 @@ const ChannelsPage = () => {
       <ToastContainer />
       <div className="channel-title">
         <h4 className="float-left">
-          Channels <span>({channels !== null && channels.length > 0 ? channels.length : 0})</span>
+          Channels{" "}
+          <span>
+            ({channels !== null && channels.length > 0 ? channels.length : 0})
+          </span>
         </h4>
 
         {globalAdminRole === 1 ? (
@@ -292,7 +295,8 @@ const ChannelsPage = () => {
           </span>
         ) : (
           <span
-            className="float-right add-btn" disabled
+            className="float-right add-btn"
+            disabled
             onClick={() => setShowModal(false)}
           >
             Add Channel
@@ -307,7 +311,7 @@ const ChannelsPage = () => {
           Edit Channel
         </span>
       </div>
-      <div className="demo-block">
+      <div className="demo-block bg-white overflow-hidden">
         {channels !== null ? (
           <Tabs className="vertical-tabs">
             <TabList className="inner-tablist channels-tab">
@@ -363,12 +367,17 @@ const ChannelsPage = () => {
                           {globalAdminRole === 1 ? (
                             <button
                               className="btn btn-small btn-primary"
-                              onClick={() => handleAccordionToggle(channel.channelId)}
+                              onClick={() =>
+                                handleAccordionToggle(channel.channelId)
+                              }
                             >
                               Edit
                             </button>
                           ) : (
-                            <button className="btn btn-primary btn-small" disabled>
+                            <button
+                              className="btn btn-primary btn-small"
+                              disabled
+                            >
                               Edit
                             </button>
                           )}
@@ -380,7 +389,10 @@ const ChannelsPage = () => {
                               Delete
                             </button>
                           ) : (
-                            <button className="btn btn-sm btn-danger btn-small ml-10" disabled>
+                            <button
+                              className="btn btn-sm btn-danger btn-small ml-10"
+                              disabled
+                            >
                               Delete
                             </button>
                           )}
@@ -392,7 +404,9 @@ const ChannelsPage = () => {
                             <div className="accordion-header">
                               <button
                                 className="close-button"
-                                onClick={() => handleAccordionToggle(channel.channelId)}
+                                onClick={() =>
+                                  handleAccordionToggle(channel.channelId)
+                                }
                               >
                                 x
                               </button>
@@ -447,14 +461,18 @@ const ChannelsPage = () => {
                                   as="textarea"
                                   ref={channelDescriptions}
                                   rows={3}
-                                  defaultValue={selectedChannel.channelDescription}
+                                  defaultValue={
+                                    selectedChannel.channelDescription
+                                  }
                                 />
                               </Form.Group>
                               <Form.Group className="mt-5">
                                 <Button
                                   variant="secondary"
                                   className="btn-small"
-                                  onClick={() => handleAccordionToggle(channel.channelId)}
+                                  onClick={() =>
+                                    handleAccordionToggle(channel.channelId)
+                                  }
                                 >
                                   Close
                                 </Button>
@@ -478,7 +496,6 @@ const ChannelsPage = () => {
                   </tr>
                 )}
               </tbody>
-
             </table>
           </div>
         </Modal.Body>

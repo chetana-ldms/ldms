@@ -60,7 +60,7 @@ const OrganizationTools = () => {
   }, []);
 
   return (
-    <div className="card">
+    <div className="card pad-10">
       <ToastContainer />
       <div className="card-header no-pad">
         <h3 className="card-title align-items-start flex-column">
@@ -124,7 +124,7 @@ const OrganizationTools = () => {
 
                       {globalAdminRole === 1 || clientAdminRole === 1 ? (
                         <td>
-                          <button className="btn btn-primary btn-circle">
+                          <button className="btn btn-new btn-circle">
                             <Link
                               className="text-white"
                               to={`/qradar/organization-tools/update/${item.orgToolID}`}

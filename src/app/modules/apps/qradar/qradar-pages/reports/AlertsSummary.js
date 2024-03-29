@@ -210,7 +210,7 @@ function AlertsSummary() {
       ) : (
         <p>No data found</p>
       )}
-      <div className="export-report">
+      <div className="export-report mt-5 me-5">
         <Dropdown
           isOpen={dropdownOpen}
           toggle={() => setDropdownOpen(!dropdownOpen)}

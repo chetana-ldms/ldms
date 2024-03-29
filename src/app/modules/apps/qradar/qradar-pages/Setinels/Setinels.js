@@ -1,4 +1,4 @@
-import React, { useState } from "react";    
+import React, { useState } from "react";
 import Endpoint from "./Endpoint";
 import BlockList from "./BlockList";
 import Exclusions from "./Exclusions";
@@ -11,7 +11,6 @@ function Setinels() {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
-
 
   return (
     <div className="ldc-application">
