@@ -2,6 +2,7 @@
 const ExclusionListUrl ="http://115.110.192.133:502/api/SentinalOne/v1/Exclusion/List"
 const BlokckedListUrl ="http://115.110.192.133:502/api/SentinalOne/v1/BlokckedList"
 const AccountDetailsUrl ="http://115.110.192.133:502/api/SentinalOne/v1/Account/Details"
+const PolicyDetailsUrl = "http://115.110.192.133:502/api/SentinalOne/v1/Policy/Details"
 
 export const fetchExclusionListUrl = async (data) => {
     try {
@@ -56,6 +57,25 @@ export const fetchExclusionListUrl = async (data) => {
       const responseData = await response.json();
       const accounts = responseData.accounts;
       return accounts;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchPolicyDetailsUrl = async (data) => {
+    try {
+      const response = await fetch(`${PolicyDetailsUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      const result = responseData.data;
+      return result;
     } catch (error) {
       console.log(error);
     }
