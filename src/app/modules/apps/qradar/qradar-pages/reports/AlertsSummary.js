@@ -216,7 +216,7 @@ function AlertsSummary() {
           toggle={() => setDropdownOpen(!dropdownOpen)}
         >
           <DropdownToggle caret>
-            Export Report <i className="fa fa-file-export link mg-left-10" />
+            Export <i className="fa fa-file-export link mg-left-10" />
           </DropdownToggle>
           <DropdownMenu>
             <DropdownItem onClick={() => handleExport("excel")}>

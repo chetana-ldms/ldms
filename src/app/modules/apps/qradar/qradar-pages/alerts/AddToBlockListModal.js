@@ -82,13 +82,18 @@ const AddToBlockListModal = ({
     >
       <Modal.Header closeButton>
         <Modal.Title>
+          <button
+            type="button"
+            class="application-modal-close"
+            aria-label="Close"
+          >
+            <i className="fa fa-close" />
+          </button>
           <div>
             {" "}
             <i className="bi bi-shield-slash mr-2"></i> Add To Blocklist
           </div>
-          <div className="mt-2" style={{ fontSize: "1rem", color: "gray" }}>
-            Blacklist Type: Hash
-          </div>
+          <div className="mt-2 white fs-11">Blacklist Type: Hash</div>
         </Modal.Title>
         <br />
       </Modal.Header>
@@ -169,10 +174,18 @@ const AddToBlockListModal = ({
         <div className="mt-5">Analyst Verdict: True Positive</div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
+        <Button
+          variant="secondary"
+          onClick={handleClose}
+          className=" btn-small"
+        >
           Close
         </Button>
-        <Button variant="primary" onClick={handleSubmit}>
+        <Button
+          variant="primary"
+          onClick={handleSubmit}
+          className="btn-new btn-small"
+        >
           Apply
         </Button>
       </Modal.Footer>

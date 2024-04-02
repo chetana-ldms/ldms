@@ -722,7 +722,7 @@ const AlertsPage = () => {
     <KTCardBody className="alert-page">
       <ToastContainer />
 
-      <div className="mb-5 mb-xl-8 pad-10">
+      <div className="mb-5 pad-10">
         <div className="d-flex justify-content-between border-0">
           <h3 className="align-items-start flex-column">
             <span className="fw-bold fs-3">
@@ -1165,10 +1165,10 @@ const AlertsPage = () => {
         </div>
       </div>
       <div className="clearfix" />
-      <div className="card mt-5">
-        <div className="pad-10">
-          <div className="d-flex justify-content-between align-items-center pagination-bar">
-            <ReactPaginate
+      <div className="card pad-10">
+        <div>
+          <div className="d-flex justify-content-end align-items-center pagination-bar">
+            {/* <ReactPaginate
               previousLabel=<i className="fa fa-chevron-left" />
               nextLabel=<i className="fa fa-chevron-right" />
               pageCount={pageCount}
@@ -1198,7 +1198,7 @@ const AlertsPage = () => {
                 <option value={15}>15</option>
                 <option value={20}>20</option>
               </select>
-            </div>
+            </div> */}
             <div className="float-right fs-13 lh-40 fc-gray text-right ds-reload">
               Alerts are automatically refreshing every 2 minutes{" "}
               <a href="#" onClick={handleRefresh}>
@@ -2138,7 +2138,7 @@ const AlertsPage = () => {
                                         <hr />
                                         <div className="row">
                                           <div className="fs-12 col-md-6">
-                                            THREAT FILE NAME $RN30BDD.exe
+                                            THREAT FILE NAME {threatInfo.name}
                                           </div>
                                           <div className="fs-14 mt-5 text-primary col-md-6 text-end">
                                             {/* <span className="mx-5"><i className="fas fa-copy mx-3"></i> Copy Details</span>

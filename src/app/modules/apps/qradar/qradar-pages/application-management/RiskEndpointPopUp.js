@@ -46,7 +46,7 @@ const RiskEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
           <i className="fa fa-chevron-left link" /> Back
         </div>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="pad-10">
         {showRiskComponent && (
           <div className="row">
             <div className="col-md-12">

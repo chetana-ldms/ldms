@@ -179,7 +179,7 @@ function Exclusions() {
       {loading ? (
         <UsersListLoading />
       ) : (
-        <>
+        <div className="card pad-10">
           <div className="row">
             <div className="col-lg-6 d-flex">
               <div className="mb-3">
@@ -274,7 +274,9 @@ function Exclusions() {
                 toggle={() => setDropdownOpen(!dropdownOpen)}
               >
                 <DropdownToggle className="no-pad">
-                  <div className="btn btn-new btn-small">Actions</div>
+                  <div className="btn btn-new btn-small">
+                    Export <i className="fa fa-file-export white mg-left-5" />
+                  </div>
                 </DropdownToggle>
                 <DropdownMenu className="w-auto">
                   <DropdownItem
@@ -282,11 +284,11 @@ function Exclusions() {
                     className="border-btm"
                   >
                     <i className="fa fa-file-excel link mg-right-5" /> Export
-                    full report
+                    Full Report
                   </DropdownItem>
                   <DropdownItem onClick={exportCurrentTableToCSV}>
                     <i className="fa fa-file-excel link mg-right-5" /> Export
-                    current page report
+                    Current Page Report
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
@@ -348,7 +350,7 @@ function Exclusions() {
             itemsPerPage={itemsPerPage}
             handlePageSelect={handlePageSelect}
           />
-        </>
+        </div>
       )}
     </div>
   );

@@ -156,7 +156,9 @@ function InventoryComponent() {
                   toggle={() => setDropdownOpen(!dropdownOpen)}
                 >
                   <DropdownToggle className="no-pad">
-                    <div className="btn btn-new btn-small">Actions</div>
+                    <div className="btn btn-new btn-small">
+                      Export <i className="fa fa-file-export white mg-left-5" />
+                    </div>
                   </DropdownToggle>
                   <DropdownMenu className="w-auto">
                     <DropdownItem
@@ -164,11 +166,11 @@ function InventoryComponent() {
                       className="border-btm"
                     >
                       <i className="fa fa-file-excel link mg-right-5" /> Export
-                      full report
+                      Full Report
                     </DropdownItem>
                     <DropdownItem onClick={exportCurrentTableToCSV}>
                       <i className="fa fa-file-excel link mg-right-5" /> Export
-                      current page report
+                      Current Page Report
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>

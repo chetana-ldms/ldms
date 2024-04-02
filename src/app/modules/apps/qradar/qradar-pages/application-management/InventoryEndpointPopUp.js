@@ -114,7 +114,9 @@ const InventoryEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
               toggle={() => setDropdownOpen(!dropdownOpen)}
             >
               <DropdownToggle className="no-pad">
-                <div className="btn btn-new btn-small">Actions</div>
+                <div className="btn btn-new btn-small">
+                  Export <i className="fa fa-file-export white mg-left-5" />
+                </div>
               </DropdownToggle>
               <DropdownMenu>
                 <DropdownItem onClick={exportTableToCSV}>

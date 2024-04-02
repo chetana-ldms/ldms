@@ -172,13 +172,13 @@ const Reports = () => {
                 </div>
               </div>
               <TabList className="tab-list mt-5">
-                <Tab>Alert summary</Tab>
-                <Tab>Alerts rule</Tab>
-                <Tab>SLA measurement</Tab>
-                <Tab>Status of all created incidents</Tab>
-                <Tab>Closed incidents</Tab>
-                <Tab>Open incident status</Tab>
-                <Tab>Significant incidents</Tab>
+                <Tab>Alert Summary</Tab>
+                <Tab>Alerts Rule</Tab>
+                <Tab>SLA Measurement</Tab>
+                <Tab>Status of Created Incidents</Tab>
+                <Tab>Closed Incidents</Tab>
+                <Tab>Open Incident Status</Tab>
+                <Tab>Significant Incidents</Tab>
               </TabList>
             </Tabs>
           </div>

@@ -174,43 +174,48 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                 <div className="bd-highlight mb-3 mt-5 pt-5 bdr-top">
                   <div className="bd-highlight mb-2">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Alert Name - </span> Multiple
-                      failed login for same IP
+                      <span className="fw-bold m-width">Alert Name: </span>{" "}
+                      Multiple failed login for same IP
                     </div>
                   </div>
                   <div className="bd-highlight mb-2">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Event ID - </span> 4625
+                      <span className="fw-bold m-width">Event ID: </span> 4625
                     </div>
                   </div>
                   <div className="bd-highlight mb-2">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold"> Destination User - </span>{" "}
+                      <span className="fw-bold m-width">
+                        {" "}
+                        Destination User:{" "}
+                      </span>{" "}
                       James James
                     </div>
                   </div>
                   <div className="bd-highlight mb-2">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Source IP - </span> 192.168.0.1
+                      <span className="fw-bold m-width">Source IP: </span>{" "}
+                      192.168.0.1
                     </div>
                   </div>
                   <div className="bd-highlight mb-2">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Vendor - </span> Microsoft
+                      <span className="fw-bold m-width">Vendor: </span>{" "}
+                      Microsoft
                     </div>
                   </div>
                 </div>
                 <div className="d-flex justify-content-between bd-highlight">
-                  <div className="p-2 bd-highlight">
-                    <div className="fs-13 semi-bold">Incident ID</div>
+                  <div className="bd-highlight">
+                    <div className="fs-13 semi-bold m-width">Incident ID:</div>
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="badge gray fs-13">20210728-00056 </div>
                   </div>
                 </div>
                 <div className="d-flex justify-content-between bd-highlight">
-                  <div className="p-2 bd-highlight">
-                    <div className="fs-13 semi-bold">Owner</div>
+                  <div className="bd-highlight">
+                    <div className="fs-13 semi-bold m-width">Owner:</div>
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="">
@@ -228,8 +233,8 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                 </div>
                 <div className="d-flex justify-content-between bd-highlight">
-                  <div className="p-2 bd-highlight">
-                    <div className="fs-13 semi-bold">Created</div>
+                  <div className="bd-highlight">
+                    <div className="fs-13 semi-bold">Created:</div>
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="text-black fw-normal">
@@ -238,8 +243,8 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                 </div>
                 <div className="d-flex justify-content-between bd-highlight">
-                  <div className="p-2 bd-highlight">
-                    <div className="fs-13 semi-bold">Updated</div>
+                  <div className="bd-highlight">
+                    <div className="fs-13 semi-bold">Updated:</div>
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="text-black fw-normal">
@@ -308,7 +313,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                             <div className="text-dark mb-1">
                               <a href="#" className="text-dark">
                                 <span className="fw-bold">
-                                  CheckPoint - Malware Traffic
+                                  CheckPoint: Malware Traffic
                                 </span>
                               </a>
                             </div>
@@ -466,7 +471,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                         <i className="fa fa-genderless text-danger fs-1"></i>
                       </div>
                       <div className="timeline-content fw-bold text-gray-800 ps-3">
-                        Ticket Closed -
+                        Ticket Closed:
                         <a href="#" className="text-primary">
                           Issue Resolved
                         </a>

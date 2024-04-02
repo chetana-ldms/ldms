@@ -425,46 +425,52 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                 <div className="bd-highlight mb-3 bdr-top pt-5 mt-5">
                   <div className="bd-highlight mb-3">
                     <div className="d-flex align-items-top gap-2">
-                      <span className="fw-bold">Incident Name : </span>{" "}
+                      <span className="fw-bold m-width">Incident Name : </span>{" "}
                       {subject}
                     </div>
                   </div>
                   <div className="bd-highlight mb-3">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Event ID : </span> {eventID}
+                      <span className="fw-bold m-width">Event ID : </span>{" "}
+                      {eventID}
                     </div>
                   </div>
                   <div className="bd-highlight mb-3">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold"> Destination User : </span>{" "}
+                      <span className="fw-bold m-width">
+                        {" "}
+                        Destination User :{" "}
+                      </span>{" "}
                       {destinationUser}
                     </div>
                   </div>
                   <div className="bd-highlight mb-3">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Source IP : </span> {sourceIP}
+                      <span className="fw-bold m-width">Source IP : </span>{" "}
+                      {sourceIP}
                     </div>
                   </div>
                   <div className="bd-highlight mb-3">
                     <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Vendor : </span> {vendor}
+                      <span className="fw-bold m-width">Vendor : </span>{" "}
+                      {vendor}
                     </div>
                   </div>
                 </div>
-                <div className="d-flex justify-content-between bd-highlight bdr-top pt-2">
-                  <div className="p-2 bd-highlight">
-                    <div className="fs-13  semi-bold">Incident ID</div>
+                <div className="d-flex justify-content-between bd-highlight mb-3">
+                  <div className="bd-highlight">
+                    <div className="fs-13  semi-bold m-width">Incident ID:</div>
                   </div>
-                  <div className="p-2 bd-highlight">
+                  <div className="bd-highlight">
                     <div className="badge text-black fs-13">{incidentID} </div>
                   </div>
                 </div>
 
-                <div className="d-flex justify-content-between bd-highlight">
-                  <div className="p-2 bd-highlight">
-                    <div className="fs-13 semi-bold">Owner</div>
+                <div className="d-flex justify-content-between bd-highlight mb-3">
+                  <div className="bd-highlight">
+                    <div className="fs-13 semi-bold">Owner:</div>
                   </div>
-                  <div className="p-2 bd-highlight">
+                  <div className="bd-highlight">
                     <div className="">
                       <select
                         name="ownerName"
@@ -506,7 +512,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
 
                 <div className="d-flex justify-content-between bd-highlight">
                   <div className="p-2 bd-highlight">
-                    <div className="fs-13 semi-bold">Created</div>
+                    <div className="fs-13 semi-bold">Created:</div>
                   </div>
                   <div className="p-2">
                     <div className="text-black">
@@ -517,7 +523,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
 
                 <div className="d-flex justify-content-between bd-highlight">
                   <div className="p-2 bd-highlight">
-                    <div className="fs-13 semi-bold">Updated</div>
+                    <div className="fs-13 semi-bold">Updated:</div>
                   </div>
                   <div className="p-2">
                     <div className="text-black">
