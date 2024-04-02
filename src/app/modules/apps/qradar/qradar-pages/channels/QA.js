@@ -20,6 +20,7 @@ const QA = ({ channelId, channelName }) => {
   const createdDate = new Date().toISOString();
   const orgId = Number(sessionStorage.getItem("orgId"));
   const [channelQAList, setChannelQAList] = useState([]);
+  console.log(channelQAList, "channelQAList")
   const [error, setError] = useState(null);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
   const [showAnswerModal, setShowAnswerModal] = useState(false);
@@ -203,7 +204,8 @@ const QA = ({ channelId, channelName }) => {
       </div>
 
       <div className="qa mt-5">
-        {channelQAList.map((item) => (
+        {channelQAList !== null ?(
+        channelQAList.map((item) => (
           <div className="row" key={item.questionId}>
             <div className="col">
               <p className="question">
@@ -291,7 +293,11 @@ const QA = ({ channelId, channelName }) => {
               )}
             </div>
           </div>
-        ))}
+        ))
+        ):(
+          <div>No Data found</div>
+        )
+      }
       </div>
 
       <Modal

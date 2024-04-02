@@ -316,7 +316,7 @@ const AlertsPage = () => {
             (timeDifferenceMs % (60 * 60 * 1000)) / (60 * 1000)
           );
           // Format the time difference
-          let formattedTimeDifference = `${days}d${hours}h${minutes}m`;
+          let formattedTimeDifference = `${days}D ${hours}H : ${minutes}M`;
           item.sla = formattedTimeDifference;
         }
       });
@@ -1848,7 +1848,7 @@ const AlertsPage = () => {
                                       Timeline
                                     </a>
                                   </li>
-                                  {orgId === 2 && (
+                                  {/* {orgId === 2 && (
                                     <li
                                       className="nav-item"
                                       role="presentation"
@@ -1865,22 +1865,7 @@ const AlertsPage = () => {
                                         Other Action
                                       </a>
                                     </li>
-                                  )}
-                                  {/* {orgId === 2 && (
-                                  <li className="nav-item" role="presentation">
-                                    <a
-                                      className="nav-link"
-                                      id={`actionsTab_${index}`}
-                                      data-bs-toggle="tab"
-                                      href={`#actions_${index}`}
-                                      role="tab"
-                                      aria-controls={`actions_${index}`}
-                                      aria-selected="false"
-                                    >
-                                      Actions
-                                    </a>
-                                  </li>
-                                )} */}
+                                  )} */}
                                 </ul>
                                 <div className="tab-content pt-4">
                                   <div
@@ -2432,7 +2417,7 @@ const AlertsPage = () => {
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="tab-content">
+                                  {/* <div className="tab-content">
                                     {orgId === 2 && (
                                       <div
                                         className="tab-pane"
@@ -2612,7 +2597,7 @@ const AlertsPage = () => {
                                       role="tabpanel"
                                       aria-labelledby={`actionsTab_${index}`}
                                     ></div>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </div>
                             </div>
