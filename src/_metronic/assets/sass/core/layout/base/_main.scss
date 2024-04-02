@@ -268,12 +268,33 @@ body {
 
 //Table pagination
 .pagination-bar{
+    // border-top: 1px solid #ccc;
+    // padding-top: 10px;
   .page-item{
     &.active {
       .page-link{
         border-radius: 50%;
         color: #fff !important;
+        
       }
+      
+    }
+    &.disabled{
+      background-color: #ddd;
+      opacity: 1;
+      border-radius: 4px;
+      a{
+        background-color: #ddd;
+        i{
+          color: white;
+        }
+      }
+    }
+  }
+  .page-link{
+    border: 1px solid #ccc;
+    i{
+      color: #333;
     }
   }
 }
@@ -595,6 +616,29 @@ body {
   }  
 }
 
+.modal-header{
+    background: #1b2f69;
+    color: white;
+    padding: 15px;
+    .modal-title{
+      color: white;
+    }
+    .btn-close{
+      background: none;
+      z-index: 1;
+    }
+  }
+  .application-modal-close{
+    background: none;
+    border: 0;
+    position: absolute;
+    right: 15px;
+    i{
+      color: white;
+      font-size: 20px;
+    }
+  }
+
 .demo-modal {
   transition: none !important;
   margin: 0;
@@ -649,6 +693,11 @@ form{
 }
 
 //Dashboard CSS
+.alert-boxes{
+  h6{
+    word-wrap: normal;
+  }
+}
 .header-filter,.form-section {
   .form-select,.form-control {
     // padding: 4px 10px;
@@ -776,8 +825,8 @@ form{
     // box-shadow: 0px 0px 2px 2px #e5e5e5;
     box-shadow: 0px 1px 2px 1px #afc7c5;
     background-color: #fff;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    // border-bottom-left-radius: 0;
+    // border-bottom-right-radius: 0;
   }
 
   .card-title{
@@ -1030,6 +1079,9 @@ form{
   }
   .card-header{
     padding: 0;
+  }
+  .menu-sub{
+    box-shadow: 0px 1px 2px 1px #afc7c5;
   }
 }
 
@@ -1521,9 +1573,7 @@ form{
 }
 
 .export-report{
-  position: absolute;
-  top: 0;
-  right: 0;
+  
   border: 1px solid #ccc;
   border-radius: 4px;
   button{
@@ -1950,6 +2000,9 @@ form{
 
 .reports-page {
   .export-report{
+    position: absolute;
+    top: 0;
+    right: 0;
     button{
       padding: 5px 10px !important;
     }
