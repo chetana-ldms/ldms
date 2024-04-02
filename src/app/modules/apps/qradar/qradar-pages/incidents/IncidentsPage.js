@@ -252,7 +252,7 @@ const IncidentsPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="scroll-y h-450px">
+                  <div className="scroll-y h-500px">
                     <div className="incident-list">
                       <>
                         {loading && <UsersListLoading />}
