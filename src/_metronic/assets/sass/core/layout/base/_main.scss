@@ -493,6 +493,7 @@ body {
     border-radius: 5px !important;
     .form-switch{
       margin-bottom: 10px;
+      margin-right: 15px;
     }
     label{
       color: #333;
@@ -1272,7 +1273,7 @@ form{
   }
 }
 
-.scroll-y{
+.scroll-y,.scroll-x{
     scrollbar-color: #68aef3 transparent;
     scrollbar-width: 2px;
     &::-webkit-scrollbar-thumb {

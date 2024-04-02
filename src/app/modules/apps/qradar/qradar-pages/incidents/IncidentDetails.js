@@ -305,7 +305,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </li>
             </ul>
 
-            <div className="tab-content h-500px scroll-y" id="myTabContent">
+            <div className="tab-content h-auto" id="myTabContent">
               <div
                 className="tab-pane fade show active me-n5 pe-5 h-500px"
                 id="kt_tab_pane_1"

@@ -360,7 +360,7 @@ const DashboardWrapper = () => {
                     <span className="fw-bold fs-22 mt-10 mb-8">
                       {alertsResolvedMeanTime.alertsResolvedMeanTime
                         ? alertsResolvedMeanTime.alertsResolvedMeanTime
-                        : "0"}
+                        : "00:00:00"}
                     </span>
                     <span className="span-red">
                       {/* <i className="fa fa-arrow-down"></i> 100% */}

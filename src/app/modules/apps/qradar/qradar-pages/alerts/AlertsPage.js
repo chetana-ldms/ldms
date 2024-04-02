@@ -1892,11 +1892,11 @@ const AlertsPage = () => {
                                     <div className="row alert-accordion">
                                       <div className="col-md-10">
                                         <div className="alert-details">
-                                          <b>Alert Name : </b>
+                                          <b>Alert Name </b>
                                           <span>{item.name}</span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Score : </b>
+                                          <b>Score</b>
                                           <span>
                                             {item.score === null ||
                                             item.score === ""
@@ -1905,19 +1905,19 @@ const AlertsPage = () => {
                                           </span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>SLA : </b>
+                                          <b>SLA </b>
                                           <span>{item.sla}</span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Severity : </b>
+                                          <b>Severity </b>
                                           <span>{item.severityName}</span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Status : </b>
+                                          <b>Status </b>
                                           <span>{item.status}</span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Detected Date/Time : </b>
+                                          <b>Detected Date/Time </b>
                                           <span>
                                             {item.detectedtime &&
                                               getCurrentTimeZone(
@@ -1926,19 +1926,19 @@ const AlertsPage = () => {
                                           </span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Observable Tag : </b>
+                                          <b>Observable Tag </b>
                                           <span>{item.observableTag} </span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Owner Name : </b>
+                                          <b>Owner Name </b>
                                           <span>{item.ownerusername}</span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Analysts Verdict : </b>
+                                          <b>Analysts Verdict </b>
                                           <span>{item.positiveAnalysis} </span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Source Name : </b>
+                                          <b>Source Name </b>
                                           <span>{item.source}</span>{" "}
                                         </div>
                                       </div>

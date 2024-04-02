@@ -252,7 +252,7 @@ const IncidentsPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="scroll-y h-400px">
+                  <div className="scroll-y h-450px">
                     <div className="incident-list">
                       <>
                         {loading && <UsersListLoading />}
@@ -296,11 +296,11 @@ const IncidentsPage = () => {
                               <hr className="my-0" />
                               <div className="d-flex justify-content-between bd-highlight mt-2">
                                 {item.ownerName ? (
-                                  <div className="p-1 bd-highlight fs-14">
+                                  <div className="p-1 bd-highlight fs-12">
                                     {item.ownerName}
                                   </div>
                                 ) : (
-                                  <div className="p-1 bd-highlight fs-14">
+                                  <div className="p-1 bd-highlight fs-12">
                                     {item.createdUser}
                                   </div>
                                 )}

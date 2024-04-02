@@ -1,53 +1,70 @@
-import React, {useEffect, useState} from 'react'
-import {fetchPolicyDetailsUrl} from '../../../../../api/SentinalApi'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
+import React, { useEffect, useState } from "react";
+import { fetchPolicyDetailsUrl } from "../../../../../api/SentinalApi";
+import { UsersListLoading } from "../components/loading/UsersListLoading";
 
 function Policy() {
-  const orgId = Number(sessionStorage.getItem('orgId'))
-  const [policy, setPolicy] = useState({})
-  console.log(policy, 'policy')
-  const [loading, setLoading] = useState(false)
-  const [reputationChecked, setReputationChecked] = useState(false)
-  const [staticAiChecked, setStaticAiChecked] = useState(false)
-  const [staticAiSuspiciousChecked, setStaticAiSuspiciousChecked] = useState(false)
-  const [behavioralAiChecked, setBehavioralAiChecked] = useState(false)
-  const [documentScriptChecked, setDocumentScriptChecked] = useState(false)
-  const [lateralMovementsChecked, setLateralMovementsChecked] = useState(false)
-  const [antiExploitationChecked, setAntiExploitationChecked] = useState(false)
-  const [unwantedApplicationsChecked, setUnwantedApplicationsChecked] = useState(false)
-  const [applicationControlsChecked, setApplicationControlsChecked] = useState(false)
-  const [alternativeThreatsChecked, setAlternativeThreatsChecked] = useState(false)
+  const orgId = Number(sessionStorage.getItem("orgId"));
+  const [policy, setPolicy] = useState({});
+  console.log(policy, "policy");
+  const [loading, setLoading] = useState(false);
+  const [reputationChecked, setReputationChecked] = useState(false);
+  const [staticAiChecked, setStaticAiChecked] = useState(false);
+  const [staticAiSuspiciousChecked, setStaticAiSuspiciousChecked] = useState(
+    false
+  );
+  const [behavioralAiChecked, setBehavioralAiChecked] = useState(false);
+  const [documentScriptChecked, setDocumentScriptChecked] = useState(false);
+  const [lateralMovementsChecked, setLateralMovementsChecked] = useState(false);
+  const [antiExploitationChecked, setAntiExploitationChecked] = useState(false);
+  const [
+    unwantedApplicationsChecked,
+    setUnwantedApplicationsChecked,
+  ] = useState(false);
+  const [applicationControlsChecked, setApplicationControlsChecked] = useState(
+    false
+  );
+  const [alternativeThreatsChecked, setAlternativeThreatsChecked] = useState(
+    false
+  );
 
-  const [snapshotsChecked, setSnapshotsChecked] = useState(false)
-  const [antiTamperChecked, setAntiTamperChecked] = useState(false)
-  const [scanNewAgentsChecked, setScanNewAgentsChecked] = useState(false)
-  const [suspiciousDriveBlockingChecked, setSuspiciousDriveBlockingChecked] = useState(false)
-  const [loggingChecked, setLoggingChecked] = useState(false)
+  const [snapshotsChecked, setSnapshotsChecked] = useState(false);
+  const [antiTamperChecked, setAntiTamperChecked] = useState(false);
+  const [scanNewAgentsChecked, setScanNewAgentsChecked] = useState(false);
+  const [
+    suspiciousDriveBlockingChecked,
+    setSuspiciousDriveBlockingChecked,
+  ] = useState(false);
+  const [loggingChecked, setLoggingChecked] = useState(false);
 
-  const [threatMitigationChecked, setThreatMitigationChecked] = useState(false)
-  const [blockedDevicesChecked, setBlockedDevicesChecked] = useState(false)
-  const [includeSuspiciousChecked, setIncludeSuspiciousChecked] = useState(false)
-  const [includeWarningChecked, setIncludeWarningChecked] = useState(false)
-  const [showLast30Days, setShowLast30Days] = useState(false)
-  const [contactSupportChecked, setContactSupportChecked] = useState(false)
+  const [threatMitigationChecked, setThreatMitigationChecked] = useState(false);
+  const [blockedDevicesChecked, setBlockedDevicesChecked] = useState(false);
+  const [includeSuspiciousChecked, setIncludeSuspiciousChecked] = useState(
+    false
+  );
+  const [includeWarningChecked, setIncludeWarningChecked] = useState(false);
+  const [showLast30Days, setShowLast30Days] = useState(false);
+  const [contactSupportChecked, setContactSupportChecked] = useState(false);
 
-  const [deepVisibilityEnabled, setDeepVisibilityEnabled] = useState(false)
-  const [processEnabled, setProcessEnabled] = useState(false)
-  const [fileEnabled, setFileEnabled] = useState(false)
-  const [urlEnabled, setUrlEnabled] = useState(false)
-  const [dnsEnabled, setDnsEnabled] = useState(false)
-  const [ipEnabled, setIpEnabled] = useState(false)
-  const [loginEnabled, setLoginEnabled] = useState(false)
-  const [registryKeysEnabled, setRegistryKeysEnabled] = useState(false)
-  const [scheduledTasksEnabled, setScheduledTasksEnabled] = useState(false)
-  const [behavioralIndicatorsEnabled, setBehavioralIndicatorsEnabled] = useState(false)
-  const [commandScriptsEnabled, setCommandScriptsEnabled] = useState(false)
-  const [crossProcessEnabled, setCrossProcessEnabled] = useState(false)
-  const [driverLoadEnabled, setDriverLoadEnabled] = useState(false)
-  const [dataMaskingEnabled, setDataMaskingEnabled] = useState(false)
-  const [fileMonitoringEnabled, setFileMonitoringEnabled] = useState(false)
+  const [deepVisibilityEnabled, setDeepVisibilityEnabled] = useState(false);
+  const [processEnabled, setProcessEnabled] = useState(false);
+  const [fileEnabled, setFileEnabled] = useState(false);
+  const [urlEnabled, setUrlEnabled] = useState(false);
+  const [dnsEnabled, setDnsEnabled] = useState(false);
+  const [ipEnabled, setIpEnabled] = useState(false);
+  const [loginEnabled, setLoginEnabled] = useState(false);
+  const [registryKeysEnabled, setRegistryKeysEnabled] = useState(false);
+  const [scheduledTasksEnabled, setScheduledTasksEnabled] = useState(false);
+  const [
+    behavioralIndicatorsEnabled,
+    setBehavioralIndicatorsEnabled,
+  ] = useState(false);
+  const [commandScriptsEnabled, setCommandScriptsEnabled] = useState(false);
+  const [crossProcessEnabled, setCrossProcessEnabled] = useState(false);
+  const [driverLoadEnabled, setDriverLoadEnabled] = useState(false);
+  const [dataMaskingEnabled, setDataMaskingEnabled] = useState(false);
+  const [fileMonitoringEnabled, setFileMonitoringEnabled] = useState(false);
 
-  const [autoDecommissionEnabled, setAutoDecommissionEnabled] = useState(false)
+  const [autoDecommissionEnabled, setAutoDecommissionEnabled] = useState(false);
 
   const fetchData = async () => {
     const data = {
@@ -56,276 +73,323 @@ function Policy() {
       accountPolicyScope: true,
       sitePolicyScope: false,
       groupPolicyScope: false,
-      scopeId: '1665272541043650534',
-    }
+      scopeId: "1665272541043650534",
+    };
     try {
-      setLoading(true)
-      const response = await fetchPolicyDetailsUrl(data)
-      setPolicy(response)
+      setLoading(true);
+      const response = await fetchPolicyDetailsUrl(data);
+      setPolicy(response);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   return (
-    <div className='account-policy'>
+    <div className="account-policy">
       {loading ? (
         <UsersListLoading />
       ) : (
         <>
-          <div className='row'>
-            <div className='col-md-6'>
+          <div className="row">
+            <div className="col-md-6">
               <p>
-                <i className='fa fa-circle-exclamation incident-icon blue mg0right-5' /> Last
-                Modified 12 days ago
+                <i className="fa fa-circle-exclamation incident-icon blue mg0right-5" />{" "}
+                Last Modified 12 days ago
               </p>
             </div>
-            <div className='col-md-6 d-flex justify-content-end'>
+            <div className="col-md-6 d-flex justify-content-end">
               <p>Revert to default inherited policy</p>
             </div>
           </div>
-          <div className='row'>
-            <div className='col-md-7'>
-              <div className='card'>
-                <div className='bg-heading'>
-                  <h6 className='white pad-10'>Protection Mode</h6>
+          <div className="row">
+            <div className="col-md-7">
+              <div className="card">
+                <div className="bg-heading">
+                  <h6 className="white pad-10">Protection Mode</h6>
                 </div>
-                <div className='card-body'>
-                  <div className='d-flex my-5'>
-                    <h6 className='mr-3'>Malicious Threats</h6>
-                    <div className='form-check form-check-inline'>
+                <div className="card-body pad-10">
+                  <div className="d-flex">
+                    <h6 className="mr-3">Malicious Threats</h6>
+                    <div className="form-check form-check-inline">
                       <input
-                        className='form-check-input'
-                        type='radio'
-                        id='detect'
-                        name='maliciousThreatsGroup'
-                        checked={policy?.mitigationMode === 'detect'}
+                        className="form-check-input"
+                        type="radio"
+                        id="detect"
+                        name="maliciousThreatsGroup"
+                        checked={policy?.mitigationMode === "detect"}
                       />
-                      <label className='form-check-label mr-3' htmlFor='detect'>
+                      <label className="form-check-label mr-3" htmlFor="detect">
                         Detect
                       </label>
                     </div>
-                    <div className='form-check form-check-inline'>
+                    <div className="form-check form-check-inline">
                       <input
-                        className='form-check-input'
-                        type='radio'
-                        id='protect'
-                        name='maliciousThreatsGroup'
-                        checked={policy?.mitigationMode === 'protect'}
+                        className="form-check-input"
+                        type="radio"
+                        id="protect"
+                        name="maliciousThreatsGroup"
+                        checked={policy?.mitigationMode === "protect"}
                       />
-                      <label className='form-check-label mr-3' htmlFor='protect'>
+                      <label
+                        className="form-check-label mr-3"
+                        htmlFor="protect"
+                      >
                         Protect
                       </label>
                     </div>
-                    <div className='form-check form-check-inline'>
+                    <div className="form-check form-check-inline">
                       <input
-                        className='form-check-input'
-                        type='radio'
-                        id='quarantine'
-                        name='maliciousThreatsGroup'
-                        checked={policy?.mitigationMode === 'Kill & Quarantine'}
+                        className="form-check-input"
+                        type="radio"
+                        id="quarantine"
+                        name="maliciousThreatsGroup"
+                        checked={policy?.mitigationMode === "Kill & Quarantine"}
                       />
-                      <label className='form-check-label' htmlFor='quarantine'>
+                      <label className="form-check-label" htmlFor="quarantine">
                         Kill & Quarantine
                       </label>
                     </div>
                   </div>
 
-                  <div className='d-flex my-5'>
-                    <h6 className='mr-3'>Suspicious Threat</h6>
-                    <div className='form-check form-check-inline'>
+                  <div className="d-flex my-5">
+                    <h6 className="mr-3">Suspicious Threat</h6>
+                    <div className="form-check form-check-inline">
                       <input
-                        className='form-check-input'
-                        type='radio'
-                        id='detect'
-                        name='suspiciousThreatsGroup'
-                        checked={policy?.mitigationModeSuspicious === 'detect'}
+                        className="form-check-input"
+                        type="radio"
+                        id="detect"
+                        name="suspiciousThreatsGroup"
+                        checked={policy?.mitigationModeSuspicious === "detect"}
                       />
-                      <label className='form-check-label mr-3' htmlFor='detect'>
+                      <label className="form-check-label mr-3" htmlFor="detect">
                         Detect
                       </label>
                     </div>
-                    <div className='form-check form-check-inline'>
+                    <div className="form-check form-check-inline">
                       <input
-                        className='form-check-input'
-                        type='radio'
-                        id='protect'
-                        name='suspiciousThreatsGroup'
-                        checked={policy?.mitigationModeSuspicious === 'protect'}
+                        className="form-check-input"
+                        type="radio"
+                        id="protect"
+                        name="suspiciousThreatsGroup"
+                        checked={policy?.mitigationModeSuspicious === "protect"}
                       />
-                      <label className='form-check-label mr-3' htmlFor='protect'>
+                      <label
+                        className="form-check-label mr-3"
+                        htmlFor="protect"
+                      >
                         Protect
                       </label>
                     </div>
-                    <div className='form-check form-check-inline'>
+                    <div className="form-check form-check-inline">
                       <input
-                        className='form-check-input'
-                        type='radio'
-                        id='alerts'
-                        name='suspiciousThreatsGroup'
-                        checked={policy?.mitigationModeSuspicious === 'alerts'}
+                        className="form-check-input"
+                        type="radio"
+                        id="alerts"
+                        name="suspiciousThreatsGroup"
+                        checked={policy?.mitigationModeSuspicious === "alerts"}
                       />
-                      <label className='form-check-label' htmlFor='alerts'>
+                      <label className="form-check-label" htmlFor="alerts">
                         Alerts Only
                       </label>
                     </div>
                   </div>
-                  
 
                   <h4>Malicious Macros Mitigation</h4>
                   <p>
-                    this only applies when the static AI detection engine is on. add the proytection
-                    mode of Malicious Threats is set to protect.{' '}
+                    this only applies when the static AI detection engine is on.
+                    add the proytection mode of Malicious Threats is set to
+                    protect.{" "}
                   </p>
-                  <input className='' type='checkbox' />
+                  <input className="" type="checkbox" />
                   <label>
-                    Remove malicious Macros from the office file instead of placing the files in
-                    quarantine
+                    Remove malicious Macros from the office file instead of
+                    placing the files in quarantine
                   </label>
                   <hr />
                   <div>
                     <span>
-                      {' '}
-                      <strong>cantainment</strong>
+                      {" "}
+                      <strong>cantainment</strong>{" "}
                     </span>
-                    <span>
-                      {' '}
-                      <input className='' type='checkbox' />
+                    <span className="mg-left-5">
+                      {" "}
+                      <input className="" type="checkbox" />
                       <label>Disconnect from the network</label>
                     </span>
                   </div>
                 </div>
               </div>
             </div>
-            <div className='col-md-5'>
-              <div className='card'>
-                <div className='card-header bg-heading'>
-                  <h6 className='pad-10 white'>Detection Engine</h6>
+            <div className="col-md-5">
+              <div className="card">
+                <div className="card-header bg-heading">
+                  <h6 className="pad-10 white">Detection Engine</h6>
                 </div>
-                <div className='card-body pad-10'>
-                  <div className='form-check form-switch'>
+                <div className="card-body pad-10">
+                  <div className="form-check form-switch">
                     <input
-                      className='form-check-input'
-                      type='checkbox'
-                      id='reputation'
+                      className="form-check-input"
+                      type="checkbox"
+                      id="reputation"
                       checked={policy?.engines?.reputation}
                       onChange={() => setReputationChecked(!reputationChecked)}
                     />
-                    <label className='form-check-label' htmlFor='reputation'>
+                    <label className="form-check-label" htmlFor="reputation">
                       Reputation
                     </label>
                   </div>
-                  <div className='form-check form-switch'>
+                  <div className="form-check form-switch">
                     <input
-                      className='form-check-input'
-                      type='checkbox'
-                      id='staticAi'
+                      className="form-check-input"
+                      type="checkbox"
+                      id="staticAi"
                       checked={staticAiChecked}
                       onChange={() => setStaticAiChecked(!staticAiChecked)}
                     />
-                    <label className='form-check-label' htmlFor='staticAi'>
+                    <label className="form-check-label" htmlFor="staticAi">
                       Static AI
                     </label>
                   </div>
-                  <div className='form-check form-switch'>
+                  <div className="form-check form-switch">
                     <input
-                      className='form-check-input'
-                      type='checkbox'
-                      id='staticAiSuspicious'
+                      className="form-check-input"
+                      type="checkbox"
+                      id="staticAiSuspicious"
                       checked={staticAiSuspiciousChecked}
-                      onChange={() => setStaticAiSuspiciousChecked(!staticAiSuspiciousChecked)}
+                      onChange={() =>
+                        setStaticAiSuspiciousChecked(!staticAiSuspiciousChecked)
+                      }
                     />
-                    <label className='form-check-label' htmlFor='staticAiSuspicious'>
+                    <label
+                      className="form-check-label"
+                      htmlFor="staticAiSuspicious"
+                    >
                       Static AI - Suspicious
                     </label>
                   </div>
-                  <div className='form-check form-switch'>
+                  <div className="form-check form-switch">
                     <input
-                      className='form-check-input'
-                      type='checkbox'
-                      id='behavioralAi'
+                      className="form-check-input"
+                      type="checkbox"
+                      id="behavioralAi"
                       checked={policy?.engines?.executables}
-                      onChange={() => setBehavioralAiChecked(!behavioralAiChecked)}
+                      onChange={() =>
+                        setBehavioralAiChecked(!behavioralAiChecked)
+                      }
                     />
-                    <label className='form-check-label' htmlFor='behavioralAi'>
+                    <label className="form-check-label" htmlFor="behavioralAi">
                       Behavioral AI - Executable
                     </label>
                   </div>
-                  <div className='form-check form-switch'>
+                  <div className="form-check form-switch">
                     <input
-                      className='form-check-input'
-                      type='checkbox'
-                      id='documentScript'
+                      className="form-check-input"
+                      type="checkbox"
+                      id="documentScript"
                       checked={documentScriptChecked}
-                      onChange={() => setDocumentScriptChecked(!documentScriptChecked)}
+                      onChange={() =>
+                        setDocumentScriptChecked(!documentScriptChecked)
+                      }
                     />
-                    <label className='form-check-label' htmlFor='documentScript'>
+                    <label
+                      className="form-check-label"
+                      htmlFor="documentScript"
+                    >
                       Document, Script
                     </label>
                   </div>
-                  <div className='form-check form-switch'>
+                  <div className="form-check form-switch">
                     <input
-                      className='form-check-input'
-                      type='checkbox'
-                      id='lateralMovements'
+                      className="form-check-input"
+                      type="checkbox"
+                      id="lateralMovements"
                       checked={policy?.engines?.lateralMovement}
-                      onChange={() => setLateralMovementsChecked(!lateralMovementsChecked)}
+                      onChange={() =>
+                        setLateralMovementsChecked(!lateralMovementsChecked)
+                      }
                     />
-                    <label className='form-check-label' htmlFor='lateralMovements'>
+                    <label
+                      className="form-check-label"
+                      htmlFor="lateralMovements"
+                    >
                       Lateral Movements
                     </label>
                   </div>
-                  <div className='form-check form-switch'>
+                  <div className="form-check form-switch">
                     <input
-                      className='form-check-input'
-                      type='checkbox'
-                      id='antiExploitation'
+                      className="form-check-input"
+                      type="checkbox"
+                      id="antiExploitation"
                       checked={policy?.engines?.exploits}
-                      onChange={() => setAntiExploitationChecked(!antiExploitationChecked)}
+                      onChange={() =>
+                        setAntiExploitationChecked(!antiExploitationChecked)
+                      }
                     />
-                    <label className='form-check-label' htmlFor='antiExploitation'>
+                    <label
+                      className="form-check-label"
+                      htmlFor="antiExploitation"
+                    >
                       Anti Exploitation / Fileless
                     </label>
                   </div>
-                  <div className='form-check form-switch'>
+                  <div className="form-check form-switch">
                     <input
-                      className='form-check-input'
-                      type='checkbox'
-                      id='unwantedApplications'
+                      className="form-check-input"
+                      type="checkbox"
+                      id="unwantedApplications"
                       checked={unwantedApplicationsChecked}
-                      onChange={() => setUnwantedApplicationsChecked(!unwantedApplicationsChecked)}
+                      onChange={() =>
+                        setUnwantedApplicationsChecked(
+                          !unwantedApplicationsChecked
+                        )
+                      }
                     />
-                    <label className='form-check-label' htmlFor='unwantedApplications'>
+                    <label
+                      className="form-check-label"
+                      htmlFor="unwantedApplications"
+                    >
                       Potential Unwanted Applications
                     </label>
                   </div>
-                  <div className='form-check form-switch'>
+                  <div className="form-check form-switch">
                     <input
-                      className='form-check-input'
-                      type='checkbox'
-                      id='applicationControls'
+                      className="form-check-input"
+                      type="checkbox"
+                      id="applicationControls"
                       checked={policy?.engines?.applicationControl}
-                      onChange={() => setApplicationControlsChecked(!applicationControlsChecked)}
+                      onChange={() =>
+                        setApplicationControlsChecked(
+                          !applicationControlsChecked
+                        )
+                      }
                     />
-                    <label className='form-check-label' htmlFor='applicationControls'>
+                    <label
+                      className="form-check-label"
+                      htmlFor="applicationControls"
+                    >
                       Application Controls
                     </label>
                   </div>
-                  <div className='form-check form-switch'>
+                  <div className="form-check form-switch">
                     <input
-                      className='form-check-input'
-                      type='checkbox'
-                      id='alternativeThreats'
+                      className="form-check-input"
+                      type="checkbox"
+                      id="alternativeThreats"
                       checked={alternativeThreatsChecked}
-                      onChange={() => setAlternativeThreatsChecked(!alternativeThreatsChecked)}
+                      onChange={() =>
+                        setAlternativeThreatsChecked(!alternativeThreatsChecked)
+                      }
                     />
-                    <label className='form-check-label' htmlFor='alternativeThreats'>
+                    <label
+                      className="form-check-label"
+                      htmlFor="alternativeThreats"
+                    >
                       Detect Alternative Threats
                     </label>
                   </div>
@@ -333,202 +397,265 @@ function Policy() {
               </div>
             </div>
           </div>
-          <div className='row mt-5'>
-            <div className='col-lg-12'>
-              <div className='card'>
-                <div className='card-header bg-heading'>
-                  <h6 className='white pad-10'>Agent</h6>
+          <div className="row mt-5">
+            <div className="col-lg-12">
+              <div className="card">
+                <div className="card-header bg-heading">
+                  <h6 className="white pad-10">Agent</h6>
                 </div>
-                <div className='card-body row pad-10'>
-                  <div className='col-md-3'>
+                <div className="card-body row pad-10 mt-3">
+                  <div className="col-md-2">
                     <p>Security Settings</p>
                   </div>
-                  <div className='col-md-9'>
-                    <div className='form-check form-switch'>
-                      <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='snapshots'
-                        checked={policy?.snapshotsOn}
-                        onChange={() => setSnapshotsChecked(!snapshotsChecked)}
-                      />
-                      <label className='form-check-label' htmlFor='snapshots'>
-                        Snapshots
-                      </label>
-                    </div>
-                    <div className='form-check form-switch'>
-                      <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='antiTamper'
-                        checked={policy?.antiTamperingOn}
-                        onChange={() => setAntiTamperChecked(!antiTamperChecked)}
-                      />
-                      <label className='form-check-label' htmlFor='antiTamper'>
-                        Anti Tamper
-                      </label>
-                    </div>
-                    <div className='form-check form-switch'>
-                      <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='scanNewAgents'
-                        checked={policy?.scanNewAgents}
-                        onChange={() => setScanNewAgentsChecked(!scanNewAgentsChecked)}
-                      />
-                      <label className='form-check-label' htmlFor='scanNewAgents'>
-                        Scan new agents
-                      </label>
-                    </div>
-                    <div className='form-check form-switch'>
-                      <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='suspiciousDriveBlocking'
-                        checked={policy?.signedDriverBlockingOn}
-                        onChange={() =>
-                          setSuspiciousDriveBlockingChecked(!suspiciousDriveBlockingChecked)
-                        }
-                      />
-                      <label className='form-check-label' htmlFor='suspiciousDriveBlocking'>
-                        Suspicious Drive Blocking
-                      </label>
-                    </div>
-                    <div className='form-check form-switch'>
-                      <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='logging'
-                        checked={policy?.agentLoggingOn}
-                        onChange={() => setLoggingChecked(!loggingChecked)}
-                      />
-                      <label className='form-check-label' htmlFor='logging'>
-                        Logging
-                      </label>
-                    </div>
+                  <div className="col-md-10">
+                    <ul>
+                      <li className="form-check form-switch inline-block">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="snapshots"
+                          checked={policy?.snapshotsOn}
+                          onChange={() =>
+                            setSnapshotsChecked(!snapshotsChecked)
+                          }
+                        />
+                        <label className="form-check-label" htmlFor="snapshots">
+                          Snapshots
+                        </label>
+                      </li>
+                      <li className="form-check form-switch inline-block">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="antiTamper"
+                          checked={policy?.antiTamperingOn}
+                          onChange={() =>
+                            setAntiTamperChecked(!antiTamperChecked)
+                          }
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor="antiTamper"
+                        >
+                          Anti Tamper
+                        </label>
+                      </li>
+                      <li className="form-check form-switch inline-block">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="scanNewAgents"
+                          checked={policy?.scanNewAgents}
+                          onChange={() =>
+                            setScanNewAgentsChecked(!scanNewAgentsChecked)
+                          }
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor="scanNewAgents"
+                        >
+                          Scan new agents
+                        </label>
+                      </li>
+                      <li className="form-check form-switch inline-block">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="suspiciousDriveBlocking"
+                          checked={policy?.signedDriverBlockingOn}
+                          onChange={() =>
+                            setSuspiciousDriveBlockingChecked(
+                              !suspiciousDriveBlockingChecked
+                            )
+                          }
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor="suspiciousDriveBlocking"
+                        >
+                          Suspicious Drive Blocking
+                        </label>
+                      </li>
+                      <li className="form-check form-switch inline-block">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="logging"
+                          checked={policy?.agentLoggingOn}
+                          onChange={() => setLoggingChecked(!loggingChecked)}
+                        />
+                        <label className="form-check-label" htmlFor="logging">
+                          Logging
+                        </label>
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className='row mt-5'>
-            <div className='col-lg-12'>
-              <div className='card'>
-                <div className='bg-heading'>
-                  <h6 className='white pad-10'>Agent UI</h6>
+          <div className="row mt-5">
+            <div className="col-lg-12">
+              <div className="card">
+                <div className="bg-heading">
+                  <h6 className="white pad-10">Agent UI</h6>
                 </div>
-                <div className='mt-5 card-body pad-10'>
-                  <input className='' type='checkbox' checked={policy?.agentUi?.agentUiOn} />
+                <div className="mt-5 card-body pad-10">
+                  <input
+                    className=""
+                    type="checkbox"
+                    checked={policy?.agentUi?.agentUiOn}
+                  />
                   <label>Show Agent UI & tray icon on endpoints</label>
 
-                  <p>Set which information and notification to show for end-user</p>
-                  <div>
-                    <p>show pop-up notification for:</p>
-                    <div className='form-check form-switch'>
+                  <p className="semi-bold">
+                    Set which information and notification to show for end-user
+                  </p>
+                  <div className="d-flex justify-align-center">
+                    <span>Show pop-up notification for:</span>
+                    <div className="form-check-inline form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='threatMitigation'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="threatMitigation"
                         checked={policy?.agentUi?.threatPopUpNotifications}
-                        onChange={() => setThreatMitigationChecked(!threatMitigationChecked)}
+                        onChange={() =>
+                          setThreatMitigationChecked(!threatMitigationChecked)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='threatMitigation'>
+                      <label
+                        className="form-check-label"
+                        htmlFor="threatMitigation"
+                      >
                         Threat and Mitigation
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check-inline form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='blockedDevices'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="blockedDevices"
                         checked={policy?.agentUi?.devicePopUpNotifications}
-                        onChange={() => setBlockedDevicesChecked(!blockedDevicesChecked)}
+                        onChange={() =>
+                          setBlockedDevicesChecked(!blockedDevicesChecked)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='blockedDevices'>
+                      <label
+                        className="form-check-label"
+                        htmlFor="blockedDevices"
+                      >
                         Blocked Devices
                       </label>
                     </div>
                   </div>
                   <div>
                     <p>show Suspicious event in the UI:</p>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='includeSuspicious'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="includeSuspicious"
                         checked={policy?.agentUi?.showSuspicious}
-                        onChange={() => setIncludeSuspiciousChecked(!includeSuspiciousChecked)}
+                        onChange={() =>
+                          setIncludeSuspiciousChecked(!includeSuspiciousChecked)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='includeSuspicious'>
+                      <label
+                        className="form-check-label"
+                        htmlFor="includeSuspicious"
+                      >
                         Include Suspicious
                       </label>
                     </div>
                   </div>
                   <div>
                     <p>show warning in case of Agent errors:</p>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='includeWarning'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="includeWarning"
                         checked={policy?.agentUi?.showAgentWarnings}
-                        onChange={() => setIncludeWarningChecked(!includeWarningChecked)}
+                        onChange={() =>
+                          setIncludeWarningChecked(!includeWarningChecked)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='includeWarning'>
+                      <label
+                        className="form-check-label"
+                        htmlFor="includeWarning"
+                      >
                         Include warning
                       </label>
                     </div>
                   </div>
                   <div>
                     <p>show in the UI events from the last:</p>
-                    <div className='form-check'>
+                    <div className="form-check">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='showLast30Days'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="showLast30Days"
                         checked={policy?.agentUi?.maxEventAgeDays}
                         onChange={() => setShowLast30Days(!showLast30Days)}
                       />
-                      <label className='form-check-label' htmlFor='showLast30Days'>
+                      <label
+                        className="form-check-label"
+                        htmlFor="showLast30Days"
+                      >
                         30 days
                       </label>
                     </div>
                   </div>
                   <div>
                     <p>show these menu item in the UI:</p>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='threatMitigation'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="threatMitigation"
                         checked={policy?.agentUi?.showDeviceTab}
-                        onChange={() => setThreatMitigationChecked(!threatMitigationChecked)}
+                        onChange={() =>
+                          setThreatMitigationChecked(!threatMitigationChecked)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='threatMitigation'>
+                      <label
+                        className="form-check-label"
+                        htmlFor="threatMitigation"
+                      >
                         Blocked Devices
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='blockedDevices'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="blockedDevices"
                         checked={policy?.agentUi?.showQuarantineTab}
-                        onChange={() => setBlockedDevicesChecked(!blockedDevicesChecked)}
+                        onChange={() =>
+                          setBlockedDevicesChecked(!blockedDevicesChecked)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='blockedDevices'>
+                      <label
+                        className="form-check-label"
+                        htmlFor="blockedDevices"
+                      >
                         Quarantined Files
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='contactSupport'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="contactSupport"
                         checked={policy?.agentUi?.showSupport}
-                        onChange={() => setContactSupportChecked(!contactSupportChecked)}
+                        onChange={() =>
+                          setContactSupportChecked(!contactSupportChecked)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='contactSupport'>
+                      <label
+                        className="form-check-label"
+                        htmlFor="contactSupport"
+                      >
                         Contact Support
                       </label>
                     </div>
@@ -537,309 +664,359 @@ function Policy() {
               </div>
             </div>
           </div>
-          <div className='row mt-5'>
-            <div className='col-lg-12'>
-              <div className='card'>
-                <p className='pad-10'>
-                  <i className='fa fa-circle-exclamation incident-icon blue mg0right-5' /> Some
-                  agent Ui settings are supported for the agent version 21.7+
+          <div className="row mt-5">
+            <div className="col-lg-12">
+              <div className="card">
+                <p className="pad-10">
+                  <i className="fa fa-circle-exclamation incident-icon blue mg0right-5" />{" "}
+                  Some agent Ui settings are supported for the agent version
+                  21.7+
                 </p>
               </div>
             </div>
           </div>
-          <div className='row mt-5'>
-            <div className='col-lg-12'>
-              <div className='card'>
-                <div className='card-header bg-heading'>
-                  <h6 className='white pad-10'>Deep Visibality</h6>
+          <div className="row mt-5">
+            <div className="col-lg-12">
+              <div className="card">
+                <div className="card-header bg-heading">
+                  <h6 className="white pad-10">Deep Visibality</h6>
                 </div>
-                <div className='card-body pad-10'>
-                  <div className='d-flex justify-content-between'>
+                <div className="card-body pad-10">
+                  <div className="d-flex justify-content-between">
                     <div>
                       <h6>Deep Visibality configuration</h6>
                       <p>collect this deep Visibality data</p>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='deepVisibility'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="deepVisibility"
                         checked={policy?.isDefault}
-                        onChange={() => setDeepVisibilityEnabled(!deepVisibilityEnabled)}
+                        onChange={() =>
+                          setDeepVisibilityEnabled(!deepVisibilityEnabled)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='deepVisibility'>
+                      <label
+                        className="form-check-label"
+                        htmlFor="deepVisibility"
+                      >
                         Enable deep Visibility
                       </label>
                     </div>
-                    <div className='float-right'>
+                    <div className="float-right">
                       <span>icon</span> <span>Event type configuration</span>
                     </div>
                   </div>
-                  <div className='d-flex flex-wrap'>
-                    <div className='form-check form-switch'>
+                  <div className="d-flex flex-wrap">
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='process'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="process"
                         checked={policy?.iocAttributes?.process}
                         onChange={() => setProcessEnabled(!processEnabled)}
                       />
-                      <label className='form-check-label' htmlFor='process'>
+                      <label className="form-check-label" htmlFor="process">
                         Process
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='file'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="file"
                         checked={policy?.iocAttributes?.file}
                         onChange={() => setFileEnabled(!fileEnabled)}
                       />
-                      <label className='form-check-label' htmlFor='file'>
+                      <label className="form-check-label" htmlFor="file">
                         File
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='url'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="url"
                         checked={policy?.iocAttributes?.url}
                         onChange={() => setUrlEnabled(!urlEnabled)}
                       />
-                      <label className='form-check-label' htmlFor='url'>
+                      <label className="form-check-label" htmlFor="url">
                         URL
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='dns'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="dns"
                         checked={policy?.iocAttributes?.dns}
                         onChange={() => setDnsEnabled(!dnsEnabled)}
                       />
-                      <label className='form-check-label' htmlFor='dns'>
+                      <label className="form-check-label" htmlFor="dns">
                         DNS
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='ip'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="ip"
                         checked={policy?.iocAttributes?.ip}
                         onChange={() => setIpEnabled(!ipEnabled)}
                       />
-                      <label className='form-check-label' htmlFor='ip'>
+                      <label className="form-check-label" htmlFor="ip">
                         IP
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='login'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="login"
                         checked={policy?.iocAttributes?.windowsEventLogs}
                         onChange={() => setLoginEnabled(!loginEnabled)}
                       />
-                      <label className='form-check-label' htmlFor='login'>
+                      <label className="form-check-label" htmlFor="login">
                         Login
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='registryKeys'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="registryKeys"
                         checked={policy?.iocAttributes?.registry}
-                        onChange={() => setRegistryKeysEnabled(!registryKeysEnabled)}
+                        onChange={() =>
+                          setRegistryKeysEnabled(!registryKeysEnabled)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='registryKeys'>
+                      <label
+                        className="form-check-label"
+                        htmlFor="registryKeys"
+                      >
                         Registry Keys
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='scheduledTasks'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="scheduledTasks"
                         checked={policy?.iocAttributes?.scheduledTask}
-                        onChange={() => setScheduledTasksEnabled(!scheduledTasksEnabled)}
+                        onChange={() =>
+                          setScheduledTasksEnabled(!scheduledTasksEnabled)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='scheduledTasks'>
+                      <label
+                        className="form-check-label"
+                        htmlFor="scheduledTasks"
+                      >
                         Scheduled Tasks
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='behavioralIndicators'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="behavioralIndicators"
                         checked={policy?.iocAttributes?.behavioralIndicators}
                         onChange={() =>
-                          setBehavioralIndicatorsEnabled(!behavioralIndicatorsEnabled)
+                          setBehavioralIndicatorsEnabled(
+                            !behavioralIndicatorsEnabled
+                          )
                         }
                       />
-                      <label className='form-check-label' htmlFor='behavioralIndicators'>
+                      <label
+                        className="form-check-label"
+                        htmlFor="behavioralIndicators"
+                      >
                         Behavioral Indicators
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='commandScripts'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="commandScripts"
                         checked={policy?.iocAttributes?.commandScripts}
-                        onChange={() => setCommandScriptsEnabled(!commandScriptsEnabled)}
+                        onChange={() =>
+                          setCommandScriptsEnabled(!commandScriptsEnabled)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='commandScripts'>
+                      <label
+                        className="form-check-label"
+                        htmlFor="commandScripts"
+                      >
                         Command Scripts
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='crossProcess'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="crossProcess"
                         checked={policy?.iocAttributes?.crossProcess}
-                        onChange={() => setCrossProcessEnabled(!crossProcessEnabled)}
+                        onChange={() =>
+                          setCrossProcessEnabled(!crossProcessEnabled)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='crossProcess'>
+                      <label
+                        className="form-check-label"
+                        htmlFor="crossProcess"
+                      >
                         Cross Process
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='driverLoad'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="driverLoad"
                         checked={policy?.iocAttributes?.driver}
-                        onChange={() => setDriverLoadEnabled(!driverLoadEnabled)}
+                        onChange={() =>
+                          setDriverLoadEnabled(!driverLoadEnabled)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='driverLoad'>
+                      <label className="form-check-label" htmlFor="driverLoad">
                         Driver Load
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='dataMasking'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="dataMasking"
                         checked={policy?.iocAttributes?.dataMasking}
-                        onChange={() => setDataMaskingEnabled(!dataMaskingEnabled)}
+                        onChange={() =>
+                          setDataMaskingEnabled(!dataMaskingEnabled)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='dataMasking'>
+                      <label className="form-check-label" htmlFor="dataMasking">
                         Data Masking
                       </label>
                     </div>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='fileMonitoring'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="fileMonitoring"
                         checked={policy?.iocAttributes?.smartFileMonitoring}
-                        onChange={() => setFileMonitoringEnabled(!fileMonitoringEnabled)}
+                        onChange={() =>
+                          setFileMonitoringEnabled(!fileMonitoringEnabled)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='fileMonitoring'>
+                      <label
+                        className="form-check-label"
+                        htmlFor="fileMonitoring"
+                      >
                         Focused File Monitoring
                       </label>
                     </div>
                   </div>
                   <div>
                     <input
-                      className=''
-                      type='checkbox'
-                      checked={policy?.iocAttributes?.autoInstallBrowserExtensions}
+                      className=""
+                      type="checkbox"
+                      checked={
+                        policy?.iocAttributes?.autoInstallBrowserExtensions
+                      }
                     />
-                    <label>Automatically install Deep Visibility browser extensions</label>
+                    <label>
+                      Automatically install Deep Visibility browser extensions
+                    </label>
                     <p>
-                      <i className='fa fa-circle-exclamation incident-icon blue mg0right-5' /> Last
-                      Do not search if your organization uses Google Workspace(formerly G Suite) to
-                      manage browser extensions
+                      <i className="fa fa-circle-exclamation incident-icon blue mg0right-5" />{" "}
+                      Last Do not search if your organization uses Google
+                      Workspace(formerly G Suite) to manage browser extensions
                     </p>
                     <p>
-                      This overrides other browser extensions deployed Google Workspace. if your
-                      organization uses Google Workspace to deploy browser extensions, This option
-                      requires Windows Agent 4.7+{' '}
+                      This overrides other browser extensions deployed Google
+                      Workspace. if your organization uses Google Workspace to
+                      deploy browser extensions, This option requires Windows
+                      Agent 4.7+{" "}
                     </p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className='row mt-5'>
-            <div className='col-lg-12'>
-              <div className='card'>
-                <div className='card-header bg-heading'>
-                  <h6 className='white pad-10'>Binary Vault</h6>
+          <div className="row mt-5">
+            <div className="col-lg-12">
+              <div className="card">
+                <div className="card-header bg-heading">
+                  <h6 className="white pad-10">Binary Vault</h6>
                 </div>
-                <div className='card-body row pad-10'>
+                <div className="card-body row pad-10">
                   <div>
                     <span>
-                      {' '}
+                      {" "}
                       <strong>Enable automatic File Upload</strong>
                     </span>
                     <span>
-                      {' '}
+                      {" "}
                       <input
-                        className=''
-                        type='checkbox'
+                        className=""
+                        type="checkbox"
                         checked={policy?.autoFileUpload?.enabled}
                       />
                       <label>Enable automatic File Upload</label>
                     </span>
                   </div>
-                  <div className='row'>
-                    <div className='col-md-5'>
+                  <div className="row">
+                    <div className="col-md-5">
                       <p>Exclude Path</p>
                       <p>Exclude File Type</p>
                       <p>Maximum file size Upload(Max 250MB)</p>
                       <p>Total Upload per agent per day(Max 500MB)</p>
                       <p>offline cache size(Max 2048MB)</p>
                     </div>
-                    <div className='col-md-7'>
+                    <div className="col-md-7">
                       <p>
-                        {' '}
-                        <input type='text' placeholder='New Path' />
+                        {" "}
+                        <input type="text" placeholder="New Path" />
                       </p>
                       <p>
-                        {' '}
-                        <input type='text' placeholder='New File Type' />
+                        {" "}
+                        <input type="text" placeholder="New File Type" />
                       </p>
                       <p>
-                        {' '}
+                        {" "}
                         <input
-                          type='text'
+                          type="text"
                           value={
-                            policy?.autoFileUpload?.maxFileSizeLimit / (1024 * 1024) + ' ' + 'MB'
+                            policy?.autoFileUpload?.maxFileSizeLimit /
+                              (1024 * 1024) +
+                            " " +
+                            "MB"
                           }
-                          placeholder='250 MB'
+                          placeholder="250 MB"
                         />
                       </p>
                       <p>
-                        {' '}
+                        {" "}
                         <input
-                          type='text'
+                          type="text"
                           value={
-                            policy?.autoFileUpload?.maxDailyFileUploadLimit / (1024 * 1024) +
-                            ' ' +
-                            'MB'
+                            policy?.autoFileUpload?.maxDailyFileUploadLimit /
+                              (1024 * 1024) +
+                            " " +
+                            "MB"
                           }
-                          placeholder='500 MB'
+                          placeholder="500 MB"
                         />
                       </p>
                       <p>
-                        {' '}
+                        {" "}
                         <input
-                          type='text'
+                          type="text"
                           value={
-                            policy?.autoFileUpload?.maxLocalDiskUsageLimit / (1024 * 1024) +
-                            ' ' +
-                            'MB'
+                            policy?.autoFileUpload?.maxLocalDiskUsageLimit /
+                              (1024 * 1024) +
+                            " " +
+                            "MB"
                           }
-                          placeholder='2048 MB'
+                          placeholder="2048 MB"
                         />
                       </p>
                     </div>
@@ -848,32 +1025,42 @@ function Policy() {
               </div>
             </div>
           </div>
-          <div className='row mt-5'>
-            <div className='col-lg-12'>
-              <div className='card'>
-                <div className='card-header bg-heading'>
-                  <h6 className='white pad-10'>More Options</h6>
+          <div className="row mt-5">
+            <div className="col-lg-12">
+              <div className="card">
+                <div className="card-header bg-heading">
+                  <h6 className="white pad-10">More Options</h6>
                 </div>
-                <div className='card-body row pad-10'>
-                  <div className='d-flex justify-content-start '>
+                <div className="card-body row pad-10">
+                  <div className="d-flex justify-content-start ">
                     <strong>Decommissioning</strong>
-                    <div className='form-check form-switch'>
+                    <div className="form-check form-switch">
                       <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='autoDecommission'
+                        className="form-check-input"
+                        type="checkbox"
+                        id="autoDecommission"
                         checked={policy?.autoDecommissionOn}
-                        onChange={() => setAutoDecommissionEnabled(!autoDecommissionEnabled)}
+                        onChange={() =>
+                          setAutoDecommissionEnabled(!autoDecommissionEnabled)
+                        }
                       />
-                      <label className='form-check-label' htmlFor='autoDecommission'>
-                        Auto Decommission after {policy?.autoDecommissionDays} days offline
+                      <label
+                        className="form-check-label"
+                        htmlFor="autoDecommission"
+                      >
+                        Auto Decommission after {policy?.autoDecommissionDays}{" "}
+                        days offline
                       </label>
                     </div>
                   </div>
-                  <div className='d-flex justify-content-start '>
+                  <div className="d-flex justify-content-start ">
                     <strong>Remote Shell</strong>
-                    <div className=''>
-                      <input className='' type='checkbox' checked={policy?.removeMacros} />
+                    <div className="">
+                      <input
+                        className=""
+                        type="checkbox"
+                        checked={policy?.removeMacros}
+                      />
                       <label>Enable Remote Shell</label>
                     </div>
                   </div>
@@ -884,7 +1071,7 @@ function Policy() {
         </>
       )}
     </div>
-  )
+  );
 }
 
-export default Policy
+export default Policy;
