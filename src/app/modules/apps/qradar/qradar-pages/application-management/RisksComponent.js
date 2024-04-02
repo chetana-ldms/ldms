@@ -133,8 +133,8 @@ function RisksComponent() {
         <UsersListLoading />
       ) : (
         <>
-          <div className="application-section mg-top-20 mg-btm-20">
-            <div className="header-filter mg-btm-20 row">
+          <div className="application-section card pad-10 mt-5 mb-5">
+            <div className="row header-filter mb-5">
               <div className="col-lg-10">
                 <input
                   type="text"
@@ -145,7 +145,7 @@ function RisksComponent() {
                 />
               </div>
               <div className="col-lg-2">
-                <div className="export-report border-0">
+                <div className="export-report border-0 float-right">
                   <Dropdown
                     isOpen={dropdownOpen}
                     toggle={() => setDropdownOpen(!dropdownOpen)}
@@ -170,79 +170,80 @@ function RisksComponent() {
                 </div>
               </div>
             </div>
-          </div>
-          <table className="table alert-table scroll-x">
-            <thead>
-              <tr className="fw-bold text-muted bg-blue">
-                <th onClick={() => handleSort("name")}>
-                  Name {renderSortIcon(sortConfig, "name")}
-                </th>
-                <th onClick={() => handleSort("vendor")}>
-                  Vendor {renderSortIcon(sortConfig, "vendor")}
-                </th>
-                <th onClick={() => handleSort("highestSeverity")}>
-                  Highest Severity{" "}
-                  {renderSortIcon(sortConfig, "highestSeverity")}
-                </th>
-                <th onClick={() => handleSort("highestNvdBaseScore")}>
-                  Highest NVD base score{" "}
-                  {renderSortIcon(sortConfig, "highestNvdBaseScore")}
-                </th>
-                <th onClick={() => handleSort("cveCount")}>
-                  Number of CVEs {renderSortIcon(sortConfig, "cveCount")}
-                </th>
-                <th onClick={() => handleSort("endpointCount")}>
-                  Number of Endpoints{" "}
-                  {renderSortIcon(sortConfig, "endpointCount")}
-                </th>
-                <th onClick={() => handleSort("detectionDate")}>
-                  Application Detection Date{" "}
-                  {renderSortIcon(sortConfig, "detectionDate")}
-                </th>
-                <th onClick={() => handleSort("daysDetected")}>
-                  Days from Detection{" "}
-                  {renderSortIcon(sortConfig, "daysDetected")}
-                </th>
-              </tr>
-            </thead>
 
-            <tbody>
-              {currentItems !== null ? (
-                currentItems.map((item, index) => (
-                  <tr key={index} className="table-row">
-                    <td
-                      onClick={() => handleItemClick(item)}
-                      className="link-txt"
-                    >
-                      {item.name}
-                    </td>
-                    <td>{item.vendor}</td>
-                    <td>{item.highestSeverity}</td>
-                    <td>{item.highestNvdBaseScore ?? 0}</td>
-                    <td>{item.cveCount}</td>
-                    <td>{item.endpointCount}</td>
-                    <td>{getCurrentTimeZone(item.detectionDate)}</td>
-                    <td>{item.daysDetected}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td>No data found</td>
+            <table className="table alert-table scroll-x">
+              <thead>
+                <tr className="fw-bold text-muted bg-blue">
+                  <th onClick={() => handleSort("name")}>
+                    Name {renderSortIcon(sortConfig, "name")}
+                  </th>
+                  <th onClick={() => handleSort("vendor")}>
+                    Vendor {renderSortIcon(sortConfig, "vendor")}
+                  </th>
+                  <th onClick={() => handleSort("highestSeverity")}>
+                    Highest Severity{" "}
+                    {renderSortIcon(sortConfig, "highestSeverity")}
+                  </th>
+                  <th onClick={() => handleSort("highestNvdBaseScore")}>
+                    Highest NVD base score{" "}
+                    {renderSortIcon(sortConfig, "highestNvdBaseScore")}
+                  </th>
+                  <th onClick={() => handleSort("cveCount")}>
+                    Number of CVEs {renderSortIcon(sortConfig, "cveCount")}
+                  </th>
+                  <th onClick={() => handleSort("endpointCount")}>
+                    Number of Endpoints{" "}
+                    {renderSortIcon(sortConfig, "endpointCount")}
+                  </th>
+                  <th onClick={() => handleSort("detectionDate")}>
+                    Application Detection Date{" "}
+                    {renderSortIcon(sortConfig, "detectionDate")}
+                  </th>
+                  <th onClick={() => handleSort("daysDetected")}>
+                    Days from Detection{" "}
+                    {renderSortIcon(sortConfig, "daysDetected")}
+                  </th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-          <RiskEndpointPopUp
-            selectedItem={selectedItem}
-            showModal={showPopup}
-            setShowModal={setShowPopup}
-          />
-          <Pagination
-            pageCount={Math.ceil(risk.length / itemsPerPage)}
-            handlePageClick={handlePageClick}
-            itemsPerPage={itemsPerPage}
-            handlePageSelect={handlePageSelect}
-          />
+              </thead>
+
+              <tbody>
+                {currentItems !== null ? (
+                  currentItems.map((item, index) => (
+                    <tr key={index} className="table-row">
+                      <td
+                        onClick={() => handleItemClick(item)}
+                        className="link-txt"
+                      >
+                        {item.name}
+                      </td>
+                      <td>{item.vendor}</td>
+                      <td>{item.highestSeverity}</td>
+                      <td>{item.highestNvdBaseScore ?? 0}</td>
+                      <td>{item.cveCount}</td>
+                      <td>{item.endpointCount}</td>
+                      <td>{getCurrentTimeZone(item.detectionDate)}</td>
+                      <td>{item.daysDetected}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td>No data found</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+            <RiskEndpointPopUp
+              selectedItem={selectedItem}
+              showModal={showPopup}
+              setShowModal={setShowPopup}
+            />
+            <Pagination
+              pageCount={Math.ceil(risk.length / itemsPerPage)}
+              handlePageClick={handlePageClick}
+              itemsPerPage={itemsPerPage}
+              handlePageSelect={handlePageSelect}
+            />
+          </div>
         </>
       )}
     </div>

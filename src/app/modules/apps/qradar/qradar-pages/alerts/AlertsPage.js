@@ -722,10 +722,10 @@ const AlertsPage = () => {
     <KTCardBody className="alert-page">
       <ToastContainer />
 
-      <div className="card mb-5 mb-xl-8 pad-10">
-        <div className="card-header border-0">
-          <h3 className="card-title align-items-start flex-column">
-            <span className="card-label fw-bold fs-3">
+      <div className="mb-5 mb-xl-8 pad-10">
+        <div className="d-flex justify-content-between border-0">
+          <h3 className="align-items-start flex-column">
+            <span className="fw-bold fs-3">
               Alerts{" "}
               {"( " +
                 (filteredAlertData !== null && filteredAlertData.length !== null
@@ -860,7 +860,7 @@ const AlertsPage = () => {
                       </div>
                       <div className="text-right">
                         <button
-                          className="btn btn-primary"
+                          className="btn btn-new btn-small"
                           onClick={handleSubmitAnalystVerdict}
                         >
                           {" "}
@@ -1018,7 +1018,7 @@ const AlertsPage = () => {
                 </a>
 
                 <div
-                  className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action"
+                  className="menu-sub menu-sub-dropdown w-250px w-md-300px alert-action"
                   data-kt-menu="true"
                   id="kt_menu_637dc6f8a1c15"
                 >
@@ -1074,7 +1074,7 @@ const AlertsPage = () => {
                               className="form-label fw-bolder"
                               htmlFor="ownerName"
                             >
-                              Owner <sup className="red">*</sup>:
+                              Owner <sup className="red">*</sup>
                             </label>
                             <div>
                               <select
@@ -1104,7 +1104,7 @@ const AlertsPage = () => {
                               className="form-label fw-bolder"
                               htmlFor="excalatecomments"
                             >
-                              Comments <sup className="red">*</sup>:
+                              Comments <sup className="red">*</sup>
                             </label>
                             <Form.Control
                               as="textarea"
@@ -1164,915 +1164,982 @@ const AlertsPage = () => {
           </div>
         </div>
         <div className="clearfix" />
-        <div className="float-right fs-13 lh-40 fc-gray text-right ds-reload">
-          Alerts are automatically refreshing every 2 minutes{" "}
-          <a href="#" onClick={handleRefresh}>
-            <i
-              className={`fa fa-refresh link ${isRefreshing ? "rotate" : ""}`}
+        <div className="card mt-5">
+          <div className="pad-10">
+            <div className="d-flex justify-content-between align-items-center pagination-bar">
+              <ReactPaginate
+                previousLabel=<i className="fa fa-chevron-left" />
+                nextLabel=<i className="fa fa-chevron-right" />
+                pageCount={pageCount}
+                marginPagesDisplayed={1}
+                pageRangeDisplayed={8}
+                onPageChange={handlePageClick}
+                containerClassName={"pagination justify-content-end"}
+                pageClassName={"page-item"}
+                pageLinkClassName={"page-link"}
+                previousClassName={"page-item custom-previous"}
+                previousLinkClassName={"page-link custom-previous-link"}
+                nextClassName={"page-item custom-next"}
+                nextLinkClassName={"page-link custom-next-link"}
+                breakClassName={"page-item"}
+                breakLinkClassName={"page-link"}
+                activeClassName={"active"}
+              />
+              <div className="col-md-3 d-flex justify-content-end align-items-center">
+                <span className="col-md-4">Count: </span>
+                <select
+                  className="form-select form-select-sm col-md-4"
+                  value={limit}
+                  onChange={handlePageSelect}
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={15}>15</option>
+                  <option value={20}>20</option>
+                </select>
+              </div>
+              <div className="float-right fs-13 lh-40 fc-gray text-right ds-reload">
+                Alerts are automatically refreshing every 2 minutes{" "}
+                <a href="#" onClick={handleRefresh}>
+                  <i
+                    className={`fa fa-refresh link ${
+                      isRefreshing ? "rotate" : ""
+                    }`}
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {openEditPage ? (
+            <EditAlertsPopUp
+              show={openEditPage}
+              onClose={handleClose}
+              onAdd={openEditPopUp}
+              row={selectedRow}
+              ldp_security_user={ldp_security_user}
+              onSubmit={handleFormSubmit}
+              dropdownData={dropdownData}
+              onTableRefresh={handleTableRefresh}
             />
-          </a>
-        </div>
-        {openEditPage ? (
-          <EditAlertsPopUp
-            show={openEditPage}
-            onClose={handleClose}
-            onAdd={openEditPopUp}
-            row={selectedRow}
-            ldp_security_user={ldp_security_user}
-            onSubmit={handleFormSubmit}
-            dropdownData={dropdownData}
-            onTableRefresh={handleTableRefresh}
-          />
-        ) : null}
-        <div className="card-body1 py-3" id="kt_accordion_1">
-          <div className="table-responsive alert-table scroll-x">
-            <table className="table align-middle gs-0 gy-4">
-              <thead>
-                <tr className="fw-bold bg-light">
-                  <th className="w-25px"></th>
-                  <th>
-                    Severity
-                    <span className="m-0 table-filter">
-                      <a
-                        href="#"
-                        className=""
-                        data-kt-menu-trigger="click"
-                        data-kt-menu-placement="bottom-end"
-                      >
-                        <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
-                        data-kt-menu="true"
-                        id="kt_menu_637dc885a14bb"
-                      >
-                        <div className="px-2 py-5">
-                          <div>
-                            <div>
-                              <select
-                                className="form-select form-select-solid"
-                                data-kt-select2="true"
-                                data-placeholder="Select option"
-                                data-dropdown-parent="#kt_menu_637dc885a14bb"
-                                data-allow-clear="true"
-                                onChange={(e) =>
-                                  handleChange(e, "severityName")
-                                }
-                              >
-                                <option value="">Select</option>
-                                {severityNameDropDownData.length > 0 &&
-                                  severityNameDropDownData.map((item) => (
-                                    <option
-                                      key={item.dataID}
-                                      value={item.dataValue}
-                                    >
-                                      {item.dataValue}
-                                    </option>
-                                  ))}
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th>
-                    SLA
-                    <span className="m-0 table-filter">
-                      <a
-                        href="#"
-                        className=""
-                        data-kt-menu-trigger="click"
-                        data-kt-menu-placement="bottom-end"
-                      >
-                        <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
-                        data-kt-menu="true"
-                        id="kt_menu_637dc885a14bb"
-                      >
-                        <div className="px-2 py-5">
-                          <div>
-                            <div>
-                              <select
-                                className="form-select form-select-solid"
-                                data-kt-select2="true"
-                                data-placeholder="Select option"
-                                data-dropdown-parent="#kt_menu_637dc885a14bb"
-                                data-allow-clear="true"
-                                onChange={(e) =>
-                                  handleSortDates(e, "detectedtime")
-                                }
-                              >
-                                <option>Select</option>
-                                <option value="New">Desc</option>
-                                <option value="Old">Asc</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th>
-                    Score
-                    <span className="m-0 table-filter">
-                      <a
-                        href="#"
-                        className=""
-                        data-kt-menu-trigger="click"
-                        data-kt-menu-placement="bottom-end"
-                      >
-                        <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
-                        data-kt-menu="true"
-                        id="kt_menu_637dc885a14bb"
-                      >
-                        <div className="px-2 py-5">
-                          <div>
-                            <div>
-                              <select
-                                className="form-select form-select-solid"
-                                data-kt-select2="true"
-                                data-placeholder="Select option"
-                                data-dropdown-parent="#kt_menu_637dc885a14bb"
-                                data-allow-clear="true"
-                                onChange={(e) => handleSort(e, "severity")}
-                              >
-                                <option>Select</option>
-                                <option value="Dec">Desc</option>
-                                <option value="Asc">Asc</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th>
-                    Status
-                    <span className="m-0 table-filter">
-                      <a
-                        href="#"
-                        className=""
-                        data-kt-menu-trigger="click"
-                        data-kt-menu-placement="bottom-end"
-                      >
-                        <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
-                        data-kt-menu="true"
-                        id="kt_menu_637dc885a14bb"
-                      >
-                        <div className="px-2 py-5">
-                          <div>
-                            <div>
-                              <select
-                                className="form-select form-select-solid"
-                                data-kt-select2="true"
-                                data-placeholder="Select option"
-                                data-dropdown-parent="#kt_menu_637dc885a14bb"
-                                data-allow-clear="true"
-                                onChange={(e) => handleChange(e, "status")}
-                              >
-                                <option value="">Select</option>
-                                {statusDropDown.length > 0 &&
-                                  statusDropDown.map((item) => (
-                                    <option
-                                      key={item.dataID}
-                                      value={item.dataValue}
-                                    >
-                                      {item.dataValue}
-                                    </option>
-                                  ))}
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th style={{ width: 140 }}>
-                    Detected time
-                    <span className="m-0 table-filter">
-                      <a
-                        href="#"
-                        className=""
-                        data-kt-menu-trigger="click"
-                        data-kt-menu-placement="bottom-end"
-                      >
-                        <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
-                        data-kt-menu="true"
-                        id="kt_menu_637dc885a14bb"
-                      >
-                        <div className="px-2 py-5">
-                          <div>
-                            <div>
-                              <select
-                                className="form-select form-select-solid"
-                                data-kt-select2="true"
-                                data-placeholder="Select option"
-                                data-dropdown-parent="#kt_menu_637dc885a14bb"
-                                data-allow-clear="true"
-                                onChange={(e) =>
-                                  handleSortDates(e, "detectedtime")
-                                }
-                              >
-                                <option>Select</option>
-                                <option value="New">Desc</option>
-                                <option value="Old">Asc</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th>
-                    Name
-                    <span className="m-0 table-filter">
-                      <a
-                        href="#"
-                        className=""
-                        data-kt-menu-trigger="click"
-                        data-kt-menu-placement="bottom-end"
-                      >
-                        <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
-                        data-kt-menu="true"
-                        id="kt_menu_637dc885a14bb"
-                      >
-                        <div className="px-2 py-5">
-                          <div>
-                            <div>
-                              <input
-                                value={inputValue}
-                                onChange={(e) => handleSearch(e)}
+          ) : null}
+          <div className="card-body1 py-3" id="kt_accordion_1">
+            <div className="table-responsive alert-table scroll-x">
+              <table className="table align-middle gs-0 gy-4">
+                <thead>
+                  <tr className="fw-bold bg-light">
+                    <th className="w-25px"></th>
+                    <th>
+                      Severity
+                      <span className="m-0 table-filter">
+                        <a
+                          href="#"
+                          className=""
+                          data-kt-menu-trigger="click"
+                          data-kt-menu-placement="bottom-end"
+                        >
+                          <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
+                                fill="currentColor"
                               />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th>
-                    Observables tags
-                    <span className="m-0 table-filter">
-                      <a
-                        href="#"
-                        className=""
-                        data-kt-menu-trigger="click"
-                        data-kt-menu-placement="bottom-end"
-                      >
-                        <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
-                        data-kt-menu="true"
-                        id="kt_menu_637dc885a14bb"
-                      >
-                        <div className="px-2 py-5">
-                          <div>
+                            </svg>
+                          </span>
+                        </a>
+                        <div
+                          className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
+                          data-kt-menu="true"
+                          id="kt_menu_637dc885a14bb"
+                        >
+                          <div className="px-2 py-5">
                             <div>
-                              <select
-                                className="form-select form-select-solid"
-                                data-kt-select2="true"
-                                data-placeholder="Select option"
-                                data-dropdown-parent="#kt_menu_637dc885a14bb"
-                                data-allow-clear="true"
-                                onChange={(e) =>
-                                  handleChange(e, "observableTag")
-                                }
-                              >
-                                <option>Select</option>
-                                {observableTagDropDown.length > 0 &&
-                                  observableTagDropDown.map((item) => (
-                                    <option
-                                      key={item.dataID}
-                                      value={item.dataValue}
-                                    >
-                                      {item.dataValue}
-                                    </option>
-                                  ))}
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th>
-                    Owner
-                    <span className="m-0 table-filter">
-                      <a
-                        href="#"
-                        className=""
-                        data-kt-menu-trigger="click"
-                        data-kt-menu-placement="bottom-end"
-                      >
-                        <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
-                        data-kt-menu="true"
-                        id="kt_menu_637dc885a14bb"
-                      >
-                        <div className="px-2 py-5">
-                          <div>
-                            <div>
-                              <select
-                                className="form-select form-select-solid"
-                                data-kt-select2="true"
-                                data-placeholder="Select option"
-                                data-dropdown-parent="#kt_menu_637dc885a14bb"
-                                data-allow-clear="true"
-                                onChange={(e) =>
-                                  handleChange(e, "ownerusername")
-                                }
-                              >
-                                <option>Select</option>
-                                {ldp_security_user.length > 0 &&
-                                  ldp_security_user.map((item, index) => {
-                                    return (
-                                      <option key={index} value={item?.name}>
-                                        {item?.name}
-                                      </option>
-                                    );
-                                  })}
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th>
-                    Source{" "}
-                    <span className="m-0 table-filter">
-                      <a
-                        href="#"
-                        className=""
-                        data-kt-menu-trigger="click"
-                        data-kt-menu-placement="bottom-end"
-                      >
-                        <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
-                        data-kt-menu="true"
-                        id="kt_menu_637dc885a14bb"
-                      >
-                        <div className="px-2 py-5">
-                          <div>
-                            <div>
-                              {source == null ? (
+                              <div>
                                 <select
                                   className="form-select form-select-solid"
                                   data-kt-select2="true"
                                   data-placeholder="Select option"
                                   data-dropdown-parent="#kt_menu_637dc885a14bb"
                                   data-allow-clear="true"
-                                  onChange={(e) => handleChange(e, "source")}
+                                  onChange={(e) =>
+                                    handleChange(e, "severityName")
+                                  }
                                 >
-                                  <option>Select</option>
-                                </select>
-                              ) : (
-                                <select
-                                  className="form-select form-select-solid"
-                                  data-kt-select2="true"
-                                  data-placeholder="Select option"
-                                  data-dropdown-parent="#kt_menu_637dc885a14bb"
-                                  data-allow-clear="true"
-                                  onChange={(e) => handleChange(e, "source")}
-                                >
-                                  <option>Select</option>
-                                  {source.length > 0 &&
-                                    source.map((item, index) => (
-                                      <option key={index} value={item}>
-                                        {item}
+                                  <option value="">Select</option>
+                                  {severityNameDropDownData.length > 0 &&
+                                    severityNameDropDownData.map((item) => (
+                                      <option
+                                        key={item.dataID}
+                                        value={item.dataValue}
+                                      >
+                                        {item.dataValue}
                                       </option>
                                     ))}
                                 </select>
-                              )}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody id="kt_accordion_1">
-                {loading && <UsersListLoading />}
-                {filteredAlertData !== null ? (
-                  filteredAlertData.map((item, index) => (
-                    <>
-                      <tr className="table-row" key={item.alertID}>
-                        <td>
-                          <div className="form-check form-check-sm form-check-custom form-check-solid">
-                            <input
-                              className="form-check-input widget-13-check"
-                              type="checkbox"
-                              value={item.alertID}
-                              name={item.alertID}
-                              onChange={(e) => handleselectedAlert(item, e)}
-                              autoComplete="off"
-                            />
-                            <span>
-                              {item.status === "New" &&
-                              item.alertIncidentMappingId === 0 ? (
-                                <i
-                                  className="fa fa-circle-exclamation incident-icon red"
-                                  title="No Action Innitiated"
-                                />
-                              ) : item.status !== "New" &&
-                                item.alertIncidentMappingId === 0 ? (
-                                <i
-                                  className="fa fa-circle-exclamation incident-icon orange"
-                                  title="Incident not created"
-                                />
-                              ) : (
-                                <i
-                                  className="fa fa-circle-exclamation incident-icon green"
-                                  title="Incident created"
-                                />
-                              )}
-                            </span>
-                          </div>
-                        </td>
-                        <td
-                          key={index}
-                          id={"kt_accordion_1_header_" + index}
-                          data-bs-toggle="collapse"
-                          data-bs-target={"#kt_accordion_1_body_" + index}
-                          aria-expanded="false"
-                          aria-controls={"kt_accordion_1_body_" + index}
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleTdClick(item.alertID)}
+                      </span>
+                    </th>
+                    <th>
+                      SLA
+                      <span className="m-0 table-filter">
+                        <a
+                          href="#"
+                          className=""
+                          data-kt-menu-trigger="click"
+                          data-kt-menu-placement="bottom-end"
                         >
-                          <span className="link underline">
-                            {item.severityName}
+                          <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
+                                fill="currentColor"
+                              />
+                            </svg>
                           </span>
-                        </td>
-                        <td>
-                          <span className="text-dark d-block mb-1">
-                            {item.sla}
-                          </span>
-                        </td>
-                        <td>
-                          <span className="text-dark text-center d-block mb-1">
-                            {item.score === null || item.score === ""
-                              ? "0"
-                              : item.score}
-                          </span>
-                        </td>
-                        <td>{item.status}</td>
-                        <td>
-                          <span className="text-dark d-block mb-1">
-                            <span>
-                              {item.detectedtime &&
-                                getCurrentTimeZone(item.detectedtime)}
-                            </span>
-                          </span>
-                        </td>
-                        <td className="text-dark fs-8 alert-name">
-                          <span title={item.name}>{item.name}</span>
-                        </td>
-                        <td className="text-dark fs-8">
-                          {item.observableTag}
-                        </td>
-                        <td className="text-dark fs-8">
-                          {" "}
-                          {item.ownerusername}
-                        </td>
-                        <td className="text-dark fw-bold fs-8">
-                          {item.source}
-                        </td>
-                      </tr>
-                      <tr
-                        id={"kt_accordion_1_body_" + index}
-                        className="accordion-collapse collapse"
-                        aria-labelledby={"kt_accordion_1_header_" + index}
-                        data-bs-parent="#kt_accordion_1"
-                      >
-                        <td colSpan="10">
-                          <div className="row">
-                            <div className="col-md-12">
-                              <div className="card pad-10">
-                                {/* Tab Navigation */}
-                                <ul
-                                  className="nav nav-tabs"
-                                  id={`alertTabs_${index}`}
-                                  role="tablist"
+                        </a>
+                        <div
+                          className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
+                          data-kt-menu="true"
+                          id="kt_menu_637dc885a14bb"
+                        >
+                          <div className="px-2 py-5">
+                            <div>
+                              <div>
+                                <select
+                                  className="form-select form-select-solid"
+                                  data-kt-select2="true"
+                                  data-placeholder="Select option"
+                                  data-dropdown-parent="#kt_menu_637dc885a14bb"
+                                  data-allow-clear="true"
+                                  onChange={(e) =>
+                                    handleSortDates(e, "detectedtime")
+                                  }
                                 >
-                                  <li className="nav-item" role="presentation">
-                                    <a
-                                      className="nav-link active"
-                                      id={`detailsTab_${index}`}
-                                      data-bs-toggle="tab"
-                                      href={`#details_${index}`}
-                                      role="tab"
-                                      aria-controls={`details_${index}`}
-                                      aria-selected="true"
-                                    >
-                                      Details
-                                    </a>
-                                  </li>
-                                  {orgId == 2 && (
-                                    <li
-                                      className="nav-item"
-                                      role="presentation"
-                                    >
-                                      <a
-                                        className="nav-link"
-                                        id={`moreDetailsTab_${index}`}
-                                        data-bs-toggle="tab"
-                                        href={`#moreDetails_${index}`}
-                                        role="tab"
-                                        aria-controls={`moreDetails_${index}`}
-                                        aria-selected="false"
+                                  <option>Select</option>
+                                  <option value="New">Desc</option>
+                                  <option value="Old">Asc</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </span>
+                    </th>
+                    <th>
+                      Score
+                      <span className="m-0 table-filter">
+                        <a
+                          href="#"
+                          className=""
+                          data-kt-menu-trigger="click"
+                          data-kt-menu-placement="bottom-end"
+                        >
+                          <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          </span>
+                        </a>
+                        <div
+                          className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
+                          data-kt-menu="true"
+                          id="kt_menu_637dc885a14bb"
+                        >
+                          <div className="px-2 py-5">
+                            <div>
+                              <div>
+                                <select
+                                  className="form-select form-select-solid"
+                                  data-kt-select2="true"
+                                  data-placeholder="Select option"
+                                  data-dropdown-parent="#kt_menu_637dc885a14bb"
+                                  data-allow-clear="true"
+                                  onChange={(e) => handleSort(e, "severity")}
+                                >
+                                  <option>Select</option>
+                                  <option value="Dec">Desc</option>
+                                  <option value="Asc">Asc</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </span>
+                    </th>
+                    <th>
+                      Status
+                      <span className="m-0 table-filter">
+                        <a
+                          href="#"
+                          className=""
+                          data-kt-menu-trigger="click"
+                          data-kt-menu-placement="bottom-end"
+                        >
+                          <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          </span>
+                        </a>
+                        <div
+                          className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
+                          data-kt-menu="true"
+                          id="kt_menu_637dc885a14bb"
+                        >
+                          <div className="px-2 py-5">
+                            <div>
+                              <div>
+                                <select
+                                  className="form-select form-select-solid"
+                                  data-kt-select2="true"
+                                  data-placeholder="Select option"
+                                  data-dropdown-parent="#kt_menu_637dc885a14bb"
+                                  data-allow-clear="true"
+                                  onChange={(e) => handleChange(e, "status")}
+                                >
+                                  <option value="">Select</option>
+                                  {statusDropDown.length > 0 &&
+                                    statusDropDown.map((item) => (
+                                      <option
+                                        key={item.dataID}
+                                        value={item.dataValue}
                                       >
-                                        More Details
-                                      </a>
-                                    </li>
-                                  )}
-                                  <li className="nav-item" role="presentation">
-                                    <a
-                                      className="nav-link"
-                                      id={`notesTab_${index}`}
-                                      data-bs-toggle="tab"
-                                      href={`#notes_${index}`}
-                                      role="tab"
-                                      aria-controls={`notes_${index}`}
-                                      aria-selected="false"
-                                    >
-                                      Notes
-                                    </a>
-                                  </li>
-                                  <li className="nav-item" role="presentation">
-                                    <a
-                                      className="nav-link"
-                                      id={`timelineTab_${index}`}
-                                      data-bs-toggle="tab"
-                                      href={`#timeline_${index}`}
-                                      role="tab"
-                                      aria-controls={`timeline_${index}`}
-                                      aria-selected="false"
-                                    >
-                                      Timeline
-                                    </a>
-                                  </li>
-                                  {/* {orgId === 2 && (
-                                    <li
-                                      className="nav-item"
-                                      role="presentation"
-                                    >
-                                      <a
-                                        className="nav-link"
-                                        id={`otherActionsTab_${index}`}
-                                        data-bs-toggle="tab"
-                                        href={`#otherActions_${index}`}
-                                        role="tab"
-                                        aria-controls={`otherActions_${index}`}
-                                        aria-selected="false"
+                                        {item.dataValue}
+                                      </option>
+                                    ))}
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </span>
+                    </th>
+                    <th style={{ width: 140 }}>
+                      Detected time
+                      <span className="m-0 table-filter">
+                        <a
+                          href="#"
+                          className=""
+                          data-kt-menu-trigger="click"
+                          data-kt-menu-placement="bottom-end"
+                        >
+                          <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          </span>
+                        </a>
+                        <div
+                          className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
+                          data-kt-menu="true"
+                          id="kt_menu_637dc885a14bb"
+                        >
+                          <div className="px-2 py-5">
+                            <div>
+                              <div>
+                                <select
+                                  className="form-select form-select-solid"
+                                  data-kt-select2="true"
+                                  data-placeholder="Select option"
+                                  data-dropdown-parent="#kt_menu_637dc885a14bb"
+                                  data-allow-clear="true"
+                                  onChange={(e) =>
+                                    handleSortDates(e, "detectedtime")
+                                  }
+                                >
+                                  <option>Select</option>
+                                  <option value="New">Desc</option>
+                                  <option value="Old">Asc</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </span>
+                    </th>
+                    <th>
+                      Name
+                      <span className="m-0 table-filter">
+                        <a
+                          href="#"
+                          className=""
+                          data-kt-menu-trigger="click"
+                          data-kt-menu-placement="bottom-end"
+                        >
+                          <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          </span>
+                        </a>
+                        <div
+                          className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
+                          data-kt-menu="true"
+                          id="kt_menu_637dc885a14bb"
+                        >
+                          <div className="px-2 py-5">
+                            <div>
+                              <div>
+                                <input
+                                  value={inputValue}
+                                  onChange={(e) => handleSearch(e)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </span>
+                    </th>
+                    <th>
+                      Observables tags
+                      <span className="m-0 table-filter">
+                        <a
+                          href="#"
+                          className=""
+                          data-kt-menu-trigger="click"
+                          data-kt-menu-placement="bottom-end"
+                        >
+                          <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          </span>
+                        </a>
+                        <div
+                          className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
+                          data-kt-menu="true"
+                          id="kt_menu_637dc885a14bb"
+                        >
+                          <div className="px-2 py-5">
+                            <div>
+                              <div>
+                                <select
+                                  className="form-select form-select-solid"
+                                  data-kt-select2="true"
+                                  data-placeholder="Select option"
+                                  data-dropdown-parent="#kt_menu_637dc885a14bb"
+                                  data-allow-clear="true"
+                                  onChange={(e) =>
+                                    handleChange(e, "observableTag")
+                                  }
+                                >
+                                  <option>Select</option>
+                                  {observableTagDropDown.length > 0 &&
+                                    observableTagDropDown.map((item) => (
+                                      <option
+                                        key={item.dataID}
+                                        value={item.dataValue}
                                       >
-                                        Other Action
-                                      </a>
-                                    </li>
-                                  )} */}
-                                </ul>
-                                <div className="tab-content pt-4">
-                                  <div
-                                    className="tab-pane fade show active"
-                                    id={`details_${index}`}
-                                    role="tabpanel"
-                                    aria-labelledby={`detailsTab_${index}`}
+                                        {item.dataValue}
+                                      </option>
+                                    ))}
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </span>
+                    </th>
+                    <th>
+                      Owner
+                      <span className="m-0 table-filter">
+                        <a
+                          href="#"
+                          className=""
+                          data-kt-menu-trigger="click"
+                          data-kt-menu-placement="bottom-end"
+                        >
+                          <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          </span>
+                        </a>
+                        <div
+                          className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
+                          data-kt-menu="true"
+                          id="kt_menu_637dc885a14bb"
+                        >
+                          <div className="px-2 py-5">
+                            <div>
+                              <div>
+                                <select
+                                  className="form-select form-select-solid"
+                                  data-kt-select2="true"
+                                  data-placeholder="Select option"
+                                  data-dropdown-parent="#kt_menu_637dc885a14bb"
+                                  data-allow-clear="true"
+                                  onChange={(e) =>
+                                    handleChange(e, "ownerusername")
+                                  }
+                                >
+                                  <option>Select</option>
+                                  {ldp_security_user.length > 0 &&
+                                    ldp_security_user.map((item, index) => {
+                                      return (
+                                        <option key={index} value={item?.name}>
+                                          {item?.name}
+                                        </option>
+                                      );
+                                    })}
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </span>
+                    </th>
+                    <th>
+                      Source{" "}
+                      <span className="m-0 table-filter">
+                        <a
+                          href="#"
+                          className=""
+                          data-kt-menu-trigger="click"
+                          data-kt-menu-placement="bottom-end"
+                        >
+                          <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          </span>
+                        </a>
+                        <div
+                          className="menu menu-sub menu-sub-dropdown w-250px w-md-250px"
+                          data-kt-menu="true"
+                          id="kt_menu_637dc885a14bb"
+                        >
+                          <div className="px-2 py-5">
+                            <div>
+                              <div>
+                                {source == null ? (
+                                  <select
+                                    className="form-select form-select-solid"
+                                    data-kt-select2="true"
+                                    data-placeholder="Select option"
+                                    data-dropdown-parent="#kt_menu_637dc885a14bb"
+                                    data-allow-clear="true"
+                                    onChange={(e) => handleChange(e, "source")}
                                   >
-                                    <div className="row alert-accordion">
-                                      <div className="col-md-10">
-                                        <div className="alert-details">
-                                          <b>Alert Name </b>
-                                          <span>{item.name}</span>
-                                        </div>
-                                        <div className="alert-details">
-                                          <b>Score</b>
-                                          <span>
-                                            {item.score === null ||
-                                            item.score === ""
-                                              ? "0"
-                                              : item.score}
-                                          </span>
-                                        </div>
-                                        <div className="alert-details">
-                                          <b>SLA </b>
-                                          <span>{item.sla}</span>
-                                        </div>
-                                        <div className="alert-details">
-                                          <b>Severity </b>
-                                          <span>{item.severityName}</span>
-                                        </div>
-                                        <div className="alert-details">
-                                          <b>Status </b>
-                                          <span>{item.status}</span>
-                                        </div>
-                                        <div className="alert-details">
-                                          <b>Detected Date/Time </b>
-                                          <span>
-                                            {item.detectedtime &&
-                                              getCurrentTimeZone(
-                                                item.detectedtime
-                                              )}
-                                          </span>
-                                        </div>
-                                        <div className="alert-details">
-                                          <b>Observable Tag </b>
-                                          <span>{item.observableTag} </span>
-                                        </div>
-                                        <div className="alert-details">
-                                          <b>Owner Name </b>
-                                          <span>{item.ownerusername}</span>
-                                        </div>
-                                        <div className="alert-details">
-                                          <b>Analysts Verdict </b>
-                                          <span>{item.positiveAnalysis} </span>
-                                        </div>
-                                        <div className="alert-details">
-                                          <b>Source Name </b>
-                                          <span>{item.source}</span>{" "}
-                                        </div>
-                                      </div>
-                                      <div className="col-md-2">
-                                        <div
-                                          className="btn btn-primary btn-new btn-small"
-                                          onClick={() => openEditPopUp(item)}
+                                    <option>Select</option>
+                                  </select>
+                                ) : (
+                                  <select
+                                    className="form-select form-select-solid"
+                                    data-kt-select2="true"
+                                    data-placeholder="Select option"
+                                    data-dropdown-parent="#kt_menu_637dc885a14bb"
+                                    data-allow-clear="true"
+                                    onChange={(e) => handleChange(e, "source")}
+                                  >
+                                    <option>Select</option>
+                                    {source.length > 0 &&
+                                      source.map((item, index) => (
+                                        <option key={index} value={item}>
+                                          {item}
+                                        </option>
+                                      ))}
+                                  </select>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="kt_accordion_1">
+                  {loading && <UsersListLoading />}
+                  {filteredAlertData !== null ? (
+                    filteredAlertData.map((item, index) => (
+                      <>
+                        <tr className="table-row" key={item.alertID}>
+                          <td>
+                            <div className="form-check form-check-sm form-check-custom form-check-solid">
+                              <input
+                                className="form-check-input widget-13-check"
+                                type="checkbox"
+                                value={item.alertID}
+                                name={item.alertID}
+                                onChange={(e) => handleselectedAlert(item, e)}
+                                autoComplete="off"
+                              />
+                              <span>
+                                {item.status === "New" &&
+                                item.alertIncidentMappingId === 0 ? (
+                                  <i
+                                    className="fa fa-circle-exclamation incident-icon red"
+                                    title="No Action Innitiated"
+                                  />
+                                ) : item.status !== "New" &&
+                                  item.alertIncidentMappingId === 0 ? (
+                                  <i
+                                    className="fa fa-circle-exclamation incident-icon orange"
+                                    title="Incident not created"
+                                  />
+                                ) : (
+                                  <i
+                                    className="fa fa-circle-exclamation incident-icon green"
+                                    title="Incident created"
+                                  />
+                                )}
+                              </span>
+                            </div>
+                          </td>
+                          <td
+                            key={index}
+                            id={"kt_accordion_1_header_" + index}
+                            data-bs-toggle="collapse"
+                            data-bs-target={"#kt_accordion_1_body_" + index}
+                            aria-expanded="false"
+                            aria-controls={"kt_accordion_1_body_" + index}
+                            style={{ cursor: "pointer" }}
+                            onClick={() => handleTdClick(item.alertID)}
+                          >
+                            <span className="link underline">
+                              {item.severityName}
+                            </span>
+                          </td>
+                          <td>
+                            <span className="text-dark d-block mb-1">
+                              {item.sla}
+                            </span>
+                          </td>
+                          <td>
+                            <span className="text-dark text-center d-block mb-1">
+                              {item.score === null || item.score === ""
+                                ? "0"
+                                : item.score}
+                            </span>
+                          </td>
+                          <td>{item.status}</td>
+                          <td>
+                            <span className="text-dark d-block mb-1">
+                              <span>
+                                {item.detectedtime &&
+                                  getCurrentTimeZone(item.detectedtime)}
+                              </span>
+                            </span>
+                          </td>
+                          <td className="text-dark fs-8 alert-name">
+                            <span title={item.name}>{item.name}</span>
+                          </td>
+                          <td className="text-dark fs-8">
+                            {item.observableTag}
+                          </td>
+                          <td className="text-dark fs-8">
+                            {" "}
+                            {item.ownerusername}
+                          </td>
+                          <td className="text-dark fw-bold fs-8">
+                            {item.source}
+                          </td>
+                        </tr>
+                        <tr
+                          id={"kt_accordion_1_body_" + index}
+                          className="accordion-collapse collapse"
+                          aria-labelledby={"kt_accordion_1_header_" + index}
+                          data-bs-parent="#kt_accordion_1"
+                        >
+                          <td colSpan="10">
+                            <div className="row">
+                              <div className="col-md-12">
+                                <div className="card pad-10">
+                                  {/* Tab Navigation */}
+                                  <ul
+                                    className="nav nav-tabs"
+                                    id={`alertTabs_${index}`}
+                                    role="tablist"
+                                  >
+                                    <li
+                                      className="nav-item"
+                                      role="presentation"
+                                    >
+                                      <a
+                                        className="nav-link active"
+                                        id={`detailsTab_${index}`}
+                                        data-bs-toggle="tab"
+                                        href={`#details_${index}`}
+                                        role="tab"
+                                        aria-controls={`details_${index}`}
+                                        aria-selected="true"
+                                      >
+                                        Details
+                                      </a>
+                                    </li>
+                                    {orgId == 2 && (
+                                      <li
+                                        className="nav-item"
+                                        role="presentation"
+                                      >
+                                        <a
+                                          className="nav-link"
+                                          id={`moreDetailsTab_${index}`}
+                                          data-bs-toggle="tab"
+                                          href={`#moreDetails_${index}`}
+                                          role="tab"
+                                          aria-controls={`moreDetails_${index}`}
+                                          aria-selected="false"
                                         >
-                                          Edit
+                                          More Details
+                                        </a>
+                                      </li>
+                                    )}
+                                    <li
+                                      className="nav-item"
+                                      role="presentation"
+                                    >
+                                      <a
+                                        className="nav-link"
+                                        id={`notesTab_${index}`}
+                                        data-bs-toggle="tab"
+                                        href={`#notes_${index}`}
+                                        role="tab"
+                                        aria-controls={`notes_${index}`}
+                                        aria-selected="false"
+                                      >
+                                        Notes
+                                      </a>
+                                    </li>
+                                    <li
+                                      className="nav-item"
+                                      role="presentation"
+                                    >
+                                      <a
+                                        className="nav-link"
+                                        id={`timelineTab_${index}`}
+                                        data-bs-toggle="tab"
+                                        href={`#timeline_${index}`}
+                                        role="tab"
+                                        aria-controls={`timeline_${index}`}
+                                        aria-selected="false"
+                                      >
+                                        Timeline
+                                      </a>
+                                    </li>
+                                    {orgId === 2 && (
+                                      <li
+                                        className="nav-item"
+                                        role="presentation"
+                                      >
+                                        <a
+                                          className="nav-link"
+                                          id={`otherActionsTab_${index}`}
+                                          data-bs-toggle="tab"
+                                          href={`#otherActions_${index}`}
+                                          role="tab"
+                                          aria-controls={`otherActions_${index}`}
+                                          aria-selected="false"
+                                        >
+                                          Other Action
+                                        </a>
+                                      </li>
+                                    )}
+                                    {/* {orgId === 2 && (
+                                  <li className="nav-item" role="presentation">
+                                    <a
+                                      className="nav-link"
+                                      id={`actionsTab_${index}`}
+                                      data-bs-toggle="tab"
+                                      href={`#actions_${index}`}
+                                      role="tab"
+                                      aria-controls={`actions_${index}`}
+                                      aria-selected="false"
+                                    >
+                                      Actions
+                                    </a>
+                                  </li>
+                                )} */}
+                                  </ul>
+                                  <div className="tab-content pt-4">
+                                    <div
+                                      className="tab-pane fade show active"
+                                      id={`details_${index}`}
+                                      role="tabpanel"
+                                      aria-labelledby={`detailsTab_${index}`}
+                                    >
+                                      <div className="row alert-accordion">
+                                        <div className="col-md-10">
+                                          <div className="alert-details">
+                                            <b>Alert Name </b>
+                                            <span>{item.name}</span>
+                                          </div>
+                                          <div className="alert-details">
+                                            <b>Score</b>
+                                            <span>
+                                              {item.score === null ||
+                                              item.score === ""
+                                                ? "0"
+                                                : item.score}
+                                            </span>
+                                          </div>
+                                          <div className="alert-details">
+                                            <b>SLA </b>
+                                            <span>{item.sla}</span>
+                                          </div>
+                                          <div className="alert-details">
+                                            <b>Severity </b>
+                                            <span>{item.severityName}</span>
+                                          </div>
+                                          <div className="alert-details">
+                                            <b>Status </b>
+                                            <span>{item.status}</span>
+                                          </div>
+                                          <div className="alert-details">
+                                            <b>Detected Date/Time </b>
+                                            <span>
+                                              {item.detectedtime &&
+                                                getCurrentTimeZone(
+                                                  item.detectedtime
+                                                )}
+                                            </span>
+                                          </div>
+                                          <div className="alert-details">
+                                            <b>Observable Tag </b>
+                                            <span>{item.observableTag} </span>
+                                          </div>
+                                          <div className="alert-details">
+                                            <b>Owner Name </b>
+                                            <span>{item.ownerusername}</span>
+                                          </div>
+                                          <div className="alert-details">
+                                            <b>Analysts Verdict </b>
+                                            <span>
+                                              {item.positiveAnalysis}{" "}
+                                            </span>
+                                          </div>
+                                          <div className="alert-details">
+                                            <b>Source Name </b>
+                                            <span>{item.source}</span>{" "}
+                                          </div>
+                                        </div>
+                                        <div className="col-md-2">
+                                          <div
+                                            className="btn btn-primary btn-new btn-small"
+                                            onClick={() => openEditPopUp(item)}
+                                          >
+                                            Edit
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
-                                  <div
-                                    className="tab-pane fade"
-                                    id={`moreDetails_${index}`}
-                                    role="tabpanel"
-                                    aria-labelledby={`moreDetailsTab_${index}`}
-                                  >
-                                    {orgId == 2 ? (
-                                      <div
-                                        style={{
-                                          maxHeight: "300px",
-                                          overflowY: "auto",
-                                        }}
-                                      >
-                                        <div className="row">
-                                          <div className="col-md-1 py-4 text-center">
-                                            <i
-                                              className="bi bi-check-square text-success"
-                                              style={{
-                                                fontSize: "2rem",
-                                                width: "2em",
-                                                height: "2em",
-                                              }}
-                                            ></i>
-                                          </div>
-                                          <div className="col-md-8">
-                                            <div className="d-flex ">
-                                              <div className="border-right px-1">
-                                                {" "}
-                                                <span className="fs-8">
-                                                  Threat status :
-                                                </span>{" "}
-                                                {threatHeaderDtls.threatStatus}
-                                              </div>
-                                              <div className="border-right px-1">
-                                                <span className="fs-8">
-                                                  AI Confidence level :{" "}
-                                                </span>
-                                                {
-                                                  threatHeaderDtls.aiConfidenceLevel
-                                                }
-                                              </div>
-                                              <div className="border-right px-1 d-flex align-items-center">
-                                                <span className="fs-8">
-                                                  Analyst Verdict:
-                                                </span>
-                                                <input
-                                                  type="text"
-                                                  className="ml-2"
-                                                  style={{ width: "110px" }}
-                                                  value={
-                                                    threatHeaderDtls.analysisVerdict
-                                                  }
-                                                />
-                                              </div>
-                                              <div className="px-1 d-flex align-items-center">
-                                                <span className="fs-8">
-                                                  Incident Status:
-                                                </span>
-                                                <input
-                                                  type="text"
-                                                  style={{ width: "110px" }}
-                                                  className="ml-2"
-                                                  value={
-                                                    threatHeaderDtls.incidentStatus
-                                                  }
-                                                />
-                                              </div>
+                                    <div
+                                      className="tab-pane fade"
+                                      id={`moreDetails_${index}`}
+                                      role="tabpanel"
+                                      aria-labelledby={`moreDetailsTab_${index}`}
+                                    >
+                                      {orgId == 2 ? (
+                                        <div
+                                          style={{
+                                            maxHeight: "300px",
+                                            overflowY: "auto",
+                                          }}
+                                        >
+                                          <div className="row">
+                                            <div className="col-md-1 py-4 text-center">
+                                              <i
+                                                className="bi bi-check-square text-success"
+                                                style={{
+                                                  fontSize: "2rem",
+                                                  width: "2em",
+                                                  height: "2em",
+                                                }}
+                                              ></i>
                                             </div>
-                                            <hr
-                                              className="bg-primary"
-                                              style={{
-                                                height: "4px",
-                                                border: "none",
-                                              }}
-                                            />
-                                            <div>
-                                              <span className="fs-8">
-                                                Mitigation Actions Taken :
-                                              </span>
-                                              {threatHeaderDtls?.miticationActions ? (
-                                                threatHeaderDtls?.miticationActions.map(
-                                                  (item, index) => (
-                                                    <span
-                                                      key={index}
-                                                      className="m-2"
-                                                    >
-                                                      {item}{" "}
-                                                      <i className="bi bi-check"></i>
-                                                    </span>
+                                            <div className="col-md-8">
+                                              <div className="d-flex ">
+                                                <div className="border-right px-1">
+                                                  {" "}
+                                                  <span className="fs-8">
+                                                    Threat status :
+                                                  </span>{" "}
+                                                  {
+                                                    threatHeaderDtls.threatStatus
+                                                  }
+                                                </div>
+                                                <div className="border-right px-1">
+                                                  <span className="fs-8">
+                                                    AI Confidence level :{" "}
+                                                  </span>
+                                                  {
+                                                    threatHeaderDtls.aiConfidenceLevel
+                                                  }
+                                                </div>
+                                                <div className="border-right px-1 d-flex align-items-center">
+                                                  <span className="fs-8">
+                                                    Analyst Verdict:
+                                                  </span>
+                                                  <input
+                                                    type="text"
+                                                    className="ml-2"
+                                                    style={{ width: "110px" }}
+                                                    value={
+                                                      threatHeaderDtls.analysisVerdict
+                                                    }
+                                                  />
+                                                </div>
+                                                <div className="px-1 d-flex align-items-center">
+                                                  <span className="fs-8">
+                                                    Incident Status:
+                                                  </span>
+                                                  <input
+                                                    type="text"
+                                                    style={{ width: "110px" }}
+                                                    className="ml-2"
+                                                    value={
+                                                      threatHeaderDtls.incidentStatus
+                                                    }
+                                                  />
+                                                </div>
+                                              </div>
+                                              <hr
+                                                className="bg-primary"
+                                                style={{
+                                                  height: "4px",
+                                                  border: "none",
+                                                }}
+                                              />
+                                              <div>
+                                                <span className="fs-8">
+                                                  Mitigation Actions Taken :
+                                                </span>
+                                                {threatHeaderDtls?.miticationActions ? (
+                                                  threatHeaderDtls?.miticationActions.map(
+                                                    (item, index) => (
+                                                      <span
+                                                        key={index}
+                                                        className="m-2"
+                                                      >
+                                                        {item}{" "}
+                                                        <i className="bi bi-check"></i>
+                                                      </span>
+                                                    )
                                                   )
-                                                )
-                                              ) : (
-                                                <span>
-                                                  No mitigation actions
-                                                </span>
-                                              )}
-                                            </div>
-                                          </div>
-                                          <div className="col-md-3">
-                                            <div className="row">
-                                              <div className="col-md-2 text-center py-3">
-                                                <i
-                                                  className="bi bi-stopwatch"
-                                                  style={{
-                                                    fontSize: "3rem",
-                                                    width: "2em",
-                                                    height: "2em",
-                                                  }}
-                                                ></i>
-                                              </div>
-                                              <div className="col-md-10">
-                                                <p>
-                                                  <span className="fs-8">
-                                                    Identified Time :{" "}
+                                                ) : (
+                                                  <span>
+                                                    No mitigation actions
                                                   </span>
-                                                  <span className="fs-8">
-                                                    {getCurrentTimeZone(
-                                                      threatHeaderDtls.identifiedTime
-                                                    )}
-                                                  </span>
-                                                </p>
-                                                <p>
-                                                  <span className="fs-8">
-                                                    Reporting Time :{" "}
-                                                  </span>
-                                                  <span className="fs-8">
-                                                    {getCurrentTimeZone(
-                                                      threatHeaderDtls.reportingTime
-                                                    )}
-                                                  </span>
-                                                </p>
+                                                )}
                                               </div>
                                             </div>
+                                            <div className="col-md-3">
+                                              <div className="row">
+                                                <div className="col-md-2 text-center py-3">
+                                                  <i
+                                                    className="bi bi-stopwatch"
+                                                    style={{
+                                                      fontSize: "3rem",
+                                                      width: "2em",
+                                                      height: "2em",
+                                                    }}
+                                                  ></i>
+                                                </div>
+                                                <div className="col-md-10">
+                                                  <p>
+                                                    <span className="fs-8">
+                                                      Identified Time :{" "}
+                                                    </span>
+                                                    <span className="fs-8">
+                                                      {getCurrentTimeZone(
+                                                        threatHeaderDtls.identifiedTime
+                                                      )}
+                                                    </span>
+                                                  </p>
+                                                  <p>
+                                                    <span className="fs-8">
+                                                      Reporting Time :{" "}
+                                                    </span>
+                                                    <span className="fs-8">
+                                                      {getCurrentTimeZone(
+                                                        threatHeaderDtls.reportingTime
+                                                      )}
+                                                    </span>
+                                                  </p>
+                                                </div>
+                                              </div>
+                                            </div>
                                           </div>
-                                        </div>
-                                        {/* <div className="fs-12">NETWORK HISTORY</div>
+                                          {/* <div className="fs-12">NETWORK HISTORY</div>
                                   <hr className="my-2" />
                                   <div className="row">
                                     <div className="col-md-4 border-right">
@@ -2109,288 +2176,296 @@ const AlertsPage = () => {
                                       </div>
                                     </div>
                                   </div> */}
-                                        <hr
-                                          className="my-1"
-                                          style={{
-                                            borderColor: "#3838a0",
-                                            borderWidth: "7px",
-                                          }}
-                                        />
-                                        <div className="mt-5 row">
-                                          <div className="fs-12 mt-5 col-md-6">
-                                            THREAT FILE NAME $RN30BDD.exe
-                                          </div>
-                                          <div className="fs-14 mt-5 text-primary col-md-6 text-end">
-                                            {/* <span className="mx-5"><i className="fas fa-copy mx-3"></i> Copy Details</span>
+                                          <hr
+                                            className="my-1"
+                                            style={{
+                                              borderColor: "#3838a0",
+                                              borderWidth: "7px",
+                                            }}
+                                          />
+                                          <div className="mt-5 row">
+                                            <div className="fs-12 mt-5 col-md-6">
+                                              THREAT FILE NAME $RN30BDD.exe
+                                            </div>
+                                            <div className="fs-14 mt-5 text-primary col-md-6 text-end">
+                                              {/* <span className="mx-5"><i className="fas fa-copy mx-3"></i> Copy Details</span>
                                         <span className="mx-5"><i className="fas fa-file mx-3"></i> Download Threat Files</span> */}
-                                          </div>
-                                        </div>
-                                        <hr className="my-2" />
-                                        <div className="row">
-                                          <div className="col-md-7">
-                                            <div className="row border-right p-5">
-                                              <div className="col-md-3 ">
-                                                <p>Path</p>
-                                                {/* <p>Command Line Arguments</p> */}
-                                                <p>Process User</p>
-                                                {/* <p>Publisher Name</p> */}
-                                                {/* <p> Signer Identity</p> */}
-                                                {/* <p>Signature Verification</p> */}
-                                                <p>Original Process</p>
-                                                <p>SHA1</p>
-                                              </div>
-                                              <div className="col-md-9">
-                                                <p>{threatInfo.path}</p>
-                                                {/* <p>NA</p> */}
-                                                <p>{threatInfo.processUser}</p>
-                                                {/* <p>FH Manager</p> */}
-                                                {/* <p>FH Manager</p> */}
-                                                {/* <p>Signature varified</p> */}
-                                                <p>
-                                                  {
-                                                    threatInfo.originatingProcess
-                                                  }
-                                                </p>
-                                                <p>{threatInfo.shA1}</p>
-                                              </div>
                                             </div>
                                           </div>
-                                          <div className="col-md-5">
-                                            <div className="row border-right p-5">
-                                              <div className="col-md-4 ">
-                                                <p>Initiated By</p>
-                                                {/* <p>Engine</p> */}
-                                                <p>Detection Type</p>
-                                                <p>Classification</p>
-                                                <p> File Size</p>
-                                                <p>Storyline</p>
-                                                <p>Threat id</p>
-                                              </div>
-                                              <div className="col-md-6">
-                                                <p>{threatInfo.initiatedBy}</p>
-                                                {/* <p>SentinalOne Cloud</p> */}
-                                                <p>
-                                                  {threatInfo.detectionType}
-                                                </p>
-                                                <p>
-                                                  {threatInfo.classification}
-                                                </p>
-                                                <p>{threatInfo.fileSize}</p>
-                                                <p>{threatInfo.storyline}</p>
-                                                <p>{threatInfo.threatId}</p>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <hr
-                                          className="my-1"
-                                          style={{
-                                            borderColor: "#3838a0",
-                                            borderWidth: "7px",
-                                          }}
-                                        />
-                                        <div className="text-primary text-center m-3">
-                                          END POINT
-                                        </div>
-                                        <hr className="my-2" />
-
-                                        <div className="row">
-                                          <div className="col-md-5">
-                                            <div className="row  p-5">
-                                              <div>
-                                                <p>
-                                                  Real Time Data about the end
-                                                  point:
-                                                </p>
-                                              </div>
-                                              <div className="row">
-                                                <div className="col-md-3">
-                                                  <span>
-                                                    <i
-                                                      className="fab fa-windows"
-                                                      style={{
-                                                        fontSize: "6em",
-                                                        width: "2em",
-                                                      }}
-                                                    ></i>
-                                                  </span>
+                                          <hr className="my-2" />
+                                          <div className="row">
+                                            <div className="col-md-7">
+                                              <div className="row border-right p-5">
+                                                <div className="col-md-3 ">
+                                                  <p>Path</p>
+                                                  {/* <p>Command Line Arguments</p> */}
+                                                  <p>Process User</p>
+                                                  {/* <p>Publisher Name</p> */}
+                                                  {/* <p> Signer Identity</p> */}
+                                                  {/* <p>Signature Verification</p> */}
+                                                  <p>Original Process</p>
+                                                  <p>SHA1</p>
                                                 </div>
                                                 <div className="col-md-9">
-                                                  <h6>DESCTOP-UPU1TUD</h6>
-                                                  <p className="fs-12">
-                                                    LANCESOFT INDIA PRIVATE
-                                                    LIMITE / Defoult site
+                                                  <p>{threatInfo.path}</p>
+                                                  {/* <p>NA</p> */}
+                                                  <p>
+                                                    {threatInfo.processUser}
                                                   </p>
-                                                  <p className="fs-10">
-                                                    (Connect Homes)/ Defoult
-                                                    Group
+                                                  {/* <p>FH Manager</p> */}
+                                                  {/* <p>FH Manager</p> */}
+                                                  {/* <p>Signature varified</p> */}
+                                                  <p>
+                                                    {
+                                                      threatInfo.originatingProcess
+                                                    }
                                                   </p>
+                                                  <p>{threatInfo.shA1}</p>
                                                 </div>
                                               </div>
-                                              <hr className="my-2" />
-                                              <div className="col-md-4 ">
-                                                {/* <p>Console connectivity</p> */}
-                                                <p>Full Disc scan</p>
-                                                <p>Pending Reboot</p>
-                                                {/* <p>Number of not Mitigated Threats</p> */}
-                                                <p> Network status</p>
-                                              </div>
-                                              <div className="col-md-8">
-                                                {/* <p>{endpointInfo.consoleConnectivity}</p> */}
-                                                <p>
-                                                  {endpointInfo.fullDiskScan}
-                                                </p>
-                                                <p>
-                                                  {endpointInfo.pendinRreboot}
-                                                </p>
-                                                {/* <p>0</p> */}
-                                                <p>
-                                                  {endpointInfo.networkStatus}
-                                                </p>
+                                            </div>
+                                            <div className="col-md-5">
+                                              <div className="row border-right p-5">
+                                                <div className="col-md-4 ">
+                                                  <p>Initiated By</p>
+                                                  {/* <p>Engine</p> */}
+                                                  <p>Detection Type</p>
+                                                  <p>Classification</p>
+                                                  <p> File Size</p>
+                                                  <p>Storyline</p>
+                                                  <p>Threat id</p>
+                                                </div>
+                                                <div className="col-md-6">
+                                                  <p>
+                                                    {threatInfo.initiatedBy}
+                                                  </p>
+                                                  {/* <p>SentinalOne Cloud</p> */}
+                                                  <p>
+                                                    {threatInfo.detectionType}
+                                                  </p>
+                                                  <p>
+                                                    {threatInfo.classification}
+                                                  </p>
+                                                  <p>{threatInfo.fileSize}</p>
+                                                  <p>{threatInfo.storyline}</p>
+                                                  <p>{threatInfo.threatId}</p>
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
-                                          <div className="col-md-7">
-                                            <div className="row border-right p-5">
-                                              <div className="col-md-3 ">
-                                                {/* <p>At Detection time :</p> */}
-                                                <p>Scope</p>
-                                                <p>OS Version</p>
-                                                <p>Agent Version</p>
-                                                <p> Policy</p>
-                                                <p>Logged in user</p>
-                                                <p>UUID</p>
-                                                <p>Domain</p>
-                                                <p>IP v4 Address</p>
-                                                <p>IP v6 Address</p>
-                                                <p>Console Visible adress</p>
-                                                <p>Subscription Time</p>
+                                          <hr
+                                            className="my-1"
+                                            style={{
+                                              borderColor: "#3838a0",
+                                              borderWidth: "7px",
+                                            }}
+                                          />
+                                          <div className="text-primary text-center m-3">
+                                            END POINT
+                                          </div>
+                                          <hr className="my-2" />
+
+                                          <div className="row">
+                                            <div className="col-md-5">
+                                              <div className="row  p-5">
+                                                <div>
+                                                  <p>
+                                                    Real Time Data about the end
+                                                    point:
+                                                  </p>
+                                                </div>
+                                                <div className="row">
+                                                  <div className="col-md-3">
+                                                    <span>
+                                                      <i
+                                                        className="fab fa-windows"
+                                                        style={{
+                                                          fontSize: "6em",
+                                                          width: "2em",
+                                                        }}
+                                                      ></i>
+                                                    </span>
+                                                  </div>
+                                                  <div className="col-md-9">
+                                                    <h6>DESCTOP-UPU1TUD</h6>
+                                                    <p className="fs-12">
+                                                      LANCESOFT INDIA PRIVATE
+                                                      LIMITE / Defoult site
+                                                    </p>
+                                                    <p className="fs-10">
+                                                      (Connect Homes)/ Defoult
+                                                      Group
+                                                    </p>
+                                                  </div>
+                                                </div>
+                                                <hr className="my-2" />
+                                                <div className="col-md-4 ">
+                                                  {/* <p>Console connectivity</p> */}
+                                                  <p>Full Disc scan</p>
+                                                  <p>Pending Reboot</p>
+                                                  {/* <p>Number of not Mitigated Threats</p> */}
+                                                  <p> Network status</p>
+                                                </div>
+                                                <div className="col-md-8">
+                                                  {/* <p>{endpointInfo.consoleConnectivity}</p> */}
+                                                  <p>
+                                                    {endpointInfo.fullDiskScan}
+                                                  </p>
+                                                  <p>
+                                                    {endpointInfo.pendinRreboot}
+                                                  </p>
+                                                  {/* <p>0</p> */}
+                                                  <p>
+                                                    {endpointInfo.networkStatus}
+                                                  </p>
+                                                </div>
                                               </div>
-                                              <div className="col-md-9">
-                                                {/* <p>.</p> */}
-                                                <p>{endpointInfo.scope}</p>
-                                                <p>{endpointInfo.osVersion}</p>
-                                                <p>
-                                                  {endpointInfo.agentVersion}
-                                                </p>
-                                                <p>{endpointInfo.policy}</p>
-                                                <p>
-                                                  {endpointInfo.loggedInUser}
-                                                </p>
-                                                <p>{endpointInfo.uuid}</p>
-                                                <p>{endpointInfo.domain}</p>
-                                                <p>
-                                                  {endpointInfo.ipV4Address}
-                                                </p>
-                                                <p>
-                                                  {endpointInfo.ipV6Address}
-                                                </p>
-                                                <p>
-                                                  {
-                                                    endpointInfo.consoleVisibleIPAddress
-                                                  }
-                                                </p>
-                                                <p>
-                                                  {
-                                                    endpointInfo.subscriptionTime
-                                                  }
-                                                </p>
+                                            </div>
+                                            <div className="col-md-7">
+                                              <div className="row border-right p-5">
+                                                <div className="col-md-3 ">
+                                                  {/* <p>At Detection time :</p> */}
+                                                  <p>Scope</p>
+                                                  <p>OS Version</p>
+                                                  <p>Agent Version</p>
+                                                  <p> Policy</p>
+                                                  <p>Logged in user</p>
+                                                  <p>UUID</p>
+                                                  <p>Domain</p>
+                                                  <p>IP v4 Address</p>
+                                                  <p>IP v6 Address</p>
+                                                  <p>Console Visible adress</p>
+                                                  <p>Subscription Time</p>
+                                                </div>
+                                                <div className="col-md-9">
+                                                  {/* <p>.</p> */}
+                                                  <p>{endpointInfo.scope}</p>
+                                                  <p>
+                                                    {endpointInfo.osVersion}
+                                                  </p>
+                                                  <p>
+                                                    {endpointInfo.agentVersion}
+                                                  </p>
+                                                  <p>{endpointInfo.policy}</p>
+                                                  <p>
+                                                    {endpointInfo.loggedInUser}
+                                                  </p>
+                                                  <p>{endpointInfo.uuid}</p>
+                                                  <p>{endpointInfo.domain}</p>
+                                                  <p>
+                                                    {endpointInfo.ipV4Address}
+                                                  </p>
+                                                  <p>
+                                                    {endpointInfo.ipV6Address}
+                                                  </p>
+                                                  <p>
+                                                    {
+                                                      endpointInfo.consoleVisibleIPAddress
+                                                    }
+                                                  </p>
+                                                  <p>
+                                                    {
+                                                      endpointInfo.subscriptionTime
+                                                    }
+                                                  </p>
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
                                         </div>
-                                      </div>
-                                    ) : (
-                                      <span>No Data found</span>
-                                    )}
-                                  </div>
-                                  <div
-                                    className="tab-pane fade"
-                                    id={`notes_${index}`}
-                                    role="tabpanel"
-                                    aria-labelledby={`notesTab_${index}`}
-                                  >
-                                    {alertNotesList.length > 0 ? (
-                                      <div className="notes-container pt-5 alert-table">
-                                        {/* <b>Notes:</b> */}
-                                        <table className="table">
-                                          <thead>
-                                            <tr className="bg-header">
-                                              <th className="custom-th">
-                                                User
-                                              </th>
-                                              <th className="custom-th">
-                                                Date
-                                              </th>
-                                              <th className="custom-th">
-                                                Note
-                                              </th>
-                                            </tr>
-                                          </thead>
-                                          <tbody>
-                                            {alertNotesList.map((note) => (
-                                              <tr key={note.alertsNotesId}>
-                                                <td>{note.createdUser}</td>
-                                                <td>
-                                                  {getCurrentTimeZone(
-                                                    note.createdDate
-                                                  )}
-                                                </td>
-                                                <td>{note.notes}</td>
+                                      ) : (
+                                        <span>No Data found</span>
+                                      )}
+                                    </div>
+                                    <div
+                                      className="tab-pane fade"
+                                      id={`notes_${index}`}
+                                      role="tabpanel"
+                                      aria-labelledby={`notesTab_${index}`}
+                                    >
+                                      {alertNotesList.length > 0 ? (
+                                        <div className="notes-container pt-5 alert-table">
+                                          {/* <b>Notes:</b> */}
+                                          <table className="table">
+                                            <thead>
+                                              <tr className="bg-header">
+                                                <th className="custom-th">
+                                                  User
+                                                </th>
+                                                <th className="custom-th">
+                                                  Date
+                                                </th>
+                                                <th className="custom-th">
+                                                  Note
+                                                </th>
                                               </tr>
-                                            ))}
-                                          </tbody>
-                                        </table>
-                                      </div>
-                                    ) : (
-                                      <div>No notes available.</div>
-                                    )}
-                                  </div>
-                                  <div
-                                    className="tab-pane fade"
-                                    id={`timeline_${index}`}
-                                    role="tabpanel"
-                                    aria-labelledby={`timelineTab_${index}`}
-                                  >
-                                    <div className="row">
-                                      {/* <div className="">
+                                            </thead>
+                                            <tbody>
+                                              {alertNotesList.map((note) => (
+                                                <tr key={note.alertsNotesId}>
+                                                  <td>{note.createdUser}</td>
+                                                  <td>
+                                                    {getCurrentTimeZone(
+                                                      note.createdDate
+                                                    )}
+                                                  </td>
+                                                  <td>{note.notes}</td>
+                                                </tr>
+                                              ))}
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      ) : (
+                                        <div>No notes available.</div>
+                                      )}
+                                    </div>
+                                    <div
+                                      className="tab-pane fade"
+                                      id={`timeline_${index}`}
+                                      role="tabpanel"
+                                      aria-labelledby={`timelineTab_${index}`}
+                                    >
+                                      <div className="row">
+                                        {/* <div className="">
                                         <h6>Timeline:</h6>
                                       </div> */}
 
-                                      <div className="row">
-                                        <div className="col-md-1"></div>
-                                        <div className="col-md-11">
-                                          <div className="timeline-section h-300 scroll-y">
-                                            <div className="pt-6 h-600px">
-                                              <div className="timeline-label">
-                                                {alertHistory &&
-                                                alertHistory.length > 0 ? (
-                                                  alertHistory
-                                                    .sort(
-                                                      (a, b) =>
-                                                        b.alertHistoryId -
-                                                        a.alertHistoryId
-                                                    )
-                                                    .map((item) => {
-                                                      const formattedDateTime = getCurrentTimeZone(
-                                                        item.historyDate
-                                                      );
+                                        <div className="row">
+                                          <div className="col-md-1"></div>
+                                          <div className="col-md-11">
+                                            <div className="timeline-section h-300 scroll-y">
+                                              <div className="pt-6 h-600px">
+                                                <div className="timeline-label">
+                                                  {alertHistory &&
+                                                  alertHistory.length > 0 ? (
+                                                    alertHistory
+                                                      .sort(
+                                                        (a, b) =>
+                                                          b.alertHistoryId -
+                                                          a.alertHistoryId
+                                                      )
+                                                      .map((item) => {
+                                                        const formattedDateTime = getCurrentTimeZone(
+                                                          item.historyDate
+                                                        );
 
-                                                      return (
-                                                        <div
-                                                          className="timeline-item"
-                                                          key={item.id}
-                                                        >
-                                                          <div className="timeline-label fw-bold text-gray-800 fs-6">
-                                                            <p className="semi-bold">
-                                                              {
-                                                                formattedDateTime
-                                                              }
-                                                            </p>
-                                                            <p className="text-muted normal">
-                                                              {item.createdUser}
-                                                            </p>
-                                                          </div>
+                                                        return (
+                                                          <div
+                                                            className="timeline-item"
+                                                            key={item.id}
+                                                          >
+                                                            <div className="timeline-label fw-bold text-gray-800 fs-6">
+                                                              <p className="semi-bold">
+                                                                {
+                                                                  formattedDateTime
+                                                                }
+                                                              </p>
+                                                              <p className="text-muted normal">
+                                                                {
+                                                                  item.createdUser
+                                                                }
+                                                              </p>
+                                                            </div>
 
                                                           <div className="timeline-badge">
                                                             <i
@@ -2417,7 +2492,7 @@ const AlertsPage = () => {
                                       </div>
                                     </div>
                                   </div>
-                                  {/* <div className="tab-content">
+                                  <div className="tab-content">
                                     {orgId === 2 && (
                                       <div
                                         className="tab-pane"
@@ -2597,7 +2672,7 @@ const AlertsPage = () => {
                                       role="tabpanel"
                                       aria-labelledby={`actionsTab_${index}`}
                                     ></div>
-                                  </div> */}
+                                  </div>
                                 </div>
                               </div>
                             </div>

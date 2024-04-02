@@ -134,12 +134,12 @@ function InventoryComponent() {
   };
 
   return (
-    <div className="application-section mg-top-20 mg-btm-20">
+    <div className="application-section card pad-10 mt-5 mb-5">
       {loading ? (
         <UsersListLoading />
       ) : (
         <>
-          <div className="header-filter mg-btm-20 row">
+          <div className="header-filter row">
             <div className="col-lg-10">
               <input
                 type="text"
@@ -150,7 +150,7 @@ function InventoryComponent() {
               />
             </div>
             <div className="col-lg-2">
-              <div className="export-report border-0">
+              <div className="export-report border-0 float-right">
                 <Dropdown
                   isOpen={dropdownOpen}
                   toggle={() => setDropdownOpen(!dropdownOpen)}

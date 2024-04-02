@@ -301,7 +301,7 @@ const DashboardWrapper = () => {
           </div>
 
           {/* begin::Row */}
-          <div className="row py-lg-3 incident-box">
+          <div className="row py-lg-3 incident-box alert-boxes">
             <div className="col-lg-6">
               <div className="row">
                 <div className="col-xl-3">
