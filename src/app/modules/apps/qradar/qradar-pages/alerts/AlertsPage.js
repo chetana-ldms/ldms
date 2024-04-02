@@ -1163,6 +1163,7 @@ const AlertsPage = () => {
             </div>
           </div>
         </div>
+        </div>
         <div className="clearfix" />
         <div className="card mt-5">
           <div className="pad-10">
@@ -1896,7 +1897,7 @@ const AlertsPage = () => {
                                         Timeline
                                       </a>
                                     </li>
-                                    {orgId === 2 && (
+                                    {/* {orgId === 2 && (
                                       <li
                                         className="nav-item"
                                         role="presentation"
@@ -1913,22 +1914,7 @@ const AlertsPage = () => {
                                           Other Action
                                         </a>
                                       </li>
-                                    )}
-                                    {/* {orgId === 2 && (
-                                  <li className="nav-item" role="presentation">
-                                    <a
-                                      className="nav-link"
-                                      id={`actionsTab_${index}`}
-                                      data-bs-toggle="tab"
-                                      href={`#actions_${index}`}
-                                      role="tab"
-                                      aria-controls={`actions_${index}`}
-                                      aria-selected="false"
-                                    >
-                                      Actions
-                                    </a>
-                                  </li>
-                                )} */}
+                                    )} */}
                                   </ul>
                                   <div className="tab-content pt-4">
                                     <div
@@ -2492,7 +2478,7 @@ const AlertsPage = () => {
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="tab-content">
+                                  {/* <div className="tab-content">
                                     {orgId === 2 && (
                                       <div
                                         className="tab-pane"
@@ -2672,7 +2658,7 @@ const AlertsPage = () => {
                                       role="tabpanel"
                                       aria-labelledby={`actionsTab_${index}`}
                                     ></div>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </div>
                             </div>
