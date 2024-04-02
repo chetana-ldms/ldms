@@ -76,7 +76,7 @@ const DashboardWrapper = () => {
     const hours = Math.floor((diffMins % 1440) / 60)
     const minutes = diffMins % 60
 
-    const diffString = `${days}d ${hours}h ${minutes}m`
+    const diffString = `${days}D ${hours}H : ${minutes}M`
 
     return diffString
   }
