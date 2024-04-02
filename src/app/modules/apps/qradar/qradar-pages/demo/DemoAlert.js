@@ -99,10 +99,10 @@ const DemoAlert = () => {
   };
 
   return (
-    <KTCardBody className="demo-alert">
+    <KTCardBody className="demo-alert alert-page">
       <ToastContainer />
-      <div className="card mb-5 mb-xl-8">
-        <div className="card-header border-0 no-pad">
+      <div className="mb-5 mb-xl-8">
+        <div className="card-header border-0 no-pad d-flex justify-content-between mb-5">
           <h3 className="card-title align-items-start flex-column">
             <span className="card-label fw-bold fs-3 mb-1">
               Alerts {"( " + alertData.length + " / " + alertsCount + ")"}
@@ -141,7 +141,7 @@ const DemoAlert = () => {
                   id="kt_menu_637dc885a14bb"
                 >
                   <div className="separator border-gray-200"></div>
-                  <div className="px-7 py-5">
+                  <div className="px-7 py-5 header-filter">
                     <div className="mb-10">
                       <label className="form-label fw-semibold">Actions:</label>
                       <div>
@@ -165,7 +165,7 @@ const DemoAlert = () => {
           </div>
         </div>
 
-        <div className="card-body no-pad alert-table" id="kt_accordion_1">
+        <div className="card no-pad alert-table" id="kt_accordion_1">
           <div className="table-responsive alert-table">
             <table className="table align-middle gs-0 gy-4">
               <thead>

@@ -78,12 +78,14 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
             </ul>
             <div className="tab-content" id="myTabContent">
               <div
-                className="tab-pane fade show active me-n5 pe-5 h-500px"
+                className="tab-pane fade show active me-n5 pe-5 h-500px header-filter"
                 id="kt_tab_pane_1"
                 role="tabpanel"
               >
                 <div className="row bd-highlight mb-3">
-                  <div className="col-md-3 bd-highlight mt-2">Status</div>
+                  <div className="col-md-3 bd-highlight mt-2 semi-bold">
+                    Status
+                  </div>
                   <div className="col-md-9 bd-highlight">
                     <div className="w-120px">
                       <select
@@ -101,7 +103,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                 </div>
                 <div className="row bd-highlight mb-3">
-                  <div className="col-md-3 bd-highlight mt-2">Priority</div>
+                  <div className="col-md-3 bd-highlight mt-2 semi-bold">
+                    Priority
+                  </div>
                   <div className="col-md-9 bd-highlight">
                     <div className="w-120px">
                       <select
@@ -124,7 +128,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                 </div>
                 <div className="row bd-highlight mb-3">
-                  <div className="col-md-3 bd-highlight mt-2">Severity</div>
+                  <div className="col-md-3 bd-highlight mt-2 semi-bold">
+                    Severity
+                  </div>
                   <div className="col-md-9 bd-highlight">
                     <div className="w-120px">
                       <select
@@ -147,7 +153,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                 </div>
                 <div className="row bd-highlight mb-3">
-                  <div className="col-md-3 bd-highlight mt-2">Type</div>
+                  <div className="col-md-3 bd-highlight mt-2 semi-bold">
+                    Type
+                  </div>
                   <div className="col-md-9 bd-highlight">
                     <div className="w-120px">
                       <select
@@ -164,29 +172,29 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                 </div>
                 <div className="bd-highlight mb-3 mt-5 pt-5 bdr-top">
-                  <div className="bd-highlight">
+                  <div className="bd-highlight mb-2">
                     <div className="d-flex align-items-center gap-2">
                       <span className="fw-bold">Alert Name - </span> Multiple
                       failed login for same IP
                     </div>
                   </div>
-                  <div className="bd-highlight">
+                  <div className="bd-highlight mb-2">
                     <div className="d-flex align-items-center gap-2">
                       <span className="fw-bold">Event ID - </span> 4625
                     </div>
                   </div>
-                  <div className="bd-highlight">
+                  <div className="bd-highlight mb-2">
                     <div className="d-flex align-items-center gap-2">
                       <span className="fw-bold"> Destination User - </span>{" "}
                       James James
                     </div>
                   </div>
-                  <div className="bd-highlight">
+                  <div className="bd-highlight mb-2">
                     <div className="d-flex align-items-center gap-2">
                       <span className="fw-bold">Source IP - </span> 192.168.0.1
                     </div>
                   </div>
-                  <div className="bd-highlight">
+                  <div className="bd-highlight mb-2">
                     <div className="d-flex align-items-center gap-2">
                       <span className="fw-bold">Vendor - </span> Microsoft
                     </div>
@@ -194,7 +202,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                 </div>
                 <div className="d-flex justify-content-between bd-highlight">
                   <div className="p-2 bd-highlight">
-                    <div className="fs-13">Incident ID</div>
+                    <div className="fs-13 semi-bold">Incident ID</div>
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="badge gray fs-13">20210728-00056 </div>
@@ -202,7 +210,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                 </div>
                 <div className="d-flex justify-content-between bd-highlight">
                   <div className="p-2 bd-highlight">
-                    <div className="fs-13">Owner</div>
+                    <div className="fs-13 semi-bold">Owner</div>
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="">
@@ -221,20 +229,20 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                 </div>
                 <div className="d-flex justify-content-between bd-highlight">
                   <div className="p-2 bd-highlight">
-                    <div className="fs-13">Created</div>
+                    <div className="fs-13 semi-bold">Created</div>
                   </div>
                   <div className="p-2 bd-highlight">
-                    <div className="badge text-black fw-normal">
+                    <div className="text-black fw-normal">
                       Jul 28, 2022 02:02:02 PM
                     </div>
                   </div>
                 </div>
                 <div className="d-flex justify-content-between bd-highlight">
                   <div className="p-2 bd-highlight">
-                    <div className="fs-13">Updated</div>
+                    <div className="fs-13 semi-bold">Updated</div>
                   </div>
                   <div className="p-2 bd-highlight">
-                    <div className="badge text-black fw-normal">
+                    <div className="text-black fw-normal">
                       Jul 29, 2022 01:12:32 AM
                     </div>
                   </div>

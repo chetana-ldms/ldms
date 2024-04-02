@@ -113,7 +113,7 @@ const IncidentsPageDemo = () => {
                 </div>
                 <div className="p-1 bd-highlight"></div>
 
-                <div className="card-title">
+                <div className="card-title header-filter">
                   {/* begin::Search */}
                   <div className="input-group">
                     <input
@@ -126,7 +126,7 @@ const IncidentsPageDemo = () => {
                     </span>
                   </div>
                   {/* end::Search */}
-                  <div className="d-flex justify-content-between bd-highlight mb-3">
+                  <div className="d-flex justify-content-between bd-highlight mb-3 header-filter">
                     <div className="mt-2 bd-highlight">
                       <div className="w-110px me-2">
                         <select

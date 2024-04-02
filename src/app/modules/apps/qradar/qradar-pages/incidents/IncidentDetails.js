@@ -307,7 +307,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
 
             <div className="tab-content h-auto" id="myTabContent">
               <div
-                className="tab-pane fade show active me-n5 pe-5 h-500px"
+                className="tab-pane fade show active me-n5 pe-5 h-500px header-filter"
                 id="kt_tab_pane_1"
                 role="tabpanel"
               >
@@ -453,7 +453,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                 </div>
                 <div className="d-flex justify-content-between bd-highlight bdr-top pt-2">
                   <div className="p-2 bd-highlight">
-                    <div className="fs-13">Incident ID</div>
+                    <div className="fs-13  semi-bold">Incident ID</div>
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="badge text-black fs-13">{incidentID} </div>
@@ -462,7 +462,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
 
                 <div className="d-flex justify-content-between bd-highlight">
                   <div className="p-2 bd-highlight">
-                    <div className="fs-13">Owner</div>
+                    <div className="fs-13 semi-bold">Owner</div>
                   </div>
                   <div className="p-2 bd-highlight">
                     <div className="">
@@ -506,10 +506,10 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
 
                 <div className="d-flex justify-content-between bd-highlight">
                   <div className="p-2 bd-highlight">
-                    <div className="fs-13">Created</div>
+                    <div className="fs-13 semi-bold">Created</div>
                   </div>
-                  <div className="p-2 bd-highlight">
-                    <div className="badge text-black fw-bold">
+                  <div className="p-2">
+                    <div className="text-black">
                       {createdDate && getCurrentTimeZone(createdDate)}
                     </div>
                   </div>
@@ -517,10 +517,10 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
 
                 <div className="d-flex justify-content-between bd-highlight">
                   <div className="p-2 bd-highlight">
-                    <div className="fs-13">Updated</div>
+                    <div className="fs-13 semi-bold">Updated</div>
                   </div>
-                  <div className="p-2 bd-highlight">
-                    <div className="badge text-black fw-bold">
+                  <div className="p-2">
+                    <div className="text-black">
                       {modifiedDate && getCurrentTimeZone(modifiedDate)}
                     </div>
                   </div>
@@ -650,7 +650,8 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                 </div>
               </div>
-              <div className="">
+              <div className="clearfix" />
+              <div className="d-flex mt-10 justify-content-end">
                 {activeTab === "general" && (
                   <div className="text-end mt-10">
                     <button
