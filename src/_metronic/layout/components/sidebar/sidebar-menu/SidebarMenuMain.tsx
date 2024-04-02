@@ -99,11 +99,11 @@ const SidebarMenuMain = () => {
         {/* <SidebarMenuItem hasBullet={true} to='/qradar/master-data/list' title='Master Data' /> */}
 
       </SidebarMenuItemWithSub>
-      <SidebarMenuItem
+      {/* <SidebarMenuItem
           icon='/media/icons/duotune/communication/com006.svg'
           to='/qradar/profile'
           title='Users Profile'
-        />
+        /> */}
         <SidebarMenuItem
           icon='/media/icons/duotune/communication/com007.svg'
           to='/qradar/tasks/list'

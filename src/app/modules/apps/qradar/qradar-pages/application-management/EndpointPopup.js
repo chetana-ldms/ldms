@@ -53,7 +53,7 @@ const EndpointPopup = ({ selectedEndpoint, showModal, setShowModal }) => {
                     App Inventory
                   </a>
                 </li>
-                <li className="nav-item text-center">
+                {/* <li className="nav-item text-center">
                   <a
                     className={`nav-link normal pointer ${
                       activeTab === "tasks" ? "active" : ""
@@ -62,7 +62,7 @@ const EndpointPopup = ({ selectedEndpoint, showModal, setShowModal }) => {
                   >
                     Tasks
                   </a>
-                </li>
+                </li> */}
                 <li className="nav-item text-center">
                   <a
                     className={`nav-link normal pointer ${
@@ -73,7 +73,7 @@ const EndpointPopup = ({ selectedEndpoint, showModal, setShowModal }) => {
                     Updates
                   </a>
                 </li>
-                <li className="nav-item text-center">
+                {/* <li className="nav-item text-center">
                   <a
                     className={`nav-link normal pointer ${
                       activeTab === "tags" ? "active" : ""
@@ -82,14 +82,14 @@ const EndpointPopup = ({ selectedEndpoint, showModal, setShowModal }) => {
                   >
                     Tags
                   </a>
-                </li>
+                </li> */}
               </ul>
             </div>
             {activeTab === "general" && <General id={id} />}
             {activeTab === "inventory" && <Inventory id={id} />}
-            {activeTab === "tasks" && <TasksApplication id={id} />}
+            {/* {activeTab === "tasks" && <TasksApplication id={id} />} */}
             {activeTab === "updates" && <Updates id={id} />}
-            {activeTab === "tags" && <Tags id={id} />}
+            {/* {activeTab === "tags" && <Tags id={id} />} */}
           </div>
         </div>
       </Modal.Body>

@@ -105,7 +105,7 @@ function Task() {
         <table className="table align-middle gs-0 gy-4 dash-table alert-table">
           <thead>
             <tr className="fw-bold text-muted bg-blue">
-              <th className="min-w-50px fs-14">Creadated User</th>
+              <th className="min-w-50px fs-14"> User</th>
               <th className="min-w-50px fs-14">Created Date</th>
               <th className="min-w-50px fs-14">Task Type</th>
               <th className="min-w-50px fs-14">Task Description</th>
