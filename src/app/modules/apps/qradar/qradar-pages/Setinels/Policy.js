@@ -56,8 +56,11 @@ function Policy() {
       autoInstallBrowserExtensions: false,
     },
     autoFileUpload: {
-        enabled: false,
-      },
+      enabled: false,
+    },
+    autoDecommissionOn: false,
+    autoDecommissionDays: 0,
+    removeMacros: false,
   })
   console.log(policy, 'policy')
   const [loading, setLoading] = useState(false)
@@ -115,6 +118,19 @@ function Policy() {
         ...prevPolicy.autoFileUpload,
         enabled: !prevPolicy.autoFileUpload.enabled,
       },
+    }))
+  }
+  const handleAutoDecommissionChange = () => {
+    setPolicy((prevPolicy) => ({
+      ...prevPolicy,
+      autoDecommissionOn: !prevPolicy.autoDecommissionOn,
+    }));
+  };
+
+  const handleRemoteShellChange = () => {
+    setPolicy((prevPolicy) => ({
+      ...prevPolicy,
+      removeMacros: !prevPolicy.removeMacros,
     }));
   };
 
@@ -978,7 +994,7 @@ function Policy() {
                   <h6 className='white pad-10'>More Options</h6>
                 </div>
                 <div className='card-body row pad-10'>
-                  <div className='d-flex justify-content-start '>
+                  <div className='d-flex justify-content-start'>
                     <strong>Decommissioning</strong>
                     <div className='form-check form-switch'>
                       <input
@@ -986,17 +1002,22 @@ function Policy() {
                         type='checkbox'
                         id='autoDecommission'
                         checked={policy?.autoDecommissionOn}
-                        onChange={() => setAutoDecommissionEnabled(!autoDecommissionEnabled)}
+                        onChange={handleAutoDecommissionChange}
                       />
                       <label className='form-check-label' htmlFor='autoDecommission'>
                         Auto Decommission after {policy?.autoDecommissionDays} days offline
                       </label>
                     </div>
                   </div>
-                  <div className='d-flex justify-content-start '>
+                  <div className='d-flex justify-content-start'>
                     <strong>Remote Shell</strong>
                     <div className=''>
-                      <input className='' type='checkbox' checked={policy?.removeMacros} />
+                      <input
+                        className=''
+                        type='checkbox'
+                        checked={policy?.removeMacros}
+                        onChange={handleRemoteShellChange}
+                      />
                       <label>Enable Remote Shell</label>
                     </div>
                   </div>
