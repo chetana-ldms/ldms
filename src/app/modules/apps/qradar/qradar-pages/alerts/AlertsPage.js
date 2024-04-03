@@ -935,7 +935,7 @@ const AlertsPage = () => {
                                 Unquarantine
                               </option>
                               <option value="AddANote" className="p-2">
-                                Add a Note
+                                Add A Note
                               </option>
                               <option value="ConnectToNetwork" className="p-2">
                                 Connect To Network
@@ -1200,7 +1200,7 @@ const AlertsPage = () => {
               </select>
             </div> */}
             <div className="float-right fs-13 lh-40 fc-gray text-right ds-reload">
-              Alerts are automatically refreshing every 2 minutes{" "}
+              Auto refresh every 5 minutes{" "}
               <a href="#" onClick={handleRefresh}>
                 <i
                   className={`fa fa-refresh link ${

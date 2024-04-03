@@ -30,8 +30,8 @@ function Inventory({ id }) {
   }, []);
   return (
     <div>
-        {loading && <UsersListLoading />}
-        <table className="table align-middle gs-0 gy-4 dash-table alert-table mt-2">
+      {loading && <UsersListLoading />}
+      <table className="table align-middle gs-0 gy-4 dash-table alert-table mt-2 h-300px scroll-y">
         <thead>
           <tr className="fw-bold text-muted bg-blue">
             <th>Name </th>
@@ -53,7 +53,6 @@ function Inventory({ id }) {
           ))}
         </tbody>
       </table>
-     
     </div>
   );
 }

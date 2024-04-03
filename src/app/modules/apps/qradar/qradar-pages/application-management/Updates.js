@@ -28,35 +28,33 @@ function Updates({ id }) {
   }, []);
   return (
     <div>
-        {loading && <UsersListLoading />}
-        <table className="table align-middle gs-0 gy-4 dash-table alert-table mt-2">
+      {loading && <UsersListLoading />}
+      <table className="table align-middle gs-0 gy-4 dash-table alert-table mt-2">
         <thead>
           <tr className="fw-bold text-muted bg-blue">
             <th>Name </th>
             <th>Category</th>
             <th>ID</th>
-            <th>Applied at</th>
+            <th>Applied Date</th>
           </tr>
         </thead>
         <tbody>
-          {
-          inventory !== null ? (
-          inventory?.map((item, index) => (
-            <tr key={index}>
-              <td>{item.displayName}</td>
-              <td>{item.assetFamilyType}</td>
-              <td>{item.liveUpdateId}</td>
-              <td>{getCurrentTimeZone(item.appliedAt)}</td>
-            </tr>
-          ))):(
+          {inventory !== null ? (
+            inventory?.map((item, index) => (
+              <tr key={index}>
+                <td>{item.displayName}</td>
+                <td>{item.assetFamilyType}</td>
+                <td>{item.liveUpdateId}</td>
+                <td>{getCurrentTimeZone(item.appliedAt)}</td>
+              </tr>
+            ))
+          ) : (
             <tr>
               <td>No data found</td>
             </tr>
-          )
-}
+          )}
         </tbody>
       </table>
-     
     </div>
   );
 }
