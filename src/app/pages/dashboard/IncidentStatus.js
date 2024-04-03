@@ -94,7 +94,7 @@ function IncidentStatus(props) {
     <div className="card-body">
       <div className="row">
         <label className="form-label fw-bold fs-12 col-lg-5 lh-40">
-          <span>Incident by Status & Priority:</span>
+          <span>Incident by Status & Priority :</span>
         </label>
         <div className="col-lg-4 header-filter">
           {dropdownData.statusDropDown !== null ? (

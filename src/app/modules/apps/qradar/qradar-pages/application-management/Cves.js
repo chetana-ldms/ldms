@@ -130,8 +130,8 @@ function Cves({ id }) {
                 <td>{item.severity}</td>
                 <td>{item.nvdBaseScore}</td>
                 <td>{getCurrentTimeZone(item.publishedDate)}</td>
-                <td className="w-200px">{item.description}</td>
-                <td>
+                <td title={item.description}>{item.description}</td>
+                <td title={item.mitreUrl}>
                   {item.mitreUrl} {item.nvdUrl}
                 </td>
               </tr>

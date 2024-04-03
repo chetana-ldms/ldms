@@ -301,7 +301,7 @@ const DemoPage = () => {
             <h5>Security Monitoring</h5>
             <div className="demo-block">
               <p>
-                Add an alert from IntSight about SMB exploit named EternalBlue
+                Add an alert from Int Sight about SMB exploit named EternalBlue
               </p>
               <a
                 onClick={() => {
@@ -321,14 +321,14 @@ const DemoPage = () => {
                 }}
                 className="btn btn-success"
               >
-                Start collaboration
+                Start Collaboration
               </button>
             </div>
           </div>
         </div>
         <div className="card mb-5 mb-xl-8">
           <div className="card-body">
-            <h5>Leaked Credentials use case</h5>
+            <h5>Leaked Credentials - Use Cases</h5>
             <div className="demo-block">
               <p>Add Insights alert</p>
               <button
@@ -348,11 +348,11 @@ const DemoPage = () => {
                 }}
                 className="btn btn-success"
               >
-                Start collaboration
+                Start Collaboration
               </button>
             </div>
             <div className="demo-block">
-              <p>Add failed login alert</p>
+              <p>Add Failed Login Alert</p>
 
               <button
                 onClick={() => {
@@ -371,7 +371,7 @@ const DemoPage = () => {
                 }}
                 className="btn btn-success"
               >
-                Start collaboration
+                Start Collaboration
               </button>
             </div>
           </div>
@@ -407,7 +407,7 @@ const DemoPage = () => {
                 <div className="card-body">
                   <h5>Threat Intelligence</h5>
                   <div className="demo-block">
-                    <p>Add channel post</p>
+                    <p>Add Channel Post</p>
                     {/* <button className='btn btn-primary'>Add Channel Post</button> */}
                     <button
                       onClick={() => {
@@ -460,7 +460,7 @@ const DemoPage = () => {
                     </button>
                   </div>
                   <div className="demo-block">
-                    <p>Start Collaborating on latest XM incident</p>
+                    <p>Start collaborating on latest XM incident</p>
 
                     <button
                       onClick={() => {
@@ -475,9 +475,9 @@ const DemoPage = () => {
               </div>
               <div className="card mt-8">
                 <div className="card-body">
-                  <h5>Suspecious mail</h5>
+                  <h5>Suspicious mail</h5>
                   <div className="demo-block">
-                    <p>Start collaboration </p>
+                    <p>Start Collaboration </p>
 
                     <button
                       onClick={() => {
@@ -485,7 +485,7 @@ const DemoPage = () => {
                       }}
                       className="btn btn-success"
                     >
-                      Start collaboration
+                      Start Collaboration
                     </button>
                   </div>
                 </div>

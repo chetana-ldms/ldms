@@ -31,8 +31,8 @@ const DemoAlert = () => {
 
   const handleCreateIncident = () => {
     // const alertData = "add failed login";
-    notify("Alert identified as threat");
-    notify("Incident created");
+    notify("Alert Identified as Threat");
+    notify("Incident Created");
     setTimeout(() => {
       navigate("/qradar/incidentsDemo");
     }, 5000);

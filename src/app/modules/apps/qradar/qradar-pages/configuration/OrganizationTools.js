@@ -87,7 +87,7 @@ const OrganizationTools = () => {
         <table className="table align-middle gs-0 gy-4 dash-table alert-table">
           <thead>
             <tr className="fw-bold text-muted bg-blue">
-              <th>S.NoD</th>
+              <th>S.No</th>
               <th>Tool Name</th>
               <th>Organization</th>
               <th>Auth Key</th>

@@ -189,7 +189,7 @@ const IncidentsPage = () => {
                   <div className="p-1 bd-highlight"></div>
                 </div> */}
 
-                <div className="card-title">
+                <div className="card-title header-filter">
                   {/* begin::Search */}
                   <div className="input-group">
                     <input
@@ -233,7 +233,7 @@ const IncidentsPage = () => {
                     </div>
                     <div className="mt-2 bd-highlight mt-5">Sort by</div>
                     <div className="mt-2 bd-highlight">
-                      <div className="w-120px me-0">
+                      <div className="w-150px me-0">
                         <select
                           className="form-select form-select-sm"
                           data-kt-select2="true"

@@ -158,7 +158,7 @@ const IncidentsPageDemo = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="scroll-y h-500px">
+                  <div className="scroll-y h-600px">
                     <div className="incident-list">
                       <>
                         {Array.isArray(demoAlertData) ? (

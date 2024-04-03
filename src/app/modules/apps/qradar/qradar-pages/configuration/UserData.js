@@ -82,11 +82,11 @@ const UserData = () => {
       <ToastContainer />
 
       <div className="header-filter row">
-        <div className="col-lg-7">
-          <h3 className="uppercase lh-40">Users</h3>
+        <div className="col-lg-6">
+          <h3 className="lh-40">Users</h3>
         </div>
 
-        <div className="col-lg-3">
+        <div className="col-lg-4">
           <label className="form-label fw-normal fc-gray fs-14 lh-40 float-left">
             <span>Organization: </span>
           </label>

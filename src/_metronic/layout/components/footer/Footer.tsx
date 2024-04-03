@@ -11,7 +11,7 @@ const Footer = () => {
     <>
       <div className='text-dark'>
         <span className='text-muted fw-semibold me-1'>
-          {new Date().getFullYear().toString()}&copy;
+          &copy; {new Date().getFullYear().toString()}
         </span>
         <a
           href={process.env.REACT_APP_COMPANY_URL}

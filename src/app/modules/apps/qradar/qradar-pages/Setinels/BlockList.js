@@ -329,9 +329,9 @@ function BlockList() {
                           <input type="checkbox" name={`checkbox_${item.id}`} />
                         </td>
                         <td>{item.osType}</td>
-                        <td>{item.description}</td>
+                        <td title={item.description}>{item.description}</td>
                         <td>{item.value}</td>
-                        <td>{item.scopePath}</td>
+                        <td title={item.scopePath}>{item.scopePath}</td>
                         <td>{item.userName}</td>
                         <td>{item.notRecommended}</td>
                         <td>{getCurrentTimeZone(item.updatedAt)}</td>

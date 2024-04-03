@@ -237,7 +237,7 @@ function Exclusions() {
                             value="AddFromExclusionsCatalog"
                             className="mb-2"
                           >
-                            Add from exclusions Catalog
+                            Add From Exclusions Catalog
                           </option>
                         </select>
                       </div>
@@ -326,9 +326,9 @@ function Exclusions() {
                     <td>{item.osType}</td>
                     <td>{item.applicationName}</td>
                     <td></td>
-                    <td>{item.description}</td>
-                    <td>{item.value}</td>
-                    <td>{item?.scopePath}</td>
+                    <td title={item.description}>{item.description}</td>
+                    <td title={item.value}>{item.value}</td>
+                    <td title={item.scopePath}>{item?.scopePath}</td>
                     <td>{item.userName}</td>
                     <td>{item.mode}</td>
                     <td>{getCurrentTimeZone(item.updatedAt)}</td>

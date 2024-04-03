@@ -421,57 +421,11 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                     </div>
                   </div>
                 </div>
-                {/* Text */}
-                <div className="bd-highlight mb-3 bdr-top pt-5 mt-5">
-                  <div className="bd-highlight mb-3">
-                    <div className="d-flex align-items-top gap-2">
-                      <span className="fw-bold m-width">Incident Name : </span>{" "}
-                      {subject}
-                    </div>
-                  </div>
-                  <div className="bd-highlight mb-3">
-                    <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold m-width">Event ID : </span>{" "}
-                      {eventID}
-                    </div>
-                  </div>
-                  <div className="bd-highlight mb-3">
-                    <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold m-width">
-                        {" "}
-                        Destination User :{" "}
-                      </span>{" "}
-                      {destinationUser}
-                    </div>
-                  </div>
-                  <div className="bd-highlight mb-3">
-                    <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold m-width">Source IP : </span>{" "}
-                      {sourceIP}
-                    </div>
-                  </div>
-                  <div className="bd-highlight mb-3">
-                    <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold m-width">Vendor : </span>{" "}
-                      {vendor}
-                    </div>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between bd-highlight mb-3">
-                  <div className="bd-highlight">
-                    <div className="fs-13  semi-bold m-width">Incident ID:</div>
-                  </div>
-                  <div className="bd-highlight">
-                    <div className="badge text-black fs-13">{incidentID} </div>
-                  </div>
-                </div>
-
-                <div className="d-flex justify-content-between bd-highlight mb-3">
-                  <div className="bd-highlight">
-                    <div className="fs-13 semi-bold">Owner:</div>
-                  </div>
-                  <div className="bd-highlight">
-                    <div className="">
+                {/* Owner */}
+                <div className="row bd-highlight mb-3">
+                  <div className="col-md-3 bd-highlight mt-2">Owner</div>
+                  <div className="col-md-9 bd-highlight">
+                    <div className="w-120px">
                       <select
                         name="ownerName"
                         className="form-select form-select-solid"
@@ -499,6 +453,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                     </div>
                   </div>
                 </div>
+
                 <div className="checkbox-wrapper">
                   <input
                     className="p-2 v-middle"
@@ -510,25 +465,60 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </label>
                 </div>
 
-                <div className="d-flex justify-content-between bd-highlight">
-                  <div className="p-2 bd-highlight">
-                    <div className="fs-13 semi-bold">Created:</div>
+                {/* Text */}
+                <div className="bd-highlight mb-3 bdr-top pt-5 mt-2">
+                  <div className="bd-highlight mb-3">
+                    <div className="d-flex align-items-top gap-2">
+                      <span className="fw-bold m-width">Incident Name </span>{" "}
+                      <b>:</b> {subject}
+                    </div>
                   </div>
-                  <div className="p-2">
-                    <div className="text-black">
-                      {createdDate && getCurrentTimeZone(createdDate)}
+                  <div className="bd-highlight mb-3">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="fw-bold m-width">Event ID </span>{" "}
+                      <b>:</b> {eventID}
+                    </div>
+                  </div>
+                  <div className="bd-highlight mb-3">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="fw-bold m-width">
+                        {" "}
+                        Destination User{" "}
+                      </span>{" "}
+                      <b>:</b> {destinationUser}
+                    </div>
+                  </div>
+                  <div className="bd-highlight mb-3">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="fw-bold m-width">Source IP </span>{" "}
+                      <b>:</b> {sourceIP}
+                    </div>
+                  </div>
+                  <div className="bd-highlight mb-3">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="fw-bold m-width">Vendor</span> <b>:</b>{" "}
+                      {vendor}
                     </div>
                   </div>
                 </div>
-
-                <div className="d-flex justify-content-between bd-highlight">
-                  <div className="p-2 bd-highlight">
-                    <div className="fs-13 semi-bold">Updated:</div>
+                <div className="bd-highlight mb-3">
+                  <div className="d-flex align-items-center gap-2">
+                    <span className="fw-bold m-width">Incident ID</span>{" "}
+                    <b>:</b> {incidentID}
                   </div>
-                  <div className="p-2">
-                    <div className="text-black">
-                      {modifiedDate && getCurrentTimeZone(modifiedDate)}
-                    </div>
+                </div>
+
+                <div className="bd-highlight mb-3">
+                  <div className="d-flex align-items-center gap-2">
+                    <span className="fw-bold m-width">Created</span> <b>:</b>{" "}
+                    {createdDate && getCurrentTimeZone(createdDate)}
+                  </div>
+                </div>
+
+                <div className="bd-highlight mb-3">
+                  <div className="d-flex align-items-center gap-2">
+                    <span className="fw-bold m-width">Updated</span> <b>:</b>{" "}
+                    {modifiedDate && getCurrentTimeZone(modifiedDate)}
                   </div>
                 </div>
               </div>

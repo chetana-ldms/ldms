@@ -103,7 +103,8 @@ const InventoryEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
       <Modal.Header closeButton>
         <h1>Inventory Details</h1>
         <div className="back btn btn-small btn-border">
-          <i className="fa fa-chevron-left link" /> Back
+          {/* <i className="fa fa-chevron-left link" /> */}
+          Back
         </div>
       </Modal.Header>
       <Modal.Body>

@@ -45,9 +45,9 @@ const IncidentChat = () => {
           <p className="fs-12">User | Multiple failed login</p>
         </div>
         <div className="badge text-black fw-normal icon-right float-right">
-          <a href="#" onClick={handleShow}>
+          {/* <a href="#" onClick={handleShow}>
             <i className="far fa-window-restore white"></i>
-          </a>
+          </a> */}
           <a
             href={toAbsoluteUrl("/media/reports/Report.docx")}
             download="myFile"

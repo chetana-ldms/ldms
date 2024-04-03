@@ -551,7 +551,7 @@ body {
 .application-modal{
   .modal-dialog{
     max-width: 60%;
-    box-shadow: 0px 0px 2px 2px #e5e5e5;
+    box-shadow: 0px 0px 2px 2px #d1cdcd;
     border-radius: 6px;
   }
   .modal-header{
@@ -575,6 +575,9 @@ body {
       color: white;
       font-size: 20px;
     }
+  }
+  table{
+    min-height: 200px;
   }
 }
 
@@ -602,6 +605,24 @@ body {
   }
   .btn-close{
     padding-left: 50px;
+  }
+  .modal-header{
+    padding: 15px 10px;
+    border-bottom: 1px solid #ccc;
+    h1{
+      font-size: 20px;
+    }
+  }
+  .modal-body{
+    padding: 10px;
+  }
+  table{
+    td{
+      max-width: 270px; /* Adjust the width as per your preference */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }
 
@@ -769,6 +790,7 @@ form{
         &.active{
           border-radius: 0;
           font-weight: bold;
+          border: 1px solid #2f2f74;
           border-bottom: 2px solid #2f2f74;
         }
         &.btn{
@@ -797,6 +819,10 @@ form{
         }
       }
       td{
+        max-width: 270px; /* Adjust the width as per your preference */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         a{
           &:hover{
             text-decoration: underline !important;
@@ -1296,6 +1322,7 @@ form{
     .card{
       padding: 0;
       min-height: 450px;
+      height: 733px;
     }
     .m-width{
       min-width: 100px;
