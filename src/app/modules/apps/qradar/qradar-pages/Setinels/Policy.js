@@ -22,38 +22,47 @@ function Policy() {
       applicationControl: false,
       alternativeThreats: false,
     },
+    snapshotsOn: false,
+    antiTamperingOn: false,
+    scanNewAgents: false,
+    signedDriverBlockingOn: false,
+    agentLoggingOn: false,
+    agentUi: {
+      agentUiOn: false,
+      threatPopUpNotifications: false,
+      devicePopUpNotifications: false,
+      showSuspicious: false,
+      showAgentWarnings: false,
+      maxEventAgeDays: false,
+      showDeviceTab: false,
+      showQuarantineTab: false,
+      showSupport: false,
+    },
+    iocAttributes: {
+      process: false,
+      file: false,
+      url: false,
+      dns: false,
+      ip: false,
+      windowsEventLogs: false,
+      registry: false,
+      scheduledTask: false,
+      behavioralIndicators: false,
+      commandScripts: false,
+      crossProcess: false,
+      driver: false,
+      dataMasking: false,
+      smartFileMonitoring: false,
+      autoInstallBrowserExtensions: false,
+    },
+    autoFileUpload: {
+        enabled: false,
+      },
   })
   console.log(policy, 'policy')
   const [loading, setLoading] = useState(false)
 
-  const [snapshotsChecked, setSnapshotsChecked] = useState(false)
-  const [antiTamperChecked, setAntiTamperChecked] = useState(false)
-  const [scanNewAgentsChecked, setScanNewAgentsChecked] = useState(false)
-  const [suspiciousDriveBlockingChecked, setSuspiciousDriveBlockingChecked] = useState(false)
-  const [loggingChecked, setLoggingChecked] = useState(false)
-
-  const [threatMitigationChecked, setThreatMitigationChecked] = useState(false)
-  const [blockedDevicesChecked, setBlockedDevicesChecked] = useState(false)
-  const [includeSuspiciousChecked, setIncludeSuspiciousChecked] = useState(false)
-  const [includeWarningChecked, setIncludeWarningChecked] = useState(false)
-  const [showLast30Days, setShowLast30Days] = useState(false)
-  const [contactSupportChecked, setContactSupportChecked] = useState(false)
-
   const [deepVisibilityEnabled, setDeepVisibilityEnabled] = useState(false)
-  const [processEnabled, setProcessEnabled] = useState(false)
-  const [fileEnabled, setFileEnabled] = useState(false)
-  const [urlEnabled, setUrlEnabled] = useState(false)
-  const [dnsEnabled, setDnsEnabled] = useState(false)
-  const [ipEnabled, setIpEnabled] = useState(false)
-  const [loginEnabled, setLoginEnabled] = useState(false)
-  const [registryKeysEnabled, setRegistryKeysEnabled] = useState(false)
-  const [scheduledTasksEnabled, setScheduledTasksEnabled] = useState(false)
-  const [behavioralIndicatorsEnabled, setBehavioralIndicatorsEnabled] = useState(false)
-  const [commandScriptsEnabled, setCommandScriptsEnabled] = useState(false)
-  const [crossProcessEnabled, setCrossProcessEnabled] = useState(false)
-  const [driverLoadEnabled, setDriverLoadEnabled] = useState(false)
-  const [dataMaskingEnabled, setDataMaskingEnabled] = useState(false)
-  const [fileMonitoringEnabled, setFileMonitoringEnabled] = useState(false)
 
   const [autoDecommissionEnabled, setAutoDecommissionEnabled] = useState(false)
 
@@ -81,6 +90,33 @@ function Policy() {
       },
     }))
   }
+  const handleAgentUiChange = (key) => {
+    setPolicy((prevPolicy) => ({
+      ...prevPolicy,
+      agentUi: {
+        ...prevPolicy.agentUi,
+        [key]: !prevPolicy.agentUi[key],
+      },
+    }))
+  }
+  const handleIoCAttributeChange = (key) => {
+    setPolicy((prevPolicy) => ({
+      ...prevPolicy,
+      iocAttributes: {
+        ...prevPolicy.iocAttributes,
+        [key]: !prevPolicy.iocAttributes[key],
+      },
+    }))
+  }
+  const handleAutoFileUploadChange = () => {
+    setPolicy((prevPolicy) => ({
+      ...prevPolicy,
+      autoFileUpload: {
+        ...prevPolicy.autoFileUpload,
+        enabled: !prevPolicy.autoFileUpload.enabled,
+      },
+    }));
+  };
 
   const fetchData = async () => {
     const data = {
@@ -406,8 +442,9 @@ function Policy() {
                           className='form-check-input'
                           type='checkbox'
                           id='snapshots'
+                          name='snapshotsOn'
                           checked={policy?.snapshotsOn}
-                          onChange={() => setSnapshotsChecked(!snapshotsChecked)}
+                          onChange={handleCheckboxChange}
                         />
                         <label className='form-check-label' htmlFor='snapshots'>
                           Snapshots
@@ -418,8 +455,9 @@ function Policy() {
                           className='form-check-input'
                           type='checkbox'
                           id='antiTamper'
+                          name='antiTamperingOn'
                           checked={policy?.antiTamperingOn}
-                          onChange={() => setAntiTamperChecked(!antiTamperChecked)}
+                          onChange={handleCheckboxChange}
                         />
                         <label className='form-check-label' htmlFor='antiTamper'>
                           Anti Tamper
@@ -430,8 +468,9 @@ function Policy() {
                           className='form-check-input'
                           type='checkbox'
                           id='scanNewAgents'
+                          name='scanNewAgents'
                           checked={policy?.scanNewAgents}
-                          onChange={() => setScanNewAgentsChecked(!scanNewAgentsChecked)}
+                          onChange={handleCheckboxChange}
                         />
                         <label className='form-check-label' htmlFor='scanNewAgents'>
                           Scan new agents
@@ -442,10 +481,9 @@ function Policy() {
                           className='form-check-input'
                           type='checkbox'
                           id='suspiciousDriveBlocking'
+                          name='signedDriverBlockingOn'
                           checked={policy?.signedDriverBlockingOn}
-                          onChange={() =>
-                            setSuspiciousDriveBlockingChecked(!suspiciousDriveBlockingChecked)
-                          }
+                          onChange={handleCheckboxChange}
                         />
                         <label className='form-check-label' htmlFor='suspiciousDriveBlocking'>
                           Suspicious Drive Blocking
@@ -456,8 +494,9 @@ function Policy() {
                           className='form-check-input'
                           type='checkbox'
                           id='logging'
+                          name='agentLoggingOn'
                           checked={policy?.agentLoggingOn}
-                          onChange={() => setLoggingChecked(!loggingChecked)}
+                          onChange={handleCheckboxChange}
                         />
                         <label className='form-check-label' htmlFor='logging'>
                           Logging
@@ -476,8 +515,15 @@ function Policy() {
                   <h6 className='white pad-10'>Agent UI</h6>
                 </div>
                 <div className='mt-5 card-body pad-10'>
-                  <input className='' type='checkbox' checked={policy?.agentUi?.agentUiOn} />
-                  <label>Show Agent UI & tray icon on endpoints</label>
+                  <input
+                    className=''
+                    type='checkbox'
+                    id='agentUi'
+                    name='agentUiOn'
+                    checked={policy?.agentUi?.agentUiOn}
+                    onChange={() => handleAgentUiChange('agentUiOn')}
+                  />
+                  <label htmlFor='agentUi'>Show Agent UI & tray icon on endpoints</label>
 
                   <p className='semi-bold'>
                     Set which information and notification to show for end-user
@@ -489,8 +535,9 @@ function Policy() {
                         className='form-check-input'
                         type='checkbox'
                         id='threatMitigation'
+                        name='threatPopUpNotifications'
                         checked={policy?.agentUi?.threatPopUpNotifications}
-                        onChange={() => setThreatMitigationChecked(!threatMitigationChecked)}
+                        onChange={() => handleAgentUiChange('threatPopUpNotifications')}
                       />
                       <label className='form-check-label' htmlFor='threatMitigation'>
                         Threat and Mitigation
@@ -501,8 +548,9 @@ function Policy() {
                         className='form-check-input'
                         type='checkbox'
                         id='blockedDevices'
+                        name='devicePopUpNotifications'
                         checked={policy?.agentUi?.devicePopUpNotifications}
-                        onChange={() => setBlockedDevicesChecked(!blockedDevicesChecked)}
+                        onChange={() => handleAgentUiChange('devicePopUpNotifications')}
                       />
                       <label className='form-check-label' htmlFor='blockedDevices'>
                         Blocked Devices
@@ -516,8 +564,9 @@ function Policy() {
                         className='form-check-input'
                         type='checkbox'
                         id='includeSuspicious'
+                        name='showSuspicious'
                         checked={policy?.agentUi?.showSuspicious}
-                        onChange={() => setIncludeSuspiciousChecked(!includeSuspiciousChecked)}
+                        onChange={() => handleAgentUiChange('showSuspicious')}
                       />
                       <label className='form-check-label' htmlFor='includeSuspicious'>
                         Include Suspicious
@@ -531,8 +580,9 @@ function Policy() {
                         className='form-check-input'
                         type='checkbox'
                         id='includeWarning'
+                        name='showAgentWarnings'
                         checked={policy?.agentUi?.showAgentWarnings}
-                        onChange={() => setIncludeWarningChecked(!includeWarningChecked)}
+                        onChange={() => handleAgentUiChange('showAgentWarnings')}
                       />
                       <label className='form-check-label' htmlFor='includeWarning'>
                         Include warning
@@ -546,8 +596,9 @@ function Policy() {
                         className='form-check-input'
                         type='checkbox'
                         id='showLast30Days'
+                        name='maxEventAgeDays'
                         checked={policy?.agentUi?.maxEventAgeDays}
-                        onChange={() => setShowLast30Days(!showLast30Days)}
+                        onChange={() => handleAgentUiChange('maxEventAgeDays')}
                       />
                       <label className='form-check-label' htmlFor='showLast30Days'>
                         30 days
@@ -560,11 +611,12 @@ function Policy() {
                       <input
                         className='form-check-input'
                         type='checkbox'
-                        id='threatMitigation'
+                        id='threatMitigationMenu'
+                        name='showDeviceTab'
                         checked={policy?.agentUi?.showDeviceTab}
-                        onChange={() => setThreatMitigationChecked(!threatMitigationChecked)}
+                        onChange={() => handleAgentUiChange('showDeviceTab')}
                       />
-                      <label className='form-check-label' htmlFor='threatMitigation'>
+                      <label className='form-check-label' htmlFor='threatMitigationMenu'>
                         Blocked Devices
                       </label>
                     </div>
@@ -572,11 +624,12 @@ function Policy() {
                       <input
                         className='form-check-input'
                         type='checkbox'
-                        id='blockedDevices'
+                        id='blockedDevicesMenu'
+                        name='showQuarantineTab'
                         checked={policy?.agentUi?.showQuarantineTab}
-                        onChange={() => setBlockedDevicesChecked(!blockedDevicesChecked)}
+                        onChange={() => handleAgentUiChange('showQuarantineTab')}
                       />
-                      <label className='form-check-label' htmlFor='blockedDevices'>
+                      <label className='form-check-label' htmlFor='blockedDevicesMenu'>
                         Quarantined Files
                       </label>
                     </div>
@@ -584,11 +637,12 @@ function Policy() {
                       <input
                         className='form-check-input'
                         type='checkbox'
-                        id='contactSupport'
+                        id='contactSupportMenu'
+                        name='showSupport'
                         checked={policy?.agentUi?.showSupport}
-                        onChange={() => setContactSupportChecked(!contactSupportChecked)}
+                        onChange={() => handleAgentUiChange('showSupport')}
                       />
-                      <label className='form-check-label' htmlFor='contactSupport'>
+                      <label className='form-check-label' htmlFor='contactSupportMenu'>
                         Contact Support
                       </label>
                     </div>
@@ -624,7 +678,7 @@ function Policy() {
                         className='form-check-input'
                         type='checkbox'
                         id='deepVisibility'
-                        checked={policy?.isDefault}
+                        checked={deepVisibilityEnabled}
                         onChange={() => setDeepVisibilityEnabled(!deepVisibilityEnabled)}
                       />
                       <label className='form-check-label' htmlFor='deepVisibility'>
@@ -642,7 +696,7 @@ function Policy() {
                         type='checkbox'
                         id='process'
                         checked={policy?.iocAttributes?.process}
-                        onChange={() => setProcessEnabled(!processEnabled)}
+                        onChange={() => handleIoCAttributeChange('process')}
                       />
                       <label className='form-check-label' htmlFor='process'>
                         Process
@@ -654,7 +708,7 @@ function Policy() {
                         type='checkbox'
                         id='file'
                         checked={policy?.iocAttributes?.file}
-                        onChange={() => setFileEnabled(!fileEnabled)}
+                        onChange={() => handleIoCAttributeChange('file')}
                       />
                       <label className='form-check-label' htmlFor='file'>
                         File
@@ -666,7 +720,7 @@ function Policy() {
                         type='checkbox'
                         id='url'
                         checked={policy?.iocAttributes?.url}
-                        onChange={() => setUrlEnabled(!urlEnabled)}
+                        onChange={() => handleIoCAttributeChange('url')}
                       />
                       <label className='form-check-label' htmlFor='url'>
                         URL
@@ -678,7 +732,7 @@ function Policy() {
                         type='checkbox'
                         id='dns'
                         checked={policy?.iocAttributes?.dns}
-                        onChange={() => setDnsEnabled(!dnsEnabled)}
+                        onChange={() => handleIoCAttributeChange('dns')}
                       />
                       <label className='form-check-label' htmlFor='dns'>
                         DNS
@@ -690,7 +744,7 @@ function Policy() {
                         type='checkbox'
                         id='ip'
                         checked={policy?.iocAttributes?.ip}
-                        onChange={() => setIpEnabled(!ipEnabled)}
+                        onChange={() => handleIoCAttributeChange('ip')}
                       />
                       <label className='form-check-label' htmlFor='ip'>
                         IP
@@ -702,7 +756,7 @@ function Policy() {
                         type='checkbox'
                         id='login'
                         checked={policy?.iocAttributes?.windowsEventLogs}
-                        onChange={() => setLoginEnabled(!loginEnabled)}
+                        onChange={() => handleIoCAttributeChange('windowsEventLogs')}
                       />
                       <label className='form-check-label' htmlFor='login'>
                         Login
@@ -714,7 +768,7 @@ function Policy() {
                         type='checkbox'
                         id='registryKeys'
                         checked={policy?.iocAttributes?.registry}
-                        onChange={() => setRegistryKeysEnabled(!registryKeysEnabled)}
+                        onChange={() => handleIoCAttributeChange('registry')}
                       />
                       <label className='form-check-label' htmlFor='registryKeys'>
                         Registry Keys
@@ -726,7 +780,7 @@ function Policy() {
                         type='checkbox'
                         id='scheduledTasks'
                         checked={policy?.iocAttributes?.scheduledTask}
-                        onChange={() => setScheduledTasksEnabled(!scheduledTasksEnabled)}
+                        onChange={() => handleIoCAttributeChange('scheduledTask')}
                       />
                       <label className='form-check-label' htmlFor='scheduledTasks'>
                         Scheduled Tasks
@@ -738,9 +792,7 @@ function Policy() {
                         type='checkbox'
                         id='behavioralIndicators'
                         checked={policy?.iocAttributes?.behavioralIndicators}
-                        onChange={() =>
-                          setBehavioralIndicatorsEnabled(!behavioralIndicatorsEnabled)
-                        }
+                        onChange={() => handleIoCAttributeChange('behavioralIndicators')}
                       />
                       <label className='form-check-label' htmlFor='behavioralIndicators'>
                         Behavioral Indicators
@@ -752,7 +804,7 @@ function Policy() {
                         type='checkbox'
                         id='commandScripts'
                         checked={policy?.iocAttributes?.commandScripts}
-                        onChange={() => setCommandScriptsEnabled(!commandScriptsEnabled)}
+                        onChange={() => handleIoCAttributeChange('commandScripts')}
                       />
                       <label className='form-check-label' htmlFor='commandScripts'>
                         Command Scripts
@@ -764,7 +816,7 @@ function Policy() {
                         type='checkbox'
                         id='crossProcess'
                         checked={policy?.iocAttributes?.crossProcess}
-                        onChange={() => setCrossProcessEnabled(!crossProcessEnabled)}
+                        onChange={() => handleIoCAttributeChange('crossProcess')}
                       />
                       <label className='form-check-label' htmlFor='crossProcess'>
                         Cross Process
@@ -776,7 +828,7 @@ function Policy() {
                         type='checkbox'
                         id='driverLoad'
                         checked={policy?.iocAttributes?.driver}
-                        onChange={() => setDriverLoadEnabled(!driverLoadEnabled)}
+                        onChange={() => handleIoCAttributeChange('driver')}
                       />
                       <label className='form-check-label' htmlFor='driverLoad'>
                         Driver Load
@@ -788,7 +840,7 @@ function Policy() {
                         type='checkbox'
                         id='dataMasking'
                         checked={policy?.iocAttributes?.dataMasking}
-                        onChange={() => setDataMaskingEnabled(!dataMaskingEnabled)}
+                        onChange={() => handleIoCAttributeChange('dataMasking')}
                       />
                       <label className='form-check-label' htmlFor='dataMasking'>
                         Data Masking
@@ -800,7 +852,7 @@ function Policy() {
                         type='checkbox'
                         id='fileMonitoring'
                         checked={policy?.iocAttributes?.smartFileMonitoring}
-                        onChange={() => setFileMonitoringEnabled(!fileMonitoringEnabled)}
+                        onChange={() => handleIoCAttributeChange('smartFileMonitoring')}
                       />
                       <label className='form-check-label' htmlFor='fileMonitoring'>
                         Focused File Monitoring
@@ -812,6 +864,16 @@ function Policy() {
                       className=''
                       type='checkbox'
                       checked={policy?.iocAttributes?.autoInstallBrowserExtensions}
+                      onChange={() =>
+                        setPolicy((prevPolicy) => ({
+                          ...prevPolicy,
+                          iocAttributes: {
+                            ...prevPolicy.iocAttributes,
+                            autoInstallBrowserExtensions:
+                              !prevPolicy.iocAttributes.autoInstallBrowserExtensions,
+                          },
+                        }))
+                      }
                     />
                     <label>Automatically install Deep Visibility browser extensions</label>
                     <p>
@@ -847,6 +909,7 @@ function Policy() {
                         className=''
                         type='checkbox'
                         checked={policy?.autoFileUpload?.enabled}
+                        onChange={handleAutoFileUploadChange}
                       />
                       <label>Enable automatic File Upload</label>
                     </span>

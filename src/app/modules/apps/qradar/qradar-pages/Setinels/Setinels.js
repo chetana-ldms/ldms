@@ -40,7 +40,7 @@ function Setinels() {
                   }`}
                   onClick={() => handleTabClick("blockList")}
                 >
-                  BlockList
+                  Blocklist
                 </a>
               </li>
               <li className="nav-item text-center">
@@ -56,16 +56,6 @@ function Setinels() {
               <li className="nav-item text-center">
                 <a
                   className={`nav-link normal pointer ${
-                    activeTab === "accountDetalis" ? "active" : ""
-                  }`}
-                  onClick={() => handleTabClick("accountDetalis")}
-                >
-                  AccountDetalis
-                </a>
-              </li>
-              <li className="nav-item text-center">
-                <a
-                  className={`nav-link normal pointer ${
                     activeTab === "policy" ? "active" : ""
                   }`}
                   onClick={() => handleTabClick("policy")}
@@ -73,13 +63,24 @@ function Setinels() {
                   Policy
                 </a>
               </li>
+              <li className="nav-item text-center">
+                <a
+                  className={`nav-link normal pointer ${
+                    activeTab === "accountDetalis" ? "active" : ""
+                  }`}
+                  onClick={() => handleTabClick("accountDetalis")}
+                >
+                  Account Detalis
+                </a>
+              </li>
+             
             </ul>
           </div>
           {activeTab === "endpoint" && <Endpoint />}
           {activeTab === "blockList" && <BlockList />}
           {activeTab === "exclusions" && <Exclusions />}
-          {activeTab === "accountDetalis" && <AccountDetalis />}
           {activeTab === "policy" && <Policy />}
+          {activeTab === "accountDetalis" && <AccountDetalis />}
         </div>
       </div>
     </div>

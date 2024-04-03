@@ -59,11 +59,7 @@ const SidebarMenuMain = () => {
         fontIcon='bi-archive'
         icon='/media/icons/duotune/general/gen011.svg'
       /> */}
-       <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen004.svg' title='Playbook'>
-        <SidebarMenuItem hasBullet={true} to='/qradar/demo/v1' title='Alert Types' />
-        <SidebarMenuItem hasBullet={true} to='/qradar/demoalert/updated' title='Playbook Alert' />
-        <SidebarMenuItem hasBullet={true} to='/qradar/demoplaybooks' title='Alert Playbooks' />
-      </SidebarMenuItemWithSub>
+      
        <SidebarMenuItem
         to='/qradar/reports'
         icon='/media/icons/duotune/general/gen005.svg'
@@ -123,7 +119,11 @@ const SidebarMenuMain = () => {
         icon='/media/icons/duotune/general/gen017.svg'
       /> */}
 
-
+      <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen004.svg' title='Playbook'>
+        <SidebarMenuItem hasBullet={true} to='/qradar/demo/v1' title='Alert Types' />
+        <SidebarMenuItem hasBullet={true} to='/qradar/demoalert/updated' title='Playbook Alert' />
+        <SidebarMenuItem hasBullet={true} to='/qradar/demoplaybooks' title='Alert Playbooks' />
+      </SidebarMenuItemWithSub>
     
       
        

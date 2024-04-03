@@ -58,6 +58,8 @@ function Cves({ id }) {
   // let { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [endpoints, setEndpoints] = useState([]);
+  console.log(endpoints, "")
+  console.log(endpoints, "endpoints1111111111")
   const orgId = Number(sessionStorage.getItem("orgId"));
 
   const fetchData = async () => {
@@ -129,7 +131,7 @@ function Cves({ id }) {
                 <td>{item.nvdBaseScore}</td>
                 <td>{getCurrentTimeZone(item.publishedDate)}</td>
                 <td className="w-200px">{item.description}</td>
-                <td>{item.mitreUrl}</td>
+                <td>{item.mitreUrl} {item.nvdUrl}</td>
               </tr>
             ))
           ) : (
