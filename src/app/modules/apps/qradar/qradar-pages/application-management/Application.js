@@ -29,7 +29,7 @@ function Application() {
                   }`}
                   onClick={() => handleTabClick("risks")}
                 >
-                  RISKS
+                  Risks
                 </a>
               </li>
               <li className="nav-item text-center">
@@ -39,7 +39,7 @@ function Application() {
                   }`}
                   onClick={() => handleTabClick("inventory")}
                 >
-                  INVENTORY
+                  Inventory
                 </a>
               </li>
               <li className="nav-item text-center">
@@ -49,7 +49,7 @@ function Application() {
                   }`}
                   onClick={() => handleTabClick("policy")}
                 >
-                  POLICY
+                  Policy
                 </a>
               </li>
             </ul>

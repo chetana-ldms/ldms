@@ -207,8 +207,11 @@ function Endpoint() {
                   Site {renderSortIcon(sortConfig, "siteName")}
                 </th>
                 <th onClick={() => handleSort("lastLoggedInUserName")}>
-                  Last Logged in user{" "}
+                  User Name{" "}
                   {renderSortIcon(sortConfig, "lastLoggedInUserName")}
+                </th>
+                <th onClick={() => handleSort("lastActiveDate")}>
+                  Last Active {renderSortIcon(sortConfig, "lastActiveDate")}
                 </th>
                 <th onClick={() => handleSort("groupName")}>
                   Group {renderSortIcon(sortConfig, "groupName")}
@@ -222,11 +225,8 @@ function Endpoint() {
                 <th onClick={() => handleSort("agentVersion")}>
                   Agent Version {renderSortIcon(sortConfig, "agentVersion")}
                 </th>
-                <th onClick={() => handleSort("lastActiveDate")}>
-                  Last Active {renderSortIcon(sortConfig, "lastActiveDate")}
-                </th>
                 <th onClick={() => handleSort("registeredAt")}>
-                  Register on {renderSortIcon(sortConfig, "registeredAt")}
+                Registered Date {renderSortIcon(sortConfig, "registeredAt")}
                 </th>
                 <th onClick={() => handleSort("machineType")}>
                   Device Type {renderSortIcon(sortConfig, "machineType")}
@@ -244,7 +244,7 @@ function Endpoint() {
                   CPU Count {renderSortIcon(sortConfig, "cpuCount")}
                 </th>
                 <th onClick={() => handleSort("coreCount")}>
-                  Core count {renderSortIcon(sortConfig, "coreCount")}
+                  Core Count {renderSortIcon(sortConfig, "coreCount")}
                 </th>
                 <th onClick={() => handleSort("networkStatus")}>
                   Network Status {renderSortIcon(sortConfig, "networkStatus")}
@@ -254,19 +254,19 @@ function Endpoint() {
                   {renderSortIcon(sortConfig, "lastSuccessfulScanDate")}
                 </th>
                 <th onClick={() => handleSort("lastIpToMgmt")}>
-                  IP Adress {renderSortIcon(sortConfig, "lastIpToMgmt")}
+                  IP Address {renderSortIcon(sortConfig, "lastIpToMgmt")}
                 </th>
                 <th onClick={() => handleSort("installerType")}>
-                  Installer type {renderSortIcon(sortConfig, "installerType")}
+                  Installer Type {renderSortIcon(sortConfig, "installerType")}
                 </th>
                 <th onClick={() => handleSort("storageName")}>
-                  Storage name {renderSortIcon(sortConfig, "storageName")}
+                  Storage Name {renderSortIcon(sortConfig, "storageName")}
                 </th>
                 <th onClick={() => handleSort("storageType")}>
-                  Storage type {renderSortIcon(sortConfig, "storageType")}
+                  Storage Type {renderSortIcon(sortConfig, "storageType")}
                 </th>
                 <th onClick={() => handleSort("lastSuccessfulScanDate")}>
-                  Last successful scan time{" "}
+                  Last Successful Scan Time{" "}
                   {renderSortIcon(sortConfig, "lastSuccessfulScanDate")}
                 </th>
                 <th onClick={() => handleSort("locations")}>
@@ -287,11 +287,11 @@ function Endpoint() {
                     <td>{item.accountName}</td>
                     <td>{item.siteName}</td>
                     <td>{item.lastLoggedInUserName}</td>
+                    <td>{getCurrentTimeZone(item.lastActiveDate)}</td>
                     <td>{item.groupName}</td>
                     <td>{item.domain}</td>
                     <td>{item.externalIp}</td>
                     <td>{item.agentVersion}</td>
-                    <td>{getCurrentTimeZone(item.lastActiveDate)}</td>
                     <td>{getCurrentTimeZone(item.registeredAt)}</td>
                     <td>{item.machineType}</td>
                     <td>{item.osName}</td>

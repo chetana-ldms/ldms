@@ -1449,7 +1449,7 @@ const AlertsPage = () => {
                     </span>
                   </th>
                   <th style={{ width: 140 }}>
-                    Detected time
+                    Detected Time
                     <span className="m-0 table-filter">
                       <a
                         href="#"
@@ -1543,7 +1543,7 @@ const AlertsPage = () => {
                     </span>
                   </th>
                   <th>
-                    Observables tags
+                    Observables Tags
                     <span className="m-0 table-filter">
                       <a
                         href="#"

@@ -306,7 +306,7 @@ function Exclusions() {
                 <th>Inventory Listed</th>
                 <th>Description</th>
                 <th>Value</th>
-                <th>Scope path </th>
+                <th>Scope Path </th>
                 <th>User</th>
                 <th>Mode</th>
                 <th>Last Update</th>

@@ -90,7 +90,7 @@ const SidebarMenuMain = () => {
         <SidebarMenuItem hasBullet={true} to='/qradar/tool-actions/list' title='Tool Actions' />
         <SidebarMenuItem hasBullet={true} to='/qradar/tool-type-actions/list' title='Tool Type Actions' />
         <SidebarMenuItem hasBullet={true} to='/qradar/roles-data/list' title='Roles' />
-        <SidebarMenuItem hasBullet={true} to='/qradar/master-data/list' title='Master Data' />
+        {/* <SidebarMenuItem hasBullet={true} to='/qradar/master-data/list' title='Master Data' /> */}
 
         {/* <SidebarMenuItem hasBullet={true} to='/qradar/master-data/list' title='Master Data' /> */}
 

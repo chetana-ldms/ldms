@@ -171,13 +171,13 @@ const DemoAlert = () => {
               <thead>
                 <tr className="fw-bold bg-light">
                   <th className="w-25px"></th>
-                  <th className="min-w-50px">Ser</th>
+                  <th className="min-w-50px">Severity</th>
                   <th className="min-w-50px">SLA</th>
                   <th className="min-w-50px">Score</th>
                   <th className="min-w-50px">Status</th>
-                  <th className="min-w-50px">Detected time</th>
+                  <th className="min-w-50px">Detected Time</th>
                   <th className="min-w-50px">Name</th>
-                  <th className="min-w-50px">Observables tags</th>
+                  <th className="min-w-50px">Observables Tags</th>
                   <th className="min-w-50px">Owner</th>
                   <th className="min-w-50px">Source</th>
                 </tr>

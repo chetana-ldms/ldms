@@ -188,7 +188,7 @@ function RisksComponent() {
                     {renderSortIcon(sortConfig, "highestSeverity")}
                   </th>
                   <th onClick={() => handleSort("highestNvdBaseScore")}>
-                    Highest NVD base score{" "}
+                    Highest NVD Base Score{" "}
                     {renderSortIcon(sortConfig, "highestNvdBaseScore")}
                   </th>
                   <th onClick={() => handleSort("cveCount")}>
@@ -203,7 +203,7 @@ function RisksComponent() {
                     {renderSortIcon(sortConfig, "detectionDate")}
                   </th>
                   <th onClick={() => handleSort("daysDetected")}>
-                    Days from Detection{" "}
+                    Days From Detection{" "}
                     {renderSortIcon(sortConfig, "daysDetected")}
                   </th>
                 </tr>
