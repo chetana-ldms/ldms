@@ -55,8 +55,8 @@ const LdpTools = () => {
       <ToastContainer />
       <div className="card-header no-pad mb-5 border-0">
         <h3 className="card-title align-items-start flex-column">
-          <span className="card-label fw-bold fs-3 mb-1 uppercase">
-            LDP Tools
+          <span className="card-label fw-bold fs-3 mb-1">
+            Ldc Tools
           </span>
         </h3>
         <div className="card-toolbar">
