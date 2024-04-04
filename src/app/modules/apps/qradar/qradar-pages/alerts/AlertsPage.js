@@ -1200,7 +1200,7 @@ const AlertsPage = () => {
               </select>
             </div> */}
             <div className="float-right fs-13 lh-40 fc-gray text-right ds-reload">
-              Auto refresh every 5 minutes{" "}
+              Auto refresh every 2 minutes{" "}
               <a href="#" onClick={handleRefresh}>
                 <i
                   className={`fa fa-refresh link ${
