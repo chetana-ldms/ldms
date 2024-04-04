@@ -330,7 +330,7 @@ function BlockList() {
                         </td>
                         <td>{item.osType}</td>
                         <td title={item.description}>{item.description}</td>
-                        <td>{item.value}</td>
+                        <td title={item.value}>{item.value}</td>
                         <td title={item.scopePath}>{item.scopePath}</td>
                         <td>{item.userName}</td>
                         <td>{item.notRecommended}</td>

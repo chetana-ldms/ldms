@@ -122,15 +122,23 @@
 .react-flow__node-input,
 .react-flow__node-output,
 .react-flow__node-group {
-    padding: 4px;
+    padding: 0 10px 0 3px;
     border-radius: 5px;
     width: auto;
-    font-size: 7px;
+    font-size: 9px;
     color: #222;
     text-align: center;
     border-width: 1px;
     border-style: solid;
     border-color: #909090;
     background-color: white;
-    box-shadow: none
+    box-shadow: none;
+    line-height: 22px;
+}
+
+.react-flow__node::before{
+    line-height: 19px;
+margin-top: -5px !important;   
+    position: relative;
+    top: -1px;
 }
