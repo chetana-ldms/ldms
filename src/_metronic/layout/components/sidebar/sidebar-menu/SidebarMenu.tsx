@@ -5,7 +5,7 @@ const SidebarMenu = () => {
   
   const compliance = sessionStorage.getItem('compliance');
   return (
-    <div className='app-sidebar-menu scroll-y'>
+    <div className='app-sidebar-menu'>
       <div
         id='kt_app_sidebar_menu_wrapper'
         className='app-sidebar-wrapper hover-scroll-overlay-y my-5'
