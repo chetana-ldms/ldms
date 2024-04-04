@@ -90,7 +90,7 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: " Add Failed Login Alert",
+      name: "Failed Login Alert",
       sla: "5h 11m",
       severity: "Medium",
       score: 3,
@@ -297,8 +297,8 @@ const DemoPage = () => {
       {/* Begin Col */}
       <div className="col-lg-5">
         <div className="card mb-5 mb-xl-8">
+          <h5 className="bg-heading">Security Monitoring</h5>
           <div className="card-body">
-            <h5>Security Monitoring</h5>
             <div className="demo-block">
               <p>
                 Add an alert from Int Sight about SMB exploit named EternalBlue
@@ -308,9 +308,7 @@ const DemoPage = () => {
                   addalerttolocal(datatoBeadded["0"]);
                 }}
               >
-                <button className="btn btn-primary">
-                  Add SMB Exploit Alert
-                </button>
+                <button className="btn btn-new">Add SMB Exploit Alert</button>
               </a>
             </div>
             <div className="demo-block">
@@ -326,16 +324,16 @@ const DemoPage = () => {
             </div>
           </div>
         </div>
-        <div className="card mb-5 mb-xl-8">
+        <div className="card mb-5 mb-xl-8 h-420px">
+          <h5 className="bg-heading">Leaked Credentials - Use Cases</h5>
           <div className="card-body">
-            <h5>Leaked Credentials - Use Cases</h5>
             <div className="demo-block">
               <p>Add Insights alert</p>
               <button
                 onClick={() => {
                   addalerttolocal(datatoBeadded["2"]);
                 }}
-                className="btn btn-primary"
+                className="btn btn-new"
               >
                 Add Insights Alert
               </button>
@@ -352,13 +350,13 @@ const DemoPage = () => {
               </button>
             </div>
             <div className="demo-block">
-              <p>Add Failed Login Alert</p>
+              <p>Failed Login Alert</p>
 
               <button
                 onClick={() => {
                   addalerttolocal(datatoBeadded["3"]);
                 }}
-                className="btn btn-primary"
+                className="btn btn-new"
               >
                 Add Failed Login Alert
               </button>
@@ -382,8 +380,8 @@ const DemoPage = () => {
       {/* Begin Col */}
       <div className="col-lg-7">
         <div className="card mb-5 mb-xl-8">
+          <h5 className="bg-heading">Automation</h5>
           <div className="card-body">
-            <h5>Automation</h5>
             <div className="demo-block">
               <p>
                 Add an alert with known IOC (Open incident automatically -
@@ -393,7 +391,7 @@ const DemoPage = () => {
                 onClick={() => {
                   addalerttolocal(datatoBeadded["1"]);
                 }}
-                className="btn btn-primary"
+                className="btn btn-new"
               >
                 Add CYREN Alert
               </button>
@@ -404,16 +402,16 @@ const DemoPage = () => {
           <div className="row">
             <div className="col-lg-6">
               <div className="card">
+                <h5 className="bg-heading">Threat Intelligence</h5>
                 <div className="card-body">
-                  <h5>Threat Intelligence</h5>
                   <div className="demo-block">
                     <p>Add Channel Post</p>
-                    {/* <button className='btn btn-primary'>Add Channel Post</button> */}
+                    {/* <button className='btn btn-new'>Add Channel Post</button> */}
                     <button
                       onClick={() => {
                         addalerttolocal(datatoBeadded["4"]);
                       }}
-                      className="btn btn-primary"
+                      className="btn btn-new"
                     >
                       Add Channel Post
                     </button>
@@ -423,15 +421,15 @@ const DemoPage = () => {
             </div>
             <div className="col-lg-6">
               <div className="card">
+                <h5 className="bg-heading">Malware Alert</h5>
                 <div className="card-body">
-                  <h5>Malware Alert</h5>
                   <div className="demo-block">
                     <p>Add Checkpoint</p>
                     <button
                       onClick={() => {
                         addalerttolocal(datatoBeadded["5"]);
                       }}
-                      className="btn btn-primary"
+                      className="btn btn-new"
                     >
                       Add Checkpoint Alert
                     </button>
@@ -446,15 +444,15 @@ const DemoPage = () => {
           <div className="row">
             <div className="col-lg-7">
               <div className="card">
+                <h5 className="bg-heading">Vulnerability Management</h5>
                 <div className="card-body">
-                  <h5>Vulnerability Management</h5>
                   <div className="demo-block">
                     <p>New XML Incident</p>
                     <button
                       onClick={() => {
                         addalerttolocal(datatoBeadded["6"]);
                       }}
-                      className="btn btn-primary"
+                      className="btn btn-new"
                     >
                       New XML Incident
                     </button>
@@ -474,8 +472,8 @@ const DemoPage = () => {
                 </div>
               </div>
               <div className="card mt-8">
+                <h5 className="bg-heading">Suspicious mail</h5>
                 <div className="card-body">
-                  <h5>Suspicious mail</h5>
                   <div className="demo-block">
                     <p>Start Collaboration </p>
 
@@ -493,31 +491,31 @@ const DemoPage = () => {
             </div>
             <div className="col-lg-5">
               <div className="card">
+                <h5 className="bg-heading">Blacklist</h5>
                 <div className="card-body">
-                  <h5>Blacklist</h5>
                   <div className="demo-block">
                     <p>Add Scanning Alert</p>
                     <button
                       onClick={() => {
                         addalerttolocal(datatoBeadded["7"]);
                       }}
-                      className="btn btn-primary"
+                      className="btn btn-new"
                     >
                       Add Scanning Alert
                     </button>
                     {/* <a href='alerts'>
-                      <button className='btn btn-primary'>Add Scanning Alert</button>
+                      <button className='btn btn-new'>Add Scanning Alert</button>
                     </a> */}
                   </div>
                 </div>
               </div>
               <div className="card mt-8">
+                <h5 className="bg-heading">Malicious code</h5>
                 <div className="card-body">
-                  <h5>Malicious code</h5>
                   <div className="demo-block">
                     <p>Add WDATP Alert</p>
                     <button
-                      className="btn btn-primary"
+                      className="btn btn-new"
                       onClick={() => {
                         addalerttolocal(datatoBeadded["8"]);
                       }}
@@ -525,7 +523,7 @@ const DemoPage = () => {
                       Add WDATP Alert
                     </button>
                     {/* <a href='alerts'>
-                      <button className='btn btn-primary'>Add WDATP Alert</button>
+                      <button className='btn btn-new'>Add WDATP Alert</button>
                     </a> */}
                   </div>
                 </div>

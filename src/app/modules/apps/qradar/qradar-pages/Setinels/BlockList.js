@@ -195,7 +195,7 @@ function BlockList() {
               >
                 <DropdownToggle className="no-pad btn btn-small btn-border">
                   <div className="fs-12 normal">
-                    All related scopes{" "}
+                    All Related Scopes{" "}
                     <i className="fa fa-chevron-down link mg-left-5" />
                   </div>
                 </DropdownToggle>
@@ -286,9 +286,7 @@ function BlockList() {
               <table className="table alert-table scroll-x">
                 <thead>
                   <tr>
-                    <th>
-                      {/* <input type="checkbox" name="selectAll" /> */}
-                    </th>
+                    <th>{/* <input type="checkbox" name="selectAll" /> */}</th>
                     <th onClick={() => handleSort("osType")}>
                       OS {renderSortIcon(sortConfig, "osType")}
                     </th>

@@ -68,9 +68,9 @@ const AddToolTypeAction = () => {
   return (
     <div className="card">
       {loading && <UsersListLoading />}
-      <div className="card-header bg-header">
+      <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">
-          <span className="white uppercase">Add Tool Type Action</span>
+          <span className="white">Add Tool Type Action</span>
         </h3>
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">

@@ -105,9 +105,9 @@ const AddUserData = () => {
   return (
     <div className="card">
       {loading && <UsersListLoading />}
-      <div className="card-header bg-header mb-5">
+      <div className="card-header bg-heading mb-5">
         <h3 className="card-title">
-          <span className="card-label white uppercase">Add New User</span>
+          <span className="card-label white">Add New User</span>
         </h3>
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">

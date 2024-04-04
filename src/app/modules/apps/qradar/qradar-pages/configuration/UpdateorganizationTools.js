@@ -300,7 +300,7 @@ const UpdateOrganizationTools = () => {
     <div className="card">
       <div className="card-header bg-header">
         <h3 className="card-title align-items-start flex-column">
-          <span className="white uppercase">Update Organization Tool</span>
+          <span className="white">Update Organization Tool</span>
         </h3>
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">

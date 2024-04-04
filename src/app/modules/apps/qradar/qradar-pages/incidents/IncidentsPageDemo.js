@@ -40,7 +40,7 @@ const IncidentsPageDemo = () => {
     setSelectedAlert(selectedAlert);
     setDemoAlertData(updatedAlerts);
     // Show the chat only when the "Demo: Add Failed Login Alert" incident is selected
-    setShowChat(selectedAlert.name === "Demo : Add Failed Login Alert");
+    setShowChat(selectedAlert.name === "Failed Login Alert");
   };
 
   //Chat window
@@ -201,7 +201,7 @@ const IncidentsPageDemo = () => {
                                       </div>
                                       <div className="pt-3 bd-highlight">
                                         <div className="badge text-black fw-normal">
-                                          3 MIN
+                                          1 MIN
                                         </div>
                                       </div>
                                     </div>
@@ -238,7 +238,7 @@ const IncidentsPageDemo = () => {
                             <div className="text-dark col-md-9">
                               <a href="#" className="text-dark">
                                 <span className="fw-bold">
-                                  Demo : Failed Login Alert
+                                  Failed Login Alert
                                 </span>
                               </a>
                             </div>
@@ -286,7 +286,7 @@ const IncidentsPageDemo = () => {
                 <div>
                   {showChat ||
                   (selectedAlert &&
-                    selectedAlert.name === "Demo : Add Failed Login Alert") ? (
+                    selectedAlert.name === "Failed Login Alert") ? (
                     <IncidentChat />
                   ) : (
                     <p>

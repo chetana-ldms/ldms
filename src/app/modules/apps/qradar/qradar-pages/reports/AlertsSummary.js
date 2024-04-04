@@ -202,7 +202,7 @@ function AlertsSummary() {
         <p>Error: {error}</p>
       ) : alertData !== null ? (
         <>
-          <h4>
+          <h4 className="mb-10">
             Alerts Summary for the last year ({startDate} to {endDate})
           </h4>
           <CanvasJSChart options={openstatusoptions} />

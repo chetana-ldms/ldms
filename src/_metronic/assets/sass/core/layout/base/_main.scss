@@ -144,6 +144,10 @@ body {
   width: 200px;
 }
 
+.h-420px{
+  height: 420px !important;
+}
+
 .border-btm{
   border-bottom:  1px solid #ccc;
 }
@@ -1036,6 +1040,16 @@ form{
 }
 
 .alert-chart {
+  &::before{
+      content: "";
+      width: 100px;
+      height: 20px;
+      background-color: #fff;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: 1;
+    }
   .card {
     margin: 0 !important;
     .card-header {
@@ -1224,20 +1238,29 @@ form{
 }
 .demo-page {
   .card-body {
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 1px 3px 1px #ccc;
+    padding: 0px 15px 20px;
+    border-radius: 0;
+    box-shadow: none;
   }
   .demo-block {
-    min-height: 200px;
+    // min-height: 200px;
     margin-top: 12px;
     p {
-      margin-bottom: 2px;
+      font-size: 13px;
+      margin-bottom: 0;
     }
     .btn {
       padding: 5px 15px !important;
       font-size: 12px;
+      margin-top: 5px;
     }
+  }
+  h5{
+    padding: 10px ! IMPORTANT;
+    color: white;
+    position: relative;
+    top: 0px;
+    margin: 0;
   }
 }
 
@@ -1592,6 +1615,9 @@ form{
 
 //Table filter
 .table-filter {
+  select{
+    padding: 8px 15px;
+  }
   svg {
     color: white;
   }
@@ -1689,6 +1715,9 @@ form{
 
 //Channels page
 .channels-page {
+  .demo-block{
+    min-height: 200px;
+  }
   .channel-title {
     overflow: hidden;
     background-color: #1e1e2d;
@@ -1742,6 +1771,7 @@ form{
         &.react-tabs__tab--selected {
           background-color: white;
           color: black;
+          border-radius: 0;
           &::before {
             border-color: #fff #fff;
           }
@@ -2101,7 +2131,19 @@ form{
       }
     }
   }
-
+  
+  .main-tab{
+    &::before{
+      content: "";
+      width: 100px;
+      height: 20px;
+      background-color: #fff;
+      position: absolute;
+      left: 0;
+      bottom: 60px;
+      z-index: 1;
+    }
+  }
   //Pie chart
   #canvasjs-react-chart-container-2 {
     // width: 100% !important;
