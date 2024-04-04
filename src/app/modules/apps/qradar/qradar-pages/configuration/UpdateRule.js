@@ -144,9 +144,9 @@ const UpdateRule = () => {
   return (
     <div className="card">
       {loading && <UsersListLoading />}
-      <div className="card-header no-pad bg-header">
+      <div className="card-header no-pad bg-heading">
         <h3 className="card-title align-items-start flex-column">
-          <span className="white uppercase">Update Rule</span>
+          <span className="white">Update Rule</span>
         </h3>
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">
