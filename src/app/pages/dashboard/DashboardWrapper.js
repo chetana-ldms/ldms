@@ -360,7 +360,7 @@ const DashboardWrapper = () => {
                     <h6 className="text-gray-800 text-hover-primary mb-1 fs-12 uppercase">
                       Mean Time to Resolve
                     </h6>
-                    <span className="fw-bold fs-22 mt-10 mb-8">
+                    <span className="fw-bold fs-18 mt-10 mb-8">
                       {parseInt(
                         alertsResolvedMeanTime.alertsResolvedMeanTime
                       ) === 0

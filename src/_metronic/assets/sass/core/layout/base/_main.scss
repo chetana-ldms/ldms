@@ -867,24 +867,24 @@ form{
     background-color: #f4d9dc !important;
     // color: white !important;
     box-shadow: none;
-    height: 157px;
+    height: 180px;
   }
   .bg-light-warning {
     background-color: #dbc4f5 !important;
     box-shadow: none;
-    height: 157px;
+    height: 180px;
   }
 
   .bg-light-success {
     background-color: #b6eac8 !important;
     box-shadow: none;
-    height: 157px;
+    height: 180px;
   }
 
   .bg-light-danger {
     background-color: #fce9c4 !important;
     box-shadow: none;
-    height: 157px;
+    height: 180px;
   }
 
   // .text-gray-800,
@@ -935,6 +935,10 @@ form{
 
 .fs-15 {
   font-size: 15px !important;
+}
+
+.fs-18{
+  font-size: 18px;
 }
 
 .fs-20 {
