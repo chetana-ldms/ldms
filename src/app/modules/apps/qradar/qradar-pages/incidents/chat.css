@@ -176,8 +176,11 @@
 }
 .attachment__label{
   position: absolute;
-    right: 60px;
-    top: 16px;
+  right: 40px;
+  top: 16px;
+  background: white;
+  padding-right: 20px;
+  padding-left: 10px;
 }
 
 .send-input-container{

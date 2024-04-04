@@ -1036,6 +1036,16 @@ form{
 }
 
 .alert-chart {
+  &::before{
+      content: "";
+      width: 100px;
+      height: 20px;
+      background-color: #fff;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: 1;
+    }
   .card {
     margin: 0 !important;
     .card-header {
@@ -1742,6 +1752,7 @@ form{
         &.react-tabs__tab--selected {
           background-color: white;
           color: black;
+          border-radius: 0;
           &::before {
             border-color: #fff #fff;
           }
@@ -2101,7 +2112,19 @@ form{
       }
     }
   }
-
+  
+  .main-tab{
+    &::before{
+      content: "";
+      width: 100px;
+      height: 20px;
+      background-color: #fff;
+      position: absolute;
+      left: 0;
+      bottom: 60px;
+      z-index: 1;
+    }
+  }
   //Pie chart
   #canvasjs-react-chart-container-2 {
     // width: 100% !important;
