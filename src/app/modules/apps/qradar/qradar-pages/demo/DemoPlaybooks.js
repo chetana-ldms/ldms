@@ -159,7 +159,6 @@ const DemoPlaybooks = () => {
       <div className="card mb-5 mt-5 demo-playbook pad-0">
         {/* <DemoSMS /> */}
 
-        <br />
         <div className="row">
           <div className="col-lg-3">
             <div className="card-body bg-heading pad-10">

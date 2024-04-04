@@ -67,6 +67,8 @@
 .demo-playbook {
   .btn{
     padding: 10px;
+    width: 100%;
+    margin-bottom: 8px !important;
   }
   .react-flow__panel {
     margin: 5px;
@@ -95,7 +97,7 @@
   }
 }
 .check_hostname_ip {
-  background-color: #a5b9d1;
+  background-color: #fff;
   &:before {
     font-family: 'Font Awesome 5 Free';
     content: '\f002';
@@ -113,7 +115,7 @@
   }
 }
 .check_for_connection {
-  background-color: #e2b985;
+  background-color: #fff;
   &:before {
     font-family: 'Font Awesome 5 Free';
     content: '\f56e';
@@ -131,7 +133,7 @@
   }
 }
 .check_for_connection {
-  background-color: #e2b985;
+  background-color: #fff;
   &:before {
     font-family: 'Font Awesome 5 Free';
     content: '\f56e';
@@ -141,7 +143,7 @@
     font-weight: 600;
     background-color: #dab27f;
     padding: 1px 4px 1px 4px;
-    border-radius: 0px 4px 4px 0px;
+    border-radius: 4px 0 0 4px;
     margin: -4px;
     margin-right: 4px;
     color: rgb(255, 255, 255);
@@ -149,9 +151,8 @@
   }
 }
 .cdc_out {
-  background-color: #656668;
-  color: #fff;
-  &:after {
+  background-color: #fff;
+ &::before {
     font-family: 'Font Awesome 5 Free';
     content: '\f544';
     display: inline-block;
@@ -159,17 +160,16 @@
     vertical-align: middle;
     font-weight: 600;
     background-color: #534d4d;
-    padding: 1px 4px 1px 4px;
-    border-radius: 0px 4px 4px 0px;
-    margin: -4px;
-    margin-left: 4px;
     color: #fff;
+    padding: 1px 4px 1px 4px;
+    border-radius: 5px 0px 0px 4px;
+    margin: -4px;
+    margin-right: 4px;
     font-size: 11px;
   }
 }
 .cdc_query {
-  background-color: #656668;
-  color: #fff;
+  background-color: #fff;
   &:before {
     font-family: 'Font Awesome 5 Free';
     content: '\f544';
@@ -178,17 +178,17 @@
     vertical-align: middle;
     font-weight: 600;
     background-color: #534d4d;
+    color: #fff;
     padding: 1px 4px 1px 4px;
     border-radius: 4px 0px 0px 4px;
     margin: -4px;
     margin-right: 4px;
-    color: #fff;
     font-size: 11px;
   }
 }
 .dba_admin {
-  background-color: #c1e3be;
-  &:after {
+  background-color: #fff;
+  &::before {
     font-family: 'Font Awesome 5 Free';
     content: '\f0e0';
     display: inline-block;
@@ -197,9 +197,9 @@
     font-weight: 600;
     background-color: #c2dfc1;
     padding: 1px 4px 1px 4px;
-    border-radius: 0px 4px 4px 0px;
+    border-radius: 4px 0 0 4px;
     margin: -4px;
-    margin-left: 4px;
+    margin-right: 4px;
     color: #fff;
     font-size: 11px;
   }
@@ -212,18 +212,21 @@
     vertical-align: middle;
     font-weight: 600;
     background-color: #e1372a;
-    padding: 4px 4px 4px 4px;
-    border-radius: 4px 0px 0px 4px;
+padding: 1px 4px 1px 4px;
+    border-radius: 5px 0px 0px 4px;
     margin: -4px;
     margin-right: 4px;
+    font-size: 11px;    border-radius: 4px 0px 0px 4px;
+    margin: -3px;
+    margin-right: 4px;
     color: #fff;
-    font-size: 6px;
-    font-weight: 800;
-    width: 20px;
+    font-size: 8px;
+    // font-weight: 800;
+    width: 30px;
   }
 }
 .create_incident {
-  background-color: #ffd19f;
+  background-color: #fff;
   &:before {
     content: 'f';
     display: inline-block;
@@ -241,7 +244,7 @@
   }
 }
 .thread_crowd1 {
-  background-color: #00a4da;
+  background-color: #fff;
   &:before {
     font-family: 'Font Awesome 5 Free';
     content: '\f126';
@@ -249,18 +252,18 @@
     padding-right: 3px;
     vertical-align: middle;
     font-weight: 600;
-    background-color: #00a0fb;
+    background-color: #ddd;
     padding: 1px 4px 1px 4px;
     border-radius: 4px 0px 0px 4px;
     margin: -4px;
     margin-right: 4px;
-    color: #fc9c11;
+    color: #fff;
     font-size: 11px;
     font-family: cursive;
   }
 }
 .thread_crowd {
-  background-color: #00a4da;
+  background-color: #fff;
   &:before {
     font-family: 'Font Awesome 5 Free';
     content: '\f542';
@@ -273,7 +276,7 @@
     border-radius: 4px 0px 0px 4px;
     margin: -4px;
     margin-right: 4px;
-    color: #fc9c11;
+    color: #fff;
     font-size: 11px;
   }
 }

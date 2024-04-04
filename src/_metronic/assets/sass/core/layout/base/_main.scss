@@ -1231,6 +1231,9 @@ form{
 }
 
 .demo-playbook{
+  .bg-heading{
+    background: #53565e !important;
+  }
   .btn{
     padding: 10px;
   }
@@ -2097,7 +2100,7 @@ form{
 
 //Sidebar menu CSS
 .app-sidebar{
-  background-color: #2A3F54 !important; 
+  background-color: #1e456c !important; 
 }
 .app-sidebar-menu {
   overflow-x: hidden;
