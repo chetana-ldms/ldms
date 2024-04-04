@@ -108,7 +108,7 @@ function Cves({ id }) {
         <thead>
           <tr>
             <th>
-              <input type="checkbox" />
+              {/* <input type="checkbox" /> */}
             </th>
             <th>CVE ID</th>
             <th>Severity</th>

@@ -119,13 +119,13 @@ const Reports = ({channelId, channelName}) => {
                       checked={selectedItems.includes(subItem.channelSubItemId)}
                       onChange={() => handleItemCheckboxChange(subItem.channelSubItemId)}
                     />
-                    <a className='doc-section' href={subItem.documentUrl} download='Document'>
+                    <a className='doc-section'  download='Document'>
                       <i className='far fa-file-pdf' />{' '}
                       <span className='text-blue'>{subItem.channelSubItemName} Report</span>
                     </a>
                   </label>
                   {/* Download Report - show download icon once report is available for download */}
-                  <button className='btn btn-new'>
+                  <button className='btn btn-new hidden '>
                     <a href={subItem.documentUrl} download='Document'>
                       <i className='fas fa-download'></i>
                     </a>
@@ -135,7 +135,7 @@ const Reports = ({channelId, channelName}) => {
             ) : (
               <div>Loading...</div>
             )}
-            <button className='btn btn-new btn-primary btn-small mt-5'>Generate Report</button>
+            {/* <button className='btn btn-new btn-primary btn-small mt-5'>Generate Report</button> */}
           </div>
         </div>
       )}

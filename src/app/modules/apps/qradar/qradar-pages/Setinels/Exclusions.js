@@ -298,7 +298,7 @@ function Exclusions() {
             <thead>
               <tr>
                 <th>
-                  <input type="checkbox" name="selectAll" />
+                  {/* <input type="checkbox" name="selectAll" /> */}
                 </th>
                 <th>Exclusion Type</th>
                 <th>OS</th>

@@ -287,7 +287,7 @@ function BlockList() {
                 <thead>
                   <tr>
                     <th>
-                      <input type="checkbox" name="selectAll" />
+                      {/* <input type="checkbox" name="selectAll" /> */}
                     </th>
                     <th onClick={() => handleSort("osType")}>
                       OS {renderSortIcon(sortConfig, "osType")}
