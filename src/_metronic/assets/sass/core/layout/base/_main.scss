@@ -82,6 +82,9 @@ body {
     position: relative;
     top: -30px;
   }
+  select{
+      padding: 9px 15px;
+  }
 }
 
 //text truncate
@@ -783,14 +786,17 @@ form{
 //LDC Application
 .ldc-application{
   .nav-tabs{
+    background-color: #fff;
+    box-shadow: 0 1px 2px 1px #afc7c5;
+    width: 100%;
     .nav-item{
-      // width: 15%;
+      margin-right: 20px;
       .nav-link{
 
         &.active{
           border-radius: 0;
           font-weight: bold;
-          border: 1px solid #2f2f74;
+          border: 0;
           border-bottom: 2px solid #2f2f74;
         }
         &.btn{
@@ -867,24 +873,24 @@ form{
     background-color: #f4d9dc !important;
     // color: white !important;
     box-shadow: none;
-    height: 157px;
+    height: 180px;
   }
   .bg-light-warning {
     background-color: #dbc4f5 !important;
     box-shadow: none;
-    height: 157px;
+    height: 180px;
   }
 
   .bg-light-success {
     background-color: #b6eac8 !important;
     box-shadow: none;
-    height: 157px;
+    height: 180px;
   }
 
   .bg-light-danger {
     background-color: #fce9c4 !important;
     box-shadow: none;
-    height: 157px;
+    height: 180px;
   }
 
   // .text-gray-800,
@@ -935,6 +941,10 @@ form{
 
 .fs-15 {
   font-size: 15px !important;
+}
+
+.fs-18{
+  font-size: 18px;
 }
 
 .fs-20 {
@@ -1219,6 +1229,7 @@ form{
     box-shadow: 0px 1px 3px 1px #ccc;
   }
   .demo-block {
+    min-height: 200px;
     margin-top: 12px;
     p {
       margin-bottom: 2px;

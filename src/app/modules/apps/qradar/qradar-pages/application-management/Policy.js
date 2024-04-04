@@ -48,7 +48,7 @@ function Policy() {
   };
 
   return (
-    <div className="container mt-4 application-policy">
+    <div className="mt-4 application-policy">
       {loading && <UsersListLoading />}
       {/* Scan Policy Card */}
       <div className="card mb-10 pad-10">
