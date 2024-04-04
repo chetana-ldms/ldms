@@ -8,13 +8,13 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
   const id = incidentID;
   const date = new Date().toISOString();
   const [message, setMessage] = useState("");
-  console.log(message, "message")
+  console.log(message, "message");
   const [attachment, setAttachment] = useState(null);
 
   const handleTyping = () => socket.emit("typing", `${username} is typing`);
 
   const handleSendMessage = async (e) => {
-    console.log(e, "handleSendMessage")
+    console.log(e, "handleSendMessage");
     e.preventDefault();
     console.log("attachment:", attachment);
     if (message.trim() || attachment) {
@@ -33,19 +33,19 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
         for (let i = 0; i < binaryAttachment.length; i++) {
           byteArray[i] = binaryAttachment.charCodeAt(i);
         }
-      
+
         // Create a new Blob with the binary data
         const blob = new Blob([byteArray], { type: attachment.type });
-      
+
         // Create a new File object from the Blob
         const file = new File([blob], attachment.name, {
           type: attachment.type,
         });
-      
+
         // Append the file as an IFormFile
         formData.append("ChatAttachmentFile", file);
       }
-      
+
       console.log("formData:", formData);
       try {
         const response = await fetchAddChatMessage(formData);
@@ -56,7 +56,7 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
           name: username,
           attachment: attachment,
           incidentID: id,
-          createdDate: date
+          createdDate: date,
         });
         onSendMessage();
       } catch (error) {
@@ -66,7 +66,6 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
     setMessage("");
     setAttachment(null);
   };
-
 
   const handleAttachmentChange = (e) => {
     const file = e.target.files[0];
@@ -108,7 +107,7 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
               <input
                 type="text"
                 placeholder="Attachment"
-                className="attachment"
+                className="attachment link text-underline"
                 value={attachment.name}
                 readOnly
               />
