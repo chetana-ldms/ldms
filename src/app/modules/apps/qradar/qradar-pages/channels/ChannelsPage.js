@@ -329,7 +329,7 @@ const ChannelsPage = () => {
             ))}
           </Tabs>
         ) : (
-          <p>No channels available.</p>
+          <p className="pt-20 text-center pb-20">No channels available.</p>
         )}
         <NewChannelModal
           show={showModal}
