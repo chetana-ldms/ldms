@@ -125,7 +125,8 @@ function Cves({id}) {
                     {item.mitreUrl.length > 20
                       ? `${item.mitreUrl.substring(0, 25)}...`
                       : item.mitreUrl}
-                  </a> {' '}{' '}{' '}
+                  </a>{' '}
+                  &nbsp;&nbsp;&nbsp;
                   <a href={item.nvdUrl} target='_blank' rel='noopener noreferrer'>
                     {item.nvdUrl.length > 25 ? `${item.nvdUrl.substring(0, 25)}...` : item.nvdUrl}
                   </a>
