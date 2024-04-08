@@ -138,7 +138,7 @@ const AddRule = () => {
           </div>
         </div>
       </div>
-      <div className="card-body no-pad mt-5">
+      <div className="card-body pad-10 mt-5">
         <div className="row mb-6 table-filter">
           <div className="col-lg-6 mb-4 mb-lg-0">
             <div className="fv-row mb-0">
@@ -239,7 +239,7 @@ const AddRule = () => {
                               Condition Text
                             </label>
                             <span
-                              className="btn btn-warning btn-small float-right"
+                              className="btn btn-warning btn-small float-right btn-add"
                               onClick={() => addAction(index)}
                             >
                               Add Field

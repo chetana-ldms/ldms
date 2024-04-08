@@ -29,9 +29,9 @@ const IncidentsPageDemo = () => {
   const handleAlertClick = (selectedAlert) => {
     const updatedAlerts = demoAlertData.map((alert) => {
       if (alert.id === selectedAlert.id) {
-        return { ...alert, isSelected: true };
+        return { ...alert, isSelected: true }; // Set isSelected to true for the clicked incident
       } else {
-        return { ...alert, isSelected: false };
+        return { ...alert, isSelected: false }; // Deselect other alerts
       }
     });
 
@@ -166,10 +166,8 @@ const IncidentsPageDemo = () => {
                             <>
                               <div
                                 className={`incident-section${
-                                  incident.isSelected == "true"
-                                    ? "selected"
-                                    : ""
-                                }`}
+                                  incident.isSelected ? " selected" : ""
+                                }`} // Apply "selected" class if isSelected is true
                                 key={incident.id}
                                 onClick={() => {
                                   console.log("Clicked incident:", incident);

@@ -204,7 +204,7 @@
   min-width: 100px;
   padding: 10px;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 13px;
 }
 .message__recipient a{
   color: #fff;
@@ -221,7 +221,7 @@
   padding: 10px;
   border-radius: 8px;
   margin-left: 0;
-  font-size: 15px;
+  font-size: 13px;
   float: right;
 }
 .message__sender p{
