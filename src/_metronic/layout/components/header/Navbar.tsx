@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
-import { Dropdown, Button } from 'react-bootstrap';
+import { Dropdown, Button, Accordion, Card } from 'react-bootstrap';
 import { KTSVG, toAbsoluteUrl } from '../../../helpers';
 import { HeaderNotificationsMenu, HeaderUserMenu } from '../../../partials';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../../../app/modules/apps/qradar/qradar-pages/context/AppContextProvider';
 import { fetchTasksUrl } from '../../../../app/api/TasksApi';
+
 
 interface Task {
   taskId: string;
@@ -58,12 +59,58 @@ const Navbar = () => {
    await reload();
   }
 
+  const [openSection, setOpenSection] = useState<number | null>(null);
+
+ const toggleAccordion = (section: number) => {
+    setOpenSection(openSection === section ? null : section);
+  };
+
+  const isSectionOpen = (section: number) => {
+    return openSection === section;
+  };
+
+  const renderIcon = (section: number) => {
+    return isSectionOpen(section) ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>;
+  };
+
   return (
     <div className='app-navbar flex-shrink-0'>
       <p className='d-flex m-5'>Welcome &nbsp;<b>{" "} {userName}!</b></p>
       <div className={clsx('app-navbar-item', itemClass)}>
         <HeaderNotificationsMenu />
       </div>
+
+      <Dropdown className='header-account'>
+            <Dropdown.Toggle as={Button} variant="link" id="dropdown-basic" className='bell'>
+            <span className='acc-name' title="Lancesoft India Private Limited">Lancesoft India Private Limited</span>
+          </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+             
+                  <Accordion>
+          <div className='pad-10'>
+              <Button variant="link" className='text-left no-pad' onClick={() => toggleAccordion(1)} aria-controls="collapse-section-1" aria-expanded={openSection === 1}>
+                 Accordion Section 1 {renderIcon(1)}
+              </Button>
+            <Accordion.Collapse eventKey="1" in={openSection === 1}>
+              <div className=''>
+                Content of accordion section 1
+              </div>
+            </Accordion.Collapse>
+          </div>
+          <div className='pad-10'>
+              <Button variant="link" className='text-left no-pad' onClick={() => toggleAccordion(1)} aria-controls="collapse-section-1" aria-expanded={openSection === 1}>
+                 Accordion Section 1 {renderIcon(1)}
+              </Button>
+            <Accordion.Collapse eventKey="1" in={openSection === 1}>
+              <div className=''>
+                Content of accordion section 1
+              </div>
+            </Accordion.Collapse>
+          </div>
+        </Accordion>
+            </Dropdown.Menu>
+          </Dropdown>
 
       <div className={clsx('app-navbar-item', itemClass)}>
         <div
