@@ -90,10 +90,6 @@ function Activity() {
     fetchData()
   }, [])
 
-  useEffect(() => {
-    fetchData()
-  }, [selectedUsers, selectedFromDate, selectedToDate, selectedActivityTypes])
-
   const handlePageSelect = (event) => {
     const selectedPerPage = event.target.value
     setLimit(selectedPerPage)
@@ -151,37 +147,37 @@ function Activity() {
     console.log('Selected Activity Types:', selectedActivityTypes);
     console.log('Selected From Date:', selectedFromDate);
     console.log('Selected To Date:', selectedToDate);
-        const selectedUserIDs = selectedUsers.map((user) => user.value.userID)
-        console.log(selectedUserIDs, "selectedUserIDs")
-        const selectedActivityTypeIDs = selectedActivityTypes.map(
-          (activityType) => activityType.value.id
-        )
+    const selectedUserIDs = selectedUsers?.value?.userID ? selectedUsers.value.userID : 0 ;
     
-        const data = {
-          orgId: orgId,
-          userId: selectedUsers || 0,
-          activityTypeIds: selectedActivityTypes || [],
-          fromDateTime: selectedFromDate ? selectedFromDate.toISOString() : null,
-          toDateTime: selectedToDate ? selectedToDate.toISOString() : null,
-          paging: {
-            rangeStart: 1,
-            rangeEnd: limit,
-          },
-        }
-    
-        try {
-          setLoading(true)
-          const response = await fetchActivitiesUrl(data)
-          setActivity(response.activitiesList)
-          const total = response.totalActivitiesCount
-          setPageCount(Math.ceil(total / limit))
-        } catch (error) {
-          console.error(error)
-        } finally {
-          setLoading(false)
-        }
-      
-  };
+    const selectedActivityTypeIDs = selectedActivityTypes.map(
+      (activityType) => activityType.value.activityTypeId
+    )
+
+    const data = {
+      orgId: orgId,
+      userId: selectedUserIDs,
+      activityTypeIds: selectedActivityTypeIDs ? selectedActivityTypeIDs : [0],
+      fromDateTime: selectedFromDate ? selectedFromDate.toISOString() : null,
+      toDateTime: selectedToDate ? selectedToDate.toISOString() : null,
+      paging: {
+        rangeStart: 1,
+        rangeEnd: limit,
+      },
+    }
+
+    try {
+      setLoading(true)
+      const response = await fetchActivitiesUrl(data)
+      setActivity(response.activitiesList)
+      const total = response.totalActivitiesCount
+      setPageCount(Math.ceil(total / limit))
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+};
+
 
   return (
     <div>
