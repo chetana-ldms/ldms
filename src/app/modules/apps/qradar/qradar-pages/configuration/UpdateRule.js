@@ -345,7 +345,7 @@ const UpdateRule = () => {
         <button
           type="submit"
           onClick={handleSubmit}
-          className="btn btn-new btm-small"
+          className="btn btn-new btn-small"
           disabled={loading}
         >
           {!loading && "Save Changes"}

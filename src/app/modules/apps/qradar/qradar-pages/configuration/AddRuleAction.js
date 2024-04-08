@@ -141,7 +141,7 @@ const AddRuleAction = () => {
         </div>
       </div>
       <form>
-        <div className="card-body no-pad mt-5">
+        <div className="card-body pad-10 mt-5">
           <div className="row mb-6 table-filter">
             <div className="col-lg-6 mb-5">
               <div className="fv-row mb-0">
