@@ -110,6 +110,11 @@ const SidebarMenuMain = () => {
           to='/qradar/settings/list'
           title='Settings'
         />
+         <SidebarMenuItem
+          icon='/media/icons/duotune/communication/com009.svg'
+          to='/qradar/activity/list'
+          title='Activity'
+        />
 
      
       {/* <SidebarMenuItem
