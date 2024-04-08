@@ -306,6 +306,27 @@ body {
   }
 }
 
+.header-account{
+  .accordion{
+    button{
+      width: 100%;
+    }
+    i{
+      float: right;
+      position: relative;
+      top: 5px;
+      left: 5px;
+    }
+  }
+  .acc-name{
+    width: 160px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+  }
+}
+
 //Header notificaion bell icon
 .notification{
   position: relative;
