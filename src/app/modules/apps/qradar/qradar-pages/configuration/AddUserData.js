@@ -75,7 +75,7 @@ const AddUserData = () => {
     };
     try {
       const responseData = await fetchUserAddUrl(data);
-      const { isSuccess } = responseData;
+      const { isSuccess, message } = responseData;
 
       if (isSuccess) {
         notify("User Saved");
