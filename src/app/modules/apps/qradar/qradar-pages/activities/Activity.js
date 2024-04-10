@@ -152,13 +152,13 @@ function Activity() {
     return css_classes[randomIndex]
   }
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    const selectedUserIDs = selectedUsers?.value?.userID ? selectedUsers.value.userID : 0
-
+    e.preventDefault();
+  
+    const selectedUserIDs = selectedUsers?.value?.userID ? selectedUsers.value.userID : 0;
     const selectedActivityTypeIDs = selectedActivityTypes.map(
       (activityType) => activityType.value.activityTypeId
-    )
-
+    );
+  
     const data = {
       orgId: orgId,
       userId: selectedUserIDs,
@@ -169,20 +169,25 @@ function Activity() {
         rangeStart: 1,
         rangeEnd: limit,
       },
-    }
-
+    };
+  
     try {
-      setLoading(true)
-      const response = await fetchActivitiesUrl(data)
-      setActivity(response.activitiesList)
-      const total = response.totalActivitiesCount
-      setPageCount(Math.ceil(total / limit))
+      setLoading(true);
+      const response = await fetchActivitiesUrl(data);
+      setActivity(response.activitiesList);
+      const total = response.totalActivitiesCount;
+      setPageCount(Math.ceil(total / limit));
     } catch (error) {
-      console.error(error)
+      console.error(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
+      setSelectedUsers([]);
+      setSelectedActivityTypes([]);
+      setSelectedFromDate(null);
+      setSelectedToDate(null);
     }
-  }
+  };
+  
 
   return (
     <div>
