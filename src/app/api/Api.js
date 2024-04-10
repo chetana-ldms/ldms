@@ -17,6 +17,7 @@ const rolesUrl = process.env.REACT_APP_ROLES_URL;
 const organizationDetailsUrl = process.env.REACT_APP_ORGANIZATION_DETAILS_URL;
 const ldpToolDetailsUrl = process.env.REACT_APP_LDP_TOOL_DETAILS_URL;
 const forgatePasswordUrl = "http://115.110.192.133:502/api/Task/v1/PasswordReset/Add"
+const accountsStructureUrl= "http://115.110.192.133:502/api/SentinalOne/v1/Accounts/Structure"
 
 export const fetchMasterData = async (maserDataType) => {
   try {
@@ -351,6 +352,26 @@ export const fetchForgatePassword = async (userName, orgId,  createdDate) => {
 
     const responseData = await response.json();
     return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const fetchAccountsStructureUrl = async (data) => {
+  try {
+    const response = await fetch(`${accountsStructureUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    const result = responseData.accounts;
+    return result;
   } catch (error) {
     console.log(error);
   }

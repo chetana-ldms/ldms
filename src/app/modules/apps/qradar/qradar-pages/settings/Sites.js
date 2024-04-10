@@ -48,7 +48,7 @@ function Sites() {
             </tr>
           </thead>
           <tbody>
-            {sites !== null ? (
+            {sites !== null && sites.length > 0 ? (
               sites?.map((item, index) => (
                 <tr className='table-row' key={index}>
                   <td>{item.accountName}</td>
