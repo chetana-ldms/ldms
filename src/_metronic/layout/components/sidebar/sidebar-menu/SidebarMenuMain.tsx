@@ -50,7 +50,7 @@ const SidebarMenuMain = () => {
         <SidebarMenuItem
           icon='/media/icons/duotune/communication/com009.svg'
           to='/qradar/setinels/list'
-          title='Setinels'
+          title='Sentinels'
         />
       }
       {/* <SidebarMenuItem

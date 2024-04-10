@@ -16,16 +16,15 @@ function Activity() {
   const [loading, setLoading] = useState(false)
   const [users, setUsers] = useState([])
   const [selectedUsers, setSelectedUsers] = useState([])
-  const [selectedActivityTypes, setSelectedActivityTypes] = useState([]) // State for selected activity types
+  const [selectedActivityTypes, setSelectedActivityTypes] = useState([])
   const [activityType, setActivityType] = useState([])
-  const [userEmail, setUserEmail] = useState('')
   const [selectedFromDate, setSelectedFromDate] = useState(null)
   const [selectedToDate, setSelectedToDate] = useState(null)
   const orgId = Number(sessionStorage.getItem('orgId'))
-  const userID = Number(sessionStorage.getItem('userId'))
   const [limit, setLimit] = useState(20)
   const [pageCount, setPageCount] = useState(0)
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(1);
+  console.log(currentPage, "currentPage")
 
   const reload = async () => {
     try {
@@ -60,7 +59,6 @@ function Activity() {
   }, [])
 
   const fetchData = async () => {
-
     const data = {
       orgId: orgId,
       userId: 0,
@@ -98,10 +96,22 @@ function Activity() {
   const handlePageClick = async (data) => {
     let currentPage = data.selected + 1
     setLoading(true)
-    const setOfAlertsData = await fetchSetOfActivity(currentPage, orgId, userID, limit)
-    setActivity(setOfAlertsData)
-    setCurrentPage(currentPage)
-    setLoading(false)
+    try {
+      const setOfAlertsData = await fetchSetOfActivity(
+        currentPage,
+        orgId,
+        0,
+        selectedFromDate,
+        selectedToDate,
+        limit
+      )
+      setActivity(setOfAlertsData)
+      setCurrentPage(currentPage)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -121,7 +131,7 @@ function Activity() {
   }
 
   const handleActivityTypeChange = (selectedOptions) => {
-    setSelectedActivityTypes(selectedOptions) // Update selected activity types state
+    setSelectedActivityTypes(selectedOptions) 
   }
 
   const userOptions = users.map((user) => ({label: user.name, value: user}))
@@ -142,13 +152,9 @@ function Activity() {
     return css_classes[randomIndex]
   }
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log('Selected Users:', selectedUsers);
-    console.log('Selected Activity Types:', selectedActivityTypes);
-    console.log('Selected From Date:', selectedFromDate);
-    console.log('Selected To Date:', selectedToDate);
-    const selectedUserIDs = selectedUsers?.value?.userID ? selectedUsers.value.userID : 0 ;
-    
+    e.preventDefault()
+    const selectedUserIDs = selectedUsers?.value?.userID ? selectedUsers.value.userID : 0
+
     const selectedActivityTypeIDs = selectedActivityTypes.map(
       (activityType) => activityType.value.activityTypeId
     )
@@ -176,8 +182,7 @@ function Activity() {
     } finally {
       setLoading(false)
     }
-};
-
+  }
 
   return (
     <div>
@@ -185,68 +190,62 @@ function Activity() {
         <UsersListLoading />
       ) : (
         <>
-           <>
-          <div className='d-flex'>
-            <div className='mb-3 d-flex align-items-center'>
-              <label className='me-2'>Users:</label>
-              <Select
-                options={userOptions}
-                isMulti={false}
-                value={selectedUsers}
-                onChange={handleUserChange}
-                placeholder='Select Users'
-              />
-            </div>
+          <>
+            <div className='d-flex'>
+              <div className='mb-3 d-flex align-items-center'>
+                <label className='me-2'>Users:</label>
+                <Select
+                  options={userOptions}
+                  isMulti={false}
+                  value={selectedUsers}
+                  onChange={handleUserChange}
+                  placeholder='Select Users'
+                />
+              </div>
 
-            <div className='mb-3 d-flex align-items-center'>
-              <label className='me-2'>Activity Types:</label>
-              <Select
-                options={activityTypeOptions}
-                isMulti
-                value={selectedActivityTypes}
-                onChange={handleActivityTypeChange}
-                placeholder='Select Activity Types'
-              />
-            </div>
+              <div className='mb-3 d-flex align-items-center'>
+                <label className='me-2'>Activity Types:</label>
+                <Select
+                  options={activityTypeOptions}
+                  isMulti
+                  value={selectedActivityTypes}
+                  onChange={handleActivityTypeChange}
+                  placeholder='Select Activity Types'
+                />
+              </div>
 
-            <div className='mb-3'>
-              <label>From Date: </label>
-              <input
-                type='date'
-                value={
-                  selectedFromDate
-                    ? selectedFromDate.toISOString().split('T')[0]
-                    : ''
-                }
-                onChange={(e) => handleFromDateChange(new Date(e.target.value))}
-              />
+              <div className='mb-3'>
+                <label>From Date: </label>
+                <input
+                  type='date'
+                  value={selectedFromDate ? selectedFromDate.toISOString().split('T')[0] : ''}
+                  onChange={(e) => handleFromDateChange(new Date(e.target.value))}
+                />
+              </div>
+              <div className='mb-3'>
+                <label>To Date: </label>
+                <input
+                  type='date'
+                  value={selectedToDate ? selectedToDate.toISOString().split('T')[0] : ''}
+                  onChange={(e) => handleToDateChange(new Date(e.target.value))}
+                />
+              </div>
+
+              <button className='btn btn-primary ms-10' onClick={handleSubmit}>
+                Submit
+              </button>
             </div>
-            <div className='mb-3'>
-              <label>To Date: </label>
-              <input
-                type='date'
-                value={
-                  selectedToDate
-                    ? selectedToDate.toISOString().split('T')[0]
-                    : ''
-                }
-                onChange={(e) => handleToDateChange(new Date(e.target.value))}
-              />
-            </div>
-            
-          <button className='btn btn-primary ms-10' onClick={handleSubmit}>Submit</button>
-          </div>
-        </>
+          </>
 
           <div className='timeline-label'>
-            {activity !== null && activity!==undefined ? (
+            {activity !== null && activity !== undefined ? (
               activity
-                // .sort((a, b) => b.activityId - a.activityId)
+                .sort((a, b) => b.activityId - a.activityId)
                 .map((item) => {
                   const formattedDateTime = getCurrentTimeZone(item.activityDate)
 
                   return (
-                    <div className='timeline-item' key={item.id}>
+                    <div className='timeline-item' key={item.activityId}>
                       <div className='timeline-label fw-bold text-gray-800 fs-6'>
                         <p className='semi-bold'>{formattedDateTime}</p>
                         <p className='text-muted normal'>{item.createedUser}</p>

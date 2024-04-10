@@ -19,22 +19,24 @@ export const fetchActivitiesUrl = async (data) => {
       console.log(error);
     }
   };
-  export const fetchSetOfActivity = async (currentPage, orgId, userID, limit) => {
+  export const fetchSetOfActivity = async (currentPage, orgId, userID, selectedFromDate, selectedToDate, limit) => {
     const rangeStart = (currentPage - 1) * limit + 1;
     const rangeEnd = currentPage * limit;
     let data2 = {
-      orgID: orgId,
-      toolID: "1",
-      toolTypeID: "1",
-      paging: {
-        rangeStart: rangeStart,
-        rangeEnd: rangeEnd,
-      },
-      loggedInUserId: userID,
-    };
+        orgId: orgId,
+        userId: userID,
+        activityTypeIds: [],
+        fromDateTime: selectedFromDate ? selectedFromDate.toISOString() : null,
+        toDateTime: selectedToDate ? selectedToDate.toISOString() : null,
+        paging: {
+            rangeStart: rangeStart,
+            rangeEnd: rangeEnd,
+        },
+    }
     const response = await fetchActivitiesUrl(data2);
     return response.activitiesList;
-  };
+};
+
   export const fetchActivityTypesUrl = async () => {
     try {
       const response = await fetch(`${ActivityTypesUrl}`, {
