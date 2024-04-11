@@ -37,13 +37,11 @@ const userAvatarClass = 'symbol-35px symbol-md-40px';
 const Navbar = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const date = new Date().toISOString();
   const [tasksData, setTasksData] = useState([]);
   const [siteName, setSiteName] = useState<string>('');
   const [groupName, setGroupName] = useState<string>('');
   const [accountsStructure, setAccountsStructure] = useState<Account[]>([]);
   console.log(accountsStructure, "accountsStructure");
-  const [selectedSite, setSelectedSite] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState<boolean>(false); 
   const ownerUserId = Number(sessionStorage.getItem('userId'));
   const [organizations, setOrganizations] = useState<{ orgID: number; orgName: string }[]>([]);
@@ -143,16 +141,16 @@ return item.name
     setGroupName(name);
     sessionStorage.setItem('groupId', id);
   };
-const accountName = sessionStorage.getItem('accountName');
+// const accountName = sessionStorage.getItem('accountName');
 // const siteName = sessionStorage.getItem('siteName');
 // const groupName = sessionStorage.getItem('groupName');
   return (
     <div className='app-navbar flex-shrink-0'>
       <div>
-      {orgNames}/{accountNames.join(', ')}{siteName ? `/${siteName}` : ''}{groupName ? `/${groupName}` : ''}
+      <p className='m-5 float-start '>Welcome &nbsp;<b>{" "} {userName}!</b></p>
       </div>
-      <div>
-      <p className='d-flex m-5'>Welcome &nbsp;<b>{" "} {userName}!</b></p>
+      <div className='d-flex m-5'>
+      {orgNames}/{accountNames.join(', ')}{siteName ? `/${siteName}` : ''}{groupName ? `/${groupName}` : ''}
       </div>
       <div className={clsx('app-navbar-item', itemClass)}>
         <HeaderNotificationsMenu />

@@ -2679,8 +2679,8 @@ const AlertsPage = () => {
           </div>
           <div className="d-flex justify-content-end align-items-center pagination-bar mt-5">
             <ReactPaginate
-              previousLabel=<i className="fa fa-chevron-left" />
-              nextLabel=<i className="fa fa-chevron-right" />
+              previousLabel={<i className="fa fa-chevron-left" />}
+              nextLabel={<i className="fa fa-chevron-right" />}
               pageCount={pageCount}
               marginPagesDisplayed={1}
               pageRangeDisplayed={8}
