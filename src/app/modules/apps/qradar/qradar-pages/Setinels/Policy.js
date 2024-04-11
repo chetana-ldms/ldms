@@ -191,7 +191,7 @@ function Policy() {
                         id="detect"
                         name="mitigationMode"
                         value="detect"
-                        checked={policy.mitigationMode === "detect"}
+                        checked={policy?.mitigationMode === "detect"}
                         onChange={handleRadioChange}
                       />
                       <label className="form-check-label mr-3" htmlFor="detect">
@@ -205,7 +205,7 @@ function Policy() {
                         id="protect"
                         name="mitigationMode"
                         value="protect"
-                        checked={policy.mitigationMode === "protect"}
+                        checked={policy?.mitigationMode === "protect"}
                         onChange={handleRadioChange}
                       />
                       <label
@@ -222,7 +222,7 @@ function Policy() {
                         id="quarantine"
                         name="mitigationMode"
                         value="Kill & Quarantine"
-                        checked={policy.mitigationMode === "Kill & Quarantine"}
+                        checked={policy?.mitigationMode === "Kill & Quarantine"}
                         onChange={handleRadioChange}
                       />
                       <label className="form-check-label" htmlFor="quarantine">
@@ -240,7 +240,7 @@ function Policy() {
                         id="detectSuspicious"
                         name="mitigationModeSuspicious"
                         value="detect"
-                        checked={policy.mitigationModeSuspicious === "detect"}
+                        checked={policy?.mitigationModeSuspicious === "detect"}
                         onChange={handleRadioChange}
                       />
                       <label
@@ -257,7 +257,7 @@ function Policy() {
                         id="protectSuspicious"
                         name="mitigationModeSuspicious"
                         value="protect"
-                        checked={policy.mitigationModeSuspicious === "protect"}
+                        checked={policy?.mitigationModeSuspicious === "protect"}
                         onChange={handleRadioChange}
                       />
                       <label
@@ -274,7 +274,7 @@ function Policy() {
                         id="alerts"
                         name="mitigationModeSuspicious"
                         value="alerts"
-                        checked={policy.mitigationModeSuspicious === "alerts"}
+                        checked={policy?.mitigationModeSuspicious === "alerts"}
                         onChange={handleRadioChange}
                       />
                       <label className="form-check-label" htmlFor="alerts">
@@ -311,7 +311,7 @@ function Policy() {
                         className=""
                         type="checkbox"
                         name="containment"
-                        checked={policy.containment}
+                        checked={policy?.containment}
                         onChange={handleCheckboxChange}
                       />
                       <label>Disconnect from the network</label>
@@ -331,7 +331,7 @@ function Policy() {
                       className="form-check-input"
                       type="checkbox"
                       id="reputation"
-                      checked={policy.engines.reputation}
+                      checked={policy?.engines?.reputation}
                       onChange={() => handleDetectionEngineChange("reputation")}
                     />
                     <label className="form-check-label" htmlFor="reputation">
@@ -343,7 +343,7 @@ function Policy() {
                       className="form-check-input"
                       type="checkbox"
                       id="staticAi"
-                      checked={policy.engines.staticAi}
+                      checked={policy?.engines?.staticAi}
                       onChange={() => handleDetectionEngineChange("staticAi")}
                     />
                     <label className="form-check-label" htmlFor="staticAi">
@@ -355,7 +355,7 @@ function Policy() {
                       className="form-check-input"
                       type="checkbox"
                       id="staticAiSuspicious"
-                      checked={policy.engines.staticAiSuspicious}
+                      checked={policy?.engines?.staticAiSuspicious}
                       onChange={() =>
                         handleDetectionEngineChange("staticAiSuspicious")
                       }
@@ -372,7 +372,7 @@ function Policy() {
                       className="form-check-input"
                       type="checkbox"
                       id="behavioralAi"
-                      checked={policy.engines.executables}
+                      checked={policy?.engines?.executables}
                       onChange={() =>
                         handleDetectionEngineChange("executables")
                       }
@@ -386,7 +386,7 @@ function Policy() {
                       className="form-check-input"
                       type="checkbox"
                       id="documentScript"
-                      checked={policy.engines.documentScript}
+                      checked={policy?.engines?.documentScript}
                       onChange={() =>
                         handleDetectionEngineChange("documentScript")
                       }
@@ -403,7 +403,7 @@ function Policy() {
                       className="form-check-input"
                       type="checkbox"
                       id="lateralMovements"
-                      checked={policy.engines.lateralMovement}
+                      checked={policy?.engines?.lateralMovement}
                       onChange={() =>
                         handleDetectionEngineChange("lateralMovement")
                       }
@@ -420,7 +420,7 @@ function Policy() {
                       className="form-check-input"
                       type="checkbox"
                       id="antiExploitation"
-                      checked={policy.engines.exploits}
+                      checked={policy?.engines?.exploits}
                       onChange={() => handleDetectionEngineChange("exploits")}
                     />
                     <label
@@ -435,7 +435,7 @@ function Policy() {
                       className="form-check-input"
                       type="checkbox"
                       id="unwantedApplications"
-                      checked={policy.engines.unwantedApplications}
+                      checked={policy?.engines?.unwantedApplications}
                       onChange={() =>
                         handleDetectionEngineChange("unwantedApplications")
                       }
@@ -452,7 +452,7 @@ function Policy() {
                       className="form-check-input"
                       type="checkbox"
                       id="applicationControls"
-                      checked={policy.engines.applicationControl}
+                      checked={policy?.engines?.applicationControl}
                       onChange={() =>
                         handleDetectionEngineChange("applicationControl")
                       }
@@ -469,7 +469,7 @@ function Policy() {
                       className="form-check-input"
                       type="checkbox"
                       id="alternativeThreats"
-                      checked={policy.engines.alternativeThreats}
+                      checked={policy?.engines?.alternativeThreats}
                       onChange={() =>
                         handleDetectionEngineChange("alternativeThreats")
                       }

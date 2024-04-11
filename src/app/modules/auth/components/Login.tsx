@@ -76,6 +76,12 @@ export function Login() {
           sessionStorage.setItem('clientAdminRole', authData.clientAdminRole);
           sessionStorage.setItem('openTaskCount', authData.openTaskCount);
           sessionStorage.setItem('defaultPassword', authData.defaultPassword);
+          sessionStorage.setItem('accountName', "LanceSoft Inc");
+          sessionStorage.setItem('accountId', "1");
+          sessionStorage.setItem('siteName', "Default site");
+          sessionStorage.setItem('siteId', "1");
+          sessionStorage.setItem('groupName', "Default Group");
+          sessionStorage.setItem('groupId', "1");
           const defaultPassword = authData.defaultPassword;
           if (defaultPassword) {
             setShowChangePwdModal(true);

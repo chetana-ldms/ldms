@@ -6,11 +6,30 @@ import { HeaderNotificationsMenu, HeaderUserMenu } from '../../../partials';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../../../app/modules/apps/qradar/qradar-pages/context/AppContextProvider';
 import { fetchTasksUrl } from '../../../../app/api/TasksApi';
+import { fetchAccountsStructureUrl } from '../../../../app/api/Api';
 
 
 interface Task {
   taskId: string;
   taskTitle: string;
+}
+interface Account {
+  accountId: string;
+  name: string;
+  totalSites: number;
+  totalEndpoints: number;
+  sites: {
+    siteId: string;
+    totalGroups: number;
+    name: string;
+    isDefault: boolean;
+    activeLicenses: number;
+    groups: {
+      groupId: string;
+      name: string;
+      totalAgents: number;
+    }[];
+  }[];
 }
 
 const itemClass = 'ms-1 ms-lg-3';
@@ -19,10 +38,17 @@ const userAvatarClass = 'symbol-35px symbol-md-40px';
 const Navbar = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const userID = Number(sessionStorage.getItem('userId'));
   const date = new Date().toISOString();
   const [tasksData, setTasksData] = useState([]);
+  const [accountsStructure, setAccountsStructure] = useState<Account[]>([]);
+  console.log(accountsStructure, "accountsStructure")
   const ownerUserId = Number(sessionStorage.getItem('userId'));
+  const orgId = Number(sessionStorage.getItem('orgId'));
+   const [selectedSite, setSelectedSite] = useState<string | null>(null);
+
+  const handleSiteClick = (siteId: string) => {
+    setSelectedSite(siteId === selectedSite ? null : siteId);
+  };
   const reload = async () => {
     try {
       setLoading(true);
@@ -60,18 +86,30 @@ const Navbar = () => {
   }
 
   const [openSection, setOpenSection] = useState<number | null>(null);
+  const [showAccordion, setShowAccordion] = useState<boolean>(false);
+  const fetchData = async () => {
+    const data = {
+      orgID: orgId,
+    };
+    try {
+      setLoading(true);
+      const response = await fetchAccountsStructureUrl(data);
+      setAccountsStructure(response);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
- const toggleAccordion = (section: number) => {
-    setOpenSection(openSection === section ? null : section);
+  const handleAccountClick = () => {
+    setShowAccordion(!showAccordion);
+    fetchData();
   };
 
-  const isSectionOpen = (section: number) => {
-    return openSection === section;
-  };
-
-  const renderIcon = (section: number) => {
-    return isSectionOpen(section) ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>;
-  };
 
   return (
     <div className='app-navbar flex-shrink-0'>
@@ -79,39 +117,42 @@ const Navbar = () => {
       <div className={clsx('app-navbar-item', itemClass)}>
         <HeaderNotificationsMenu />
       </div>
-
-      <Dropdown className='header-account'>
-            <Dropdown.Toggle as={Button} variant="link" id="dropdown-basic" className='bell'>
-            <span className='acc-name' title="Lancesoft India Private Limited">Lancesoft India Private Limited</span>
-          </Dropdown.Toggle>
-
-            <Dropdown.Menu>
-             
-                  <Accordion>
-          <div className='pad-10'>
-              <Button variant="link" className='text-left no-pad' onClick={() => toggleAccordion(1)} aria-controls="collapse-section-1" aria-expanded={openSection === 1}>
-                 Accordion Section 1 {renderIcon(1)}
-              </Button>
-            <Accordion.Collapse eventKey="1" in={openSection === 1}>
-              <div className=''>
-                Content of accordion section 1
+      <div className='app-navbar flex-shrink-0'>
+      <button onClick={handleAccountClick}>Account</button>
+      
+      {showAccordion && (
+  accountsStructure.map((account, accountIndex) => (
+    <div className='header-account' key={accountIndex}>
+      <Button variant="link" id="dropdown-basic" className='bell'>
+        <span className='acc-name' title={account.name}>{account.name}</span>
+        <div>
+          Account: {account.totalSites} Sites, {account.totalEndpoints} Endpoints
+        </div>
+        <div>
+          {account.sites.map((site, siteIndex) => (
+            <div key={siteIndex}>
+              <div className='d-flex justify-content-between'>
+                <p>{site.name}</p>
+                <p>{site.activeLicenses}</p>
               </div>
-            </Accordion.Collapse>
-          </div>
-          <div className='pad-10'>
-              <Button variant="link" className='text-left no-pad' onClick={() => toggleAccordion(1)} aria-controls="collapse-section-1" aria-expanded={openSection === 1}>
-                 Accordion Section 1 {renderIcon(1)}
-              </Button>
-            <Accordion.Collapse eventKey="1" in={openSection === 1}>
-              <div className=''>
-                Content of accordion section 1
+              <div>
+                {site.groups.map((group, groupIndex) => (
+                  <div className='d-flex justify-content-between' key={groupIndex}>
+                    <p>{group.name}</p>
+                    <p>{group.totalAgents}</p>
+                  </div>
+                ))}
               </div>
-            </Accordion.Collapse>
-          </div>
-        </Accordion>
-            </Dropdown.Menu>
-          </Dropdown>
+            </div>
+          ))}
+        </div>
+      </Button>
+    </div>
+  ))
+)}
 
+
+    </div>
       <div className={clsx('app-navbar-item', itemClass)}>
         <div
           className={clsx('cursor-pointer symbol', userAvatarClass)}

@@ -16,7 +16,7 @@ function Setinels() {
     <div className="ldc-application">
       <div className="row">
         <div className="col-md-12">
-          <h1>Setinels</h1>
+          <h1>Sentinels</h1>
         </div>
       </div>
       <div className="row">
