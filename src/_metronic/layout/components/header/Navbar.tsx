@@ -6,8 +6,7 @@ import { HeaderNotificationsMenu, HeaderUserMenu } from '../../../partials';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../../../app/modules/apps/qradar/qradar-pages/context/AppContextProvider';
 import { fetchTasksUrl } from '../../../../app/api/TasksApi';
-import { fetchAccountsStructureUrl } from '../../../../app/api/Api';
-
+import { fetchAccountsStructureUrl, fetchOrganizations } from '../../../../app/api/Api';
 
 interface Task {
   taskId: string;
@@ -40,15 +39,30 @@ const Navbar = () => {
   const [loading, setLoading] = useState(false);
   const date = new Date().toISOString();
   const [tasksData, setTasksData] = useState([]);
+  const [siteName, setSiteName] = useState<string>('');
+  const [groupName, setGroupName] = useState<string>('');
   const [accountsStructure, setAccountsStructure] = useState<Account[]>([]);
-  console.log(accountsStructure, "accountsStructure")
+  console.log(accountsStructure, "accountsStructure");
+  const [selectedSite, setSelectedSite] = useState<string | null>(null);
+  const [showDropdown, setShowDropdown] = useState<boolean>(false); 
   const ownerUserId = Number(sessionStorage.getItem('userId'));
+  const [organizations, setOrganizations] = useState<{ orgID: number; orgName: string }[]>([]);
   const orgId = Number(sessionStorage.getItem('orgId'));
-   const [selectedSite, setSelectedSite] = useState<string | null>(null);
-
-  const handleSiteClick = (siteId: string) => {
-    setSelectedSite(siteId === selectedSite ? null : siteId);
-  };
+ 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const organizationsResponse = await fetchOrganizations();
+        setOrganizations(organizationsResponse);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+const orgNames = organizations
+  .filter((item) => item.orgID === orgId)
+  .map((item) => item.orgName)
   const reload = async () => {
     try {
       setLoading(true);
@@ -64,6 +78,7 @@ const Navbar = () => {
   useEffect(() => {
     reload();
   }, []);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       reload();
@@ -81,12 +96,11 @@ const Navbar = () => {
   const handleNotification = (taskId: string) => {
     navigate(`/qradar/tasks/update/${taskId}`);
   };
-  const handleBellIcon = async () =>{
-   await reload();
-  }
 
-  const [openSection, setOpenSection] = useState<number | null>(null);
-  const [showAccordion, setShowAccordion] = useState<boolean>(false);
+  const handleBellIcon = async () => {
+    await reload();
+  };
+
   const fetchData = async () => {
     const data = {
       orgID: orgId,
@@ -101,92 +115,104 @@ const Navbar = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchData();
   }, []);
-
-  const handleAccountClick = () => {
-    setShowAccordion(!showAccordion);
-    fetchData();
+  const accountNames = accountsStructure.map((item) => {
+return item.name
+  })
+  const handleAccountClick = (accountId: string, accountName: string) => {
+    sessionStorage.removeItem('accountId');
+    sessionStorage.removeItem('accountName');
+    sessionStorage.setItem('accountId', accountId);
+    sessionStorage.setItem('accountName', accountName);
   };
-
-
+  
+  const handleAccordionClick = (name: string, id: string) => {
+    sessionStorage.removeItem('siteName');
+    sessionStorage.removeItem('siteId');
+    sessionStorage.setItem('siteName', name);
+    setSiteName(name)
+    sessionStorage.setItem('siteId', id);
+  };
+  const handleGroupClick = (name: string, id: string) => {
+    sessionStorage.removeItem('groupName');
+    sessionStorage.removeItem('groupId');
+    sessionStorage.setItem('groupName', name);
+    setGroupName(name);
+    sessionStorage.setItem('groupId', id);
+  };
+const accountName = sessionStorage.getItem('accountName');
+// const siteName = sessionStorage.getItem('siteName');
+// const groupName = sessionStorage.getItem('groupName');
   return (
     <div className='app-navbar flex-shrink-0'>
+      <div>
+      {orgNames}/{accountNames.join(', ')}{siteName ? `/${siteName}` : ''}{groupName ? `/${groupName}` : ''}
+      </div>
+      <div>
       <p className='d-flex m-5'>Welcome &nbsp;<b>{" "} {userName}!</b></p>
+      </div>
       <div className={clsx('app-navbar-item', itemClass)}>
         <HeaderNotificationsMenu />
       </div>
 
-{accountsStructure.map((account, accountIndex) => (
-<Dropdown key={accountIndex} className='account-header'>
-            <Dropdown.Toggle as={Button} variant="link" id="dropdown-basic" className='bell'>
-            <i className='fa fa-user-circle fs-20'/>
+      {accountsStructure.map((account, accountIndex) => (
+        <Dropdown key={accountIndex} className='account-header' show={showDropdown}>
+          <Dropdown.Toggle as={Button} variant="link" id="dropdown-basic" className='bell'>
+            <i className='fa fa-user-circle fs-20' onClick={() => setShowDropdown(!showDropdown)} />
             {" "}
           </Dropdown.Toggle>
 
-            <Dropdown.Menu>
-              
-                  <Dropdown.Item>
-                    <p className='no-margin'>{account.name}</p>
-                    <span className='gray fs-12'>Account: {account.totalSites} Sites, {account.totalEndpoints} Endpoints</span>
-                  </Dropdown.Item>
-                  {account.sites.map((site, siteIndex) => (
-                  <Dropdown.Item key={siteIndex}>
-                    <p>{site.name} {site.activeLicenses}</p>
-                    {site.groups.map((group, groupIndex) => (
-                    <p key={groupIndex}>
-                      <p>{group.name} {group.totalAgents}</p>
+          <Dropdown.Menu>
+          <Dropdown.Item onClick={() => handleAccountClick(account.accountId, account.name)}>
+          <p className='no-margin'>{account.name}</p>
+          <span className='gray fs-12'>Account: {account.totalSites} Sites, {account.totalEndpoints} Endpoints</span>
+        </Dropdown.Item>
+
+            {account.sites.map((site, siteIndex) => (
+              <Dropdown.Item key={siteIndex}>
+              <div className="accordion" id={`accordion-${siteIndex}`}>
+                <div className="accordion-item">
+                  <h2 className="accordion-header" id={`heading-${siteIndex}`}>
+                  <button
+                  className="accordion-button"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target={`#collapse-${siteIndex}`}
+                  aria-expanded="true"
+                  aria-controls={`collapse-${siteIndex}`}
+                  onClick={() => handleAccordionClick(site.name, site.siteId)}
+                >
+                  {site.name} {site.activeLicenses}
+                </button>
+
+                  </h2>
+                  <div
+                    id={`collapse-${siteIndex}`}
+                    className="accordion-collapse collapse"
+                    aria-labelledby={`heading-${siteIndex}`}
+                    data-bs-parent={`#accordion-${siteIndex}`}
+                  >
+                  <div className="accordion-body">
+                  {site.groups.map((group, groupIndex) => (
+                    <p key={groupIndex} onClick={() => handleGroupClick(group.name, group.groupId)}>
+                      {group.name} {group.totalAgents}
                     </p>
                   ))}
-                  </Dropdown.Item>
-                  ))}
-                  
-                  
-                  
-                
-            </Dropdown.Menu>
-          </Dropdown>
+                </div>
 
-          ))
- } 
-
-      {/* <div className='app-navbar flex-shrink-0'>
-      <button onClick={handleAccountClick}>Account</button>
-      
-      {showAccordion && (
-  accountsStructure.map((account, accountIndex) => (
-    <div className='header-account' key={accountIndex}>
-      <Button variant="link" id="dropdown-basic">
-        <span className='acc-name' title={account.name}>{account.name}</span>
-        <div>
-          Account: {account.totalSites} Sites, {account.totalEndpoints} Endpoints
-        </div>
-        <div>
-          {account.sites.map((site, siteIndex) => (
-            <div key={siteIndex}>
-              <div className='d-flex justify-content-between'>
-                <p>{site.name}</p>
-                <p>{site.activeLicenses}</p>
-              </div>
-              <div>
-                {site.groups.map((group, groupIndex) => (
-                  <div className='d-flex justify-content-between' key={groupIndex}>
-                    <p>{group.name}</p>
-                    <p>{group.totalAgents}</p>
                   </div>
-                ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </Button>
-    </div>
-  ))
-)}
+            </Dropdown.Item>
+            
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+      ))}
 
-
-    </div> */}
       <div className={clsx('app-navbar-item', itemClass)}>
         <div
           className={clsx('cursor-pointer symbol', userAvatarClass)}
@@ -200,25 +226,25 @@ const Navbar = () => {
       </div>
 
       <div className='notification' onClick={handleBellIcon}>
-          <Dropdown>
-            <Dropdown.Toggle as={Button} variant="link" id="dropdown-basic" className='bell'>
-            <i className='fa fa-bell link'/>
+        <Dropdown>
+          <Dropdown.Toggle as={Button} variant="link" id="dropdown-basic" className='bell'>
+            <i className='fa fa-bell link' />
             {" "}
             <span className={tasksData?.length > 0 ? 'count' : 'count-zero'}></span>
           </Dropdown.Toggle>
 
-            <Dropdown.Menu>
-              {tasksData ? (
-                tasksData.map((task: Task) => (
-                  <Dropdown.Item key={task.taskId} onClick={() => handleNotification(task.taskId)}>
-                    {task.taskTitle}
-                  </Dropdown.Item>
-                ))
-              ) : (
-                <Dropdown.Item className='no-pointer'>No new notifications.</Dropdown.Item>
-              )}
-            </Dropdown.Menu>
-          </Dropdown>
+          <Dropdown.Menu>
+            {tasksData ? (
+              tasksData.map((task: Task) => (
+                <Dropdown.Item key={task.taskId} onClick={() => handleNotification(task.taskId)}>
+                  {task.taskTitle}
+                </Dropdown.Item>
+              ))
+            ) : (
+              <Dropdown.Item className='no-pointer'>No new notifications.</Dropdown.Item>
+            )}
+          </Dropdown.Menu>
+        </Dropdown>
       </div>
     </div>
   );

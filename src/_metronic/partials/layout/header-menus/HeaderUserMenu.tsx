@@ -9,6 +9,7 @@ import UsersProfile from '../../../../app/modules/apps/qradar/qradar-pages/profi
 const HeaderUserMenu: FC = () => {
   const navigate = useNavigate()
     const handleLogout = () => {
+      sessionStorage.clear();
     // navigate('/pagelayout'); //  the code need uncomment if you want microsoft login page
     navigate('/auth');       //  the code need comment if you want microsoft login page
   };
