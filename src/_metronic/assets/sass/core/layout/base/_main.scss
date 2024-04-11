@@ -334,6 +334,38 @@ body {
       display: none !important;
     }
   }
+
+  .dropdown-menu{
+    box-shadow: 1px 1px 4px 1px #ccc;
+    opacity: 0;
+    transition: opacity 0.3s ease !important;
+    &.show{
+      opacity: 1;
+    }
+    
+  }
+  .dropdown-toggle{
+      &::after{
+        margin: 0 !important;
+      }
+    }
+  .dropdown-item{
+    &:active{
+      background-color: transparent !important;
+      color: black !important;
+    }
+    &:hover{
+      background-color: transparent !important;
+    }
+  }
+  .accordion-item,.accordion-button{
+    border: 0;
+    box-shadow: none;
+  }
+  .accordion-body{
+    padding-left: 5px !important;
+    padding-top: 4px !important;
+  }
 }
 
 //Header notificaion bell icon
@@ -546,18 +578,36 @@ body {
 
 //Activity
 .activity-timeline{
+  .css-13cymwt-control,.css-13cymwt-control{
+    border-radius: 10px;
+    border: 1px solid #aaa !important;
+  }
+  .date{
+    border-radius: 10px;
+    border: 1px solid #aaa !important;
+    background-color: white !important;
+    padding: 10px;
+    color: gray;
+  }
   .timeline-label{
     &::before{
-      left: 151px !important;
+      left: 216px !important;
     }
   }
   .timeline-item{
+    margin-bottom: 20px;
     .timeline-label{
       width: 150px !important;
       &::before{
         left: 151px !important;
       }
+      p{
+        margin: 0;
+      }
     }
+  }
+  .header-filter{
+    border-bottom: 2px solid #2f2f99;
   }
 }
 
@@ -790,7 +840,7 @@ form{
     font-size: 13px;
     border: 1px solid #ccc !important;
     background-color: white !important;
-    border-radius: 20px;
+    border-radius: 10px;
     &:focus {
       border: 1px solid #ccc !important;
     }
@@ -2232,9 +2282,12 @@ form{
   }
   .menu-link {
     padding: 6px 15px !important;
+    transition: background-color 0.3s ease, border-radius 0.3s ease, margin 0.3s ease; /* Added transition properties */
     &:hover,&.active {
-      background-color: #35475D;
+      background-color: #5353e6 !important;
+      border-radius: 20px;
       margin: 0 !important;
+      
     }
   }
 }

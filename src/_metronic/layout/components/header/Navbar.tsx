@@ -146,12 +146,14 @@ return item.name
 // const groupName = sessionStorage.getItem('groupName');
   return (
     <div className='app-navbar flex-shrink-0'>
-      <div>
+      {/* <div>
       <p className='m-5 float-start '>Welcome &nbsp;<b>{" "} {userName}!</b></p>
-      </div>
-      <div className='d-flex m-5'>
+      </div> */}
+
+      <div className='d-flex mt-5 semi-bold'>
       {orgNames}/{accountNames.join(', ')}{siteName ? `/${siteName}` : ''}{groupName ? `/${groupName}` : ''}
       </div>
+      
       <div className={clsx('app-navbar-item', itemClass)}>
         <HeaderNotificationsMenu />
       </div>
@@ -167,16 +169,16 @@ return item.name
           <Dropdown.Item onClick={() => handleAccountClick(account.accountId, account.name)}>
           <p className='no-margin'>{account.name}</p>
           <span className='gray fs-12'>Account: {account.totalSites} Sites, {account.totalEndpoints} Endpoints</span>
-        </Dropdown.Item>
+        {/* </Dropdown.Item> */}
 
             {account.sites.map((site, siteIndex) => (
-              <Dropdown.Item key={siteIndex}>
+              <div key={siteIndex}>
               <div className="accordion" id={`accordion-${siteIndex}`}>
                 <div className="accordion-item">
-                  <h2 className="accordion-header" id={`heading-${siteIndex}`}>
+                  <h2 className="accordion-header pt-3" id={`heading-${siteIndex}`}>
                   <button
-                  className="accordion-button"
-                  type="button"
+                  className="accordion-button no-pad black"
+                  // type="button"
                   data-bs-toggle="collapse"
                   data-bs-target={`#collapse-${siteIndex}`}
                   aria-expanded="true"
@@ -189,13 +191,13 @@ return item.name
                   </h2>
                   <div
                     id={`collapse-${siteIndex}`}
-                    className="accordion-collapse collapse"
+                    className="accordion-collapse collapse no-pad gray fs-12"
                     aria-labelledby={`heading-${siteIndex}`}
                     data-bs-parent={`#accordion-${siteIndex}`}
                   >
-                  <div className="accordion-body">
+                  <div className="accordion-body no-pad">
                   {site.groups.map((group, groupIndex) => (
-                    <p key={groupIndex} onClick={() => handleGroupClick(group.name, group.groupId)}>
+                    <p className='no-margin' key={groupIndex} onClick={() => handleGroupClick(group.name, group.groupId)}>
                       {group.name} {group.totalAgents}
                     </p>
                   ))}
@@ -204,12 +206,15 @@ return item.name
                   </div>
                 </div>
               </div>
-            </Dropdown.Item>
+              </div>
+            
             
             ))}
+            </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
       ))}
+      
 
       <div className={clsx('app-navbar-item', itemClass)}>
         <div
