@@ -304,73 +304,72 @@ const DashboardWrapper = () => {
           </div>
 
           {/* begin::Row */}
-          <div className="row py-lg-3 incident-box alert-boxes">
+          <div className="row py-lg-3 incident-box">
             <div className="col-lg-6">
-              <div className="row">
-                <div className="col-xl-3">
-                  <div className="card bg-default py-5 text-center bg-secondary">
-                    <h6 className="text-gray-800 text-hover-primary mb-1 fs-12 uppercase">
-                      Unhandled Incidents
-                    </h6>
-                    <span className="fw-bold fs-40 mt-5 mb-5">
-                      {unattendedIcount.unattendedIncidentCount
-                        ? unattendedIcount.unattendedIncidentCount
-                        : "0"}
-                    </span>
-                    <span className="span-red">
-                      {/* <i className="fa fa-arrow-down"></i> 67% */}
-                    </span>
+              <div className="card alert-boxes pad-10">
+                <div className="row">
+                  <div className="col-xl-3">
+                    <div className="card bg-default py-5 text-center bg-secondary">
+                      <h4 className="text-gray-800 text-hover-primary mb-1 fs-16">
+                        Unhandled Incidents
+                      </h4>
+                      <span className="fw-bold fs-40 mt-5 mb-5">
+                        {unattendedIcount.unattendedIncidentCount
+                          ? unattendedIcount.unattendedIncidentCount
+                          : "0"}
+                      </span>
+                      {/* <span className="span-red">
+                        <i className="fa fa-arrow-down"></i> 67%
+                      </span> */}
+                    </div>
                   </div>
-                </div>
 
-                <div className="col-xl-3">
-                  <div className="card bg-default pad-20 text-center bg-light-warning">
-                    <h6 className="text-gray-800 text-hover-primary mb-1 fs-12 uppercase">
-                      Unhandled Alerts
-                    </h6>
-                    <span className="fw-bold fs-40 mt-5 mb-5">
-                      {unattendedAcount.unattendedAlertsCount
-                        ? unattendedAcount.unattendedAlertsCount
-                        : "0"}
-                    </span>
-                    <span className="span-red">
-                      {/* <i className="fa fa-arrow-down"></i> 100% */}
-                    </span>
+                  <div className="col-xl-3">
+                    <div className="card bg-default py-5 text-center bg-light-warning">
+                      <h4 className="text-gray-800 text-hover-primary mb-1 fs-16">
+                        Unhandled Alerts
+                      </h4>
+                      <span className="fw-bold fs-40 mt-5 mb-5">
+                        {unattendedAcount.unattendedAlertsCount
+                          ? unattendedAcount.unattendedAlertsCount
+                          : "0"}
+                      </span>
+                      {/* <span className="span-red">
+                        <i className="fa fa-arrow-down"></i> 100%
+                      </span> */}
+                    </div>
                   </div>
-                </div>
 
-                <div className="col-xl-3">
-                  <div className="card bg-default py-5 text-center bg-light-success">
-                    <h6 className="text-gray-800 text-hover-primary mb-1 fs-12 uppercase">
-                      False Positive Alerts
-                    </h6>
-                    <span className="fw-bold fs-40 mt-5 mb-5">
-                      {falsePAcount.alertsCount
-                        ? falsePAcount.alertsCount
-                        : "0"}
-                    </span>
-                    <span className="span-red">
-                      <i className="v-hidden fa fa-arrow-down"></i>
-                    </span>
+                  <div className="col-xl-3">
+                    <div className="card bg-default py-5 text-center bg-light-success">
+                      <h4 className="text-gray-800 text-hover-primary mb-1 fs-16">
+                        False Positive Alerts
+                      </h4>
+                      <span className="fw-bold fs-40 mt-5 mb-5">
+                        {falsePAcount.alertsCount
+                          ? falsePAcount.alertsCount
+                          : "0"}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                <div className="col-xl-3">
-                  <div className="card bg-default py-5 text-center bg-light-danger">
-                    <h6 className="text-gray-800 text-hover-primary mb-1 fs-12 uppercase">
-                      Mean Time to Resolve
-                    </h6>
-                    <span className="fw-bold fs-18 mt-10 mb-8">
-                      {parseInt(
-                        alertsResolvedMeanTime.alertsResolvedMeanTime
-                      ) === 0
-                        ? "8H:30M:00"
-                        : alertsResolvedMeanTime.alertsResolvedMeanTime}
-                    </span>
+                  <div className="col-xl-3">
+                    <div className="card bg-default py-5 text-center bg-light-danger">
+                      <h4 className="text-gray-800 text-hover-primary mb-1 fs-16">
+                        Mean Time to Resolve
+                      </h4>
+                      <span className="fw-bold fs-18 mt-10 mb-10">
+                        {parseInt(
+                          alertsResolvedMeanTime.alertsResolvedMeanTime
+                        ) === 0
+                          ? "8H:30M:00"
+                          : alertsResolvedMeanTime.alertsResolvedMeanTime}
+                      </span>
 
-                    <span className="span-red">
-                      {/* <i className="fa fa-arrow-down"></i> 100% */}
-                    </span>
+                      {/* <span className="span-red">
+                        <i className="fa fa-arrow-down"></i> 100%
+                      </span> */}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -398,9 +397,9 @@ const DashboardWrapper = () => {
             </div>
             <div className="col-lg-6">
               <div className="card bg-default">
-                <div className="card-body">
+                <div className="card-body no-pad">
                   <h6 className="uppercase text-center">Most used tags</h6>
-                  <div className="text-center">
+                  <div className="text-center pad-10 overflow-hidden">
                     {users?.length > 0 ? (
                       users.map((tag, index) => {
                         return (
@@ -428,11 +427,11 @@ const DashboardWrapper = () => {
           <div className="row py-lg-3 incident-box">
             <div className="col-lg-6">
               <div className="card bg-default">
-                <div className="card-body">
+                <div className="card-body no-pad">
                   <h6 className="uppercase text-center">
                     Actions assigned to me
                   </h6>
-                  <div className="table-responsive alert-table">
+                  <div className="table-responsive alert-table1">
                     {/* begin::Table */}
                     <table className="table align-middle gs-0 gy-5 ds-table mt-2">
                       <thead>
@@ -476,9 +475,9 @@ const DashboardWrapper = () => {
             </div>
             <div className="col-lg-6">
               <div className="card bg-default">
-                <div className="card-body">
+                <div className="card-body no-pad">
                   <h6 className="uppercase text-center">My recent Incidents</h6>
-                  <div className="table-responsive alert-table">
+                  <div className="table-responsive alert-table1">
                     {/* begin::Table */}
                     <table className="table align-middle gs-0 gy-5 ds-table mt-2">
                       <thead>

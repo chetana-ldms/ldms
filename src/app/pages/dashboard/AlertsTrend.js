@@ -92,7 +92,7 @@ function AlertsTrends(props) {
 
   return (
     <div>
-      <h6 className="mt-5 text-center uppercase">Alerts Trendline</h6>
+      <h6 className="text-center uppercase">Alerts Trendline</h6>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (

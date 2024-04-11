@@ -101,9 +101,9 @@ const Navbar = () => {
       setLoading(false);
     }
   };
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleAccountClick = () => {
     setShowAccordion(!showAccordion);
@@ -117,13 +117,47 @@ const Navbar = () => {
       <div className={clsx('app-navbar-item', itemClass)}>
         <HeaderNotificationsMenu />
       </div>
-      <div className='app-navbar flex-shrink-0'>
+
+{accountsStructure.map((account, accountIndex) => (
+<Dropdown key={accountIndex} className='account-header'>
+            <Dropdown.Toggle as={Button} variant="link" id="dropdown-basic" className='bell'>
+            <i className='fa fa-user-circle fs-20'/>
+            {" "}
+          </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              
+                  <Dropdown.Item>
+                    <p className='no-margin'>{account.name}</p>
+                    <span className='gray fs-12'>Account: {account.totalSites} Sites, {account.totalEndpoints} Endpoints</span>
+                  </Dropdown.Item>
+                  {account.sites.map((site, siteIndex) => (
+                  <Dropdown.Item key={siteIndex}>
+                    <p>{site.name} {site.activeLicenses}</p>
+                    {site.groups.map((group, groupIndex) => (
+                    <p key={groupIndex}>
+                      <p>{group.name} {group.totalAgents}</p>
+                    </p>
+                  ))}
+                  </Dropdown.Item>
+                  ))}
+                  
+                  
+                  
+                
+            </Dropdown.Menu>
+          </Dropdown>
+
+          ))
+ } 
+
+      {/* <div className='app-navbar flex-shrink-0'>
       <button onClick={handleAccountClick}>Account</button>
       
       {showAccordion && (
   accountsStructure.map((account, accountIndex) => (
     <div className='header-account' key={accountIndex}>
-      <Button variant="link" id="dropdown-basic" className='bell'>
+      <Button variant="link" id="dropdown-basic">
         <span className='acc-name' title={account.name}>{account.name}</span>
         <div>
           Account: {account.totalSites} Sites, {account.totalEndpoints} Endpoints
@@ -152,7 +186,7 @@ const Navbar = () => {
 )}
 
 
-    </div>
+    </div> */}
       <div className={clsx('app-navbar-item', itemClass)}>
         <div
           className={clsx('cursor-pointer symbol', userAvatarClass)}
