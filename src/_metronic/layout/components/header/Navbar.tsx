@@ -152,7 +152,7 @@ return item.name
 // const siteName = sessionStorage.getItem('siteName');
 // const groupName = sessionStorage.getItem('groupName');
   return (
-    <div className='app-navbar flex-shrink-0'>
+    <div className='app-navbar flex-shrink-0 account-header'>
       {/* <div className='d-flex mt-5 semi-bold'>
       {orgNames}/{accountNames.join(', ')}{siteName ? `/${siteName}` : ''}{groupName ? `/${groupName}` : ''}
       </div> */}
@@ -161,7 +161,7 @@ return item.name
       </div> */}
       <div className='d-flex mt-5 semi-bold'>
         <Dropdown>
-          <Dropdown.Toggle variant="primary" id="dropdown-basic">
+          <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
           {orgNames}
           </Dropdown.Toggle>
           <Dropdown.Menu>
@@ -175,7 +175,7 @@ return item.name
        {
         accountName &&
         <Dropdown>
-        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+        <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
           {accountName}
         </Dropdown.Toggle>
         <Dropdown.Menu>
@@ -187,9 +187,10 @@ return item.name
         </Dropdown.Menu>
       </Dropdown>
       }
+      
       {siteName &&
       <Dropdown>
-        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+        <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
           {siteName}
         </Dropdown.Toggle>
         <Dropdown.Menu>
@@ -206,7 +207,7 @@ return item.name
       }
       {groupName &&
       <Dropdown>
-      <Dropdown.Toggle variant="primary" id="dropdown-basic">
+      <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
         {groupName}
       </Dropdown.Toggle>
     </Dropdown>

@@ -148,6 +148,10 @@ body {
   height: 420px !important;
 }
 
+.min-h-200px{
+  min-height: 200px !important;
+}
+
 .border-btm{
   border-bottom:  1px solid #ccc;
 }
@@ -275,7 +279,7 @@ body {
 
 //Table pagination
 .pagination-bar{
-    // border-top: 1px solid #ccc;
+    border-top: 1px solid #ccc;
     // padding-top: 10px;
   .page-item{
     &.active {
@@ -329,9 +333,16 @@ body {
 
 //Account header
 .account-header{
-  button{
-    &::before{
-      display: none !important;
+  .no-btn{
+    &.btn-primary{
+      background-color: transparent !important;
+      padding: 0 !important;
+      color: black !important;
+      font-size: 12px;
+      font-weight: 600;
+      &.show,&:focus,&:hover{
+        background-color: transparent !important;
+      }
     }
   }
 
@@ -721,6 +732,7 @@ body {
     padding: 10px;
   }
   table{
+    min-height: 250px;
     td{
       max-width: 270px; /* Adjust the width as per your preference */
       white-space: nowrap;
@@ -934,6 +946,7 @@ form{
     padding: 10px !important;
   }
   table{
+    min-height: 300px;
     tr{
       &.table-row{
         border-bottom: 1px solid #ddd;
@@ -1253,6 +1266,14 @@ form{
   }
   .menu-sub{
     box-shadow: 0px 1px 2px 1px #afc7c5;
+  }
+  .alert-table{
+    min-height: 300px;
+    .auto-refresh{
+      position: absolute;
+      right: 10px;
+      top: 0;
+    }
   }
 }
 
