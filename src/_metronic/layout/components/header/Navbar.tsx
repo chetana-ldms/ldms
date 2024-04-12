@@ -38,6 +38,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [tasksData, setTasksData] = useState([]);
+  const [accountName, setAccountName] = useState<string>('');
   const [siteName, setSiteName] = useState<string>('');
   const [groupName, setGroupName] = useState<string>('');
   const [accountsStructure, setAccountsStructure] = useState<Account[]>([]);
@@ -61,6 +62,7 @@ const Navbar = () => {
 const orgNames = organizations
   .filter((item) => item.orgID === orgId)
   .map((item) => item.orgName)
+  
   const reload = async () => {
     try {
       setLoading(true);
@@ -121,22 +123,27 @@ const orgNames = organizations
 return item.name
   })
   const handleAccountClick = (accountId: string, accountName: string) => {
-    sessionStorage.removeItem('accountId');
-    sessionStorage.removeItem('accountName');
     sessionStorage.setItem('accountId', accountId);
     sessionStorage.setItem('accountName', accountName);
+    setAccountName(accountName);
+    setSiteName("");
+    setGroupName("");
+    sessionStorage.setItem('siteName', "Default site");
+    sessionStorage.setItem('siteId', "1");
+    sessionStorage.setItem('groupName', "Default Group");
+    sessionStorage.setItem('groupId', "1");
   };
   
   const handleAccordionClick = (name: string, id: string) => {
-    sessionStorage.removeItem('siteName');
-    sessionStorage.removeItem('siteId');
     sessionStorage.setItem('siteName', name);
     setSiteName(name)
+    setGroupName("");
     sessionStorage.setItem('siteId', id);
+    sessionStorage.setItem('groupName', "Default Group");
+    sessionStorage.setItem('groupId', "1");
+    
   };
   const handleGroupClick = (name: string, id: string) => {
-    sessionStorage.removeItem('groupName');
-    sessionStorage.removeItem('groupId');
     sessionStorage.setItem('groupName', name);
     setGroupName(name);
     sessionStorage.setItem('groupId', id);
@@ -146,74 +153,72 @@ return item.name
 // const groupName = sessionStorage.getItem('groupName');
   return (
     <div className='app-navbar flex-shrink-0'>
-      {/* <div>
-      <p className='m-5 float-start '>Welcome &nbsp;<b>{" "} {userName}!</b></p>
-      </div> */}
-
-      <div className='d-flex mt-5 semi-bold'>
+      {/* <div className='d-flex mt-5 semi-bold'>
       {orgNames}/{accountNames.join(', ')}{siteName ? `/${siteName}` : ''}{groupName ? `/${groupName}` : ''}
+      </div> */}
+      {/* <div className='d-flex mt-5 semi-bold'>
+      {orgNames}
+      </div> */}
+      <div className='d-flex mt-5 semi-bold'>
+        <Dropdown>
+          <Dropdown.Toggle variant="primary" id="dropdown-basic">
+          {orgNames}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {accountsStructure.map((account, index) => (
+              <Dropdown.Item key={index} onClick={() => handleAccountClick(account.accountId, account.name)}>
+                {account.name}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+       {
+        accountName &&
+        <Dropdown>
+        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+          {accountName}
+        </Dropdown.Toggle>
+        <Dropdown.Menu>
+          {accountsStructure?.find(account => account.name === accountName)?.sites.map((site, siteIndex) => (
+            <Dropdown.Item key={siteIndex} onClick={() => handleAccordionClick(site.name, site.siteId)}>
+              {site.name} {site.activeLicenses}
+            </Dropdown.Item>
+          ))}
+        </Dropdown.Menu>
+      </Dropdown>
+      }
+      {siteName &&
+      <Dropdown>
+        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+          {siteName}
+        </Dropdown.Toggle>
+        <Dropdown.Menu>
+        {accountsStructure
+          ?.find(account => account.name === accountName)
+          ?.sites.find(site => site.name === siteName)
+          ?.groups.map((group, groupIndex) => (
+            <Dropdown.Item key={groupIndex} onClick={() => handleGroupClick(group.name, group.groupId)}>
+              {group.name} {group.totalAgents}
+            </Dropdown.Item>
+          ))}
+        </Dropdown.Menu>
+      </Dropdown>
+      }
+      {groupName &&
+      <Dropdown>
+      <Dropdown.Toggle variant="primary" id="dropdown-basic">
+        {groupName}
+      </Dropdown.Toggle>
+    </Dropdown>
+    }
+
+
       </div>
+     
       
       <div className={clsx('app-navbar-item', itemClass)}>
         <HeaderNotificationsMenu />
       </div>
-
-      {accountsStructure.map((account, accountIndex) => (
-        <Dropdown key={accountIndex} className='account-header' show={showDropdown}>
-          <Dropdown.Toggle as={Button} variant="link" id="dropdown-basic" className='bell'>
-            <i className='fa fa-user-circle fs-20' onClick={() => setShowDropdown(!showDropdown)} />
-            {" "}
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu>
-          <Dropdown.Item onClick={() => handleAccountClick(account.accountId, account.name)}>
-          <p className='no-margin'>{account.name}</p>
-          <span className='gray fs-12'>Account: {account.totalSites} Sites, {account.totalEndpoints} Endpoints</span>
-        {/* </Dropdown.Item> */}
-
-            {account.sites.map((site, siteIndex) => (
-              <div key={siteIndex}>
-              <div className="accordion" id={`accordion-${siteIndex}`}>
-                <div className="accordion-item">
-                  <h2 className="accordion-header pt-3" id={`heading-${siteIndex}`}>
-                  <button
-                  className="accordion-button no-pad black"
-                  // type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target={`#collapse-${siteIndex}`}
-                  aria-expanded="true"
-                  aria-controls={`collapse-${siteIndex}`}
-                  onClick={() => handleAccordionClick(site.name, site.siteId)}
-                >
-                  {site.name} {site.activeLicenses}
-                </button>
-
-                  </h2>
-                  <div
-                    id={`collapse-${siteIndex}`}
-                    className="accordion-collapse collapse no-pad gray fs-12"
-                    aria-labelledby={`heading-${siteIndex}`}
-                    data-bs-parent={`#accordion-${siteIndex}`}
-                  >
-                  <div className="accordion-body no-pad">
-                  {site.groups.map((group, groupIndex) => (
-                    <p className='no-margin' key={groupIndex} onClick={() => handleGroupClick(group.name, group.groupId)}>
-                      {group.name} {group.totalAgents}
-                    </p>
-                  ))}
-                </div>
-
-                  </div>
-                </div>
-              </div>
-              </div>
-            
-            
-            ))}
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      ))}
       
 
       <div className={clsx('app-navbar-item', itemClass)}>

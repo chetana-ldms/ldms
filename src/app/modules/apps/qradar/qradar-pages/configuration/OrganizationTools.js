@@ -120,7 +120,6 @@ const OrganizationTools = () => {
                       <td>{item.toolName}</td>
                       <td>{item.orgName}</td>
                       <td style={{ maxWidth: "200px" }}>{item.authKey}</td>
-                      {/* <td style={{ maxWidth: '200px' }}>{item.apiUrl}</td> */}
 
                       {globalAdminRole === 1 || clientAdminRole === 1 ? (
                         <td>
