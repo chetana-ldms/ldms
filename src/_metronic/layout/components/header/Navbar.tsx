@@ -176,7 +176,7 @@ return item.name
         accountName &&
         <Dropdown>
         <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-          {accountName}
+         {` / ${accountName}`}
         </Dropdown.Toggle>
         <Dropdown.Menu>
           {accountsStructure?.find(account => account.name === accountName)?.sites.map((site, siteIndex) => (
@@ -191,7 +191,7 @@ return item.name
       {siteName &&
       <Dropdown>
         <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-          {siteName}
+          {`/ ${siteName}`}
         </Dropdown.Toggle>
         <Dropdown.Menu>
         {accountsStructure
@@ -208,7 +208,7 @@ return item.name
       {groupName &&
       <Dropdown>
       <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-        {groupName}
+        {`/ ${groupName}`}
       </Dropdown.Toggle>
     </Dropdown>
     }
