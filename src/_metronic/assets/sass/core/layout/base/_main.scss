@@ -280,7 +280,7 @@ body {
 //Table pagination
 .pagination-bar{
     border-top: 1px solid #ccc;
-    // padding-top: 10px;
+    padding-top: 10px;
   .page-item{
     &.active {
       .page-link{
@@ -473,23 +473,29 @@ body {
     overflow-y: auto; 
     overflow-x: hidden; 
     // border-top: 1px solid #ccc;
+    thead{
+      
+    }
     th{
       background: none !important;
       color: #333 !important;
       padding: 5px;
-      border: 1px solid #333 !important;
+      border-bottom: 2px solid #5b7cdc !important;
       font-weight: bold;
     }
     tr{
+      box-shadow: 2px 1px 2px 1px #eee;
       &:last-child{
         td{
-          border-bottom: 1px solid #333 !important;
+          border-bottom: 0 !important;
         }
       }      
     }
     td{
-      border: 1px solid #333;
-      padding: 4px;
+      padding: 10px 4px 10px;
+      
+      margin-bottom: 10px;
+      border: 1px solid #eee;
     }
   }
   .menu-sub{
@@ -1275,6 +1281,9 @@ form{
       top: 0;
     }
   }
+  .timeline-item{
+    margin-bottom: 15px;
+  }
 }
 
 //Table
@@ -1348,12 +1357,14 @@ form{
       
       .nav-tabs{
         padding-bottom: 2px;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid #008cba;
         .nav-link{
           &.active{
             border-radius: 0;
             border-color: #008cba;
-            border-bottom: 1px solid #1b2f69;
+            border-bottom: 0;
+            position: relative;
+            top: 1px;
           }
         }
       }
@@ -1536,6 +1547,10 @@ form{
       border: 0;
     }
   }
+}
+
+.scroll-y{
+  overflow-x: hidden;
 }
 
 .scroll-y,.scroll-x{

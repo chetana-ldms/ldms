@@ -173,47 +173,45 @@ return item.name
           </Dropdown.Menu>
         </Dropdown>
        {
-        accountName &&
-        <Dropdown>
-        <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-         {` / ${accountName}`}
-        </Dropdown.Toggle>
-        <Dropdown.Menu>
-          {accountsStructure?.find(account => account.name === accountName)?.sites.map((site, siteIndex) => (
-            <Dropdown.Item key={siteIndex} onClick={() => handleAccordionClick(site.name, site.siteId)}>
-              {site.name} {site.activeLicenses}
-            </Dropdown.Item>
-          ))}
-        </Dropdown.Menu>
-      </Dropdown>
-      }
+          accountName &&
+          <Dropdown>
+          <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
+          {` / ${accountName}`}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {accountsStructure?.find(account => account.name === accountName)?.sites.map((site, siteIndex) => (
+              <Dropdown.Item key={siteIndex} onClick={() => handleAccordionClick(site.name, site.siteId)}>
+                {site.name} {site.activeLicenses}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+        }
       
-      {siteName &&
-      <Dropdown>
-        <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-          {`/ ${siteName}`}
-        </Dropdown.Toggle>
-        <Dropdown.Menu>
-        {accountsStructure
-          ?.find(account => account.name === accountName)
-          ?.sites.find(site => site.name === siteName)
-          ?.groups.map((group, groupIndex) => (
-            <Dropdown.Item key={groupIndex} onClick={() => handleGroupClick(group.name, group.groupId)}>
-              {group.name} {group.totalAgents}
-            </Dropdown.Item>
-          ))}
-        </Dropdown.Menu>
-      </Dropdown>
-      }
-      {groupName &&
-      <Dropdown>
-      <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-        {`/ ${groupName}`}
-      </Dropdown.Toggle>
-    </Dropdown>
-    }
-
-
+        {siteName &&
+          <Dropdown>
+            <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
+              {`/ ${siteName}`}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+            {accountsStructure
+              ?.find(account => account.name === accountName)
+              ?.sites.find(site => site.name === siteName)
+              ?.groups.map((group, groupIndex) => (
+                <Dropdown.Item key={groupIndex} onClick={() => handleGroupClick(group.name, group.groupId)}>
+                  {group.name} {group.totalAgents}
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+            </Dropdown>
+            }
+            {groupName &&
+            <Dropdown>
+            <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
+              {`/ ${groupName}`}
+            </Dropdown.Toggle>
+          </Dropdown>
+        }
       </div>
      
       

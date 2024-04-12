@@ -2364,20 +2364,20 @@ const AlertsPage = () => {
                                     aria-labelledby={`notesTab_${index}`}
                                   >
                                     {alertNotesList.length > 0 ? (
-                                      <div className="notes-container pt-5 alert-table">
-                                        <div className="float-right fs-13 lh-40 fc-gray text-right ds-reload">
-                                          Auto refresh every 2 minutes{" "}
+                                      <div className="notes-container alert-table">
+                                        <div className="float-right fs-13 fc-gray text-right ds-reload">
                                           <a href="#" onClick={handleRefresh}>
                                             <i
                                               className={`fa fa-refresh link ${
                                                 isRefreshing ? "rotate" : ""
                                               }`}
+                                              title="Auto refresh every 2 minutes"
                                             />
                                           </a>
                                         </div>
                                         <table className="table">
                                           <thead>
-                                            <tr className="bg-header">
+                                            <tr>
                                               <th className="custom-th">
                                                 User
                                               </th>
@@ -2421,8 +2421,7 @@ const AlertsPage = () => {
                                           <div className="timeline-section h-300px scroll-y">
                                             <div className="pt-6 h-600px">
                                               <div className="timeline-label">
-                                                <div className="float-right fs-13 lh-40 fc-gray text-right ds-reload">
-                                                  Auto refresh every 2 minutes{" "}
+                                                <div className="float-right fs-13 fc-gray text-right ds-reload">
                                                   <a
                                                     href="#"
                                                     onClick={handleRefresh}
@@ -2433,6 +2432,7 @@ const AlertsPage = () => {
                                                           ? "rotate"
                                                           : ""
                                                       }`}
+                                                      title="Auto refresh every 2 minutes"
                                                     />
                                                   </a>
                                                 </div>
