@@ -692,7 +692,7 @@ const AlertsPage = () => {
     }
   };
   const handleStatus = () => {
-    setStatusDropDown(!AnalystVerdictDropDown);
+    setStatusDropDown(true);
   };
   const handleStatusClose = () => {
     setStatusDropDown(false);
