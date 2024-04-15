@@ -130,25 +130,12 @@ const Reports = () => {
           <h2>Reports</h2>
           <div className="demo-block card mt-5">
             <Tabs className="report-tabs">
-              <div className="ps-5 pe-10">
+              <div>
                 <div className="card-body1">
                   <TabPanel className="main-tab">
                     <AlertsSummary />
                   </TabPanel>
-                  {/* <TabPanel className="main-tab">
-                    <h2 className="mb-10">
-                      Top 10 alerts by rule name for the last year ({startDate} to{" "}
-            {endDate})
-                    </h2>
-                    <Tabs>
-                      <TabList className="inner-tablist">
-                        <Tab>Last year</Tab>
-                      </TabList>
-                      <TabPanel className="inner-tab">
-                        <CanvasJSChart options={baroptions} />
-                      </TabPanel>
-                    </Tabs>
-                  </TabPanel> */}
+
                   <TabPanel className="main-tab">
                     <AlertsRule />
                   </TabPanel>

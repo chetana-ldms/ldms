@@ -1324,7 +1324,7 @@ form{
   background-color: #008cba !important;
   font-weight: normal !important;
   color: #fff !important;
-  border-radius: 20px;
+  border-radius: 10px;
   &:hover{
     background-color: #076280 !important;
   }
@@ -1832,8 +1832,89 @@ form{
 }
 
 //Reports
+.reports-page {
+  .export-report{
+    position: absolute;
+    top: 40px;
+    right: 0;
+    z-index: 1;
+    button{
+      padding: 5px 10px !important;
+    }
+  }
+  .react-tabs__tab-panel--selected {
+    min-height: 150px;
+  }
+  .tab-list {
+    list-style: none;
+    border: 1px solid #ccc;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    li {
+      background-color: #5353e6;
+      color: white;
+      display: inline-block;
+      padding: 10px 15px;
+      border-right: 1px solid #ccc;
+      cursor: pointer;
+      &:last-child {
+        border: 0;
+      }
+      &:active,
+      &:focus {
+        border: 0;
+        outline: none;
+      }
+      &.react-tabs__tab--selected {
+        background-color: white;
+        color: black;
+      }
+    }
+  }
+
+  .inner-tablist {
+    list-style: none;
+    padding: 0;
+    justify-content: center;
+    li {
+      display: inline-block;
+      padding: 6px 15px;
+      margin-right: 20px;
+      cursor: pointer;
+      border: 1px solid #3cc07e;
+      &.react-tabs__tab--selected {
+        background-color: #3cc07e;
+        color: white;
+        border-radius: 0;
+      }
+    }
+  }
+  
+  .main-tab{
+    &::before{
+      content: "";
+      width: 100px;
+      height: 20px;
+      background-color: #fff;
+      position: absolute;
+      left: 0;
+      bottom: 60px;
+      z-index: 1;
+    }
+  }
+  //Pie chart
+  #canvasjs-react-chart-container-2 {
+    // width: 100% !important;
+    border: 0 !important;
+  }
+}
 .report-tabs {
-  margin-top: 20px;
+  // margin-top: 20px;
+  .bg-heading{
+    padding: 10px !important;
+    color: white !important;
+  }
   .canvasjs-chart-toolbar,
   .canvasjs-chart-credit {
     display: none;
@@ -2273,78 +2354,7 @@ form{
   }
 }
 
-.reports-page {
-  .export-report{
-    position: absolute;
-    top: 0;
-    right: 0;
-    button{
-      padding: 5px 10px !important;
-    }
-  }
-  .react-tabs__tab-panel--selected {
-    min-height: 150px;
-  }
-  .tab-list {
-    list-style: none;
-    border: 1px solid #ccc;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    li {
-      background-color: #eee;
-      display: inline-block;
-      padding: 10px 15px;
-      border-right: 1px solid #ccc;
-      cursor: pointer;
-      &:last-child {
-        border: 0;
-      }
-      &:active,
-      &:focus {
-        border: 0;
-        outline: none;
-      }
-      &.react-tabs__tab--selected {
-        background-color: white;
-      }
-    }
-  }
 
-  .inner-tablist {
-    list-style: none;
-    padding: 0;
-    justify-content: center;
-    li {
-      display: inline-block;
-      padding: 6px 15px;
-      margin-right: 20px;
-      cursor: pointer;
-      &.react-tabs__tab--selected {
-        background-color: #2b2b4c;
-        color: white;
-      }
-    }
-  }
-  
-  .main-tab{
-    &::before{
-      content: "";
-      width: 100px;
-      height: 20px;
-      background-color: #fff;
-      position: absolute;
-      left: 0;
-      bottom: 60px;
-      z-index: 1;
-    }
-  }
-  //Pie chart
-  #canvasjs-react-chart-container-2 {
-    // width: 100% !important;
-    border: 0 !important;
-  }
-}
 
 //Sidebar menu CSS
 .app-sidebar{
