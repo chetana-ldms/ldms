@@ -297,7 +297,7 @@ const UpdateOrganizationTools = () => {
   };
 
   return (
-    <div className="card">
+    <div className="config card">
       <div className="card-header bg-header">
         <h3 className="card-title align-items-start flex-column">
           <span className="white">Update Organization Tool</span>
@@ -479,9 +479,9 @@ const UpdateOrganizationTools = () => {
                     />
                   </div>
                 </div>
-                <div className="col-lg-4 mb-4 mb-lg-0 d-flex align-items-end justify-content-center">
+                <div className="col-lg-4 mb-4 mb-lg-0 d-flex align-items-end justify-content-start">
                   <button
-                    className="btn btn-new btn-small"
+                    className="btn btn-green btn-small"
                     onClick={handleAction}
                   >
                     {isEditing ? "Update Action" : "Add Action"}
@@ -489,12 +489,31 @@ const UpdateOrganizationTools = () => {
                 </div>
               </div>
             </div>
+            <div className="card-footer d-flex justify-content-end py-6 px-9">
+              <button
+                type="submit"
+                onClick={(e) => handleSubmit(e, toolTypeAction)}
+                className="btn btn-new btn-small"
+                disabled={loading}
+              >
+                {!loading && "Update Changes"}
+                {loading && (
+                  <span
+                    className="indicator-progress"
+                    style={{ display: "block" }}
+                  >
+                    Please wait...{" "}
+                    <span className="spinner-border spinner-border-sm align-middle ms-2"></span>
+                  </span>
+                )}
+              </button>
+            </div>
             {tableData.length > 0 && (
               <div className="card-body border-top pad-10">
                 <h4>List of Tool Actions</h4>
-                <table className="table">
+                <table className="table alert-table">
                   <thead>
-                    <tr>
+                    <tr className="bg-blue">
                       <th className="bold">Tool Action</th>
                       <th className="bold">API URL</th>
                       <th className="bold">Action</th>
@@ -508,24 +527,23 @@ const UpdateOrganizationTools = () => {
                         </td>
                         <td style={{ paddingTop: "30px" }}>{item.apiUrl}</td>
                         <td>
-                          <button
-                            className="btn btn-warning btn-circle"
+                          <span
                             title="Edit"
                             onClick={() => handleEdit(index)}
                             style={{ borderRadius: "50%", marginRight: "10px" }}
                             type="button"
                           >
-                            <i className="fa fa-pencil white" />
-                          </button>
-                          <button
-                            className="btn btn-danger btn-circle"
+                            <i className="fa fa-pencil link" />
+                          </span>
+                          <span
+                            className="ms-8"
                             title="Remove"
                             onClick={() => handleDelete(index)}
                             style={{ borderRadius: "50%" }}
                             type="button"
                           >
-                            <i className="fa fa-trash white" />
-                          </button>
+                            <i className="fa fa-trash red" />
+                          </span>
                         </td>
                       </tr>
                     ))}
@@ -534,22 +552,6 @@ const UpdateOrganizationTools = () => {
               </div>
             )}
           </div>
-        </div>
-        <div className="card-footer d-flex justify-content-end py-6 px-9">
-          <button
-            type="submit"
-            onClick={(e) => handleSubmit(e, toolTypeAction)}
-            className="btn btn-new btn-small"
-            disabled={loading}
-          >
-            {!loading && "Update Changes"}
-            {loading && (
-              <span className="indicator-progress" style={{ display: "block" }}>
-                Please wait...{" "}
-                <span className="spinner-border spinner-border-sm align-middle ms-2"></span>
-              </span>
-            )}
-          </button>
         </div>
       </form>
     </div>

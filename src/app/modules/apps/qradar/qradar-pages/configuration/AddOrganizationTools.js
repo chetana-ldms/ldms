@@ -200,7 +200,7 @@ const AddOrganizationTools = () => {
     setTableData(updatedTableData);
   };
   return (
-    <div className="card">
+    <div className="config card">
       <ToastContainer />
       <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">
@@ -408,9 +408,9 @@ const AddOrganizationTools = () => {
                     />
                   </div>
                 </div>
-                <div className="col-lg-4 mb-4 mb-lg-0 d-flex align-items-end justify-content-center">
+                <div className="col-lg-4 mb-4 mb-lg-0 d-flex align-items-end justify-content-start">
                   <button
-                    className="btn btn-new btn-small"
+                    className="btn btn-small btn-green"
                     onClick={handleAction}
                   >
                     Add Action
@@ -423,7 +423,7 @@ const AddOrganizationTools = () => {
                 <h4>List of Tool Actions</h4>
                 <table className="table">
                   <thead>
-                    <tr>
+                    <tr className="bg-blue">
                       <th>Tool Action</th>
                       <th>API URL</th>
                       <th>Remove</th>
