@@ -37,10 +37,10 @@ const CreateExclusionModal = ({ show, handleClose }) => {
       <Modal.Header closeButton>
         <Modal.Title>
           New Exclusions
-          <div className="mt-2 white">Exclusions Type: Hash</div>
+          <div className="mt-2 fs-12 white">Exclusions Type: Hash</div>
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="header-filter">
         <div className="row">
           <div className="col-md-6">
             <label htmlFor="osInput" className="form-label">
@@ -83,10 +83,18 @@ const CreateExclusionModal = ({ show, handleClose }) => {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
+        <Button
+          variant="secondary"
+          className="btn btn-small"
+          onClick={handleClose}
+        >
           Close
         </Button>
-        <Button variant="primary" onClick={handleSubmit}>
+        <Button
+          variant="primary"
+          className="btn btn-small btn-new"
+          onClick={handleSubmit}
+        >
           Apply
         </Button>
       </Modal.Footer>

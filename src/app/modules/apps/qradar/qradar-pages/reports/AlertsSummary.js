@@ -202,7 +202,7 @@ function AlertsSummary() {
         <p>Error: {error}</p>
       ) : alertData !== null ? (
         <>
-          <h4 className="mb-10">
+          <h4 className="mb-10 bg-heading">
             Alerts Summary for the last year ({startDate} to {endDate})
           </h4>
           <CanvasJSChart options={openstatusoptions} />
@@ -220,8 +220,7 @@ function AlertsSummary() {
           </DropdownToggle>
           <DropdownMenu>
             <DropdownItem onClick={() => handleExport("excel")}>
-              Export to Excel{" "}
-              <i className="fa fa-file-excel link float-right" />
+              Export to CSV <i className="fa fa-file-excel link float-right" />
             </DropdownItem>
             <hr className="no-margin" />
             <DropdownItem onClick={() => handleExport("pdf")}>
