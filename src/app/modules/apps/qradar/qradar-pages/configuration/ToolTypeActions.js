@@ -19,7 +19,7 @@ const ToolTypeActions = () => {
   const [toolTypeActions, setToolTypeActions] = useState([]);
   const [filterValue, setFilterValue] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [updateData, setUpdateData] = useState({});
   const { status } = useParams();
 
