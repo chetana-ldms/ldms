@@ -12,6 +12,7 @@ const AddToExclusionsModal = ({
   handleAction,
   selectedValue,
   selectedAlert,
+  refreshParent
 }) => {
   const data = { selectedValue, selectedAlert };
   const value = data.selectedValue;
@@ -61,14 +62,15 @@ const AddToExclusionsModal = ({
         // note: descriptionTextareaRef.current.value
       };
       const responseData = await fetchAddToExclusionListUrl(data);
-      const { isSuccess } = responseData;
+      const { isSuccess, message } = responseData;
 
       if (isSuccess) {
-        notify("Add To Exclusions Applied");
+        notify(message);
+        handleClose();
+        refreshParent();
       } else {
-        notifyFail("Add To Exclusions Applied");
+        notifyFail(message);
       }
-      handleClose();
     } catch (error) {
       console.error("Error during API call:", error);
     }

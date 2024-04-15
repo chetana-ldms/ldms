@@ -12,6 +12,7 @@ const AddToBlockListModal = ({
   handleAction,
   selectedValue,
   selectedAlert,
+  refreshParent
 }) => {
   const data = { selectedValue, selectedAlert };
   const value = data.selectedValue;
@@ -62,13 +63,14 @@ const AddToBlockListModal = ({
         // note: descriptionTextareaRef.current.value
       };
       const responseData = await fetchAddToblockListUrl(data);
-      const { isSuccess } = responseData;
+      const { isSuccess, message } = responseData;
 
       if (isSuccess) {
-        notify("File added to blocked list");
+        notify(message);
         handleClose();
+        refreshParent();
       } else {
-        notifyFail("File added to blocked list Failed");
+        notifyFail(message);
       }
      
     } catch (error) {

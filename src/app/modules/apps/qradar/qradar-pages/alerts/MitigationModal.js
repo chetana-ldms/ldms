@@ -10,6 +10,7 @@ const MitigationModal = ({
   handleAction,
   selectedValue,
   selectedAlert,
+  refreshParent
 }) => {
   const data = { selectedValue, selectedAlert };
   const value = data.selectedValue;
@@ -77,10 +78,11 @@ const MitigationModal = ({
 
       if (isSuccess) {
         notify(message);
+        handleClose();
+        refreshParent();
       } else {
         notifyFail(message);
       }
-      handleClose();
     } catch (error) {
       console.error("Error during API call:", error);
     }

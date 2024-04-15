@@ -159,6 +159,11 @@ const AlertsPage = () => {
   console.log(threatInfo, "threatInfo");
   const [alertHistory, setAlertHistory] = useState([]);
   console.log(alertHistory, "alertHistory");
+  const [refreshFlag, setRefreshFlag] = useState(false);
+  const handleRefreshActions = () => {
+    setRefreshFlag(!refreshFlag);
+    qradaralerts();
+  };
   const reloadHistory = () => {
     if (selectedAlertId !== null && selectedAlertId !== undefined) {
       const data = {
@@ -741,6 +746,70 @@ const AlertsPage = () => {
 
           <div className="card-toolbar">
             <div className="d-flex align-items-center gap-2 gap-lg-3">
+              
+              <div className="m-0">
+                <a
+                  href="#"
+                  className={`btn btn-small fs-14 btn-green ${
+                    !isCheckboxSelected && "disabled"
+                  }`}
+                  data-kt-menu-trigger="click"
+                  data-kt-menu-placement="bottom-end"
+                  onClick={handleAnalystsVerdict}
+                >
+                  Analyst Verdict
+                </a>
+
+                <div
+                  className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action"
+                  data-kt-menu="true"
+                >
+                  {AnalystVerdictDropDown && (
+                    <div className="px-3 py-3">
+                      <div className="mb-5">
+                        <div className="d-flex justify-content-end mb-5">
+                          <div>
+                            <div
+                              className="close fs-20 text-muted pointer"
+                              aria-label="Close"
+                              onClick={handleAnalystsVerdictClose}
+                            >
+                              <span aria-hidden="true" classNam="black">
+                                &times;
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <select
+                          className="form-select form-select-solid"
+                          data-kt-select2="true"
+                          data-placeholder="Select option"
+                          data-dropdown-parent="#kt_menu_637dc885a14bb"
+                          data-allow-clear="true"
+                          onChange={handleAnalystsVerdictDropDown}
+                        >
+                          <option>Select</option>
+                          {analystVerdictDropDown.length > 0 &&
+                            analystVerdictDropDown.map((item) => (
+                              <option key={item.dataID} value={item.dataID}>
+                                {item.dataValue}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                      <div className="text-right">
+                        <button
+                          className="btn btn-new btn-small"
+                          onClick={handleSubmitAnalystVerdict}
+                        >
+                          {" "}
+                          Submit{" "}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
               <div className="m-0">
                 <a
                   href="#"
@@ -798,69 +867,6 @@ const AlertsPage = () => {
                         <button
                           className="btn btn-new btn-small"
                           onClick={handleSubmitStatus}
-                        >
-                          {" "}
-                          Submit{" "}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="m-0">
-                <a
-                  href="#"
-                  className={`btn btn-small fs-14 btn-green ${
-                    !isCheckboxSelected && "disabled"
-                  }`}
-                  data-kt-menu-trigger="click"
-                  data-kt-menu-placement="bottom-end"
-                  onClick={handleAnalystsVerdict}
-                >
-                  Analyst Verdict
-                </a>
-
-                <div
-                  className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action"
-                  data-kt-menu="true"
-                >
-                  {AnalystVerdictDropDown && (
-                    <div className="px-3 py-3">
-                      <div className="mb-5">
-                        <div className="d-flex justify-content-end mb-5">
-                          <div>
-                            <div
-                              className="close fs-20 text-muted pointer"
-                              aria-label="Close"
-                              onClick={handleAnalystsVerdictClose}
-                            >
-                              <span aria-hidden="true" classNam="black">
-                                &times;
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <select
-                          className="form-select form-select-solid"
-                          data-kt-select2="true"
-                          data-placeholder="Select option"
-                          data-dropdown-parent="#kt_menu_637dc885a14bb"
-                          data-allow-clear="true"
-                          onChange={handleAnalystsVerdictDropDown}
-                        >
-                          <option>Select</option>
-                          {analystVerdictDropDown.length > 0 &&
-                            analystVerdictDropDown.map((item) => (
-                              <option key={item.dataID} value={item.dataID}>
-                                {item.dataValue}
-                              </option>
-                            ))}
-                        </select>
-                      </div>
-                      <div className="text-right">
-                        <button
-                          className="btn btn-new btn-small"
-                          onClick={handleSubmitAnalystVerdict}
                         >
                           {" "}
                           Submit{" "}
@@ -957,6 +963,7 @@ const AlertsPage = () => {
                         handleAction={handleAction}
                         selectedValue={selectedValue}
                         selectedAlert={selectedAlert}
+                        refreshParent={handleRefreshActions}
                       />
                     )}
                     {addToBlockListModal && (
@@ -966,6 +973,7 @@ const AlertsPage = () => {
                         handleAction={handleActionAddToBlockList}
                         selectedValue={selectedValue}
                         selectedAlert={selectedAlert}
+                        refreshParent={handleRefreshActions}
                       />
                     )}
                     {addToExclusionsModal && (
@@ -975,6 +983,7 @@ const AlertsPage = () => {
                         handleAction={handleActionAddToExclusions}
                         selectedValue={selectedValue}
                         selectedAlert={selectedAlert}
+                        refreshParent={handleRefreshActions}
                       />
                     )}
                     {addANoteModal && (
