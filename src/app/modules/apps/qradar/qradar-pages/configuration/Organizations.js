@@ -58,7 +58,7 @@ const Organizations = () => {
     reload();
   }, []);
   return (
-    <div className="card pad-10">
+    <div className="card pad-10 config">
       <ToastContainer />
       <div className="card-header no-pad">
         <h3 className="card-title align-items-start flex-column">
@@ -100,7 +100,7 @@ const Organizations = () => {
 
             {tools.length > 0 ? (
               tools.map((item, index) => (
-                <tr key={index} className="fs-12">
+                <tr key={index} className="fs-12 table-row">
                   <td>{item.orgID}</td>
                   <td>{item.orgName}</td>
                   <td>{item.address}</td>
@@ -109,25 +109,25 @@ const Organizations = () => {
 
                   {globalAdminRole === 1 || clientAdminRole === 1 ? (
                     <td>
-                      <button className="btn btn-new btn-circle">
+                      <span className="ms-5">
                         <Link
                           className="text-white"
                           to={`/qradar/organizations/update/${item.orgID}`}
                           title="Edit"
                         >
-                          <i className="fa fa-pencil cursor white" />
+                          <i className="fa fa-pencil cursor green" />
                         </Link>
-                      </button>
+                      </span>
 
-                      <button
-                        className="btn btn-danger btn-circle ms-5"
+                      <span
+                        className="ms-5"
                         onClick={() => {
                           handleDelete(item);
                         }}
                         title="Delete"
                       >
-                        <i className="fa fa-trash cursor white" />
-                      </button>
+                        <i className="fa fa-trash cursor red" />
+                      </span>
                     </td>
                   ) : (
                     <></>
