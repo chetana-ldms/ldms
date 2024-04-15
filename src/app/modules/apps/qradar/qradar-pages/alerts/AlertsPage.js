@@ -744,7 +744,7 @@ const AlertsPage = () => {
               <div className="m-0">
                 <a
                   href="#"
-                  className={`btn btn-small btn-flex btn-primary fw-bold fs-14 btn-new ${
+                  className={`btn btn-small fw-bold fs-14 btn-green ${
                     !isCheckboxSelected && "disabled"
                   }`}
                   data-kt-menu-trigger="click"
@@ -759,7 +759,7 @@ const AlertsPage = () => {
                   data-kt-menu="true"
                 >
                   {StatusDropDown && (
-                    <div className="px-5 py-5">
+                    <div className="px-3 py-3">
                       <div className="mb-5">
                         <div className="d-flex justify-content-end mb-5">
                           <div>
@@ -796,7 +796,7 @@ const AlertsPage = () => {
                       </div>
                       <div className="text-right">
                         <button
-                          className="btn btn-primary"
+                          className="btn btn-new btn-small"
                           onClick={handleSubmitStatus}
                         >
                           {" "}
@@ -810,7 +810,7 @@ const AlertsPage = () => {
               <div className="m-0">
                 <a
                   href="#"
-                  className={`btn btn-small btn-flex btn-primary fw-bold fs-14 btn-new ${
+                  className={`btn btn-small fs-14 btn-green ${
                     !isCheckboxSelected && "disabled"
                   }`}
                   data-kt-menu-trigger="click"
@@ -825,7 +825,7 @@ const AlertsPage = () => {
                   data-kt-menu="true"
                 >
                   {AnalystVerdictDropDown && (
-                    <div className="px-5 py-5">
+                    <div className="px-3 py-3">
                       <div className="mb-5">
                         <div className="d-flex justify-content-end mb-5">
                           <div>
@@ -834,10 +834,7 @@ const AlertsPage = () => {
                               aria-label="Close"
                               onClick={handleAnalystsVerdictClose}
                             >
-                              <span
-                                aria-hidden="true"
-                                style={{ color: "inherit", textShadow: "none" }}
-                              >
+                              <span aria-hidden="true" classNam="black">
                                 &times;
                               </span>
                             </div>
@@ -878,7 +875,7 @@ const AlertsPage = () => {
                   <div className="m-0">
                     <a
                       href="#"
-                      className={`btn btn-small btn-flex btn-primary fw-bold fs-14 btn-new ${
+                      className={`btn btn-small fs-14 btn-green ${
                         !isCheckboxSelected && "disabled"
                       }`}
                       data-kt-menu-trigger="click"
@@ -892,7 +889,7 @@ const AlertsPage = () => {
                       data-kt-menu="true"
                     >
                       {showDropdown && (
-                        <div className="px-5 py-5">
+                        <div className="px-3 py-3">
                           <div className="mb-5">
                             <div className="d-flex justify-content-end mb-5">
                               <div>
@@ -995,27 +992,13 @@ const AlertsPage = () => {
               <div className="m-0">
                 <a
                   href="#"
-                  className={`btn btn-small btn-flex btn-primary fw-bold fs-14 btn-new ${
+                  className={`btn btn-small fs-14 btn-green ${
                     !isCheckboxSelected && "disabled"
                   }`}
                   data-kt-menu-trigger="click"
                   data-kt-menu-placement="bottom-end"
                   onClick={onActionsClick}
                 >
-                  <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </span>
                   Actions
                 </a>
 
@@ -1025,7 +1008,7 @@ const AlertsPage = () => {
                   id="kt_menu_637dc6f8a1c15"
                 >
                   {showForm && (
-                    <div className="px-5 py-5">
+                    <div className="px-3 py-3">
                       <div className="mb-5">
                         <div className="d-flex justify-content-end mb-5">
                           <div>
@@ -1122,7 +1105,7 @@ const AlertsPage = () => {
                           <div className="d-flex justify-content-end">
                             <button
                               type="submit"
-                              className="btn btn-primary btn-small btn-new"
+                              className="btn btn-small btn-new"
                             >
                               Submit
                             </button>
@@ -1140,7 +1123,7 @@ const AlertsPage = () => {
                         <div className="d-flex justify-content-end">
                           <button
                             type="button"
-                            className="btn btn-primary btn-small btn-new"
+                            className="btn btn-small btn-new"
                             onClick={handleIgnoreSubmit}
                           >
                             Submit
@@ -1151,7 +1134,7 @@ const AlertsPage = () => {
                         <div className="d-flex justify-content-end">
                           <button
                             type="button"
-                            className="btn btn-primary btn-small btn-new"
+                            className="btn btn-small btn-new"
                             onClick={handleGenerateReport}
                           >
                             Download Report
@@ -1168,42 +1151,15 @@ const AlertsPage = () => {
       </div>
       <div className="clearfix" />
       <div className="card pad-10">
-        <div>
-          <div className="d-flex justify-content-end align-items-center pagination-bar">
-            {/* <ReactPaginate
-              previousLabel=<i className="fa fa-chevron-left" />
-              nextLabel=<i className="fa fa-chevron-right" />
-              pageCount={pageCount}
-              marginPagesDisplayed={1}
-              pageRangeDisplayed={8}
-              onPageChange={handlePageClick}
-              containerClassName={"pagination justify-content-end"}
-              pageClassName={"page-item"}
-              pageLinkClassName={"page-link"}
-              previousClassName={"page-item custom-previous"}
-              previousLinkClassName={"page-link custom-previous-link"}
-              nextClassName={"page-item custom-next"}
-              nextLinkClassName={"page-link custom-next-link"}
-              breakClassName={"page-item"}
-              breakLinkClassName={"page-link"}
-              activeClassName={"active"}
+        <div className="float-right text-right ds-reload">
+          <span className="fs-13 fc-gray" onClick={handleRefresh}>
+            Auto refresh every 2 minutes{" "}
+            <i
+              className={`fa fa-refresh link ${isRefreshing ? "rotate" : ""}`}
+              title="Auto refresh every 2 minutes"
             />
-            <div className="col-md-3 d-flex justify-content-end align-items-center">
-              <span className="col-md-4">Count: </span>
-              <select
-                className="form-select form-select-sm col-md-4"
-                value={limit}
-                onChange={handlePageSelect}
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={15}>15</option>
-                <option value={20}>20</option>
-              </select>
-            </div> */}
-          </div>
+          </span>
         </div>
-
         {openEditPage ? (
           <EditAlertsPopUp
             show={openEditPage}
@@ -1773,12 +1729,10 @@ const AlertsPage = () => {
                           </span>
                         </td>
                         <td>
-                          <span className="text-dark d-block mb-1">
-                            {item.sla}
-                          </span>
+                          <span className="text-dark d-block">{item.sla}</span>
                         </td>
                         <td>
-                          <span className="text-dark text-center d-block mb-1">
+                          <span className="text-dark text-center d-block">
                             {item.score === null || item.score === ""
                               ? "0"
                               : item.score}
@@ -1786,7 +1740,7 @@ const AlertsPage = () => {
                         </td>
                         <td>{item.status}</td>
                         <td>
-                          <span className="text-dark d-block mb-1">
+                          <span className="text-dark d-block">
                             <span>
                               {item.detectedtime &&
                                 getCurrentTimeZone(item.detectedtime)}
@@ -1794,7 +1748,12 @@ const AlertsPage = () => {
                           </span>
                         </td>
                         <td className="text-dark fs-8 alert-name">
-                          <span title={item.name}>{item.name}</span>
+                          <span
+                            className="text-dark text-center d-block"
+                            title={item.name}
+                          >
+                            {item.name}
+                          </span>
                         </td>
                         <td className="text-dark fs-8">{item.observableTag}</td>
                         <td className="text-dark fs-8">
@@ -2514,7 +2473,7 @@ const AlertsPage = () => {
                                               data-kt-menu="true"
                                             >
                                               {showDropdown && (
-                                                <div className="px-5 py-5">
+                                                <div className="px-3 py-3">
                                                   <div className="mb-5">
                                                     <div className="d-flex justify-content-end mb-5">
                                                       <div>

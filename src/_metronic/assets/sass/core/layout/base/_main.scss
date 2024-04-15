@@ -459,8 +459,11 @@ body {
   tr{
     &.table-row{
       border-bottom: 1px solid #ddd !important;
-      &:nth-of-type(4n+1),&:nth-of-type(4n+2) {
+      &:nth-of-type(4n+1) {
         background-color: #f4f4f4 !important;
+      }
+      &:nth-of-type(4n+2) {
+        background-color: #fff !important;
       }
     }
   }
@@ -1247,11 +1250,11 @@ form{
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    padding-bottom: 0 !important;
+    padding-bottom: 2px !important;
     width: 220px;
     text-wrap: initial;
     position: relative;
-    top: -5px;
+    top: -2px;
     border: 0;
   }
   .card-body {
@@ -1271,7 +1274,9 @@ form{
     padding: 0;
   }
   .menu-sub{
-    box-shadow: 0px 1px 2px 1px #afc7c5;
+    &.show{
+      box-shadow: 0px 1px 2px 1px #afc7c5;
+    }
   }
   .alert-table{
     min-height: 300px;
@@ -1305,6 +1310,16 @@ form{
   }
 }
 
+.btn-green{
+  background-color: #3cc07e !important;
+  font-weight: normal !important;
+  color: #fff !important;
+  border-radius: 20px;
+  &:hover{
+    background-color: #44b87e !important;
+  }
+}
+
 .btn-new {
   background-color: #008cba !important;
   font-weight: normal !important;
@@ -1328,6 +1343,18 @@ form{
     padding: 0;
     font-size: 12px !important;
     line-height: 31px;
+  }
+}
+
+//Configuration pages
+.config{
+  .alert-table{
+    min-height: 300px;
+  }
+  td{
+    i{
+      cursor: pointer;
+    }
   }
 }
 
@@ -1744,6 +1771,9 @@ form{
 .alert-action {
   select {
     border: 1px solid #aaa !important;
+    &:hover,&:focus{
+      border: 1px solid #aaa !important;
+    }
     option:disabled{
       color: #c9c6c6;
     }
