@@ -16,6 +16,8 @@ const MitigationModal = ({
   const AlertId = data.selectedAlert;
   console.log(data, "data");
   console.log(value, "value");
+  const userID = Number(sessionStorage.getItem("userId"));
+  const modifiedDate = new Date().toISOString();
   const orgId = Number(sessionStorage.getItem("orgId"));
   const [markAsResolved, setMarkAsResolved] = useState(false);
   const [addToBlocklist, setAddToBlocklist] = useState(false);
@@ -53,6 +55,8 @@ const MitigationModal = ({
   const handleSubmit = async () => {
     try {
       const data = {
+        modifiedDate: modifiedDate,
+        modifiedUserId: userID,
         orgID: orgId,
         alertIds: selectedAlert,
         kill: killSwitchChecked,
@@ -69,12 +73,12 @@ const MitigationModal = ({
       };
 
       const responseData = await fetchMitigateActionUrl(data);
-      const { isSuccess } = responseData;
+      const { isSuccess, message } = responseData;
 
       if (isSuccess) {
-        notify("MitigateAction Applied");
+        notify(message);
       } else {
-        notifyFail("MitigateAction not Applied");
+        notifyFail(message);
       }
       handleClose();
     } catch (error) {

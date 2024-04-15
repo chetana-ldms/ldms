@@ -66,10 +66,11 @@ const AddToBlockListModal = ({
 
       if (isSuccess) {
         notify("File added to blocked list");
+        handleClose();
       } else {
         notifyFail("File added to blocked list Failed");
       }
-      handleClose();
+     
     } catch (error) {
       console.error("Error during API call:", error);
     }
