@@ -446,7 +446,7 @@ body {
 //Table CSS
 
 .alert-table {
-  // min-height: 200px;
+  border: 1px solid #ccc;
   background-color: #fff;
   th {
     // background: #0EB0BF !important;
@@ -1348,10 +1348,20 @@ form{
 
 //Configuration pages
 .config{
-  .alert-table{
+  &.card{
     min-height: 300px;
   }
+  tr{
+    border-bottom: 1px solid #ddd !important;
+    &:nth-child(even) {
+      background-color: #f4f4f4 !important;
+    }
+    &:nth-child(odd) {
+      background-color: #fff !important;
+    }
+  }
   td{
+    padding: 10px !important;
     i{
       cursor: pointer;
     }

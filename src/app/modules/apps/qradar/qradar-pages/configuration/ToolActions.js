@@ -57,7 +57,7 @@ const ToolActions = () => {
   }, []);
 
   return (
-    <div className="card pad-10">
+    <div className="config card pad-10">
       <ToastContainer />
       <div className="card-header no-pad">
         <h3 className="card-title align-items-start flex-column">
@@ -103,26 +103,25 @@ const ToolActions = () => {
 
                   {globalAdminRole === 1 || clientAdminRole === 1 ? (
                     <td>
-                      <button className="btn btn-new btn-circle">
+                      <span>
                         <Link
                           className="text-white"
                           to={`/qradar/tool-actions/update/${item.toolActionID}`}
                           title="Edit"
                         >
-                          <i className="fa fa-pencil cursor white" />
+                          <i className="fa fa-pencil cursor link" />
                         </Link>
-                      </button>
+                      </span>
 
-                      <button
-                        className="btn btn-danger btn-circle ms-5"
-                        style={{ fontSize: "14px" }}
+                      <span
+                        className="ms-8"
                         onClick={() => {
                           handleDelete(item);
                         }}
                         title="Delete"
                       >
-                        <i className="fa fa-trash cursor white" />
-                      </button>
+                        <i className="fa fa-trash cursor red" />
+                      </span>
                     </td>
                   ) : (
                     <></>

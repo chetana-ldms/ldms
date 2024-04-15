@@ -66,7 +66,7 @@ const RoleData = () => {
     }
   };
   return (
-    <div className="card pad-10">
+    <div className="config card pad-10">
       <ToastContainer />
       <div className="card-header no-pad">
         <h3 className="card-title align-items-start flex-column">
@@ -109,25 +109,25 @@ const RoleData = () => {
                   <td>{item.roleName}</td>
                   {globalAdminRole === 1 || clientAdminRole === 1 ? (
                     <td>
-                      <button className="btn btn-new btn-circle">
+                      <span>
                         <Link
                           className="text-white"
                           to={`/qradar/roles-data/update/${item.roleID}`}
                           title="Edit"
                         >
-                          <i className="fa fa-pencil white pointer fs-15" />
+                          <i className="fa fa-pencil link pointer fs-15" />
                         </Link>
-                      </button>
+                      </span>
 
-                      <button
-                        className="btn btn-danger btn-circle ms-5"
+                      <span
+                        className="ms-8"
                         style={{ fontSize: "14px" }}
                         onClick={() => {
                           handleDelete(item);
                         }}
                       >
-                        <i className="fa fa-trash white pointer fs-15" />
-                      </button>
+                        <i className="fa fa-trash red pointer fs-15" />
+                      </span>
                     </td>
                   ) : (
                     <></>

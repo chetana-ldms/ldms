@@ -54,7 +54,7 @@ const RulesEngine = () => {
   }, []);
 
   return (
-    <div className="card pad-10">
+    <div className="config card pad-10">
       <ToastContainer />
       <div className="card-header no-pad">
         <h3 className="card-title align-items-start flex-column">
@@ -98,26 +98,25 @@ const RulesEngine = () => {
 
                   {globalAdminRole === 1 || clientAdminRole === 1 ? (
                     <td>
-                      <button className="btn btn-new btn-circle">
+                      <span className="btn btn-new btn-circle">
                         <Link
                           className="text-white"
                           to={`/qradar/rules-engine/update/${item.ruleID}`}
                           title="Edit"
                         >
-                          <i className="fa fa-pencil cursor white" />
+                          <i className="fa fa-pencil cursor link" />
                         </Link>
-                      </button>
+                      </span>
 
-                      <button
-                        className="btn btn-circle btn-danger ms-5"
-                        style={{ fontSize: "14px" }}
+                      <span
+                        className="ms-8"
                         onClick={() => {
                           handleDelete(item);
                         }}
                         title="Delete"
                       >
-                        <i className="fa fa-trash cursor white" />
-                      </button>
+                        <i className="fa fa-trash cursor red" />
+                      </span>
                     </td>
                   ) : (
                     <></>

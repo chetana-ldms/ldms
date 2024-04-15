@@ -78,7 +78,7 @@ const UserData = () => {
   };
 
   return (
-    <div className="card pad-10">
+    <div className="config card pad-10">
       <ToastContainer />
 
       <div className="header-filter row">
@@ -168,19 +168,19 @@ const UserData = () => {
                             to={`/qradar/users-data/update/${item.userID}`}
                             title="Update"
                           >
-                            <button className="btn btn-new btn-circle">
-                              <i className="fa fa-pencil white fs-12" />
-                            </button>
+                            <span>
+                              <i className="fa fa-pencil link" />
+                            </span>
                           </Link>
-                          <button
-                            className="btn btn-danger btn-circle ms-5"
+                          <span
+                            className="ms-8"
                             onClick={() => {
                               handleDelete(item);
                             }}
                             title="Delete"
                           >
-                            <i className="fa fa-trash fs-12" />
-                          </button>
+                            <i className="fa fa-trash red" />
+                          </span>
                         </td>
                       ) : (
                         <></>

@@ -79,7 +79,7 @@ const Organizations = () => {
           </div>
         </div>
       </div>
-      <div className="card-body pad-10">
+      <div className="card-body no-pad">
         <table className="table align-middle gs-0 gy-4 dash-table alert-table">
           <thead>
             <tr className="fw-bold text-muted bg-blue">
@@ -109,18 +109,18 @@ const Organizations = () => {
 
                   {globalAdminRole === 1 || clientAdminRole === 1 ? (
                     <td>
-                      <span className="ms-5">
+                      <span>
                         <Link
                           className="text-white"
                           to={`/qradar/organizations/update/${item.orgID}`}
                           title="Edit"
                         >
-                          <i className="fa fa-pencil cursor green" />
+                          <i className="fa fa-pencil cursor link" />
                         </Link>
                       </span>
 
                       <span
-                        className="ms-5"
+                        className="ms-8"
                         onClick={() => {
                           handleDelete(item);
                         }}
