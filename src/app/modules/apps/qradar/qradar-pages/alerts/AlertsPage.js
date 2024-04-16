@@ -746,7 +746,6 @@ const AlertsPage = () => {
 
           <div className="card-toolbar">
             <div className="d-flex align-items-center gap-2 gap-lg-3">
-              
               <div className="m-0">
                 <a
                   href="#"
@@ -1757,10 +1756,7 @@ const AlertsPage = () => {
                           </span>
                         </td>
                         <td className="text-dark fs-8 alert-name">
-                          <span
-                            className="text-dark text-center d-block"
-                            title={item.name}
-                          >
+                          <span className="text-dark d-block" title={item.name}>
                             {item.name}
                           </span>
                         </td>
