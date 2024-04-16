@@ -16,6 +16,7 @@ function Exclusions() {
   const orgId = Number(sessionStorage.getItem('orgId'))
   const [loading, setLoading] = useState(false)
   const [exlusions, setExlusions] = useState([])
+  console.log(exlusions, "exlusions111")
   const [showDropdown, setShowDropdown] = useState(false)
   const [showMoreActionsModal, setShowMoreActionsModal] = useState(false)
   const [addToBlockListModal, setAddToBlockListModal] = useState(false)
