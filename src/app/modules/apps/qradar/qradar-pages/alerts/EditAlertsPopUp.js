@@ -153,7 +153,7 @@ const EditAlertsPopUp = ({
         onClose();
         onTableRefresh();
       } else {
-        notifyFail("Alert data not Updated");
+        notifyFail("Alert data not updated");
       }
     } catch (error) {
       handleError(error);

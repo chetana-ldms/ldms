@@ -10,7 +10,7 @@ const MitigationModal = ({
   handleAction,
   selectedValue,
   selectedAlert,
-  refreshParent
+  refreshParent,
 }) => {
   const data = { selectedValue, selectedAlert };
   const value = data.selectedValue;
@@ -101,8 +101,8 @@ const MitigationModal = ({
         </button>
       </Modal.Header>
       <Modal.Body>
-        <div>
-          <label>Select Action:</label>
+        <div className="header-filter">
+          <label className="semi-bold mb-5 fs-14">Select Action:</label>
           <div className="form-check mb-2">
             <input
               className="form-check-input"
@@ -111,7 +111,7 @@ const MitigationModal = ({
               checked={killSwitchChecked}
               onChange={() => handleActionCheckboxChange("killSwitch")}
             />
-            <label className="form-check-label" htmlFor="killSwitch">
+            <label className="form-check-label black" htmlFor="killSwitch">
               Kill
             </label>
           </div>
@@ -123,7 +123,10 @@ const MitigationModal = ({
               checked={quarantineSwitchChecked}
               onChange={() => handleActionCheckboxChange("quarantineSwitch")}
             />
-            <label className="form-check-label" htmlFor="quarantineSwitch">
+            <label
+              className="form-check-label black"
+              htmlFor="quarantineSwitch"
+            >
               Quarantine
             </label>
           </div>
@@ -135,7 +138,7 @@ const MitigationModal = ({
               checked={remediateSwitchChecked}
               onChange={() => handleActionCheckboxChange("remediateSwitch")}
             />
-            <label className="form-check-label" htmlFor="remediateSwitch">
+            <label className="form-check-label black" htmlFor="remediateSwitch">
               Remediate
             </label>
           </div>
@@ -147,12 +150,12 @@ const MitigationModal = ({
               checked={rollbackSwitchChecked}
               onChange={() => handleActionCheckboxChange("rollbackSwitch")}
             />
-            <label className="form-check-label" htmlFor="rollbackSwitch">
+            <label className="form-check-label black" htmlFor="rollbackSwitch">
               RollBack
             </label>
           </div>
 
-          <hr className="my-4" />
+          {/* <hr className="my-4" /> */}
           <div className="form-check mb-3">
             <input
               className="form-check-input"
@@ -160,7 +163,7 @@ const MitigationModal = ({
               id="checkbox1"
               onChange={() => setMarkAsResolved(!markAsResolved)}
             />
-            <label className="form-check-label" htmlFor="checkbox1">
+            <label className="form-check-label black" htmlFor="checkbox1">
               Mark as Resolved
             </label>
           </div>
@@ -171,22 +174,22 @@ const MitigationModal = ({
               id="checkbox2"
               onChange={() => setAddToBlocklist(!addToBlocklist)}
             />
-            <label className="form-check-label" htmlFor="checkbox2">
+            <label className="form-check-label black" htmlFor="checkbox2">
               Add to Blocklist
             </label>
           </div>
           {addToBlocklist && (
             <div className="m-0">
-              <label htmlFor="scopeDropdown" className="form-label">
+              <label htmlFor="scopeDropdown" className="form-label black">
                 Scope:
               </label>
-              <button
+              {/* <button
                 className="btn btn-outline-primary rounded-pill position-relative"
                 style={{ backgroundColor: "white", color: "#007BFF" }}
                 onClick={() => setGroupDropdownVisible(!groupDropdownVisible)}
-              >
-                Group{" "}
-                <i
+              > */}
+              {/* Group{" "} */}
+              {/* <i
                   className="bi bi-caret-down-fill"
                   style={{
                     position: "absolute",
@@ -195,11 +198,11 @@ const MitigationModal = ({
                     transform: "translateY(-50%)",
                   }}
                 ></i>
-              </button>
-
+              </button> */}
+              <label className="d-block">Group </label>
               {groupDropdownVisible && (
                 <select
-                  className="form-select"
+                  className="form-select mb-5"
                   id="scopeDropdown"
                   type="text"
                   value={scopeValue}
@@ -227,13 +230,13 @@ const MitigationModal = ({
             </div>
           )}
 
-          <p className="mb-3">
+          <p className="mb-3 mt-3">
             <i className="bi bi-info-circle"></i> This action will apply to all
             selected threats.
           </p>
         </div>
-        <hr className="my-4" />
-        <p>Analyst verdict</p>
+        {/* <hr className="my-4" /> */}
+        <p className="semi-bold fs-14">Analyst verdict:</p>
         {addToBlocklist && (
           <div className="form-check form-check-inline">
             <input
@@ -243,7 +246,7 @@ const MitigationModal = ({
               checked={isChecked1}
               onChange={() => handleCheckboxChange("checkboxButton1")}
             />
-            <label className="form-check-label" htmlFor="checkboxButton1">
+            <label className="form-check-label black" htmlFor="checkboxButton1">
               True Positive
             </label>
           </div>
@@ -258,7 +261,10 @@ const MitigationModal = ({
                 checked={isChecked1}
                 onChange={() => handleCheckboxChange("checkboxButton1")}
               />
-              <label className="form-check-label" htmlFor="checkboxButton1">
+              <label
+                className="form-check-label black"
+                htmlFor="checkboxButton1"
+              >
                 True Positive
               </label>
             </div>
@@ -270,7 +276,10 @@ const MitigationModal = ({
                 checked={isChecked2}
                 onChange={() => handleCheckboxChange("checkboxButton2")}
               />
-              <label className="form-check-label" htmlFor="checkboxButton2">
+              <label
+                className="form-check-label black"
+                htmlFor="checkboxButton2"
+              >
                 Suspicious
               </label>
             </div>
@@ -278,10 +287,14 @@ const MitigationModal = ({
         )}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
+        <Button variant="secondary" className="btn-small" onClick={handleClose}>
           Close
         </Button>
-        <Button variant="primary" onClick={handleSubmit}>
+        <Button
+          variant="primary"
+          className="btn-new btn-small"
+          onClick={handleSubmit}
+        >
           Apply
         </Button>
       </Modal.Footer>

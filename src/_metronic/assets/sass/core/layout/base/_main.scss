@@ -873,6 +873,9 @@ form{
     &.form-select-sm{
       padding: 4px 10px !important;
     }
+    &:disabled{
+      background-color: #e4e6ef !important;
+    }
   }
 }
 

@@ -12,7 +12,7 @@ const AddToExclusionsModal = ({
   handleAction,
   selectedValue,
   selectedAlert,
-  refreshParent
+  refreshParent,
 }) => {
   const data = { selectedValue, selectedAlert };
   const value = data.selectedValue;
@@ -80,7 +80,7 @@ const AddToExclusionsModal = ({
       <Modal.Header closeButton>
         <Modal.Title>
           Add To Exclusions
-          <div className="mt-2 fs-12 normal">Exclusions Type: Hash</div>
+          <div className="fs-12 normal">Exclusions Type: Hash</div>
         </Modal.Title>
         <button
           type="button"
@@ -90,7 +90,7 @@ const AddToExclusionsModal = ({
           <i className="fa fa-close" />
         </button>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="header-filter">
         <div className="row">
           <div className="col-md-6">
             <label htmlFor="osInput" className="form-label">

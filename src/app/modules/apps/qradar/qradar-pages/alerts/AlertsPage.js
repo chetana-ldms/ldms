@@ -412,7 +412,7 @@ const AlertsPage = () => {
           }, 2000);
         } else {
           setShowForm(false);
-          notifyFail("Incident Creation Failed");
+          notifyFail("Failed to Create Incident");
         }
       });
     }
@@ -514,7 +514,7 @@ const AlertsPage = () => {
   const handleGenerateReport = () => {
     const tableData = [selectCheckBox];
     generatePDFFromTable(tableData);
-    notify("Generated Report Successfully");
+    notify("Report generated successfully");
     setGenerateReport(false);
     setShowForm(false);
   };
@@ -575,9 +575,9 @@ const AlertsPage = () => {
         const { isSuccess } = responseData;
         if (isSuccess) {
           qradaralerts();
-          notify("Add to network");
+          notify("Network connected");
         } else {
-          notifyFail("Connect To Network Failed");
+          notifyFail("Failed to connect to network");
         }
       } catch (error) {
         console.error(error);
@@ -593,9 +593,9 @@ const AlertsPage = () => {
         const { isSuccess } = responseData;
         if (isSuccess) {
           qradaralerts();
-          notify("Disconnect from network");
+          notify("Disconnected from network");
         } else {
-          notifyFail("Disconnect from network Failed");
+          notifyFail("Failed to disconnect from network");
         }
       } catch (error) {
         console.error(error);
@@ -1037,7 +1037,7 @@ const AlertsPage = () => {
                             </div>
                           </div>
                         </div>
-                        <div>
+                        <div className="header-filter">
                           <select
                             onChange={createIncidentSubmit}
                             className="form-select form-select-solid"

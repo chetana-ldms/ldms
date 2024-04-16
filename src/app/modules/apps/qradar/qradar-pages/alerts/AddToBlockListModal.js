@@ -12,7 +12,7 @@ const AddToBlockListModal = ({
   handleAction,
   selectedValue,
   selectedAlert,
-  refreshParent
+  refreshParent,
 }) => {
   const data = { selectedValue, selectedAlert };
   const value = data.selectedValue;
@@ -76,7 +76,6 @@ const AddToBlockListModal = ({
       } else {
         notifyFail(message);
       }
-     
     } catch (error) {
       console.error("Error during API call:", error);
     }
@@ -104,7 +103,7 @@ const AddToBlockListModal = ({
         </Modal.Title>
         <br />
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="header-filter">
         <div className="row">
           <div className="col-md-6">
             <label htmlFor="osInput" className="form-label">
