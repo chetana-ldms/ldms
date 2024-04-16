@@ -68,7 +68,7 @@ const AddLdpTools = () => {
   }, []);
 
   return (
-    <div className="card">
+    <div className="config card">
       <div className="card-header bg-heading mb-5">
         <h3 className="card-title">
           <span className="card-label white fs-3 mb-1">
@@ -136,7 +136,7 @@ const AddLdpTools = () => {
             </div>
           </div>
         </div>
-        <div className="card-footer d-flex justify-content-end py-6 px-9">
+        <div className="card-footer d-flex justify-content-end pad-10">
           <button
             type="submit"
             onClick={handleSubmit}

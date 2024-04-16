@@ -142,7 +142,7 @@ const UpdateRule = () => {
   };
 
   return (
-    <div className="card">
+    <div className="config card">
       {loading && <UsersListLoading />}
       <div className="card-header no-pad bg-heading">
         <h3 className="card-title align-items-start flex-column">
@@ -341,7 +341,7 @@ const UpdateRule = () => {
           </div>
         </div>
       </div>
-      <div className="card-footer d-flex justify-content-end py-6 px-9">
+      <div className="card-footer d-flex justify-content-end pad-10">
         <button
           type="submit"
           onClick={handleSubmit}

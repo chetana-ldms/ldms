@@ -50,7 +50,7 @@ const AddMasterData = () => {
   };
 
   return (
-    <div className="card">
+    <div className="config card">
       <div className="card-header bg-header">
         <h3 className="card-title align-items-start flex-column">
           <span className="white">Configure Master Data</span>

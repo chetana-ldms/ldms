@@ -64,7 +64,9 @@ const ToolActions = () => {
   const currentItems = toolActions
     ? toolActions
         .filter((item) =>
-          item.toolTypeActionName.toLowerCase().includes(filterValue.toLowerCase())
+          item.toolTypeActionName
+            .toLowerCase()
+            .includes(filterValue.toLowerCase())
         )
         .slice(indexOfFirstItem, indexOfLastItem)
     : null;
@@ -102,7 +104,7 @@ const ToolActions = () => {
           </div>
         </div>
       </div>
-      <div className="row mb-5">
+      <div className="row mb-5 mt-2">
         <div className="col-lg-12 header-filter">
           <input
             type="text"

@@ -104,7 +104,7 @@ const ToolTypeActions = () => {
           </div>
         </div>
       </div>
-      <div className="row mb-5">
+      <div className="row mb-5 mt-2">
         <div className="col-lg-12 header-filter">
           <input
             type="text"

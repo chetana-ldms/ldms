@@ -71,7 +71,7 @@ const UpdateRoleData = () => {
   };
 
   return (
-    <div className="card">
+    <div className="config card">
       <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">
           <span className="white">Update User Role</span>
@@ -111,7 +111,7 @@ const UpdateRoleData = () => {
             </div>
           </div>
         </div>
-        <div className="card-footer d-flex justify-content-end py-6 px-9">
+        <div className="card-footer d-flex justify-content-end pad-10">
           <button
             type="submit"
             onClick={handleSubmit}

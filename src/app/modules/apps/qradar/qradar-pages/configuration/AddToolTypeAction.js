@@ -66,7 +66,7 @@ const AddToolTypeAction = () => {
   };
 
   return (
-    <div className="card">
+    <div className="config card">
       {loading && <UsersListLoading />}
       <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">

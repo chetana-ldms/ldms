@@ -103,7 +103,7 @@ const AddUserData = () => {
   }, []);
 
   return (
-    <div className="card">
+    <div className="config card">
       {loading && <UsersListLoading />}
       <div className="card-header bg-heading mb-5">
         <h3 className="card-title">
@@ -230,7 +230,7 @@ const AddUserData = () => {
           </div>
         </div>
 
-        <div className="card-footer text-right no-pad">
+        <div className="card-footer text-right pad-10">
           <button
             type="submit"
             onClick={handleSubmit}

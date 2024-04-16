@@ -80,7 +80,7 @@ const UpdateLdpTools = () => {
   }, [id, toolName]);
 
   return (
-    <div className="card">
+    <div className="config card">
       <div className="card-header bg-header mb-5">
         <h3 className="card-title">
           <span className="card-label fs-3 mb-1 uppercase white">
@@ -161,7 +161,7 @@ const UpdateLdpTools = () => {
             </div>
           </div>
         </div>
-        <div className="card-footer d-flex justify-content-end py-6 px-9">
+        <div className="card-footer d-flex justify-content-end pad-10">
           <button
             type="submit"
             onClick={handleSubmit}

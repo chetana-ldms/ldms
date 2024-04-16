@@ -1247,6 +1247,11 @@ form{
 
 //Alert Page
 .alert-page {
+  .export-report{
+    button{
+      padding: 5px !important;
+    }
+  }
   table {
     td {
       font-size: 12px !important;
@@ -1322,7 +1327,7 @@ form{
   background-color: #3cc07e !important;
   font-weight: normal !important;
   color: #fff !important;
-  border-radius: 20px;
+  border-radius: 15px;
   &:hover{
     background-color: #44b87e !important;
   }
@@ -1332,7 +1337,7 @@ form{
   background-color: #008cba !important;
   font-weight: normal !important;
   color: #fff !important;
-  border-radius: 10px;
+  border-radius: 15px;
   &:hover{
     background-color: #076280 !important;
   }
@@ -1372,6 +1377,10 @@ form{
     padding: 10px !important;
     i{
       cursor: pointer;
+      transition: transform 0.5s ease;
+      &:hover{
+        transform: scale(1.3);
+      }
     }
   }
 }

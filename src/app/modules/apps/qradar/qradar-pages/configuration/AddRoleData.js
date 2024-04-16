@@ -43,7 +43,7 @@ const AddRoleData = () => {
   };
 
   return (
-    <div className="card">
+    <div className="config card">
       <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">
           <span className="white">Add User Role </span>

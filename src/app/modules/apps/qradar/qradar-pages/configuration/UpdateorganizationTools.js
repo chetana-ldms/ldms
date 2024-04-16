@@ -489,7 +489,7 @@ const UpdateOrganizationTools = () => {
                 </div>
               </div>
             </div>
-            <div className="card-footer d-flex justify-content-end py-6 px-9">
+            <div className="card-footer d-flex justify-content-end pad-10">
               <button
                 type="submit"
                 onClick={(e) => handleSubmit(e, toolTypeAction)}
@@ -508,7 +508,7 @@ const UpdateOrganizationTools = () => {
                 )}
               </button>
             </div>
-            
+
             {tableData.length > 0 && (
               <div className="card-body border-top pad-10">
                 <h4>List of Tool Actions</h4>

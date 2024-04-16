@@ -5,7 +5,6 @@ import { UsersListPagination } from "../components/pagination/UsersListPaginatio
 import { KTCardBody } from "../../../../../../_metronic/helpers";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Button, Dropdown, FloatingLabel, Form, Modal } from "react-bootstrap";
 import { useFormik } from "formik";
 import EditAlertsPopUp from "./EditAlertsPopUp";
 import { notify, notifyFail } from "../components/notification/Notification";
@@ -33,13 +32,21 @@ import { fetchCreateIncident } from "../../../../../api/IncidentsApi";
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import "./Alerts.css";
 import { useErrorBoundary } from "react-error-boundary";
-import jsPDF from "jspdf";
 import "jspdf-autotable";
 import AddToBlockListModal from "./AddToBlockListModal";
 import AddToExclusionsModal from "./AddToExclusionsModal";
 import AddANoteModal from "./AddANoteModal";
+import jsPDF from "jspdf";
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Form,
+} from "reactstrap";
 
 const AlertsPage = () => {
+  const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
   const handleError = useErrorBoundary();
   const [inputValue, setInputValue] = useState("");
   const [selectedAlert, setselectedAlert] = useState([]);
@@ -728,6 +735,82 @@ const AlertsPage = () => {
       console.error(error);
     }
   };
+
+  // Function to export data to CSV
+  const exportToExcel = () => {
+    // Add the heading
+    let csvContent = "Alerts Report\n";
+
+    // Convert alertData to CSV format
+    csvContent +=
+      "Severity,SLA,Score,Status,Detected time,Name,Observables tags,Owner,Source\n" +
+      alertData
+        .map(
+          (item) =>
+            `${item.severityName},${item.sla},${
+              item.score === null ? "0" : item.score
+            },${item.status},${item.detectedtime},${item.name},${
+              item.observableTag
+            },${item.ownerusername},${item.source}`
+        )
+        .join("\n");
+
+    // Create a Blob with the CSV data
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+    // Create a temporary anchor element
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "alert_report.csv");
+
+    // Append the anchor element to the body
+    document.body.appendChild(link);
+
+    // Trigger the click event to initiate download
+    link.click();
+
+    // Clean up
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Function to export data to PDF
+  const exportToPDF = () => {
+    // Create a new jsPDF instance
+    const doc = new jsPDF();
+    doc.text("Alerts Report", 10, 10); // Add heading to PDF
+    doc.autoTable({
+      head: [
+        [
+          "Severity",
+          "SLA",
+          "Score",
+          "Status",
+          "Detected time",
+          "Name",
+          "Observables tags",
+          "Owner",
+          "Source",
+        ],
+      ],
+      body: alertData.map((item) => [
+        item.severityName,
+        item.sla,
+        item.score === null ? "0" : item.score,
+        item.status,
+        item.detectedtime,
+        item.name,
+        item.observableTag,
+        item.ownerusername,
+        item.source,
+      ]),
+    });
+
+    // Save the PDF
+    doc.save("alert_report.pdf");
+  };
+
   return (
     <KTCardBody className="alert-page">
       <ToastContainer />
@@ -1059,7 +1142,7 @@ const AlertsPage = () => {
                             </option>
                             <option value="2">Escalate</option>
                             <option value="3">Irrelevant / Ignore</option>
-                            <option value="4">Generate Report</option>
+                            {/* <option value="4">Generate Report</option> */}
                           </select>
                         </div>
                       </div>
@@ -1141,7 +1224,7 @@ const AlertsPage = () => {
                           </button>
                         </div>
                       )}
-                      {actionsValue === "4" && generateReport && (
+                      {/* {actionsValue === "4" && generateReport && (
                         <div className="d-flex justify-content-end">
                           <button
                             type="button"
@@ -1151,9 +1234,31 @@ const AlertsPage = () => {
                             Download Report
                           </button>
                         </div>
-                      )}
+                      )} */}
                     </div>
                   )}
+                </div>
+              </div>
+              <div className="m-0">
+                <div className="export-report">
+                  <Dropdown
+                    isOpen={dropdownOpen}
+                    toggle={() => setDropdownOpen(!dropdownOpen)}
+                  >
+                    <DropdownToggle caret>
+                      Export <i className="fa fa-file-export link mg-left-10" />
+                    </DropdownToggle>
+                    <DropdownMenu>
+                      <DropdownItem onClick={exportToExcel}>
+                        Export to CSV{" "}
+                        <i className="fa fa-file-excel link float-right" />
+                      </DropdownItem>
+                      <DropdownItem onClick={exportToPDF}>
+                        Export to PDF{" "}
+                        <i className="fa fa-file-pdf red float-right" />
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
                 </div>
               </div>
             </div>
@@ -2691,6 +2796,7 @@ const AlertsPage = () => {
           </div>
         </div>
       </div>
+
       <UsersListPagination />
     </KTCardBody>
   );

@@ -186,7 +186,7 @@ const UpdateToolAction = () => {
   };
 
   return (
-    <div className="card">
+    <div className="config card">
       {loading && <UsersListLoading />}
       <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">
@@ -314,7 +314,7 @@ const UpdateToolAction = () => {
             className="btn btn-new btn-small"
             disabled={loading}
           >
-            {!loading && "Save Changes"}
+            {!loading && "Update Changes"}
             {loading && (
               <span className="indicator-progress" style={{ display: "block" }}>
                 Please wait...{" "}
