@@ -129,9 +129,9 @@ return item.name
     setSiteName("");
     setGroupName("");
     sessionStorage.setItem('siteName', "Default site");
-    sessionStorage.setItem('siteId', "1");
+    sessionStorage.setItem('siteId', "1924063617241689625");
     sessionStorage.setItem('groupName', "Default Group");
-    sessionStorage.setItem('groupId', "1");
+    sessionStorage.setItem('groupId', "1924063617266855450");
   };
   
   const handleAccordionClick = (name: string, id: string) => {
@@ -140,7 +140,7 @@ return item.name
     setGroupName("");
     sessionStorage.setItem('siteId', id);
     sessionStorage.setItem('groupName', "Default Group");
-    sessionStorage.setItem('groupId', "1");
+    sessionStorage.setItem('groupId', "1924063617266855450");
     
   };
   const handleGroupClick = (name: string, id: string) => {

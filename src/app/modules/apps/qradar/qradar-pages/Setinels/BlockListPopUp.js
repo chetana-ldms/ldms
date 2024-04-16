@@ -1,23 +1,35 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { notify, notifyFail } from "../components/notification/Notification";
-import {
-  fetchAddToblockListUrl,
-  fetchSentinelOneAlert,
-} from "../../../../../api/AlertsApi";
+import { fetchAddToblockListUrl } from "../../../../../api/SentinalApi";
 
-const BlockListPopUp = ({ show, onClose }) => {
+const BlockListPopUp = ({ show, onClose, refreshParent }) => {
   const osDropdownRef = useRef(null);
   const descriptionTextareaRef = useRef(null);
   const sha1InputRef = useRef(null);
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const createdDate = new Date().toISOString();
+  const createdUserId = Number(sessionStorage.getItem('userId'));
+
   const handleSubmit = async () => {
     try {
+      // Check if OS and SHA1 fields are filled out
+      if (!osDropdownRef.current.value || !sha1InputRef.current.value) {
+        notifyFail("Please fill out all mandatory fields.");
+        return;
+      }
+
       const data = {
         orgID: orgId,
-        os: osDropdownRef.current.value,
-        sha1: sha1InputRef.current.value,
+        osType: osDropdownRef.current.value,
+        value: sha1InputRef.current.value,
         description: descriptionTextareaRef.current.value,
+        source: "",
+        createdDate: createdDate,
+        createdUserId: createdUserId,
+        groupId: "1924063617266855450",
+        siteId: "1924063617241689625",
+        accountId: "1924063616109227261"
       };
       const responseData = await fetchAddToblockListUrl(data);
       const { isSuccess, message } = responseData;
@@ -25,6 +37,7 @@ const BlockListPopUp = ({ show, onClose }) => {
       if (isSuccess) {
         notify(message);
         onClose();
+        refreshParent();
       } else {
         notifyFail(message);
       }
@@ -32,6 +45,7 @@ const BlockListPopUp = ({ show, onClose }) => {
       console.error("Error during API call:", error);
     }
   };
+
   return (
     <Modal
       show={show}
@@ -60,10 +74,9 @@ const BlockListPopUp = ({ show, onClose }) => {
         <div className="row">
           <div className="col-md-6">
             <label htmlFor="osInput" className="form-label">
-              OS
+              OS*
             </label>
-
-            <select className="form-select" id="osInput" ref={osDropdownRef}>
+            <select className="form-select" id="osInput" ref={osDropdownRef} required>
               <option value="">Select</option>
               <option value="windows">windows</option>
               <option value="Mac">Mac</option>
@@ -75,17 +88,13 @@ const BlockListPopUp = ({ show, onClose }) => {
           <div className="col-md-6">
             <div>
               <label className="form-label" htmlFor="sha1Input">
-                SHA1:
+                SHA1*
               </label>
-              <input type="text" className="form-control" ref={sha1InputRef} />
+              <input type="text" className="form-control" ref={sha1InputRef} required />
             </div>
           </div>
           <div className="col-md-3  text-primary d-flex align-items-end justify-content-end pb-3 ">
-            <i className="bi bi-search text-primary mr-2"></i> Threat |
-          </div>
-          <div className="col-md-3  text-primary d-flex align-items-end pb-3 justify-content-start">
-            {" "}
-            <i className="bi bi-search text-primary mr-2"></i>Deep Visibility
+            <i className="bi bi-search text-primary mr-2"></i> Threat
           </div>
         </div>
         <div className="mt-5">
@@ -109,4 +118,5 @@ const BlockListPopUp = ({ show, onClose }) => {
     </Modal>
   );
 };
+
 export default BlockListPopUp;
