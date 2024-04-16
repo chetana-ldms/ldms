@@ -16,7 +16,7 @@ function Exclusions() {
   const orgId = Number(sessionStorage.getItem('orgId'))
   const [loading, setLoading] = useState(false)
   const [exlusions, setExlusions] = useState([])
-  console.log(exlusions, "exlusions111")
+  console.log(exlusions, 'exlusions111')
   const [showDropdown, setShowDropdown] = useState(false)
   const [showMoreActionsModal, setShowMoreActionsModal] = useState(false)
   const [addToBlockListModal, setAddToBlockListModal] = useState(false)
@@ -33,9 +33,9 @@ function Exclusions() {
       setLoading(true)
       const response = await fetchExclusionListUrl(data)
       if (response !== null) {
-        setExlusions(response);
+        setExlusions(response)
       } else {
-        setExlusions([]);
+        setExlusions([])
       }
     } catch (error) {
       console.error(error)
@@ -62,11 +62,7 @@ function Exclusions() {
   }
 
   const handleThreatActions = () => {
-    setShowDropdown(true)
-    console.log(showDropdown, 'showDropdown')
-  }
-  const handleShowDropdown = () => {
-    setShowDropdown(false)
+    setDropdownOpenExclusion(!dropdownOpenExclusion)
   }
   const handleCloseMoreActionsModal = () => {
     setShowMoreActionsModal(false)
@@ -82,19 +78,10 @@ function Exclusions() {
   const handleActionAddToBlockList = () => {
     setAddToBlockListModal(false)
   }
-  const handleDropdownSelect = async (event) => {
-    const value = event.target.value
-    setSelectedValue(value)
-    if (value === 'CreateExclusion') {
-      setShowMoreActionsModal(true)
-    } else if (value === 'AddFromExclusionsCatalog') {
-      setAddToBlockListModal(true)
-    } else {
-      setShowDropdown(false)
-    }
-  }
 
-  const [dropdownOpen, setDropdownOpen] = useState(false) // State to manage dropdown toggle
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [dropdownOpenExclusion, setDropdownOpenExclusion] = useState(false)
+
   // Function to extract table data
   const extractTableData = (items) => {
     return items.map((item) => ({
@@ -183,65 +170,26 @@ function Exclusions() {
           <div className='row'>
             <div className='col-lg-6 d-flex'>
               <div className='mb-3'>
-                <a
-                  href='#'
-                  className='btn btn-small btn-border '
-                  data-kt-menu-trigger='click'
-                  data-kt-menu-placement='bottom-end'
-                  onClick={handleThreatActions}
-                >
-                  New Exclusion
-                  <i className='fa fa-chevron-down fs-12 mg-left-5' />
-                </a>
-                <div
-                  className='menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action'
-                  data-kt-menu='true'
-                >
-                  {showDropdown && (
-                    <div className='px-5 py-5'>
-                      <div className='mb-5'>
-                        <div className='d-flex justify-content-end mb-5'>
-                          <div>
-                            <div
-                              className='close fs-20 text-muted pointer'
-                              aria-label='Close'
-                              onClick={handleShowDropdown}
-                            >
-                              <span
-                                aria-hidden='true'
-                                style={{
-                                  color: 'inherit',
-                                  textShadow: 'none',
-                                }}
-                              >
-                                &times;
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <select
-                          onChange={handleDropdownSelect}
-                          className='form-select form-select-solid'
-                          data-kt-select2='true'
-                          data-control='select2'
-                          data-placeholder='Select option'
-                          data-allow-clear='true'
-                        >
-                          <option value='' className='p-2'>
-                            Select
-                          </option>
-                          <option value='CreateExclusion' className='mb-2'>
-                            Create Exclusion
-                          </option>
-                          <option value='AddFromExclusionsCatalog' className='mb-2'>
-                            Add From Exclusions Catalog
-                          </option>
-                        </select>
-                      </div>
+                <Dropdown isOpen={dropdownOpenExclusion} toggle={handleThreatActions}>
+                  <DropdownToggle className='no-pad'>
+                    <div className='btn btn-new btn-small'>
+                      New Exclusion 
                     </div>
-                  )}
-                </div>
-                {showMoreActionsModal && (
+                  </DropdownToggle>
+                  <DropdownMenu className='w-auto'>
+                    <DropdownItem
+                      onClick={() => setShowMoreActionsModal(true)}
+                      className='border-btm'
+                    >
+                      Create Exclusion
+                    </DropdownItem>
+                    <DropdownItem onClick={() => setAddToBlockListModal(true)}>
+                    Add From Exclusions Catalog
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
+              {showMoreActionsModal && (
                   <CreateExclusionModal
                     show={showMoreActionsModal}
                     handleClose={handleCloseMoreActionsModal}
@@ -257,8 +205,7 @@ function Exclusions() {
                     selectedValue={selectedValue}
                   />
                 )}
-                <button className='btn btn-small btn-new ms-2 '>Delete selection</button>
-              </div>
+              <button className='btn btn-small btn-new ms-2 '>Delete selection</button>
             </div>
             <div className='col-lg-6 text-right'>
               {/* <span className="gray inline-block mg-righ-20">
