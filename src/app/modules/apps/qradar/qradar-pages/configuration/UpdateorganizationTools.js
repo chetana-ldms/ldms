@@ -438,7 +438,7 @@ const UpdateOrganizationTools = () => {
                       htmlFor="toolTypeActionID"
                       className="form-label fs-6 fw-bolder mb-3"
                     >
-                      Tool Action drop down
+                      Tool Action
                     </label>
                     <select
                       className="form-select form-select-solid"
@@ -508,6 +508,7 @@ const UpdateOrganizationTools = () => {
                 )}
               </button>
             </div>
+            
             {tableData.length > 0 && (
               <div className="card-body border-top pad-10">
                 <h4>List of Tool Actions</h4>

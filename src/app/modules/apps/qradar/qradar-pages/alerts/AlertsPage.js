@@ -574,6 +574,7 @@ const AlertsPage = () => {
         const responseData = await fetchConnectToNetworkUrl(data);
         const { isSuccess } = responseData;
         if (isSuccess) {
+          qradaralerts();
           notify("Add to network");
         } else {
           notifyFail("Connect To Network Failed");
@@ -591,6 +592,7 @@ const AlertsPage = () => {
         const responseData = await fetchDisConnectFromNetworkUrl(data);
         const { isSuccess } = responseData;
         if (isSuccess) {
+          qradaralerts();
           notify("Disconnect from network");
         } else {
           notifyFail("Disconnect from network Failed");
@@ -614,6 +616,7 @@ const AlertsPage = () => {
         const responseData = await fetchThreatsActionUrl(data);
         const { isSuccess } = responseData;
         if (isSuccess) {
+          qradaralerts();
           notify("UnQuarantine Succesfull");
         } else {
           notifyFail("UnQuarantine Failed");

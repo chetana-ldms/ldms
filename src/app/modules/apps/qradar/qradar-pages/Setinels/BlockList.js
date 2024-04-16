@@ -205,7 +205,7 @@ function BlockList() {
                       type="checkbox"
                       name="thisScopeAndItsAncestors"
                       onChange={handleCheckboxChange}
-                      checked={includeParents} // Set checked state
+                      checked={includeParents} 
                     />
                     <span>
                       <i className="link mg-right-5" /> This scope and its
@@ -218,7 +218,7 @@ function BlockList() {
                       type="checkbox"
                       name="thisScopeAndItsDescendants"
                       onChange={handleCheckboxChange}
-                      checked={includeChildren} // Set checked state
+                      checked={includeChildren} //
                     />
                     <span>
                       <i className="link mg-right-5" /> This scope and its

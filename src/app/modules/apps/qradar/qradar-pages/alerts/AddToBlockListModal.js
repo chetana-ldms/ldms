@@ -23,6 +23,8 @@ const AddToBlockListModal = ({
   const sha1InputRef = useRef(null);
   const descriptionTextareaRef = useRef(null);
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const userID = Number(sessionStorage.getItem("userId"));
+  const modifiedDate = new Date().toISOString();
   const [sentinalOne, setSentinalOne] = useState([]);
   console.log(sentinalOne, "sentinalOne");
   const [endpointInfo, setEndpointInfo] = useState([
@@ -55,6 +57,8 @@ const AddToBlockListModal = ({
   const handleSubmit = async () => {
     try {
       const data = {
+        modifiedDate: modifiedDate,
+        modifiedUserId: userID,
         orgID: orgId,
         alertIds: selectedAlert,
         targetScope: scopeDropdownRef.current.value,

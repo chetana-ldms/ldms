@@ -20,14 +20,14 @@ const BlockListPopUp = ({ show, onClose }) => {
         description: descriptionTextareaRef.current.value,
       };
       const responseData = await fetchAddToblockListUrl(data);
-      const { isSuccess } = responseData;
+      const { isSuccess, message } = responseData;
 
       if (isSuccess) {
-        notify("File added to blocked list");
+        notify(message);
+        onClose();
       } else {
-        notifyFail("File added to blocked list Failed");
+        notifyFail(message);
       }
-      onClose();
     } catch (error) {
       console.error("Error during API call:", error);
     }

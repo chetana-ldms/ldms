@@ -8,12 +8,16 @@ import { fetchToolActionDelete } from "../../../../../api/Api";
 import axios from "axios";
 import { fetchToolActionsUrl } from "../../../../../api/ConfigurationApi";
 import { useErrorBoundary } from "react-error-boundary";
+import Pagination from "../../../../../../utils/Pagination";
 
 const ToolActions = () => {
   const handleError = useErrorBoundary();
   const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
   const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
   const [loading, setLoading] = useState(false);
+  const [filterValue, setFilterValue] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [toolActions, setToolActions] = useState([]);
   console.log(toolActions, "toolActions");
   const { status } = useParams();
@@ -55,6 +59,26 @@ const ToolActions = () => {
   useEffect(() => {
     reload();
   }, []);
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = toolActions
+    ? toolActions
+        .filter((item) =>
+          item.toolTypeActionName.toLowerCase().includes(filterValue.toLowerCase())
+        )
+        .slice(indexOfFirstItem, indexOfLastItem)
+    : null;
+
+  const handlePageSelect = (event) => {
+    setItemsPerPage(Number(event.target.value));
+    setCurrentPage(0);
+  };
+  const handlePageClick = (selected) => {
+    setCurrentPage(selected.selected);
+  };
+  const handleFilterChange = (event) => {
+    setFilterValue(event.target.value);
+  };
 
   return (
     <div className="config card pad-10">
@@ -78,6 +102,17 @@ const ToolActions = () => {
           </div>
         </div>
       </div>
+      <div className="row mb-5">
+        <div className="col-lg-12 header-filter">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="form-control"
+            value={filterValue}
+            onChange={handleFilterChange}
+          />
+        </div>
+      </div>
       <div className="card-body no-pad">
         <table className="table align-middle gs-0 gy-4 dash-table alert-table">
           <thead>
@@ -94,8 +129,8 @@ const ToolActions = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {toolActions !== null ? (
-              toolActions.map((item, index) => (
+            {currentItems !== null ? (
+              currentItems.map((item, index) => (
                 <tr key={index} className="fs-12">
                   <td>{index + 1}</td>
                   <td>{item.toolName}</td>
@@ -137,6 +172,12 @@ const ToolActions = () => {
             )}
           </tbody>
         </table>
+        <Pagination
+          pageCount={Math.ceil(toolActions.length / itemsPerPage)}
+          handlePageClick={handlePageClick}
+          itemsPerPage={itemsPerPage}
+          handlePageSelect={handlePageSelect}
+        />
       </div>
     </div>
   );
