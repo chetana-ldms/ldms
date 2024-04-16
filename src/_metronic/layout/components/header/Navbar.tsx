@@ -159,7 +159,7 @@ return item.name
       {/* <div className='d-flex mt-5 semi-bold'>
       {orgNames}
       </div> */}
-      <div className='d-flex mt-5 semi-bold'>
+      <div className='d-flex mt-5 semi-bold acc-site'>
         <Dropdown>
           <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
           {orgNames}
@@ -213,6 +213,8 @@ return item.name
           </Dropdown>
         }
       </div>
+
+      <div className='d-flex align-items-center'><span>Welcome <b>{userName}!</b></span></div>
      
       
       <div className={clsx('app-navbar-item', itemClass)}>

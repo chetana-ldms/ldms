@@ -170,23 +170,25 @@ function SignificantIncident() {
           <h4 className="bg-heading">
             Significant Incident for the last year ({startDate} to {endDate})
           </h4>
-          <Dropdown
-            isOpen={dropdownOpen}
-            toggle={() => setDropdownOpen(!dropdownOpen)}
-          >
-            <DropdownToggle caret>
-              Export <i className="fa fa-file-export link mg-left-10" />
-            </DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem onClick={exportToExcel}>
-                Export to CSV{" "}
-                <i className="fa fa-file-excel link float-right" />
-              </DropdownItem>
-              <DropdownItem onClick={exportToPDF}>
-                Export to PDF <i className="fa fa-file-pdf red float-right" />
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
+          <div className="export-report mt-5 me-5">
+            <Dropdown
+              isOpen={dropdownOpen}
+              toggle={() => setDropdownOpen(!dropdownOpen)}
+            >
+              <DropdownToggle caret>
+                Export <i className="fa fa-file-export link mg-left-10" />
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem onClick={exportToExcel}>
+                  Export to CSV{" "}
+                  <i className="fa fa-file-excel link float-right" />
+                </DropdownItem>
+                <DropdownItem onClick={exportToPDF}>
+                  Export to PDF <i className="fa fa-file-pdf red float-right" />
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
           <CanvasJSChart options={openstatusoptions} />
         </>
       ) : (
