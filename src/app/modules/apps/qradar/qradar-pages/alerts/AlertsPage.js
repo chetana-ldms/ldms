@@ -1239,42 +1239,41 @@ const AlertsPage = () => {
                   )}
                 </div>
               </div>
-              <div className="m-0">
-                <div className="export-report">
-                  <Dropdown
-                    isOpen={dropdownOpen}
-                    toggle={() => setDropdownOpen(!dropdownOpen)}
-                  >
-                    <DropdownToggle caret>
-                      Export <i className="fa fa-file-export link mg-left-10" />
-                    </DropdownToggle>
-                    <DropdownMenu>
-                      <DropdownItem onClick={exportToExcel}>
-                        Export to CSV{" "}
-                        <i className="fa fa-file-excel link float-right" />
-                      </DropdownItem>
-                      <DropdownItem onClick={exportToPDF}>
-                        Export to PDF{" "}
-                        <i className="fa fa-file-pdf red float-right" />
-                      </DropdownItem>
-                    </DropdownMenu>
-                  </Dropdown>
-                </div>
-              </div>
             </div>
           </div>
         </div>
       </div>
       <div className="clearfix" />
       <div className="card pad-10">
-        <div className="float-right text-right ds-reload">
-          <span className="fs-13 fc-gray" onClick={handleRefresh}>
-            Auto refresh every 2 minutes{" "}
-            <i
-              className={`fa fa-refresh link ${isRefreshing ? "rotate" : ""}`}
-              title="Auto refresh every 2 minutes"
-            />
-          </span>
+        <div className="d-flex justify-content-end align-items-center">
+          <div className="ds-reload">
+            <span className="fs-13 fc-gray" onClick={handleRefresh}>
+              Auto refresh every 2 minutes{" "}
+              <i
+                className={`fa fa-refresh link ${isRefreshing ? "rotate" : ""}`}
+                title="Auto refresh every 2 minutes"
+              />
+            </span>
+          </div>
+          <div className="export-report ms-2">
+            <Dropdown
+              isOpen={dropdownOpen}
+              toggle={() => setDropdownOpen(!dropdownOpen)}
+            >
+              <DropdownToggle caret>
+                Export <i className="fa fa-file-export link mg-left-10" />
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem onClick={exportToExcel}>
+                  Export to CSV{" "}
+                  <i className="fa fa-file-excel link float-right" />
+                </DropdownItem>
+                <DropdownItem onClick={exportToPDF}>
+                  Export to PDF <i className="fa fa-file-pdf red float-right" />
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
         </div>
         {openEditPage ? (
           <EditAlertsPopUp
@@ -1813,7 +1812,7 @@ const AlertsPage = () => {
                               item.alertIncidentMappingId === 0 ? (
                                 <i
                                   className="fa fa-circle-exclamation incident-icon red"
-                                  title="No Action Innitiated"
+                                  title="No Action Initiated"
                                 />
                               ) : item.status !== "New" &&
                                 item.alertIncidentMappingId === 0 ? (

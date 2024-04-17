@@ -78,10 +78,7 @@ const AddToExclusionsModal = ({
   return (
     <Modal show={show} onHide={handleClose} className="AddToExclusionsModal">
       <Modal.Header closeButton>
-        <Modal.Title>
-          Add To Exclusions
-          <div className="fs-12 normal">Exclusions Type: Hash</div>
-        </Modal.Title>
+        <Modal.Title>Add To Exclusions</Modal.Title>
         <button
           type="button"
           class="application-modal-close"
@@ -91,6 +88,9 @@ const AddToExclusionsModal = ({
         </button>
       </Modal.Header>
       <Modal.Body className="header-filter">
+        <div className="mb-2 fs-12">
+          <label className="semi-bold">Exclusions Type:</label> Hash
+        </div>
         <div className="row">
           <div className="col-md-6">
             <label htmlFor="osInput" className="form-label">

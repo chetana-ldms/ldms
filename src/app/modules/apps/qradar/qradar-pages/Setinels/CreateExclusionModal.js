@@ -35,12 +35,12 @@ const CreateExclusionModal = ({ show, handleClose }) => {
   return (
     <Modal show={show} onHide={handleClose} className="AddToExclusionsModal">
       <Modal.Header closeButton>
-        <Modal.Title>
-          New Exclusions
-          <div className="mt-2 fs-12 white">Exclusions Type: Hash</div>
-        </Modal.Title>
+        <Modal.Title>New Exclusions</Modal.Title>
       </Modal.Header>
       <Modal.Body className="header-filter">
+        <div className="mb-2 fs-12">
+          <label className="semi-bold">Exclusions Type:</label> Hash
+        </div>
         <div className="row">
           <div className="col-md-6">
             <label htmlFor="osInput" className="form-label">

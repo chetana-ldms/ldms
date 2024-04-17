@@ -347,11 +347,11 @@ body {
   }
 
   .dropdown-menu{
-    box-shadow: 1px 1px 4px 1px #ccc;
     opacity: 0;
     transition: opacity 0.3s ease !important;
     &.show{
       opacity: 1;
+      box-shadow: 1px 1px 4px 1px #ccc;
     }
     
   }
@@ -381,6 +381,12 @@ body {
     position: absolute;
     left: 20px;
     top: 4px;
+  }
+}
+
+.dropdown-menu{
+  &.show{
+    box-shadow: 0px 1px 2px 1px #afc7c5;
   }
 }
 
@@ -1963,6 +1969,7 @@ form{
       // top: 1px !important;
       width: 100%;
       border: 1px solid #ccc;
+      box-shadow: 0px 1px 2px 1px #afc7c5;
     }
   }
 }

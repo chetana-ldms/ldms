@@ -102,8 +102,8 @@ function Endpoints({ shouldRender, id }) {
             toggle={() => setDropdownOpen(!dropdownOpen)}
           >
             <DropdownToggle className="no-pad">
-              <div className="btn btn-new btn-small">
-                Export <i className="fa fa-file-export white mg-left-5" />
+              <div className="btn btn-border btn-small">
+                Export <i className="fa fa-file-export link mg-left-5" />
               </div>
             </DropdownToggle>
             <DropdownMenu>

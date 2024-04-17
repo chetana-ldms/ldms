@@ -1,259 +1,277 @@
-import {useEffect, useState} from 'react'
-import ReactPaginate from 'react-paginate'
-import {fetchAEndPointDetailsUrl} from '../../../../../api/ApplicationSectionApi'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
-import Pagination from '../../../../../../utils/Pagination'
-import {getCurrentTimeZone} from '../../../../../../utils/helper'
-import {fetchExclusionListUrl} from '../../../../../api/SentinalApi'
-import {useAbsoluteLayout} from 'react-table'
-import MitigationModal from '../alerts/MitigationModal'
-import AddToBlockListModal from '../alerts/AddToBlockListModal'
-import CreateExclusionModal from './CreateExclusionModal'
-import AddFromExclusionsCatalogModal from './AddFromExclusionsCatalogModal'
-import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
-import {renderSortIcon, sortedItems} from '../../../../../../utils/Sorting'
+import { useEffect, useState } from "react";
+import ReactPaginate from "react-paginate";
+import { fetchAEndPointDetailsUrl } from "../../../../../api/ApplicationSectionApi";
+import { UsersListLoading } from "../components/loading/UsersListLoading";
+import Pagination from "../../../../../../utils/Pagination";
+import { getCurrentTimeZone } from "../../../../../../utils/helper";
+import { fetchExclusionListUrl } from "../../../../../api/SentinalApi";
+import { useAbsoluteLayout } from "react-table";
+import MitigationModal from "../alerts/MitigationModal";
+import AddToBlockListModal from "../alerts/AddToBlockListModal";
+import CreateExclusionModal from "./CreateExclusionModal";
+import AddFromExclusionsCatalogModal from "./AddFromExclusionsCatalogModal";
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from "reactstrap";
+import { renderSortIcon, sortedItems } from "../../../../../../utils/Sorting";
 
 function Exclusions() {
-  const orgId = Number(sessionStorage.getItem('orgId'))
-  const [loading, setLoading] = useState(false)
-  const [exlusions, setExlusions] = useState([])
-  console.log(exlusions, 'exlusions111')
-  const [showDropdown, setShowDropdown] = useState(false)
-  const [showMoreActionsModal, setShowMoreActionsModal] = useState(false)
-  const [addToBlockListModal, setAddToBlockListModal] = useState(false)
-  const [selectedValue, setSelectedValue] = useState('')
-  console.log(exlusions, 'exlusions111')
-  const [dropdown, setDropdown] = useState(false)
-  const [includeChildren, setIncludeChildren] = useState(true)
-  const [includeParents, setIncludeParents] = useState(true)
-  const [currentPage, setCurrentPage] = useState(0)
-  const [itemsPerPage, setItemsPerPage] = useState(20)
-  const [filterValue, setFilterValue] = useState('')
+  const orgId = Number(sessionStorage.getItem("orgId"));
+  const [loading, setLoading] = useState(false);
+  const [exlusions, setExlusions] = useState([]);
+  console.log(exlusions, "exlusions111");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showMoreActionsModal, setShowMoreActionsModal] = useState(false);
+  const [addToBlockListModal, setAddToBlockListModal] = useState(false);
+  const [selectedValue, setSelectedValue] = useState("");
+  console.log(exlusions, "exlusions111");
+  const [dropdown, setDropdown] = useState(false);
+  const [includeChildren, setIncludeChildren] = useState(true);
+  const [includeParents, setIncludeParents] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [filterValue, setFilterValue] = useState("");
   const [sortConfig, setSortConfig] = useState({
     key: null,
-    direction: 'ascending',
-  })
+    direction: "ascending",
+  });
 
   const fetchData = async () => {
     const data = {
       orgID: orgId,
       includeChildren: includeChildren,
       includeParents: includeParents,
-    }
+    };
     try {
-      setLoading(true)
-      const response = await fetchExclusionListUrl(data)
+      setLoading(true);
+      const response = await fetchExclusionListUrl(data);
       if (response !== null) {
-        setExlusions(response)
+        setExlusions(response);
       } else {
-        setExlusions([])
+        setExlusions([]);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
   useEffect(() => {
-    fetchData()
-  }, [includeChildren, includeParents])
+    fetchData();
+  }, [includeChildren, includeParents]);
 
   const handlePageSelect = (event) => {
-    setItemsPerPage(Number(event.target.value))
-    setCurrentPage(0)
-  }
+    setItemsPerPage(Number(event.target.value));
+    setCurrentPage(0);
+  };
 
-  const indexOfLastItem = (currentPage + 1) * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   // const currentItems = exlusions ? exlusions.slice(indexOfFirstItem, indexOfLastItem) : null
   const currentItems =
     exlusions !== null
       ? sortedItems(
-          exlusions.filter((item) => item.osType.toLowerCase().includes(filterValue.toLowerCase())),
+          exlusions.filter((item) =>
+            item.osType.toLowerCase().includes(filterValue.toLowerCase())
+          ),
           sortConfig
         ).slice(indexOfFirstItem, indexOfLastItem)
-      : null
+      : null;
 
   const handleSort = (key) => {
     const direction =
-      sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending'
-    setSortConfig({key, direction})
-  }
+      sortConfig.key === key && sortConfig.direction === "ascending"
+        ? "descending"
+        : "ascending";
+    setSortConfig({ key, direction });
+  };
 
   const handlePageClick = (selected) => {
-    setCurrentPage(selected.selected)
-  }
+    setCurrentPage(selected.selected);
+  };
 
   const handleThreatActions = () => {
-    setDropdownOpenExclusion(!dropdownOpenExclusion)
-  }
+    setDropdownOpenExclusion(!dropdownOpenExclusion);
+  };
   const handleCloseMoreActionsModal = () => {
-    setShowMoreActionsModal(false)
-    setShowDropdown(false)
-  }
+    setShowMoreActionsModal(false);
+    setShowDropdown(false);
+  };
   const handleAction = () => {
-    handleCloseMoreActionsModal()
-  }
+    handleCloseMoreActionsModal();
+  };
   const handleCloseAddToBlockList = () => {
-    setAddToBlockListModal(false)
-    setShowDropdown(false)
-  }
+    setAddToBlockListModal(false);
+    setShowDropdown(false);
+  };
   const handleActionAddToBlockList = () => {
-    setAddToBlockListModal(false)
-  }
+    setAddToBlockListModal(false);
+  };
   const handleCheckboxChange = (event) => {
-    const checkboxName = event.target.name
-    const isChecked = event.target.checked
+    const checkboxName = event.target.name;
+    const isChecked = event.target.checked;
 
-    if (checkboxName === 'thisScopeAndItsAncestors') {
-      setIncludeParents(isChecked)
-    } else if (checkboxName === 'thisScopeAndItsDescendants') {
-      setIncludeChildren(isChecked)
+    if (checkboxName === "thisScopeAndItsAncestors") {
+      setIncludeParents(isChecked);
+    } else if (checkboxName === "thisScopeAndItsDescendants") {
+      setIncludeChildren(isChecked);
     }
-  }
+  };
 
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [dropdownOpenExclusion, setDropdownOpenExclusion] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownOpenExclusion, setDropdownOpenExclusion] = useState(false);
 
   // Function to extract table data
   const extractTableData = (items) => {
     return items.map((item) => ({
-      'Exclusion Type': 'null',
+      "Exclusion Type": "null",
       OS: item.osType,
-      'Application Name': item.applicationName,
-      'Inventory Listed': 'null',
+      "Application Name": item.applicationName,
+      "Inventory Listed": "null",
       Description: item.description,
       Value: item.value,
       Scope: item.scopePath,
       User: item.agentVersion,
       Mode: item.mode,
-      'Last Updated': getCurrentTimeZone(item.updatedAt),
+      "Last Updated": getCurrentTimeZone(item.updatedAt),
       Source: item.source,
       Scope: item.scopeName,
-      Imported: item.imported ? 'Yes' : 'No',
-    }))
-  }
+      Imported: item.imported ? "Yes" : "No",
+    }));
+  };
   // Function to convert data to CSV format
   const convertToCSV = (data) => {
-    const csvRows = []
+    const csvRows = [];
 
     // Add header row
-    const header = Object.keys(data[0])
-    csvRows.push(header.join(','))
+    const header = Object.keys(data[0]);
+    csvRows.push(header.join(","));
 
     // Add data rows
     data.forEach((item) => {
       const values = header.map((key) => {
-        let value = item[key]
+        let value = item[key];
         // Escape double quotes in values
-        if (typeof value === 'string') {
-          value = value.replace(/"/g, '""')
+        if (typeof value === "string") {
+          value = value.replace(/"/g, '""');
         }
         // Enclose value in double quotes if it contains special characters
         if (/[",\n]/.test(value)) {
-          value = `"${value}"`
+          value = `"${value}"`;
         }
-        return value
-      })
-      csvRows.push(values.join(','))
-    })
+        return value;
+      });
+      csvRows.push(values.join(","));
+    });
 
     // Combine rows into a single string
-    return csvRows.join('\n')
-  }
+    return csvRows.join("\n");
+  };
 
   const exportToCSV = (data) => {
-    const csvData = convertToCSV(data)
-    const blob = new Blob([csvData], {type: 'text/csv;charset=utf-8;'})
-    const fileName = 'risk_data.csv'
+    const csvData = convertToCSV(data);
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+    const fileName = "risk_data.csv";
     if (navigator.msSaveBlob) {
       // IE 10+
-      navigator.msSaveBlob(blob, fileName)
+      navigator.msSaveBlob(blob, fileName);
     } else {
-      const link = document.createElement('a')
+      const link = document.createElement("a");
       if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob)
-        link.setAttribute('href', url)
-        link.setAttribute('download', fileName)
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       }
     }
-  }
+  };
 
   // Function to extract full table data
   const exportTableToCSV = () => {
-    const tableData = extractTableData(exlusions)
-    exportToCSV(tableData)
-  }
+    const tableData = extractTableData(exlusions);
+    exportToCSV(tableData);
+  };
 
   // Function to extract current pagination table data
   const exportCurrentTableToCSV = () => {
-    const tableData = extractTableData(currentItems)
-    exportToCSV(tableData)
-  }
+    const tableData = extractTableData(currentItems);
+    exportToCSV(tableData);
+  };
   const handleFilterChange = (event) => {
-    setFilterValue(event.target.value)
-  }
+    setFilterValue(event.target.value);
+  };
 
   return (
     <div>
       {loading ? (
         <UsersListLoading />
       ) : (
-        <div className='card pad-10'>
-          <div className='row'>
-            <div className='col-lg-6 d-flex'>
+        <div className="card pad-10">
+          <div className="row">
+            <div className="col-lg-6 d-flex">
               <Dropdown
                 isOpen={dropdown}
                 toggle={() => setDropdown(!dropdown)}
-                className='float-left mg-right-10'
+                className="float-left mg-right-10"
               >
-                <DropdownToggle className='no-pad btn btn-small btn-border'>
-                  <div className='fs-12 normal'>
-                    All Related Scopes <i className='fa fa-chevron-down link mg-left-5' />
+                <DropdownToggle className="no-pad btn btn-small btn-border">
+                  <div className="fs-12 normal">
+                    All Related Scopes{" "}
+                    <i className="fa fa-chevron-down link mg-left-5" />
                   </div>
                 </DropdownToggle>
-                <DropdownMenu className='w-auto px-5'>
-                  <label className='dropdown-checkbox'>
+                <DropdownMenu className="w-auto px-5">
+                  <label className="dropdown-checkbox">
                     <input
-                      type='checkbox'
-                      name='thisScopeAndItsAncestors'
+                      type="checkbox"
+                      name="thisScopeAndItsAncestors"
                       onChange={handleCheckboxChange}
                       checked={includeParents}
                     />
                     <span>
-                      <i className='link mg-right-5' /> This scope and its ancestors
+                      <i className="link mg-right-5" /> This scope and its
+                      ancestors
                     </span>
-                  </label>{' '}
+                  </label>{" "}
                   <br />
-                  <label className='dropdown-checkbox'>
+                  <label className="dropdown-checkbox">
                     <input
-                      type='checkbox'
-                      name='thisScopeAndItsDescendants'
+                      type="checkbox"
+                      name="thisScopeAndItsDescendants"
                       onChange={handleCheckboxChange}
                       checked={includeChildren} //
                     />
                     <span>
-                      <i className='link mg-right-5' /> This scope and its descendants
+                      <i className="link mg-right-5" /> This scope and its
+                      descendants
                     </span>
                   </label>
                 </DropdownMenu>
               </Dropdown>
-              <div className='mb-3'>
-                <Dropdown isOpen={dropdownOpenExclusion} toggle={handleThreatActions}>
-                  <DropdownToggle className='no-pad'>
-                    <div className='btn btn-new btn-small'>New Exclusion</div>
+              <div className="mb-3">
+                <Dropdown
+                  isOpen={dropdownOpenExclusion}
+                  toggle={handleThreatActions}
+                >
+                  <DropdownToggle className="no-pad btn btn-border btn-small">
+                    <div className="normal">
+                      New Exclusion{" "}
+                      <i className="fa fa-chevron-down link mg-left-5" />
+                    </div>
                   </DropdownToggle>
-                  <DropdownMenu className='w-auto'>
+                  <DropdownMenu className="w-auto">
                     <DropdownItem
                       onClick={() => setShowMoreActionsModal(true)}
-                      className='border-btm'
+                      className="border-btm"
                     >
                       Create Exclusion
                     </DropdownItem>
@@ -279,86 +297,99 @@ function Exclusions() {
                   selectedValue={selectedValue}
                 />
               )}
-              <button className='btn btn-small btn-new ms-2 '>Delete selection</button>
+              <div className="float-left mg-left-10">
+                <button className="btn btn-small btn-new ms-2 ">
+                  Delete selection
+                </button>
+              </div>
             </div>
-            <div className='col-lg-6 text-right'>
+            <div className="col-lg-6 text-right">
               {/* <span className="gray inline-block mg-righ-20">
                 {exlusions.length} Items
               </span> */}
-              <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
-                <DropdownToggle className='no-pad'>
-                  <div className='btn btn-new btn-small'>
-                    Export <i className='fa fa-file-export white mg-left-5' />
+              <Dropdown
+                isOpen={dropdownOpen}
+                toggle={() => setDropdownOpen(!dropdownOpen)}
+              >
+                <DropdownToggle className="no-pad btn btn-new btn-small">
+                  <div>
+                    Export <i className="fa fa-file-export white mg-left-5" />
                   </div>
                 </DropdownToggle>
-                <DropdownMenu className='w-auto'>
-                  <DropdownItem onClick={exportTableToCSV} className='border-btm'>
-                    <i className='fa fa-file-excel link mg-right-5' /> Export Full Report
+                <DropdownMenu className="w-auto">
+                  <DropdownItem
+                    onClick={exportTableToCSV}
+                    className="border-btm"
+                  >
+                    <i className="fa fa-file-excel link mg-right-5" /> Export
+                    Full Report
                   </DropdownItem>
                   <DropdownItem onClick={exportCurrentTableToCSV}>
-                    <i className='fa fa-file-excel link mg-right-5' /> Export Current Page Report
+                    <i className="fa fa-file-excel link mg-right-5" /> Export
+                    Current Page Report
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </div>
           </div>
-          <div className='header-filter mg-btm-20 row'>
-            <div className='col-lg-12'>
+          <div className="header-filter mg-btm-20 row">
+            <div className="col-lg-12">
               <input
-                type='text'
-                placeholder='Search...'
-                className='form-control'
+                type="text"
+                placeholder="Search..."
+                className="form-control"
                 value={filterValue}
                 onChange={handleFilterChange}
               />
             </div>
           </div>
-          <table className='table alert-table scroll-x'>
+          <table className="table alert-table scroll-x">
             <thead>
               <tr>
                 <th>{/* <input type="checkbox" name="selectAll" /> */}</th>
 
-                <th onClick={() => handleSort('osType')}>
-                  OS {renderSortIcon(sortConfig, 'osType')}
+                <th onClick={() => handleSort("osType")}>
+                  OS {renderSortIcon(sortConfig, "osType")}
                 </th>
-                <th onClick={() => handleSort('applicationName')}>
-                  Application Name {renderSortIcon(sortConfig, 'applicationName')}
+                <th onClick={() => handleSort("applicationName")}>
+                  Application Name{" "}
+                  {renderSortIcon(sortConfig, "applicationName")}
                 </th>
-                <th onClick={() => handleSort('description')}>
-                  Description {renderSortIcon(sortConfig, 'description')}
+                <th onClick={() => handleSort("description")}>
+                  Description {renderSortIcon(sortConfig, "description")}
                 </th>
-                <th onClick={() => handleSort('value')}>
-                  Value {renderSortIcon(sortConfig, 'value')}
+                <th onClick={() => handleSort("value")}>
+                  Value {renderSortIcon(sortConfig, "value")}
                 </th>
-                <th onClick={() => handleSort('scopePath')}>
-                  Scope Path {renderSortIcon(sortConfig, 'scopePath')}
+                <th onClick={() => handleSort("scopePath")}>
+                  Scope Path {renderSortIcon(sortConfig, "scopePath")}
                 </th>
-                <th onClick={() => handleSort('userName')}>
-                  User {renderSortIcon(sortConfig, 'userName')}
+                <th onClick={() => handleSort("userName")}>
+                  User {renderSortIcon(sortConfig, "userName")}
                 </th>
-                <th onClick={() => handleSort('mode')}>
-                  Mode {renderSortIcon(sortConfig, 'mode')}
+                <th onClick={() => handleSort("mode")}>
+                  Mode {renderSortIcon(sortConfig, "mode")}
                 </th>
-                <th onClick={() => handleSort('updatedAt')}>
-                  Last Update {renderSortIcon(sortConfig, 'updatedAt')}
+                <th onClick={() => handleSort("updatedAt")}>
+                  Last Update {renderSortIcon(sortConfig, "updatedAt")}
                 </th>
-                <th onClick={() => handleSort('source')}>
-                  Source {renderSortIcon(sortConfig, 'source')}
+                <th onClick={() => handleSort("source")}>
+                  Source {renderSortIcon(sortConfig, "source")}
                 </th>
-                <th onClick={() => handleSort('scopeName')}>
-                  Scope {renderSortIcon(sortConfig, 'scopeName')}
+                <th onClick={() => handleSort("scopeName")}>
+                  Scope {renderSortIcon(sortConfig, "scopeName")}
                 </th>
-                <th onClick={() => handleSort('imported')}>
-                  Imported {renderSortIcon(sortConfig, 'imported')}
+                <th onClick={() => handleSort("imported")}>
+                  Imported {renderSortIcon(sortConfig, "imported")}
                 </th>
               </tr>
             </thead>
             <tbody>
               {currentItems !== null ? (
                 currentItems?.map((item, index) => (
-                  <tr className='table-row' key={index}>
+                  <tr className="table-row" key={index}>
                     <td>
-                      <input type='checkbox' name={`checkbox_${item.id}`} />
+                      <input type="checkbox" name={`checkbox_${item.id}`} />
                     </td>
                     <td>{item.osType}</td>
                     <td>{item.applicationName}</td>
@@ -370,12 +401,12 @@ function Exclusions() {
                     <td>{getCurrentTimeZone(item.updatedAt)}</td>
                     <td>{item.source}</td>
                     <td>{item.scopeName}</td>
-                    <td>{item.imported ? 'Yes' : 'No'}</td>
+                    <td>{item.imported ? "Yes" : "No"}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan='24'>No data found</td>
+                  <td colSpan="24">No data found</td>
                 </tr>
               )}
             </tbody>
@@ -389,7 +420,7 @@ function Exclusions() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default Exclusions
+export default Exclusions;
