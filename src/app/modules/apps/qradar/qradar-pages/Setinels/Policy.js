@@ -600,8 +600,10 @@ function Policy() {
                     Set which information and notification to show for end-user
                   </p>
                   <div className="d-flex justify-align-center">
-                    <span>Show pop-up notification for:</span>
-                    <div className="form-check-inline form-switch">
+                    <span className="inline-block w-250px">
+                      Show pop-up notification for:
+                    </span>
+                    <div className="form-check-inline form-switch inline-block ms-10">
                       <input
                         className="form-check-input"
                         type="checkbox"
@@ -613,13 +615,13 @@ function Policy() {
                         }
                       />
                       <label
-                        className="form-check-label"
+                        className="form-check-label w-150px"
                         htmlFor="threatMitigation"
                       >
                         Threat and Mitigation
                       </label>
                     </div>
-                    <div className="form-check-inline form-switch">
+                    <div className="form-check-inline form-switch inline-block ms-10">
                       <input
                         className="form-check-input"
                         type="checkbox"
@@ -631,7 +633,7 @@ function Policy() {
                         }
                       />
                       <label
-                        className="form-check-label"
+                        className="form-check-label w-150px"
                         htmlFor="blockedDevices"
                       >
                         Blocked Devices
@@ -639,8 +641,10 @@ function Policy() {
                     </div>
                   </div>
                   <div>
-                    <p>show Suspicious event in the UI:</p>
-                    <div className="form-check form-switch">
+                    <p className="inline-block w-250px">
+                      show Suspicious event in the UI:
+                    </p>
+                    <div className="form-check form-switch inline-block ms-10">
                       <input
                         className="form-check-input"
                         type="checkbox"
@@ -658,8 +662,10 @@ function Policy() {
                     </div>
                   </div>
                   <div>
-                    <p>show warning in case of Agent errors:</p>
-                    <div className="form-check form-switch">
+                    <p className="inline-block w-250px">
+                      show warning in case of Agent errors:
+                    </p>
+                    <div className="form-check form-switch inline-block ms-10">
                       <input
                         className="form-check-input"
                         type="checkbox"
@@ -679,8 +685,10 @@ function Policy() {
                     </div>
                   </div>
                   <div>
-                    <p>show in the UI events from the last:</p>
-                    <div className="form-check">
+                    <p className="inline-block w-250px">
+                      show in the UI events from the last:
+                    </p>
+                    <div className="form-check inline-block ms-10">
                       <input
                         className="form-check-input"
                         type="checkbox"
@@ -698,8 +706,10 @@ function Policy() {
                     </div>
                   </div>
                   <div>
-                    <p>show these menu item in the UI:</p>
-                    <div className="form-check form-switch">
+                    <p className="inline-block w-250px">
+                      show these menu item in the UI:
+                    </p>
+                    <div className="form-check form-switch inline-block ms-10">
                       <input
                         className="form-check-input"
                         type="checkbox"
@@ -715,7 +725,7 @@ function Policy() {
                         Blocked Devices
                       </label>
                     </div>
-                    <div className="form-check form-switch">
+                    <div className="form-check form-switch inline-block ms-10">
                       <input
                         className="form-check-input"
                         type="checkbox"
@@ -733,7 +743,7 @@ function Policy() {
                         Quarantined Files
                       </label>
                     </div>
-                    <div className="form-check form-switch">
+                    <div className="form-check form-switch inline-block ms-10">
                       <input
                         className="form-check-input"
                         type="checkbox"
@@ -767,7 +777,7 @@ function Policy() {
           </div>
           <div className="row mt-5">
             <div className="col-lg-12">
-              <div className="card">
+              <div className="card deep-visibility">
                 <div className="card-header bg-heading">
                   <h6 className="white pad-10">Deep Visibality</h6>
                 </div>
@@ -1129,7 +1139,7 @@ function Policy() {
                 <div className="card-body row pad-10">
                   <div className="d-flex justify-content-start">
                     <strong>Decommissioning</strong>
-                    <div className="form-check form-switch">
+                    <div className="form-check form-switch px-5">
                       <input
                         className="form-check-input"
                         type="checkbox"
@@ -1148,7 +1158,7 @@ function Policy() {
                   </div>
                   <div className="d-flex justify-content-start">
                     <strong>Remote Shell</strong>
-                    <div className="">
+                    <div className="px-3">
                       <input
                         className=""
                         type="checkbox"
