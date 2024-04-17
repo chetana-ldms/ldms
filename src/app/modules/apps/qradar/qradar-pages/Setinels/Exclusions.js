@@ -351,8 +351,11 @@ function Exclusions() {
               {/* <span className="gray inline-block mg-righ-20">
                 {exlusions.length} Items
               </span> */}
-              <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
-                <DropdownToggle className='no-pad btn btn-new btn-small'>
+              <Dropdown
+                isOpen={dropdownOpen}
+                toggle={() => setDropdownOpen(!dropdownOpen)}
+              >
+                <DropdownToggle className="no-pad btn btn-new btn-small">
                   <div>
                     Export <i className='fa fa-file-export white mg-left-5' />
                   </div>
