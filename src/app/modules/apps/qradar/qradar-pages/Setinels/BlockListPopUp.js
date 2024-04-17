@@ -10,10 +10,12 @@ const BlockListPopUp = ({ show, onClose, refreshParent }) => {
   const orgId = Number(sessionStorage.getItem("orgId"));
   const createdDate = new Date().toISOString();
   const createdUserId = Number(sessionStorage.getItem('userId'));
+  const accountId =sessionStorage.getItem('accountId');
+  const siteId = sessionStorage.getItem('siteId');
+  const groupId = sessionStorage.getItem('groupId');
 
   const handleSubmit = async () => {
     try {
-      // Check if OS and SHA1 fields are filled out
       if (!osDropdownRef.current.value || !sha1InputRef.current.value) {
         notifyFail("Please fill out all mandatory fields.");
         return;
@@ -27,9 +29,9 @@ const BlockListPopUp = ({ show, onClose, refreshParent }) => {
         source: "",
         createdDate: createdDate,
         createdUserId: createdUserId,
-        groupId: "1924063617266855450",
-        siteId: "1924063617241689625",
-        accountId: "1924063616109227261"
+        groupId: groupId,
+        siteId: siteId,
+        accountId: accountId
       };
       const responseData = await fetchAddToblockListUrl(data);
       const { isSuccess, message } = responseData;
@@ -78,9 +80,9 @@ const BlockListPopUp = ({ show, onClose, refreshParent }) => {
             </label>
             <select className="form-select" id="osInput" ref={osDropdownRef} required>
               <option value="">Select</option>
-              <option value="windows">windows</option>
-              <option value="Mac">Mac</option>
-              <option value="Linux">Linux</option>
+              <option value="windows">Windows</option>
+              <option value="macos">MacOS</option>
+              <option value="linux">Linux</option>
             </select>
           </div>
         </div>

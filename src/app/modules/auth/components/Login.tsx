@@ -78,10 +78,10 @@ export function Login() {
           sessionStorage.setItem('defaultPassword', authData.defaultPassword);
           sessionStorage.setItem('accountName', "LanceSoft Inc");
           sessionStorage.setItem('accountId', "1924063616109227261");
-          sessionStorage.setItem('siteName', "Default site");
-          sessionStorage.setItem('siteId', "1924063617241689625");
-          sessionStorage.setItem('groupName', "Default Group");
-          sessionStorage.setItem('groupId', "1924063617266855450");
+          sessionStorage.setItem('siteName', "");
+          sessionStorage.setItem('siteId', "");
+          sessionStorage.setItem('groupName', "");
+          sessionStorage.setItem('groupId', "");
           const defaultPassword = authData.defaultPassword;
           if (defaultPassword) {
             setShowChangePwdModal(true);

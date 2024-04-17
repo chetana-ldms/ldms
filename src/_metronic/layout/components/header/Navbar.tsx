@@ -128,10 +128,10 @@ return item.name
     setAccountName(accountName);
     setSiteName("");
     setGroupName("");
-    sessionStorage.setItem('siteName', "Default site");
-    sessionStorage.setItem('siteId', "1924063617241689625");
-    sessionStorage.setItem('groupName', "Default Group");
-    sessionStorage.setItem('groupId', "1924063617266855450");
+    sessionStorage.removeItem('siteName');
+    sessionStorage.removeItem('siteId');
+    sessionStorage.removeItem('groupName');
+    sessionStorage.removeItem('groupId');
   };
   
   const handleAccordionClick = (name: string, id: string) => {
@@ -139,8 +139,8 @@ return item.name
     setSiteName(name)
     setGroupName("");
     sessionStorage.setItem('siteId', id);
-    sessionStorage.setItem('groupName', "Default Group");
-    sessionStorage.setItem('groupId', "1924063617266855450");
+    sessionStorage.removeItem('groupName');
+    sessionStorage.removeItem('groupId');
     
   };
   const handleGroupClick = (name: string, id: string) => {

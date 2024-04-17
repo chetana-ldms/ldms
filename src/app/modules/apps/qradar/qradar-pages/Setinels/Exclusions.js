@@ -11,6 +11,7 @@ import AddToBlockListModal from '../alerts/AddToBlockListModal'
 import CreateExclusionModal from './CreateExclusionModal'
 import AddFromExclusionsCatalogModal from './AddFromExclusionsCatalogModal'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
+import {renderSortIcon, sortedItems} from '../../../../../../utils/Sorting'
 
 function Exclusions() {
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -22,12 +23,22 @@ function Exclusions() {
   const [addToBlockListModal, setAddToBlockListModal] = useState(false)
   const [selectedValue, setSelectedValue] = useState('')
   console.log(exlusions, 'exlusions111')
+  const [dropdown, setDropdown] = useState(false)
+  const [includeChildren, setIncludeChildren] = useState(true)
+  const [includeParents, setIncludeParents] = useState(true)
   const [currentPage, setCurrentPage] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(20)
+  const [filterValue, setFilterValue] = useState('')
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: 'ascending',
+  })
 
   const fetchData = async () => {
     const data = {
       orgID: orgId,
+      includeChildren: includeChildren,
+      includeParents: includeParents,
     }
     try {
       setLoading(true)
@@ -47,6 +58,9 @@ function Exclusions() {
   useEffect(() => {
     fetchData()
   }, [])
+  useEffect(() => {
+    fetchData()
+  }, [includeChildren, includeParents])
 
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value))
@@ -55,7 +69,20 @@ function Exclusions() {
 
   const indexOfLastItem = (currentPage + 1) * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = exlusions ? exlusions.slice(indexOfFirstItem, indexOfLastItem) : null
+  // const currentItems = exlusions ? exlusions.slice(indexOfFirstItem, indexOfLastItem) : null
+  const currentItems =
+    exlusions !== null
+      ? sortedItems(
+          exlusions.filter((item) => item.osType.toLowerCase().includes(filterValue.toLowerCase())),
+          sortConfig
+        ).slice(indexOfFirstItem, indexOfLastItem)
+      : null
+
+  const handleSort = (key) => {
+    const direction =
+      sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending'
+    setSortConfig({key, direction})
+  }
 
   const handlePageClick = (selected) => {
     setCurrentPage(selected.selected)
@@ -77,6 +104,16 @@ function Exclusions() {
   }
   const handleActionAddToBlockList = () => {
     setAddToBlockListModal(false)
+  }
+  const handleCheckboxChange = (event) => {
+    const checkboxName = event.target.name
+    const isChecked = event.target.checked
+
+    if (checkboxName === 'thisScopeAndItsAncestors') {
+      setIncludeParents(isChecked)
+    } else if (checkboxName === 'thisScopeAndItsDescendants') {
+      setIncludeChildren(isChecked)
+    }
   }
 
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -160,6 +197,9 @@ function Exclusions() {
     const tableData = extractTableData(currentItems)
     exportToCSV(tableData)
   }
+  const handleFilterChange = (event) => {
+    setFilterValue(event.target.value)
+  }
 
   return (
     <div>
@@ -169,12 +209,46 @@ function Exclusions() {
         <div className='card pad-10'>
           <div className='row'>
             <div className='col-lg-6 d-flex'>
+              <Dropdown
+                isOpen={dropdown}
+                toggle={() => setDropdown(!dropdown)}
+                className='float-left mg-right-10'
+              >
+                <DropdownToggle className='no-pad btn btn-small btn-border'>
+                  <div className='fs-12 normal'>
+                    All Related Scopes <i className='fa fa-chevron-down link mg-left-5' />
+                  </div>
+                </DropdownToggle>
+                <DropdownMenu className='w-auto px-5'>
+                  <label className='dropdown-checkbox'>
+                    <input
+                      type='checkbox'
+                      name='thisScopeAndItsAncestors'
+                      onChange={handleCheckboxChange}
+                      checked={includeParents}
+                    />
+                    <span>
+                      <i className='link mg-right-5' /> This scope and its ancestors
+                    </span>
+                  </label>{' '}
+                  <br />
+                  <label className='dropdown-checkbox'>
+                    <input
+                      type='checkbox'
+                      name='thisScopeAndItsDescendants'
+                      onChange={handleCheckboxChange}
+                      checked={includeChildren} //
+                    />
+                    <span>
+                      <i className='link mg-right-5' /> This scope and its descendants
+                    </span>
+                  </label>
+                </DropdownMenu>
+              </Dropdown>
               <div className='mb-3'>
                 <Dropdown isOpen={dropdownOpenExclusion} toggle={handleThreatActions}>
                   <DropdownToggle className='no-pad'>
-                    <div className='btn btn-new btn-small'>
-                      New Exclusion 
-                    </div>
+                    <div className='btn btn-new btn-small'>New Exclusion</div>
                   </DropdownToggle>
                   <DropdownMenu className='w-auto'>
                     <DropdownItem
@@ -184,27 +258,27 @@ function Exclusions() {
                       Create Exclusion
                     </DropdownItem>
                     <DropdownItem onClick={() => setAddToBlockListModal(true)}>
-                    Add From Exclusions Catalog
+                      Add From Exclusions Catalog
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </div>
               {showMoreActionsModal && (
-                  <CreateExclusionModal
-                    show={showMoreActionsModal}
-                    handleClose={handleCloseMoreActionsModal}
-                    handleAction={handleAction}
-                    selectedValue={selectedValue}
-                  />
-                )}
-                {addToBlockListModal && (
-                  <AddFromExclusionsCatalogModal
-                    show={addToBlockListModal}
-                    handleClose={handleCloseAddToBlockList}
-                    handleAction={handleActionAddToBlockList}
-                    selectedValue={selectedValue}
-                  />
-                )}
+                <CreateExclusionModal
+                  show={showMoreActionsModal}
+                  handleClose={handleCloseMoreActionsModal}
+                  handleAction={handleAction}
+                  selectedValue={selectedValue}
+                />
+              )}
+              {addToBlockListModal && (
+                <AddFromExclusionsCatalogModal
+                  show={addToBlockListModal}
+                  handleClose={handleCloseAddToBlockList}
+                  handleAction={handleActionAddToBlockList}
+                  selectedValue={selectedValue}
+                />
+              )}
               <button className='btn btn-small btn-new ms-2 '>Delete selection</button>
             </div>
             <div className='col-lg-6 text-right'>
@@ -228,23 +302,55 @@ function Exclusions() {
               </Dropdown>
             </div>
           </div>
+          <div className='header-filter mg-btm-20 row'>
+            <div className='col-lg-12'>
+              <input
+                type='text'
+                placeholder='Search...'
+                className='form-control'
+                value={filterValue}
+                onChange={handleFilterChange}
+              />
+            </div>
+          </div>
           <table className='table alert-table scroll-x'>
             <thead>
               <tr>
                 <th>{/* <input type="checkbox" name="selectAll" /> */}</th>
-                <th>Exclusion Type</th>
-                <th>OS</th>
-                <th>Application Name</th>
-                <th>Inventory Listed</th>
-                <th>Description</th>
-                <th>Value</th>
-                <th>Scope Path </th>
-                <th>User</th>
-                <th>Mode</th>
-                <th>Last Update</th>
-                <th>Source</th>
-                <th>Scope</th>
-                <th>Imported</th>
+
+                <th onClick={() => handleSort('osType')}>
+                  OS {renderSortIcon(sortConfig, 'osType')}
+                </th>
+                <th onClick={() => handleSort('applicationName')}>
+                  Application Name {renderSortIcon(sortConfig, 'applicationName')}
+                </th>
+                <th onClick={() => handleSort('description')}>
+                  Description {renderSortIcon(sortConfig, 'description')}
+                </th>
+                <th onClick={() => handleSort('value')}>
+                  Value {renderSortIcon(sortConfig, 'value')}
+                </th>
+                <th onClick={() => handleSort('scopePath')}>
+                  Scope Path {renderSortIcon(sortConfig, 'scopePath')}
+                </th>
+                <th onClick={() => handleSort('userName')}>
+                  User {renderSortIcon(sortConfig, 'userName')}
+                </th>
+                <th onClick={() => handleSort('mode')}>
+                  Mode {renderSortIcon(sortConfig, 'mode')}
+                </th>
+                <th onClick={() => handleSort('updatedAt')}>
+                  Last Update {renderSortIcon(sortConfig, 'updatedAt')}
+                </th>
+                <th onClick={() => handleSort('source')}>
+                  Source {renderSortIcon(sortConfig, 'source')}
+                </th>
+                <th onClick={() => handleSort('scopeName')}>
+                  Scope {renderSortIcon(sortConfig, 'scopeName')}
+                </th>
+                <th onClick={() => handleSort('imported')}>
+                  Imported {renderSortIcon(sortConfig, 'imported')}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -254,10 +360,8 @@ function Exclusions() {
                     <td>
                       <input type='checkbox' name={`checkbox_${item.id}`} />
                     </td>
-                    <td></td>
                     <td>{item.osType}</td>
                     <td>{item.applicationName}</td>
-                    <td></td>
                     <td title={item.description}>{item.description}</td>
                     <td title={item.value}>{item.value}</td>
                     <td title={item.scopePath}>{item?.scopePath}</td>

@@ -1,10 +1,11 @@
 
-const ExclusionListUrl ="http://115.110.192.133:502/api/SentinalOne/v1/Exclusion/List"
+const ExclusionListUrl ="http://115.110.192.133:502/api/Alerts/v1/Exclusion/List"
 const BlokckedListUrl ="http://115.110.192.133:502/api/SentinalOne/v1/BlokckedList"
 const AccountDetailsUrl ="http://115.110.192.133:502/api/SentinalOne/v1/Account/Details"
 const PolicyDetailsUrl = "http://115.110.192.133:502/api/SentinalOne/v1/Policy/Details"
 const blockedListItemDeleteUrl= "http://115.110.192.133:502/api/Alerts/v1/blockedListItem/Delete"
 const AddToblockListUrl= "http://115.110.192.133:502/api/Alerts/v1/AddToblockList"
+const blockedListItemUpdateUrl = "http://115.110.192.133:502/api/Alerts/v1/blockedListItem/Update"
 
 export const fetchExclusionListUrl = async (data) => {
     try {
@@ -103,6 +104,24 @@ export const fetchExclusionListUrl = async (data) => {
   export const fetchAddToblockListUrl = async (data) => {
     try {
       const response = await fetch(`${AddToblockListUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchblockedListItemUpdateUrl = async (data) => {
+    try {
+      const response = await fetch(`${blockedListItemUpdateUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
