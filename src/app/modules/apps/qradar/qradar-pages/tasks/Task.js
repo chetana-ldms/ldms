@@ -52,7 +52,7 @@ function Task() {
       const { isSuccess, message } = responseData;
 
       if (isSuccess) {
-        notify(message)
+        notify(message);
         reload();
       } else {
         notifyFail(message);
@@ -89,19 +89,20 @@ function Task() {
   };
   if (LoginCheck === "true" && tasks === null) {
     sessionStorage.removeItem("openTaskCount");
-    setTimeout(()=>{
-      navigate("/dashboard");},2000);
+    setTimeout(() => {
+      navigate("/dashboard");
+    }, 2000);
     sessionStorage.removeItem("clickedButton");
   }
   return (
-    <div className="no-pad">
+    <div className="card pad-10">
       <ToastContainer />
       <div className="border-0">
-        <h1 className="card-title align-items-start flex-column mb-10">
+        <h1 className="card-title align-items-start flex-column mb-5">
           <span className="card-label fw-bold fs-3 mb-1">Tasks</span>
         </h1>
       </div>
-      <div className="card-body">
+      <div className="card-body no-pad">
         <table className="table align-middle gs-0 gy-4 dash-table alert-table">
           <thead>
             <tr className="fw-bold text-muted bg-blue">

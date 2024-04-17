@@ -311,9 +311,9 @@ function Exclusions() {
                 isOpen={dropdownOpen}
                 toggle={() => setDropdownOpen(!dropdownOpen)}
               >
-                <DropdownToggle className="no-pad btn btn-new btn-small">
+                <DropdownToggle className="no-pad btn btn-border btn-small">
                   <div>
-                    Export <i className="fa fa-file-export white mg-left-5" />
+                    Export <i className="fa fa-file-export link mg-left-5" />
                   </div>
                 </DropdownToggle>
                 <DropdownMenu className="w-auto">
