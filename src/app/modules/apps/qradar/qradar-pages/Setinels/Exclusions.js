@@ -409,7 +409,9 @@ function Exclusions() {
           <table className="table alert-table scroll-x">
             <thead>
               <tr>
-                <th>{/* <input type="checkbox" name="selectAll" /> */}</th>
+                <th className="checkbox-th">
+                  {/* <input type="checkbox" name="selectAll" /> */}
+                </th>
 
                 <th onClick={() => handleSort("osType")}>
                   OS {renderSortIcon(sortConfig, "osType")}

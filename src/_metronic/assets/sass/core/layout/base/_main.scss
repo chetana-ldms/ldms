@@ -387,6 +387,11 @@ body {
 .dropdown-menu{
   &.show{
     box-shadow: 0px 1px 2px 1px #afc7c5;
+    .btn-border{
+      &.btn-secondary{
+        background-color: white !important;
+      }
+    }
   }
 }
 
@@ -470,13 +475,19 @@ body {
   tr{
     &.table-row{
       border-bottom: 1px solid #ddd !important;
+      transition: transform .2s;
       &:nth-of-type(4n+1) {
         background-color: #f4f4f4 !important;
       }
       &:nth-of-type(4n+2) {
         background-color: #fff !important;
       }
+      &:hover{
+        box-shadow: 0px 0px 1px 1px #9ad2e5 !important;
+        transform: scale(1.01);
+      }
     }
+    
   }
   .form-check-input{
     cursor: pointer;
@@ -542,6 +553,14 @@ body {
   border: 1px solid #008cba !important;
   color: #008cba;
   background: white !important;
+  &:hover,&:focus{
+    background-color: white !important;
+  }
+  &.btn.btn-secondary{
+    &:hover:not(.btn-active){
+      background-color: white !important;
+    }
+  }
 }
 
 .btn-login{
@@ -981,6 +1000,9 @@ form{
   }
   table{
     min-height: 300px;
+    .checkbox-th{
+      padding: 10px 30px !important;
+    }
     tr{
       &.table-row{
         border-bottom: 1px solid #ddd;
@@ -1000,6 +1022,9 @@ form{
           &:hover{
             text-decoration: underline !important;
           }
+        }
+        input[type="checkbox"]{
+          margin: 0 0 0 8px;
         }
       }
     }
@@ -1354,7 +1379,7 @@ form{
   background-color: #008cba !important;
   font-weight: normal !important;
   color: #fff !important;
-  border-radius: 15px;
+  border-radius: 10px;
   &:hover{
     background-color: #076280 !important;
   }

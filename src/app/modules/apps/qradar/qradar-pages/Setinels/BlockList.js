@@ -355,7 +355,7 @@ function BlockList() {
               <table className="table alert-table scroll-x">
                 <thead>
                   <tr>
-                    <th className="w-25px"></th>
+                    <th className="checkbox-th"></th>
                     <th onClick={() => handleSort("osType")}>
                       OS {renderSortIcon(sortConfig, "osType")}
                     </th>
