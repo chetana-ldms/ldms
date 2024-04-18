@@ -829,8 +829,12 @@ const AlertsPage = () => {
                 ")"}
             </span>
           </h3>
-
-          <div className="card-toolbar">
+        </div>
+      </div>
+      <div className="clearfix" />
+      <div className="card pad-10">
+        <div className="pb-3 pt-3">
+          <div className="card-toolbar float-left">
             <div className="d-flex align-items-center gap-2 gap-lg-3">
               <div className="m-0">
                 <a
@@ -1241,21 +1245,8 @@ const AlertsPage = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div className="clearfix" />
-      <div className="card pad-10">
-        <div className="d-flex justify-content-end align-items-center">
-          <div className="ds-reload">
-            <span className="fs-13 fc-gray" onClick={handleRefresh}>
-              Auto refresh every 2 minutes{" "}
-              <i
-                className={`fa fa-refresh link ${isRefreshing ? "rotate" : ""}`}
-                title="Auto refresh every 2 minutes"
-              />
-            </span>
-          </div>
-          <div className="export-report ms-2">
+
+          <div className="export-report ms-2 float-right">
             <Dropdown
               isOpen={dropdownOpen}
               toggle={() => setDropdownOpen(!dropdownOpen)}
@@ -1273,6 +1264,15 @@ const AlertsPage = () => {
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
+          </div>
+          <div className="ds-reload mt-2 float-right">
+            <span className="fs-13 fc-gray" onClick={handleRefresh}>
+              Auto refresh every 2 minutes{" "}
+              <i
+                className={`fa fa-refresh link ${isRefreshing ? "rotate" : ""}`}
+                title="Auto refresh every 2 minutes"
+              />
+            </span>
           </div>
         </div>
         {openEditPage ? (
@@ -2057,9 +2057,9 @@ const AlertsPage = () => {
                                               }}
                                             ></i>
                                           </div> */}
-                                          <div className="col-md-9">
+                                          <div className="col-md-8">
                                             <div className="d-flex ">
-                                              <div className="border-right">
+                                              <div className="border-right pe-2">
                                                 {" "}
                                                 <span className="semi-bold">
                                                   Threat status :
@@ -2074,9 +2074,9 @@ const AlertsPage = () => {
                                                   threatHeaderDtls.aiConfidenceLevel
                                                 }
                                               </div>
-                                              <div className="border-right px-1 d-flex align-items-center">
+                                              <div className="border-right px-1 pe-2 d-flex align-items-center">
                                                 <span className="semi-bold">
-                                                  Analyst Verdict:
+                                                  Analyst Verdict :
                                                 </span>
                                                 {/* <input
                                                   type="text"
@@ -2092,7 +2092,7 @@ const AlertsPage = () => {
                                               </div>
                                               <div className="px-1 d-flex align-items-center">
                                                 <span className="semi-bold">
-                                                  Incident Status:
+                                                  Incident Status :
                                                 </span>
                                                 {/* <input
                                                   type="text"
@@ -2201,7 +2201,7 @@ const AlertsPage = () => {
                                         <hr />
                                         <div className="row">
                                           <div className="fs-12 col-md-6">
-                                            THREAT FILE NAME {threatInfo.name}
+                                            THREAT FILE NAME : {threatInfo.name}
                                           </div>
                                           <div className="fs-14 mt-5 text-primary col-md-6 text-end">
                                             {/* <span className="mx-5"><i className="fas fa-copy mx-3"></i> Copy Details</span>
@@ -2297,16 +2297,10 @@ const AlertsPage = () => {
                                                 Real Time Data about the end
                                                 point:
                                               </p>
-                                              <div className="row">
-                                                <div className="col-md-3">
+                                              <div className="row border-bottom">
+                                                <div className="col-md-2">
                                                   <span>
-                                                    <i
-                                                      className="fab fa-windows"
-                                                      style={{
-                                                        fontSize: "6em",
-                                                        width: "2em",
-                                                      }}
-                                                    ></i>
+                                                    <i className="fab fa-windows fs-40"></i>
                                                   </span>
                                                 </div>
                                                 <div className="col-md-9">
@@ -2321,7 +2315,6 @@ const AlertsPage = () => {
                                                   </p>
                                                 </div>
                                               </div>
-                                              <hr />
                                               <div className="col-md-4 ">
                                                 {/* <p>Console connectivity</p> */}
                                                 <p className="mb-2 semi-bold">

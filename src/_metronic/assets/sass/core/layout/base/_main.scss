@@ -389,7 +389,7 @@ body {
     box-shadow: 0px 1px 2px 1px #afc7c5;
     .btn-border{
       &.btn-secondary{
-        background-color: white !important;
+        background-color: white !important  ;
       }
     }
   }
@@ -1029,6 +1029,13 @@ form{
       }
     }
   }
+  .show{
+    .btn-border{
+      &.btn-secondary{
+        background-color: white !important;
+      }
+    }
+  }
 }
 
 #kt_app_content {
@@ -1153,7 +1160,7 @@ form{
 }
 
 .fs-40 {
-  font-size: 40px;
+  font-size: 40px !important;
 }
 
 .lh-30 {
