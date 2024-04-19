@@ -4,7 +4,8 @@ import {notify, notifyFail} from '../components/notification/Notification'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
 import {fetchAddToExclusionListUrl} from '../../../../../api/SentinalApi'
 
-const CreateExclusionModal = ({show, onClose, refreshParent}) => {
+const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) => {
+  console.log(selectedItem, 'selectedItem')
   const osDropdownRef = useRef(null)
   const descriptionTextareaRef = useRef(null)
   const sha1InputRef = useRef(null)
@@ -32,6 +33,18 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
   const [selectedOption, setSelectedOption] = useState('suppressAlerts')
   const [actions, setActions] = useState([])
   const browserDropdownRef = useRef(null)
+  const [formData, setFormData] = useState({
+    osType: selectedItem?.osType,
+    description: selectedItem?.description,
+  })
+  const {osType, description} = formData
+  const handleChange = (e, field) => {
+    e.preventDefault()
+    setFormData({
+      ...formData,
+      [field]: e.target.value,
+    })
+  }
 
   const handleSubmit = async () => {
     try {
@@ -85,8 +98,9 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
           osType: osDropdownRef.current.value,
           value: sha1InputRef.current.value,
           description: descriptionTextareaRef.current.value,
-          createdDate: createdDate,
-          createdUserId: createdUserId,
+          id: selectedItem.id,
+          modifiedDate: createdDate,
+          modifiedUserId: createdUserId,
           type: 'white_hash',
           groupId: groupId || '',
           siteId: siteId || '',
@@ -284,7 +298,7 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
   return (
     <Modal show={show} onHide={onClose} className='AddToExclusionsModal application-modal'>
       <Modal.Header closeButton>
-        <Modal.Title>New Exclusions</Modal.Title>
+        <Modal.Title>Update Exclusionslist Item</Modal.Title>
         <button type='button' class='application-modal-close' aria-label='Close'>
           <i className='fa fa-close' />
         </button>
@@ -316,11 +330,18 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
 
         {selectedValue == 'Browser' && (
           <div className='row'>
-            <div className='col-md-4'>
+            <div className='col-md-6'>
               <label htmlFor='osInput' className='form-label'>
                 OS*
               </label>
-              <select className='form-select' id='osInput' ref={osDropdownRef} required>
+              <select
+                className='form-select'
+                id='osInput'
+                ref={osDropdownRef}
+                value={osType}
+                onChange={(e) => handleChange(e, 'osType')}
+                required
+              >
                 <option value=''>Select</option>
                 <option value='windows'>Windows</option>
               </select>
@@ -330,11 +351,18 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
 
         {selectedValue !== 'Browser' && (
           <div className='row'>
-            <div className='col-md-4'>
+            <div className='col-md-6'>
               <label htmlFor='osInput' className='form-label'>
                 OS*
               </label>
-              <select className='form-select' id='osInput' ref={osDropdownRef} required>
+              <select
+                className='form-select'
+                id='osInput'
+                ref={osDropdownRef}
+                value={osType}
+                onChange={(e) => handleChange(e, 'osType')}
+                required
+              >
                 <option value=''>Select</option>
                 <option value='windows'>Windows</option>
                 <option value='macos'>MacOS</option>
@@ -345,19 +373,23 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
         )}
 
         {selectedValue == 'Hash' && (
-          <div className='row mt-5 mb-5'>
-            <div className='col-md-10'>
+          <div className='row mt-5'>
+            <div className='col-md-9'>
               <div>
                 <label className='form-label' htmlFor='sha1Input'>
                   SHA1*
                 </label>
-                <input type='text' className='form-control' ref={sha1InputRef} required />
+                <input
+                  type='text'
+                  className='form-control'
+                  ref={sha1InputRef}
+                  value={selectedItem?.value}
+                  disabled
+                />
               </div>
             </div>
-            <div className='link col-md-2'>
-              <span className='inline-block threat-search float-right'>
-                <i className='bi bi-search text-primary mr-2'></i> Threat
-              </span>
+            <div className='col-md-3  text-primary d-flex align-items-end justify-content-end pb-3 '>
+              <i className='bi bi-search text-primary mr-2'></i> Threat
             </div>
           </div>
         )}
@@ -637,13 +669,15 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
             </select>
           </div>
         )}
-        <div className='mt-1'>
+        <div className='mt-5'>
           <label className='form-label'>Description</label>
           <textarea
             ref={descriptionTextareaRef}
             rows='1'
             className='form-control'
             placeholder='Add Description or Leave empty'
+            value={description}
+            onChange={(e) => handleChange(e, 'description')}
           ></textarea>
         </div>
       </Modal.Body>
@@ -659,4 +693,4 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
   )
 }
 
-export default CreateExclusionModal
+export default CreateExclusionModalEdit

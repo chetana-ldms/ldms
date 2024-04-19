@@ -94,7 +94,7 @@ const BlockListEditPopup = ({show, onClose, refreshParent, selectedItem}) => {
               required
             >
               <option value=''>Select</option>
-              <option value='windows'>Windows</option>BlockListPopUp
+              <option value='windows'>Windows</option>
               <option value='macos'>MacOS</option>
               <option value='linux'>Linux</option>
             </select>

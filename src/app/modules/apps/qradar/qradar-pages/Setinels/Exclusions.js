@@ -22,6 +22,7 @@ import {
 import { renderSortIcon, sortedItems } from "../../../../../../utils/Sorting";
 import { notify, notifyFail } from "../components/notification/Notification";
 import { ToastContainer } from "react-toastify";
+import CreateExclusionModalEdit from "./CreateExclusionModalEdit";
 
 function Exclusions() {
   const orgId = Number(sessionStorage.getItem("orgId"));
@@ -498,7 +499,7 @@ function Exclusions() {
             handlePageSelect={handlePageSelect}
           />
           {showPopupEdit && selectedItem && (
-            <CreateExclusionModal
+            <CreateExclusionModalEdit
               show={openPopupEdit}
               onClose={closePopupEdit}
               refreshParent={handleRefreshActions}
