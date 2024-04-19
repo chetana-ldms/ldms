@@ -244,6 +244,8 @@ function Exclusions() {
       if (isSuccess) {
         notify(message);
         await fetchData();
+        setIsCheckboxSelected(false)
+        setselectedAlert([]);
       } else {
         notifyFail(message);
       }
