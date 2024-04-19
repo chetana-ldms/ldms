@@ -691,7 +691,7 @@ function Policy() {
                     <div className="form-check inline-block ms-10">
                       <input
                         className="form-check-input"
-                        type="checkbox"
+                        type="text"
                         id="showLast30Days"
                         name="maxEventAgeDays"
                         checked={policy?.agentUi?.maxEventAgeDays}
@@ -1139,7 +1139,7 @@ function Policy() {
                 <div className="card-body row pad-10">
                   <div className="d-flex justify-content-start">
                     <strong>Decommissioning</strong>
-                    <div className="form-check form-switch px-5">
+                    <div className="form-check form-switch">
                       <input
                         className="form-check-input"
                         type="checkbox"
