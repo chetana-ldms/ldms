@@ -2,10 +2,12 @@ import React, {useState, useRef, useEffect} from 'react'
 import {Modal, Button} from 'react-bootstrap'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
-import {fetchAddToExclusionListUrl} from '../../../../../api/SentinalApi'
+import {fetchAddToExclusionListUrl, fetchExcludedListItemUpdateUrl} from '../../../../../api/SentinalApi'
 
 const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) => {
   console.log(selectedItem, 'selectedItem')
+  const initialExcludeAlertsFile = selectedItem?.actions?.includes('upload') || false;
+  const initialexcludeBinaryVaultFile = selectedItem?.actions?.includes('detect') || false;
   const osDropdownRef = useRef(null)
   const descriptionTextareaRef = useRef(null)
   const sha1InputRef = useRef(null)
@@ -20,14 +22,30 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
   const groupId = sessionStorage.getItem('groupId')
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [isCustomDropdownOpen, setIsCustomDropdownOpen] = useState(false)
-  const [selectedValue, setSelectedValue] = useState('Hash')
+  const mapTypeToSelectedValue = (type) => {
+    switch (type) {
+      case 'white_hash':
+        return 'Hash'
+      case 'path':
+        return 'Path'
+      case 'certificate':
+        return 'Certificate'
+      case 'browser':
+        return 'Browser'
+      case 'file_type':
+        return 'File Type'
+      default:
+        return type
+    }
+  }
+  const [selectedValue, setSelectedValue] = useState(mapTypeToSelectedValue(selectedItem?.type))
   const [customSelectedValue, setCustomSelectedValue] = useState('All engines')
   const [includeSubfolders, setIncludeSubfolders] = useState(false)
   const [changeEnabled, setChangeEnabled] = useState(false)
   const [excludeAlerts, setExcludeAlerts] = useState(false)
   const [excludeBinaryVault, setExcludeBinaryVault] = useState(false)
-  const [excludeAlertsFile, setExcludeAlertsFile] = useState(false)
-  const [excludeBinaryVaultFile, setExcludeBinaryVaultFile] = useState(false)
+  const [excludeAlertsFile, setExcludeAlertsFile] = useState(initialExcludeAlertsFile);
+  const [excludeBinaryVaultFile, setExcludeBinaryVaultFile] = useState(initialexcludeBinaryVaultFile)
   const [error, setError] = useState(false)
   const [isAccordionOpen, setIsAccordionOpen] = useState(false)
   const [selectedOption, setSelectedOption] = useState('suppressAlerts')
@@ -36,8 +54,9 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
   const [formData, setFormData] = useState({
     osType: selectedItem?.osType,
     description: selectedItem?.description,
+    value: selectedItem?.value,
   })
-  const {osType, description} = formData
+  const {osType, description, value} = formData
   const handleChange = (e, field) => {
     e.preventDefault()
     setFormData({
@@ -99,6 +118,7 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
           value: sha1InputRef.current.value,
           description: descriptionTextareaRef.current.value,
           id: selectedItem.id,
+          source:selectedItem?.source,
           modifiedDate: createdDate,
           modifiedUserId: createdUserId,
           type: 'white_hash',
@@ -112,8 +132,10 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
           osType: osDropdownRef.current.value,
           value: signerInputRef.current.value,
           description: descriptionTextareaRef.current.value,
-          createdDate: createdDate,
-          createdUserId: createdUserId,
+          id: selectedItem.id,
+          source:selectedItem?.source,
+          modifiedDate: createdDate,
+          modifiedUserId: createdUserId,
           type: 'certificate',
           groupId: groupId || '',
           siteId: siteId || '',
@@ -125,8 +147,10 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
           osType: osDropdownRef.current.value,
           value: fileInputRef.current.value,
           description: descriptionTextareaRef.current.value,
-          createdDate: createdDate,
-          createdUserId: createdUserId,
+          id: selectedItem.id,
+          source:selectedItem?.source,
+          modifiedDate: createdDate,
+          modifiedUserId: createdUserId,
           type: 'file_type',
           groupId: groupId || '',
           siteId: siteId || '',
@@ -139,8 +163,10 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
           osType: osDropdownRef.current.value,
           value: browserDropdownRef.current.value,
           description: descriptionTextareaRef.current.value,
-          createdDate: createdDate,
-          createdUserId: createdUserId,
+          id: selectedItem.id,
+          source:selectedItem?.source,
+          modifiedDate: createdDate,
+          modifiedUserId: createdUserId,
           type: 'browser',
           groupId: groupId || '',
           siteId: siteId || '',
@@ -178,8 +204,10 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
           osType: osDropdownRef.current.value,
           value: pathInputRef.current.value,
           description: descriptionTextareaRef.current.value,
-          createdDate: createdDate,
-          createdUserId: createdUserId,
+          id: selectedItem?.id,
+          source:selectedItem?.source,
+          modifiedDate: createdDate,
+          modifiedUserId: createdUserId,
           type: 'file_type',
           groupId: groupId || '',
           siteId: siteId || '',
@@ -192,7 +220,7 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
         return
       }
       if (data) {
-        const responseData = await fetchAddToExclusionListUrl(data)
+        const responseData = await fetchExcludedListItemUpdateUrl(data)
         const {isSuccess, message} = responseData
 
         if (isSuccess) {
@@ -307,7 +335,7 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
         <div className='mb-2 fs-12 d-flex align-items-center'>
           <label className='semi-bold me-2'>Exclusions Type:</label>
           <Dropdown isOpen={dropdownOpen} toggle={handleDropdownToggle}>
-            <DropdownToggle className='btn btn-small btn-border'>
+            <DropdownToggle className='btn btn-small btn-border' disabled>
               {selectedValue} <i className='fa fa-chevron-down' />
             </DropdownToggle>
             <DropdownMenu className='w-auto'>
@@ -405,6 +433,8 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
                   className='form-control'
                   placeholder='Example: /bin/file or /bin/'
                   ref={pathInputRef}
+                  value={value}
+                  onChange={(e) => handleChange(e, 'value')}
                   required
                 />
               </div>
@@ -590,7 +620,14 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
                 <label className='form-label' htmlFor='sha1Input'>
                   Signer Identity*
                 </label>
-                <input type='text' className='form-control' ref={signerInputRef} required />
+                <input
+                  type='text'
+                  className='form-control'
+                  value={value}
+                  onChange={(e) => handleChange(e, 'value')}
+                  ref={signerInputRef}
+                  required
+                />
               </div>
             </div>
             <div className='link col-md-2'>
@@ -618,6 +655,8 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
                   className='form-control'
                   placeholder='Example: txt'
                   ref={fileInputRef}
+                  value={value}
+                  onChange={(e) => handleChange(e, 'value')}
                   required
                 />
               </div>
@@ -633,6 +672,7 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
                 <input
                   type='checkbox'
                   checked={excludeAlertsFile}
+                  value={selectedItem?.actions}
                   onChange={(e) => handleCheckboxChangeFile(e, 'excludeAlertsFile')}
                   className='me-2 v-middle'
                 />
@@ -660,7 +700,14 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
             <label htmlFor='browserInput' className='form-label'>
               Browser*
             </label>
-            <select className='form-select' id='browserInput' ref={browserDropdownRef} required>
+            <select
+              className='form-select'
+              id='browserInput'
+              value={value}
+              onChange={(e) => handleChange(e, 'value')}
+              ref={browserDropdownRef}
+              required
+            >
               <option value=''>Select</option>
               <option value='firefox'>Firefox</option>
               <option value='edge'>Edge</option>

@@ -8,6 +8,7 @@ const AddToblockListUrl= "http://115.110.192.133:502/api/Alerts/v1/AddToblockLis
 const blockedListItemUpdateUrl = "http://115.110.192.133:502/api/Alerts/v1/blockedListItem/Update"
 const AddToExclusionListUrl= "http://115.110.192.133:502/api/Alerts/v1/AddToExclusionList"
 const ExcludedListItemDeleteUrl="http://115.110.192.133:502/api/Alerts/v1/ExcludedListItem/Delete"
+const ExcludedListItemUpdateUrl="http://115.110.192.133:502/api/Alerts/v1/ExcludedListItem/Update"
 
 export const fetchExclusionListUrl = async (data) => {
     try {
@@ -160,6 +161,24 @@ export const fetchExclusionListUrl = async (data) => {
   export const fetchExcludedListItemDeleteUrl = async (data) => {
     try {
       const response = await fetch(`${ExcludedListItemDeleteUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchExcludedListItemUpdateUrl = async (data) => {
+    try {
+      const response = await fetch(`${ExcludedListItemUpdateUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
