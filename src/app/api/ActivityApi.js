@@ -1,5 +1,6 @@
-const ActivitiesUrl ="http://115.110.192.133:502/api/Activity/v1/activities"
-const ActivityTypesUrl= "http://115.110.192.133:502/api/Activity/v1/ActivityTypes"
+const ActivitiesUrl =process.env.REACT_APP_ACTIVITIES_URL
+const ActivityTypesUrl= process.env.REACT_APP_ACTIVITY_TYPES_URL
+
 
 export const fetchActivitiesUrl = async (data) => {
     try {

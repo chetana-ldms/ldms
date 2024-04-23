@@ -414,41 +414,25 @@ const modeToDisplayString = {
           </Dropdown>
         </div>
 
-        {selectedValue == 'Browser' && (
+        {selectedValue == 'File Type' || selectedValue == 'Browser' ? (
           <div className='row'>
-            <div className='col-md-6'>
+            <div className='col-md-4'>
               <label htmlFor='osInput' className='form-label'>
                 OS*
               </label>
-              <select
-                className='form-select'
-                id='osInput'
-                ref={osDropdownRef}
-                value={osType}
-                onChange={(e) => handleChange(e, 'osType')}
-                required
-              >
+              <select className='form-select' id='osInput' ref={osDropdownRef} required>
                 <option value=''>Select</option>
                 <option value='windows'>Windows</option>
               </select>
             </div>
           </div>
-        )}
-
-        {selectedValue !== 'Browser' && (
+        ) : (
           <div className='row'>
-            <div className='col-md-6'>
+            <div className='col-md-4'>
               <label htmlFor='osInput' className='form-label'>
                 OS*
               </label>
-              <select
-                className='form-select'
-                id='osInput'
-                ref={osDropdownRef}
-                value={osType}
-                onChange={(e) => handleChange(e, 'osType')}
-                required
-              >
+              <select className='form-select' id='osInput' ref={osDropdownRef} required>
                 <option value=''>Select</option>
                 <option value='windows'>Windows</option>
                 <option value='macos'>MacOS</option>
