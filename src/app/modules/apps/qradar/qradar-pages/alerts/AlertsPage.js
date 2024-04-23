@@ -2076,7 +2076,7 @@ const AlertsPage = () => {
                                               </div>
                                               <div className="border-right px-1 pe-2 d-flex align-items-center">
                                                 <span className="semi-bold">
-                                                  Analyst Verdict :
+                                                  Analyst Verdict :{" "}
                                                 </span>
                                                 {/* <input
                                                   type="text"
@@ -2092,7 +2092,7 @@ const AlertsPage = () => {
                                               </div>
                                               <div className="px-1 d-flex align-items-center">
                                                 <span className="semi-bold">
-                                                  Incident Status :
+                                                  Incident Status :{" "}
                                                 </span>
                                                 {/* <input
                                                   type="text"
@@ -2131,10 +2131,10 @@ const AlertsPage = () => {
                                               )}
                                             </div>
                                           </div>
-                                          <div className="col-md-3">
+                                          <div className="col-md-4">
                                             <div className="row">
-                                              <div className="col-md-2 text-center py-3">
-                                                <i className="bi bi-stopwatch fs-20"></i>
+                                              <div className="col-md-1 text-center py-3">
+                                                <i className="bi bi-stopwatch fs-18"></i>
                                               </div>
                                               <div className="col-md-10">
                                                 <p className="mb-2">
