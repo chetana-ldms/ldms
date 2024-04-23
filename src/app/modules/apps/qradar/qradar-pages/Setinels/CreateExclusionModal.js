@@ -37,6 +37,13 @@ const CreateExclusionModal = ({ show, onClose, refreshParent }) => {
   const [selectedOption, setSelectedOption] = useState("suppressAlerts");
   const [actions, setActions] = useState([]);
   const browserDropdownRef = useRef(null);
+  const optionDisplayStrings = {
+    suppressAlerts: "Suppress Alerts",
+    interoperability: "Interoperability",
+    interoperabilityExtended: "Interoperability - extended",
+    performanceFocus: "Performance Focus",
+    performanceFocusExtended: "Performance Focus - extended"
+};
 
   const handleSubmit = async () => {
     try {
@@ -146,24 +153,37 @@ const CreateExclusionModal = ({ show, onClose, refreshParent }) => {
         }
         let mode;
         switch (selectedOption) {
-          case "suppressAlerts":
-            mode = "suppress";
-            break;
-          case "interoperability":
-            mode = "disable_all_monitors";
-            break;
-          case "interoperabilityExtended":
-            mode = "disable_all_monitors_deep";
-            break;
-          case "performanceFocus":
-            mode = "disable_in_process_monitor";
-            break;
-          case "performanceFocusExtended":
-            mode = "disable_in_process_monitor_deep";
-            break;
-          default:
-            mode = "suppress";
+            case "suppressAlerts":
+                switch (customSelectedValue) {
+                    case "Static AI":
+                      mode = "suppress_dfi_only";
+                        break;
+                    case "Dynamic AI":
+                      mode = "suppress_dynamic_only";
+                        break;
+                    case "All engines":
+                      mode = "suppress_app_control";
+                        break;
+                    default:
+                        mode = "suppress";
+                }
+                break;
+            case "interoperability":
+                mode = "disable_all_monitors";
+                break;
+            case "interoperabilityExtended":
+                mode = "disable_all_monitors_deep";
+                break;
+            case "performanceFocus":
+                mode = "disable_in_process_monitor";
+                break;
+            case "performanceFocusExtended":
+                mode = "disable_in_process_monitor_deep";
+                break;
+            default:
+                mode = "suppress";
         }
+        
         data = {
           orgID: orgId,
           osType: osDropdownRef.current.value,
@@ -177,7 +197,7 @@ const CreateExclusionModal = ({ show, onClose, refreshParent }) => {
           accountId: accountId || "",
           actions: actions,
           pathExclusionType,
-          // mode,
+          mode,
         };
       } else {
         return;
@@ -473,7 +493,7 @@ const CreateExclusionModal = ({ show, onClose, refreshParent }) => {
             </div>
             <div className="border-top pt-5">
               <div className="d-flex justify-content-between mb-5">
-                <div>Exclusions Mode : {selectedOption}</div>
+                <div>Exclusions Mode : {optionDisplayStrings[selectedOption]}</div>
                 <div className="pointer link" onClick={toggleAccordion}>
                   More Options <i className="fa fa-chevron-down link" />
                 </div>
