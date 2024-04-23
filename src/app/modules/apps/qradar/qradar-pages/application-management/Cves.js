@@ -122,7 +122,12 @@ function Cves({ id }) {
             endpoints?.map((item) => (
               <tr key={item.cveId}>
                 <td>
-                  <input type="checkbox" />
+                  <div className="form-check form-check-sm form-check-custom form-check-solid">
+                    <input
+                      className="form-check-input widget-13-check"
+                      type="checkbox"
+                    />
+                  </div>
                 </td>
                 <td>{item.cveId}</td>
                 <td>{item.severity}</td>

@@ -245,7 +245,7 @@ function Exclusions() {
       if (isSuccess) {
         notify(message);
         await fetchData();
-        setIsCheckboxSelected(false)
+        setIsCheckboxSelected(false);
         setselectedAlert([]);
       } else {
         notifyFail(message);
@@ -360,7 +360,7 @@ function Exclusions() {
               )}
               <div className="float-left mg-left-10">
                 <button
-                  className={`btn btn-new btn-small float-left ${
+                  className={`btn btn-green btn-small float-left ${
                     !isCheckboxSelected && "disabled"
                   }`}
                   onClick={handleDelete}

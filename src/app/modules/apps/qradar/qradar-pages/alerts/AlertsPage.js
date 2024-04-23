@@ -1978,11 +1978,11 @@ const AlertsPage = () => {
                                     <div className="row alert-accordion">
                                       <div className="col-md-10">
                                         <div className="alert-details">
-                                          <b>Alert Name </b>
+                                          <b>Alert Name: </b>
                                           <span>{item.name}</span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Score</b>
+                                          <b>Score:</b>
                                           <span>
                                             {item.score === null ||
                                             item.score === ""
@@ -1991,19 +1991,19 @@ const AlertsPage = () => {
                                           </span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>SLA </b>
+                                          <b>SLA: </b>
                                           <span>{item.sla}</span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Severity </b>
+                                          <b>Severity: </b>
                                           <span>{item.severityName}</span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Status </b>
+                                          <b>Status: </b>
                                           <span>{item.status}</span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Detected Date/Time </b>
+                                          <b>Detected Date/Time: </b>
                                           <span>
                                             {item.detectedtime &&
                                               getCurrentTimeZone(
@@ -2012,23 +2012,23 @@ const AlertsPage = () => {
                                           </span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Observable Tag </b>
+                                          <b>Observable Tag: </b>
                                           <span>{item.observableTag} </span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Owner Name </b>
+                                          <b>Owner Name: </b>
                                           <span>{item.ownerusername}</span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Analysts Verdict </b>
+                                          <b>Analysts Verdict: </b>
                                           <span>{item.positiveAnalysis} </span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Source Name </b>
+                                          <b>Source Name: </b>
                                           <span>{item.source}</span>{" "}
                                         </div>
                                       </div>
-                                      <div className="col-md-2">
+                                      <div className="col-md-2 text-right">
                                         <div
                                           className="btn btn-primary btn-new btn-small"
                                           onClick={() => openEditPopUp(item)}
@@ -2201,7 +2201,10 @@ const AlertsPage = () => {
                                         <hr />
                                         <div className="row">
                                           <div className="fs-12 col-md-6">
-                                            THREAT FILE NAME : {threatInfo.name}
+                                            <span className="semi-bold">
+                                              Threat File Name :
+                                            </span>{" "}
+                                            {threatInfo.name}
                                           </div>
                                           <div className="fs-14 mt-5 text-primary col-md-6 text-end">
                                             {/* <span className="mx-5"><i className="fas fa-copy mx-3"></i> Copy Details</span>
@@ -2250,24 +2253,24 @@ const AlertsPage = () => {
                                             <div className="row">
                                               <div className="col-md-4 ">
                                                 <p className="semi-bold">
-                                                  Initiated By
+                                                  Initiated By:
                                                 </p>
                                                 {/* <p>Engine</p> */}
                                                 <p className="semi-bold">
-                                                  Detection Type
+                                                  Detection Type:
                                                 </p>
                                                 <p className="semi-bold">
-                                                  Classification
+                                                  Classification:
                                                 </p>
                                                 <p className="semi-bold">
                                                   {" "}
-                                                  File Size
+                                                  File Size:
                                                 </p>
                                                 <p className="semi-bold">
-                                                  Storyline
+                                                  Storyline:
                                                 </p>
                                                 <p className="semi-bold">
-                                                  Threat id
+                                                  Threat id:
                                                 </p>
                                               </div>
                                               <div className="col-md-6">
@@ -2297,7 +2300,7 @@ const AlertsPage = () => {
                                                 Real Time Data about the end
                                                 point:
                                               </p>
-                                              <div className="row border-bottom">
+                                              <div className="row border-btm">
                                                 <div className="col-md-2">
                                                   <span>
                                                     <i className="fab fa-windows fs-40"></i>
@@ -2305,7 +2308,7 @@ const AlertsPage = () => {
                                                 </div>
                                                 <div className="col-md-9">
                                                   <h6>DESCTOP-UPU1TUD</h6>
-                                                  <p className="fs-12">
+                                                  <p className="fs-12 no-margin">
                                                     LANCESOFT INDIA PRIVATE
                                                     LIMITE / Defoult site
                                                   </p>
@@ -2315,32 +2318,46 @@ const AlertsPage = () => {
                                                   </p>
                                                 </div>
                                               </div>
-                                              <div className="col-md-4 ">
-                                                {/* <p>Console connectivity</p> */}
-                                                <p className="mb-2 semi-bold">
-                                                  Full Disc scan:
-                                                </p>
-                                                <p className="semi-bold">
-                                                  Pending Reboot:
-                                                </p>
-                                                {/* <p>Number of not Mitigated Threats</p> */}
-                                                <p className="semi-bold">
-                                                  {" "}
-                                                  Network status:
-                                                </p>
-                                              </div>
-                                              <div className="col-md-8">
-                                                {/* <p>{endpointInfo.consoleConnectivity}</p> */}
-                                                <p>
-                                                  {endpointInfo.fullDiskScan}
-                                                </p>
-                                                <p>
-                                                  {endpointInfo.pendinRreboot}
-                                                </p>
-                                                {/* <p>0</p> */}
-                                                <p>
-                                                  {endpointInfo.networkStatus}
-                                                </p>
+                                              <div className="row  mt-2">
+                                                <div className="col-md-4">
+                                                  {/* <p>Console connectivity</p> */}
+                                                  <p className="semi-bold">
+                                                    Full Disc scan:
+                                                  </p>
+                                                  <p className="semi-bold">
+                                                    Pending Reboot:
+                                                  </p>
+                                                  {/* <p>Number of not Mitigated Threats</p> */}
+                                                  <p className="semi-bold">
+                                                    {" "}
+                                                    Network status:
+                                                  </p>
+                                                  <p className="semi-bold">
+                                                    OS Version:
+                                                  </p>
+                                                  <p className="semi-bold">
+                                                    Agent Version:
+                                                  </p>
+                                                </div>
+                                                <div className="col-md-8">
+                                                  {/* <p>{endpointInfo.consoleConnectivity}</p> */}
+                                                  <p>
+                                                    {endpointInfo.fullDiskScan}
+                                                  </p>
+                                                  <p>
+                                                    {endpointInfo.pendinRreboot}
+                                                  </p>
+                                                  {/* <p>0</p> */}
+                                                  <p>
+                                                    {endpointInfo.networkStatus}
+                                                  </p>
+                                                  <p>
+                                                    {endpointInfo.osVersion}
+                                                  </p>
+                                                  <p>
+                                                    {endpointInfo.agentVersion}
+                                                  </p>
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
@@ -2351,12 +2368,7 @@ const AlertsPage = () => {
                                                 <p className="semi-bold">
                                                   Scope:
                                                 </p>
-                                                <p className="semi-bold">
-                                                  OS Version:
-                                                </p>
-                                                <p className="semi-bold">
-                                                  Agent Version:
-                                                </p>
+
                                                 <p className="semi-bold">
                                                   {" "}
                                                   Policy:
@@ -2386,10 +2398,7 @@ const AlertsPage = () => {
                                               <div className="col-md-9">
                                                 {/* <p>.</p> */}
                                                 <p>{endpointInfo.scope}</p>
-                                                <p>{endpointInfo.osVersion}</p>
-                                                <p>
-                                                  {endpointInfo.agentVersion}
-                                                </p>
+
                                                 <p>{endpointInfo.policy}</p>
                                                 <p>
                                                   {endpointInfo.loggedInUser}

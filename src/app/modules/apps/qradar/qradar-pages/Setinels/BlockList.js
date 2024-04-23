@@ -288,7 +288,7 @@ function BlockList() {
               </Dropdown>
 
               <button
-                className="btn btn-new btn-small float-left"
+                className="btn btn-green btn-small float-left"
                 onClick={openPopup}
               >
                 Add New
@@ -303,7 +303,7 @@ function BlockList() {
               <div className="float-left mg-left-10">
                 {/* <button className='btn btn-new btn-small float-left'>Delete selection</button> */}
                 <button
-                  className={`btn btn-new btn-small float-left ${
+                  className={`btn btn-green btn-small float-left ${
                     !isCheckboxSelected && "disabled"
                   }`}
                   onClick={handleDelete}
