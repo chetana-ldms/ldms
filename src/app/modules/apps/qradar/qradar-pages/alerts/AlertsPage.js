@@ -45,6 +45,7 @@ import {
   Form,
 } from "reactstrap";
 
+
 const AlertsPage = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
   const handleError = useErrorBoundary();
@@ -1137,7 +1138,6 @@ const AlertsPage = () => {
                             <option>Select</option>
                             <option
                               value="1"
-                              onClick={createIncidentSubmit}
                               disabled={
                                 selectCheckBox.alertIncidentMappingId > 0
                               }
@@ -1151,13 +1151,14 @@ const AlertsPage = () => {
                         </div>
                       </div>
                       {actionsValue === "2" && escalate && (
+                        <div>
                         <form onSubmit={handleSubmit}>
                           <div className="mb-5">
                             <label
                               className="form-label fw-bolder"
                               htmlFor="ownerName"
                             >
-                              Owner <sup className="red">*</sup>
+                              Owner <sup className="red">*</sup>:
                             </label>
                             <div>
                               <select
@@ -1183,27 +1184,27 @@ const AlertsPage = () => {
                             </div>
                           </div>
                           <div className="mb-5">
-                            <label
-                              className="form-label fw-bolder"
-                              htmlFor="excalatecomments"
-                            >
-                              Comments <sup className="red">*</sup>
-                            </label>
-                            <Form.Control
-                              as="textarea"
-                              placeholder="Leave a comment here"
-                              value={values.comments}
-                              id="excalatecomments"
-                              name="comments"
-                              onChange={handleEscalate}
-                              style={{ height: "100px" }}
-                              required
-                            />
-                          </div>
+    <label
+        className="form-label fw-bolder"
+        htmlFor="excalatecomments"
+    >
+        Comments <sup className="red">*</sup>:
+    </label>
+    <textarea
+        placeholder="Leave a comment here"
+        value={values.comments}
+        id="excalatecomments"
+        name="comments"
+        onChange={handleEscalate}
+        // style={{ height: "100px" }}
+        required
+    />
+</div>
+
                           <div className="d-flex justify-content-end">
                             <button
                               type="submit"
-                              className="btn btn-small btn-new"
+                              className="btn btn-primary btn-small btn-new"
                             >
                               Submit
                             </button>
@@ -1216,6 +1217,7 @@ const AlertsPage = () => {
                             </button>
                           </div>
                         </form>
+                        </div>
                       )}
                       {actionsValue === "3" && ignorVisible && (
                         <div className="d-flex justify-content-end">
