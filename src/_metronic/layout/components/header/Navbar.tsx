@@ -119,9 +119,9 @@ const orgNames = organizations
   useEffect(() => {
     fetchData();
   }, []);
-  const accountNames = accountsStructure.map((item) => {
-return item.name
-  })
+//   const accountNames = accountsStructure.map((item) => {
+// return item.name
+//   })
   const handleAccountClick = (accountId: string, accountName: string) => {
     sessionStorage.setItem('accountId', accountId);
     sessionStorage.setItem('accountName', accountName);
@@ -160,40 +160,44 @@ return item.name
       {orgNames}
       </div> */}
       <div className='d-flex mt-5 semi-bold acc-site'>
+  {accountsStructure !==null ? (
+    <>
+      <Dropdown>
+        <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
+          {orgNames}
+        </Dropdown.Toggle>
+        <Dropdown.Menu>
+          {accountsStructure.map((account, index) => (
+            <Dropdown.Item key={index} onClick={() => handleAccountClick(account.accountId, account.name)}>
+              {account.name}
+            </Dropdown.Item>
+          ))}
+        </Dropdown.Menu>
+      </Dropdown>
+      
+      {accountName && (
         <Dropdown>
           <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-          {orgNames}
+            {`/ ${accountName}`}
           </Dropdown.Toggle>
           <Dropdown.Menu>
-            {accountsStructure.map((account, index) => (
-              <Dropdown.Item key={index} onClick={() => handleAccountClick(account.accountId, account.name)}>
-                {account.name}
-              </Dropdown.Item>
-            ))}
+            {accountsStructure
+              ?.find(account => account.name === accountName)
+              ?.sites.map((site, siteIndex) => (
+                <Dropdown.Item key={siteIndex} onClick={() => handleAccordionClick(site.name, site.siteId)}>
+                  {site.name} {site.activeLicenses}
+                </Dropdown.Item>
+              ))}
           </Dropdown.Menu>
         </Dropdown>
-       {
-          accountName &&
-          <Dropdown>
-          <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-          {` / ${accountName}`}
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            {accountsStructure?.find(account => account.name === accountName)?.sites.map((site, siteIndex) => (
-              <Dropdown.Item key={siteIndex} onClick={() => handleAccordionClick(site.name, site.siteId)}>
-                {site.name} {site.activeLicenses}
-              </Dropdown.Item>
-            ))}
-          </Dropdown.Menu>
-        </Dropdown>
-        }
+      )}
       
-        {siteName &&
-          <Dropdown>
-            <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-              {`/ ${siteName}`}
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
+      {siteName && (
+        <Dropdown>
+          <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
+            {`/ ${siteName}`}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
             {accountsStructure
               ?.find(account => account.name === accountName)
               ?.sites.find(site => site.name === siteName)
@@ -202,17 +206,23 @@ return item.name
                   {group.name} {group.totalAgents}
                 </Dropdown.Item>
               ))}
-            </Dropdown.Menu>
-            </Dropdown>
-            }
-            {groupName &&
-            <Dropdown>
-            <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-              {`/ ${groupName}`}
-            </Dropdown.Toggle>
-          </Dropdown>
-        }
-      </div>
+          </Dropdown.Menu>
+        </Dropdown>
+      )}
+      
+      {groupName && (
+        <Dropdown>
+          <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
+            {`/ ${groupName}`}
+          </Dropdown.Toggle>
+        </Dropdown>
+      )}
+    </>
+  ) : (
+    <div>{orgNames}</div>
+  )}
+</div>
+
 
       <div className='d-flex align-items-center'><span>Welcome <b>{userName}!</b></span></div>
      
