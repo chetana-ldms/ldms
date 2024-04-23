@@ -509,6 +509,7 @@ const CreateExclusionModal = ({ show, onClose, refreshParent }) => {
                           <Dropdown
                             isOpen={isCustomDropdownOpen}
                             toggle={toggleCustomDropdown}
+                            className="float-left"
                           >
                             <DropdownToggle className="no-btn no-pad no-bg link mb-1">
                               {customSelectedValue}{" "}
@@ -552,6 +553,7 @@ const CreateExclusionModal = ({ show, onClose, refreshParent }) => {
                           </Dropdown>
                         </div>
                       )}
+                      <div className="clearfix" />
                       <p className="gray fs-12 ms-6">
                         Do not display alerts on processes.
                       </p>
