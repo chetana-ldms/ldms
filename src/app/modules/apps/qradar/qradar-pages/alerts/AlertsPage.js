@@ -1137,7 +1137,6 @@ const AlertsPage = () => {
                             <option>Select</option>
                             <option
                               value="1"
-                              onClick={createIncidentSubmit}
                               disabled={
                                 selectCheckBox.alertIncidentMappingId > 0
                               }
@@ -1151,71 +1150,80 @@ const AlertsPage = () => {
                         </div>
                       </div>
                       {actionsValue === "2" && escalate && (
-                        <form onSubmit={handleSubmit}>
-                          <div className="mb-5">
-                            <label
-                              className="form-label fw-bolder"
-                              htmlFor="ownerName"
-                            >
-                              Owner <sup className="red">*</sup>
-                            </label>
-                            <div>
-                              <select
-                                id="ownerName"
-                                className="form-select form-select-solid"
-                                data-placeholder="Select option"
-                                data-allow-clear="true"
-                                value={values.owner}
-                                name="owner"
-                                onChange={handleEscalate}
-                                required
+                        <div>
+                          <form
+                            onSubmit={handleSubmit}
+                            className="header-filter"
+                          >
+                            <div className="mb-5">
+                              <label
+                                className="form-label fw-bolder"
+                                htmlFor="ownerName"
                               >
-                                <option value="">Select</option>
-                                {ldp_security_user.length > 0 &&
-                                  ldp_security_user.map((item, index) => {
-                                    return (
-                                      <option key={index} value={item?.userID}>
-                                        {item?.name}
-                                      </option>
-                                    );
-                                  })}
-                              </select>
+                                Owner <sup className="red">*</sup>:
+                              </label>
+                              <div>
+                                <select
+                                  id="ownerName"
+                                  className="form-select form-select-solid"
+                                  data-placeholder="Select option"
+                                  data-allow-clear="true"
+                                  value={values.owner}
+                                  name="owner"
+                                  onChange={handleEscalate}
+                                  required
+                                >
+                                  <option value="">Select</option>
+                                  {ldp_security_user.length > 0 &&
+                                    ldp_security_user.map((item, index) => {
+                                      return (
+                                        <option
+                                          key={index}
+                                          value={item?.userID}
+                                        >
+                                          {item?.name}
+                                        </option>
+                                      );
+                                    })}
+                                </select>
+                              </div>
                             </div>
-                          </div>
-                          <div className="mb-5">
-                            <label
-                              className="form-label fw-bolder"
-                              htmlFor="excalatecomments"
-                            >
-                              Comments <sup className="red">*</sup>
-                            </label>
-                            <Form.Control
-                              as="textarea"
-                              placeholder="Leave a comment here"
-                              value={values.comments}
-                              id="excalatecomments"
-                              name="comments"
-                              onChange={handleEscalate}
-                              style={{ height: "100px" }}
-                              required
-                            />
-                          </div>
-                          <div className="d-flex justify-content-end">
-                            <button
-                              type="submit"
-                              className="btn btn-small btn-new"
-                            >
-                              Submit
-                            </button>
-                            &nbsp;&nbsp;
-                            <button
-                              className="btn btn-secondary btn-small ml-10"
-                              onClick={handleCloseForm}
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </form>
+                            <div className="mb-5">
+                              <label
+                                className="form-label fw-bolder"
+                                htmlFor="excalatecomments"
+                              >
+                                Comments <sup className="red">*</sup>:
+                              </label>
+                              <br />
+                              <textarea
+                                placeholder="Leave a comment here"
+                                value={values.comments}
+                                id="excalatecomments"
+                                name="comments"
+                                onChange={handleEscalate}
+                                className="form-control"
+                                required
+                              />
+                            </div>
+
+                            <div className="d-flex justify-content-end">
+                              <button
+                                type="submit"
+                                className="btn btn-primary btn-small btn-new"
+                              >
+                                Submit
+                              </button>
+                              &nbsp;&nbsp;
+                              <button
+                                className="btn btn-secondary btn-small ml-10"
+                                onClick={handleCloseForm}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </form>
+                        </div>
                       )}
                       {actionsValue === "3" && ignorVisible && (
                         <div className="d-flex justify-content-end">
@@ -2016,7 +2024,7 @@ const AlertsPage = () => {
                                           <span>{item.observableTag} </span>
                                         </div>
                                         <div className="alert-details">
-                                          <b>Owner Name: </b>
+                                          <b>Owner Name </b>
                                           <span>{item.ownerusername}</span>
                                         </div>
                                         <div className="alert-details">
@@ -2028,7 +2036,7 @@ const AlertsPage = () => {
                                           <span>{item.source}</span>{" "}
                                         </div>
                                       </div>
-                                      <div className="col-md-2 text-right">
+                                      <div className="col-md-2">
                                         <div
                                           className="btn btn-primary btn-new btn-small"
                                           onClick={() => openEditPopUp(item)}
@@ -2202,7 +2210,7 @@ const AlertsPage = () => {
                                         <div className="row">
                                           <div className="fs-12 col-md-6">
                                             <span className="semi-bold">
-                                              Threat File Name :
+                                              THREAT FILE NAME :
                                             </span>{" "}
                                             {threatInfo.name}
                                           </div>
@@ -2232,6 +2240,9 @@ const AlertsPage = () => {
                                                 <p className="semi-bold">
                                                   SHA1:
                                                 </p>
+                                                <p className="semi-bold">
+                                                  Initiated By:
+                                                </p>
                                               </div>
                                               <div className="col-md-9">
                                                 <p>{threatInfo.path}</p>
@@ -2246,15 +2257,13 @@ const AlertsPage = () => {
                                                   }
                                                 </p>
                                                 <p>{threatInfo.shA1}</p>
+                                                <p>{threatInfo.initiatedBy}</p>
                                               </div>
                                             </div>
                                           </div>
                                           <div className="col-md-5">
                                             <div className="row">
                                               <div className="col-md-4 ">
-                                                <p className="semi-bold">
-                                                  Initiated By:
-                                                </p>
                                                 {/* <p>Engine</p> */}
                                                 <p className="semi-bold">
                                                   Detection Type:
@@ -2267,14 +2276,13 @@ const AlertsPage = () => {
                                                   File Size:
                                                 </p>
                                                 <p className="semi-bold">
-                                                  Storyline:
+                                                  Storyline
                                                 </p>
                                                 <p className="semi-bold">
                                                   Threat id:
                                                 </p>
                                               </div>
                                               <div className="col-md-6">
-                                                <p>{threatInfo.initiatedBy}</p>
                                                 {/* <p>SentinalOne Cloud</p> */}
                                                 <p>
                                                   {threatInfo.detectionType}
@@ -2300,7 +2308,7 @@ const AlertsPage = () => {
                                                 Real Time Data about the end
                                                 point:
                                               </p>
-                                              <div className="row border-btm">
+                                              <div className="row border-bottom">
                                                 <div className="col-md-2">
                                                   <span>
                                                     <i className="fab fa-windows fs-40"></i>
@@ -2308,7 +2316,7 @@ const AlertsPage = () => {
                                                 </div>
                                                 <div className="col-md-9">
                                                   <h6>DESCTOP-UPU1TUD</h6>
-                                                  <p className="fs-12 no-margin">
+                                                  <p className="fs-12">
                                                     LANCESOFT INDIA PRIVATE
                                                     LIMITE / Defoult site
                                                   </p>
@@ -2318,46 +2326,32 @@ const AlertsPage = () => {
                                                   </p>
                                                 </div>
                                               </div>
-                                              <div className="row  mt-2">
-                                                <div className="col-md-4">
-                                                  {/* <p>Console connectivity</p> */}
-                                                  <p className="semi-bold">
-                                                    Full Disc scan:
-                                                  </p>
-                                                  <p className="semi-bold">
-                                                    Pending Reboot:
-                                                  </p>
-                                                  {/* <p>Number of not Mitigated Threats</p> */}
-                                                  <p className="semi-bold">
-                                                    {" "}
-                                                    Network status:
-                                                  </p>
-                                                  <p className="semi-bold">
-                                                    OS Version:
-                                                  </p>
-                                                  <p className="semi-bold">
-                                                    Agent Version:
-                                                  </p>
-                                                </div>
-                                                <div className="col-md-8">
-                                                  {/* <p>{endpointInfo.consoleConnectivity}</p> */}
-                                                  <p>
-                                                    {endpointInfo.fullDiskScan}
-                                                  </p>
-                                                  <p>
-                                                    {endpointInfo.pendinRreboot}
-                                                  </p>
-                                                  {/* <p>0</p> */}
-                                                  <p>
-                                                    {endpointInfo.networkStatus}
-                                                  </p>
-                                                  <p>
-                                                    {endpointInfo.osVersion}
-                                                  </p>
-                                                  <p>
-                                                    {endpointInfo.agentVersion}
-                                                  </p>
-                                                </div>
+                                              <div className="col-md-4 ">
+                                                {/* <p>Console connectivity</p> */}
+                                                <p className="mb-2 semi-bold">
+                                                  Full Disc scan:
+                                                </p>
+                                                <p className="semi-bold">
+                                                  Pending Reboot:
+                                                </p>
+                                                {/* <p>Number of not Mitigated Threats</p> */}
+                                                <p className="semi-bold">
+                                                  {" "}
+                                                  Network status:
+                                                </p>
+                                              </div>
+                                              <div className="col-md-8">
+                                                {/* <p>{endpointInfo.consoleConnectivity}</p> */}
+                                                <p>
+                                                  {endpointInfo.fullDiskScan}
+                                                </p>
+                                                <p>
+                                                  {endpointInfo.pendinRreboot}
+                                                </p>
+                                                {/* <p>0</p> */}
+                                                <p>
+                                                  {endpointInfo.networkStatus}
+                                                </p>
                                               </div>
                                             </div>
                                           </div>
@@ -2368,7 +2362,12 @@ const AlertsPage = () => {
                                                 <p className="semi-bold">
                                                   Scope:
                                                 </p>
-
+                                                <p className="semi-bold">
+                                                  OS Version:
+                                                </p>
+                                                <p className="semi-bold">
+                                                  Agent Version:
+                                                </p>
                                                 <p className="semi-bold">
                                                   {" "}
                                                   Policy:
@@ -2398,7 +2397,10 @@ const AlertsPage = () => {
                                               <div className="col-md-9">
                                                 {/* <p>.</p> */}
                                                 <p>{endpointInfo.scope}</p>
-
+                                                <p>{endpointInfo.osVersion}</p>
+                                                <p>
+                                                  {endpointInfo.agentVersion}
+                                                </p>
                                                 <p>{endpointInfo.policy}</p>
                                                 <p>
                                                   {endpointInfo.loggedInUser}
