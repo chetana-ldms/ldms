@@ -47,6 +47,8 @@ const Navbar = () => {
   const ownerUserId = Number(sessionStorage.getItem('userId'));
   const [organizations, setOrganizations] = useState<{ orgID: number; orgName: string }[]>([]);
   const orgId = Number(sessionStorage.getItem('orgId'));
+  const accountNameDefoult = sessionStorage.getItem('accountName');
+  console.log(accountNameDefoult, "accountNameDefoult")
  
   useEffect(() => {
     const fetchData = async () => {
@@ -165,6 +167,10 @@ const orgNames = organizations
       <Dropdown>
         <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
           {orgNames}
+          {!accountName &&
+          <span>{`/ ${accountNameDefoult}`}</span>
+          }
+           
         </Dropdown.Toggle>
         <Dropdown.Menu>
           {accountsStructure.map((account, index) => (

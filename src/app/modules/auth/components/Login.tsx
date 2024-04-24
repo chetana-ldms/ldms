@@ -76,7 +76,7 @@ export function Login() {
           sessionStorage.setItem('clientAdminRole', authData.clientAdminRole);
           sessionStorage.setItem('openTaskCount', authData.openTaskCount);
           sessionStorage.setItem('defaultPassword', authData.defaultPassword);
-          sessionStorage.setItem('accountName', "LanceSoft Inc");
+          sessionStorage.setItem('accountName', "Insilicorp");
           sessionStorage.setItem('accountId', "1924063616109227261");
           sessionStorage.setItem('siteName', "");
           sessionStorage.setItem('siteId', "");
