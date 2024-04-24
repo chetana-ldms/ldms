@@ -84,7 +84,9 @@ const AddOrganizationTools = () => {
 
       if (isSuccess) {
         notify("Organizations Tools Saved");
+        setTimeout(() => {
         navigate("/qradar/organization-tools/updated");
+        }, 2000);
       } else {
         notifyFail("Failed to save Organizations Tools");
       }

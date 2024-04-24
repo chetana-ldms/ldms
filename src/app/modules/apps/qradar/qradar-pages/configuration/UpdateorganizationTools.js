@@ -12,6 +12,7 @@ import {
 import { fetchLDPTools, fetchMasterData } from "../../../../../api/Api";
 import { fetchOrganizations } from "../../../../../api/dashBoardApi";
 import { useErrorBoundary } from "react-error-boundary";
+import { ToastContainer } from "react-toastify";
 
 const UpdateOrganizationTools = () => {
   const handleError = useErrorBoundary();
@@ -158,7 +159,9 @@ const UpdateOrganizationTools = () => {
 
       if (isSuccess) {
         notify("Organizations Tool Updated");
+        setTimeout(() => {
         navigate("/qradar/organization-tools/updated");
+        }, 2000);
       } else {
         notifyFail("Failed to update Organizations Tool");
       }
@@ -298,6 +301,7 @@ const UpdateOrganizationTools = () => {
 
   return (
     <div className="config card">
+      <ToastContainer />
       <div className="card-header bg-header">
         <h3 className="card-title align-items-start flex-column">
           <span className="white">Update Organization Tool</span>
