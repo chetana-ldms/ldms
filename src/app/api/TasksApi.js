@@ -1,5 +1,5 @@
-const tasksUrl = "http://115.110.192.133:502/api/Task/v1/List";
-const taskCancelUrl ="http://115.110.192.133:502/api/Task/v1/PasswordReset/Status/Update"
+const tasksUrl = process.env.REACT_APP_TASK_LIST_URL
+const taskCancelUrl =process.env.REACT_APP_PASSWORDRESET_STATUS_UPDATE_URL
 
 export const fetchTasksUrl = async (ownerUserId) => {
     try {

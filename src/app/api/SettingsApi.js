@@ -1,4 +1,4 @@
-const SitesUrl ="http://115.110.192.133:502/api/SentinalOne/v1/Sites"
+const SitesUrl =process.env.REACT_APP_SITES_URL
 
 export const fetchSitesUrl = async (data) => {
     try {

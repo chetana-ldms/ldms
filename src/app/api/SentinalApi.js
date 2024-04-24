@@ -1,14 +1,14 @@
 
-const ExclusionListUrl ="http://115.110.192.133:502/api/Alerts/v1/Exclusion/List"
-const BlokckedListUrl ="http://115.110.192.133:502/api/SentinalOne/v1/BlokckedList"
-const AccountDetailsUrl ="http://115.110.192.133:502/api/SentinalOne/v1/Account/Details"
-const PolicyDetailsUrl = "http://115.110.192.133:502/api/SentinalOne/v1/Policy/Details"
-const blockedListItemDeleteUrl= "http://115.110.192.133:502/api/Alerts/v1/blockedListItem/Delete"
-const AddToblockListUrl= "http://115.110.192.133:502/api/Alerts/v1/AddToblockList"
-const blockedListItemUpdateUrl = "http://115.110.192.133:502/api/Alerts/v1/blockedListItem/Update"
-const AddToExclusionListUrl= "http://115.110.192.133:502/api/Alerts/v1/AddToExclusionList"
-const ExcludedListItemDeleteUrl="http://115.110.192.133:502/api/Alerts/v1/ExcludedListItem/Delete"
-const ExcludedListItemUpdateUrl="http://115.110.192.133:502/api/Alerts/v1/ExcludedListItem/Update"
+const ExclusionListUrl =process.env.REACT_APP_EXCLUSION_LIST_URL
+const BlokckedListUrl =process.env.REACT_APP_BLOCKEDLIST_URL
+const AccountDetailsUrl =process.env.REACT_APP_ACCOUNT_DETAILS_URL
+const PolicyDetailsUrl = process.env.REACT_APP_POLICY_DETAILS_URL
+const blockedListItemDeleteUrl= process.env.REACT_APP_BLOCKEDLISTITEM_DELETE_URL
+const AddToblockListUrl= process.env.REACT_APP_ADDTOBLOCKLIST_URL
+const blockedListItemUpdateUrl = process.env.REACT_APP_BLOCKEDLISTITEM_UPDATE_URL
+const AddToExclusionListUrl= process.env.REACT_APP_ADDTOEXCLUSIONLIST_URL
+const ExcludedListItemDeleteUrl=process.env.REACT_APP_EXCLUSDEDLISTITEM_DELETE_URL
+const ExcludedListItemUpdateUrl=process.env.REACT_APP_EXCLUSDEDLISTITEM_UPDATE_URL
 
 export const fetchExclusionListUrl = async (data) => {
     try {

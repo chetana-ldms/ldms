@@ -1,12 +1,12 @@
-const ApplicationsAndRisksUrl= "http://115.110.192.133:502/api/SentinalOne/v1/Risks/Applications"
-const ApplicationInventoryUrl="http://115.110.192.133:502/api/SentinalOne/v1/Inventory/Applications"
-const ApplicationEndPointsUrl="http://115.110.192.133:502/api/SentinalOne/v1/Risks/Application/Endpoints"
-const ApplicationCVSUrl="http://115.110.192.133:502/api/SentinalOne/v1/Risks/Application/CVEs"
-const EndPointDetailsUrl ="http://115.110.192.133:502/api/SentinalOne/v1/EndPoint/Details"
-const EndPointApplicationsUrl = "http://115.110.192.133:502/api/SentinalOne/v1/EndPoint/Applications"
-const InventoryApplicationsEndpointsUrl= "http://115.110.192.133:502/api/SentinalOne/v1/Inventory/Applications/Endpoints"
-const EndPointUpdatesUrl= "http://115.110.192.133:502/api/SentinalOne/v1/EndPoint/Updates"
-const ApplicationManagementSettingsUrl="http://115.110.192.133:502/api/SentinalOne/v1/ApplicationManagement/Settings"
+const ApplicationsAndRisksUrl= process.env.REACT_APP_RISKS_APPLICATIONS_URL
+const ApplicationInventoryUrl=process.env.REACT_APP_INVENTORY_APPLICATIONS_URL
+const ApplicationEndPointsUrl=process.env.REACT_APP_RISKS_APPLICATIONS_ENDPOINTS_URL
+const ApplicationCVSUrl=process.env.REACT_APP_RISKS_APPLICATION_CVES_URL
+const EndPointDetailsUrl =process.env.REACT_APP_ENDPONT_DETAILS_URL
+const EndPointApplicationsUrl = process.env.REACT_APP_ENDPOINT_APPLICATIONS_URL
+const InventoryApplicationsEndpointsUrl= process.env.REACT_APP_INVENTORY_APPLICATIONS_ENDPOINTS_URL
+const EndPointUpdatesUrl= process.env.REACT_APP_ENDPOINT_UPDATES_URL
+const ApplicationManagementSettingsUrl=process.env.REACT_APP_APPLICATION_MANAGEMENT_SETTINGS_URL
 
 export const fetchApplicationsAndRisksUrl = async (data) => {
     try {

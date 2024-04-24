@@ -16,8 +16,8 @@ const ldpToolsUrl = process.env.REACT_APP_LDP_TOOLS_URL;
 const rolesUrl = process.env.REACT_APP_ROLES_URL;
 const organizationDetailsUrl = process.env.REACT_APP_ORGANIZATION_DETAILS_URL;
 const ldpToolDetailsUrl = process.env.REACT_APP_LDP_TOOL_DETAILS_URL;
-const forgatePasswordUrl = "http://115.110.192.133:502/api/Task/v1/PasswordReset/Add"
-const accountsStructureUrl= "http://115.110.192.133:502/api/SentinalOne/v1/Accounts/Structure"
+const forgatePasswordUrl = process.env.REACT_APP_PASSWORD_RESET_ADD_URL
+const accountsStructureUrl= process.env.REACT_APP_ACCOUNTS_STRUCTURE_URL
 
 export const fetchMasterData = async (maserDataType) => {
   try {
