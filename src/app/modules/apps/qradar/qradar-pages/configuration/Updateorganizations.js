@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { fetchOrganizationDetails } from "../../../../../api/Api";
 import { notify, notifyFail } from "../components/notification/Notification";
-import axios from "axios";
 import { fetchOrganizationUpdateUrl } from "../../../../../api/ConfigurationApi";
 import { useErrorBoundary } from "react-error-boundary";
+import { ToastContainer } from "react-toastify";
 
 const UpdateOrganizations = () => {
   const handleError = useErrorBoundary();
@@ -57,7 +57,9 @@ const UpdateOrganizations = () => {
 
       if (isSuccess) {
         notify("Organization Updated");
-        navigate("/qradar/organizations/updated");
+        setTimeout(() => {
+          navigate("/qradar/organizations/updated");
+        }, 2000);
       } else {
         notifyFail("Failed to update Organization");
       }
@@ -87,6 +89,7 @@ const UpdateOrganizations = () => {
 
   return (
     <div className="config card">
+       <ToastContainer />
       <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">
           <span className="white">Update Organization</span>

@@ -8,6 +8,7 @@ import {
 import axios from "axios";
 import { notify, notifyFail } from "../components/notification/Notification";
 import { useErrorBoundary } from "react-error-boundary";
+import { ToastContainer } from "react-toastify";
 
 const UpdateUserData = () => {
   const handleError = useErrorBoundary();
@@ -100,8 +101,10 @@ const UpdateUserData = () => {
       const { isSuccess } = responseData;
 
       if (isSuccess) {
-        notify("User Updated");
-        navigate("/qradar/users-data/list");
+        notify("User Updated"); 
+        setTimeout(() => {
+          navigate("/qradar/users-data/list");
+        }, 2000);
       } else {
         notifyFail("Failed to update User");
       }
@@ -125,6 +128,7 @@ const UpdateUserData = () => {
 
   return (
     <div className="config card">
+    <ToastContainer />
       <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">
           <span className="white">Update User</span>

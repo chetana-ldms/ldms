@@ -11,8 +11,9 @@ const ChatApp = ({ selectedIncident }) => {
   useEffect(() => {
     // Create a socket connection
     console.log("Attempting to establish socket connection...");
-    const socketInstance = io("http://115.110.192.133:4000/", { mode: "cors" });
-    // const response = await fetch('http://localhost:8080/', {mode:'cors'});
+    // const socketInstance = io("REACT_APP_CHAT_SERVER_DEV", { mode: "cors" });
+    const socketInstance = io("REACT_APP_CHAT_SERVER_QA", { mode: "cors" });
+    // const response = await fetch('REACT_APP_CHAT_SERVER_QA', {mode:'cors'});
     setSocket(socketInstance);
     console.log("Socket:", socketInstance);
 

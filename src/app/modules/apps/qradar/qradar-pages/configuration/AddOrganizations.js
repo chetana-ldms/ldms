@@ -1,10 +1,9 @@
 import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { notify, notifyFail } from "../components/notification/Notification";
-import axios from "axios";
-import { async } from "q";
 import { fetchOrganizationAddUrl } from "../../../../../api/ConfigurationApi";
 import { useErrorBoundary } from "react-error-boundary";
+import { ToastContainer } from "react-toastify";
 
 const AddOrganizations = () => {
   const handleError = useErrorBoundary();
@@ -57,7 +56,9 @@ const AddOrganizations = () => {
 
       if (isSuccess) {
         notify("Organizations Saved");
-        navigate("/qradar/organizations/updated");
+        setTimeout(() => {
+          navigate("/qradar/organizations/updated");
+        }, 2000);
       } else {
         notifyFail("Failed to save Organizations");
       }
@@ -70,6 +71,7 @@ const AddOrganizations = () => {
 
   return (
     <div className="config card">
+      <ToastContainer />
       <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">
           <span className="white">Add New Organization</span>

@@ -6,6 +6,7 @@ import { fetchUserAddUrl } from "../../../../../api/ConfigurationApi";
 import { notify, notifyFail } from "../components/notification/Notification";
 import { useErrorBoundary } from "react-error-boundary";
 import { UsersListLoading } from "../components/loading/UsersListLoading";
+import { ToastContainer } from "react-toastify";
 
 const AddUserData = () => {
   const handleError = useErrorBoundary();
@@ -79,7 +80,9 @@ const AddUserData = () => {
 
       if (isSuccess) {
         notify("User Saved");
-        navigate("/qradar/users-data/list");
+        setTimeout(() => {
+          navigate("/qradar/users-data/list");
+        }, 2000);
       } else {
         notifyFail("Failed to save User");
       }
@@ -104,6 +107,7 @@ const AddUserData = () => {
 
   return (
     <div className="config card">
+    <ToastContainer />
       {loading && <UsersListLoading />}
       <div className="card-header bg-heading mb-5">
         <h3 className="card-title">
