@@ -4,6 +4,7 @@ import { useIntl } from 'react-intl'
 import { KTSVG } from '../../../../helpers'
 import { SidebarMenuItemWithSub } from './SidebarMenuItemWithSub'
 import { SidebarMenuItem } from './SidebarMenuItem'
+import { Link } from 'react-router-dom'
 
 const SidebarMenuMain = () => {
   const intl = useIntl()
@@ -134,7 +135,18 @@ const SidebarMenuMain = () => {
         <SidebarMenuItem hasBullet={true} to='/qradar/demoalert/updated' title='Playbook Alert' />
         <SidebarMenuItem hasBullet={true} to='/qradar/demoplaybooks' title='Alert Playbooks' />
       </SidebarMenuItemWithSub>
-    
+
+      <div className='d-flex align-items-center me-10'>
+      <a
+        href="https://honeypot.run/auth"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="btn btn-sm btn-primary"
+      >
+        Honeypot
+      </a>
+    </div>
+      
       
        
     </>

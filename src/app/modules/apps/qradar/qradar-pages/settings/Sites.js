@@ -9,10 +9,11 @@ function Sites() {
   console.log(sites, 'sites')
   const [loading, setLoading] = useState(false)
   const orgId = Number(sessionStorage.getItem('orgId'))
+  const accountId = sessionStorage.getItem('accountId')
   const fetchData = async () => {
     const data = {
       orgID: orgId,
-      accountId: '1665272541043650534',
+      accountId: accountId,
     }
     try {
       setLoading(true)
