@@ -61,6 +61,33 @@ body {
   background-color: #dee8fc !important;
 }
 
+
+
+//Generic CSS
+
+.black{
+  color: #333 !important;
+}
+
+.orange{
+  color: rgb(255, 140, 0) !important;
+}
+
+.green{
+  color: green !important;
+}
+
+.link{
+  color: #008cba !important;
+}
+.gray{
+  color: gray;
+}
+
+.white{
+  color: white !important;
+}
+
 .hidden {
   display: none;
 }
@@ -95,29 +122,6 @@ body {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   padding-bottom: 0 !important;
-}
-
-.black{
-  color: #333 !important;
-}
-
-.orange{
-  color: rgb(255, 140, 0) !important;
-}
-
-.green{
-  color: green !important;
-}
-
-.link{
-  color: #008cba !important;
-}
-.gray{
-  color: gray;
-}
-
-.white{
-  color: white !important;
 }
 
 .link-txt{
@@ -275,6 +279,8 @@ body {
 .overflow-hidden{
   overflow: hidden;
 }
+
+//Generic CSS Ends
 
 .app-footer{
   background-color: #dee8fc !important;
