@@ -1,45 +1,55 @@
-import React, { useState, useEffect } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { UsersListLoading } from '../components/loading/UsersListLoading'
-import { ToastContainer, toast } from 'react-toastify'
-import { notify, notifyFail } from '../components/notification/Notification'
-import 'react-toastify/dist/ReactToastify.css'
-import { fetchToolTypeActionDelete } from "../../../../../api/Api"
-import axios from 'axios'
-import { fetchToolTypeActions } from '../../../../../api/ConfigurationApi'
+import React, { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { UsersListLoading } from "../components/loading/UsersListLoading";
+import { ToastContainer, toast } from "react-toastify";
+import { notify, notifyFail } from "../components/notification/Notification";
+import "react-toastify/dist/ReactToastify.css";
+import { fetchToolTypeActionDelete } from "../../../../../api/Api";
+import axios from "axios";
+import { fetchToolTypeActions } from "../../../../../api/ConfigurationApi";
+import { useErrorBoundary } from "react-error-boundary";
+import Pagination from "../../../../../../utils/Pagination";
+import { sortedItems } from "../../../../../../utils/Sorting";
+
 const ToolTypeActions = () => {
-  const [loading, setLoading] = useState(false)
-  const [toolTypeActions, setToolTypeActions] = useState([])
-  const [updateData, setUpdateData] = useState({})
-  const { status } = useParams()
+  const handleError = useErrorBoundary();
+  const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
+  const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
+  const [loading, setLoading] = useState(false);
+  const [toolTypeActions, setToolTypeActions] = useState([]);
+  const [filterValue, setFilterValue] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [updateData, setUpdateData] = useState({});
+  const { status } = useParams();
 
   const handleDelete = async (item) => {
-    const deletedUserId = Number(sessionStorage.getItem('userId'));
+    const deletedUserId = Number(sessionStorage.getItem("userId"));
     const deletedDate = new Date().toISOString();
     const data = {
       toolTypeActionID: item.toolTypeActionID,
       deletedDate,
-      deletedUserId
-    }
+      deletedUserId,
+    };
     try {
       const responce = await fetchToolTypeActionDelete(data);
       if (responce.isSuccess) {
-        notify('Data Deleted');
-      }else{
-        notifyFail("Data not Deleted")
+        notify("Tool Type Action Deleted");
+      } else {
+        notifyFail("Tool Type Action not Deleted");
       }
       await reload();
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
-  }
+  };
   const reload = async () => {
     try {
       setLoading(true);
       const response = await fetchToolTypeActions();
       setToolTypeActions(response);
     } catch (error) {
-      console.log(error);
+      handleError(error);
     } finally {
       setLoading(false);
     }
@@ -47,74 +57,128 @@ const ToolTypeActions = () => {
 
   useEffect(() => {
     reload();
-  }, [])
+  }, []);
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = toolTypeActions
+    ? toolTypeActions
+        .filter((item) =>
+          item.toolAction.toLowerCase().includes(filterValue.toLowerCase())
+        )
+        .slice(indexOfFirstItem, indexOfLastItem)
+    : null;
+
+  const handlePageSelect = (event) => {
+    setItemsPerPage(Number(event.target.value));
+    setCurrentPage(0);
+  };
+  const handlePageClick = (selected) => {
+    setCurrentPage(selected.selected);
+  };
+  const handleFilterChange = (event) => {
+    setFilterValue(event.target.value);
+  };
 
   return (
-    <div className='card'>
+    <div className="config card pad-10">
       <ToastContainer />
-      <div className='card-header border-0 pt-5'>
-        <h3 className='card-title align-items-start flex-column'>
-          <span className='card-label fw-bold fs-3 mb-1'>Tool Type Actions</span>
+
+      <div className="card-header no-pad">
+        <h3 className="card-title align-items-start flex-column">
+          <span className="card-label fw-bold fs-3 mb-1">
+            Tool Type Actions
+          </span>
         </h3>
-        <div className='card-toolbar'>
-          <div className='d-flex align-items-center gap-2 gap-lg-3'>
-            <Link to='/qradar/tool-type-actions/add' className='btn btn-danger btn-small'>
-              Add
-            </Link>
+        <div className="card-toolbar">
+          <div className="d-flex align-items-center gap-2 gap-lg-3">
+            {globalAdminRole === 1 || clientAdminRole === 1 ? (
+              <Link
+                to="/qradar/tool-type-actions/add"
+                className="btn btn-new btn-small"
+              >
+                Add
+              </Link>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </div>
-      <div className='card-body'>
-        {/* {status === 'updated' && (
-          <div class='alert alert-success d-flex align-items-center p-5'>
-            <div class='d-flex flex-column'>
-              <h4 class='mb-1 text-dark'>Data Saved</h4>
-            </div>
-            <button
-              type='button'
-              class='position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto'
-              data-bs-dismiss='alert'
-            >
-              X<span class='svg-icon svg-icon-2x svg-icon-light'>...</span>
-            </button>
-          </div>
-        )} */}
-        {/* {status === 'updated' && (
-          notify('Data Saved')
-        )} */}
-
-        <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
+      <div className="row mb-5 mt-2">
+        <div className="col-lg-12 header-filter">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="form-control"
+            value={filterValue}
+            onChange={handleFilterChange}
+          />
+        </div>
+      </div>
+      <div className="card-body no-pad">
+        <table className="table align-middle gs-0 gy-4 dash-table alert-table">
           <thead>
-            <tr className='fw-bold text-muted bg-blue'>
-              <th className='min-w-50px'>Tool Action Type</th>
-              <th className='min-w-50px'>Tool Type</th>
-              <th className='min-w-50px'>Action</th>
+            <tr className="fw-bold text-muted bg-blue">
+              <th>Tool Action Type</th>
+              <th>Tool Type</th>
+              {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                <th>Action</th>
+              ) : (
+                <></>
+              )}
             </tr>
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {toolTypeActions.map((item, index) => (
-              <tr key={index} className='fs-12'>
-                <td>{item.toolAction}</td>
-                <td>{item.toolTypeName}</td>
-                <td>
-                  <Link
-                    className='text-white'
-                    to={`/qradar/tool-type-actions/update/${item.toolTypeActionID}`}
-                  >
-                    <button className='btn btn-primary btn-small'>Update</button>
-                  </Link>
+            {currentItems.length > 0 ? (
+              currentItems.map((item, index) => (
+                <tr key={index} className="fs-12">
+                  <td>{item.toolAction}</td>
+                  <td>{item.toolTypeName}</td>
 
-                  <button className="btn btn-sm btn-danger btn-small ms-5" style={{ fontSize: '14px' }} onClick={() => { handleDelete(item) }}> Delete</button>
+                  {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                    <td>
+                      <span>
+                        <Link
+                          className="text-white"
+                          to={`/qradar/tool-type-actions/update/${item.toolTypeActionID}`}
+                        >
+                          <i className="fa fa-pencil link" />
+                        </Link>
+                      </span>
 
+                      <span
+                        className="ms-8"
+                        onClick={() => {
+                          handleDelete(item);
+                        }}
+                      >
+                        <i className="fa fa-trash red" />
+                      </span>
+                    </td>
+                  ) : (
+                    <></>
+                  )}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center">
+                  No data found
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
+        <Pagination
+          pageCount={Math.ceil(toolTypeActions.length / itemsPerPage)}
+          handlePageClick={handlePageClick}
+          itemsPerPage={itemsPerPage}
+          handlePageSelect={handlePageSelect}
+        />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export { ToolTypeActions }
+export { ToolTypeActions };

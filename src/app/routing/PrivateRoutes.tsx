@@ -7,6 +7,9 @@ import {MenuTestPage} from '../pages/MenuTestPage'
 import {getCSSVariableValue} from '../../_metronic/assets/ts/_utils'
 import {WithChildren} from '../../_metronic/helpers'
 import BuilderPageWrapper from '../pages/layout-builder/BuilderPageWrapper'
+// import ErrorBoundary from '../../utils/ErrorBoundary'
+import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorFallbackComponent } from '../../utils/ErrorFallbackComponent'
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/apps/qradar/qradar-pages/account/ProfilePage'))
@@ -16,8 +19,17 @@ const PrivateRoutes = () => {
   const ChatPage = lazy(() => import('../modules/apps/chat/ChatPage'))
   const UsersPage = lazy(() => import('../modules/apps/user-management/UsersPage'))
   const QradarPages = lazy(() => import('../modules/apps/qradar/Qradar'))
+  const DashboardCompliance = lazy(() => import('../pages/dashboard/DashboardCompliance'))
+
+  const handleError = (error: any, info: any) => {
+    console.error("An error occurred:", error, info);
+  };
 
   return (
+    <ErrorBoundary
+    FallbackComponent={ErrorFallbackComponent}
+    onError={handleError}
+  >
     <Routes>
       <Route element={<MasterLayout />}>
         {/* Redirect to Dashboard after success login/registartion */}
@@ -36,10 +48,10 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-          path='qradar/user/profile/*'
+          path='dashboardCompliance'
           element={
             <SuspensedView>
-              <ProfilePage />
+              <DashboardCompliance />
             </SuspensedView>
           }
         />
@@ -87,6 +99,7 @@ const PrivateRoutes = () => {
         <Route path='*' element={<Navigate to='/error/404' />} />
       </Route>
     </Routes>
+    </ErrorBoundary>
   )
 }
 

@@ -473,7 +473,7 @@ const ChatWindow = ({ defaultMessage }) => {
             value={inputValue}
             onChange={handleInputChange}
           />
-          <button type="submit" className="btn-chat">
+          <button type="submit" className="btn-chat btn-small btn-new">
             <span className="input-group-text">
               <i className="fas fa-paper-plane"></i>
             </span>

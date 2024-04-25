@@ -10,12 +10,19 @@ const toolActionsUrl = process.env.REACT_APP_TOOL_ACTIONS_URL;
 const ruleActionDetailsUrl = process.env.REACT_APP_RULE_ACTION_DETAILS_URL;
 
 const ToolTypeActionsUrl = process.env.REACT_APP_TOOL_TYPE_ACTIONS_URL;
+const GetToolActionsByToolURL = process.env.REACT_APP_GET_TOOL_ACTIONS_BY_TOOL_URL;
+
 const ToolTypeActionUpdateUrl = process.env.REACT_APP_TOOL_TYPE_ACTION_UPDATE_URL;
 const ToolTypeActionAddUrl= process.env.REACT_APP_TOOL_TYPE_ACTION_ADD_URL
 const OrganizationsUrl= process.env.REACT_APP_ORGANIZATIONS_URL
 const OrganizationAddUrl=  process.env.REACT_APP_ORGANIZATIONS_ADD_URL
 const OrganizationUpdateUrl=  process.env.REACT_APP_ORGANIZATIONS_UPDATE_URL
 const UsersUrl= process.env.REACT_APP_USERS_URL
+const RolesUrl= process.env.REACT_APP_ROLES_URL
+const RolesAddUrl = process.env.REACT_APP_ROLES_ADD_URL
+const RolesUpdateUrl = process.env.REACT_APP_ROLES_UPDATE_URL
+const RolesDeleteUrl = process.env.REACT_APP_ROLES_DELETE_URL
+const RolesDetailUrl =process.env.REACT_APP_ROLE_DETAILS_URL
 const UserAddUrl= process.env.REACT_APP_USER_ADD_URL
 const UserUpdateUrl= process.env.REACT_APP_USER_UPDATE_URL
 const LDPToolsUrl= process.env.REACT_APP_LDPTOOLS_URL
@@ -71,7 +78,7 @@ export const fetchToolTypeActionDetails = async (id, toolNameRef) => {
   }
 };
 
-export const fetchUserDetails = async (id, toolNameRef) => {
+export const fetchUserDetails = async (id, userName, emailId ) => {
   try {
     const response = await fetch(`${userDetailsUrl}?id=${id}`, {
       method: "GET",
@@ -82,9 +89,8 @@ export const fetchUserDetails = async (id, toolNameRef) => {
     const responseData = await response.json();
     const userdata = responseData.userdata;
     console.log(userdata, "userdata");
-    // Populate the form fields with the retrieved data
-    toolNameRef.current.value = userdata.name;
-    //   passwordRef.current.value = userdata.password;
+    userName.current.value = userdata.name;
+    emailId.current.value = userdata.emailId;
     return userdata;
   } catch (error) {
     console.log(error);
@@ -205,6 +211,25 @@ export const fetchRuleActionDetails = async (id) => {
     console.log(error);
   }
 };
+export const fetchGetToolActionsByToolURL = async (data) => {
+  try {
+    const response = await fetch(`${GetToolActionsByToolURL}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const fetchToolTypeActions = async () => {
   try {
     const response = await fetch(`${ToolTypeActionsUrl}`, {
@@ -325,6 +350,81 @@ export const fetchUsersUrl = async (orgId) => {
     console.log(error);
   }
 };
+
+export const fetchRolesUrl = async (orgId) => {
+  try {
+    const response = await fetch(`${RolesUrl}?orgId=${orgId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        orgId,
+      }),
+    });
+    const responseData = await response.json();
+    const rolesList = responseData.rolesList;
+    return rolesList;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchRolesAddUrl = async (data) => {
+  try {
+    const response = await fetch(`${RolesAddUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchRolesUpdateUrl = async (data) => {
+  try {
+    const response = await fetch(`${RolesUpdateUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchRolesDeleteUrl = async (data) => {
+  try {
+    const response = await fetch(`${RolesDeleteUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
 export const fetchUserAddUrl = async (data) => {
   try {
     const response = await fetch(`${UserAddUrl}`, {
@@ -598,6 +698,24 @@ export const fetchRuleActionUpdateUrl = async (data) => {
 
     const responseData = await response.json();
     return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchRolesDetailUrl = async (id) => {
+  try {
+    const response = await fetch(`${RolesDetailUrl}?id=${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id,
+      }),
+    });
+    const responseData = await response.json();
+    const roleData = responseData.roleData;
+    return roleData;
   } catch (error) {
     console.log(error);
   }

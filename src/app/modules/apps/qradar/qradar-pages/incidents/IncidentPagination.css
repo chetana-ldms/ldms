@@ -1,0 +1,30 @@
+.pagination-incident {
+    display: flex;
+    align-items: center;
+    flex-direction: column; /* Change flex direction to column */
+    padding-top: 15px;
+    border-top: 1px solid #ccc;
+  }
+  
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    width: 100%;
+  }
+  
+  .page-size-dropdown {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 5px; 
+  }
+  
+  .pagination-incident .pagination {
+    flex-wrap: nowrap !important;
+  }
+  .pagination-incident .pagination .page-item {
+        margin-right: 0.3rem;
+  }
+  
+  

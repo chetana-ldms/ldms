@@ -67,7 +67,7 @@ function IncidentStatus(props) {
       const requestData = {
         statusID: selectedStatus,
         priorityID: selectedPriority,
-        orgId: 1,
+        orgId: orgId,
       };
       const response = await axios.post(apiUrl, requestData);
       const { incidentCount } = response.data;
@@ -86,65 +86,108 @@ function IncidentStatus(props) {
   if (error) {
     return <div>Error: {error}</div>;
   }
+  // if (incidentCount === 0) {
+  //   return <div>No Data Found</div>;
+  // }
 
   return (
     <div className="card-body">
       <div className="row">
-        <label className="form-label fw-bold fs-12 col-lg-5 lh-40 fs-14">
-          <span>Incident by Status & Priority:</span>
+        <label className="form-label fw-bold fs-12 col-lg-5 lh-40">
+          <span>Incident by Status & Priority :</span>
         </label>
         <div className="col-lg-4 header-filter">
-          <select
-            name="incidentStatusName"
-            data-control="select2"
-            data-hide-search="true"
-            className="form-select form-control form-select-white form-select-sm mt-2"
-            value={selectedStatus}
-            onChange={handleSelectStatusChange}
-          >
-            <option value="">Select</option>
-            {dropdownData.statusDropDown.map((status) => (
-              <option
-                key={status.dataID}
-                value={status.dataID}
-                data-id={status.dataID}
-              >
-                {status.dataValue}
-              </option>
-            ))}
-          </select>
+          {dropdownData.statusDropDown !== null ? (
+            <select
+              name="incidentStatusName"
+              data-control="select2"
+              data-hide-search="true"
+              className="form-select form-control form-select-white form-select-sm mt-2"
+              value={selectedStatus}
+              onChange={handleSelectStatusChange}
+            >
+              <option value="">Select</option>
+              {dropdownData.statusDropDown.map((status) => (
+                <option
+                  key={status.dataID}
+                  value={status.dataID}
+                  data-id={status.dataID}
+                >
+                  {status.dataValue}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <select
+              name="incidentStatusName"
+              data-control="select2"
+              data-hide-search="true"
+              className="form-select form-control form-select-white form-select-sm mt-2"
+              value={selectedStatus}
+              onChange={handleSelectStatusChange}
+            >
+              <option value="">Select</option>
+            </select>
+          )}
         </div>
+
         <div className="col-lg-3 header-filter">
-          <select
-            name="priorityName"
-            data-control="select2"
-            data-hide-search="true"
-            className="form-select form-control form-select-white form-select-sm mt-2"
-            value={selectedPriority}
-            onChange={handleSelectPriorityChange}
-          >
-            <option value="">Select</option>
-            {dropdownData.priorityDropDown.map((priority) => (
-              <option
-                key={priority.dataID}
-                value={priority.dataID}
-                data-id={priority.dataID}
-              >
-                {priority.dataValue}
-              </option>
-            ))}
-          </select>
+          {dropdownData.priorityDropDown !== null ? (
+            <select
+              name="priorityName"
+              data-control="select2"
+              data-hide-search="true"
+              className="form-select form-control form-select-white form-select-sm mt-2"
+              value={selectedPriority}
+              onChange={handleSelectPriorityChange}
+            >
+              <option value="">Select</option>
+              {dropdownData.priorityDropDown.map((priority) => (
+                <option
+                  key={priority.dataID}
+                  value={priority.dataID}
+                  data-id={priority.dataID}
+                >
+                  {priority.dataValue}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <select
+              name="priorityName"
+              data-control="select2"
+              data-hide-search="true"
+              className="form-select form-control form-select-white form-select-sm mt-2"
+              value={selectedPriority}
+              onChange={handleSelectPriorityChange}
+            >
+              <option value="">Select</option>
+            </select>
+          )}
         </div>
+
         <div className="row bar-chart mt-10">
-          <>
-            <div className="col-lg-2 fw-bold">Count:</div>
-            <div className="col-lg-7">
-              <span className="bar">{incidentCount}</span>
-            </div>
-            <div className="col-lg-2">
-              <span>Total</span> <span>{incidentCount}</span>
-            </div>
-          </>
+          {incidentCount !== null ? (
+            <>
+              <div className="col-lg-2 fw-bold">Count:</div>
+              <div className="col-lg-7">
+                <span className="bar">{incidentCount}</span>
+              </div>
+              <div className="col-lg-2">
+                <span>Total</span> <span>{incidentCount}</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="col-lg-2 fw-bold">Count:</div>
+              <div className="col-lg-7">
+                <span className="bar">{incidentCount ?? 0}</span>
+              </div>
+              <div className="col-lg-2">
+                <span>Total</span> <span>{incidentCount ?? 0}</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

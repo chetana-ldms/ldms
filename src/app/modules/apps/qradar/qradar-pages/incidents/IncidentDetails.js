@@ -10,9 +10,22 @@ import {
   fetchIncidents,
   fetchUpdateIncident,
 } from "../../../../../api/IncidentsApi";
+import { getCurrentTimeZone } from "../../../../../../utils/helper";
+import { useErrorBoundary } from "react-error-boundary";
 
 const IncidentDetails = ({ incident, onRefreshIncidents }) => {
-  const { subject, createdDate, incidentID, modifiedDate } = incident;
+  console.log("incident11111", incident);
+  const handleError = useErrorBoundary();
+  const {
+    subject,
+    createdDate,
+    incidentID,
+    modifiedDate,
+    eventID,
+    destinationUser,
+    sourceIP,
+    vendor,
+  } = incident;
   const id = incidentID;
   console.log(id, "id");
   const [activeTab, setActiveTab] = useState("general");
@@ -27,7 +40,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
   });
   const checkboxRef = useRef(null);
   const [incidentHistory, setIncidentHistory] = useState([]);
-  console.log(incidentHistory, "incidentHistory")
+  console.log(incidentHistory, "incidentHistory");
   const [alertsList, setAlertsList] = useState({});
   const [ldp_security_user, setldp_security_user] = useState([]);
   const [incidentData, setIncidentData] = useState({
@@ -72,7 +85,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
         }));
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   }, []);
   useEffect(() => {
@@ -100,7 +113,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
           }));
         }
       } catch (error) {
-        console.log(error);
+        handleError(error);
       }
     };
 
@@ -163,11 +176,13 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
       await fetchUpdateIncident(data);
       notify("Incident updated");
       onRefreshIncidents();
+      reloadHistory();
     } catch (error) {
-      notifyFail("Failed to update data");
+      notifyFail("Failed to update Incident");
+      handleError(error);
     }
   };
-  useEffect(() => {
+  const reloadHistory = () => {
     const data = {
       orgId,
       incidentId: Number(id),
@@ -177,8 +192,11 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
         setIncidentHistory(res);
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
+  };
+  useEffect(() => {
+    reloadHistory();
   }, [id]);
   useEffect(() => {
     const fetchData = async () => {
@@ -188,7 +206,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
         console.log(alertsList, "alertsList1111");
         setAlertsList(alertsList);
       } catch (error) {
-        console.log(error);
+        handleError(error);
       }
     };
 
@@ -213,20 +231,18 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
   };
 
   return (
-    <div className="col-md-4 border-1 border-gray-600">
+    <div className="col-md-4 border-1 border-gray-600 incident-details">
       <div className="card">
-        <div className="d-flex justify-content-between bd-highlight mb-3">
-          <div className="p-2 bd-highlight">
-            <h6 className="card-title align-items-start flex-column pt-2">
-              <span className="card-label fw-bold fs-3 mb-1">
-                Incidents Details
-              </span>
-            </h6>
-          </div>
+        <div className="bg-heading">
+          <h4 className="no-margin no-pad">
+            <span className="white fw-bold block pt-3 pb-3">
+              Incidents Details
+            </span>
+          </h4>
         </div>
-        <div className="d-flex justify-content-between bd-highlight mb-3 incident-tabs h-500px scroll-y">
-          <div className="p-2 bd-highlight incident-details">
-            <ul className="nav nav-tabs nav-line-tabs mb-5 fs-8">
+        <div className="mb-3 incident-tabs">
+          <div className="p-2 bd-highlight">
+            <ul className="nav nav-tabs nav-line-tabs mb-5 fs-8 no-pad">
               <li className="nav-item">
                 <a
                   className={`nav-link ${
@@ -289,9 +305,9 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               </li>
             </ul>
 
-            <div className="tab-content" id="myTabContent">
+            <div className="tab-content h-auto" id="myTabContent">
               <div
-                className="tab-pane fade show active me-n5 pe-5 h-500px"
+                className="tab-pane fade show active me-n5 pe-5 h-500px header-filter"
                 id="kt_tab_pane_1"
                 role="tabpanel"
               >
@@ -405,53 +421,11 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                     </div>
                   </div>
                 </div>
-                {/* Text */}
-                <div className="bd-highlight mb-3 bdr-top pt-5 mt-5">
-                  <div className="bd-highlight">
-                    <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Incident Name : </span>{" "}
-                      {subject}
-                    </div>
-                  </div>
-                  <div className="bd-highlight">
-                    <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Event ID : </span> 4625
-                    </div>
-                  </div>
-                  <div className="bd-highlight">
-                    <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold"> Destination User : </span>{" "}
-                      James James
-                    </div>
-                  </div>
-                  <div className="bd-highlight">
-                    <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Source IP : </span> 192.168.0.1
-                    </div>
-                  </div>
-                  <div className="bd-highlight">
-                    <div className="d-flex align-items-center gap-2">
-                      <span className="fw-bold">Vendor : </span> Microsoft
-                    </div>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between bd-highlight bdr-top pt-2">
-                  <div className="p-2 bd-highlight">
-                    <div className="fs-13">Incident ID</div>
-                  </div>
-                  <div className="p-2 bd-highlight">
-                    <div className="badge text-black fs-13">
-                      20210728-00056{" "}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="d-flex justify-content-between bd-highlight">
-                  <div className="p-2 bd-highlight">
-                    <div className="fs-13">Owner</div>
-                  </div>
-                  <div className="p-2 bd-highlight">
-                    <div className="">
+                {/* Owner */}
+                <div className="row bd-highlight mb-3">
+                  <div className="col-md-3 bd-highlight mt-2">Owner</div>
+                  <div className="col-md-9 bd-highlight">
+                    <div className="w-120px">
                       <select
                         name="ownerName"
                         className="form-select form-select-solid"
@@ -479,6 +453,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                     </div>
                   </div>
                 </div>
+
                 <div className="checkbox-wrapper">
                   <input
                     className="p-2 v-middle"
@@ -490,32 +465,67 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </label>
                 </div>
 
-                <div className="d-flex justify-content-between bd-highlight">
-                  <div className="p-2 bd-highlight">
-                    <div className="fs-13">Created</div>
+                {/* Text */}
+                <div className="bd-highlight mb-3 bdr-top pt-5 mt-2">
+                  <div className="bd-highlight mb-3">
+                    <div className="d-flex align-items-top gap-2">
+                      <span className="fw-bold m-width">Incident Name </span>{" "}
+                      <b>:</b> {subject}
+                    </div>
                   </div>
-                  <div className="p-2 bd-highlight">
-                    <div className="badge text-black fw-bold">
-                      {createdDate}
+                  <div className="bd-highlight mb-3">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="fw-bold m-width">Event ID </span>{" "}
+                      <b>:</b> {eventID}
+                    </div>
+                  </div>
+                  <div className="bd-highlight mb-3">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="fw-bold m-width">
+                        {" "}
+                        Destination User{" "}
+                      </span>{" "}
+                      <b>:</b> {destinationUser}
+                    </div>
+                  </div>
+                  <div className="bd-highlight mb-3">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="fw-bold m-width">Source IP </span>{" "}
+                      <b>:</b> {sourceIP}
+                    </div>
+                  </div>
+                  <div className="bd-highlight mb-3">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="fw-bold m-width">Vendor</span> <b>:</b>{" "}
+                      {vendor}
                     </div>
                   </div>
                 </div>
-
-                <div className="d-flex justify-content-between bd-highlight">
-                  <div className="p-2 bd-highlight">
-                    <div className="fs-13">Updated</div>
+                <div className="bd-highlight mb-3">
+                  <div className="d-flex align-items-center gap-2">
+                    <span className="fw-bold m-width">Incident ID</span>{" "}
+                    <b>:</b> {incidentID}
                   </div>
-                  <div className="p-2 bd-highlight">
-                    <div className="badge text-black fw-bold">
-                      {modifiedDate}
-                    </div>
+                </div>
+
+                <div className="bd-highlight mb-3">
+                  <div className="d-flex align-items-center gap-2">
+                    <span className="fw-bold m-width">Created</span> <b>:</b>{" "}
+                    {createdDate && getCurrentTimeZone(createdDate)}
+                  </div>
+                </div>
+
+                <div className="bd-highlight mb-3">
+                  <div className="d-flex align-items-center gap-2">
+                    <span className="fw-bold m-width">Updated</span> <b>:</b>{" "}
+                    {modifiedDate && getCurrentTimeZone(modifiedDate)}
                   </div>
                 </div>
               </div>
 
               <div className="tab-pane fade" id="kt_tab_pane_2" role="tabpanel">
                 <table
-                  className="scroll-y me-n5 pe-5 table table-hover table-row-dashed fs-6 gy-5 my-0 dataTable no-footer"
+                  className="me-n5 pe-5 table table-hover table-row-dashed fs-6 gy-5 my-0 dataTable no-footer"
                   id="kt_inbox_listing"
                 >
                   <tbody>
@@ -523,14 +533,12 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                       <td className="p-2 pb-8">
                         <div className="d-flex justify-content-between bd-highlight">
                           <div
-                            className="p-1 bd-highlight fw-bold fs-12"
+                            className="p-1 fs-12"
                             style={{ width: "190px", textAlign: "left" }}
                           >
                             <div className="text-dark mb-1">
                               <a href="#" className="text-dark">
-                                <span className="fw-bold">
-                                  {alertsList?.name}
-                                </span>
+                                <span className="">{alertsList?.name}</span>
                               </a>
                             </div>
                           </div>
@@ -560,11 +568,15 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                           </div>
                         </div>
                         <div className="d-flex justify-content-between align-text-left bd-highlight">
-                          <div className="p-1 bd-highlight fw-bold fs-12">
+                          <div className="p-1 bd-highlight fs-12">
                             Detected date
                           </div>
-                          <div className="p-1 bd-highlight fs-12">
-                            {alertsList?.detectedtime}
+                          <div className="p-1 fs-12">
+                            {alertsList?.detectedtime && (
+                              <div className="gray">
+                                {getCurrentTimeZone(alertsList.detectedtime)}
+                              </div>
+                            )}
                           </div>
                         </div>
                         <hr className="my-0" />
@@ -596,30 +608,25 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
               <div className="tab-pane fade" id="kt_tab_pane_4" role="tabpanel">
                 Observables data
               </div>
-              <div className="tab-pane fade" id="kt_tab_pane_5" role="tabpanel">
-                <div className="card-body pt-6 h-600px">
+              <div
+                className="tab-pane fade timeline-section"
+                id="kt_tab_pane_5"
+                role="tabpanel"
+              >
+                <div className="pt-6 h-600px">
                   <div className="timeline-label">
                     {incidentHistory && incidentHistory.length > 0 ? (
                       incidentHistory.map((item) => {
-                        const [_date, time] = item.historyDate.split("T");
-                        const formattedDate = _date;
-                        const formattedTime = time
-                          .split(":")
-                          .slice(0, 2)
-                          .join(":");
+                        const formattedDateTime = getCurrentTimeZone(
+                          item.historyDate
+                        );
 
                         return (
-                          <div className="timeline-item" key={item.incidentId}>
+                          <div className="timeline-item mb-5" key={item.id}>
                             <div className="timeline-label fw-bold text-gray-800 fs-6">
-                              <span style={{ fontSize: "9px" }}>
-                                {formattedDate}
-                              </span>{" "}
-                              <span style={{ color: "blue", fontSize: "10px" }}>
-                                {formattedTime}
-                              </span>
-                              <p className="text-muted fs-11 fw-normal">
-                                {item.createdUser}
-                              </p>
+                              <p>{formattedDateTime}</p>
+                              {/* <p className="time">{formattedDateTime}</p> */}
+                              <p className="text-muted">{item.createdUser}</p>
                             </div>
 
                             <div className="timeline-badge">
@@ -639,7 +646,8 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                   </div>
                 </div>
               </div>
-              <div className="">
+              <div className="clearfix" />
+              <div className="d-flex mt-10 justify-content-end">
                 {activeTab === "general" && (
                   <div className="text-end mt-10">
                     <button

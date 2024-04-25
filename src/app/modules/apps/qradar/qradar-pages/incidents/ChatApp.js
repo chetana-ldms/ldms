@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import ChatPage from "../components/ChatPage";
-import { fetchGetChatHistory } from "../../../../../api/IncidentsApi";
 
 const ChatApp = ({ selectedIncident }) => {
   const [socket, setSocket] = useState(null);
@@ -12,7 +11,9 @@ const ChatApp = ({ selectedIncident }) => {
   useEffect(() => {
     // Create a socket connection
     console.log("Attempting to establish socket connection...");
-    const socketInstance = io("localhost:4000");
+    // const socketInstance = io("REACT_APP_CHAT_SERVER_DEV", { mode: "cors" });
+    const socketInstance = io("REACT_APP_CHAT_SERVER_QA", { mode: "cors" });
+    // const response = await fetch('REACT_APP_CHAT_SERVER_QA', {mode:'cors'});
     setSocket(socketInstance);
     console.log("Socket:", socketInstance);
 

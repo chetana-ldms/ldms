@@ -1,89 +1,152 @@
-import React, {useState, useEffect} from 'react'
-import CanvasJSReact from './assets/canvasjs.react'
+import React, { useState, useEffect } from "react";
+import CanvasJSReact from "./assets/canvasjs.react";
+import { fetchClosedIncidentsSummeryUrl } from "../../../../../api/ReportApi";
+import { useErrorBoundary } from "react-error-boundary";
+import jsPDF from "jspdf";
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from "reactstrap";
 
 function ClosedIncidentReport() {
-  const [alertData, setAlertData] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const handleError = useErrorBoundary();
+  const orgId = Number(sessionStorage.getItem("orgId"));
+  const [alertData, setAlertData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const CanvasJS = CanvasJSReact.CanvasJS
-  const CanvasJSChart = CanvasJSReact.CanvasJSChart
+  const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
+
+  const CanvasJS = CanvasJSReact.CanvasJS;
+  const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
   //Pie chart color code
-  CanvasJS.addColorSet('colorShades', [
+  CanvasJS.addColorSet("colorShades", [
     //colorSet Array
-    '#008080',
-    '#f0e68c',
-    '#ffb700',
-  ])
+    "#008080",
+    "#f0e68c",
+    "#ffb700",
+  ]);
 
-  const statusNames = alertData.map((alert) => alert.statusName)
-  const alertCounts = alertData.map((alert) => alert.alertCount)
+  let statusNames = null;
+  let alertCounts = null;
 
-  //Pie chart for closed incidents
+  if (alertData && alertData.length > 0) {
+    statusNames = alertData.map((alert) => alert.statusName);
+    alertCounts = alertData.map((alert) => alert.alertCount);
+  }
+
+  const dataPoints =
+    alertData && alertData.length > 0
+      ? alertData.map((alert, index) => {
+          return {
+            y: alert.percentageValue.toFixed(2),
+            label: alert.statusName,
+            alertCount: alertCounts[index],
+          };
+        })
+      : [];
+
   const closedoptions = {
     exportEnabled: true,
     animationEnabled: true,
     zoomEnabled: true,
-    colorSet: 'colorShades',
+    colorSet: "colorShades",
     title: {
-      text: '',
+      text: "",
     },
     data: [
       {
-        type: 'pie',
+        type: "pie",
         startAngle: 220,
-        toolTipContent: '<b>{label}</b>: {y}%',
-        showInLegend: 'true',
-        legendText: '{label}',
+        toolTipContent: "<b>{label}</b>: {y}% ({alertCount})",
+        showInLegend: "true",
+        legendText: "{label}",
         indexLabelFontSize: 13,
-        indexLabel: '{label} - {y}%',
-        dataPoints: statusNames.map((statusName, index) => {
-          return {
-            y: alertCounts[index],
-            label: statusName,
-          }
-        }),
+        indexLabel: "{label} - {y}% ({alertCount})",
+        dataPoints: dataPoints,
       },
     ],
-  }
-
+  };
   useEffect(() => {
     const fetchData = async () => {
+      const toDate = new Date().toISOString(); // Get the current date and time
+      const fromDate = new Date();
+      fromDate.setFullYear(fromDate.getFullYear() - 1); // Subtract 1 year from the current year
+      const fromDateISO = fromDate.toISOString(); // Convert the fromDate to ISO string format
+
+      const requestData = {
+        orgId,
+        incidentFromDate: fromDateISO,
+        incidentToDate: toDate,
+      };
       try {
-        const response = await fetch(
-          'http://115.110.192.133:502/api/Reports/v1/ClosedIncidentsSummery',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              orgId: 1,
-              incidentFromDate: '2022-04-11T14:05:06.443Z',
-              incidentToDate: '2023-04-11T14:05:06.443Z',
-            }),
-          }
-        )
+        const response = await fetchClosedIncidentsSummeryUrl(requestData);
 
         if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(`Network response was not ok: ${response.status} - ${errorData.message}`)
+          const errorData = await response.json();
+          throw new Error(
+            `Network response was not ok: ${response.status} - ${errorData.message}`
+          );
         }
 
-        const {data} = await response.json() // destructure the 'data' property from the response object
-        setAlertData(data)
-        setLoading(false)
+        const { data } = await response.json(); // destructure the 'data' property from the response object
+        setAlertData(data);
+        setLoading(false);
       } catch (error) {
-        setError(error.message)
-        setLoading(false)
+        handleError(error);
+        setError(error.message);
+        setLoading(false);
       }
-    }
+    };
 
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
+  //Date range
+  const today = new Date();
+  const lastYear = new Date();
+  lastYear.setFullYear(lastYear.getFullYear() - 1);
+  const startDate = lastYear.toLocaleDateString("en-GB");
+  const endDate = today.toLocaleDateString("en-GB");
 
-  console.log(alertData) // Log the alertData to the console
+  // Function to export data to Excel
+  const exportToExcel = () => {
+    // Convert alertData to CSV format
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [
+        Object.keys(alertData[0]).join(","),
+        ...alertData.map((row) => Object.values(row).join(",")),
+      ].join("\n");
+
+    // Create a temporary anchor element
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "closed_incident_report.csv");
+    document.body.appendChild(link);
+
+    // Trigger the click event to initiate download
+    link.click();
+
+    // Clean up
+    document.body.removeChild(link);
+  };
+
+  // Function to export data to PDF
+  const exportToPDF = () => {
+    // Create a new jsPDF instance
+    const doc = new jsPDF();
+    doc.autoTable({
+      head: [Object.keys(alertData[0])],
+      body: alertData.map((row) => Object.values(row)),
+    });
+
+    // Save the PDF
+    doc.save("closed_incident_report.pdf");
+  };
 
   return (
     <div>
@@ -91,14 +154,37 @@ function ClosedIncidentReport() {
         <p>Loading...</p>
       ) : error ? (
         <p>Error: {error}</p>
-      ) : (
+      ) : alertData !== null ? (
         <>
-          <h4>Closed Incident</h4>
+          <h4 className="bg-heading">
+            Closed Incident for the last year ({startDate} to {endDate})
+          </h4>
+          <div className="export-report mt-5 me-5">
+            <Dropdown
+              isOpen={dropdownOpen}
+              toggle={() => setDropdownOpen(!dropdownOpen)}
+            >
+              <DropdownToggle caret>
+                Export <i className="fa fa-file-export link mg-left-10" />
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem onClick={exportToExcel}>
+                  Export to CSV{" "}
+                  <i className="fa fa-file-excel link float-right" />
+                </DropdownItem>
+                <DropdownItem onClick={exportToPDF}>
+                  Export to PDF <i className="fa fa-file-pdf red float-right" />
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
           <CanvasJSChart options={closedoptions} />
         </>
+      ) : (
+        <p>No data found</p>
       )}
     </div>
-  )
+  );
 }
 
-export default ClosedIncidentReport
+export default ClosedIncidentReport;

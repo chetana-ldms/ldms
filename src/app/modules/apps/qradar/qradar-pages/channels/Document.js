@@ -9,8 +9,11 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import { notify, notifyFail } from "../components/notification/Notification";
 import "react-toastify/dist/ReactToastify.css";
+import { useErrorBoundary } from "react-error-boundary";
+
 
 const Document = ({ channelId, channelName }) => {
+  const handleError = useErrorBoundary();
   const CreatedUserId = Number(sessionStorage.getItem("userId"));
   const orgId = Number(sessionStorage.getItem("orgId"));
   const date = new Date().toISOString();
@@ -25,7 +28,7 @@ const Document = ({ channelId, channelName }) => {
       const response = await fetchGetUploadedFilesListByChannelId(channelId);
       setDocuments(response);
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   };
 
@@ -53,7 +56,7 @@ const Document = ({ channelId, channelName }) => {
         setUploadDocumentModal(false);
         fetchData(channelId);
       } catch (error) {
-        console.log(error);
+        handleError(error);
       }
     }
   };
@@ -68,7 +71,7 @@ const Document = ({ channelId, channelName }) => {
       }
       await fetchData(channelId);
     } catch (error) {
-      console.log(error);
+      handleError(error);
     }
   };
   const handleDownload = async (item) => {
@@ -89,7 +92,7 @@ const Document = ({ channelId, channelName }) => {
         notifyFail("File not downloaded");
       }
     } catch (error) {
-      console.log(error);
+      handleError(error);
       notifyFail("Error occurred while downloading the file");
     }
   };

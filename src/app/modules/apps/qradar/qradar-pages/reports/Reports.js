@@ -7,6 +7,7 @@ import ClosedIncidentReport from "./ClosedIncidentReport";
 import OpenIncidentSummary from "./OpenIncidentSummary";
 import SignificantIncident from "./SignificantIncident";
 import CreatedIncidentStatusReport from "./CreatedIncidentStatusReport";
+import AlertsRule from "./AlertsRule";
 
 const CanvasJS = CanvasJSReact.CanvasJS;
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -75,80 +76,68 @@ const Reports = () => {
   };
 
   //Bar chart
-  const baroptions = {
-    dataPointWidth: 40,
-    axisY: {
-      minimum: 0,
-      maximum: 15,
-      interval: 5,
-    },
-    axisX: {
-      labelMaxWidth: 70,
-      labelWrap: true, // change it to false
-      interval: 1,
-      labelFontSize: 11,
-      labelFontWeight: "normal",
-      labelTextAlign: "center",
-      labelAngle: 180,
-    },
-    data: [
-      {
-        // Change type to "doughnut", "line", "splineArea", etc.
-        type: "column",
-        dataPoints: [
-          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 17 },
-          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 14 },
-          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 13 },
-          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 10 },
-          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 8 },
-          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 8 },
-          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 7 },
-          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 4 },
-          { label: "Customer Name - Smith Co Alert Name - Windows...", y: 4 },
-          { label: "SMB Port Scanning Device Vendor - Checkpoint...", y: 5 },
-          {
-            label:
-              'Today, Apr 26,2018 it was found that "Shadow Brokers" le...',
-            y: 5,
-          },
-        ],
-      },
-    ],
-  };
+  // const baroptions = {
+  //   dataPointWidth: 40,
+  //   axisY: {
+  //     minimum: 0,
+  //     maximum: 15,
+  //     interval: 5,
+  //   },
+  //   axisX: {
+  //     labelMaxWidth: 70,
+  //     labelWrap: true, // change it to false
+  //     interval: 1,
+  //     labelFontSize: 11,
+  //     labelFontWeight: "normal",
+  //     labelTextAlign: "center",
+  //     labelAngle: 180,
+  //   },
+  //   data: [
+  //     {
+  //       // Change type to "doughnut", "line", "splineArea", etc.
+  //       type: "column",
+  //       dataPoints: [
+  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 17 },
+  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 14 },
+  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 13 },
+  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 10 },
+  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 8 },
+  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 8 },
+  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 7 },
+  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 4 },
+  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 4 },
+  //         { label: "SMB Port Scanning Device Vendor - Checkpoint...", y: 5 },
+  //         {
+  //           label:
+  //             'Today, Apr 26,2018 it was found that "Shadow Brokers" le...',
+  //           y: 5,
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // };
+  //Date range
+  const today = new Date();
+  const lastYear = new Date();
+  lastYear.setFullYear(lastYear.getFullYear() - 1);
+  const startDate = lastYear.toLocaleDateString("en-GB");
+  const endDate = today.toLocaleDateString("en-GB");
 
   return (
     <div className="row reports-page">
-      {/* Begin Col */}
       <div className="col-lg-12">
         <div className="mb-5 mb-xl-12">
           <h2>Reports</h2>
-          <div className="demo-block">
+          <div className="demo-block card mt-5">
             <Tabs className="report-tabs">
-              <div className="card">
-                <div className="card-body">
+              <div>
+                <div className="card-body1">
                   <TabPanel className="main-tab">
                     <AlertsSummary />
                   </TabPanel>
-                  <TabPanel className="main-tab">
-                    <h2 className="mb-10">
-                      Top 10 alerts by rule name for the last year (2/20/2020
-                      and 7/28/2021)
-                    </h2>
-                    <Tabs>
-                      <TabList className="inner-tablist">
-                        {/* <Tab>Last day</Tab>
-                          <Tab>Last 7 days</Tab>
-                          <Tab>Last month</Tab> */}
-                        <Tab>Last year</Tab>
-                      </TabList>
 
-                      {/* <TabPanel className='inner-tab'>1</TabPanel>
-                        <TabPanel>2</TabPanel>
-                        <TabPanel>3</TabPanel> */}
-                      <TabPanel className="inner-tab">
-                        <CanvasJSChart options={baroptions} />
-                      </TabPanel>
-                    </Tabs>
+                  <TabPanel className="main-tab">
+                    <AlertsRule />
                   </TabPanel>
                   <TabPanel className="main-tab">
                     <SlaMeasurement />
@@ -169,21 +158,19 @@ const Reports = () => {
                   </TabPanel>
                 </div>
               </div>
-              <TabList className="tab-list">
-                <Tab>Alert summary</Tab>
-                <Tab>Alerts rule</Tab>
-                <Tab>SLA measurement</Tab>
-                <Tab>Status of all created incidents</Tab>
-                <Tab>Closed incidents</Tab>
-                <Tab>Open incident status</Tab>
-                <Tab>Significant incidents</Tab>
+              <TabList className="tab-list mt-5">
+                <Tab>Alert Summary</Tab>
+                <Tab>Alerts Rule</Tab>
+                <Tab>SLA Measurement</Tab>
+                <Tab>Status of Created Incidents</Tab>
+                <Tab>Closed Incidents</Tab>
+                <Tab>Open Incident Status</Tab>
+                <Tab>Significant Incidents</Tab>
               </TabList>
             </Tabs>
           </div>
         </div>
       </div>
-
-      {/* End Col */}
     </div>
   );
 };

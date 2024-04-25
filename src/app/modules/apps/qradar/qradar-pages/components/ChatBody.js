@@ -5,6 +5,7 @@ import {
   fetchGetChatHistory,
 } from "../../../../../api/IncidentsApi";
 import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
+import { getCurrentTimeZone } from "../../../../../../utils/helper";
 
 const ChatBody = ({
   messages: initialMessages,
@@ -29,21 +30,45 @@ const ChatBody = ({
   useEffect(() => {
     setMessages(initialMessages);
   }, [initialMessages]);
-  useEffect(() => {
-    const fetchData = async () => {
-      // Fetch chat history for the selected incident
-      const data = {
-        orgId: orgId,
-        subject: "Incident",
-        subjectRefId: id,
-      };
-      const chatHistory = await fetchGetChatHistory(data);
-      setChatHistory(chatHistory || []);
-      setRefreshChatHistory(false);
-      setMessages([]);
-      resetMessages();
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     // Fetch chat history for the selected incident
+  //     const data = {
+  //       orgId: orgId,
+  //       subject: "Incident",
+  //       subjectRefId: id,
+  //     };
+  //     const chatHistory = await fetchGetChatHistory(data);
+  //     setChatHistory(chatHistory || []);
+  //     setRefreshChatHistory(false);
+  //     setMessages([]);
+  //     resetMessages();
+  //   };
 
+  //   fetchData();
+  //   setChatHistory([]);
+  //   // const interval = setInterval(() => {
+  //   //   fetchData();
+  //   // }, 1000);
+
+  //   // return () => {
+  //   //   clearInterval(interval);
+  //   // };
+  // }, [id, setRefreshChatHistory]);
+  const fetchData = async () => {
+    // Fetch chat history for the selected incident
+    const data = {
+      orgId: orgId,
+      subject: "Incident",
+      subjectRefId: id,
+    };
+    const chatHistory = await fetchGetChatHistory(data);
+    setChatHistory(chatHistory || []);
+    setRefreshChatHistory(false);
+    setMessages([]);
+    resetMessages();
+  };
+  useEffect(() => {
     fetchData();
     setChatHistory([]);
     // const interval = setInterval(() => {
@@ -54,7 +79,13 @@ const ChatBody = ({
     //   clearInterval(interval);
     // };
   }, [id, setRefreshChatHistory]);
-  const exportChatHistory = () => {
+  const exportChatHistory = async () => {
+    const data = {
+      orgId: orgId,
+      subject: "Incident",
+      subjectRefId: id,
+    };
+    const chatHistory = await fetchGetChatHistory(data);
     const filename = `Chat_History_Incident_${id}.txt`;
     const formattedChatHistory = chatHistory
       .map((message) => `${message.fromUserName}: ${message.chatMessage}`)
@@ -67,50 +98,13 @@ const ChatBody = ({
     element.download = filename;
     element.click();
   };
-  const handleDownloadAttachment = async (message) => {
-    try {
-      const data = {
-        fileUrl: message.attachmentUrl,
-        filePhysicalPath: message.attachmentPhysicalPath,
-      };
-      const response = await fetchDownloadAttachmentUrl(data);
-      if (response.ok) {
-        const fileBlob = await response.blob();
-        const url = URL.createObjectURL(fileBlob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = message.fileName;
-        link.target = "_blank";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        // notify("File Downloaded successfully");
-      } else {
-        // notifyFail("File not Downloaded successfully");
-      }
-    } catch (error) {
-      console.log(error);
-      // notifyFail("Error occurred while downloading the file");
-    }
-  };
-  const formatDate = (datetimeString) => {
-    const datetime = new Date(datetimeString);
-
-    const dateOptions = { year: "numeric", month: "2-digit", day: "2-digit" };
-    const timeOptions = { hour: "2-digit", minute: "2-digit" };
-
-    const formattedDate = datetime.toLocaleDateString("en-US", dateOptions);
-    const formattedTime = datetime.toLocaleTimeString("en-US", timeOptions);
-
-    return `${formattedDate} ${formattedTime}`;
-  };
 
   return (
     <>
       <header className="chat__mainHeader">
         <span>{loggedInUserName}</span>
         <span className="pointer" onClick={exportChatHistory}>
-          <i className="fa fa-download" title="download chat history" />
+          <i className="fa fa-download white" title="Download Chat History" />
         </span>
       </header>
       <div className="message__container">
@@ -148,7 +142,7 @@ const ChatBody = ({
                       : "float-left"
                   }`}
                 >
-                  {formatDate(message.messsageDate)}
+                  {getCurrentTimeZone(message.messsageDate)}
                 </div>
                 <div className="clearfix" />
                 <div
@@ -170,21 +164,9 @@ const ChatBody = ({
                         href={message.attachmentUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleDownloadAttachment(message);
-                        }}
+                        download={message.attachmentName}
                       >
                         {message.chatMessage}
-                        {/* <div
-                          className={`date-time ${
-                            message.fromUserName === loggedInUserName
-                              ? "float-right"
-                              : "float-left"
-                          }`}
-                        >
-                          {formatDate(message.messsageDate)}
-                        </div> */}
                       </a>
                     </div>
                   )}
@@ -223,7 +205,7 @@ const ChatBody = ({
                           : "float-left"
                       }`}
                     >
-                      {formatDate(message.createdDate)}
+                      {getCurrentTimeZone(message.createdDate)}
                     </div>
                   )}
                   <div className="clearfix" />

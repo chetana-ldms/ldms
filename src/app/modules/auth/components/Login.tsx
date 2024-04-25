@@ -1,16 +1,16 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-// import { AES } from 'crypto-js';
+
 import { useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import clsx from 'clsx'
 import { Link, useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik'
-// import { getUserByToken, login } from '../core/_requests'
-import { getUserByToken } from '../core/_requests'
 import { toAbsoluteUrl } from '../../../../_metronic/helpers'
 import { fetchAuthenticate, fetchOrganizations } from '../../../api/Api'
-// import { useAuth } from '../core/Auth'
-import axios from 'axios'
+import TasksPopUp from './TasksPopUp';
+import ChangePasswordPopUp from './ChangePasswordPopUp'
+import { ToastContainer } from 'react-toastify'
+import { notify, notifyFail } from '../../apps/qradar/qradar-pages/components/notification/Notification'
+import 'react-toastify/dist/ReactToastify.css';
 const loginSchema = Yup.object().shape({
   username: Yup.string()
     .min(3, 'Minimum 3 symbols')
@@ -19,7 +19,9 @@ const loginSchema = Yup.object().shape({
     .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
     .required('Password is required'),
-  org: Yup.string().required('Organisation is required'),
+  org: Yup.string()
+    .notOneOf(['0'], 'Please select an organisation') 
+    .required('Organisation is required'),
 });
 
 interface Organisation {
@@ -39,8 +41,9 @@ const initialValues = {
 
 export function Login() {
   const [loading, setLoading] = useState(false)
-  // const { saveAuth, setCurrentUser } = useAuth()
   const [organisation, setOrganisation] = useState([]);
+  const [message, setMessage] = useState('')
+  const [showChangePwdModal, setShowChangePwdModal] = useState(false);
   const navigate = useNavigate()
   useEffect(() => {
     fetchOrganizations()
@@ -51,6 +54,9 @@ export function Login() {
         console.log(error);
       });
   }, []);
+  const handlePassword = () => {
+    navigate('/auth/forgotpassword')
+  };
   const formik = useFormik({
     initialValues,
     validationSchema: loginSchema,
@@ -59,59 +65,63 @@ export function Login() {
       try {
         const authData = await fetchAuthenticate(values.username, values.password, Number(values.org))
         console.log(authData, "authData")
+        setMessage(authData.message);
         if (authData.isSuccess) {
+            // notify('Login succesful');
           sessionStorage.setItem('userId', authData.userID);
           sessionStorage.setItem('orgId', authData.orgId);
+          sessionStorage.setItem('roleID', authData.roleID);
           sessionStorage.setItem('userName', authData.userName);
-          navigate('/dashboard')
+          sessionStorage.setItem('globalAdminRole', authData.globalAdminRole);
+          sessionStorage.setItem('clientAdminRole', authData.clientAdminRole);
+          sessionStorage.setItem('openTaskCount', authData.openTaskCount);
+          sessionStorage.setItem('defaultPassword', authData.defaultPassword);
+          sessionStorage.setItem('accountName', "Insilicorp");
+          sessionStorage.setItem('accountId', "1924063616109227261");
+          sessionStorage.setItem('siteName', "");
+          sessionStorage.setItem('siteId', "");
+          sessionStorage.setItem('groupName', "");
+          sessionStorage.setItem('groupId', "");
+          const defaultPassword = authData.defaultPassword;
+          if (defaultPassword) {
+            setShowChangePwdModal(true);
+          } else{
+              navigate('/dashboard');
+          }
         } else {
-          setStatus('The login details are incorrect')
+          // notifyFail('Authentication failed');
         }
-        // saveAuth(auth);
-        // const { data: auth } = await login(values.username, values.password, Number(values.org));
-        // saveAuth(auth);
-        // const { data: user } = await getUserByToken(auth.api_token);
-        // setCurrentUser(user);
       } catch (error) {
         console.error(error)
-        // saveAuth(undefined)
         setStatus('The login details are incorrect')
         setSubmitting(false)
         setLoading(false)
       }
     },
   })
-
   return (
+    <div className='card pad-20'>  
+    <ToastContainer />
+    
     <form
       className='form w-100 login-form'
       onSubmit={formik.handleSubmit}
       noValidate
       id='kt_login_signin_form'
     >
-      {/* begin::Heading */}
-      <div className='text-center mb-11'>
+      <div className='text-center'>
         <h1 className='text-dark fw-bolder mb-3'>
           <img src={toAbsoluteUrl('/media/misc/lancesoft_logo.png')} className='h-80px me-3' />
         </h1>
         <div className='text-blue-500 fw-semibold fs-20 login-subtxt'>Defence Centre</div>
       </div>
-      {/* begin::Heading */}
-
-      {formik.status ? (
-        <div className='mb-lg-15 alert alert-danger'>
-          <div className='alert-text font-weight-bold'>{formik.status}</div>
+      <h1 className='mb-2 text-blue'>Login</h1>
+      <hr/>
+      { message &&
+      <div className="alert alert-danger mb-5">
+          <i className="fa fa-exclamation-circle red" /> {message}
         </div>
-      ) : (
-        <div className='mb-10 bg-light-info p-8 rounded d-none'>
-          <div className='text-info'>
-            Use account <strong>admin@demo.com</strong> and password <strong>demo</strong> to
-            continue.
-          </div>
-        </div>
-      )}
-
-      {/* begin::Form group */}
+      }
       <div className='fv-row mb-8'>
         <label className='form-label fs-6 fw-bolder text-dark'>Username</label>
         <input
@@ -130,13 +140,10 @@ export function Login() {
         />
         {formik.touched.username && formik.errors.username && (
           <div className='fv-plugins-message-container'>
-            <span role='alert'>{formik.errors.username}</span>
+            <span className='red' role='alert'>{formik.errors.username}</span>
           </div>
         )}
       </div>
-      {/* end::Form group */}
-
-      {/* begin::Form group */}
       <div className='fv-row mb-3'>
         <label className='form-label fw-bolder text-dark fs-6 mb-0'>Password</label>
         <input
@@ -157,80 +164,73 @@ export function Login() {
         {formik.touched.password && formik.errors.password && (
           <div className='fv-plugins-message-container'>
             <div className='fv-help-block'>
-              <span role='alert'>{formik.errors.password}</span>
+              <span className='red' role='alert'>{formik.errors.password}</span>
             </div>
           </div>
         )}
+        <div className='text-right mt-3'>
+          <p onClick={handlePassword} className='link pointer text-underline'>Forgot password</p>
+        </div>
       </div>
       <div className='fv-row mb-8'>
         <label className='form-label fs-6 fw-bolder text-dark'>Organisation Name</label>
-        <select
-          placeholder='Organisation'
-          {...formik.getFieldProps('org')}
-          className={clsx(
-            'form-select form-control bg-transparent',
-            { 'is-invalid': formik.touched.org && formik.errors.org },
-            {
-              'is-valid': formik.touched.org && !formik.errors.org,
-            }
+        <div>
+          {organisation === null && (
+            
+             <select
+             placeholder='Organisation'
+             {...formik.getFieldProps('org')}
+             className={clsx(
+               'form-select form-control bg-transparent',
+               { 'is-invalid': formik.touched.org && formik.errors.org },
+               { 'is-valid': formik.touched.org && !formik.errors.org }
+             )}
+             autoComplete='off'
+           >
+              <option value="">Select Organisation</option>
+            </select>
           )}
-          autoComplete='off'
-        >
-          <option value="" >Select</option>
-          {organisation.length > 0 &&
-            organisation.map((user: Organisation) => (
-              <option key={user.orgID} value={user.orgID}>
-                {user.orgName}
-              </option>
-            ))}
-        </select>
+          {organisation !== null && (
+            
+            <select
+              placeholder='Organisation'
+              {...formik.getFieldProps('org')}
+              className={clsx(
+                'form-select form-control bg-transparent',
+                { 'is-invalid': formik.touched.org && formik.errors.org },
+                { 'is-valid': formik.touched.org && !formik.errors.org }
+              )}
+              autoComplete='off'
+            >
+              <option value="" >Select Organisation</option>
+              {organisation.length >= 0 && organisation.map((user: Organisation) => (
+                <option key={user.orgID} value={user.orgID}>
+                  {user.orgName}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
         {formik.touched.org && formik.errors.org && (
           <div className='fv-plugins-message-container'>
-            <span role='alert'>{formik.errors.org}</span>
+            <span className='red' role='alert'>{formik.errors.org}</span>
           </div>
         )}
       </div>
-      {/* end::Form group */}
-
-      {/* begin::Wrapper */}
-      <div className='d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8'>
-        <div />
-
-        {/* begin::Link */}
-        {/* <Link to='/auth/forgot-password' className='link-primary'>
-          Forgot Password ?
-        </Link> */}
-        {/* end::Link */}
-      </div>
-      {/* end::Wrapper */}
-
-      {/* begin::Action */}
+      
       <div className='d-grid mb-10'>
         <button
           type='submit'
           id='kt_sign_in_submit'
-          className='btn btn-primary'
+          className='btn btn-login'
           disabled={formik.isSubmitting || !formik.isValid}
         >
           <span className='indicator-label' >LOGIN</span>
-          {/* {!loading && <span className='indicator-label' >Continue</span>} */}
-
-          {/* {loading && (
-            <span className='indicator-progress' style={{ display: 'block' }}>
-              Please wait...
-              <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
-            </span>
-          )} */}
         </button>
       </div>
-      {/* end::Action */}
-
-      {/* <div className='text-gray-500 text-center fw-semibold fs-6'>
-        Not a Member yet?{' '}
-        <Link to='/auth/registration' className='link-primary'>
-          Sign up
-        </Link>
-      </div> */}
     </form>
+    <ChangePasswordPopUp showChangePwdModal={showChangePwdModal} setShowChangePwdModal={setShowChangePwdModal}/>
+
+    </div>
   )
 }

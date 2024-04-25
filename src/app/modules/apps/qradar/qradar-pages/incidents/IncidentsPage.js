@@ -14,8 +14,14 @@ import { ToastContainer } from "react-toastify";
 import { notify, notifyFail } from "../components/notification/Notification";
 import "react-toastify/dist/ReactToastify.css";
 import ChatApp from "./ChatApp";
+import moment from "moment-timezone";
+import { getCurrentTimeZone } from "../../../../../../utils/helper";
+import "./IncidentPagination.css";
+import { useErrorBoundary } from "react-error-boundary";
+import { UsersListLoading } from "../components/loading/UsersListLoading";
 
 const IncidentsPage = () => {
+  const handleError = useErrorBoundary();
   const userID = Number(sessionStorage.getItem("userId"));
   const orgId = Number(sessionStorage.getItem("orgId"));
   const date = new Date().toISOString();
@@ -36,6 +42,7 @@ const IncidentsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageCount, setpageCount] = useState(0);
   const [limit, setLimit] = useState(20);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     Promise.all([
       fetchMasterData("incident_status"),
@@ -46,7 +53,7 @@ const IncidentsPage = () => {
         setIncidentSortOptions(sortOptionsData);
       })
       .catch((error) => {
-        console.log(error);
+        handleError(error);
       });
   }, []);
   const incidents = async () => {
@@ -59,6 +66,7 @@ const IncidentsPage = () => {
       loggedInUserId: userID,
     };
     try {
+      setLoading(true);
       const response = await fetchIncidents(data);
       setIncident(response.incidentList);
       setTotalIncidentsCount(response.totalIncidentsCount);
@@ -66,8 +74,10 @@ const IncidentsPage = () => {
       // const total = 40;
 
       setpageCount(Math.ceil(total / limit));
+      setLoading(false);
     } catch (error) {
-      console.log(error);
+      handleError(error);
+      setLoading(false);
     }
   };
 
@@ -93,12 +103,20 @@ const IncidentsPage = () => {
       // toolTypeID
     };
     try {
+      setLoading(true);
       const response = await fetchGetIncidentSearchResult(data);
-      setIncident(response);
+      setIncident(response.incidentList);
+      setTotalIncidentsCount(response.totalIncidentsCount);
+      const total = response.totalIncidentsCount;
+      // const total = 40;
+
+      setpageCount(Math.ceil(total / limit));
 
       // incidents();
+      setLoading(false);
     } catch (error) {
-      console.log(error);
+      handleError(error);
+      setLoading(false);
     }
   };
   const handleIncidentClick = (item) => {
@@ -135,23 +153,32 @@ const IncidentsPage = () => {
     setLimit(selectedPerPage);
   };
   useEffect(() => {
-    if (incident.length > 0) {
-      setSelectedIncident(incident[0]);
-    }
+    setSelectedIncident(
+      incident !== null && incident.length > 0 ? incident[0] : []
+    );
   }, [incident]);
 
   return (
     <>
-      <div className="card mb-5 mb-xl-8 bg-red incident-page">
+      <div className="mb-5 mb-xl-8 bg-red incident-page">
         <ToastContainer />
         <div className="card-body1 py-3">
           <div className="row">
             <div className="col-md-4 border-1 border-gray-300 border-end">
               <div className="card">
-                <div className="d-flex justify-content-between bd-highlight mb-3">
+                <div className="bg-heading">
+                  <h4 className="no-margin no-pad">
+                    <span className="white fw-bold block pt-3 pb-3">
+                      Incidents{" "}
+                      <span className="white">({totalIncidentsCount})</span>
+                    </span>
+                  </h4>
+                </div>
+                <div className="p-1 bd-highlight"></div>
+                {/* <div className="d-flex justify-content-between bd-highlight mb-3">
                   <div className="p-1 bd-highlight">
-                    <h6 className="card-title align-items-start flex-column pt-2">
-                      <span className="card-label fw-bold fs-5 mb-1">
+                    <h6 className="card-title pt-3 pb-3 bg-header no-margin">
+                      <span className="white fw-bold fs-5 mb-1">
                         Incidents{" "}
                         <span className="text-black-50">
                           ({totalIncidentsCount})
@@ -160,9 +187,9 @@ const IncidentsPage = () => {
                     </h6>
                   </div>
                   <div className="p-1 bd-highlight"></div>
-                </div>
+                </div> */}
 
-                <div className="card-title">
+                <div className="card-title header-filter">
                   {/* begin::Search */}
                   <div className="input-group">
                     <input
@@ -182,7 +209,7 @@ const IncidentsPage = () => {
                   {/* end::Search */}
                   <div className="d-flex justify-content-between bd-highlight mb-3">
                     <div className="mt-2 bd-highlight">
-                      <div className="w-110px me-2">
+                      <div className="w-100px me-2">
                         <div>
                           <select
                             className="form-select form-select-sm"
@@ -206,7 +233,7 @@ const IncidentsPage = () => {
                     </div>
                     <div className="mt-2 bd-highlight mt-5">Sort by</div>
                     <div className="mt-2 bd-highlight">
-                      <div className="w-120px me-0">
+                      <div className="w-150px me-0">
                         <select
                           className="form-select form-select-sm"
                           data-kt-select2="true"
@@ -214,9 +241,7 @@ const IncidentsPage = () => {
                           data-dropdown-parent="#kt_menu_637dc885a14bb"
                           data-allow-clear="true"
                           ref={sortOption}
-                          // onChange={handleSortOptionChange}
                         >
-                          <option value="">Select</option>
                           {incidentSortOptions.length > 0 &&
                             incidentSortOptions.map((item) => (
                               <option key={item.dataID} value={item.dataID}>
@@ -227,9 +252,10 @@ const IncidentsPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="scroll-y h-350px">
+                  <div className="scroll-y h-500px">
                     <div className="incident-list">
                       <>
+                        {loading && <UsersListLoading />}
                         {incident && incident.length > 0 ? (
                           incident.map((item, index) => (
                             <div
@@ -243,7 +269,7 @@ const IncidentsPage = () => {
                                 <div className="text-dark">
                                   <a href="#" className="text-dark">
                                     <span
-                                      className="fw-bold incident-name"
+                                      className="incident-name"
                                       title={item.description}
                                     >
                                       {item.description}
@@ -254,13 +280,15 @@ const IncidentsPage = () => {
                               <div className="row">
                                 <div className="d-flex justify-content-between">
                                   <div className="pt-2 bd-highlight">
-                                    <div className="text-black fw-normal">
+                                    <div className="fw-bold">
                                       {item.incidentStatusName}
                                     </div>
                                   </div>
                                   <div className="pt-3 bd-highlight">
-                                    <div className="badge text-black fw-normal">
-                                      {item.createdDate}
+                                    <div className="badge gray fw-normal">
+                                      {item.modifiedDate
+                                        ? getCurrentTimeZone(item.modifiedDate)
+                                        : getCurrentTimeZone(item.createdDate)}
                                     </div>
                                   </div>
                                 </div>
@@ -268,11 +296,11 @@ const IncidentsPage = () => {
                               <hr className="my-0" />
                               <div className="d-flex justify-content-between bd-highlight mt-2">
                                 {item.ownerName ? (
-                                  <div className="p-1 bd-highlight fs-14">
+                                  <div className="p-1 bd-highlight fs-12">
                                     {item.ownerName}
                                   </div>
                                 ) : (
-                                  <div className="p-1 bd-highlight fs-14">
+                                  <div className="p-1 bd-highlight fs-12">
                                     {item.createdUser}
                                   </div>
                                 )}
@@ -293,43 +321,49 @@ const IncidentsPage = () => {
                       </>
                     </div>
                   </div>
-                  <div className="d-flex align-items-center justify-content-between pagination-bar pt-5 border-top">
-                    <ReactPaginate
-                      previousLabel=<i className="fa fa-chevron-left" />
-                      nextLabel=<i className="fa fa-chevron-right" />
-                      pageCount={pageCount}
-                      marginPagesDisplayed={1}
-                      pageRangeDisplayed={2}
-                      onPageChange={handlePageClick}
-                      containerClassName={"pagination justify-content-end"}
-                      pageClassName={"page-item"}
-                      pageLinkClassName={"page-link"}
-                      previousClassName={"page-item custom-previous"}
-                      previousLinkClassName={"page-link custom-previous-link"}
-                      nextClassName={"page-item custom-next"}
-                      nextLinkClassName={"page-link custom-next-link"}
-                      breakClassName={"page-item"}
-                      breakLinkClassName={"page-link"}
-                      activeClassName={"active"}
-                    />
-                    <div className="d-flex justify-content-end align-items-center">
-                      {/* <span className="col-md-4">Pages:</span> */}
-                      <select
-                        className="form-select form-select-sm"
-                        value={limit}
-                        onChange={handlePageSelect}
-                      >
-                        <option value={5}>5</option>
-                        <option value={10}>10</option>
-                        <option value={15}>15</option>
-                        <option value={20}>20</option>
-                      </select>
+                  <div className="d-flex flex-column align-items-start pagination-bar pagination-incident pt-5 border-top">
+                    {/* Pagination Controls */}
+                    <div className="pagination-controls mb-2">
+                      <ReactPaginate
+                        previousLabel={<i className="fa fa-chevron-left" />}
+                        nextLabel={<i className="fa fa-chevron-right" />}
+                        pageCount={pageCount}
+                        marginPagesDisplayed={1}
+                        pageRangeDisplayed={2}
+                        onPageChange={handlePageClick}
+                        containerClassName={"pagination justify-content-start"}
+                        pageClassName={"page-item"}
+                        pageLinkClassName={"page-link"}
+                        previousClassName={"page-item custom-previous"}
+                        previousLinkClassName={"page-link custom-previous-link"}
+                        nextClassName={"page-item custom-next"}
+                        nextLinkClassName={"page-link custom-next-link"}
+                        breakClassName={"page-item"}
+                        breakLinkClassName={"page-link"}
+                        activeClassName={"active"}
+                      />
+                    </div>
+
+                    {/* Page Size Dropdown */}
+                    <div className="page-size-dropdown">
+                      <div className="d-flex justify-content-start align-items-center">
+                        <select
+                          className="form-select form-select-sm"
+                          value={limit}
+                          onChange={handlePageSelect}
+                        >
+                          <option value={5}>5</option>
+                          <option value={10}>10</option>
+                          <option value={15}>15</option>
+                          <option value={20}>20</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="col-md-4 border-1 border-gray-300 border-end chat-section border-top border-start">
+            <div className="col-md-4 chat-section">
               <ChatApp
                 userId={sessionStorage.getItem("userId")}
                 userName={sessionStorage.getItem("userName")}

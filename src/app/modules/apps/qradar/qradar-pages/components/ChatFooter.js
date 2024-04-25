@@ -8,36 +8,45 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
   const id = incidentID;
   const date = new Date().toISOString();
   const [message, setMessage] = useState("");
-  console.log(message, "message")
+  console.log(message, "message");
   const [attachment, setAttachment] = useState(null);
 
   const handleTyping = () => socket.emit("typing", `${username} is typing`);
 
   const handleSendMessage = async (e) => {
-    console.log(e, "handleSendMessage")
+    console.log(e, "handleSendMessage");
     e.preventDefault();
     console.log("attachment:", attachment);
     if (message.trim() || attachment) {
       const formData = new FormData();
-      // formData.append("ChatAttachmentFile", attachment ? attachment.data : "");
-      // formData.append("ChatAttachmentFile", attachment ? attachment.data : "");
       formData.append("MesssageDate", date || "");
       formData.append("OrgId", orgId || 0);
       formData.append("FromUserID", userID || 0);
       formData.append("ToUserID", 0);
-      // formData.append("ChatMessage", message || (attachment ? attachment.name : ""));
       formData.append("ChatMessage", message || "");
       formData.append("ChatSubject", "Incident");
       formData.append("SubjectRefID", id || 0);
       if (attachment) {
-        // Create a new File object with the attachment data
-        const file = new File([attachment.data], attachment.name, {
+        // Convert base64 data to binary data
+        const binaryAttachment = atob(attachment.data);
+        const byteArray = new Uint8Array(binaryAttachment.length);
+        for (let i = 0; i < binaryAttachment.length; i++) {
+          byteArray[i] = binaryAttachment.charCodeAt(i);
+        }
+
+        // Create a new Blob with the binary data
+        const blob = new Blob([byteArray], { type: attachment.type });
+
+        // Create a new File object from the Blob
+        const file = new File([blob], attachment.name, {
           type: attachment.type,
         });
-  
+
         // Append the file as an IFormFile
         formData.append("ChatAttachmentFile", file);
       }
+
+      console.log("formData:", formData);
       try {
         const response = await fetchAddChatMessage(formData);
         console.log(response, "chat Add API");
@@ -47,7 +56,7 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
           name: username,
           attachment: attachment,
           incidentID: id,
-          createdDate: date
+          createdDate: date,
         });
         onSendMessage();
       } catch (error) {
@@ -57,7 +66,6 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
     setMessage("");
     setAttachment(null);
   };
-
 
   const handleAttachmentChange = (e) => {
     const file = e.target.files[0];
@@ -99,7 +107,7 @@ const ChatFooter = ({ socket, username, selectedIncident, onSendMessage }) => {
               <input
                 type="text"
                 placeholder="Attachment"
-                className="attachment"
+                className="attachment link text-underline"
                 value={attachment.name}
                 readOnly
               />

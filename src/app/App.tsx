@@ -6,6 +6,7 @@ import {MasterInit} from '../_metronic/layout/MasterInit'
 import {AuthInit} from './modules/auth'
 
 const App = () => {
+  // console.log(process.env)
   return (
     <Suspense fallback={<LayoutSplashScreen />}>
       <I18nProvider>

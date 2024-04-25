@@ -1,10 +1,23 @@
 import React, { useState, useEffect } from "react";
 import CanvasJSReact from "./assets/canvasjs.react";
+import { fetchAllIncidentsSummeryUrl } from "../../../../../api/ReportApi";
+import { useErrorBoundary } from "react-error-boundary";
+import jsPDF from "jspdf";
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from "reactstrap";
 
 function CreatedIncidentStatusReport() {
+  const handleError = useErrorBoundary();
+  const orgId = Number(sessionStorage.getItem("orgId"));
   const [alertData, setAlertData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
 
   const CanvasJS = CanvasJSReact.CanvasJS;
   const CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -18,12 +31,26 @@ function CreatedIncidentStatusReport() {
     "#b3c100",
     "#ea6a47",
   ]);
+  let statusNames = null;
+  let alertCounts = null;
 
-  const statusNames = alertData.map((alert) => alert.statusName);
-  const alertCounts = alertData.map((alert) => alert.alertCount);
+  if (alertData && alertData.length > 0) {
+    statusNames = alertData.map((alert) => alert.statusName);
+    alertCounts = alertData.map((alert) => alert.alertCount);
+  }
 
-  //Pie chart for Open incident status
-  const allstatusoption = {
+  const dataPoints =
+    alertData && alertData.length > 0
+      ? alertData.map((alert, index) => {
+          return {
+            y: alert.percentageValue.toFixed(2),
+            label: alert.statusName,
+            alertCount: alertCounts[index],
+          };
+        })
+      : [];
+
+  const openstatusoptions = {
     exportEnabled: true,
     animationEnabled: true,
     zoomEnabled: true,
@@ -35,38 +62,30 @@ function CreatedIncidentStatusReport() {
       {
         type: "pie",
         startAngle: 220,
-        toolTipContent: "<b>{label}</b>: {y}%",
+        toolTipContent: "<b>{label}</b>: {y}% ({alertCount})",
         showInLegend: "true",
         legendText: "{label}",
         indexLabelFontSize: 13,
-        indexLabel: "{label} - {y}%",
-        dataPoints: statusNames.map((statusName, index) => {
-          return {
-            y: alertCounts[index],
-            label: statusName,
-          };
-        }),
+        indexLabel: "{label} - {y}% ({alertCount})",
+        dataPoints: dataPoints,
       },
     ],
   };
 
   useEffect(() => {
     const fetchData = async () => {
+      const toDate = new Date().toISOString();
+      const fromDate = new Date();
+      fromDate.setFullYear(fromDate.getFullYear() - 1);
+      const fromDateISO = fromDate.toISOString();
+
+      const requestData = {
+        orgId,
+        incidentFromDate: fromDateISO,
+        incidentToDate: toDate,
+      };
       try {
-        const response = await fetch(
-          "http://115.110.192.133:502/api/Reports/v1/AllIncidentsSummery",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              orgId: 1,
-              incidentFromDate: "2022-04-13T05:43:48.828Z",
-              incidentToDate: "2023-04-13T05:43:48.828Z",
-            }),
-          }
-        );
+        const response = await fetchAllIncidentsSummeryUrl(requestData);
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -75,10 +94,11 @@ function CreatedIncidentStatusReport() {
           );
         }
 
-        const { data } = await response.json(); // destructure the 'data' property from the response object
+        const { data } = await response.json();
         setAlertData(data);
         setLoading(false);
       } catch (error) {
+        handleError(error);
         setError(error.message);
         setLoading(false);
       }
@@ -86,15 +106,48 @@ function CreatedIncidentStatusReport() {
 
     fetchData();
   }, []);
-
-  console.log(alertData); // Log the alertData to the console
-
-  //Date range
   const today = new Date();
   const lastYear = new Date();
   lastYear.setFullYear(lastYear.getFullYear() - 1);
   const startDate = lastYear.toLocaleDateString("en-GB");
   const endDate = today.toLocaleDateString("en-GB");
+
+  // Function to export data to Excel
+  const exportToExcel = () => {
+    // Convert alertData to CSV format
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [
+        Object.keys(alertData[0]).join(","),
+        ...alertData.map((row) => Object.values(row).join(",")),
+      ].join("\n");
+
+    // Create a temporary anchor element
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "incident_status_report.csv");
+    document.body.appendChild(link);
+
+    // Trigger the click event to initiate download
+    link.click();
+
+    // Clean up
+    document.body.removeChild(link);
+  };
+
+  // Function to export data to PDF
+  const exportToPDF = () => {
+    // Create a new jsPDF instance
+    const doc = new jsPDF();
+    doc.autoTable({
+      head: [Object.keys(alertData[0])],
+      body: alertData.map((row) => Object.values(row)),
+    });
+
+    // Save the PDF
+    doc.save("incident_status_report.pdf");
+  };
 
   return (
     <div>
@@ -102,14 +155,35 @@ function CreatedIncidentStatusReport() {
         <p>Loading...</p>
       ) : error ? (
         <p>Error: {error}</p>
-      ) : (
+      ) : alertData !== null ? (
         <>
-          <h2>
+          <h4 className="bg-heading">
             Status of all created incidents for the last year ({startDate} to{" "}
             {endDate})
-          </h2>
-          <CanvasJSChart options={allstatusoption} />
+          </h4>
+          <div className="export-report mt-5 me-5">
+            <Dropdown
+              isOpen={dropdownOpen}
+              toggle={() => setDropdownOpen(!dropdownOpen)}
+            >
+              <DropdownToggle caret>
+                Export <i className="fa fa-file-export link mg-left-10" />
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem onClick={exportToExcel}>
+                  Export to CSV{" "}
+                  <i className="fa fa-file-excel link float-right" />
+                </DropdownItem>
+                <DropdownItem onClick={exportToPDF}>
+                  Export to PDF <i className="fa fa-file-pdf red float-right" />
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+          <CanvasJSChart options={openstatusoptions} />
         </>
+      ) : (
+        <p>No data found</p>
       )}
     </div>
   );

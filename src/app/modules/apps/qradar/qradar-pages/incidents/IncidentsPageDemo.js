@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import IncidentChat from "./IncidentChat";
-import IncidentDetails from "./IncidentDetails";
+import IncidentDetailsDemo from "./IncidentDetailsDemo";
 import { useLocation } from "react-router-dom";
 import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
 import Chat from "./Chat";
@@ -29,9 +29,9 @@ const IncidentsPageDemo = () => {
   const handleAlertClick = (selectedAlert) => {
     const updatedAlerts = demoAlertData.map((alert) => {
       if (alert.id === selectedAlert.id) {
-        return { ...alert, isSelected: true };
+        return { ...alert, isSelected: true }; // Set isSelected to true for the clicked incident
       } else {
-        return { ...alert, isSelected: false };
+        return { ...alert, isSelected: false }; // Deselect other alerts
       }
     });
 
@@ -40,7 +40,7 @@ const IncidentsPageDemo = () => {
     setSelectedAlert(selectedAlert);
     setDemoAlertData(updatedAlerts);
     // Show the chat only when the "Demo: Add Failed Login Alert" incident is selected
-    setShowChat(selectedAlert.name === "Demo : Add Failed Login Alert");
+    setShowChat(selectedAlert.name === "Failed Login Alert");
   };
 
   //Chat window
@@ -99,23 +99,21 @@ const IncidentsPageDemo = () => {
 
   return (
     <>
-      <div className="card mb-5 mb-xl-8 bg-red incident-page">
+      <div className="mb-5 mb-xl-8 bg-red incident-page">
         <div className="card-body1 py-3">
           <div className="row">
             <div className="col-md-4 border-1 border-gray-300 border-end">
               <div className="card">
-                <div className="d-flex justify-content-between bd-highlight mb-3">
-                  <div className="p-1 bd-highlight">
-                    <h6 className="card-title align-items-start flex-column pt-2">
-                      <span className="card-label fw-bold fs-5 mb-1">
-                        Incidents <span className="text-black-50">(2)</span>
-                      </span>
-                    </h6>
-                  </div>
-                  <div className="p-1 bd-highlight"></div>
+                <div className="bg-heading">
+                  <h4 className="no-margin no-pad">
+                    <span className="white fw-bold block pt-3 pb-3">
+                      Incidents <span className="white">(135)</span>
+                    </span>
+                  </h4>
                 </div>
+                <div className="p-1 bd-highlight"></div>
 
-                <div className="card-title">
+                <div className="card-title header-filter">
                   {/* begin::Search */}
                   <div className="input-group">
                     <input
@@ -128,7 +126,7 @@ const IncidentsPageDemo = () => {
                     </span>
                   </div>
                   {/* end::Search */}
-                  <div className="d-flex justify-content-between bd-highlight mb-3">
+                  <div className="d-flex justify-content-between bd-highlight mb-3 header-filter">
                     <div className="mt-2 bd-highlight">
                       <div className="w-110px me-2">
                         <select
@@ -160,7 +158,7 @@ const IncidentsPageDemo = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="scroll-y h-500px">
+                  <div className="scroll-y h-600px">
                     <div className="incident-list">
                       <>
                         {Array.isArray(demoAlertData) ? (
@@ -168,10 +166,8 @@ const IncidentsPageDemo = () => {
                             <>
                               <div
                                 className={`incident-section${
-                                  incident.isSelected == "true"
-                                    ? "selected"
-                                    : ""
-                                }`}
+                                  incident.isSelected ? " selected" : ""
+                                }`} // Apply "selected" class if isSelected is true
                                 key={incident.id}
                                 onClick={() => {
                                   console.log("Clicked incident:", incident);
@@ -203,7 +199,7 @@ const IncidentsPageDemo = () => {
                                       </div>
                                       <div className="pt-3 bd-highlight">
                                         <div className="badge text-black fw-normal">
-                                          3 MIN
+                                          1 MIN
                                         </div>
                                       </div>
                                     </div>
@@ -240,7 +236,7 @@ const IncidentsPageDemo = () => {
                             <div className="text-dark col-md-9">
                               <a href="#" className="text-dark">
                                 <span className="fw-bold">
-                                  Demo : Failed Login Alert
+                                  Failed Login Alert
                                 </span>
                               </a>
                             </div>
@@ -288,13 +284,13 @@ const IncidentsPageDemo = () => {
                 <div>
                   {showChat ||
                   (selectedAlert &&
-                    selectedAlert.name === "Demo : Add Failed Login Alert") ? (
+                    selectedAlert.name === "Failed Login Alert") ? (
                     <IncidentChat />
                   ) : (
                     <p>
                       {selectedAlert ? (
                         <>
-                          <div className="chat-header">
+                          <div className="chat-header bg-heading">
                             <ChatHeader selectedAlert={selectedAlert} />
                           </div>
                           <div className="chat-box scroll-y me-n5">
@@ -316,7 +312,7 @@ const IncidentsPageDemo = () => {
                           </div>
                         </>
                       ) : (
-                        <div className="chat-header">
+                        <div className="chat-header bg-heading">
                           <ChatHeader selectedAlert={selectedAlert} />
                         </div>
                       )}
@@ -326,7 +322,7 @@ const IncidentsPageDemo = () => {
               )}
             </div>
 
-            <IncidentDetails />
+            <IncidentDetailsDemo />
           </div>
         </div>
       </div>

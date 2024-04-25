@@ -27,7 +27,7 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Demo : Add SMB  Exploit Alert",
+      name: "Add SMB  Exploit Alert",
       severity: "Low",
       score: 8,
       status: "New",
@@ -48,7 +48,7 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Demo : Add CYREN Alert",
+      name: "Add CYREN Alert",
       severity: "Low",
       score: 7,
       status: "New",
@@ -69,7 +69,7 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Demo : Add Insights Alert",
+      name: "Add Insights Alert",
       severity: "Low",
       score: 6,
       status: "New",
@@ -90,15 +90,15 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Demo : Add Failed Login Alert",
+      name: "Failed Login Alert",
       sla: "5h 11m",
-      severity: "10",
+      severity: "Medium",
       score: 3,
       status: "New",
       statusID: null,
       detectedtime: null,
       observableTagID: null,
-      observableTag: 1,
+      observableTag: "BruteForce",
       ownerUserID: 0,
       ownerusername: "Global Admin",
       source: "QRadar",
@@ -111,14 +111,14 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Demo : Add Channel Post",
-      severity: "10",
+      name: "Add Channel Post",
+      severity: "Medium",
       score: 2,
       status: "New",
       statusID: null,
       detectedtime: null,
       observableTagID: null,
-      observableTag: 1,
+      observableTag: "BruteForce",
       ownerUserID: 0,
       ownerusername: null,
       source: "QRadar",
@@ -131,14 +131,14 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Demo : Add Checkpoint Alert",
-      severity: "10",
+      name: " Add Checkpoint Alert",
+      severity: "Medium",
       score: 1,
       status: "New",
       statusID: null,
       detectedtime: null,
       observableTagID: null,
-      observableTag: 1,
+      observableTag: "Credential Access",
       ownerUserID: 0,
       ownerusername: null,
       source: "QRadar",
@@ -151,14 +151,14 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Demo : New XML Incident",
-      severity: "10",
+      name: " New XML Incident",
+      severity: "Medium",
       score: 2,
       status: "New",
       statusID: null,
       detectedtime: null,
       observableTagID: null,
-      observableTag: 1,
+      observableTag: "Credential Access",
       ownerUserID: 0,
       ownerusername: null,
       source: "QRadar",
@@ -171,15 +171,15 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Demo : Add Scanning Alert",
-      severity: "10",
+      name: "Add Scanning Alert",
+      severity: "High",
       score: 3,
       status: "New",
       sla: "2h 10m",
       statusID: null,
       detectedtime: null,
       observableTagID: null,
-      observableTag: 1,
+      observableTag: "Credential Access",
       ownerUserID: 0,
       ownerusername: null,
       source: "QRadar",
@@ -192,14 +192,14 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Demo : Add WDATP Alert",
-      severity: "10",
+      name: " Add WDATP Alert",
+      severity: "High",
       score: 4,
       status: "New",
       statusID: null,
       detectedtime: null,
       observableTagID: null,
-      observableTag: 1,
+      observableTag: "Credential Access",
       ownerUserID: 0,
       ownerusername: null,
       source: "QRadar",
@@ -214,7 +214,7 @@ const DemoPage = () => {
       orgID: 1,
       name: "Suspecious mail",
       sla: "4h 40m",
-      severity: "10",
+      severity: "High",
       score: 2,
       status: "New",
       statusID: null,
@@ -288,7 +288,7 @@ const DemoPage = () => {
           onClick={() => {
             localStorage.setItem("alertData", JSON.stringify([]));
           }}
-          className="btn btn-danger"
+          className="btn btn-danger btn-small"
         >
           Reset
         </a>
@@ -297,20 +297,18 @@ const DemoPage = () => {
       {/* Begin Col */}
       <div className="col-lg-5">
         <div className="card mb-5 mb-xl-8">
+          <h5 className="bg-heading">Security Monitoring</h5>
           <div className="card-body">
-            <h5>Security Monitoring</h5>
             <div className="demo-block">
               <p>
-                Add an alert from IntSight about SMB exploit named EternalBlue
+                Add an alert from Int Sight about SMB exploit named EternalBlue
               </p>
               <a
                 onClick={() => {
                   addalerttolocal(datatoBeadded["0"]);
                 }}
               >
-                <button className="btn btn-primary">
-                  Add SMB Exploit Alert
-                </button>
+                <button className="btn btn-new">Add SMB Exploit Alert</button>
               </a>
             </div>
             <div className="demo-block">
@@ -321,21 +319,21 @@ const DemoPage = () => {
                 }}
                 className="btn btn-success"
               >
-                Start collaboration
+                Start Collaboration
               </button>
             </div>
           </div>
         </div>
-        <div className="card mb-5 mb-xl-8">
+        <div className="card mb-5 mb-xl-8 h-420px">
+          <h5 className="bg-heading">Leaked Credentials - Use Cases</h5>
           <div className="card-body">
-            <h5>Leaked Credentials use case</h5>
             <div className="demo-block">
               <p>Add Insights alert</p>
               <button
                 onClick={() => {
                   addalerttolocal(datatoBeadded["2"]);
                 }}
-                className="btn btn-primary"
+                className="btn btn-new"
               >
                 Add Insights Alert
               </button>
@@ -348,17 +346,17 @@ const DemoPage = () => {
                 }}
                 className="btn btn-success"
               >
-                Start collaboration
+                Start Collaboration
               </button>
             </div>
             <div className="demo-block">
-              <p>Add failed login alert</p>
+              <p>Failed Login Alert</p>
 
               <button
                 onClick={() => {
                   addalerttolocal(datatoBeadded["3"]);
                 }}
-                className="btn btn-primary"
+                className="btn btn-new"
               >
                 Add Failed Login Alert
               </button>
@@ -371,7 +369,7 @@ const DemoPage = () => {
                 }}
                 className="btn btn-success"
               >
-                Start collaboration
+                Start Collaboration
               </button>
             </div>
           </div>
@@ -382,8 +380,8 @@ const DemoPage = () => {
       {/* Begin Col */}
       <div className="col-lg-7">
         <div className="card mb-5 mb-xl-8">
+          <h5 className="bg-heading">Automation</h5>
           <div className="card-body">
-            <h5>Automation</h5>
             <div className="demo-block">
               <p>
                 Add an alert with known IOC (Open incident automatically -
@@ -393,7 +391,7 @@ const DemoPage = () => {
                 onClick={() => {
                   addalerttolocal(datatoBeadded["1"]);
                 }}
-                className="btn btn-primary"
+                className="btn btn-new"
               >
                 Add CYREN Alert
               </button>
@@ -404,16 +402,16 @@ const DemoPage = () => {
           <div className="row">
             <div className="col-lg-6">
               <div className="card">
+                <h5 className="bg-heading">Threat Intelligence</h5>
                 <div className="card-body">
-                  <h5>Threat Intelligence</h5>
                   <div className="demo-block">
-                    <p>Add channel post</p>
-                    {/* <button className='btn btn-primary'>Add Channel Post</button> */}
+                    <p>Add Channel Post</p>
+                    {/* <button className='btn btn-new'>Add Channel Post</button> */}
                     <button
                       onClick={() => {
                         addalerttolocal(datatoBeadded["4"]);
                       }}
-                      className="btn btn-primary"
+                      className="btn btn-new"
                     >
                       Add Channel Post
                     </button>
@@ -423,15 +421,15 @@ const DemoPage = () => {
             </div>
             <div className="col-lg-6">
               <div className="card">
+                <h5 className="bg-heading">Malware Alert</h5>
                 <div className="card-body">
-                  <h5>Malware Alert</h5>
                   <div className="demo-block">
                     <p>Add Checkpoint</p>
                     <button
                       onClick={() => {
                         addalerttolocal(datatoBeadded["5"]);
                       }}
-                      className="btn btn-primary"
+                      className="btn btn-new"
                     >
                       Add Checkpoint Alert
                     </button>
@@ -446,21 +444,21 @@ const DemoPage = () => {
           <div className="row">
             <div className="col-lg-7">
               <div className="card">
+                <h5 className="bg-heading">Vulnerability Management</h5>
                 <div className="card-body">
-                  <h5>Vulnerability Management</h5>
                   <div className="demo-block">
                     <p>New XML Incident</p>
                     <button
                       onClick={() => {
                         addalerttolocal(datatoBeadded["6"]);
                       }}
-                      className="btn btn-primary"
+                      className="btn btn-new"
                     >
                       New XML Incident
                     </button>
                   </div>
                   <div className="demo-block">
-                    <p>Start Collaborating on latest XM incident</p>
+                    <p>Start collaborating on latest XM incident</p>
 
                     <button
                       onClick={() => {
@@ -474,10 +472,10 @@ const DemoPage = () => {
                 </div>
               </div>
               <div className="card mt-8">
+                <h5 className="bg-heading">Suspicious mail</h5>
                 <div className="card-body">
-                  <h5>Suspecious mail</h5>
                   <div className="demo-block">
-                    <p>Start collaboration </p>
+                    <p>Start Collaboration </p>
 
                     <button
                       onClick={() => {
@@ -485,7 +483,7 @@ const DemoPage = () => {
                       }}
                       className="btn btn-success"
                     >
-                      Start collaboration
+                      Start Collaboration
                     </button>
                   </div>
                 </div>
@@ -493,31 +491,31 @@ const DemoPage = () => {
             </div>
             <div className="col-lg-5">
               <div className="card">
+                <h5 className="bg-heading">Blacklist</h5>
                 <div className="card-body">
-                  <h5>Blacklist</h5>
                   <div className="demo-block">
                     <p>Add Scanning Alert</p>
                     <button
                       onClick={() => {
                         addalerttolocal(datatoBeadded["7"]);
                       }}
-                      className="btn btn-primary"
+                      className="btn btn-new"
                     >
                       Add Scanning Alert
                     </button>
                     {/* <a href='alerts'>
-                      <button className='btn btn-primary'>Add Scanning Alert</button>
+                      <button className='btn btn-new'>Add Scanning Alert</button>
                     </a> */}
                   </div>
                 </div>
               </div>
               <div className="card mt-8">
+                <h5 className="bg-heading">Malicious code</h5>
                 <div className="card-body">
-                  <h5>Malicious code</h5>
                   <div className="demo-block">
                     <p>Add WDATP Alert</p>
                     <button
-                      className="btn btn-primary"
+                      className="btn btn-new"
                       onClick={() => {
                         addalerttolocal(datatoBeadded["8"]);
                       }}
@@ -525,7 +523,7 @@ const DemoPage = () => {
                       Add WDATP Alert
                     </button>
                     {/* <a href='alerts'>
-                      <button className='btn btn-primary'>Add WDATP Alert</button>
+                      <button className='btn btn-new'>Add WDATP Alert</button>
                     </a> */}
                   </div>
                 </div>

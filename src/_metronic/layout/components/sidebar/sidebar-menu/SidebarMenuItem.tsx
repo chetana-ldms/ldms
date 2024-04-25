@@ -31,7 +31,7 @@ const SidebarMenuItem: FC<Props & WithChildren> = ({
       <Link className={clsx('menu-link without-sub', {active: isActive})} to={to}>
         {hasBullet && (
           <span className='menu-bullet'>
-            <span className='bullet bullet-dot'></span>
+            <i className='fa fa-dot-circle fs-8'/>
           </span>
         )}
         {icon && app?.sidebar?.default?.menu?.iconType === 'svg' && (

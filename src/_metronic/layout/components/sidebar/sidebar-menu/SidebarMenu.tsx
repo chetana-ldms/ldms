@@ -1,8 +1,11 @@
+import { SidebarMenuMainCompiance } from '../../../../../complianceModules/app/SidebarMenuMainCompiance';
 import {SidebarMenuMain} from './SidebarMenuMain'
 
 const SidebarMenu = () => {
+  
+  const compliance = sessionStorage.getItem('compliance');
   return (
-    <div className='app-sidebar-menu scroll-y'>
+    <div className='app-sidebar-menu'>
       <div
         id='kt_app_sidebar_menu_wrapper'
         className='app-sidebar-wrapper hover-scroll-overlay-y my-5'
@@ -20,7 +23,10 @@ const SidebarMenu = () => {
           data-kt-menu='true'
           data-kt-menu-expand='false'
         >
-          <SidebarMenuMain />
+          {/* <SidebarMenuMain />
+          <SidebarMenuMainCompiance /> */}
+         
+               {compliance === 'true' ? <SidebarMenuMainCompiance /> : <SidebarMenuMain />}
         </div>
       </div>
     </div>

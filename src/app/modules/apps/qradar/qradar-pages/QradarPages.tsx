@@ -5,6 +5,8 @@ import {UsersListHeader} from './components/header/UsersListHeader'
 import {UsersTable} from './table/UsersTable'
 import {UserEditModal} from './user-edit-modal/UserEditModal'
 import {KTCard} from '../../../../../_metronic/helpers'
+import { ErrorFallbackComponent } from '../../../../../utils/ErrorFallbackComponent'
+import { ErrorBoundary } from 'react-error-boundary'
 
 const UsersList = () => {
   const {itemIdForUpdate} = useListView()
@@ -19,7 +21,15 @@ const UsersList = () => {
   )
 }
 
-const QradarPagesWrapper = () => (
+const QradarPagesWrapper = () => { 
+  const handleError = (error: any, info: any) => {
+    console.error("An error occurred:", error, info);
+  };
+  return(
+  <ErrorBoundary
+  FallbackComponent={ErrorFallbackComponent}
+  onError={handleError}
+>
   <QueryRequestProvider>
     <QueryResponseProvider>
       <ListViewProvider>
@@ -27,6 +37,8 @@ const QradarPagesWrapper = () => (
       </ListViewProvider>
     </QueryResponseProvider>
   </QueryRequestProvider>
-)
+  </ErrorBoundary>
+  )
+}
 
 export {QradarPagesWrapper}

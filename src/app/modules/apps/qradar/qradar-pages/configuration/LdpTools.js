@@ -1,110 +1,138 @@
-import React, {useState, useEffect} from 'react'
-import {Link, useParams} from 'react-router-dom'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
-import { ToastContainer, toast } from 'react-toastify'
-import { notify, notifyFail } from '../components/notification/Notification'
-import 'react-toastify/dist/ReactToastify.css'
-import { fetchLDPToolsDelete } from "../../../../../api/Api"
-import axios from 'axios'
-import { fetchLDPToolsUrl } from '../../../../../api/ConfigurationApi'
-const LdpTools = () => {
-  const [loading, setLoading] = useState(false)
-  const [tools, setTools] = useState([])
-  console.log(tools, "tools1111")
-  const {status} = useParams()
+import React, { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { UsersListLoading } from "../components/loading/UsersListLoading";
+import { ToastContainer, toast } from "react-toastify";
+import { notify, notifyFail } from "../components/notification/Notification";
+import "react-toastify/dist/ReactToastify.css";
+import { fetchLDPToolsDelete } from "../../../../../api/Api";
+import axios from "axios";
+import { fetchLDPToolsUrl } from "../../../../../api/ConfigurationApi";
+import { useErrorBoundary } from "react-error-boundary";
 
-  const handleDelete = async (item)  =>{
-    console.log(item, "item")
-    const deletedUserId = Number(sessionStorage.getItem('userId'));
+const LdpTools = () => {
+  const handleError = useErrorBoundary();
+  const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
+  const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
+  const [loading, setLoading] = useState(false);
+  const [tools, setTools] = useState([]);
+
+  const handleDelete = async (item) => {
+    console.log(item, "item");
+    const deletedUserId = Number(sessionStorage.getItem("userId"));
     const deletedDate = new Date().toISOString();
     const data = {
       toolId: item.toolId,
       deletedDate,
-      deletedUserId
-    }
+      deletedUserId,
+    };
     try {
+      setLoading(true);
       const responce = await fetchLDPToolsDelete(data);
       if (responce.isSuccess) {
-        notify('Data Deleted');
-      }else{
-        notifyFail("Data not Deleted")
+        notify("LDP Tool Deleted");
+      } else {
+        notifyFail("LDP Tool not Deleted");
       }
       await reload();
+      setLoading(false);
     } catch (error) {
-      console.log(error);
+      setLoading(false);
+      handleError(error);
     }
-  }
-  const reload = async() => {
+  };
+  const reload = async () => {
+    setLoading(true);
     const response = await fetchLDPToolsUrl();
-    setTools(response)
-   }
+    setTools(response);
+    setLoading(false);
+  };
   useEffect(() => {
     reload();
-  }, [])
+  }, []);
 
   return (
-    <div className='card'>
-       <ToastContainer />
-      <div className='card-header border-0 pt-5'>
-        <h3 className='card-title align-items-start flex-column'>
-          <span className='card-label fw-bold fs-3 mb-1'>LDP Tools</span>
+    <div className="config card pad-10">
+      <ToastContainer />
+      <div className="card-header no-pad mb-5 border-0">
+        <h3 className="card-title align-items-start flex-column">
+          <span className="card-label fw-bold fs-3 mb-1">Ldc Tools</span>
         </h3>
-        <div className='card-toolbar'>
-          <div className='d-flex align-items-center gap-2 gap-lg-3'>
-            <Link to='/qradar/ldp-tools/add' className='btn btn-danger btn-small'>
-              Add
-            </Link>
+        <div className="card-toolbar">
+          <div className="d-flex align-items-center gap-2 gap-lg-3">
+            {globalAdminRole === 1 || clientAdminRole === 1 ? (
+              <Link
+                to="/qradar/ldp-tools/add"
+                className="btn btn-new btn-small"
+              >
+                Add
+              </Link>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </div>
-      <div className='card-body'>
-        {/* {status === 'updated' && (
-          <div class='alert alert-success d-flex align-items-center p-5'>
-            <div class='d-flex flex-column'>
-              <h4 class='mb-1 text-dark'>Data Saved</h4>
-            </div>
-            <button
-              type='button'
-              class='position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto'
-              data-bs-dismiss='alert'
-            >
-              X<span class='svg-icon svg-icon-2x svg-icon-light'>...</span>
-            </button>
-          </div>
-        )} */}
-
-        <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
+      <div className="card-body no-pad">
+        <table className="table align-middle gs-0 gy-4 dash-table alert-table">
           <thead>
-            <tr className='fw-bold text-muted bg-blue'>
-              <th className='min-w-50px'>Tool ID</th>
-              <th className='min-w-50px'>Tool Name</th>
-              <th className='min-w-50px'>Tool Type</th>
-              <th className='min-w-50px'>Created Date</th>
-              <th className='min-w-50px'>Action</th>
+            <tr className="fw-bold text-muted bg-blue">
+              <th>Tool ID</th>
+              <th>Tool Name</th>
+              <th>Tool Type</th>
+              {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                <th>Action</th>
+              ) : (
+                <></>
+              )}
             </tr>
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {tools.map((item, index) => (
-              <tr key={index} className='fs-12'>
-                <td className='text-danger fw-bold'>{item.toolId}</td>
-                <td>{item.toolName}</td>
-                <td className='text-warning fw-bold'>{item.toolType}</td>
-                <td>{item.createdDate}</td>
-                <td>
-                  <Link className='text-white' to={`/qradar/ldp-tools/update/${item.toolId}`}>
-                    <button className='btn btn-primary btn-small'>Update</button>
-                  </Link>
-                  <button className="btn btn-sm btn-danger btn-small ms-5" style={{ fontSize: '14px' }} onClick={()=>{handleDelete(item)}}> Delete</button>    
+            {tools !== null ? (
+              tools.map((item, index) => (
+                <tr key={index} className="fs-12">
+                  <td>{item.toolId}</td>
+                  <td>{item.toolName}</td>
+                  <td>{item.toolType}</td>
+                  {/* <td>{item.createdDate}</td> */}
 
+                  {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                    <td>
+                      <span className="" title="Edit">
+                        <Link
+                          className="text-white"
+                          to={`/qradar/ldp-tools/update/${item.toolId}`}
+                        >
+                          <i className="fa fa-pencil link pointer fs-15" />
+                        </Link>
+                      </span>
+                      <span
+                        className="ms-8"
+                        onClick={() => {
+                          handleDelete(item);
+                        }}
+                        title="Delete"
+                      >
+                        <i className="fa fa-trash pointer red fs-15" />
+                      </span>
+                    </td>
+                  ) : (
+                    <></>
+                  )}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center">
+                  No data found
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export {LdpTools}
+export { LdpTools };

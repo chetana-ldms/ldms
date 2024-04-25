@@ -31,8 +31,8 @@ const DemoAlert = () => {
 
   const handleCreateIncident = () => {
     // const alertData = "add failed login";
-    notify("Alert identified as threat");
-    notify("Incident created");
+    notify("Alert Identified as Threat");
+    notify("Incident Created");
     setTimeout(() => {
       navigate("/qradar/incidentsDemo");
     }, 5000);
@@ -99,10 +99,10 @@ const DemoAlert = () => {
   };
 
   return (
-    <KTCardBody className="demo-alert">
+    <KTCardBody className="demo-alert alert-page">
       <ToastContainer />
-      <div className="card mb-5 mb-xl-8">
-        <div className="card-header border-0 pt-5">
+      <div className="mb-5 mb-xl-8">
+        <div className="card-header border-0 no-pad d-flex justify-content-between mb-5">
           <h3 className="card-title align-items-start flex-column">
             <span className="card-label fw-bold fs-3 mb-1">
               Alerts {"( " + alertData.length + " / " + alertsCount + ")"}
@@ -113,13 +113,13 @@ const DemoAlert = () => {
               <div className="m-0">
                 <a
                   href="#"
-                  className={`btn btn-sm btn-flex btn-primary fw-bold fs-14 ${
+                  className={`btn btn-sm btn-flex btn-new btn-small fw-bold fs-14 ${
                     !isAlertSelected ? "disabled" : ""
                   }`}
                   data-kt-menu-trigger="click"
                   data-kt-menu-placement="bottom-end"
                 >
-                  <span className="svg-icon svg-icon-6 svg-icon-muted me-1">
+                  <span className="svg-icon svg-icon-6  white me-1">
                     <svg
                       width="24"
                       height="24"
@@ -141,7 +141,7 @@ const DemoAlert = () => {
                   id="kt_menu_637dc885a14bb"
                 >
                   <div className="separator border-gray-200"></div>
-                  <div className="px-7 py-5">
+                  <div className="px-7 py-5 header-filter">
                     <div className="mb-10">
                       <label className="form-label fw-semibold">Actions:</label>
                       <div>
@@ -165,19 +165,19 @@ const DemoAlert = () => {
           </div>
         </div>
 
-        <div className="card-body py-3 alert-table" id="kt_accordion_1">
+        <div className="card no-pad alert-table" id="kt_accordion_1">
           <div className="table-responsive alert-table">
             <table className="table align-middle gs-0 gy-4">
               <thead>
                 <tr className="fw-bold bg-light">
                   <th className="w-25px"></th>
-                  <th className="min-w-50px">Ser</th>
+                  <th className="min-w-50px">Severity</th>
                   <th className="min-w-50px">SLA</th>
                   <th className="min-w-50px">Score</th>
                   <th className="min-w-50px">Status</th>
-                  <th className="min-w-50px">Detected time</th>
+                  <th className="min-w-50px">Detected Time</th>
                   <th className="min-w-50px">Name</th>
-                  <th className="min-w-50px">Observables tags</th>
+                  <th className="min-w-50px">Observables Tags</th>
                   <th className="min-w-50px">Owner</th>
                   <th className="min-w-50px">Source</th>
                 </tr>
@@ -218,12 +218,12 @@ const DemoAlert = () => {
                         aria-expanded="false"
                         aria-controls={"kt_accordion_1_body_" + index}
                       >
-                        <span className="text-hover-primary d-block mb-1 fs-8">
+                        <span className="text-hover-primary d-block mb-1">
                           {item.sla}
                         </span>
                       </td>
                       <td>
-                        <span className="text-dark text-hover-primary d-block mb-1 fs-8">
+                        <span className="text-dark text-hover-primary d-block mb-1">
                           {item.score}
                         </span>
                       </td>
@@ -232,25 +232,25 @@ const DemoAlert = () => {
                         {item.status}
                       </td>
                       <td>
-                        <span className="text-dark text-hover-primary d-block mb-1 fs-8">
+                        <span className="text-dark text-hover-primary d-block mb-1">
                           {convertDate(item.last_persisted_time)}
                         </span>
                       </td>
                       <td
                         className={
-                          `text-dark text-hover-primary fs-8` + newAlertAdded
+                          `text-dark text-hover-primary` + newAlertAdded
                         }
                       >
                         {item.name}
                       </td>
-                      <td className="text-dark text-hover-primary fs-8">
+                      <td className="text-dark text-hover-primary">
                         {item.observableTag}
                       </td>
-                      <td className="text-dark text-hover-primary fs-8">
+                      <td className="text-dark text-hover-primary">
                         {" "}
                         {item.ownerusername}
                       </td>
-                      <td className="text-dark fw-bold text-hover-primary fs-8">
+                      <td className="text-dark fw-bold text-hover-primary">
                         {item.source}
                       </td>
                     </tr>

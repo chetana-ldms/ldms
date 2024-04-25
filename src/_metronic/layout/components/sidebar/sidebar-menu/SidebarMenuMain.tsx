@@ -7,6 +7,7 @@ import { SidebarMenuItem } from './SidebarMenuItem'
 
 const SidebarMenuMain = () => {
   const intl = useIntl()
+  const orgId = Number(sessionStorage.getItem('orgId'));
 
   return (
     <>
@@ -22,12 +23,7 @@ const SidebarMenuMain = () => {
         title='People'
         fontIcon='bi-layers'
       /> */}
-      <SidebarMenuItem
-        to='/qradar/reports'
-        icon='/media/icons/duotune/general/gen005.svg'
-        title='Reports'
-        fontIcon='bi-layers'
-      />
+     
 
       <SidebarMenuItem
         to='/qradar/alerts'
@@ -41,12 +37,35 @@ const SidebarMenuMain = () => {
         fontIcon='bi-archive'
         icon='/media/icons/duotune/general/gen011.svg'
       />
+       {
+        orgId == 2 &&
+       <SidebarMenuItem
+          icon='/media/icons/duotune/communication/com008.svg'
+          to='/qradar/application/list'
+          title='Applications'
+        />
+      }
+      {
+         orgId == 2 &&
+        <SidebarMenuItem
+          icon='/media/icons/duotune/communication/com009.svg'
+          to='/qradar/setinels/list'
+          title='Sentinels'
+        />
+      }
       {/* <SidebarMenuItem
         to='/qradar/incidentsPagev2'
         title='Incidentsv1'
         fontIcon='bi-archive'
         icon='/media/icons/duotune/general/gen011.svg'
       /> */}
+      
+       <SidebarMenuItem
+        to='/qradar/reports'
+        icon='/media/icons/duotune/general/gen005.svg'
+        title='Reports'
+        fontIcon='bi-layers'
+      />
       <SidebarMenuItem
         to='/qradar/channels'
         title='Channels'
@@ -71,35 +90,53 @@ const SidebarMenuMain = () => {
         <SidebarMenuItem hasBullet={true} to='/qradar/tool-actions/list' title='Tool Actions' />
         <SidebarMenuItem hasBullet={true} to='/qradar/tool-type-actions/list' title='Tool Type Actions' />
         <SidebarMenuItem hasBullet={true} to='/qradar/roles-data/list' title='Roles' />
-        <SidebarMenuItem hasBullet={true} to='/qradar/master-data/list' title='Master Data' />
+        {/* <SidebarMenuItem hasBullet={true} to='/qradar/master-data/list' title='Master Data' /> */}
 
         {/* <SidebarMenuItem hasBullet={true} to='/qradar/master-data/list' title='Master Data' /> */}
-       
-      </SidebarMenuItemWithSub>
 
-      <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen004.svg' title='Demo'>
-        <SidebarMenuItem hasBullet={true} to='/qradar/demo/v1' title='Demo' />
-        <SidebarMenuItem hasBullet={true} to='/qradar/demoalert/updated' title='Demo Alert' />
-        <SidebarMenuItem hasBullet={true} to='/qradar/demoplaybooks' title='Demo Playbooks' />
       </SidebarMenuItemWithSub>
+      {/* <SidebarMenuItem
+          icon='/media/icons/duotune/communication/com006.svg'
+          to='/qradar/profile'
+          title='Users Profile'
+        /> */}
+        <SidebarMenuItem
+          icon='/media/icons/duotune/communication/com007.svg'
+          to='/qradar/tasks/list'
+          title='My Tasks'
+        />
+         <SidebarMenuItem
+          icon='/media/icons/duotune/communication/com008.svg'
+          to='/qradar/settings/list'
+          title='Settings'
+        />
+         <SidebarMenuItem
+          icon='/media/icons/duotune/communication/com009.svg'
+          to='/qradar/activity/list'
+          title='Activity'
+        />
+
+     
       {/* <SidebarMenuItem
         icon='/media/icons/duotune/communication/com012.svg'
         to='/apps/chat/group-chat'
         title='Chat'
       /> */}
-      <SidebarMenuItem
+      {/* <SidebarMenuItem
         to='/qradar/playbooks/list'
         title='Playbooks'
         fontIcon='bi-archive'
         icon='/media/icons/duotune/general/gen017.svg'
-      />
+      /> */}
 
-
-      <SidebarMenuItem
-        icon='/media/icons/duotune/communication/com006.svg'
-        to='/qradar/profile'
-        title='Users Profile'
-      />
+      <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen004.svg' title='Playbook'>
+        <SidebarMenuItem hasBullet={true} to='/qradar/demo/v1' title='Alert Types' />
+        <SidebarMenuItem hasBullet={true} to='/qradar/demoalert/updated' title='Playbook Alert' />
+        <SidebarMenuItem hasBullet={true} to='/qradar/demoplaybooks' title='Alert Playbooks' />
+      </SidebarMenuItemWithSub>
+    
+      
+       
     </>
   )
 }

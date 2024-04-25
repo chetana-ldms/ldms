@@ -305,7 +305,7 @@ const IncidentsPageCollaboration = () => {
                 data-kt-scroll-wrappers="#kt_content, #kt_chat_contacts_body"
                 data-kt-scroll-offset="0px"
               >
-                <div className="chat-header">
+                <div className="chat-header bg-heading">
                   <ChatHeader />
                 </div>
                 <div className="chat-box scroll-y me-n5 h-500px">
@@ -347,16 +347,16 @@ const IncidentsPageCollaboration = () => {
                   <div className="separator separator-dashed"></div>
                 </div>
               </div>
-              <form onSubmit={handleSend} className="chat-form">
+              <form onSubmit={handleSend} className="chat-form pad-10">
                 <div className="input-group">
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control bg-white"
                     name="message"
                     placeholder="Type your message here..."
                   />
                   <button type="submit" className="btn-chat">
-                    <span className="input-group-text">
+                    <span className="input-group-text btn btn-small btn-new">
                       <i className="fas fa-paper-plane"></i>
                     </span>
                   </button>
@@ -378,7 +378,7 @@ const IncidentsPageCollaboration = () => {
                   data-kt-scroll-wrappers="#kt_content, #kt_chat_contacts_body"
                   data-kt-scroll-offset="0px"
                 >
-                  <div className="chat-header">
+                  <div className="chat-header bg-heading">
                     <ChatHeader />
                   </div>
                   <div className="chat-box scroll-y me-n5 h-600px">
