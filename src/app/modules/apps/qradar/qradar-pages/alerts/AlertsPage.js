@@ -815,7 +815,7 @@ const AlertsPage = () => {
     <KTCardBody className="alert-page">
       <ToastContainer />
 
-      <div className="mb-5 pad-10">
+      <div className="mb-5">
         <div className="d-flex justify-content-between border-0">
           <h3 className="align-items-start flex-column">
             <span className="fw-bold fs-3">

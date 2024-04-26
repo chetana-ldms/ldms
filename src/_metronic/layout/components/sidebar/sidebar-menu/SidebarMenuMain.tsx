@@ -5,6 +5,8 @@ import { KTSVG } from '../../../../helpers'
 import { SidebarMenuItemWithSub } from './SidebarMenuItemWithSub'
 import { SidebarMenuItem } from './SidebarMenuItem'
 import { Link } from 'react-router-dom'
+import { toAbsoluteUrl} from '../../../../helpers'
+
 
 const SidebarMenuMain = () => {
   const intl = useIntl()
@@ -107,7 +109,7 @@ const SidebarMenuMain = () => {
           title='My Tasks'
         />
          <SidebarMenuItem
-          icon='/media/icons/duotune/communication/com008.svg'
+          icon='/media/icons/duotune/coding/cod001.svg'
           to='/qradar/settings/list'
           title='Settings'
         />
@@ -130,19 +132,27 @@ const SidebarMenuMain = () => {
         icon='/media/icons/duotune/general/gen017.svg'
       /> */}
 
-      <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen004.svg' title='Playbook'>
+      <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen003.svg' title='Playbook'>
         <SidebarMenuItem hasBullet={true} to='/qradar/demo/v1' title='Alert Types' />
         <SidebarMenuItem hasBullet={true} to='/qradar/demoalert/updated' title='Playbook Alert' />
         <SidebarMenuItem hasBullet={true} to='/qradar/demoplaybooks' title='Alert Playbooks' />
       </SidebarMenuItemWithSub>
 
-      <div className='d-flex align-items-center me-10'>
+      <div className='d-flex align-items-center honeypot mt-1'>
       <a
         href="https://honeypot.run/auth"
         target="_blank"
         rel="noopener noreferrer"
-        className="btn btn-sm btn-primary"
+        className="white"
+        
       >
+        {/* <i className='fa fa-search me-3 fs-15'/> */}
+        <img
+            alt='Logo'
+            src={toAbsoluteUrl('/media/honeypot.png')}
+            className='h-20px me-2'
+          />
+        
         Honeypot
       </a>
     </div>

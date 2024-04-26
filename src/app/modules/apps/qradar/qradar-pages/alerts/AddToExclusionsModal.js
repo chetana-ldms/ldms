@@ -76,7 +76,11 @@ const AddToExclusionsModal = ({
     }
   };
   return (
-    <Modal show={show} onHide={handleClose} className="AddToExclusionsModal">
+    <Modal
+      show={show}
+      onHide={handleClose}
+      className="AddToExclusionsModal application-modal"
+    >
       <Modal.Header closeButton>
         <Modal.Title>Add To Exclusions</Modal.Title>
         <button
@@ -147,11 +151,12 @@ const AddToExclusionsModal = ({
             </div>
           </div>
           <div className="col-md-3  text-primary d-flex align-items-end justify-content-end pb-3 ">
-            <i className="bi bi-search text-primary mr-2"></i> Threat |
+            <i className="bi bi-search text-primary mr-2"></i> Threat
           </div>
           <div className="col-md-3  text-primary d-flex align-items-end pb-3 justify-content-start">
             {" "}
-            <i className="bi bi-search text-primary mr-2"></i>Deep Visibility
+            | <i className="bi bi-search text-primary mr-2 ms-5"></i>Deep
+            Visibility
           </div>
         </div>
         <div className="mt-5">

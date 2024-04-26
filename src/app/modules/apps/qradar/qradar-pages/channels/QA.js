@@ -13,14 +13,13 @@ import {
 import { Modal, Button, Form } from "react-bootstrap";
 import { useErrorBoundary } from "react-error-boundary";
 
-
 const QA = ({ channelId, channelName }) => {
   const handleError = useErrorBoundary();
   const createdUserId = Number(sessionStorage.getItem("userId"));
   const createdDate = new Date().toISOString();
   const orgId = Number(sessionStorage.getItem("orgId"));
   const [channelQAList, setChannelQAList] = useState([]);
-  console.log(channelQAList, "channelQAList")
+  console.log(channelQAList, "channelQAList");
   const [error, setError] = useState(null);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
   const [showAnswerModal, setShowAnswerModal] = useState(false);
@@ -196,7 +195,7 @@ const QA = ({ channelId, channelName }) => {
           <strong>{channelName}</strong>
         </p>
         <button
-          className="btn btn-channel float-right btn-primary"
+          className="btn-small btn-channel float-right btn-new"
           onClick={() => setShowQuestionModal(true)}
         >
           Post a Question
@@ -204,111 +203,108 @@ const QA = ({ channelId, channelName }) => {
       </div>
 
       <div className="qa mt-5">
-        {channelQAList !== null ?(
-        channelQAList.map((item) => (
-          <div className="row" key={item.questionId}>
-            <div className="col">
-              <p className="question">
-                <b>Q:</b> {item.questionDescription}
-                <span className="action float-right">
-                  <i
-                    className="fa fa-pencil"
-                    title="Edit"
-                    onClick={() => {
-                      setSelectedQuestionId(item.questionId);
-                      setShowEditQuestionModal(true);
-                    }}
-                    style={{
-                      display:
-                        createdUserId === 1 
-                          ? "inline-block"
-                          : "none",
-                    }}
-                  />
-                  <i
-                    className="fa fa-trash"
-                    title="Delete"
-                    onClick={() => {
-                      setSelectedQuestionId(item.questionId);
-                      handleDeleteQuestion();
-                    }}
-                    style={{
-                      display:
-                        createdUserId === 1 
-                          ? "inline-block"
-                          : "none",
-                    }}
-                  />
-                </span>
-              </p>
-              {item.answerDescription && (
-                <p className="answer">
-                  <b>A:</b> {item.answerDescription}
+        {channelQAList !== null ? (
+          channelQAList.map((item) => (
+            <div className="row" key={item.questionId}>
+              <div className="col">
+                <p className="question">
+                  <b>Q:</b> {item.questionDescription}
                   <span className="action float-right">
                     <i
                       className="fa fa-pencil"
                       title="Edit"
                       onClick={() => {
                         setSelectedQuestionId(item.questionId);
-                        setSelectedAnswerId(item.answerId);
-                        setShowEditModal(true);
+                        setShowEditQuestionModal(true);
                       }}
                       style={{
-                        display:
-                          createdUserId === 1 
-                            ? "inline-block"
-                            : "none",
+                        display: createdUserId === 1 ? "inline-block" : "none",
                       }}
                     />
                     <i
                       className="fa fa-trash"
                       title="Delete"
                       onClick={() => {
-                        setSelectedAnswerId(item.answerId);
-                        handleDeleteAnswer();
-                        // setShowDeleteModal(true);
+                        setSelectedQuestionId(item.questionId);
+                        handleDeleteQuestion();
                       }}
                       style={{
-                        display:
-                          createdUserId === 1 
-                            ? "inline-block"
-                            : "none",
-                      }} 
+                        display: createdUserId === 1 ? "inline-block" : "none",
+                      }}
                     />
                   </span>
                 </p>
-              )}
-              {!item.answerDescription && (
-                <p className="answer">
-                  <button
-                    className="btn btn-channel btn-primary"
-                    onClick={() => {
-                      setSelectedQuestionId(item.questionId);
-                      setShowAnswerModal(true);
-                    }}
-                  >
-                    Add your answer
-                  </button>
-                </p>
-              )}
+                {item.answerDescription && (
+                  <p className="answer">
+                    <b>A:</b> {item.answerDescription}
+                    <span className="action float-right">
+                      <i
+                        className="fa fa-pencil"
+                        title="Edit"
+                        onClick={() => {
+                          setSelectedQuestionId(item.questionId);
+                          setSelectedAnswerId(item.answerId);
+                          setShowEditModal(true);
+                        }}
+                        style={{
+                          display:
+                            createdUserId === 1 ? "inline-block" : "none",
+                        }}
+                      />
+                      <i
+                        className="fa fa-trash"
+                        title="Delete"
+                        onClick={() => {
+                          setSelectedAnswerId(item.answerId);
+                          handleDeleteAnswer();
+                          // setShowDeleteModal(true);
+                        }}
+                        style={{
+                          display:
+                            createdUserId === 1 ? "inline-block" : "none",
+                        }}
+                      />
+                    </span>
+                  </p>
+                )}
+                {!item.answerDescription && (
+                  <p className="answer">
+                    <button
+                      className="btn btn-channel btn-primary"
+                      onClick={() => {
+                        setSelectedQuestionId(item.questionId);
+                        setShowAnswerModal(true);
+                      }}
+                    >
+                      Add your answer
+                    </button>
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        ))
-        ):(
+          ))
+        ) : (
           <div>No Data found</div>
-        )
-      }
+        )}
       </div>
 
       <Modal
         show={showQuestionModal}
         onHide={() => setShowQuestionModal(false)}
+        className="application-modal"
       >
         <Modal.Header closeButton>
           <Modal.Title>Post a Question</Modal.Title>
+          <button
+            type="button"
+            class="application-modal-close"
+            aria-label="Close"
+          >
+            <i className="fa fa-close" />
+          </button>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form className="form-section">
             <Form.Group controlId="questionText">
               <Form.Label>Question</Form.Label>
               <Form.Control type="text" ref={questionTextRef} />
@@ -317,12 +313,12 @@ const QA = ({ channelId, channelName }) => {
         </Modal.Body>
         <Modal.Footer>
           <Button
-            variant="secondary"
+            className="btn-secondary btn-small"
             onClick={() => setShowQuestionModal(false)}
           >
             Close
           </Button>
-          <Button variant="primary" onClick={handlePostQuestion}>
+          <Button className="btn-new btn-small" onClick={handlePostQuestion}>
             Post Question
           </Button>
         </Modal.Footer>
@@ -333,7 +329,7 @@ const QA = ({ channelId, channelName }) => {
           <Modal.Title>Add Your Answer</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form className="form-section">
             <Form.Group controlId="answerText">
               <Form.Label>Answer</Form.Label>
               <Form.Control type="text" ref={answerTextRef} />
@@ -353,13 +349,21 @@ const QA = ({ channelId, channelName }) => {
       <Modal
         show={showEditQuestionModal}
         onHide={() => setShowEditQuestionModal(false)}
+        className="application-modal"
       >
         <Modal.Header closeButton>
           <Modal.Title>Edit Question</Modal.Title>
+          <button
+            type="button"
+            class="application-modal-close"
+            aria-label="Close"
+          >
+            <i className="fa fa-close" />
+          </button>
         </Modal.Header>
         <Modal.Body>
           {selectedQuestionData ? (
-            <Form>
+            <Form className="form-section">
               <Form.Group controlId="questionText">
                 <Form.Label>Question</Form.Label>
                 <Form.Control
@@ -376,22 +380,34 @@ const QA = ({ channelId, channelName }) => {
         <Modal.Footer>
           <Button
             variant="secondary"
+            className="btn-small"
             onClick={() => setShowEditQuestionModal(false)}
           >
             Close
           </Button>
-          <Button variant="primary" onClick={handleEditQuestion}>
+          <Button className="btn-new btn-small" onClick={handleEditQuestion}>
             Save Question
           </Button>
         </Modal.Footer>
       </Modal>
 
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+      <Modal
+        show={showEditModal}
+        onHide={() => setShowEditModal(false)}
+        className="application-modal"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Edit Your Answer</Modal.Title>
+          <button
+            type="button"
+            class="application-modal-close"
+            aria-label="Close"
+          >
+            <i className="fa fa-close" />
+          </button>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form className="form-section">
             <Form.Group controlId="answerText">
               <Form.Label>Answer</Form.Label>
               <Form.Control
@@ -403,10 +419,14 @@ const QA = ({ channelId, channelName }) => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+          <Button
+            variant="secondary"
+            className="btn-small"
+            onClick={() => setShowEditModal(false)}
+          >
             Close
           </Button>
-          <Button variant="primary" onClick={handleEditAnswer}>
+          <Button className="btn-new btn-small" onClick={handleEditAnswer}>
             Save Answer
           </Button>
         </Modal.Footer>

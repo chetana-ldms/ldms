@@ -99,7 +99,7 @@ const AddToBlockListModal = ({
             {" "}
             <i className="bi bi-shield-slash mr-2"></i> Add To Blocklist
           </div>
-          <div className="mt-2 white fs-11">Blacklist Type: Hash</div>
+          <div className="white fs-11 ms-8">Blacklist Type: Hash</div>
         </Modal.Title>
         <br />
       </Modal.Header>

@@ -73,9 +73,16 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
   };
 
   return (
-    <Modal show={show} onHide={handleModalClose}>
+    <Modal show={show} onHide={handleModalClose} className="application-modal">
       <Modal.Header closeButton>
         <Modal.Title>Add new channel</Modal.Title>
+        <button
+          type="button"
+          class="application-modal-close"
+          aria-label="Close"
+        >
+          <i className="fa fa-close" />
+        </button>
       </Modal.Header>
       <Modal.Body>
         {
@@ -85,7 +92,7 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
             </Alert>
           ) // show success message if the showSuccessMessage is true
         }
-        <Form>
+        <Form className="form-section">
           <Form.Group controlId="channelName">
             <Form.Label>Channel name</Form.Label>
             <Form.Control
@@ -110,10 +117,10 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary btn-small" onClick={handleModalClose}>
+        <Button className="btn-secondary btn-small" onClick={handleModalClose}>
           Close
         </Button>
-        <Button variant="primary btn-small" onClick={handleSubmit}>
+        <Button className="btn-new btn-small" onClick={handleSubmit}>
           Add Channel
         </Button>
       </Modal.Footer>
@@ -288,14 +295,14 @@ const ChannelsPage = () => {
 
         {globalAdminRole === 1 ? (
           <span
-            className="float-right add-btn"
+            className="float-right add-btn btn-new"
             onClick={() => setShowModal(true)}
           >
             Add Channel
           </span>
         ) : (
           <span
-            className="float-right add-btn"
+            className="float-right add-btn btn-new"
             disabled
             onClick={() => setShowModal(false)}
           >
@@ -305,7 +312,7 @@ const ChannelsPage = () => {
 
         {"  "}
         <span
-          className="float-right add-btn ml-5"
+          className="float-right add-btn ml-5 btn-new"
           onClick={() => setShowEditChannel(true)}
         >
           Edit Channel
@@ -332,6 +339,7 @@ const ChannelsPage = () => {
           <p className="pt-20 text-center pb-20">No channels available.</p>
         )}
         <NewChannelModal
+          className="application-modal"
           show={showModal}
           onClose={() => setShowModal(false)}
           onAdd={handleAddChannel}
@@ -339,16 +347,23 @@ const ChannelsPage = () => {
       </div>
 
       <Modal
-        className="channel-edit"
+        className="channel-edit application-modal"
         show={showEditChannel}
         onHide={() => setShowEditChannel(false)}
       >
         <Modal.Header closeButton>
           <Modal.Title>Channels List</Modal.Title>
+          <button
+            type="button"
+            class="application-modal-close"
+            aria-label="Close"
+          >
+            <i className="fa fa-close" />
+          </button>
         </Modal.Header>
         <Modal.Body>
           <div className="alert-table">
-            <table className="table">
+            <table className="table scroll-y">
               <thead>
                 <tr>
                   <th>Channel Name</th>
@@ -366,27 +381,24 @@ const ChannelsPage = () => {
                         <td>
                           {globalAdminRole === 1 ? (
                             <button
-                              className="btn btn-small btn-primary"
+                              className="btn-circle btn-new"
                               onClick={() =>
                                 handleAccordionToggle(channel.channelId)
                               }
                             >
-                              Edit
+                              <i className="fa fa-pencil white fs-15" />
                             </button>
                           ) : (
-                            <button
-                              className="btn btn-primary btn-small"
-                              disabled
-                            >
-                              Edit
+                            <button className="btn-circle btn-new" disabled>
+                              <i className="fa fa-pencil white fs-15" />
                             </button>
                           )}
                           {globalAdminRole === 1 ? (
                             <button
-                              className="btn btn-small btn-danger ml-10"
+                              className="btn-circle btn-danger ms-5"
                               onClick={() => handleDelete(channel)}
                             >
-                              Delete
+                              <i className="fa fa-trash white fs-15" />
                             </button>
                           ) : (
                             <button
@@ -411,7 +423,7 @@ const ChannelsPage = () => {
                                 x
                               </button>
                             </div>
-                            <Form>
+                            <Form className="form-section">
                               <Form.Group controlId="channelName">
                                 <Form.Label>Channel name</Form.Label>
                                 <Form.Control

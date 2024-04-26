@@ -162,7 +162,7 @@ const IncidentsPage = () => {
     <>
       <div className="mb-5 mb-xl-8 bg-red incident-page">
         <ToastContainer />
-        <div className="card-body1 py-3">
+        <div className="card-body1">
           <div className="row">
             <div className="col-md-4 border-1 border-gray-300 border-end">
               <div className="card">

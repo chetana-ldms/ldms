@@ -11,7 +11,6 @@ import { notify, notifyFail } from "../components/notification/Notification";
 import "react-toastify/dist/ReactToastify.css";
 import { useErrorBoundary } from "react-error-boundary";
 
-
 const Document = ({ channelId, channelName }) => {
   const handleError = useErrorBoundary();
   const CreatedUserId = Number(sessionStorage.getItem("userId"));
@@ -162,12 +161,20 @@ const Document = ({ channelId, channelName }) => {
       <Modal
         show={uploadDocumentModal}
         onHide={() => setUploadDocumentModal(false)}
+        className="application-modal"
       >
         <Modal.Header closeButton>
           <Modal.Title>Upload a Document</Modal.Title>
+          <button
+            type="button"
+            class="application-modal-close"
+            aria-label="Close"
+          >
+            <i className="fa fa-close" />
+          </button>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form className="form-section">
             <Form.Group>
               <Form.Label>Document upload</Form.Label>
               <Form.Control
@@ -185,7 +192,7 @@ const Document = ({ channelId, channelName }) => {
           >
             Close
           </Button>
-          <Button variant="primary btn-small" onClick={handleUpload}>
+          <Button variant="primary btn-small btn-new" onClick={handleUpload}>
             Upload
           </Button>
         </Modal.Footer>

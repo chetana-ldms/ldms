@@ -283,6 +283,30 @@ function Policy() {
                     </div>
                   </div>
 
+                  <div className="progress-line-bar border-top border-btm mt-5 mb-5 pt-3">
+                    <h6 className="mr-3 float-left">Protect Level</h6>
+                    <div class="stepper-wrapper">
+                      <div class="stepper-item completed">
+                        <div class="step-counter">
+                          <i className="fa fa-check white" />
+                        </div>
+                        <div class="step-name">Kill & Quarantine</div>
+                      </div>
+                      <div class="stepper-item completed">
+                        <div class="step-counter">
+                          <i className="fa fa-check white" />
+                        </div>
+                        <div class="step-name">Remediate</div>
+                      </div>
+                      <div class="stepper-item active">
+                        <div class="step-counter">
+                          <i className="fa fa-check white" />
+                        </div>
+                        <div class="step-name">Rollback</div>
+                      </div>
+                    </div>
+                  </div>
+
                   <h4>Malicious Macros Mitigation</h4>
                   <p>
                     This only applies when the static AI detection engine is on.

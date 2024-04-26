@@ -704,6 +704,78 @@ body {
       }
     }
   }
+  
+//Stepper CSS
+  .stepper-wrapper {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    .stepper-item {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      &:before {
+        position: absolute;
+        content: "";
+        border-bottom: 2px solid #ccc;
+        width: 100%;
+        top: 10px;
+        left: -50%;
+        z-index: 2;
+      }
+      &:after {
+        position: absolute;
+        content: "";
+        border-bottom: 2px solid #ccc;
+        width: 100%;
+        top: 10px;
+        left: 50%;
+        z-index: 2;
+      }
+      .step-counter {
+        position: relative;
+        z-index: 5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #ccc;
+        margin-bottom: 6px;
+      }
+      &.active {
+        color: gray;
+      }
+      &.completed {
+        .step-counter {
+          background-color: #4bb543;
+        }
+        &:after {
+          position: absolute;
+          content: "";
+          border-bottom: 2px solid #4bb543;
+          width: 100%;
+          top: 10px;
+          left: 50%;
+          z-index: 3;
+        }
+      }
+      &:first-child{
+        &:before {
+          content: none;
+        }
+      }
+      &:last-child{
+        &:after {
+          content: none;
+        }
+      }
+    }
+  }
 }
 
 .application-policy{
@@ -715,6 +787,17 @@ body {
   
   .card{
     min-height: 100px !important;
+  }
+  
+}
+
+//Honeypot side nav
+.honeypot{
+  padding: 6px 6px 6px 15px;
+  margin-left: 6px;
+  &:hover{
+    background-color: #5353e6 !important;
+    border-radius: 20px;
   }
 }
 
@@ -1059,6 +1142,7 @@ form{
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        width: 100%;
         a{
           &:hover{
             text-decoration: underline !important;
@@ -1429,6 +1513,7 @@ form{
 
 .btn-new {
   background-color: #008cba !important;
+  border-color: transparent !important;
   font-weight: normal !important;
   color: #fff !important;
   border-radius: 6px;
@@ -1442,6 +1527,7 @@ form{
   padding: 0 !important;
   width: 30px;
   height: 30px;
+  border: 0;
   a{
     display: block;
     line-height: 30px;
@@ -2108,7 +2194,7 @@ form{
   }
   .channel-title {
     overflow: hidden;
-    background-color: #1e1e2d;
+    background-color: #242460;
     // width: 25%;
     color: white;
     padding: 10px;
@@ -2130,14 +2216,14 @@ form{
     &.channels-tab {
       margin: 0;
       float: left;
-      background-color: #33333b;
+      background-color: #242460;
       color: white;
       padding: 10px;
       width: 25%;
       min-height: 350px;
       li {
         list-style: none;
-        background-color: #3b537f;
+        background-color: #6969e6;
         margin-bottom: 10px;
         padding: 10px 8px;
         position: relative;
@@ -2359,13 +2445,25 @@ form{
   }
 }
 
+.channel-edit{
+  table{
+    td{
+      padding: 5px 10px !important;
+      &:first-child{
+        padding-left: 10px !important;
+      }
+    }
+  }
+}
+
 .channel-edit, .compliance-modal {
   &.modal{
     max-width: 90%;
-    background: #fff;
+    // background: #fff;
     margin: 0 auto;
     left: 5%;
     right: 5%;
+    overflow: hidden;
     .modal-dialog{
       max-width: 100%;
       .btn{
@@ -2387,6 +2485,7 @@ form{
     background-color: #f1f1f1;
     td{
       text-align: left !important;
+      
       .close-button{
         float: right;
         border: 0;

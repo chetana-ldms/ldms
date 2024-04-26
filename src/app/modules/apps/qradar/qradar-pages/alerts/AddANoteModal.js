@@ -49,7 +49,11 @@ const AddANoteModal = ({
   };
 
   return (
-    <Modal show={show} onHide={handleClose} className="addANoteModal">
+    <Modal
+      show={show}
+      onHide={handleClose}
+      className="addANoteModal application-modal"
+    >
       <Modal.Header closeButton>
         <Modal.Title>Add a Note</Modal.Title>
         <button
