@@ -229,16 +229,6 @@ const orgNames = organizations
   )}
 </div>
 
-<div className='d-flex align-items-center'>
-      <a
-        href="https://honeypot.run/auth"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="btn btn-small btn-new"
-      >
-        Honeypot
-      </a>
-    </div>
       <div className='d-flex align-items-center'><span>Welcome <b>{userName}!</b></span></div>
      
       
