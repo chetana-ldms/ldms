@@ -92,7 +92,7 @@ const Organizations = () => {
         </div>
       </div>
       <div className='card-body no-pad'>
-        <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
+        <table className='table align-middle gs-0 gy-4 dash-table alert-table scroll-x'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
               <th>ID</th>
@@ -111,7 +111,7 @@ const Organizations = () => {
                 <tr key={index} className='fs-12 table-row'>
                   <td>{item.orgID}</td>
                   <td>{item.orgName}</td>
-                  <td>{item.address}</td>
+                  <td className=''>{item.address}</td>
                   <td>{item.mobileNo}</td>
                   <td>{item.email}</td>
 
