@@ -4,7 +4,6 @@ import { useIntl } from 'react-intl'
 import { KTSVG } from '../../../../helpers'
 import { SidebarMenuItemWithSub } from './SidebarMenuItemWithSub'
 import { SidebarMenuItem } from './SidebarMenuItem'
-import { Link } from 'react-router-dom'
 import { toAbsoluteUrl} from '../../../../helpers'
 
 
