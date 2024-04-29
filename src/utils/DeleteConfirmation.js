@@ -16,11 +16,11 @@ function DeleteConfirmation({ show, onConfirm, onCancel }) {
         <p className="fs-15 text-center">Are you sure you want to delete?</p>
       </Modal.Body>
       <Modal.Footer className="text-center margin-auto">
-        <Button className="btn-secondary btn-small" onClick={onCancel}>
-          No
-        </Button>
         <Button className="btn-small btn-new" onClick={onConfirm}>
           Yes
+        </Button>
+        <Button className="btn-secondary btn-small" onClick={onCancel}>
+          No
         </Button>
       </Modal.Footer>
     </Modal>
