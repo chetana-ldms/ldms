@@ -160,7 +160,7 @@ const UpdateOrganizationTools = () => {
       if (isSuccess) {
         notify("Organizations Tool Updated");
         setTimeout(() => {
-        navigate("/qradar/organization-tools/updated");
+          navigate("/qradar/organization-tools/updated");
         }, 2000);
       } else {
         notifyFail("Failed to update Organizations Tool");
@@ -516,21 +516,21 @@ const UpdateOrganizationTools = () => {
             {tableData.length > 0 && (
               <div className="card-body border-top pad-10">
                 <h4>List of Tool Actions</h4>
-                <table className="table alert-table">
+                <table className="table alert-table fixed-table">
                   <thead>
                     <tr className="bg-blue">
-                      <th className="bold">Tool Action</th>
-                      <th className="bold">API URL</th>
-                      <th className="bold">Action</th>
+                      <th className="bold w-400px">Tool Action</th>
+                      <th className="bold w-400px">API URL</th>
+                      <th className="bold w-200px">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {tableData.map((item, index) => (
                       <tr key={index}>
-                        <td style={{ paddingTop: "30px" }}>
-                          {item.toolAction}
+                        <td>{item.toolAction}</td>
+                        <td className="wrap-txt" title="{item.apiUrl}">
+                          {item.apiUrl}
                         </td>
-                        <td style={{ paddingTop: "30px" }}>{item.apiUrl}</td>
                         <td>
                           <span
                             title="Edit"

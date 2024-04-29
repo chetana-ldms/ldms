@@ -184,7 +184,7 @@ function InventoryComponent() {
             {loading ? (
               <UsersListLoading />
             ) : (
-              <table className="table alert-table mg-top-20 scroll-x">
+              <table className="table alert-table mg-top-20 fixed-table scroll-x">
                 <thead>
                   <tr>
                     <th onClick={() => handleSort("applicationName")}>

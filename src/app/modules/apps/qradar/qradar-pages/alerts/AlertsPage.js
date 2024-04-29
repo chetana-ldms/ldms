@@ -1297,7 +1297,7 @@ const AlertsPage = () => {
         ) : null}
         <div className="card-body1 py-3" id="kt_accordion_1">
           <div className="table-responsive alert-table scroll-x">
-            <table className="table align-middle gs-0 gy-4">
+            <table className="table align-middle gs-0 gy-4 fixed-header">
               <thead>
                 <tr className="fw-bold bg-light">
                   <th className="w-25px"></th>

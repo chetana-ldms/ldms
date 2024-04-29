@@ -475,14 +475,44 @@ body {
 
 //Table CSS
 
-.table-container {
-  position: relative;
-  overflow-x: auto;
-  .scrollable-body {
-    max-height: 300px; /* Adjust the max height as needed */
-    overflow-y: auto;
-    height: calc(100% - 40px);
-  }
+.fixed-table{
+  height: 350px;
+	display: block;
+	overflow: auto;
+	width: 100%;
+  scrollbar-color: #68aef3 transparent;
+
+    // tbody {
+    //   max-height: 300px; /* Adjust the max height as needed */
+    //   overflow-y: auto;
+    //   height: calc(100% - 40px);
+    //   display: block;
+    //   scrollbar-color: #68aef3 transparent;
+    //   tr{
+    //     &.table-row{
+    //       display:table;
+    //       width:100%;
+    //       table-layout:fixed;
+    //     }
+    //   }
+    // }
+    // thead{
+    //   width: calc( 100% - 1em );
+    //   tr{
+    //     display:table;
+    //     width:100%;
+    //     table-layout:fixed;
+    //   }
+
+    // }
+
+    thead{
+      tr,td{
+        top: 0px;
+	      position: sticky;
+        z-index: 1;
+      }
+    }
 }
 
 .alert-table {
@@ -566,15 +596,6 @@ body {
     display: block;
     white-space: nowrap;
     overflow-x: auto;
-  }
-  //table header sticky
-  thead{
-    &.sticky{
-      position: sticky;
-      top: 0;
-      background-color: #fff;
-      z-index: 1000;
-    }
   }
 }
 

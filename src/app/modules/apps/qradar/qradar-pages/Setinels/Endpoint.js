@@ -196,7 +196,7 @@ function Endpoint() {
               </div>
             </div>
           </div>
-          <table className="table alert-table scroll-x">
+          <table className="table alert-table fixed-table scroll-x">
             <thead>
               <tr>
                 <th onClick={() => handleSort("computerName")}>

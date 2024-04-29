@@ -116,13 +116,13 @@ const ToolTypeActions = () => {
         </div>
       </div>
       <div className="card-body no-pad">
-        <table className="table align-middle gs-0 gy-4 dash-table alert-table">
+        <table className="table alert-table fixed-table">
           <thead>
             <tr className="fw-bold text-muted bg-blue">
-              <th>Tool Action Type</th>
-              <th>Tool Type</th>
+              <th className="w-500px">Tool Action Type</th>
+              <th className="w-400px">Tool Type</th>
               {globalAdminRole === 1 || clientAdminRole === 1 ? (
-                <th>Action</th>
+                <th className="w-100px">Action</th>
               ) : (
                 <></>
               )}

@@ -175,68 +175,69 @@ function RisksComponent() {
                 </div>
               </div>
             </div>
-
-            <table className="table alert-table scroll-x">
-              <thead>
-                <tr className="fw-bold text-muted bg-blue">
-                  <th onClick={() => handleSort("name")}>
-                    Name {renderSortIcon(sortConfig, "name")}
-                  </th>
-                  <th onClick={() => handleSort("vendor")}>
-                    Vendor {renderSortIcon(sortConfig, "vendor")}
-                  </th>
-                  <th onClick={() => handleSort("highestSeverity")}>
-                    Highest Severity{" "}
-                    {renderSortIcon(sortConfig, "highestSeverity")}
-                  </th>
-                  <th onClick={() => handleSort("highestNvdBaseScore")}>
-                    Highest NVD Base Score{" "}
-                    {renderSortIcon(sortConfig, "highestNvdBaseScore")}
-                  </th>
-                  <th onClick={() => handleSort("cveCount")}>
-                    Number of CVEs {renderSortIcon(sortConfig, "cveCount")}
-                  </th>
-                  <th onClick={() => handleSort("endpointCount")}>
-                    Number of Endpoints{" "}
-                    {renderSortIcon(sortConfig, "endpointCount")}
-                  </th>
-                  <th onClick={() => handleSort("detectionDate")}>
-                    Application Detection Date{" "}
-                    {renderSortIcon(sortConfig, "detectionDate")}
-                  </th>
-                  <th onClick={() => handleSort("daysDetected")}>
-                    Days From Detection{" "}
-                    {renderSortIcon(sortConfig, "daysDetected")}
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {currentItems !== null ? (
-                  currentItems.map((item, index) => (
-                    <tr key={index} className="table-row">
-                      <td
-                        onClick={() => handleItemClick(item)}
-                        className="link-txt"
-                      >
-                        {item.name}
-                      </td>
-                      <td>{item.vendor}</td>
-                      <td>{item.highestSeverity}</td>
-                      <td>{item.highestNvdBaseScore ?? 0}</td>
-                      <td>{item.cveCount}</td>
-                      <td>{item.endpointCount}</td>
-                      <td>{getCurrentTimeZone(item.detectionDate)}</td>
-                      <td>{item.daysDetected}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td>No data found</td>
+            <div className="table-container">
+              <table className="table alert-table fixed-table scroll-x">
+                <thead>
+                  <tr className="fw-bold text-muted bg-blue">
+                    <th onClick={() => handleSort("name")}>
+                      Name {renderSortIcon(sortConfig, "name")}
+                    </th>
+                    <th onClick={() => handleSort("vendor")}>
+                      Vendor {renderSortIcon(sortConfig, "vendor")}
+                    </th>
+                    <th onClick={() => handleSort("highestSeverity")}>
+                      Highest Severity{" "}
+                      {renderSortIcon(sortConfig, "highestSeverity")}
+                    </th>
+                    <th onClick={() => handleSort("highestNvdBaseScore")}>
+                      Highest NVD Base Score{" "}
+                      {renderSortIcon(sortConfig, "highestNvdBaseScore")}
+                    </th>
+                    <th onClick={() => handleSort("cveCount")}>
+                      Number of CVEs {renderSortIcon(sortConfig, "cveCount")}
+                    </th>
+                    <th onClick={() => handleSort("endpointCount")}>
+                      Number of Endpoints{" "}
+                      {renderSortIcon(sortConfig, "endpointCount")}
+                    </th>
+                    <th onClick={() => handleSort("detectionDate")}>
+                      Application Detection Date{" "}
+                      {renderSortIcon(sortConfig, "detectionDate")}
+                    </th>
+                    <th onClick={() => handleSort("daysDetected")}>
+                      Days From Detection{" "}
+                      {renderSortIcon(sortConfig, "daysDetected")}
+                    </th>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody className="scrollable-body">
+                  {currentItems !== null ? (
+                    currentItems.map((item, index) => (
+                      <tr key={index} className="table-row">
+                        <td
+                          onClick={() => handleItemClick(item)}
+                          className="link-txt"
+                        >
+                          {item.name}
+                        </td>
+                        <td>{item.vendor}</td>
+                        <td>{item.highestSeverity}</td>
+                        <td>{item.highestNvdBaseScore ?? 0}</td>
+                        <td>{item.cveCount}</td>
+                        <td>{item.endpointCount}</td>
+                        <td>{getCurrentTimeZone(item.detectionDate)}</td>
+                        <td>{item.daysDetected}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td>No data found</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
             <RiskEndpointPopUp
               selectedItem={selectedItem}
               showModal={showPopup}
