@@ -165,6 +165,13 @@ const EditAlertsPopUp = ({
       <Modal show={show} onHide={onClose} className="application-modal">
         <Modal.Header closeButton className="bg-heading">
           <Modal.Title className="white pad-10">Edit Alert</Modal.Title>
+          <button
+            type="button"
+            class="application-modal-close"
+            aria-label="Close"
+          >
+            <i className="fa fa-close" />
+          </button>
         </Modal.Header>
         <Modal.Body>
           <Form className="header-filter">
