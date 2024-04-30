@@ -49,11 +49,28 @@ function Exclusions() {
   });
   const [selectedItem, setSelectedItem] = useState(null);
   const [showPopupEdit, setShowPopupEdit] = useState(false);
+  const accountId = sessionStorage.getItem('accountId')
+  const siteId = sessionStorage.getItem('siteId')
+  const groupId = sessionStorage.getItem('groupId')
   const fetchData = async () => {
     const data = {
       orgID: orgId,
       includeChildren: includeChildren,
       includeParents: includeParents,
+      orgAccountStructureLevel: [
+        {
+          levelName: "AccountId",
+          levelValue: accountId || ""
+        },
+     {
+          levelName: "SiteId",
+          levelValue:  siteId || ""
+        },
+    {
+          levelName: "GroupId",
+          levelValue: groupId || ""
+        }
+      ]
     };
     try {
       setLoading(true);

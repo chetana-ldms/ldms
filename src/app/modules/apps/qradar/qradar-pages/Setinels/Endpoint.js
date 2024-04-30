@@ -97,10 +97,26 @@ function Endpoint() {
     direction: "ascending",
   });
 
+  const accountId = sessionStorage.getItem('accountId')
+  const siteId = sessionStorage.getItem('siteId')
+  const groupId = sessionStorage.getItem('groupId')
   const fetchData = async () => {
     const data = {
       orgID: orgId,
-      endPiontId: "",
+      orgAccountStructureLevel: [
+        {
+          levelName: "AccountId",
+          levelValue: accountId || ""
+        },
+     {
+          levelName: "SiteId",
+          levelValue:  siteId || ""
+        },
+    {
+          levelName: "GroupId",
+          levelValue: groupId || ""
+        }
+      ]
     };
     try {
       setLoading(true);
@@ -116,7 +132,7 @@ function Endpoint() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [accountId, siteId, groupId]);
 
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value));

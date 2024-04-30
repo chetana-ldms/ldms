@@ -77,11 +77,27 @@ function InventoryComponent() {
   });
   const [filterValue, setFilterValue] = useState("");
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const accountId = sessionStorage.getItem('accountId')
+  const siteId = sessionStorage.getItem('siteId')
+  const groupId = sessionStorage.getItem('groupId')
 
   const fetchData = async () => {
     const data = {
       orgID: orgId,
-      siteId: "",
+      orgAccountStructureLevel: [
+        {
+          levelName: "AccountId",
+          levelValue: accountId || ""
+        },
+     {
+          levelName: "SiteId",
+          levelValue:  siteId || ""
+        },
+    {
+          levelName: "GroupId",
+          levelValue: groupId || ""
+        }
+      ]
     };
     try {
       setLoading(true);
@@ -96,7 +112,7 @@ function InventoryComponent() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [accountId, siteId, groupId]);
 
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;

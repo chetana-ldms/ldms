@@ -35,6 +35,12 @@ const itemClass = 'ms-1 ms-lg-3';
 const userAvatarClass = 'symbol-35px symbol-md-40px';
 
 const Navbar = () => {
+  const accountId = sessionStorage.getItem('accountId')
+  const siteId = sessionStorage.getItem('siteId')
+  const groupId = sessionStorage.getItem('groupId')
+  const accountNames = sessionStorage.getItem('accountName')
+  const siteNames = sessionStorage.getItem('siteName') || '';
+  const groupNames = sessionStorage.getItem('groupName') || '';
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [tasksData, setTasksData] = useState([]);
@@ -198,31 +204,31 @@ const orgNames = organizations
         </Dropdown>
       )}
       
-      {siteName && (
-        <Dropdown>
-          <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-            {`/ ${siteName}`}
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
+      {siteName || siteNames ? (
+    <Dropdown>
+        <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
+            {`/ ${siteName || siteNames}`} {/* Use siteNames if siteName is empty */}
+        </Dropdown.Toggle>
+        <Dropdown.Menu>
             {accountsStructure
-              ?.find(account => account.name === accountName)
-              ?.sites.find(site => site.name === siteName)
-              ?.groups.map((group, groupIndex) => (
-                <Dropdown.Item key={groupIndex} onClick={() => handleGroupClick(group.name, group.groupId)}>
-                  {group.name} {group.totalAgents}
-                </Dropdown.Item>
-              ))}
-          </Dropdown.Menu>
-        </Dropdown>
-      )}
+                ?.find(account => account.name === accountName)
+                ?.sites.find(site => site.name === (siteName || siteNames))
+                ?.groups.map((group, groupIndex) => (
+                    <Dropdown.Item key={groupIndex} onClick={() => handleGroupClick(group.name, group.groupId)}>
+                        {group.name} {group.totalAgents}
+                    </Dropdown.Item>
+                ))}
+        </Dropdown.Menu>
+    </Dropdown>
+) : null}
       
-      {groupName && (
+      {groupName || groupNames ? (
         <Dropdown>
           <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-            {`/ ${groupName}`}
+          {`/ ${groupName || groupNames}`}
           </Dropdown.Toggle>
         </Dropdown>
-      )}
+        ) : null}
     </>
   ) : (
     <div>{orgNames}</div>
