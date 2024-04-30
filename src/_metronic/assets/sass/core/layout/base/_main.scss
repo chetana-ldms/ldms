@@ -475,8 +475,9 @@ body {
 
 //Table CSS
 
+//Fixed Header CSS
 .fixed-table{
-  height: 350px;
+  height: 400px;
 	display: block;
 	overflow: auto;
 	width: 100%;
@@ -908,6 +909,7 @@ body {
   input[type="checkbox"],input[type="radio"]{
     width: 15px;
     height: 15px;
+    border-radius: 3px;
   }
     .no-btn.btn.btn-secondary:hover:not(.btn-active){
       background-color: white !important;

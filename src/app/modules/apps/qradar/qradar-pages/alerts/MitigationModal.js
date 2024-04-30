@@ -264,7 +264,7 @@ const MitigationModal = ({
           <div>
             <div className="form-check form-check-inline">
               <input
-                className="form-check-input"
+                className="form-check-input mt-1"
                 type="checkbox"
                 id="checkboxButton1"
                 checked={isChecked1}
@@ -279,7 +279,7 @@ const MitigationModal = ({
             </div>
             <div className="form-check form-check-inline">
               <input
-                className="form-check-input"
+                className="form-check-input mt-1"
                 type="checkbox"
                 id="checkboxButton2"
                 checked={isChecked2}
