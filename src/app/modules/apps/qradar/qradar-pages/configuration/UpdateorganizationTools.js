@@ -13,6 +13,7 @@ import { fetchLDPTools, fetchMasterData } from "../../../../../api/Api";
 import { fetchOrganizations } from "../../../../../api/dashBoardApi";
 import { useErrorBoundary } from "react-error-boundary";
 import { ToastContainer } from "react-toastify";
+import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
 
 const UpdateOrganizationTools = () => {
   const handleError = useErrorBoundary();
@@ -51,6 +52,8 @@ const UpdateOrganizationTools = () => {
   const authKey = useRef();
   const apiUrl = useRef();
   const errors = {};
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -245,7 +248,7 @@ const UpdateOrganizationTools = () => {
     event.preventDefault();
 
     if (!selectedToolAction || !enteredApiUrl) {
-      console.log("Please select Tool Action and enter API URL");
+      notifyFail("Please select Tool Action and enter API URL");
       return;
     }
 
@@ -287,10 +290,28 @@ const UpdateOrganizationTools = () => {
   };
 
   const handleDelete = (index) => {
-    const updatedTableData = [...tableData];
-    updatedTableData.splice(index, 1);
-    setTableData(updatedTableData);
+    setShowConfirmation(true);
+    setItemToDelete(index);
+};
+const confirmDelete = async () => {
+  const updatedTableData = [...tableData];
+  updatedTableData.splice(itemToDelete, 1);
+  setTableData(updatedTableData);
+  setShowConfirmation(false);
+};
+
+ 
+  const cancelDelete = () => {
+    setShowConfirmation(false);
+    setItemToDelete(null);
   };
+
+
+  // const handleDelete = (index) => {
+  //   const updatedTableData = [...tableData];
+  //   updatedTableData.splice(index, 1);
+  //   setTableData(updatedTableData);
+  // };
   const handleEdit = (index) => {
     setEditingIndex(index);
     const editedItem = tableData[index];
@@ -559,6 +580,13 @@ const UpdateOrganizationTools = () => {
           </div>
         </div>
       </form>
+      {showConfirmation && (
+          <DeleteConfirmation
+            show={showConfirmation}
+            onConfirm={confirmDelete}
+            onCancel={cancelDelete}
+          />
+        )}
     </div>
   );
 };

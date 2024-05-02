@@ -29,15 +29,21 @@ const UpdateOrganizations = () => {
       setLoading(false);
       return errors;
     }
-    if (!mobileNo.current.value) {
-      errors.mobileNo = "Enter Mobile No.";
-      setLoading(false);
-      return errors;
+    const mobileValue = mobileNo.current.value;
+    const mobileRegex = /^[0-9]{10,15}$/;
+
+    if (!mobileRegex.test(mobileValue)) {
+        notifyFail('Phone number must contain only numeric characters and be between 10 and 15 digits long.');
+        setLoading(false);
+        return;
     }
-    if (!email.current.value) {
-      errors.email = "Enter Email Id";
-      setLoading(false);
-      return errors;
+    const emailValue = email.current.value
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+    if (!emailRegex.test(emailValue)) {
+      notifyFail('Enter a valid Email')
+      setLoading(false)
+      return
     }
     event.preventDefault();
     const updatedUserId = Number(sessionStorage.getItem("userId"));
@@ -53,15 +59,15 @@ const UpdateOrganizations = () => {
     };
     try {
       const responseData = await fetchOrganizationUpdateUrl(data);
-      const { isSuccess } = responseData;
+      const { isSuccess, message } = responseData;
 
       if (isSuccess) {
-        notify("Organization Updated");
+        notify(message);
         setTimeout(() => {
           navigate("/qradar/organizations/updated");
         }, 2000);
       } else {
-        notifyFail("Failed to update Organization");
+        notifyFail(message);
       }
     } catch (error) {
       handleError(error);
@@ -124,39 +130,39 @@ const UpdateOrganizations = () => {
                 />
               </div>
             </div>
-            <div className="col-lg-6 mb-4 mb-lg-0">
-              <div className="fv-row mb-0">
-                <label
-                  htmlFor="mobileNo"
-                  className="form-label fs-6 fw-bolder mb-3"
-                >
+            <div className='col-lg-6 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='mobileNo' className='form-label fs-6 fw-bolder mb-3'>
                   Organization Mobile
                 </label>
                 <input
-                  type="tel"
+                  type='tel'
                   required
-                  className="form-control form-control-lg form-control-solid"
-                  id="mobileNo"
+                  className='form-control form-control-lg form-control-solid'
+                  id='mobileNo'
                   ref={mobileNo}
-                  placeholder="Ex: 01 0102030405"
+                  placeholder='Ex: 01 0102030405'
+                  minLength={10} 
+                  maxLength={15} 
+                  pattern='^[0-9]{10,15}$' 
+                  title='Phone number must be between 10 and 15 digits.' 
                 />
               </div>
             </div>
             <div className="col-lg-6 mb-4 mb-lg-0">
-              <div className="fv-row mb-0">
-                <label
-                  htmlFor="email"
-                  className="form-label fs-6 fw-bolder mb-3"
-                >
+            <div className='fv-row mb-0'>
+                <label htmlFor='email' className='form-label fs-6 fw-bolder mb-3'>
                   Organization Email
                 </label>
                 <input
-                  type="email"
-                  required
-                  className="form-control form-control-lg form-control-solid"
-                  id="email"
+                  type='email'
+                  className='form-control form-control-lg form-control-solid'
+                  id='email'
                   ref={email}
-                  placeholder="email@organization.com"
+                  placeholder='email@organization.com'
+                  required
+                  pattern='^[^\s@]+@[^\s@]+\.[^\s@]+$'
+                  title='Please enter a valid email address'
                 />
               </div>
             </div>

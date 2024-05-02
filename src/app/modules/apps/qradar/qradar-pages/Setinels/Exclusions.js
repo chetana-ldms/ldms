@@ -23,6 +23,7 @@ import { renderSortIcon, sortedItems } from "../../../../../../utils/Sorting";
 import { notify, notifyFail } from "../components/notification/Notification";
 import { ToastContainer } from "react-toastify";
 import CreateExclusionModalEdit from "./CreateExclusionModalEdit";
+import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
 
 function Exclusions() {
   const orgId = Number(sessionStorage.getItem("orgId"));
@@ -49,6 +50,7 @@ function Exclusions() {
   });
   const [selectedItem, setSelectedItem] = useState(null);
   const [showPopupEdit, setShowPopupEdit] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
@@ -246,31 +248,42 @@ function Exclusions() {
       setIsCheckboxSelected(updatedAlert.length > 0);
     }
   };
-  const handleDelete = async () => {
-    const deletedUserId = Number(sessionStorage.getItem("userId"));
-    const deletedDate = new Date().toISOString();
-    const data = {
-      orgId: orgId,
-      ids: selectedAlert,
-      type: "",
-      deletedDate: deletedDate,
-      deletedUserId: deletedUserId,
-    };
-    try {
-      const responce = await fetchExcludedListItemDeleteUrl(data);
-      const { isSuccess, message } = responce;
-      if (isSuccess) {
-        notify(message);
-        await fetchData();
-        setIsCheckboxSelected(false);
-        setselectedAlert([]);
-      } else {
-        notifyFail(message);
+  const handleDelete = () => {
+    setShowConfirmation(true);
+  };
+
+  const confirmDelete = async () => {
+    if (selectedAlert) {
+      const data = {
+        orgId: orgId,
+        ids: selectedAlert,
+        type: "",
+        deletedDate: new Date().toISOString(),
+        deletedUserId: Number(sessionStorage.getItem("userId")),
+      };
+
+      try {
+        const response = await fetchExcludedListItemDeleteUrl(data);
+        const {isSuccess, message} = response
+        if (isSuccess) {
+          notify(message);
+          await fetchData();
+          setIsCheckboxSelected(false);
+          setselectedAlert([]);
+        } else {
+          notifyFail(message);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setShowConfirmation(false);
       }
-    } catch (error) {
-      console.log(error);
     }
   };
+  const cancelDelete = () => {
+    setShowConfirmation(false);
+  };
+
   const handleRefreshActions = () => {
     setRefreshFlag(!refreshFlag);
     fetchData();
@@ -509,6 +522,13 @@ function Exclusions() {
               )}
             </tbody>
           </table>
+          {showConfirmation && (
+          <DeleteConfirmation
+            show={showConfirmation}
+            onConfirm={confirmDelete}
+            onCancel={cancelDelete}
+          />
+        )}
           <Pagination
             pageCount={Math.ceil(exlusions.length / itemsPerPage)}
             handlePageClick={handlePageClick}

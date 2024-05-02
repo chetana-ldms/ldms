@@ -8,6 +8,7 @@ import axios from "axios";
 import { fetchOrganizationToolsUrl } from "../../../../../api/ConfigurationApi";
 import { useErrorBoundary } from "react-error-boundary";
 import { UsersListLoading } from "../components/loading/UsersListLoading";
+import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
 
 const OrganizationTools = () => {
   const handleError = useErrorBoundary();
@@ -17,31 +18,68 @@ const OrganizationTools = () => {
   const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
   const [tools, setTools] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
-  const handleDelete = async (item) => {
-    console.log(item, "item");
-    const deletedUserId = Number(sessionStorage.getItem("userId"));
-    const deletedDate = new Date().toISOString();
-    const data = {
-      orgToolID: item.orgToolID,
-      deletedDate,
-      deletedUserId,
-    };
-    try {
-      setLoading(true);
-      const responce = await fetchOrganizationToolsDelete(data);
-      if (responce.isSuccess) {
-        notify("Organizations Tool Deleted");
-      } else {
-        notifyFail("Organizations Tool not Deleted");
+  const handleDelete = (item) => {
+    setItemToDelete(item);
+    setShowConfirmation(true);
+  };
+
+  const confirmDelete = async () => {
+    if (itemToDelete) {
+      const data = {
+        orgToolID: itemToDelete.orgToolID,
+        deletedDate: new Date().toISOString(),
+        deletedUserId: Number(sessionStorage.getItem("userId")),
+      };
+
+      try {
+        const response = await fetchOrganizationToolsDelete(data);
+        const {isSuccess, message} = response
+        if (isSuccess) {
+          notify(message);
+          await reload();
+        } else {
+          notifyFail(message);
+        }
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setShowConfirmation(false);
+        setItemToDelete(null);
       }
-      await reload();
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      handleError(error);
     }
   };
+  const cancelDelete = () => {
+    setShowConfirmation(false);
+    setItemToDelete(null);
+  };
+
+  // const handleDelete = async (item) => {
+  //   console.log(item, "item");
+  //   const deletedUserId = Number(sessionStorage.getItem("userId"));
+  //   const deletedDate = new Date().toISOString();
+  //   const data = {
+  //     orgToolID: item.orgToolID,
+  //     deletedDate,
+  //     deletedUserId,
+  //   };
+  //   try {
+  //     setLoading(true);
+  //     const responce = await fetchOrganizationToolsDelete(data);
+  //     if (responce.isSuccess) {
+  //       notify("Organizations Tool Deleted");
+  //     } else {
+  //       notifyFail("Organizations Tool not Deleted");
+  //     }
+  //     await reload();
+  //     setLoading(false);
+  //   } catch (error) {
+  //     setLoading(false);
+  //     handleError(error);
+  //   }
+  // };
 
   const reload = async () => {
     try {
@@ -155,6 +193,13 @@ const OrganizationTools = () => {
             )}
           </tbody>
         </table>
+        {showConfirmation && (
+          <DeleteConfirmation
+            show={showConfirmation}
+            onConfirm={confirmDelete}
+            onCancel={cancelDelete}
+          />
+        )}
       </div>
     </div>
   );

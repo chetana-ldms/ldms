@@ -10,6 +10,7 @@ import { fetchToolTypeActions } from "../../../../../api/ConfigurationApi";
 import { useErrorBoundary } from "react-error-boundary";
 import Pagination from "../../../../../../utils/Pagination";
 import { sortedItems } from "../../../../../../utils/Sorting";
+import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
 
 const ToolTypeActions = () => {
   const handleError = useErrorBoundary();
@@ -22,26 +23,42 @@ const ToolTypeActions = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [updateData, setUpdateData] = useState({});
   const { status } = useParams();
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
-  const handleDelete = async (item) => {
-    const deletedUserId = Number(sessionStorage.getItem("userId"));
-    const deletedDate = new Date().toISOString();
-    const data = {
-      toolTypeActionID: item.toolTypeActionID,
-      deletedDate,
-      deletedUserId,
-    };
-    try {
-      const responce = await fetchToolTypeActionDelete(data);
-      if (responce.isSuccess) {
-        notify("Tool Type Action Deleted");
-      } else {
-        notifyFail("Tool Type Action not Deleted");
+  const handleDelete = (item) => {
+    setItemToDelete(item);
+    setShowConfirmation(true);
+  };
+
+  const confirmDelete = async () => {
+    if (itemToDelete) {
+      const data = {
+        toolTypeActionID: itemToDelete.toolTypeActionID,
+        deletedDate: new Date().toISOString(),
+        deletedUserId: Number(sessionStorage.getItem("userId")),
+      };
+
+      try {
+        const response = await fetchToolTypeActionDelete(data);
+        const {isSuccess, message} = response
+        if (isSuccess) {
+          notify(message);
+          await reload();
+        } else {
+          notifyFail(message);
+        }
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setShowConfirmation(false);
+        setItemToDelete(null);
       }
-      await reload();
-    } catch (error) {
-      handleError(error);
     }
+  };
+  const cancelDelete = () => {
+    setShowConfirmation(false);
+    setItemToDelete(null);
   };
   const reload = async () => {
     try {
@@ -170,6 +187,13 @@ const ToolTypeActions = () => {
             )}
           </tbody>
         </table>
+        {showConfirmation && (
+          <DeleteConfirmation
+            show={showConfirmation}
+            onConfirm={confirmDelete}
+            onCancel={cancelDelete}
+          />
+        )}
         <Pagination
           pageCount={Math.ceil(toolTypeActions.length / itemsPerPage)}
           handlePageClick={handlePageClick}

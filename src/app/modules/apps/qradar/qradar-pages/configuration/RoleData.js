@@ -11,6 +11,7 @@ import {
   fetchRolesUrl,
 } from "../../../../../api/ConfigurationApi";
 import { fetchLDPToolsDelete } from "../../../../../api/Api";
+import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
 
 const RoleData = () => {
   const handleError = useErrorBoundary();
@@ -24,6 +25,8 @@ const RoleData = () => {
   const [loading, setLoading] = useState(false);
   const [roles, setRoles] = useState([]);
   console.log(roles, "roles111");
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   const reload = async () => {
     try {
@@ -41,30 +44,64 @@ const RoleData = () => {
   useEffect(() => {
     reload();
   }, []);
-  const handleDelete = async (item) => {
-    console.log(item, "item");
-    const deletedUserId = Number(sessionStorage.getItem("userId"));
-    const deletedDate = new Date().toISOString();
-    const data = {
-      roleID: item.roleID,
-      deletedDate,
-      deletedUserId,
-    };
-    try {
-      setLoading(true);
-      const responce = await fetchRolesDeleteUrl(data);
-      if (responce.isSuccess) {
-        notify("Role Deleted");
-      } else {
-        notifyFail("You cannot delete the system roles");
+  const handleDelete = (item) => {
+    setItemToDelete(item);
+    setShowConfirmation(true);
+  };
+
+  const confirmDelete = async () => {
+    if (itemToDelete) {
+      const data = {
+        roleID: itemToDelete.roleID,
+        deletedDate: new Date().toISOString(),
+        deletedUserId: Number(sessionStorage.getItem("userId")),
+      };
+
+      try {
+        const response = await fetchRolesDeleteUrl(data);
+        const {isSuccess, message} = response
+        if (isSuccess) {
+          notify(message);
+          await reload();
+        } else {
+          notifyFail(message);
+        }
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setShowConfirmation(false);
+        setItemToDelete(null);
       }
-      await reload();
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      handleError(error);
     }
   };
+  const cancelDelete = () => {
+    setShowConfirmation(false);
+    setItemToDelete(null);
+  };
+  // const handleDelete = async (item) => {
+  //   console.log(item, "item");
+  //   const deletedUserId = Number(sessionStorage.getItem("userId"));
+  //   const deletedDate = new Date().toISOString();
+  //   const data = {
+  //     roleID: item.roleID,
+  //     deletedDate,
+  //     deletedUserId,
+  //   };
+  //   try {
+  //     setLoading(true);
+  //     const responce = await fetchRolesDeleteUrl(data);
+  //     if (responce.isSuccess) {
+  //       notify("Role Deleted");
+  //     } else {
+  //       notifyFail("You cannot delete the system roles");
+  //     }
+  //     await reload();
+  //     setLoading(false);
+  //   } catch (error) {
+  //     setLoading(false);
+  //     handleError(error);
+  //   }
+  // };
   return (
     <div className="config card pad-10">
       <ToastContainer />
@@ -141,6 +178,13 @@ const RoleData = () => {
             )}
           </tbody>
         </table>
+        {showConfirmation && (
+          <DeleteConfirmation
+            show={showConfirmation}
+            onConfirm={confirmDelete}
+            onCancel={cancelDelete}
+          />
+        )}
       </div>
     </div>
   );

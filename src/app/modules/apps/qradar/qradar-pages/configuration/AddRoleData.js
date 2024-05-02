@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { notify, notifyFail } from "../components/notification/Notification";
 import { fetchRolesAddUrl } from "../../../../../api/ConfigurationApi";
+import { ToastContainer } from "react-toastify";
 
 const AddRoleData = () => {
   const navigate = useNavigate();
@@ -12,6 +13,11 @@ const AddRoleData = () => {
   const handleSubmit = async (event) => {
     setLoading(true);
     event.preventDefault();
+    if (!roleName.current.value) {
+      notifyFail('Enter role Name')
+      setLoading(false)
+      return
+    }
     const createdUserId = Number(sessionStorage.getItem("userId"));
     const createdDate = new Date().toISOString();
     const orgId = Number(sessionStorage.getItem("orgId"));
@@ -27,13 +33,13 @@ const AddRoleData = () => {
     console.log("data", data);
     try {
       const responseData = await fetchRolesAddUrl(data);
-      const { isSuccess } = responseData;
+      const { isSuccess, message } = responseData;
 
       if (isSuccess) {
-        notify("Role added");
+        notify(message);
         navigate("/qradar/roles-data/list");
       } else {
-        notifyFail("Role add Failed");
+        notifyFail(message);
       }
     } catch (error) {
       console.log(error);
@@ -44,6 +50,7 @@ const AddRoleData = () => {
 
   return (
     <div className="config card">
+    <ToastContainer />
       <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">
           <span className="white">Add User Role </span>

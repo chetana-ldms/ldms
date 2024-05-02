@@ -8,6 +8,7 @@ import { fetchLDPToolsDelete } from "../../../../../api/Api";
 import axios from "axios";
 import { fetchLDPToolsUrl } from "../../../../../api/ConfigurationApi";
 import { useErrorBoundary } from "react-error-boundary";
+import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
 
 const LdpTools = () => {
   const handleError = useErrorBoundary();
@@ -15,31 +16,44 @@ const LdpTools = () => {
   const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
   const [loading, setLoading] = useState(false);
   const [tools, setTools] = useState([]);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
-  const handleDelete = async (item) => {
-    console.log(item, "item");
-    const deletedUserId = Number(sessionStorage.getItem("userId"));
-    const deletedDate = new Date().toISOString();
-    const data = {
-      toolId: item.toolId,
-      deletedDate,
-      deletedUserId,
-    };
-    try {
-      setLoading(true);
-      const responce = await fetchLDPToolsDelete(data);
-      if (responce.isSuccess) {
-        notify("LDP Tool Deleted");
-      } else {
-        notifyFail("LDP Tool not Deleted");
+  const handleDelete = (item) => {
+    setItemToDelete(item);
+    setShowConfirmation(true);
+  };
+
+  const confirmDelete = async () => {
+    if (itemToDelete) {
+      const data = {
+        toolId: itemToDelete.toolId,
+        deletedDate: new Date().toISOString(),
+        deletedUserId: Number(sessionStorage.getItem("userId")),
+      };
+
+      try {
+        const response = await fetchLDPToolsDelete(data);
+        const {isSuccess, message} = response
+        if (isSuccess) {
+          notify(message);
+          await reload();
+        } else {
+          notifyFail(message);
+        }
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setShowConfirmation(false);
+        setItemToDelete(null);
       }
-      await reload();
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      handleError(error);
     }
   };
+  const cancelDelete = () => {
+    setShowConfirmation(false);
+    setItemToDelete(null);
+  };
+
   const reload = async () => {
     setLoading(true);
     const response = await fetchLDPToolsUrl();
@@ -130,6 +144,13 @@ const LdpTools = () => {
             )}
           </tbody>
         </table>
+        {showConfirmation && (
+          <DeleteConfirmation
+            show={showConfirmation}
+            onConfirm={confirmDelete}
+            onCancel={cancelDelete}
+          />
+        )}
       </div>
     </div>
   );

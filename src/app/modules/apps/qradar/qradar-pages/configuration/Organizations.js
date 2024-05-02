@@ -37,11 +37,12 @@ const Organizations = () => {
 
       try {
         const response = await fetchOrganizationDelete(data);
-        if (response.isSuccess) {
-          notify("Organization Deleted");
+        const {isSuccess, message} = response
+        if (isSuccess) {
+          notify(message);
           await reload();
         } else {
-          notifyFail("Organization not Deleted");
+          notifyFail(message);
         }
       } catch (error) {
         handleError(error);

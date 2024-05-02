@@ -65,10 +65,13 @@ const UpdateUserData = () => {
       setLoading(false);
       return errors;
     }
-    if (!userEmail.current.value) {
-      errors.passWord = "Enter Email";
-      setLoading(false);
-      return errors;
+    const emailValue = userEmail.current.value
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+    if (!emailRegex.test(emailValue)) {
+      notifyFail('Enter a valid Email')
+      setLoading(false)
+      return
     }
     if (!orgID.current.value) {
       errors.passWord = "Enter password";
@@ -98,15 +101,15 @@ const UpdateUserData = () => {
     };
     try {
       const responseData = await fetchUserUpdateUrl(data);
-      const { isSuccess } = responseData;
+      const { isSuccess, message } = responseData;
 
       if (isSuccess) {
-        notify("User Updated"); 
+        notify(message); 
         setTimeout(() => {
           navigate("/qradar/users-data/list");
         }, 2000);
       } else {
-        notifyFail("Failed to update User");
+        notifyFail(message);
       }
     } catch (error) {
       handleError(error);
@@ -174,14 +177,15 @@ const UpdateUserData = () => {
                 >
                   User Email
                 </label>
-                <input
-                  type="email"
-                  className="form-control form-control-lg form-control-solid"
-                  required
-                  aria-required="true"
-                  id="userEmail"
+                  <input
+                  type='email'
+                  className='form-control form-control-lg form-control-solid'
+                  id='userEmail'
                   ref={userEmail}
-                  placeholder="Ex: UserEmail"
+                  placeholder='email@user.com'
+                  required
+                  pattern='^[^\s@]+@[^\s@]+\.[^\s@]+$'
+                  title='Please enter a valid email address'
                 />
               </div>
             </div>

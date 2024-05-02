@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { fetchOrganizations, fetchUserDelete } from "../../../../../api/Api";
 import { fetchUsersUrl } from "../../../../../api/ConfigurationApi";
 import { useErrorBoundary } from "react-error-boundary";
+import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
 
 const UserData = () => {
   const handleError = useErrorBoundary();
@@ -22,6 +23,8 @@ const UserData = () => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [organizations, setOrganizations] = useState([]);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,25 +37,38 @@ const UserData = () => {
     };
     fetchData();
   }, []);
-  const handleDelete = async (item) => {
-    const userID = item.userID;
-    const deletedUserId = Number(sessionStorage.getItem("userId"));
-    const deletedDate = new Date().toISOString();
-    const data = {
-      deletedUserId,
-      deletedDate,
-      userID,
-    };
-    try {
-      setLoading(true);
-      await fetchUserDelete(data);
-      notify("User Deleted");
-      await reload();
-      setLoading(false);
-    } catch (error) {
-      handleError(error);
-      setLoading(false);
+  const handleDelete = (item) => {
+    setItemToDelete(item);
+    setShowConfirmation(true);
+  };
+  const confirmDelete = async () => {
+    if (itemToDelete) {
+      const data = {
+        userID: itemToDelete.userID,
+        deletedDate: new Date().toISOString(),
+        deletedUserId: Number(sessionStorage.getItem("userId")),
+      };
+
+      try {
+        const response = await fetchUserDelete(data);
+        const {isSuccess, message} = response
+        if (isSuccess) {
+          notify(message);
+          await reload();
+        } else {
+          notifyFail(message);
+        }
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setShowConfirmation(false);
+        setItemToDelete(null);
+      }
     }
+  };
+  const cancelDelete = () => {
+    setShowConfirmation(false);
+    setItemToDelete(null);
   };
 
   const reload = async () => {
@@ -198,6 +214,13 @@ const UserData = () => {
             )}
           </tbody>
         </table>
+        {showConfirmation && (
+          <DeleteConfirmation
+            show={showConfirmation}
+            onConfirm={confirmDelete}
+            onCancel={cancelDelete}
+          />
+        )}
       </div>
     </div>
   );
