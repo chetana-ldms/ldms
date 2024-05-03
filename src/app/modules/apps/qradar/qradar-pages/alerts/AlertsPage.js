@@ -45,6 +45,9 @@ const AlertsPage = () => {
   const [loading, setLoading] = useState(false)
   const globalAdminRole = Number(sessionStorage.getItem('globalAdminRole'))
   const clientAdminRole = Number(sessionStorage.getItem('clientAdminRole'))
+  const accountId = sessionStorage.getItem('accountId')
+  const siteId = sessionStorage.getItem('siteId')
+  const groupId = sessionStorage.getItem('groupId')
   const [dropdownData, setDropdownData] = useState({
     severityNameDropDownData: [],
     statusDropDown: [],
@@ -338,6 +341,20 @@ const AlertsPage = () => {
         rangeEnd: limit,
       },
       loggedInUserId: userID,
+      orgAccountStructureLevel: [
+        {
+          levelName: "AccountId",
+          levelValue: accountId || ""
+        },
+     {
+          levelName: "SiteId",
+          levelValue:  siteId || ""
+        },
+    {
+          levelName: "GroupId",
+          levelValue: groupId || ""
+        }
+      ]
     }
     setLoading(true)
     const response = await fetchAlertData(data2)

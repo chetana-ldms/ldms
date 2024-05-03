@@ -65,7 +65,9 @@ const DashboardWrapper = () => {
   );
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-
+  const accountId = sessionStorage.getItem('accountId')
+  const siteId = sessionStorage.getItem('siteId')
+  const groupId = sessionStorage.getItem('groupId')
   const getCurrentTimeZoneDiff = (UTCDate) => {
     const inputTime = moment.tz(UTCDate, "UTC");
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -104,6 +106,20 @@ const DashboardWrapper = () => {
         toolTypeID: 0,
         userID: userID,
         numberofDays: selectedFilter,
+         orgAccountStructureLevel: [
+          {
+            levelName: "AccountId",
+            levelValue: accountId || ""
+          },
+       {
+            levelName: "SiteId",
+            levelValue:  siteId || ""
+          },
+      {
+            levelName: "GroupId",
+            levelValue: groupId || ""
+          }
+        ]
       });
       const mostUsedTagsData = mostUsedTagsResponse;
       const mostUsedTags = mostUsedTagsData.mostUsedTags;
@@ -133,7 +149,20 @@ const DashboardWrapper = () => {
           toolID: 1,
           toolTypeID: 1,
           userID: userID,
-          numberofDays: selectedFilter,
+          numberofDays: selectedFilter, orgAccountStructureLevel: [
+            {
+              levelName: "AccountId",
+              levelValue: accountId || ""
+            },
+         {
+              levelName: "SiteId",
+              levelValue:  siteId || ""
+            },
+        {
+              levelName: "GroupId",
+              levelValue: groupId || ""
+            }
+          ]
         }
       );
       const unattendedIncidentsCountData = unattendedIncidentsCountResponse;
@@ -145,7 +174,20 @@ const DashboardWrapper = () => {
         toolID: 1,
         toolTypeID: 1,
         userID: userID,
-        numberofDays: selectedFilter,
+        numberofDays: selectedFilter, orgAccountStructureLevel: [
+          {
+            levelName: "AccountId",
+            levelValue: accountId || ""
+          },
+       {
+            levelName: "SiteId",
+            levelValue:  siteId || ""
+          },
+      {
+            levelName: "GroupId",
+            levelValue: groupId || ""
+          }
+        ]
       });
       const unattendedAlertsCountData = unattendedAlertsCountResponse;
       setUnattendedAlertcount(unattendedAlertsCountData);
@@ -158,7 +200,20 @@ const DashboardWrapper = () => {
           toolTypeID: 1,
           userID: userID,
           numberofDays: selectedFilter,
-          positiveAnalysisID: 1,
+          positiveAnalysisID: 1, orgAccountStructureLevel: [
+            {
+              levelName: "AccountId",
+              levelValue: accountId || ""
+            },
+         {
+              levelName: "SiteId",
+              levelValue:  siteId || ""
+            },
+        {
+              levelName: "GroupId",
+              levelValue: groupId || ""
+            }
+          ]
         }
       );
       const falsePositiveAlertsCountData = falsePositiveAlertsCountResponse;
@@ -171,7 +226,20 @@ const DashboardWrapper = () => {
           toolID: 1,
           toolTypeID: 1,
           userID: userID,
-          numberofDays: selectedFilter,
+          numberofDays: selectedFilter, orgAccountStructureLevel: [
+            {
+              levelName: "AccountId",
+              levelValue: accountId || ""
+            },
+         {
+              levelName: "SiteId",
+              levelValue:  siteId || ""
+            },
+        {
+              levelName: "GroupId",
+              levelValue: groupId || ""
+            }
+          ]
         }
       );
       const alertsResolvedMeanTimeData = alertsResolvedMeanTimeResponse;

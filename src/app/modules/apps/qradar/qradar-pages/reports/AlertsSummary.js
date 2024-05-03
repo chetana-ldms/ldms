@@ -16,7 +16,10 @@ function AlertsSummary() {
   const [alertData, setAlertData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
+  const [dropdownOpen, setDropdownOpen] = useState(false); 
+  const accountId = sessionStorage.getItem('accountId')
+  const siteId = sessionStorage.getItem('siteId')
+  const groupId = sessionStorage.getItem('groupId')
 
   const CanvasJS = CanvasJSReact.CanvasJS;
   const CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -81,6 +84,20 @@ function AlertsSummary() {
         orgId,
         alertFromDate: fromDateISO,
         alertToDate: toDate,
+        orgAccountStructureLevel: [
+          {
+            levelName: "AccountId",
+            levelValue: accountId || ""
+          },
+       {
+            levelName: "SiteId",
+            levelValue:  siteId || ""
+          },
+      {
+            levelName: "GroupId",
+            levelValue: groupId || ""
+          }
+        ]
       };
       try {
         const response = await fetchAlertsSummeryUrl(requestData);

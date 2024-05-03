@@ -9,6 +9,9 @@ function AlertsTrends(props) {
   console.log(alertData, "alertData");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const accountId = sessionStorage.getItem('accountId')
+  const siteId = sessionStorage.getItem('siteId')
+  const groupId = sessionStorage.getItem('groupId')
 
   const CanvasJS = CanvasJSReact.CanvasJS;
 
@@ -68,6 +71,20 @@ function AlertsTrends(props) {
       try {
         const GetAlertsTrendDataResponse = await fetchGetAlertsTrendData({
           orgId: orgId,
+          orgAccountStructureLevel: [
+            {
+              levelName: "AccountId",
+              levelValue: accountId || ""
+            },
+         {
+              levelName: "SiteId",
+              levelValue:  siteId || ""
+            },
+        {
+              levelName: "GroupId",
+              levelValue: groupId || ""
+            }
+          ]
         });
         const { alertsTrendDatas } = await GetAlertsTrendDataResponse;
 

@@ -37,6 +37,9 @@ const IncidentsPage = () => {
   const [searchValue, setSearchValue] = useState("");
   const status = useRef();
   const sortOption = useRef();
+  const accountId = sessionStorage.getItem('accountId')
+  const siteId = sessionStorage.getItem('siteId')
+  const groupId = sessionStorage.getItem('groupId')
   const [selectedIncident, setSelectedIncident] = useState({});
   const [refreshParent, setRefreshParent] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -64,6 +67,20 @@ const IncidentsPage = () => {
         rangeEnd: limit,
       },
       loggedInUserId: userID,
+      orgAccountStructureLevel: [
+        {
+          levelName: "AccountId",
+          levelValue: accountId || ""
+        },
+     {
+          levelName: "SiteId",
+          levelValue:  siteId || ""
+        },
+    {
+          levelName: "GroupId",
+          levelValue: groupId || ""
+        }
+      ]
     };
     try {
       setLoading(true);

@@ -9,6 +9,9 @@ function IncidentStatus(props) {
   const [error, setError] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedPriority, setSelectedPriority] = useState("");
+  const accountId = sessionStorage.getItem('accountId')
+  const siteId = sessionStorage.getItem('siteId')
+  const groupId = sessionStorage.getItem('groupId')
   const [dropdownData, setDropdownData] = useState({
     severityNameDropDownData: [],
     statusDropDown: [],
@@ -68,6 +71,20 @@ function IncidentStatus(props) {
         statusID: selectedStatus,
         priorityID: selectedPriority,
         orgId: orgId,
+        orgAccountStructureLevel: [
+          {
+            levelName: "AccountId",
+            levelValue: accountId || ""
+          },
+       {
+            levelName: "SiteId",
+            levelValue:  siteId || ""
+          },
+      {
+            levelName: "GroupId",
+            levelValue: groupId || ""
+          }
+        ]
       };
       const response = await axios.post(apiUrl, requestData);
       const { incidentCount } = response.data;

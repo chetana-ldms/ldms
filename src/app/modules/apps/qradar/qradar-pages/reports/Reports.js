@@ -75,47 +75,6 @@ const Reports = () => {
     ],
   };
 
-  //Bar chart
-  // const baroptions = {
-  //   dataPointWidth: 40,
-  //   axisY: {
-  //     minimum: 0,
-  //     maximum: 15,
-  //     interval: 5,
-  //   },
-  //   axisX: {
-  //     labelMaxWidth: 70,
-  //     labelWrap: true, // change it to false
-  //     interval: 1,
-  //     labelFontSize: 11,
-  //     labelFontWeight: "normal",
-  //     labelTextAlign: "center",
-  //     labelAngle: 180,
-  //   },
-  //   data: [
-  //     {
-  //       // Change type to "doughnut", "line", "splineArea", etc.
-  //       type: "column",
-  //       dataPoints: [
-  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 17 },
-  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 14 },
-  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 13 },
-  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 10 },
-  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 8 },
-  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 8 },
-  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 7 },
-  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 4 },
-  //         { label: "Customer Name - Smith Co Alert Name - Windows...", y: 4 },
-  //         { label: "SMB Port Scanning Device Vendor - Checkpoint...", y: 5 },
-  //         {
-  //           label:
-  //             'Today, Apr 26,2018 it was found that "Shadow Brokers" le...',
-  //           y: 5,
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // };
   //Date range
   const today = new Date();
   const lastYear = new Date();
