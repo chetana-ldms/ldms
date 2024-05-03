@@ -186,7 +186,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
   const reloadHistory = () => {
     const data = {
       orgId,
-      incidentId: Number(id),
+      incidentIds: [Number(id)],
     };
     // fetchGetIncidentHistory(data)
     fetchActivitiesUrl(data)

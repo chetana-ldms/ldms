@@ -166,7 +166,7 @@ const AlertsPage = () => {
     if (selectedAlertId !== null && selectedAlertId !== undefined) {
       const data = {
         orgId,
-        alertId: Number(selectedAlertId),
+        alertIds: [Number(selectedAlertId)],
       }
       // fetchGetalertHistory(data)
       fetchActivitiesUrl(data)
