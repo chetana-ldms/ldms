@@ -35,6 +35,7 @@ import AddToExclusionsModal from './AddToExclusionsModal'
 import AddANoteModal from './AddANoteModal'
 import jsPDF from 'jspdf'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Form} from 'reactstrap'
+import { fetchActivitiesUrl } from '../../../../../api/ActivityApi'
 
 const AlertsPage = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false) // State to manage dropdown toggle
@@ -167,9 +168,10 @@ const AlertsPage = () => {
         orgId,
         alertId: Number(selectedAlertId),
       }
-      fetchGetalertHistory(data)
+      // fetchGetalertHistory(data)
+      fetchActivitiesUrl(data)
         .then((res) => {
-          setAlertHistory(res)
+          setAlertHistory(res.activitiesList)
         })
         .catch((error) => {
           handleError(error)
@@ -2330,24 +2332,24 @@ const AlertsPage = () => {
                                                 {alertHistory && alertHistory.length > 0 ? (
                                                   alertHistory
                                                     .sort(
-                                                      (a, b) => b.alertHistoryId - a.alertHistoryId
+                                                      (a, b) => b.activityId - a.activityId
                                                     )
                                                     .map((item) => {
                                                       const formattedDateTime = getCurrentTimeZone(
-                                                        item.historyDate
+                                                        item.activityDate
                                                       )
 
                                                       return (
                                                         <div
                                                           className='timeline-item'
-                                                          key={item.id}
+                                                          key={item.activityId}
                                                         >
                                                           <div className='timeline-label fw-bold text-gray-800 fs-6'>
                                                             <p className='semi-bold'>
                                                               {formattedDateTime}
                                                             </p>
                                                             <p className='text-muted normal'>
-                                                              {item.createdUser}
+                                                              {item.createedUser}
                                                             </p>
                                                           </div>
 
@@ -2357,7 +2359,7 @@ const AlertsPage = () => {
                                                             ></i>
                                                           </div>
                                                           <div className='fw-semibold text-gray-700 ps-3 fs-7'>
-                                                            {item.historyDescription}
+                                                            {item.primaryDescription}
                                                           </div>
                                                         </div>
                                                       )

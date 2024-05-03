@@ -12,6 +12,7 @@ import {
 } from "../../../../../api/IncidentsApi";
 import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import { useErrorBoundary } from "react-error-boundary";
+import { fetchActivitiesUrl } from "../../../../../api/ActivityApi";
 
 const IncidentDetails = ({ incident, onRefreshIncidents }) => {
   console.log("incident11111", incident);
@@ -187,9 +188,10 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
       orgId,
       incidentId: Number(id),
     };
-    fetchGetIncidentHistory(data)
+    // fetchGetIncidentHistory(data)
+    fetchActivitiesUrl(data)
       .then((res) => {
-        setIncidentHistory(res);
+        setIncidentHistory(res.activitiesList);
       })
       .catch((error) => {
         handleError(error);
@@ -616,17 +618,20 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                 <div className="pt-6 h-600px">
                   <div className="timeline-label">
                     {incidentHistory && incidentHistory.length > 0 ? (
-                      incidentHistory.map((item) => {
+                       incidentHistory
+                       .sort(
+                         (a, b) => b.activityId - a.activityId
+                       ).map((item) => {
                         const formattedDateTime = getCurrentTimeZone(
-                          item.historyDate
+                          item.activityDate
                         );
 
                         return (
-                          <div className="timeline-item mb-5" key={item.id}>
+                          <div className="timeline-item mb-5" key={item.activityId}>
                             <div className="timeline-label fw-bold text-gray-800 fs-6">
                               <p>{formattedDateTime}</p>
                               {/* <p className="time">{formattedDateTime}</p> */}
-                              <p className="text-muted">{item.createdUser}</p>
+                              <p className="text-muted">{item.createedUser}</p>
                             </div>
 
                             <div className="timeline-badge">
@@ -635,7 +640,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                               ></i>
                             </div>
                             <div className="fw-semibold text-gray-700 ps-3 fs-7">
-                              {item.historyDescription}
+                              {item.primaryDescription}
                             </div>
                           </div>
                         );
