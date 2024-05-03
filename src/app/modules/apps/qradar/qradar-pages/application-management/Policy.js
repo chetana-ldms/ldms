@@ -8,10 +8,27 @@ function Policy() {
   console.log(policy, "policy");
 
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const accountId = sessionStorage.getItem('accountId')
+  const siteId = sessionStorage.getItem('siteId')
+  const groupId = sessionStorage.getItem('groupId')
   useEffect(() => {
     const fetchData = async () => {
       const data = {
         orgID: orgId,
+      orgAccountStructureLevel: [
+        {
+          levelName: 'AccountId',
+          levelValue: accountId || '',
+        },
+        {
+          levelName: 'SiteId',
+          levelValue: siteId || '',
+        },
+        {
+          levelName: 'GroupId',
+          levelValue: groupId || '',
+        },
+      ],
       };
       try {
         setLoading(true);

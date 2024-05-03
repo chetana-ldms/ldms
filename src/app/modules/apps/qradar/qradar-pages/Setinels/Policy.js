@@ -135,24 +135,46 @@ function Policy() {
   };
 
   const fetchData = async () => {
-    const data = {
-      orgID: orgId,
-      tenantPolicyScope: false,
-      accountPolicyScope: true,
-      sitePolicyScope: false,
-      groupPolicyScope: false,
-      scopeId: "1665272541043650534",
+    const accountId = sessionStorage.getItem('accountId');
+    const siteId = sessionStorage.getItem('siteId');
+    const groupId = sessionStorage.getItem('groupId');
+    let data = {
+        orgID: orgId,
+        tenantPolicyScope: false,
+        accountPolicyScope: false,
+        sitePolicyScope: false,
+        groupPolicyScope: false,
+        scopeId: null,
     };
-    try {
-      setLoading(true);
-      const response = await fetchPolicyDetailsUrl(data);
-      setPolicy(response);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+    if (groupId) {
+        data.scopeId = groupId;
+        data.groupPolicyScope = true;
+    } else if (siteId) {
+        data.scopeId = siteId;
+        data.sitePolicyScope = true;
+    } else if (accountId) {
+        data.scopeId = accountId;
+        data.accountPolicyScope = true;
     }
-  };
+
+    try {
+        setLoading(true);
+        const response = await fetchPolicyDetailsUrl(data);
+
+        // Handle response
+        if (response.ok) {
+            const responseData = await response.json();
+            setPolicy(responseData);
+        } else {
+            console.error('API request failed with status:', response.status);
+        }
+    } catch (error) {
+        console.error('API request error:', error);
+    } finally {
+        setLoading(false);
+    }
+};
+
 
   useEffect(() => {
     fetchData();

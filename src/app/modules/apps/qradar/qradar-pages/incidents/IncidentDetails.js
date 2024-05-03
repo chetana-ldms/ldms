@@ -615,7 +615,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
                 id="kt_tab_pane_5"
                 role="tabpanel"
               >
-                <div className="pt-6 h-600px">
+                <div className="pt-6 h-600px scroll-y">
                   <div className="timeline-label">
                     {incidentHistory && incidentHistory.length > 0 ? (
                        incidentHistory
