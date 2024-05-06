@@ -104,6 +104,7 @@ const AddLdpTools = () => {
                   className="form-control form-control-lg form-control-solid"
                   id="toolName"
                   ref={toolName}
+                  maxLength={200}
                   placeholder="Ex: Qradar"
                 />
               </div>

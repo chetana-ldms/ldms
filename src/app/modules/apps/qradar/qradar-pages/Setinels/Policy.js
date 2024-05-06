@@ -5,6 +5,9 @@ import { getCurrentTimeZone } from "../../../../../../utils/helper";
 
 function Policy() {
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const accountId = sessionStorage.getItem('accountId');
+  const siteId = sessionStorage.getItem('siteId');
+  const groupId = sessionStorage.getItem('groupId');
 
   const [policy, setPolicy] = useState({
     mitigationMode: "",
@@ -62,7 +65,6 @@ function Policy() {
     autoDecommissionDays: 0,
     removeMacros: false,
   });
-  console.log(policy, "policy");
   const [loading, setLoading] = useState(false);
 
   const [deepVisibilityEnabled, setDeepVisibilityEnabled] = useState(false);
@@ -135,9 +137,6 @@ function Policy() {
   };
 
   const fetchData = async () => {
-    const accountId = sessionStorage.getItem('accountId');
-    const siteId = sessionStorage.getItem('siteId');
-    const groupId = sessionStorage.getItem('groupId');
     let data = {
         orgID: orgId,
         tenantPolicyScope: false,
@@ -160,14 +159,7 @@ function Policy() {
     try {
         setLoading(true);
         const response = await fetchPolicyDetailsUrl(data);
-
-        // Handle response
-        if (response.ok) {
-            const responseData = await response.json();
-            setPolicy(responseData);
-        } else {
-            console.error('API request failed with status:', response.status);
-        }
+        setPolicy(response);
     } catch (error) {
         console.error('API request error:', error);
     } finally {
@@ -175,10 +167,11 @@ function Policy() {
     }
 };
 
+console.log(policy, "policy");
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [accountId, siteId, groupId]);
 
   return (
     <div className="account-policy">
@@ -401,7 +394,7 @@ function Policy() {
                       className="form-check-input"
                       type="checkbox"
                       id="staticAiSuspicious"
-                      checked={policy?.engines?.staticAiSuspicious}
+                      checked={policy?.engines?.staticAiSuspicious == "on"}
                       onChange={() =>
                         handleDetectionEngineChange("staticAiSuspicious")
                       }

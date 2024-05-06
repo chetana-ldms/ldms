@@ -164,6 +164,7 @@ const UpdateUserData = () => {
                   required
                   className="form-control form-control-lg form-control-solid"
                   id="userName"
+                  maxLength={200}
                   ref={userName}
                   placeholder="Ex: username"
                 />
@@ -182,6 +183,7 @@ const UpdateUserData = () => {
                   className='form-control form-control-lg form-control-solid'
                   id='userEmail'
                   ref={userEmail}
+                  maxLength={100}
                   placeholder='email@user.com'
                   required
                   pattern='^[^\s@]+@[^\s@]+\.[^\s@]+$'

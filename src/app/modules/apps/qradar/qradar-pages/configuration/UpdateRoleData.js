@@ -104,6 +104,7 @@ const UpdateRoleData = () => {
                   className="form-control form-control-lg form-control-solid"
                   id="role"
                   ref={roleName}
+                  maxLength={200}
                   value={role?.roleName || ""}
                   onChange={handleChange}
                 />

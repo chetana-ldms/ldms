@@ -109,7 +109,7 @@ const AddOrganizations = () => {
                   type='text'
                   className='form-control form-control-lg form-control-solid'
                   required
-                  maxLength={50}
+                  maxLength={200}
                   id='orgName'
                   ref={orgName}
                   placeholder='Ex: lancesoft'
@@ -146,6 +146,7 @@ const AddOrganizations = () => {
                   className='form-control form-control-lg form-control-solid'
                   id='email'
                   ref={email}
+                  maxLength={100}
                   placeholder='email@organization.com'
                   required
                   pattern='^[^\s@]+@[^\s@]+\.[^\s@]+$'
@@ -162,6 +163,7 @@ const AddOrganizations = () => {
                   type='text'
                   required
                   className='form-control form-control-lg form-control-solid'
+                  maxLength={200}
                   id='address'
                   ref={address}
                   placeholder='Address : '

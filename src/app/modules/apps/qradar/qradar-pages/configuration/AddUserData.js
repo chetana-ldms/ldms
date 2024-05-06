@@ -146,6 +146,7 @@ const AddUserData = () => {
                   id='userName'
                   ref={userName}
                   placeholder='Ex: username'
+                  maxLength={200}
                 />
               </div>
             </div>
@@ -159,6 +160,7 @@ const AddUserData = () => {
                   className='form-control form-control-lg form-control-solid'
                   id='userEmail'
                   ref={userEmail}
+                  maxLength={100}
                   placeholder='email@user.com'
                   required
                   pattern='^[^\s@]+@[^\s@]+\.[^\s@]+$'

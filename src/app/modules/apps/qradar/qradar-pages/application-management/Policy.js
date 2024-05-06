@@ -41,7 +41,7 @@ function Policy() {
       }
     };
     fetchData();
-  }, [orgId]);
+  }, [accountId, siteId, groupId]);
 
   const handleVulnerabilitiesScanEnabledChange = (event) => {
     setPolicy({

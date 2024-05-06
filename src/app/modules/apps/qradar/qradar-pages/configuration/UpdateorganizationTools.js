@@ -449,6 +449,7 @@ const confirmDelete = async () => {
                   className="form-control form-control-lg form-control-solid"
                   id="authKey"
                   ref={authKey}
+                  maxLength={4000}
                   onChange={(e) => handleChange(e, "authKey")}
                   value={toolTypeAction.authKey}
                   placeholder="Ex: xxxxxxxxxxxxxxxxx"
@@ -499,6 +500,7 @@ const confirmDelete = async () => {
                       id="apiUrl"
                       ref={apiUrl}
                       value={enteredApiUrl}
+                      maxLength={500}
                       onChange={(e) => setEnteredApiUrl(e.target.value)}
                       placeholder="Ex: https://10.100.0.102/api/siem/offences"
                     />

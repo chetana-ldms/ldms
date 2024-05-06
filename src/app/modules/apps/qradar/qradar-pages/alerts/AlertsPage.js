@@ -279,13 +279,16 @@ const AlertsPage = () => {
         notes: values.comments,
       }
       const response = await fetchSetAlertEscalationStatus(data)
-      if (response.isSuccess) {
+      const {isSuccess, message} = response
+      if (isSuccess) {
         qradaralerts()
         reloadHistory()
         reloadNotes()
-        notify(response.message)
+        notify(message)
         setEscalate(false)
         setShowForm(false)
+      }else{
+        notifyFail(message)
       }
       handleEscalate({
         target: {
@@ -1178,6 +1181,7 @@ const AlertsPage = () => {
                                 value={values.comments}
                                 id='excalatecomments'
                                 name='comments'
+                                // maxLength={4000}
                                 onChange={handleEscalate}
                                 className='form-control'
                                 required

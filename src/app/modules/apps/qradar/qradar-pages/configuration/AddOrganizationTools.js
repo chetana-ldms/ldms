@@ -352,6 +352,7 @@ const AddOrganizationTools = () => {
                   type="text"
                   className="form-control form-control-lg form-control-solid"
                   id="authKey"
+                  maxLength={4000}
                   ref={authKey}
                   placeholder="Ex: xxxxxxxxxxxxxxxxx"
                   required
@@ -405,6 +406,7 @@ const AddOrganizationTools = () => {
                       id="apiUrl"
                       ref={apiUrl}
                       value={enteredApiUrl}
+                      maxLength={500}
                       onChange={(e) => setEnteredApiUrl(e.target.value)}
                       placeholder="Ex: https://10.100.0.102/api/siem/offences"
                     />

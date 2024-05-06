@@ -140,6 +140,7 @@ const orgNames = organizations
     sessionStorage.removeItem('siteId');
     sessionStorage.removeItem('groupName');
     sessionStorage.removeItem('groupId');
+    window.location.reload();
   };
   
   const handleAccordionClick = (name: string, id: string) => {
@@ -149,33 +150,22 @@ const orgNames = organizations
     sessionStorage.setItem('siteId', id);
     sessionStorage.removeItem('groupName');
     sessionStorage.removeItem('groupId');
-    
+    window.location.reload();
   };
   const handleGroupClick = (name: string, id: string) => {
     sessionStorage.setItem('groupName', name);
     setGroupName(name);
     sessionStorage.setItem('groupId', id);
+    window.location.reload();
   };
-// const accountName = sessionStorage.getItem('accountName');
-// const siteName = sessionStorage.getItem('siteName');
-// const groupName = sessionStorage.getItem('groupName');
   return (
     <div className='app-navbar flex-shrink-0 account-header'>
-      {/* <div className='d-flex mt-5 semi-bold'>
-      {orgNames}/{accountNames.join(', ')}{siteName ? `/${siteName}` : ''}{groupName ? `/${groupName}` : ''}
-      </div> */}
-      {/* <div className='d-flex mt-5 semi-bold'>
-      {orgNames}
-      </div> */}
       <div className='d-flex mt-5 semi-bold acc-site'>
   {accountsStructure !==null ? (
     <>
       <Dropdown>
         <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
           {orgNames}
-          {!accountName &&
-          <span>{`/ ${accountNameDefoult}`}</span>
-          }
            
         </Dropdown.Toggle>
         <Dropdown.Menu>
@@ -187,22 +177,23 @@ const orgNames = organizations
         </Dropdown.Menu>
       </Dropdown>
       
-      {accountName && (
-        <Dropdown>
-          <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-            {`/ ${accountName}`}
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
+      {accountName || accountNames ? (
+    <Dropdown>
+        <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
+            {`/ ${accountName || accountNames}`} {/* Use accountNames if accountName is empty */}
+        </Dropdown.Toggle>
+        <Dropdown.Menu>
             {accountsStructure
-              ?.find(account => account.name === accountName)
-              ?.sites.map((site, siteIndex) => (
-                <Dropdown.Item key={siteIndex} onClick={() => handleAccordionClick(site.name, site.siteId)}>
-                  {site.name} {site.activeLicenses}
-                </Dropdown.Item>
-              ))}
-          </Dropdown.Menu>
-        </Dropdown>
-      )}
+                ?.find(account => account.name === (accountName || accountNames))
+                ?.sites.map((site, siteIndex) => (
+                    <Dropdown.Item key={siteIndex} onClick={() => handleAccordionClick(site.name, site.siteId)}>
+                        {site.name} {site.activeLicenses}
+                    </Dropdown.Item>
+                ))}
+        </Dropdown.Menu>
+    </Dropdown>
+) : null}
+
       
       {siteName || siteNames ? (
     <Dropdown>
@@ -211,7 +202,7 @@ const orgNames = organizations
         </Dropdown.Toggle>
         <Dropdown.Menu>
             {accountsStructure
-                ?.find(account => account.name === accountName)
+                ?.find(account => account.name === (accountName || accountNames))
                 ?.sites.find(site => site.name === (siteName || siteNames))
                 ?.groups.map((group, groupIndex) => (
                     <Dropdown.Item key={groupIndex} onClick={() => handleGroupClick(group.name, group.groupId)}>

@@ -50,13 +50,13 @@ const AddToolTypeAction = () => {
     };
     try {
       const responseData = await fetchToolTypeActionAddUrl(data);
-      const { isSuccess } = responseData;
+      const { isSuccess, message } = responseData;
 
       if (isSuccess) {
-        notify(" Tool Type Action Saved");
+        notify(message);
         navigate("/qradar/tool-type-actions/list");
       } else {
-        notifyFail("Failed to save  Tool Type Action");
+        notifyFail(message);
       }
     } catch (error) {
       handleError(error);
@@ -101,6 +101,7 @@ const AddToolTypeAction = () => {
                   className="form-control form-control-lg form-control-solid"
                   placeholder="Ex: CreateTicket"
                   ref={toolAction}
+                  maxLength={200}
                 />
               </div>
             </div>

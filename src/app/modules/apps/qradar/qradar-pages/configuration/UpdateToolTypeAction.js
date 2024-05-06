@@ -75,13 +75,13 @@ const UpdateToolTypeAction = () => {
 
     try {
       const responseData = await fetchToolTypeActionUpdate(data);
-      const { isSuccess } = responseData;
+      const { isSuccess, message } = responseData;
 
       if (isSuccess) {
-        notify("Tool Type Action Updated");
+        notify(message);
         navigate("/qradar/tool-type-actions/updated");
       } else {
-        notifyFail("Failed to update Tool Type Action");
+        notifyFail(message);
       }
     } catch (error) {
       handleError(error);
@@ -123,6 +123,7 @@ const UpdateToolTypeAction = () => {
                 </label>
                 <input
                   type="text"
+                  maxLength={200}
                   required
                   className="form-control form-control-lg form-control-solid"
                   placeholder="Ex: CreateTicket"

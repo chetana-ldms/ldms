@@ -123,6 +123,7 @@ const UpdateOrganizations = () => {
                 <input
                   type="text"
                   required
+                  maxLength={200}
                   className="form-control form-control-lg form-control"
                   id="orgName"
                   ref={orgName}
@@ -161,6 +162,7 @@ const UpdateOrganizations = () => {
                   ref={email}
                   placeholder='email@organization.com'
                   required
+                  maxLength={100}
                   pattern='^[^\s@]+@[^\s@]+\.[^\s@]+$'
                   title='Please enter a valid email address'
                 />
@@ -177,6 +179,7 @@ const UpdateOrganizations = () => {
                 <input
                   type="text"
                   required
+                  maxLength={200}
                   className="form-control form-control-lg form-control-solid"
                   id="address"
                   ref={address}
