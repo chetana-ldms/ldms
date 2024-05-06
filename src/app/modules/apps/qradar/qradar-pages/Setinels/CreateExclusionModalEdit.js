@@ -795,6 +795,7 @@ const modeToDisplayString = {
             rows='1'
             className='form-control'
             placeholder='Add Description or Leave empty'
+            maxLength={4000}
             value={description}
             onChange={(e) => handleChange(e, 'description')}
           ></textarea>

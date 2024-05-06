@@ -174,6 +174,7 @@ const AddToBlockListModal = ({
             ref={descriptionTextareaRef}
             rows="1"
             className="form-control"
+            maxLength={4000}
             placeholder="Add Description or Leave empty"
           ></textarea>
         </div>

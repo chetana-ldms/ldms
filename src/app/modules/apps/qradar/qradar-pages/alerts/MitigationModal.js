@@ -230,6 +230,7 @@ const MitigationModal = ({
               <textarea
                 className="form-control"
                 placeholder="Add an additional note..."
+                maxLength={4000}
                 rows="2"
                 value={additionalNote}
                 onChange={(e) => {

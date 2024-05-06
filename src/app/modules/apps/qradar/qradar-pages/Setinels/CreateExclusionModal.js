@@ -693,6 +693,7 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
             rows='1'
             className='form-control'
             placeholder='Add Description or Leave empty'
+            maxLength={4000}
           ></textarea>
         </div>
       </Modal.Body>

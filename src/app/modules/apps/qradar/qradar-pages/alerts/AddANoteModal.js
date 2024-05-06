@@ -69,6 +69,7 @@ const AddANoteModal = ({
           <textarea
             className="form-control"
             placeholder="Add a note..."
+            maxLength={4000}
             rows="2"
             value={noteText}
             onChange={handleNoteChange}

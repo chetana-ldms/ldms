@@ -1181,7 +1181,7 @@ const AlertsPage = () => {
                                 value={values.comments}
                                 id='excalatecomments'
                                 name='comments'
-                                // maxLength={4000}
+                                maxLength={4000}
                                 onChange={handleEscalate}
                                 className='form-control'
                                 required
