@@ -1,4 +1,4 @@
-import {useMemo, useEffect, useState} from 'react'
+import {useMemo, useEffect, useState, useRef} from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {UsersListPagination} from '../components/pagination/UsersListPagination'
@@ -22,6 +22,7 @@ import {
   fetchDisConnectFromNetworkUrl,
   fetchThreatsActionUrl,
   fetchAlertsStatusUpdateUrl,
+  fetchMitigateActionValidationUrl,
 } from '../../../../../api/AlertsApi'
 import MitigationModal from './MitigationModal'
 import ReactPaginate from 'react-paginate'
@@ -35,13 +36,15 @@ import AddToExclusionsModal from './AddToExclusionsModal'
 import AddANoteModal from './AddANoteModal'
 import jsPDF from 'jspdf'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Form} from 'reactstrap'
-import { fetchActivitiesUrl } from '../../../../../api/ActivityApi'
+import {fetchActivitiesUrl} from '../../../../../api/ActivityApi'
 
 const AlertsPage = () => {
-  const [dropdownOpen, setDropdownOpen] = useState(false) // State to manage dropdown toggle
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const handleError = useErrorBoundary()
   const [inputValue, setInputValue] = useState('')
   const [selectedAlert, setselectedAlert] = useState([])
+  const [validations, setValidations] = useState('')
+  console.log(validations, 'validations1111')
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
   const [loading, setLoading] = useState(false)
   const globalAdminRole = Number(sessionStorage.getItem('globalAdminRole'))
@@ -101,10 +104,10 @@ const AlertsPage = () => {
       setselectedAlert([...selectedAlert, value])
       setIsCheckboxSelected(true)
     } else {
-      setselectedAlert(selectedAlert.filter((e) => e !== value))
-      // const updatedAlert = selectedAlert.filter((e) => e !== value);
-      //   setselectedAlert(updatedAlert);
-      //   setIsCheckboxSelected(updatedAlert.length > 0);
+      // setselectedAlert(selectedAlert.filter((e) => e !== value))
+      const updatedAlert = selectedAlert.filter((e) => e !== value)
+      setselectedAlert(updatedAlert)
+      setIsCheckboxSelected(updatedAlert.length > 0)
     }
   }
   const [actionsValue, setActionValue] = useState('')
@@ -157,10 +160,37 @@ const AlertsPage = () => {
   console.log(threatInfo, 'threatInfo')
   const [alertHistory, setAlertHistory] = useState([])
   console.log(alertHistory, 'alertHistory')
+  const dropdownRef = useRef(null)
+  const dropdownRefSatus = useRef(null)
   const [refreshFlag, setRefreshFlag] = useState(false)
   const handleRefreshActions = () => {
     setRefreshFlag(!refreshFlag)
     qradaralerts()
+    reloadHistory()
+    reloadNotes()
+    fetchAlertDetails()
+  }
+  const fetchAlertDetails = async () => {
+    try {
+      const sentinalOneDetails = await fetchSentinelOneAlert(selectedAlertId)
+      setSentinalOne(sentinalOneDetails)
+      const endpoint_Info = sentinalOneDetails.endpoint_Info
+      setEndpointInfo(endpoint_Info)
+      const networkHistory = sentinalOneDetails.networkHistory
+      setNetworkHistory(networkHistory)
+      const threatHeaderDtls = sentinalOneDetails.threatHeaderDtls
+      setThreatHeaderDtls(threatHeaderDtls)
+      const threatInfo = sentinalOneDetails.threatInfo
+      setThreatInfo(threatInfo)
+    } catch (error) {
+      handleError(error)
+    }
+  }
+  useEffect(() => {
+    fetchAlertDetails()
+  }, [selectedAlertId])
+  const handleTdClick = (itemId) => {
+    setSelectedAlertId(itemId)
   }
   const reloadHistory = () => {
     if (selectedAlertId !== null && selectedAlertId !== undefined) {
@@ -287,7 +317,7 @@ const AlertsPage = () => {
         notify(message)
         setEscalate(false)
         setShowForm(false)
-      }else{
+      } else {
         notifyFail(message)
       }
       handleEscalate({
@@ -348,18 +378,18 @@ const AlertsPage = () => {
       loggedInUserId: userID,
       orgAccountStructureLevel: [
         {
-          levelName: "AccountId",
-          levelValue: accountId || ""
+          levelName: 'AccountId',
+          levelValue: accountId || '',
         },
-     {
-          levelName: "SiteId",
-          levelValue:  siteId || ""
+        {
+          levelName: 'SiteId',
+          levelValue: siteId || '',
         },
-    {
-          levelName: "GroupId",
-          levelValue: groupId || ""
-        }
-      ]
+        {
+          levelName: 'GroupId',
+          levelValue: groupId || '',
+        },
+      ],
     }
     setLoading(true)
     const response = await fetchAlertData(data2)
@@ -469,6 +499,7 @@ const AlertsPage = () => {
     qradaralerts()
     reloadNotes()
     reloadHistory()
+    fetchAlertDetails()
     setTimeout(() => setIsRefreshing(false), 2000)
   }
   const RefreshInterval = 2 * 60 * 1000
@@ -491,27 +522,27 @@ const AlertsPage = () => {
       clearInterval(refreshIntervalId)
     }
   }, [currentPage])
-  const handleTdClick = async (itemId) => {
-    setSelectedAlertId(itemId)
-    try {
-      if (orgId === 2) {
-        const sentinalOneDetails = await fetchSentinelOneAlert(itemId)
-        setSentinalOne(sentinalOneDetails)
-        const endpoint_Info = sentinalOneDetails.endpoint_Info
-        setEndpointInfo(endpoint_Info)
-        const networkHistory = sentinalOneDetails.networkHistory
-        setNetworkHistory(networkHistory)
-        const threatHeaderDtls = sentinalOneDetails.threatHeaderDtls
-        setThreatHeaderDtls(threatHeaderDtls)
-        const threatInfo = sentinalOneDetails.threatInfo
-        setThreatInfo(threatInfo)
-      } else {
-        console.log('No data found')
-      }
-    } catch (error) {
-      handleError(error)
-    }
-  }
+  // const handleTdClick = async (itemId) => {
+  //   setSelectedAlertId(itemId)
+  //   try {
+  //     if (orgId === 2) {
+  //       const sentinalOneDetails = await fetchSentinelOneAlert(itemId)
+  //       setSentinalOne(sentinalOneDetails)
+  //       const endpoint_Info = sentinalOneDetails.endpoint_Info
+  //       setEndpointInfo(endpoint_Info)
+  //       const networkHistory = sentinalOneDetails.networkHistory
+  //       setNetworkHistory(networkHistory)
+  //       const threatHeaderDtls = sentinalOneDetails.threatHeaderDtls
+  //       setThreatHeaderDtls(threatHeaderDtls)
+  //       const threatInfo = sentinalOneDetails.threatInfo
+  //       setThreatInfo(threatInfo)
+  //     } else {
+  //       console.log('No data found')
+  //     }
+  //   } catch (error) {
+  //     handleError(error)
+  //   }
+  // }
 
   const handleGenerateReport = () => {
     const tableData = [selectCheckBox]
@@ -571,15 +602,19 @@ const AlertsPage = () => {
       const data = {
         orgID: orgId,
         alertIds: selectedAlert,
+        modifiedDate,
+        modifiedUserId: userID,
       }
       try {
         const responseData = await fetchConnectToNetworkUrl(data)
-        const {isSuccess} = responseData
+        const {isSuccess, message} = responseData
         if (isSuccess) {
           qradaralerts()
-          notify('Network connected')
+          fetchValidations()
+          fetchAlertDetails()
+          notify(message)
         } else {
-          notifyFail('Failed to connect to network')
+          notifyFail(message)
         }
       } catch (error) {
         console.error(error)
@@ -589,15 +624,19 @@ const AlertsPage = () => {
       const data = {
         orgID: orgId,
         alertIds: selectedAlert,
+        modifiedDate,
+        modifiedUserId: userID,
       }
       try {
         const responseData = await fetchDisConnectFromNetworkUrl(data)
-        const {isSuccess} = responseData
+        const {isSuccess, message} = responseData
         if (isSuccess) {
           qradaralerts()
-          notify('Disconnected from network')
+          fetchValidations()
+          fetchAlertDetails()
+          notify(message)
         } else {
-          notifyFail('Failed to disconnect from network')
+          notifyFail(message)
         }
       } catch (error) {
         console.error(error)
@@ -605,6 +644,8 @@ const AlertsPage = () => {
       setShowDropdown(false)
     } else if (value === 'Unquarantine') {
       const data = {
+        modifiedDate,
+        modifiedUserId: userID,
         orgID: orgId,
         alertIds: selectedAlert,
         kill: false,
@@ -616,12 +657,14 @@ const AlertsPage = () => {
       }
       try {
         const responseData = await fetchThreatsActionUrl(data)
-        const {isSuccess} = responseData
+        const {isSuccess, message} = responseData
         if (isSuccess) {
           qradaralerts()
-          notify('UnQuarantine Succesfull')
+          fetchValidations()
+          fetchAlertDetails()
+          notify(message)
         } else {
-          notifyFail('UnQuarantine Failed')
+          notifyFail(message)
         }
       } catch (error) {
         console.error(error)
@@ -672,6 +715,10 @@ const AlertsPage = () => {
     setSelectedVerdict(event.target.value)
   }
   const handleSubmitAnalystVerdict = async () => {
+    if (!selectedVerdict) {
+      notifyFail('Please select a Analyst Verdict option.')
+      return
+    }
     try {
       const modifiedUserId = Number(sessionStorage.getItem('userId'))
       const data = {
@@ -688,10 +735,14 @@ const AlertsPage = () => {
         qradaralerts()
         reloadHistory()
         reloadNotes()
+        handleAnalystsVerdictClose()
+        fetchAlertDetails()
+        if (dropdownRef.current) {
+          dropdownRef.current.classList.remove('show')
+        }
       } else {
         notifyFail(message)
       }
-      setAnalystVerdictDropDown(false)
     } catch (error) {
       console.error(error)
     }
@@ -706,6 +757,10 @@ const AlertsPage = () => {
     setSelectedStatus(event.target.value)
   }
   const handleSubmitStatus = async () => {
+    if (!selectedStatus) {
+      notifyFail('Please select a status option.')
+      return
+    }
     try {
       const modifiedUserId = Number(sessionStorage.getItem('userId'))
       const data = {
@@ -722,10 +777,14 @@ const AlertsPage = () => {
         qradaralerts()
         reloadHistory()
         reloadNotes()
+        handleStatusClose()
+        fetchAlertDetails()
+        if (dropdownRefSatus.current) {
+          dropdownRefSatus.current.classList.remove('show')
+        }
       } else {
         notifyFail(message)
       }
-      setStatusDropDown(false)
     } catch (error) {
       console.error(error)
     }
@@ -807,16 +866,31 @@ const AlertsPage = () => {
   }
   const transformAction = (item) => {
     switch (item.toLowerCase()) {
-        case 'kill':
-            return 'KILLED';
-        case 'quarantine':
-            return 'QUARANTINED';
-        case 'remediate':
-            return 'Remediate';
-        default:
-            return item.toUpperCase();
+      case 'kill':
+        return 'KILLED'
+      case 'quarantine':
+        return 'QUARANTINED'
+      case 'remediate':
+        return 'Remediate'
+      default:
+        return item.toUpperCase()
     }
-};
+  }
+  const fetchValidations = async () => {
+    try {
+      const data = {
+        alertId: Number(selectedAlert),
+      }
+      const response = await fetchMitigateActionValidationUrl(data)
+      setValidations(response)
+    } catch (error) {
+      handleError(error)
+    }
+  }
+
+  useEffect(() => {
+    fetchValidations()
+  }, [selectedAlert])
 
   return (
     <KTCardBody className='alert-page'>
@@ -855,6 +929,7 @@ const AlertsPage = () => {
                 </a>
 
                 <div
+                  ref={dropdownRef}
                   className='menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action'
                   data-kt-menu='true'
                 >
@@ -918,6 +993,7 @@ const AlertsPage = () => {
                 </a>
 
                 <div
+                  ref={dropdownRefSatus}
                   className='menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action'
                   data-kt-menu='true'
                 >
@@ -1027,16 +1103,30 @@ const AlertsPage = () => {
                               <option value='AddToExclusions' className='p-2'>
                                 Add To Exclusions
                               </option>
-                              <option value='Unquarantine' className='p-2'>
+                              <option
+                                value='Unquarantine'
+                                className='p-2'
+                                disabled={selectedAlert.length == 1 && !validations.unQuarantine}
+                              >
                                 Unquarantine
                               </option>
                               <option value='AddANote' className='p-2'>
                                 Add A Note
                               </option>
-                              <option value='ConnectToNetwork' className='p-2'>
+                              <option
+                                value='ConnectToNetwork'
+                                className='p-2'
+                                disabled={selectedAlert.length == 1 && !validations.addToNetwork}
+                              >
                                 Connect To Network
                               </option>
-                              <option value='DisconnectFromNetwork' className='p-2'>
+                              <option
+                                value='DisconnectFromNetwork'
+                                className='p-2'
+                                disabled={
+                                  selectedAlert.length == 1 && !validations.disconnectFromNetwork
+                                }
+                              >
                                 Disconnect From Network
                               </option>
                             </select>
@@ -1081,6 +1171,7 @@ const AlertsPage = () => {
                         handleAction={handleActionAddANote}
                         selectedValue={selectedValue}
                         selectedAlert={selectedAlert}
+                        refreshParent={handleRefreshActions}
                       />
                     )}
                   </div>
@@ -2006,13 +2097,13 @@ const AlertsPage = () => {
                                                 <span className='semi-bold'>
                                                   Threat status :
                                                 </span>{' '}
-                                                {threatHeaderDtls.threatStatus}
+                                                {threatHeaderDtls?.threatStatus}
                                               </div>
                                               <div className='border-right px-1'>
                                                 <span className='semi-bold'>
                                                   AI Confidence level :{' '}
                                                 </span>
-                                                {threatHeaderDtls.aiConfidenceLevel}
+                                                {threatHeaderDtls?.aiConfidenceLevel}
                                               </div>
                                               <div className='border-right px-1 pe-2 d-flex align-items-center'>
                                                 <span className='semi-bold'>
@@ -2026,7 +2117,7 @@ const AlertsPage = () => {
                                                     threatHeaderDtls.analysisVerdict
                                                   }
                                                 /> */}
-                                                {threatHeaderDtls.analysisVerdict}
+                                                {threatHeaderDtls?.analysisVerdict}
                                               </div>
                                               <div className='px-1 d-flex align-items-center'>
                                                 <span className='semi-bold'>
@@ -2040,7 +2131,7 @@ const AlertsPage = () => {
                                                     threatHeaderDtls.incidentStatus
                                                   }
                                                 /> */}
-                                                {threatHeaderDtls.incidentStatus}
+                                                {threatHeaderDtls?.incidentStatus}
                                               </div>
                                             </div>
                                             {/* <hr /> */}
@@ -2048,12 +2139,25 @@ const AlertsPage = () => {
                                               <span className='semi-bold'>
                                                 Mitigation Actions Taken:
                                               </span>
-                                              {threatHeaderDtls?.miticationActions ? (
+                                              {threatHeaderDtls?.mitigationActionWithStatus ? (
+                                                threatHeaderDtls?.mitigationActionWithStatus
+                                                  ?.reverse()
+                                                  .map((item, index) => (
+                                                    <span key={index} className='m-2'>
+                                                      {transformAction(item.actionName)}{' '}
+                                                      {item.status === 'pending' &&
+                                                        ` ${item.status}`}
+                                                      {item.status !== 'pending' && (
+                                                        <i className='bi bi-check green fs-20 v-middle'></i>
+                                                      )}
+                                                    </span>
+                                                  ))
+                                              ) : threatHeaderDtls?.miticationActions ? (
                                                 threatHeaderDtls?.miticationActions
                                                   ?.reverse()
                                                   .map((item, index) => (
                                                     <span key={index} className='m-2'>
-                                                      {transformAction(item)}{' '}
+                                                      {transformAction(item)}
                                                       <i className='bi bi-check green fs-20 v-middle'></i>
                                                     </span>
                                                   ))
@@ -2074,7 +2178,7 @@ const AlertsPage = () => {
                                                   </span>
                                                   <span>
                                                     {getCurrentTimeZone(
-                                                      threatHeaderDtls.identifiedTime
+                                                      threatHeaderDtls?.identifiedTime
                                                     )}
                                                   </span>
                                                 </p>
@@ -2084,7 +2188,7 @@ const AlertsPage = () => {
                                                   </span>
                                                   <span>
                                                     {getCurrentTimeZone(
-                                                      threatHeaderDtls.reportingTime
+                                                      threatHeaderDtls?.reportingTime
                                                     )}
                                                   </span>
                                                 </p>
@@ -2133,7 +2237,7 @@ const AlertsPage = () => {
                                         <div className='row'>
                                           <div className='fs-12 col-md-6'>
                                             <span className='semi-bold'>THREAT FILE NAME :</span>{' '}
-                                            {threatInfo.name}
+                                            {threatInfo?.name}
                                           </div>
                                           <div className='fs-14 mt-5 text-primary col-md-6 text-end'>
                                             {/* <span className="mx-5"><i className="fas fa-copy mx-3"></i> Copy Details</span>
@@ -2156,15 +2260,15 @@ const AlertsPage = () => {
                                                 <p className='semi-bold'>Initiated By:</p>
                                               </div>
                                               <div className='col-md-9'>
-                                                <p>{threatInfo.path}</p>
+                                                <p>{threatInfo?.path}</p>
                                                 {/* <p>NA</p> */}
-                                                <p>{threatInfo.processUser}</p>
+                                                <p>{threatInfo?.processUser}</p>
                                                 {/* <p>FH Manager</p> */}
                                                 {/* <p>FH Manager</p> */}
                                                 {/* <p>Signature varified</p> */}
-                                                <p>{threatInfo.originatingProcess}</p>
-                                                <p>{threatInfo.shA1}</p>
-                                                <p>{threatInfo.initiatedBy}</p>
+                                                <p>{threatInfo?.originatingProcess}</p>
+                                                <p>{threatInfo?.shA1}</p>
+                                                <p>{threatInfo?.initiatedBy}</p>
                                               </div>
                                             </div>
                                           </div>
@@ -2180,11 +2284,11 @@ const AlertsPage = () => {
                                               </div>
                                               <div className='col-md-6'>
                                                 {/* <p>SentinalOne Cloud</p> */}
-                                                <p>{threatInfo.detectionType}</p>
-                                                <p>{threatInfo.classification}</p>
-                                                <p>{threatInfo.fileSize}</p>
-                                                <p>{threatInfo.storyline}</p>
-                                                <p>{threatInfo.threatId}</p>
+                                                <p>{threatInfo?.detectionType}</p>
+                                                <p>{threatInfo?.classification}</p>
+                                                <p>{threatInfo?.fileSize}</p>
+                                                <p>{threatInfo?.storyline}</p>
+                                                <p>{threatInfo?.threatId}</p>
                                               </div>
                                             </div>
                                           </div>
@@ -2224,10 +2328,10 @@ const AlertsPage = () => {
                                               </div>
                                               <div className='col-md-8'>
                                                 {/* <p>{endpointInfo.consoleConnectivity}</p> */}
-                                                <p>{endpointInfo.fullDiskScan}</p>
-                                                <p>{endpointInfo.pendinRreboot}</p>
+                                                <p>{endpointInfo?.fullDiskScan}</p>
+                                                <p>{endpointInfo?.pendinRreboot}</p>
                                                 {/* <p>0</p> */}
-                                                <p>{endpointInfo.networkStatus}</p>
+                                                <p>{endpointInfo?.networkStatus}</p>
                                               </div>
                                             </div>
                                           </div>
@@ -2249,17 +2353,17 @@ const AlertsPage = () => {
                                               </div>
                                               <div className='col-md-9'>
                                                 {/* <p>.</p> */}
-                                                <p>{endpointInfo.scope}</p>
-                                                <p>{endpointInfo.osVersion}</p>
-                                                <p>{endpointInfo.agentVersion}</p>
-                                                <p>{endpointInfo.policy}</p>
-                                                <p>{endpointInfo.loggedInUser}</p>
-                                                <p>{endpointInfo.uuid}</p>
-                                                <p>{endpointInfo.domain}</p>
-                                                <p>{endpointInfo.ipV4Address}</p>
-                                                <p>{endpointInfo.ipV6Address}</p>
-                                                <p>{endpointInfo.consoleVisibleIPAddress}</p>
-                                                <p>{endpointInfo.subscriptionTime}</p>
+                                                <p>{endpointInfo?.scope}</p>
+                                                <p>{endpointInfo?.osVersion}</p>
+                                                <p>{endpointInfo?.agentVersion}</p>
+                                                <p>{endpointInfo?.policy}</p>
+                                                <p>{endpointInfo?.loggedInUser}</p>
+                                                <p>{endpointInfo?.uuid}</p>
+                                                <p>{endpointInfo?.domain}</p>
+                                                <p>{endpointInfo?.ipV4Address}</p>
+                                                <p>{endpointInfo?.ipV6Address}</p>
+                                                <p>{endpointInfo?.consoleVisibleIPAddress}</p>
+                                                <p>{endpointInfo?.subscriptionTime}</p>
                                               </div>
                                             </div>
                                           </div>
@@ -2335,9 +2439,7 @@ const AlertsPage = () => {
                                                 </div>
                                                 {alertHistory && alertHistory.length > 0 ? (
                                                   alertHistory
-                                                    .sort(
-                                                      (a, b) => b.activityId - a.activityId
-                                                    )
+                                                    .sort((a, b) => b.activityId - a.activityId)
                                                     .map((item) => {
                                                       const formattedDateTime = getCurrentTimeZone(
                                                         item.activityDate

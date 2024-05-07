@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { fetchThreatNotesUrl } from "../../../../../api/AlertsApi";
 import { notify, notifyFail } from "../components/notification/Notification";
@@ -9,27 +9,29 @@ const AddANoteModal = ({
   handleAction,
   selectedValue,
   selectedAlert,
+  refreshParent,
 }) => {
   const data = { selectedValue, selectedAlert };
   const value = data.selectedValue;
   const AlertId = data.selectedAlert;
   console.log(data, "data");
   const orgId = Number(sessionStorage.getItem("orgId"));
-  const [noteText, setNoteText] = useState("");
-
-  const handleNoteChange = (event) => {
-    setNoteText(event.target.value);
-  };
-  const handleSubmit = async () => {
+  const noteText = useRef()
+  const handleSubmit = async (event) => {
+    event.preventDefault()
     const modifiedUserId = Number(sessionStorage.getItem("userId"));
     const modifiedDate = new Date().toISOString();
+    if (!noteText.current.value) {
+      notifyFail('Please enter the note')
+      return
+    }
     try {
       const data = {
         orgID: orgId,
         toolID: 1,
         toolTypeID: 1,
         alertIDs: selectedAlert,
-        notes: noteText,
+        notes: noteText.current.value,
         modifiedDate,
         modifiedUserId,
       };
@@ -39,10 +41,12 @@ const AddANoteModal = ({
 
       if (isSuccess) {
         notify(message);
+        refreshParent();
+        handleClose();
       } else {
         notifyFail(message);
       }
-      handleClose();
+      
     } catch (error) {
       console.error(error);
     }
@@ -71,8 +75,8 @@ const AddANoteModal = ({
             placeholder="Add a note..."
             maxLength={4000}
             rows="2"
-            value={noteText}
-            onChange={handleNoteChange}
+            ref={noteText}
+            required
           ></textarea>
         </div>
       </Modal.Body>

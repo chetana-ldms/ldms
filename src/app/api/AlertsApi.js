@@ -13,6 +13,7 @@ const ConnectToNetworkUrl = process.env.REACT_APP_CONNECTTONETWORK_URL
 const DisConnectFromNetworkUrl = process.env.REACT_APP_DISCONNECTFROMNETWORK_URL
 const ThreatsActionUrl = process.env.REACT_APP_ACTION_URL
 const AlertsStatusUpdateUrl = process.env.REACT_APP_ALERTS_STATUS_UPDATE_URL
+const MitigateActionValidationUrl = "http://115.110.192.133:502/api/Alerts/v1/MitigateAction/Validation"
 
 export const fetchAlertData = async (data) => {
   try {
@@ -288,6 +289,22 @@ export const fetchAlertsStatusUpdateUrl = async (data) => {
       body: JSON.stringify({
         ...data,
       }),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchMitigateActionValidationUrl = async (data) => {
+  try {
+    const response = await fetch(`${MitigateActionValidationUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
     })
 
     const responseData = await response.json()

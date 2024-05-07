@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Modal, Button } from "react-bootstrap";
-import { fetchMitigateActionUrl } from "../../../../../api/AlertsApi";
+import { fetchMitigateActionUrl, fetchMitigateActionValidationUrl } from "../../../../../api/AlertsApi";
 import { notify, notifyFail } from "../components/notification/Notification";
+import { UsersListLoading } from "../components/loading/UsersListLoading";
 
 const MitigationModal = ({
   show,
@@ -31,6 +32,28 @@ const MitigationModal = ({
   const [quarantineSwitchChecked, setQuarantineSwitchChecked] = useState(false);
   const [remediateSwitchChecked, setRemediateSwitchChecked] = useState(false);
   const [rollbackSwitchChecked, setRollbackSwitchChecked] = useState(false);
+  const [validations, setValidations] = useState('')
+  console.log(validations, 'validations1111')
+  const [loading, setLoading] = useState(false)
+
+  const fetchValidations = async () => {
+    try {
+      setLoading(true)
+      const data = {
+        alertId: Number(AlertId),
+      }
+      const response = await fetchMitigateActionValidationUrl(data)
+      setValidations(response)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchValidations()
+  }, [AlertId])
 
   const handleCheckboxChange = (checkboxId) => {
     if (checkboxId === "checkboxButton1") {
@@ -94,6 +117,7 @@ const MitigationModal = ({
       onHide={handleClose}
       className="mitigate application-modal"
     >
+       {loading && <UsersListLoading />}
       <Modal.Header closeButton className="bg-heading">
         <Modal.Title className="pad-10 white">Mitigation Actions</Modal.Title>
         <button
@@ -113,6 +137,7 @@ const MitigationModal = ({
               type="checkbox"
               id="killSwitch"
               checked={killSwitchChecked}
+              disabled={selectedAlert.length == 1 && !validations.kill}
               onChange={() => handleActionCheckboxChange("killSwitch")}
             />
             <label className="form-check-label black" htmlFor="killSwitch">
@@ -125,6 +150,7 @@ const MitigationModal = ({
               type="checkbox"
               id="quarantineSwitch"
               checked={quarantineSwitchChecked}
+              disabled={selectedAlert.length == 1 && !validations.quarantine}
               onChange={() => handleActionCheckboxChange("quarantineSwitch")}
             />
             <label
@@ -140,6 +166,7 @@ const MitigationModal = ({
               type="checkbox"
               id="remediateSwitch"
               checked={remediateSwitchChecked}
+              disabled={selectedAlert.length == 1 && !validations.remediate}
               onChange={() => handleActionCheckboxChange("remediateSwitch")}
             />
             <label className="form-check-label black" htmlFor="remediateSwitch">
@@ -152,6 +179,7 @@ const MitigationModal = ({
               type="checkbox"
               id="rollbackSwitch"
               checked={rollbackSwitchChecked}
+              disabled={selectedAlert.length == 1 && !validations.rollback}
               onChange={() => handleActionCheckboxChange("rollbackSwitch")}
             />
             <label className="form-check-label black" htmlFor="rollbackSwitch">
@@ -165,6 +193,7 @@ const MitigationModal = ({
               className="form-check-input"
               type="checkbox"
               id="checkbox1"
+              disabled={selectedAlert.length == 1 && !validations.resolvedStatus}
               onChange={() => setMarkAsResolved(!markAsResolved)}
             />
             <label className="form-check-label black" htmlFor="checkbox1">
@@ -176,6 +205,7 @@ const MitigationModal = ({
               className="form-check-input"
               type="checkbox"
               id="checkbox2"
+              disabled={selectedAlert.length == 1 && !validations.addToBlockedList}
               onChange={() => setAddToBlocklist(!addToBlocklist)}
             />
             <label className="form-check-label black" htmlFor="checkbox2">
@@ -254,6 +284,7 @@ const MitigationModal = ({
               type="checkbox"
               id="checkboxButton1"
               checked={isChecked1}
+              disabled={selectedAlert.length == 1 && !validations.analystVerdict_TruePositive}
               onChange={() => handleCheckboxChange("checkboxButton1")}
             />
             <label className="form-check-label black" htmlFor="checkboxButton1">
@@ -269,6 +300,7 @@ const MitigationModal = ({
                 type="checkbox"
                 id="checkboxButton1"
                 checked={isChecked1}
+                disabled={selectedAlert.length == 1 && !validations.analystVerdict_TruePositive}
                 onChange={() => handleCheckboxChange("checkboxButton1")}
               />
               <label
@@ -284,6 +316,7 @@ const MitigationModal = ({
                 type="checkbox"
                 id="checkboxButton2"
                 checked={isChecked2}
+                disabled={selectedAlert.length == 1 && !validations.analystVerdict_Suspecious}
                 onChange={() => handleCheckboxChange("checkboxButton2")}
               />
               <label
