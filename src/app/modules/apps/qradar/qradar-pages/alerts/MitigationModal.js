@@ -77,6 +77,24 @@ const MitigationModal = ({
   };
 
   const handleSubmit = async () => {
+    const isAnyOptionSelected = () => {
+      return (
+          killSwitchChecked ||
+          quarantineSwitchChecked ||
+          remediateSwitchChecked ||
+          rollbackSwitchChecked ||
+          markAsResolved ||
+          addToBlocklist ||
+          scopeValue !== '' ||
+          additionalNote !== '' ||
+          isChecked1 ||
+          isChecked2
+      );
+  };
+  if (!isAnyOptionSelected()) {
+    notifyFail('At least one option must be selected before submitting.');
+    return; 
+}
     try {
       const data = {
         modifiedDate: modifiedDate,
@@ -131,7 +149,7 @@ const MitigationModal = ({
       <Modal.Body>
         <div className="header-filter">
           <label className="semi-bold mb-5 fs-14">Select Action:</label>
-          <div className="form-check mb-2">
+          <div className="form-check mb-2 d-flex align-items-center">
             <input
               className="form-check-input"
               type="checkbox"
@@ -144,7 +162,7 @@ const MitigationModal = ({
               Kill
             </label>
           </div>
-          <div className="form-check mb-2">
+          <div className="form-check mb-2 d-flex align-items-center">
             <input
               className="form-check-input"
               type="checkbox"
@@ -160,7 +178,7 @@ const MitigationModal = ({
               Quarantine
             </label>
           </div>
-          <div className="form-check mb-2">
+          <div className="form-check mb-2 d-flex align-items-center">
             <input
               className="form-check-input"
               type="checkbox"
@@ -173,7 +191,7 @@ const MitigationModal = ({
               Remediate
             </label>
           </div>
-          <div className="form-check mb-2">
+          <div className="form-check mb-2 d-flex align-items-center">
             <input
               className="form-check-input"
               type="checkbox"
@@ -187,8 +205,8 @@ const MitigationModal = ({
             </label>
           </div>
 
-          {/* <hr className="my-4" /> */}
-          <div className="form-check mb-3">
+          <hr className="my-4" />
+          <div className="form-check mb-3 d-flex align-items-center">
             <input
               className="form-check-input"
               type="checkbox"
@@ -200,7 +218,7 @@ const MitigationModal = ({
               Mark as Resolved
             </label>
           </div>
-          <div className="form-check mb-3">
+          <div className="form-check mb-3 d-flex align-items-center">
             <input
               className="form-check-input"
               type="checkbox"
@@ -275,7 +293,7 @@ const MitigationModal = ({
             selected threats.
           </p>
         </div>
-        {/* <hr className="my-4" /> */}
+        <hr className="my-4" />
         <p className="semi-bold fs-14">Analyst verdict:</p>
         {addToBlocklist && (
           <div className="form-check form-check-inline">
@@ -338,7 +356,7 @@ const MitigationModal = ({
           className="btn-new btn-small"
           onClick={handleSubmit}
         >
-          Apply
+          Submit
         </Button>
       </Modal.Footer>
     </Modal>

@@ -279,6 +279,7 @@ const AlertsPage = () => {
     qradaralerts()
     reloadHistory()
     reloadNotes()
+    fetchAlertDetails()
   }
   const handlePageSelect = (event) => {
     const selectedPerPage = event.target.value

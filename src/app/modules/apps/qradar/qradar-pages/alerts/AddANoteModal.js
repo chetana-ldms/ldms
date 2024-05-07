@@ -89,7 +89,7 @@ const AddANoteModal = ({
           onClick={handleSubmit}
           className="btn-new btn-small"
         >
-          Apply
+          Submit
         </Button>
       </Modal.Footer>
     </Modal>
