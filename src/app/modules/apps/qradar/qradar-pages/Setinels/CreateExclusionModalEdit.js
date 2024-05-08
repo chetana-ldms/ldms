@@ -46,29 +46,33 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
     }
   }
   const [selectedValue, setSelectedValue] = useState(mapTypeToSelectedValue(selectedItem?.type))
-  const [customSelectedValue, setCustomSelectedValue] = useState(initialecustomSelectedValue || 'All engines')
+  const [customSelectedValue, setCustomSelectedValue] = useState(
+    initialecustomSelectedValue || 'All engines'
+  )
   const [includeSubfolders, setIncludeSubfolders] = useState(false)
   const [changeEnabled, setChangeEnabled] = useState(false)
   const [excludeAlerts, setExcludeAlerts] = useState(initialExcludeAlerts)
   const [excludeBinaryVault, setExcludeBinaryVault] = useState(initialexcludeBinaryVault)
   const [excludeAlertsFile, setExcludeAlertsFile] = useState(initialExcludeAlertsFile)
-  const [excludeBinaryVaultFile, setExcludeBinaryVaultFile] = useState(initialexcludeBinaryVaultFile)
+  const [excludeBinaryVaultFile, setExcludeBinaryVaultFile] = useState(
+    initialexcludeBinaryVaultFile
+  )
   const [error, setError] = useState(false)
   const [isAccordionOpen, setIsAccordionOpen] = useState(false)
   const [selectedOption, setSelectedOption] = useState('suppressAlerts')
   const browserDropdownRef = useRef(null)
   const optionDisplayStrings = {
-    suppressAlerts: "Suppress Alerts",
-    interoperability: "Interoperability",
-    interoperabilityExtended: "Interoperability - extended",
-    performanceFocus: "Performance Focus",
-    performanceFocusExtended: "Performance Focus - extended"
-};
-const modeToDisplayString = {
-  suppress_dfi_only: "Static AI",
-  suppress_dynamic_only: "Dynamic AI",
-  suppress_app_control: "All engines",
-};
+    suppressAlerts: 'Suppress Alerts',
+    interoperability: 'Interoperability',
+    interoperabilityExtended: 'Interoperability - extended',
+    performanceFocus: 'Performance Focus',
+    performanceFocusExtended: 'Performance Focus - extended',
+  }
+  const modeToDisplayString = {
+    suppress_dfi_only: 'Static AI',
+    suppress_dynamic_only: 'Dynamic AI',
+    suppress_app_control: 'All engines',
+  }
   const [formData, setFormData] = useState({
     osType: selectedItem?.osType,
     description: selectedItem?.description,
@@ -199,36 +203,36 @@ const modeToDisplayString = {
         }
         let mode
         switch (selectedOption) {
-          case "suppressAlerts":
-              switch (customSelectedValue) {
-                  case "suppress_dfi_only":
-                    mode = "suppress_dfi_only";
-                      break;
-                  case "suppress_dynamic_only":
-                    mode = "suppress_dynamic_only";
-                      break;
-                  case "suppress_app_control":
-                    mode = "suppress_app_control";
-                      break;
-                  default:
-                      mode = "suppress";
-              }
-              break;
-          case "interoperability":
-              mode = "disable_all_monitors";
-              break;
-          case "interoperabilityExtended":
-              mode = "disable_all_monitors_deep";
-              break;
-          case "performanceFocus":
-              mode = "disable_in_process_monitor";
-              break;
-          case "performanceFocusExtended":
-              mode = "disable_in_process_monitor_deep";
-              break;
+          case 'suppressAlerts':
+            switch (customSelectedValue) {
+              case 'suppress_dfi_only':
+                mode = 'suppress_dfi_only'
+                break
+              case 'suppress_dynamic_only':
+                mode = 'suppress_dynamic_only'
+                break
+              case 'suppress_app_control':
+                mode = 'suppress_app_control'
+                break
+              default:
+                mode = 'suppress'
+            }
+            break
+          case 'interoperability':
+            mode = 'disable_all_monitors'
+            break
+          case 'interoperabilityExtended':
+            mode = 'disable_all_monitors_deep'
+            break
+          case 'performanceFocus':
+            mode = 'disable_in_process_monitor'
+            break
+          case 'performanceFocusExtended':
+            mode = 'disable_in_process_monitor_deep'
+            break
           default:
-              mode = "suppress";
-      }
+            mode = 'suppress'
+        }
         data = {
           orgID: orgId,
           osType: osDropdownRef.current.value,
@@ -339,33 +343,32 @@ const modeToDisplayString = {
   //   })
   // }
   const handleCheckboxChangeFile = (e, checkboxType) => {
-    const isChecked = e.target.checked;
+    const isChecked = e.target.checked
 
     if (checkboxType === 'excludeAlertsFile') {
-        setExcludeAlertsFile(isChecked);
+      setExcludeAlertsFile(isChecked)
     } else if (checkboxType === 'excludeBinaryVaultFile') {
-        setExcludeBinaryVaultFile(isChecked);
+      setExcludeBinaryVaultFile(isChecked)
     }
     setActions((prevActions) => {
-        const updatedActions = new Set(prevActions);
+      const updatedActions = new Set(prevActions)
 
-        if (checkboxType === 'excludeAlertsFile') {
-            if (isChecked) {
-                updatedActions.add('upload');
-            } else {
-                updatedActions.delete('upload');
-            }
-        } else if (checkboxType === 'excludeBinaryVaultFile') {
-            if (isChecked) {
-                updatedActions.add('detect');
-            } else {
-                updatedActions.delete('detect');
-            }
+      if (checkboxType === 'excludeAlertsFile') {
+        if (isChecked) {
+          updatedActions.add('upload')
+        } else {
+          updatedActions.delete('upload')
         }
-        return Array.from(updatedActions);
-    });
-};
-
+      } else if (checkboxType === 'excludeBinaryVaultFile') {
+        if (isChecked) {
+          updatedActions.add('detect')
+        } else {
+          updatedActions.delete('detect')
+        }
+      }
+      return Array.from(updatedActions)
+    })
+  }
 
   const toggleAccordion = () => {
     setIsAccordionOpen(!isAccordionOpen)
@@ -420,7 +423,14 @@ const modeToDisplayString = {
               <label htmlFor='osInput' className='form-label'>
                 OS*
               </label>
-              <select className='form-select' id='osInput' ref={osDropdownRef} required>
+              <select
+                className='form-select'
+                id='osInput'
+                value={osType}
+                onChange={(e) => handleChange(e, 'osType')}
+                ref={osDropdownRef}
+                required
+              >
                 <option value=''>Select</option>
                 <option value='windows'>Windows</option>
               </select>
@@ -432,7 +442,14 @@ const modeToDisplayString = {
               <label htmlFor='osInput' className='form-label'>
                 OS*
               </label>
-              <select className='form-select' id='osInput' ref={osDropdownRef} required>
+              <select
+                className='form-select'
+                id='osInput'
+                value={osType}
+                onChange={(e) => handleChange(e, 'osType')}
+                ref={osDropdownRef}
+                required
+              >
                 <option value=''>Select</option>
                 <option value='windows'>Windows</option>
                 <option value='macos'>MacOS</option>
@@ -559,7 +576,8 @@ const modeToDisplayString = {
                             className='float-left'
                           >
                             <DropdownToggle className='no-btn no-pad no-bg link mb-1'>
-                              {modeToDisplayString[customSelectedValue]} <i className='fa fa-chevron-down' />
+                              {modeToDisplayString[customSelectedValue]}{' '}
+                              <i className='fa fa-chevron-down' />
                             </DropdownToggle>
                             <DropdownMenu className='w-auto'>
                               <DropdownItem
@@ -570,7 +588,9 @@ const modeToDisplayString = {
                                 <div>Suppress alerts from the Deep File Inspection engines</div>
                               </DropdownItem>
                               <DropdownItem
-                                onClick={() => handleCustomDropdownItemClick('suppress_dynamic_only')}
+                                onClick={() =>
+                                  handleCustomDropdownItemClick('suppress_dynamic_only')
+                                }
                               >
                                 <h6>Dynamic AI</h6>
                                 <div className='wrap-txt'>
@@ -580,7 +600,9 @@ const modeToDisplayString = {
                                 </div>
                               </DropdownItem>
                               <DropdownItem
-                                onClick={() => handleCustomDropdownItemClick('suppress_app_control')}
+                                onClick={() =>
+                                  handleCustomDropdownItemClick('suppress_app_control')
+                                }
                               >
                                 <h6>All engines</h6>
                                 <div>Suppress all alerts</div>

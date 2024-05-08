@@ -60,6 +60,7 @@ const AddToExclusionsModal = ({
         description: descriptionTextareaRef.current.value,
         createdDate: new Date().toISOString(),
         createdUserId: Number(sessionStorage.getItem("userId")),
+        analystVerdict_FalsePositive: true
       };
       const responseData = await fetchAddToExclusionListUrl(data);
       const { isSuccess, message } = responseData;

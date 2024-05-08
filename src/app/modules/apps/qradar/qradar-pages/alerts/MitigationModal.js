@@ -131,6 +131,11 @@ const MitigationModal = ({
       console.error('Error during API call:', error)
     }
   }
+  useEffect(() => {
+    if (addToBlocklist) {
+      setIsChecked1(true);
+    }
+  }, [addToBlocklist]);
 
   return (
     <Modal show={show} onHide={handleClose} className='mitigate application-modal'>
@@ -227,13 +232,13 @@ const MitigationModal = ({
               <label htmlFor='scopeDropdown' className='form-label black'>
                 Scope:
               </label>
-              {/* <button
+              <button
                 className="btn btn-outline-primary rounded-pill position-relative"
                 style={{ backgroundColor: "white", color: "#007BFF" }}
                 onClick={() => setGroupDropdownVisible(!groupDropdownVisible)}
-              > */}
-              {/* Group{" "} */}
-              {/* <i
+              >
+              Group{" "}
+              <i
                   className="bi bi-caret-down-fill"
                   style={{
                     position: "absolute",
@@ -242,13 +247,13 @@ const MitigationModal = ({
                     transform: "translateY(-50%)",
                   }}
                 ></i>
-              </button> */}
-              <label
+              </button>
+              {/* <label
                 className='d-block'
                 onClick={() => setGroupDropdownVisible(!groupDropdownVisible)}
               >
                 Group{' '}
-              </label>
+              </label> */}
               {groupDropdownVisible && (
                 <select
                   className='form-select mb-5'

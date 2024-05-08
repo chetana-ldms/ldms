@@ -169,9 +169,9 @@ const AlertsPage = () => {
     reloadHistory()
     reloadNotes()
     fetchAlertDetails()
-    setTimeout(()=>{
+    setTimeout(() => {
       fetchAlertDetails()
-    },5000)
+    }, 5000)
   }
   const fetchAlertDetails = async () => {
     try {
@@ -875,7 +875,9 @@ const AlertsPage = () => {
       case 'quarantine':
         return 'QUARANTINED'
       case 'remediate':
-        return 'Remediate'
+        return 'REMEDIATED'
+      case 'rollback':
+        return 'ROLLED BACK'
       default:
         return item.toUpperCase()
     }
@@ -2254,22 +2256,26 @@ const AlertsPage = () => {
                                             <div className='row'>
                                               <div className='col-md-3 '>
                                                 <p className='semi-bold'>Path: </p>
-                                                {/* <p>Command Line Arguments</p> */}
                                                 <p className='semi-bold'>Process User:</p>
-                                                {/* <p>Publisher Name</p> */}
-                                                {/* <p> Signer Identity</p> */}
-                                                {/* <p>Signature Verification</p> */}
                                                 <p className='semi-bold'>Original Process:</p>
                                                 <p className='semi-bold'>SHA1:</p>
                                                 <p className='semi-bold'>Initiated By:</p>
                                               </div>
                                               <div className='col-md-9'>
-                                                <p>{threatInfo?.path}</p>
-                                                {/* <p>NA</p> */}
+                                                <p
+                                                  style={{
+                                                    display: 'block',
+                                                    whiteSpace: 'nowrap',
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    maxWidth: '100ch', 
+                                                  }}
+                                                  title={threatInfo?.path}
+                                                >
+                                                  {threatInfo?.path}
+                                                </p>
+
                                                 <p>{threatInfo?.processUser}</p>
-                                                {/* <p>FH Manager</p> */}
-                                                {/* <p>FH Manager</p> */}
-                                                {/* <p>Signature varified</p> */}
                                                 <p>{threatInfo?.originatingProcess}</p>
                                                 <p>{threatInfo?.shA1}</p>
                                                 <p>{threatInfo?.initiatedBy}</p>
@@ -2279,7 +2285,6 @@ const AlertsPage = () => {
                                           <div className='col-md-5'>
                                             <div className='row'>
                                               <div className='col-md-4 '>
-                                                {/* <p>Engine</p> */}
                                                 <p className='semi-bold'>Detection Type:</p>
                                                 <p className='semi-bold'>Classification:</p>
                                                 <p className='semi-bold'> File Size:</p>
@@ -2287,7 +2292,6 @@ const AlertsPage = () => {
                                                 <p className='semi-bold'>Threat id:</p>
                                               </div>
                                               <div className='col-md-6'>
-                                                {/* <p>SentinalOne Cloud</p> */}
                                                 <p>{threatInfo?.detectionType}</p>
                                                 <p>{threatInfo?.classification}</p>
                                                 <p>{threatInfo?.fileSize}</p>
