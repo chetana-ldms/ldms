@@ -25,7 +25,7 @@ function Endpoints({ shouldRender, id }) {
       Domain: item.domain,
       "Application Detection Date": getCurrentTimeZone(item.detectionDate),
       "Day From Detection": getCurrentTimeZone(item.applicationDaysDetected),
-      "Last Successful Scan": item.lastScanDate,
+      "Last Successful Scan": getCurrentTimeZone(item.lastScanDate),
       "Last Successful Result": item.lastScanResult,
     }));
   };
@@ -155,7 +155,7 @@ function Endpoints({ shouldRender, id }) {
                   <td>{item.domain}</td>
                   <td>{getCurrentTimeZone(item.detectionDate)}</td>
                   <td>{getCurrentTimeZone(item.applicationDaysDetected)}</td>
-                  <td>{item.lastScanDate}</td>
+                  <td>{getCurrentTimeZone(item.lastScanDate)}</td>
                   <td>{item.lastScanResult}</td>
                 </tr>
               ))
