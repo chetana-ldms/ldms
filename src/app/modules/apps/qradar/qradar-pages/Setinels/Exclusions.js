@@ -366,9 +366,9 @@ function Exclusions() {
                     >
                       Create Exclusion
                     </DropdownItem>
-                    <DropdownItem onClick={() => setAddToBlockListModal(true)}>
+                    {/* <DropdownItem onClick={() => setAddToBlockListModal(true)}>
                       Add From Exclusions Catalog
-                    </DropdownItem>
+                    </DropdownItem> */}
                   </DropdownMenu>
                 </Dropdown>
               </div>

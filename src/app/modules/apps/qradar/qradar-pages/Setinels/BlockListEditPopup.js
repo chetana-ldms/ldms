@@ -115,9 +115,6 @@ const BlockListEditPopup = ({show, onClose, refreshParent, selectedItem}) => {
               />
             </div>
           </div>
-          <div className='col-md-3  text-primary d-flex align-items-end justify-content-end pb-3 '>
-            <i className='bi bi-search text-primary mr-2'></i> Threat
-          </div>
         </div>
         <div className='mt-5'>
           <label className='form-label'>Description</label>

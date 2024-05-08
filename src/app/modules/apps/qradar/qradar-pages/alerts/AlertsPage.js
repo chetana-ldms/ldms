@@ -169,6 +169,9 @@ const AlertsPage = () => {
     reloadHistory()
     reloadNotes()
     fetchAlertDetails()
+    setTimeout(()=>{
+      fetchAlertDetails()
+    },5000)
   }
   const fetchAlertDetails = async () => {
     try {

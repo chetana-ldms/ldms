@@ -373,11 +373,6 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
                 <input type='text' className='form-control' ref={sha1InputRef} required />
               </div>
             </div>
-            <div className='link col-md-2'>
-              <span className='inline-block threat-search float-right'>
-                <i className='bi bi-search text-primary mr-2'></i> Threat
-              </span>
-            </div>
           </div>
         )}
         {selectedValue == 'Path' && (
@@ -395,11 +390,6 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
                   required
                 />
               </div>
-            </div>
-            <div className='link col-md-2'>
-              <span className='inline-block threat-search'>
-                <i className='bi bi-search text-primary mr-2'></i> Threat
-              </span>
             </div>
 
             <div>
@@ -610,11 +600,6 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
                 <input type='text' className='form-control' ref={signerInputRef} required />
               </div>
             </div>
-            <div className='link col-md-2'>
-              <span className='inline-block threat-search'>
-                <i className='bi bi-search text-primary mr-2'></i> Threat
-              </span>
-            </div>
             <div className='mt-5'>
               <h5>About Signer Identity:</h5>
               <p>1. Go to the Incidents page and select the relevant threat</p>
@@ -638,11 +623,6 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
                   required
                 />
               </div>
-            </div>
-            <div className='link col-md-2'>
-              <span className='inline-block threat-search'>
-                <i className='bi bi-search text-primary mr-2'></i> Threat
-              </span>
             </div>
             <div className='mt-5'>
               <p>Exclusion Function</p>

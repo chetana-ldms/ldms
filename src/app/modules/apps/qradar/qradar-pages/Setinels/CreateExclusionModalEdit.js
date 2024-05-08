@@ -458,9 +458,6 @@ const modeToDisplayString = {
                 />
               </div>
             </div>
-            <div className='col-md-3  text-primary d-flex align-items-end justify-content-end pb-3 '>
-              <i className='bi bi-search text-primary mr-2'></i> Threat
-            </div>
           </div>
         )}
         {selectedValue == 'Path' && (
@@ -480,11 +477,6 @@ const modeToDisplayString = {
                   required
                 />
               </div>
-            </div>
-            <div className='link col-md-2'>
-              <span className='inline-block threat-search'>
-                <i className='bi bi-search text-primary mr-2'></i> Threat
-              </span>
             </div>
 
             <div>
@@ -702,11 +694,6 @@ const modeToDisplayString = {
                 />
               </div>
             </div>
-            <div className='link col-md-2'>
-              <span className='inline-block threat-search'>
-                <i className='bi bi-search text-primary mr-2'></i> Threat
-              </span>
-            </div>
             <div className='mt-5'>
               <h5>About Signer Identity:</h5>
               <p>1. Go to the Incidents page and select the relevant threat</p>
@@ -732,11 +719,6 @@ const modeToDisplayString = {
                   required
                 />
               </div>
-            </div>
-            <div className='link col-md-2'>
-              <span className='inline-block threat-search'>
-                <i className='bi bi-search text-primary mr-2'></i> Threat
-              </span>
             </div>
             <div className='mt-5'>
               <p>Exclusion Function</p>
