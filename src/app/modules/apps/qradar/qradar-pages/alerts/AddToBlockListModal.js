@@ -160,13 +160,6 @@ const AddToBlockListModal = ({
               )}
             </div>
           </div>
-          <div className="col-md-3  text-primary d-flex align-items-end justify-content-end pb-3 ">
-            <i className="bi bi-search text-primary mr-2"></i> Threat |
-          </div>
-          <div className="col-md-3  text-primary d-flex align-items-end pb-3 justify-content-start">
-            {" "}
-            <i className="bi bi-search text-primary mr-2"></i>Deep Visibility
-          </div>
         </div>
         <div className="mt-5">
           <label className="form-label">Description</label>
@@ -193,7 +186,7 @@ const AddToBlockListModal = ({
           onClick={handleSubmit}
           className="btn-new btn-small"
         >
-          Apply
+          Submit
         </Button>
       </Modal.Footer>
     </Modal>

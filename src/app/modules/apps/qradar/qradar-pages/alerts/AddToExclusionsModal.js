@@ -57,9 +57,9 @@ const AddToExclusionsModal = ({
         orgID: orgId,
         alertIds: selectedAlert,
         targetScope: scopeDropdownRef.current.value,
-        // externalTicketId: "string",
         description: descriptionTextareaRef.current.value,
-        // note: descriptionTextareaRef.current.value
+        createdDate: new Date().toISOString(),
+        createdUserId: Number(sessionStorage.getItem("userId")),
       };
       const responseData = await fetchAddToExclusionListUrl(data);
       const { isSuccess, message } = responseData;
@@ -149,14 +149,6 @@ const AddToExclusionsModal = ({
                 />
               )}
             </div>
-          </div>
-          <div className="col-md-3  text-primary d-flex align-items-end justify-content-end pb-3 ">
-            <i className="bi bi-search text-primary mr-2"></i> Threat
-          </div>
-          <div className="col-md-3  text-primary d-flex align-items-end pb-3 justify-content-start">
-            {" "}
-            | <i className="bi bi-search text-primary mr-2 ms-5"></i>Deep
-            Visibility
           </div>
         </div>
         <div className="mt-5">

@@ -7,13 +7,13 @@ const getSentinalOneUrl = process.env.REACT_APP_THREAT_DETAILS_URL
 const AnalystVerdictUpdateUrl = process.env.REACT_APP_ANALYSTVERDICT_UPDATE_URL
 const MitigateActionUrl = process.env.REACT_APP_MITIGATEACTION_URL
 const ThreatNotesUrl = process.env.REACT_APP_NOTES_ADD_URL
-const AddToblockListUrl = process.env.REACT_APP_ADDTOBLOCKLIST_URL
+const AddToblockListUrl = process.env.REACT_APP_ADDTOBLOCKLIST_THREAT_URL
 const AddToExclusionListUrl = process.env.REACT_APP_ADDTOEXCLUSIONLIST_URL
 const ConnectToNetworkUrl = process.env.REACT_APP_CONNECTTONETWORK_URL
 const DisConnectFromNetworkUrl = process.env.REACT_APP_DISCONNECTFROMNETWORK_URL
 const ThreatsActionUrl = process.env.REACT_APP_ACTION_URL
 const AlertsStatusUpdateUrl = process.env.REACT_APP_ALERTS_STATUS_UPDATE_URL
-const MitigateActionValidationUrl = "http://115.110.192.133:502/api/Alerts/v1/MitigateAction/Validation"
+const MitigateActionValidationUrl = process.env.REACT_APP_MITIGATE_ACTION_VALIDATION_URL
 
 export const fetchAlertData = async (data) => {
   try {
