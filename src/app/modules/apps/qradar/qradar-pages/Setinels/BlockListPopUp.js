@@ -71,7 +71,7 @@ const BlockListPopUp = ({ show, onClose, refreshParent }) => {
       </Modal.Header>
       <Modal.Body>
         <div className="mb-5">
-          <b>Blacklist Type : </b> Hash
+          <b>Blocklist Type : </b> Hash
         </div>
         <div className="row">
           <div className="col-md-6">
