@@ -15,20 +15,24 @@ function Endpoints({ shouldRender, id }) {
   const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
   // Function to extract table data
   const extractTableData = (items) => {
-    return items.map((item) => ({
-      "Endpoint Name": item.endpointName,
-      OS: item.osType,
-      "OS Version": item.osVersion,
-      Account: item.accountName,
-      Site: item.siteName,
-      Group: item.groupName,
-      Domain: item.domain,
-      "Application Detection Date": getCurrentTimeZone(item.detectionDate),
-      "Day From Detection": getCurrentTimeZone(item.applicationDaysDetected),
-      "Last Successful Scan": getCurrentTimeZone(item.lastScanDate),
-      "Last Successful Result": item.lastScanResult,
-    }));
+    return items.map((item) => {
+      return {
+        "Endpoint Name": item.endpointName,
+        OS: item.osType,
+        "OS Version": item.osVersion,
+        Account: item.accountName,
+        Site: item.siteName,
+        Group: item.groupName,
+        Domain: item.domain,
+        "Application Detection Date": getCurrentTimeZone(item.detectionDate),
+        "Day From Detection": item.applicationDaysDetected,
+        "Last Successful Scan": getCurrentTimeZone(item.lastScanDate),
+        "Last Successful Result": item.lastScanResult,
+      };
+    });
   };
+  
+  
   // Function to convert data to CSV format
   const convertToCSV = (data) => {
     const header = Object.keys(data[0]).join(",") + "\n";
@@ -39,7 +43,7 @@ function Endpoints({ shouldRender, id }) {
   const exportToCSV = (data) => {
     const csvData = convertToCSV(data);
     const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    const fileName = "risk_data.csv";
+    const fileName = "Endpoints.csv";
     if (navigator.msSaveBlob) {
       // IE 10+
       navigator.msSaveBlob(blob, fileName);
@@ -154,7 +158,7 @@ function Endpoints({ shouldRender, id }) {
                   <td>{item.groupName}</td>
                   <td>{item.domain}</td>
                   <td>{getCurrentTimeZone(item.detectionDate)}</td>
-                  <td>{getCurrentTimeZone(item.applicationDaysDetected)}</td>
+                  <td>{item.applicationDaysDetected}</td>
                   <td>{getCurrentTimeZone(item.lastScanDate)}</td>
                   <td>{item.lastScanResult}</td>
                 </tr>

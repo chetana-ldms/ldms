@@ -74,6 +74,9 @@ function RisksComponent() {
       ).slice(indexOfFirstItem, indexOfLastItem)
     : null;
 
+    const filteredList = filterValue
+    ? risk.filter((item) => item.name.toLowerCase().includes(filterValue.toLowerCase()))
+    : risk;
   const handleSort = (key) => {
     const direction =
       sortConfig.key === key && sortConfig.direction === "ascending"
@@ -95,7 +98,7 @@ function RisksComponent() {
 
   // Function to extract full table data
   const exportTableToCSV = () => {
-    const tableData = extractTableData(risk);
+    const tableData = extractTableData(filteredList);
     exportToCSV(tableData);
   };
 
@@ -261,7 +264,7 @@ function RisksComponent() {
             />
             {risk && (
               <Pagination
-                pageCount={Math.ceil(risk.length / itemsPerPage)}
+                pageCount={Math.ceil(filteredList.length / itemsPerPage)}
                 handlePageClick={handlePageClick}
                 itemsPerPage={itemsPerPage}
                 handlePageSelect={handlePageSelect}

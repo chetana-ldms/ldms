@@ -56,7 +56,7 @@ function Endpoint() {
   const exportToCSV = (data) => {
     const csvData = convertToCSV(data);
     const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    const fileName = "risk_data.csv";
+    const fileName = "endpoints.csv";
     if (navigator.msSaveBlob) {
       // IE 10+
       navigator.msSaveBlob(blob, fileName);
@@ -75,7 +75,7 @@ function Endpoint() {
 
   // Function to extract full table data
   const exportTableToCSV = () => {
-    const tableData = extractTableData(endpoints);
+    const tableData = extractTableData(filteredList);
     exportToCSV(tableData);
   };
 
@@ -149,6 +149,10 @@ function Endpoint() {
         sortConfig
       ).slice(indexOfFirstItem, indexOfLastItem)
     : null;
+
+    const filteredList = filterValue
+    ? endpoints.filter((item) => item.computerName.toLowerCase().includes(filterValue.toLowerCase()))
+    : endpoints;
   const handleSort = (key) => {
     const direction =
       sortConfig.key === key && sortConfig.direction === "ascending"
@@ -335,7 +339,7 @@ function Endpoint() {
           </table>
           {endpoints && (
             <Pagination
-              pageCount={Math.ceil(endpoints.length / itemsPerPage)}
+              pageCount={Math.ceil(filteredList.length / itemsPerPage)}
               handlePageClick={handlePageClick}
               itemsPerPage={itemsPerPage}
               handlePageSelect={handlePageSelect}

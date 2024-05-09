@@ -112,6 +112,9 @@ function Exclusions() {
           sortConfig
         ).slice(indexOfFirstItem, indexOfLastItem)
       : null;
+      const filteredList = filterValue
+      ? exlusions.filter((item) => item.osType.toLowerCase().includes(filterValue.toLowerCase()))
+      : exlusions;
 
   const handleSort = (key) => {
     const direction =
@@ -206,7 +209,7 @@ function Exclusions() {
   const exportToCSV = (data) => {
     const csvData = convertToCSV(data);
     const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    const fileName = "risk_data.csv";
+    const fileName = "exclusions.csv";
     if (navigator.msSaveBlob) {
       // IE 10+
       navigator.msSaveBlob(blob, fileName);
@@ -225,7 +228,7 @@ function Exclusions() {
 
   // Function to extract full table data
   const exportTableToCSV = () => {
-    const tableData = extractTableData(exlusions);
+    const tableData = extractTableData(filteredList);
     exportToCSV(tableData);
   };
 
@@ -530,7 +533,7 @@ function Exclusions() {
           />
         )}
           <Pagination
-            pageCount={Math.ceil(exlusions.length / itemsPerPage)}
+            pageCount={Math.ceil(filteredList.length / itemsPerPage)}
             handlePageClick={handlePageClick}
             itemsPerPage={itemsPerPage}
             handlePageSelect={handlePageSelect}

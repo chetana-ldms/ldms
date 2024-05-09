@@ -1,82 +1,76 @@
-import React, { useEffect, useState } from "react";
-import { fetchApplicationInventoryUrl } from "../../../../../api/ApplicationSectionApi";
-import { UsersListLoading } from "../components/loading/UsersListLoading";
-import ReactPaginate from "react-paginate";
-import InventoryEndpointPopUp from "./InventoryEndpointPopUp";
-import {
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
-import {
-  renderSortIcon,
-  sortTable,
-  sortedItems,
-} from "../../../../../../utils/Sorting";
-import Pagination from "../../../../../../utils/Pagination";
+import React, {useEffect, useState} from 'react'
+import {fetchApplicationInventoryUrl} from '../../../../../api/ApplicationSectionApi'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
+import ReactPaginate from 'react-paginate'
+import InventoryEndpointPopUp from './InventoryEndpointPopUp'
+import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
+import {renderSortIcon, sortTable, sortedItems} from '../../../../../../utils/Sorting'
+import Pagination from '../../../../../../utils/Pagination'
 
 function InventoryComponent() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+
+  // Define functions for data extraction, conversion, and export
+
   const extractTableData = (items) => {
     return items.map((item) => ({
       Name: item.applicationName,
       Vendor: item.applicationVendor,
-      "Number of Versions": item.applicationVersionsCount,
-      "Number of Endpoints": item.endpointsCount,
-    }));
-  };
-  // Function to convert data to CSV format
+      'Number of Versions': item.applicationVersionsCount,
+      'Number of Endpoints': item.endpointsCount,
+    }))
+  }
+
   const convertToCSV = (data) => {
-    const header = Object.keys(data[0]).join(",") + "\n";
-    const body = data.map((item) => Object.values(item).join(",")).join("\n");
-    return header + body;
-  };
+    const header = Object.keys(data[0]).join(',') + '\n'
+    const body = data.map((item) => Object.values(item).join(',')).join('\n')
+    return header + body
+  }
 
   const exportToCSV = (data) => {
-    const csvData = convertToCSV(data);
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    const fileName = "risk_data.csv";
+    const csvData = convertToCSV(data)
+    const blob = new Blob([csvData], {type: 'text/csv;charset=utf-8;'})
+    const fileName = 'inventory.csv'
     if (navigator.msSaveBlob) {
       // IE 10+
-      navigator.msSaveBlob(blob, fileName);
+      navigator.msSaveBlob(blob, fileName)
     } else {
-      const link = document.createElement("a");
+      const link = document.createElement('a')
       if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const url = URL.createObjectURL(blob)
+        link.setAttribute('href', url)
+        link.setAttribute('download', fileName)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       }
     }
-  };
+  }
 
-  // Function to extract full table data
   const exportTableToCSV = () => {
-    const tableData = extractTableData(risk);
-    exportToCSV(tableData);
-  };
+    const fullData = extractTableData(filteredList)
+    exportToCSV(fullData)
+  }
 
-  // Function to extract current pagination table data
   const exportCurrentTableToCSV = () => {
-    const tableData = extractTableData(currentItems);
-    exportToCSV(tableData);
-  };
+    const currentData = extractTableData(currentItems)
+    exportToCSV(currentData)
+  }
 
-  const [loading, setLoading] = useState(false);
-  const [risk, setRisk] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [showPopup, setShowPopup] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  // Initialize states and data fetching
+
+  const [loading, setLoading] = useState(false)
+  const [risk, setRisk] = useState([])
+  const [selectedItem, setSelectedItem] = useState(null)
+  const [showPopup, setShowPopup] = useState(false)
+  const [currentPage, setCurrentPage] = useState(0)
+  const [itemsPerPage, setItemsPerPage] = useState(20)
   const [sortConfig, setSortConfig] = useState({
     key: null,
-    direction: "ascending",
-  });
-  const [filterValue, setFilterValue] = useState("");
-  const orgId = Number(sessionStorage.getItem("orgId"));
+    direction: 'ascending',
+  })
+  const [filterValue, setFilterValue] = useState('')
+  const orgId = Number(sessionStorage.getItem('orgId'))
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
@@ -86,36 +80,36 @@ function InventoryComponent() {
       orgID: orgId,
       orgAccountStructureLevel: [
         {
-          levelName: "AccountId",
-          levelValue: accountId || ""
+          levelName: 'AccountId',
+          levelValue: accountId || '',
         },
-     {
-          levelName: "SiteId",
-          levelValue:  siteId || ""
+        {
+          levelName: 'SiteId',
+          levelValue: siteId || '',
         },
-    {
-          levelName: "GroupId",
-          levelValue: groupId || ""
-        }
-      ]
-    };
-    try {
-      setLoading(true);
-      const response = await fetchApplicationInventoryUrl(data);
-      setRisk(response);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+        {
+          levelName: 'GroupId',
+          levelValue: groupId || '',
+        },
+      ],
     }
-  };
+    try {
+      setLoading(true)
+      const response = await fetchApplicationInventoryUrl(data)
+      setRisk(response)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    fetchData();
-  }, [accountId, siteId, groupId]);
+    fetchData()
+  }, [accountId, siteId, groupId])
 
-  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = risk
     ? sortedItems(
         risk.filter((item) =>
@@ -123,110 +117,100 @@ function InventoryComponent() {
         ),
         sortConfig
       ).slice(indexOfFirstItem, indexOfLastItem)
-    : null;
+    : null
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    const filteredList = filterValue
+    ? risk.filter((item) => item.applicationName.toLowerCase().includes(filterValue.toLowerCase()))
+    : risk;
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
   const handlePageSelect = (event) => {
-    setItemsPerPage(Number(event.target.value));
-    setCurrentPage(0);
-  };
+    setItemsPerPage(Number(event.target.value))
+    setCurrentPage(0)
+  }
 
   const handleItemClick = (item) => {
-    setSelectedItem(item);
-    setShowPopup(true);
-  };
+    setSelectedItem(item)
+    setShowPopup(true)
+  }
 
   const handlePageClick = (selected) => {
-    setCurrentPage(selected.selected);
-  };
+    setCurrentPage(selected.selected)
+  }
 
   const handleFilterChange = (event) => {
-    setFilterValue(event.target.value);
-  };
+    setFilterValue(event.target.value)
+  }
+
   const handleSort = (key) => {
     const direction =
-      sortConfig.key === key && sortConfig.direction === "ascending"
-        ? "descending"
-        : "ascending";
-    setSortConfig({ key, direction });
-  };
+      sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending'
+    setSortConfig({key, direction})
+  }
 
   return (
-    <div className="application-section card pad-10 mt-5 mb-5">
+    <div className='application-section card pad-10 mt-5 mb-5'>
       {loading ? (
         <UsersListLoading />
       ) : (
         <>
-          <div className="header-filter row">
-            <div className="col-lg-10">
+          <div className='header-filter row'>
+            <div className='col-lg-10'>
               <input
-                type="text"
-                placeholder="Search..."
-                className="form-control"
+                type='text'
+                placeholder='Search...'
+                className='form-control'
                 value={filterValue}
                 onChange={handleFilterChange}
               />
             </div>
-            <div className="col-lg-2">
-              <div className="export-report border-0 float-right">
-                <Dropdown
-                  isOpen={dropdownOpen}
-                  toggle={() => setDropdownOpen(!dropdownOpen)}
-                >
-                  <DropdownToggle className="no-pad">
-                    <div className="btn btn-border btn-small">
-                      Export <i className="fa fa-file-export link mg-left-5" />
+            <div className='col-lg-2'>
+              <div className='export-report border-0 float-right'>
+                <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
+                  <DropdownToggle className='no-pad'>
+                    <div className='btn btn-border btn-small'>
+                      Export <i className='fa fa-file-export link mg-left-5' />
                     </div>
                   </DropdownToggle>
-                  <DropdownMenu className="w-auto">
-                    <DropdownItem
-                      onClick={exportTableToCSV}
-                      className="border-btm"
-                    >
-                      <i className="fa fa-file-excel link mg-right-5" /> Export
-                      Full Report
+                  <DropdownMenu className='w-auto'>
+                    <DropdownItem onClick={exportTableToCSV}>
+                      <i className='fa fa-file-excel link mg-right-5' /> Export Full Report
                     </DropdownItem>
                     <DropdownItem onClick={exportCurrentTableToCSV}>
-                      <i className="fa fa-file-excel link mg-right-5" /> Export
-                      Current Page Report
+                      <i className='fa fa-file-excel link mg-right-5' /> Export Current Page Report
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </div>
             </div>
           </div>
-          <div className="actions">
+          <div className='actions'>
             {loading ? (
               <UsersListLoading />
             ) : (
-              <table className="table alert-table mg-top-20 fixed-table scroll-x">
+              <table className='table alert-table mg-top-20 fixed-table scroll-x'>
                 <thead>
                   <tr>
-                    <th onClick={() => handleSort("applicationName")}>
-                      Name {renderSortIcon(sortConfig, "applicationName")}
+                    <th onClick={() => handleSort('applicationName')}>
+                      Name {renderSortIcon(sortConfig, 'applicationName')}
                     </th>
-                    <th onClick={() => handleSort("applicationVendor")}>
-                      Vendor {renderSortIcon(sortConfig, "applicationVendor")}
+                    <th onClick={() => handleSort('applicationVendor')}>
+                      Vendor {renderSortIcon(sortConfig, 'applicationVendor')}
                     </th>
-                    <th onClick={() => handleSort("applicationVersionsCount")}>
-                      Number of Versions{" "}
-                      {renderSortIcon(sortConfig, "applicationVersionsCount")}
+                    <th onClick={() => handleSort('applicationVersionsCount')}>
+                      Number of Versions {renderSortIcon(sortConfig, 'applicationVersionsCount')}
                     </th>
-                    <th onClick={() => handleSort("endpointsCount")}>
-                      Number of Endpoints{" "}
-                      {renderSortIcon(sortConfig, "endpointsCount")}
+                    <th onClick={() => handleSort('endpointsCount')}>
+                      Number of Endpoints {renderSortIcon(sortConfig, 'endpointsCount')}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {currentItems !== null ? (
                     currentItems.map((item, index) => (
-                      <tr className="table-row" key={index}>
-                        <td
-                          onClick={() => handleItemClick(item)}
-                          className="link-txt"
-                        >
+                      <tr className='table-row' key={index}>
+                        <td onClick={() => handleItemClick(item)} className='link-txt'>
                           {item.applicationName}
                         </td>
                         <td>{item.applicationVendor}</td>
@@ -251,7 +235,7 @@ function InventoryComponent() {
           <hr />
           {risk && (
             <Pagination
-              pageCount={Math.ceil(risk.length / itemsPerPage)}
+              pageCount={Math.ceil(filteredList.length / itemsPerPage)}
               handlePageClick={handlePageClick}
               itemsPerPage={itemsPerPage}
               handlePageSelect={handlePageSelect}
@@ -260,7 +244,7 @@ function InventoryComponent() {
         </>
       )}
     </div>
-  );
+  )
 }
 
-export default InventoryComponent;
+export default InventoryComponent

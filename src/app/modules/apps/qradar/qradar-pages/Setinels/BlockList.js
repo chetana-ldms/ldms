@@ -32,7 +32,7 @@ function BlockList() {
     direction: 'ascending',
   })
   const [selectedItem, setSelectedItem] = useState(null)
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
@@ -89,7 +89,10 @@ function BlockList() {
           sortConfig
         ).slice(indexOfFirstItem, indexOfLastItem)
       : null
-
+      const filteredList = filterValue
+      ? blockList.filter((item) => item.osType.toLowerCase().includes(filterValue.toLowerCase()))
+      : blockList;
+  
   const handleSort = (key) => {
     const direction =
       sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending'
@@ -172,7 +175,7 @@ function BlockList() {
   const exportToCSV = (data) => {
     const csvData = convertToCSV(data)
     const blob = new Blob([csvData], {type: 'text/csv;charset=utf-8;'})
-    const fileName = 'risk_data.csv'
+    const fileName = 'blocklist.csv'
     if (navigator.msSaveBlob) {
       // IE 10+
       navigator.msSaveBlob(blob, fileName)
@@ -191,7 +194,7 @@ function BlockList() {
 
   // Function to extract full table data
   const exportTableToCSV = () => {
-    const tableData = extractTableData(blockList)
+    const tableData = extractTableData(filteredList)
     exportToCSV(tableData)
   }
 
@@ -440,7 +443,7 @@ function BlockList() {
                 />
               )}
               <Pagination
-                pageCount={Math.ceil(blockList.length / itemsPerPage)}
+                pageCount={Math.ceil(filteredList.length / itemsPerPage)}
                 handlePageClick={handlePageClick}
                 itemsPerPage={itemsPerPage}
                 handlePageSelect={handlePageSelect}

@@ -1338,9 +1338,9 @@ const AlertsPage = () => {
                 <DropdownItem onClick={exportToExcel}>
                   Export to CSV <i className='fa fa-file-excel link float-right' />
                 </DropdownItem>
-                <DropdownItem onClick={exportToPDF}>
+                {/* <DropdownItem onClick={exportToPDF}>
                   Export to PDF <i className='fa fa-file-pdf red float-right' />
-                </DropdownItem>
+                </DropdownItem> */}
               </DropdownMenu>
             </Dropdown>
           </div>
