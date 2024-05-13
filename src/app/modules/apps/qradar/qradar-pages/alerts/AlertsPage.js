@@ -363,7 +363,7 @@ const AlertsPage = () => {
   const handlePageClick = async (data) => {
     let currentPage = data.selected + 1
     setLoading(true)
-    const setOfAlertsData = await fetchSetOfAlerts(currentPage, orgId, userID, limit)
+    const setOfAlertsData = await fetchSetOfAlerts(currentPage, orgId, userID, limit, accountId, siteId, groupId)
     slaCal(setOfAlertsData)
     setFilteredAlertDate(setOfAlertsData.filter((item) => item.ownerUserID === userID))
     setFilteredAlertDate(setOfAlertsData)
@@ -1067,7 +1067,7 @@ const AlertsPage = () => {
                       className='menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action'
                       data-kt-menu='true'
                     >
-                      {showDropdown && (
+                      {showDropdown && selectedAlert.length > 0 && (
                         <div className='px-3 py-3'>
                           <div className='mb-5'>
                             <div className='d-flex justify-content-end mb-5'>
@@ -1199,7 +1199,7 @@ const AlertsPage = () => {
                   data-kt-menu='true'
                   id='kt_menu_637dc6f8a1c15'
                 >
-                  {showForm && (
+                  {showForm && selectedAlert.length > 0 && (
                     <div className='px-3 py-3'>
                       <div className='mb-5'>
                         <div className='d-flex justify-content-end mb-5'>
@@ -1229,7 +1229,7 @@ const AlertsPage = () => {
                             data-allow-clear='true'
                           >
                             <option>Select</option>
-                            <option value='1' disabled={selectCheckBox.alertIncidentMappingId > 0}>
+                            <option value='1' disabled={selectCheckBox.alertIncidentMappingId > 0 || selectCheckBox.positiveAnalysis == "False Positive"}>
                               Create Incident
                             </option>
                             <option value='2'>Escalate</option>
@@ -2123,21 +2123,14 @@ const AlertsPage = () => {
                                                     threatHeaderDtls.analysisVerdict
                                                   }
                                                 /> */}
-                                                {threatHeaderDtls?.analysisVerdict}
+                                                {threatHeaderDtls?.ldC_AnalysisVerdict}
                                               </div>
                                               <div className='px-1 d-flex align-items-center'>
                                                 <span className='semi-bold'>
                                                   Incident Status :{' '}
                                                 </span>
-                                                {/* <input
-                                                  type="text"
-                                                  style={{ width: "110px" }}
-                                                  className="ml-2"
-                                                  value={
-                                                    threatHeaderDtls.incidentStatus
-                                                  }
-                                                /> */}
-                                                {threatHeaderDtls?.incidentStatus}
+                                                {threatHeaderDtls?.ldC_IncidentStatus
+}
                                               </div>
                                             </div>
                                             {/* <hr /> */}

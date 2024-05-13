@@ -68,7 +68,7 @@ export const fetchSetAlertEscalationStatus = async (data) => {
   }
 }
 
-export const fetchSetOfAlerts = async (currentPage, orgId, userID, limit) => {
+export const fetchSetOfAlerts = async (currentPage, orgId, userID, limit, accountId, siteId, groupId) => {
   const rangeStart = (currentPage - 1) * limit + 1
   const rangeEnd = currentPage * limit
   let data2 = {
@@ -80,6 +80,20 @@ export const fetchSetOfAlerts = async (currentPage, orgId, userID, limit) => {
       rangeEnd: rangeEnd,
     },
     loggedInUserId: userID,
+    orgAccountStructureLevel: [
+      {
+        levelName: 'AccountId',
+        levelValue: accountId || '',
+      },
+      {
+        levelName: 'SiteId',
+        levelValue: siteId || '',
+      },
+      {
+        levelName: 'GroupId',
+        levelValue: groupId || '',
+      },
+    ],
   }
   const response = await fetchAlertData(data2)
   return response.alertsList

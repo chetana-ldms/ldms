@@ -61,6 +61,7 @@ function InventoryComponent() {
 
   const [loading, setLoading] = useState(false)
   const [risk, setRisk] = useState([])
+  console.log(risk, "inventory")
   const [selectedItem, setSelectedItem] = useState(null)
   const [showPopup, setShowPopup] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)

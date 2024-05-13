@@ -62,8 +62,8 @@ const AddToBlockListModal = ({
         orgID: orgId,
         alertIds: selectedAlert,
         targetScope: scopeDropdownRef.current.value,
-        // externalTicketId: "string",
         description: descriptionTextareaRef.current.value,
+        note: descriptionTextareaRef.current.value,
         analystVerdict_TruePositive: true
       };
       const responseData = await fetchAddToblockListUrl(data);

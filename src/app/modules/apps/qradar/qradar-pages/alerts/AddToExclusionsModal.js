@@ -58,6 +58,7 @@ const AddToExclusionsModal = ({
         alertIds: selectedAlert,
         targetScope: scopeDropdownRef.current.value,
         description: descriptionTextareaRef.current.value,
+        note: descriptionTextareaRef.current.value,
         createdDate: new Date().toISOString(),
         createdUserId: Number(sessionStorage.getItem("userId")),
         analystVerdict_FalsePositive: true

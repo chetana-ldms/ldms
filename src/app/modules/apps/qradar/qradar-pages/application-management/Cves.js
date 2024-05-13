@@ -9,9 +9,32 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import Pagination from "../../../../../../utils/Pagination";
 
 function Cves({ id }) {
-  const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
+  const [currentPage, setCurrentPage] = useState(0)
+  const [itemsPerPage, setItemsPerPage] = useState(5)
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [endpoints, setEndpoints] = useState([]);
+  console.log(endpoints, "endpoints1111111111");
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = endpoints
+    ? endpoints.slice(indexOfFirstItem, indexOfLastItem)
+    : null;
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber)
+
+  const handlePageSelect = (event) => {
+    // setItemsPerPage(Number(event.target.value))
+    setItemsPerPage(5)
+    setCurrentPage(0)
+  }
+
+  const handlePageClick = (selected) => {
+    setCurrentPage(selected.selected)
+  }
   // Function to extract table data
   const extractTableData = (items) => {
     return items.map((item) => ({
@@ -56,10 +79,6 @@ function Cves({ id }) {
   };
 
   // let { id } = useParams();
-  const [loading, setLoading] = useState(false);
-  const [endpoints, setEndpoints] = useState([]);
-  console.log(endpoints, "");
-  console.log(endpoints, "endpoints1111111111");
   const orgId = Number(sessionStorage.getItem("orgId"));
 
   const fetchData = async () => {
@@ -107,7 +126,6 @@ function Cves({ id }) {
       <table className="table alert-table scroll-x mg-top-20">
         <thead>
           <tr>
-            <th>{/* <input type="checkbox" /> */}</th>
             <th>CVE ID</th>
             <th>Severity</th>
             <th>NDV Base Score</th>
@@ -118,17 +136,9 @@ function Cves({ id }) {
         </thead>
         <tbody>
           {loading && <UsersListLoading />}
-          {endpoints !== undefined ? (
-            endpoints?.map((item) => (
+          {currentItems !== undefined ? (
+            currentItems?.map((item) => (
               <tr key={item.cveId}>
-                <td>
-                  <div className="form-check form-check-sm form-check-custom form-check-solid">
-                    <input
-                      className="form-check-input widget-13-check"
-                      type="checkbox"
-                    />
-                  </div>
-                </td>
                 <td>{item.cveId}</td>
                 <td>{item.severity}</td>
                 <td>{item.nvdBaseScore}</td>
@@ -164,6 +174,14 @@ function Cves({ id }) {
           )}
         </tbody>
       </table>
+      {currentItems && (
+            <Pagination
+              pageCount={Math.ceil(endpoints.length / itemsPerPage)}
+              handlePageClick={handlePageClick}
+              itemsPerPage={itemsPerPage}
+              handlePageSelect={handlePageSelect}
+            />
+          )}
     </div>
   );
 }
