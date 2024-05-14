@@ -4,14 +4,32 @@ import {Link} from 'react-router-dom'
 import {toAbsoluteUrl} from '../../../helpers'
 import { useNavigate } from 'react-router-dom'
 import UsersProfile from '../../../../app/modules/apps/qradar/qradar-pages/profile/UsersProfile'
+import { fetchLogoutAddUrl } from '../../../../app/api/Api'
 
 
 const HeaderUserMenu: FC = () => {
+  const createdUserId = Number(sessionStorage.getItem('userId'))
+  const createdDate = new Date().toISOString()
+  const orgId = Number(sessionStorage.getItem('orgId'));
   const navigate = useNavigate()
-    const handleLogout = () => {
+    const handleLogout = async() => {
+      const data = {
+        createdUserId,
+        createdDate,
+        orgId: Number(sessionStorage.getItem('orgId'))
+      }
+      try {
+        const responseData = await fetchLogoutAddUrl(data)
+        const {isSuccess} = responseData
+  
+        if (isSuccess) {   
       sessionStorage.clear();
-    // navigate('/pagelayout'); //  the code need uncomment if you want microsoft login page
-    navigate('/auth');       //  the code need comment if you want microsoft login page
+      // navigate('/pagelayout'); //  the code need uncomment if you want microsoft login page
+      navigate('/auth');       //  the code need comment if you want microsoft login page
+        } 
+      } catch (error) {
+        console.log(error)
+      } 
   };
     const userName = sessionStorage.getItem('userName');
         const email = sessionStorage.getItem('email');

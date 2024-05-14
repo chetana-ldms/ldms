@@ -76,7 +76,7 @@ function Policy() {
               className="form-check-input"
               type="checkbox"
               id="vulnerabilitiesScanEnabled"
-              checked={policy.vulnerabilitiesScanEnabled || false}
+              checked={policy?.vulnerabilitiesScanEnabled || false}
               onChange={handleVulnerabilitiesScanEnabledChange}
             />
             <label
@@ -109,7 +109,7 @@ function Policy() {
               className="form-check-input"
               type="checkbox"
               id="extensiveScanEnabled"
-              checked={policy.extensiveScanEnabled || false}
+              checked={policy?.extensiveScanEnabled || false}
               onChange={handleExtensiveScanEnabledChange}
             />
             <label
@@ -127,7 +127,7 @@ function Policy() {
               className="form-check-input"
               type="checkbox"
               id="extensiveLinuxScanEnabled"
-              checked={policy.extensiveLinuxScanEnabled || false}
+              checked={policy?.extensiveLinuxScanEnabled || false}
               onChange={handleExtensiveLinuxScanEnabledChange}
             />
             <label

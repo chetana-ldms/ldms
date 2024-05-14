@@ -41,6 +41,7 @@ const Navbar = () => {
   const accountNames = sessionStorage.getItem('accountName')
   const siteNames = sessionStorage.getItem('siteName') || '';
   const groupNames = sessionStorage.getItem('groupName') || '';
+  const toolExpire = sessionStorage.getItem('toolExpire');
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [tasksData, setTasksData] = useState([]);
@@ -225,7 +226,12 @@ const orgNames = organizations
     <div>{orgNames}</div>
   )}
 </div>
-
+{
+  toolExpire == "true" &&
+  
+<div className='d-flex align-items-center me-10'><span>Tool will expire in <b className="text-danger">2 days</b>
+  </span></div>
+}
       <div className='d-flex align-items-center'><span>Welcome <b>{userName}!</b></span></div>
      
       

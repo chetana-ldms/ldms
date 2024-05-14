@@ -9,6 +9,7 @@ const GetAlertsResolvedMeanTimeUrl =process.env.REACT_APP_DASHBOARD_GETALERTSRES
 const MasterDataUrl = process.env.REACT_APP_DASHBOARD_MASTERDATA_URL
 const AllIncidentsSummeryUrl =process.env.REACT_APP_DASHBOARD_ALLINCIDENTSSUMMERY_URL
 const GetAlertsTrendDataUrl =process.env.REACT_APP_DASHBOARD_GETALERTSTRENDDATA_URL
+const GetIncidentCountByPriorityAndStatusUrl= process.env.REACT_APP_DASHBOARD_GET_INCIDENT_COUNTBY_PRIORITY_AND_STATUS_URL
 
 
 export const fetchOrganizations = async () => {
@@ -195,4 +196,24 @@ export const fetchOrganizations = async () => {
       console.log(error);
     }
   };
+
+  export const fetchGetIncidentCountByPriorityAndStatusUrl = async (data) => {
+    try {
+      const response = await fetch(`${GetIncidentCountByPriorityAndStatusUrl}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
   

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { fetchMasterData } from "../../api/Api";
+import { fetchGetIncidentCountByPriorityAndStatusUrl } from "../../api/dashBoardApi";
 
 function IncidentStatus(props) {
   const { days, orgId } = props;
@@ -65,8 +66,6 @@ function IncidentStatus(props) {
   const fetchAlertCount = async () => {
     try {
       setLoading(true);
-      const apiUrl =
-        "http://115.110.192.133:502/api/IncidentManagement/v1/GetIncidentCountByPriorityAndStatus";
       const requestData = {
         statusID: selectedStatus,
         priorityID: selectedPriority,
@@ -86,8 +85,8 @@ function IncidentStatus(props) {
           }
         ]
       };
-      const response = await axios.post(apiUrl, requestData);
-      const { incidentCount } = response.data;
+      const response = await fetchGetIncidentCountByPriorityAndStatusUrl(requestData);
+      const { incidentCount } = response;
       setIncidentCount(incidentCount);
       setLoading(false);
     } catch (error) {

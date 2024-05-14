@@ -76,12 +76,13 @@ export function Login() {
           sessionStorage.setItem('clientAdminRole', authData.clientAdminRole);
           sessionStorage.setItem('openTaskCount', authData.openTaskCount);
           sessionStorage.setItem('defaultPassword', authData.defaultPassword);
-          sessionStorage.setItem('accountName', "Insilicorp");
-          sessionStorage.setItem('accountId', "1924063616109227261");
+          sessionStorage.setItem('accountName', "LANCESOFT INDIA PRIVATE LIMITED");
+          sessionStorage.setItem('accountId', "1665272541043650534");
           sessionStorage.setItem('siteName', "");
           sessionStorage.setItem('siteId', "");
           sessionStorage.setItem('groupName', "");
           sessionStorage.setItem('groupId', "");
+          sessionStorage.setItem('toolExpire', "true");
           const defaultPassword = authData.defaultPassword;
           if (defaultPassword) {
             setShowChangePwdModal(true);
