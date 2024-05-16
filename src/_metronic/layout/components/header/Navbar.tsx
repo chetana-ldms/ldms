@@ -6,11 +6,14 @@ import { HeaderNotificationsMenu, HeaderUserMenu } from '../../../partials';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../../../app/modules/apps/qradar/qradar-pages/context/AppContextProvider';
 import { fetchTasksUrl } from '../../../../app/api/TasksApi';
-import { fetchAccountsStructureUrl, fetchOrganizations } from '../../../../app/api/Api';
+import { fetchAPITokenExpireUrl, fetchAccountsStructureUrl, fetchOrganizations } from '../../../../app/api/Api';
 
 interface Task {
   taskId: string;
   taskTitle: string;
+}
+interface ToolExpireMessage {
+  message: string;
 }
 interface Account {
   accountId: string;
@@ -48,6 +51,8 @@ const Navbar = () => {
   const [accountName, setAccountName] = useState<string>('');
   const [siteName, setSiteName] = useState<string>('');
   const [groupName, setGroupName] = useState<string>('');
+  const [toolExpireMessage, setToolExpireMessage] = useState<string | ToolExpireMessage>('');
+  console.log(toolExpireMessage, "toolExpireMessage")
   const [accountsStructure, setAccountsStructure] = useState<Account[]>([]);
   console.log(accountsStructure, "accountsStructure");
   const [showDropdown, setShowDropdown] = useState<boolean>(false); 
@@ -113,6 +118,7 @@ const orgNames = organizations
   const fetchData = async () => {
     const data = {
       orgID: orgId,
+      testFlag: true
     };
     try {
       setLoading(true);
@@ -128,6 +134,32 @@ const orgNames = organizations
   useEffect(() => {
     fetchData();
   }, []);
+  const fetchDataApiExpire = async () => {
+    const data = {
+      orgID: orgId,
+    };
+    try {
+      setLoading(true);
+      const response = await fetchAPITokenExpireUrl(data);
+      setToolExpireMessage(response);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    if (toolExpire === "true") {
+      fetchDataApiExpire(); 
+      const intervalId = setInterval(() => {
+        fetchDataApiExpire();
+      }, 30 * 60 * 1000); 
+      return () => clearInterval(intervalId);
+    }
+  }, [toolExpire]);
+  
+  
 //   const accountNames = accountsStructure.map((item) => {
 // return item.name
 //   })
@@ -181,7 +213,7 @@ const orgNames = organizations
       {accountName || accountNames ? (
     <Dropdown>
         <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-            {`/ ${accountName || accountNames}`} {/* Use accountNames if accountName is empty */}
+            {`/ ${accountName || accountNames}`} 
         </Dropdown.Toggle>
         <Dropdown.Menu>
             {accountsStructure
@@ -199,7 +231,7 @@ const orgNames = organizations
       {siteName || siteNames ? (
     <Dropdown>
         <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-            {`/ ${siteName || siteNames}`} {/* Use siteNames if siteName is empty */}
+            {`/ ${siteName || siteNames}`} 
         </Dropdown.Toggle>
         <Dropdown.Menu>
             {accountsStructure
@@ -226,12 +258,9 @@ const orgNames = organizations
     <div>{orgNames}</div>
   )}
 </div>
-{
-  toolExpire == "true" &&
-  
-<div className='d-flex align-items-center me-10'><span>Tool will expire in <b className="text-danger">2 days</b>
-  </span></div>
-}
+{toolExpireMessage && typeof toolExpireMessage === 'object' && (
+  <div className='d-flex align-items-center me-10'>{toolExpireMessage.message}</div>
+)}
       <div className='d-flex align-items-center'><span>Welcome <b>{userName}!</b></span></div>
      
       

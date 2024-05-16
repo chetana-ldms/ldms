@@ -40,7 +40,7 @@ function Exclusions() {
   const [includeChildren, setIncludeChildren] = useState(true);
   const [includeParents, setIncludeParents] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [limit, setLimit] = useState(20)
   const [filterValue, setFilterValue] = useState("");
   const [selectedAlert, setselectedAlert] = useState([]);
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false);
@@ -54,6 +54,8 @@ function Exclusions() {
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
+  const [cursor, setCursor] = useState(null) 
+  console.log(cursor, "cursor")
   const fetchData = async () => {
     const data = {
       orgID: orgId,
@@ -72,13 +74,16 @@ function Exclusions() {
           levelName: "GroupId",
           levelValue: groupId || ""
         }
-      ]
+      ],
+      nextCursor: cursor || '',
+      pageSize: limit,
     };
     try {
       setLoading(true);
       const response = await fetchExclusionListUrl(data);
-      if (response !== null) {
-        setExlusions(response);
+      if (response !== null) {  
+      setExlusions(response.exclusionList) 
+      setCursor(response.pagination.nextCursor) 
       } else {
         setExlusions([]);
       }
@@ -91,18 +96,48 @@ function Exclusions() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [limit]);
   useEffect(() => {
     fetchData();
   }, [includeChildren, includeParents]);
+  const handleLoadMore = () => {
+    fetchData()
+  }
+  const handleClickFirstPage = async () =>{
+    const data = {
+      orgID: orgId,
+      includeChildren: includeChildren,
+      includeParents: includeParents,
+      orgAccountStructureLevel: [
+        {
+          levelName: 'AccountId',
+          levelValue: accountId || '',
+        },
+        {
+          levelName: 'SiteId',
+          levelValue: siteId || '',
+        },
+        {
+          levelName: 'GroupId',
+          levelValue: groupId || '',
+        },
+      ],
+      nextCursor:'',
+      pageSize: limit,
+    }
 
-  const handlePageSelect = (event) => {
-    setItemsPerPage(Number(event.target.value));
-    setCurrentPage(0);
-  };
-
-  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    try {
+      setLoading(true)
+      const response = await fetchExclusionListUrl(data)
+      setExlusions(response.exclusionList) 
+      setCursor(response.pagination.nextCursor) 
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+ 
   const currentItems =
     exlusions !== null
       ? sortedItems(
@@ -110,7 +145,7 @@ function Exclusions() {
             item.osType.toLowerCase().includes(filterValue.toLowerCase())
           ),
           sortConfig
-        ).slice(indexOfFirstItem, indexOfLastItem)
+        )
       : null;
       const filteredList = filterValue
       ? exlusions.filter((item) => item.osType.toLowerCase().includes(filterValue.toLowerCase()))
@@ -123,11 +158,6 @@ function Exclusions() {
         : "ascending";
     setSortConfig({ key, direction });
   };
-
-  const handlePageClick = (selected) => {
-    setCurrentPage(selected.selected);
-  };
-
   const handleThreatActions = () => {
     setDropdownOpenExclusion(!dropdownOpenExclusion);
   };
@@ -302,6 +332,10 @@ function Exclusions() {
     setSelectedItem(item);
     setShowPopupEdit(true);
   };
+  const handlePageSelect = (event) => {
+    const selectedPerPage = event.target.value
+    setLimit(selectedPerPage)
+  }
 
   return (
     <div>
@@ -525,6 +559,27 @@ function Exclusions() {
               )}
             </tbody>
           </table>
+          <div className=' d-flex justify-content-end  '>
+                <button className='btn btn-primary btn-small me-5 ' onClick={handleClickFirstPage}>
+                 Go to page 1
+                </button>
+                <button className='btn btn-primary btn-small' onClick={handleLoadMore} disabled={cursor === null}>
+                  Load More
+                </button>
+                <div className='col-md-3 d-flex justify-content-end align-items-center'>
+              <span className='col-md-4'>Count: </span>
+              <select
+                className='form-select form-select-sm col-md-4'
+                value={limit}
+                onChange={handlePageSelect}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={15}>15</option>
+                <option value={20}>20</option>
+              </select>
+            </div>
+              </div>
           {showConfirmation && (
           <DeleteConfirmation
             show={showConfirmation}
@@ -532,12 +587,6 @@ function Exclusions() {
             onCancel={cancelDelete}
           />
         )}
-          <Pagination
-            pageCount={Math.ceil(filteredList.length / itemsPerPage)}
-            handlePageClick={handlePageClick}
-            itemsPerPage={itemsPerPage}
-            handlePageSelect={handlePageSelect}
-          />
           {showPopupEdit && selectedItem && (
             <CreateExclusionModalEdit
               show={openPopupEdit}

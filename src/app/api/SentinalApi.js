@@ -23,8 +23,8 @@ export const fetchExclusionListUrl = async (data) => {
       });
   
       const responseData = await response.json();
-      const exclusionList = responseData.exclusionList;
-      return exclusionList;
+      // const exclusionList = responseData.exclusionList;
+      return responseData;
     } catch (error) {
       console.log(error);
     }
@@ -42,8 +42,8 @@ export const fetchExclusionListUrl = async (data) => {
       });
   
       const responseData = await response.json();
-      const blockedItemList = responseData.blockedItemList;
-      return blockedItemList;
+      // const blockedItemList = responseData.blockedItemList;
+      return responseData;
     } catch (error) {
       console.log(error);
     }

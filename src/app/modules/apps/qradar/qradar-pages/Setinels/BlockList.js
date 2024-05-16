@@ -18,7 +18,8 @@ function BlockList() {
   console.log(blockList, 'blockList111')
   const [refreshFlag, setRefreshFlag] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
-  const [itemsPerPage, setItemsPerPage] = useState(20)
+  
+  const [limit, setLimit] = useState(20)
   const [showPopup, setShowPopup] = useState(false)
   const [showPopupEdit, setShowPopupEdit] = useState(false)
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
@@ -36,6 +37,7 @@ function BlockList() {
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
+  const [cursor, setCursor] = useState(null) 
   const fetchData = async () => {
     const data = {
       orgID: orgId,
@@ -55,11 +57,15 @@ function BlockList() {
           levelValue: groupId || '',
         },
       ],
+      nextCursor: cursor || '',
+      pageSize: limit,
     }
+
     try {
       setLoading(true)
       const response = await fetchBlokckedListUrl(data)
-      setBlockList(response)
+      setBlockList(response.blockedItemList) // Append new data
+      setCursor(response.pagination.nextCursor) // Update cursor for next fetch
     } catch (error) {
       console.error(error)
     } finally {
@@ -69,30 +75,63 @@ function BlockList() {
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [limit]) 
+
+  const handleLoadMore = () => {
+    fetchData()
+  }
+  const handleClickFirstPage = async () =>{
+    const data = {
+      orgID: orgId,
+      includeChildren: includeChildren,
+      includeParents: includeParents,
+      orgAccountStructureLevel: [
+        {
+          levelName: 'AccountId',
+          levelValue: accountId || '',
+        },
+        {
+          levelName: 'SiteId',
+          levelValue: siteId || '',
+        },
+        {
+          levelName: 'GroupId',
+          levelValue: groupId || '',
+        },
+      ],
+      nextCursor:'',
+      pageSize: limit,
+    }
+
+    try {
+      setLoading(true)
+      const response = await fetchBlokckedListUrl(data)
+      setBlockList(response.blockedItemList) // Append new data
+      setCursor(response.pagination.nextCursor) // Update cursor for next fetch
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
     fetchData()
   }, [includeChildren, includeParents])
 
-  const handlePageSelect = (event) => {
-    setItemsPerPage(Number(event.target.value))
-    setCurrentPage(0)
-  }
-
-  const indexOfLastItem = (currentPage + 1) * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  // const indexOfLastItem = (currentPage + 1) * itemsPerPage
+  // const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems =
     blockList !== null
       ? sortedItems(
           blockList.filter((item) => item.osType.toLowerCase().includes(filterValue.toLowerCase())),
           sortConfig
-        ).slice(indexOfFirstItem, indexOfLastItem)
+        )
       : null
-      const filteredList = filterValue
-      ? blockList.filter((item) => item.osType.toLowerCase().includes(filterValue.toLowerCase()))
-      : blockList;
-  
+  const filteredList = filterValue
+    ? blockList.filter((item) => item.osType.toLowerCase().includes(filterValue.toLowerCase()))
+    : blockList
+
   const handleSort = (key) => {
     const direction =
       sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending'
@@ -260,6 +299,10 @@ function BlockList() {
     setSelectedItem(item)
     setShowPopupEdit(true)
   }
+  const handlePageSelect = (event) => {
+    const selectedPerPage = event.target.value
+    setLimit(selectedPerPage)
+  }
   return (
     <div>
       <ToastContainer />
@@ -317,7 +360,6 @@ function BlockList() {
                 />
               )}
               <div className='float-left mg-left-10'>
-                {/* <button className='btn btn-new btn-small float-left'>Delete selection</button> */}
                 <button
                   className={`btn btn-green btn-small float-left ${
                     !isCheckboxSelected && 'disabled'
@@ -435,6 +477,28 @@ function BlockList() {
                   )}
                 </tbody>
               </table>
+              <div className=' d-flex justify-content-end  '>
+                <button className='btn btn-primary btn-small me-5 ' onClick={handleClickFirstPage}>
+                 Go to page 1
+                </button>
+                <button className='btn btn-primary btn-small' onClick={handleLoadMore} disabled={cursor === null}>
+                  Load More
+                </button>
+                <div className='col-md-3 d-flex justify-content-end align-items-center'>
+              <span className='col-md-4'>Count: </span>
+              <select
+                className='form-select form-select-sm col-md-4'
+                value={limit}
+                onChange={handlePageSelect}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={15}>15</option>
+                <option value={20}>20</option>
+              </select>
+            </div>
+              </div>
+
               {showConfirmation && (
                 <DeleteConfirmation
                   show={showConfirmation}
@@ -442,12 +506,7 @@ function BlockList() {
                   onCancel={cancelDelete}
                 />
               )}
-              <Pagination
-                pageCount={Math.ceil(filteredList.length / itemsPerPage)}
-                handlePageClick={handlePageClick}
-                itemsPerPage={itemsPerPage}
-                handlePageSelect={handlePageSelect}
-              />
+
               {showPopupEdit && selectedItem && (
                 <BlockListEditPopup
                   show={openPopupEdit}

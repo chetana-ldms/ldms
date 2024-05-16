@@ -129,6 +129,7 @@ const AlertsPage = () => {
   const [alertNotesList, setAlertNotesList] = useState([])
   const [escalate, setEscalate] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
+  console.log(currentPage, "currentPage")
   const [showForm, setShowForm] = useState(false)
   const [ignorVisible, setIgnorVisible] = useState(true)
   const [generateReport, setGenerateReport] = useState(true)
@@ -504,6 +505,7 @@ const AlertsPage = () => {
     reloadNotes()
     reloadHistory()
     fetchAlertDetails()
+    setCurrentPage(1)
     setTimeout(() => setIsRefreshing(false), 2000)
   }
   const RefreshInterval = 2 * 60 * 1000
