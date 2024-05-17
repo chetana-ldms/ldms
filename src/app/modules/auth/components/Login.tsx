@@ -83,6 +83,7 @@ export function Login() {
           sessionStorage.setItem('groupName', "");
           sessionStorage.setItem('groupId', "");
           sessionStorage.setItem('toolExpire', "true");
+          sessionStorage.setItem('sentinalTesting', "true");
           const defaultPassword = authData.defaultPassword;
           if (defaultPassword) {
             setShowChangePwdModal(true);

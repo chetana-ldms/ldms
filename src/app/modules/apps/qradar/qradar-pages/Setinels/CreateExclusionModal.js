@@ -17,6 +17,7 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
+  const sentinalTesting = sessionStorage.getItem('sentinalTesting');
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [isCustomDropdownOpen, setIsCustomDropdownOpen] = useState(false)
   const [selectedValue, setSelectedValue] = useState('Hash')
@@ -87,57 +88,110 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
       }
       let data = null
       if (selectedValue === 'Hash') {
-        data = {
-          orgID: orgId,
-          osType: osDropdownRef.current.value,
-          value: sha1InputRef.current.value,
-          description: descriptionTextareaRef.current.value,
-          createdDate: createdDate,
-          createdUserId: createdUserId,
-          type: 'white_hash',
-          groupId: groupId || '',
-          siteId: siteId || '',
-          accountId: accountId || '',
+        if (sentinalTesting === "true") {
+          data =  {
+            orgID: orgId,
+            osType: osDropdownRef.current.value,
+            value: sha1InputRef.current.value,
+            description: descriptionTextareaRef.current.value,
+            createdDate: createdDate,
+            createdUserId: createdUserId,
+            type: 'white_hash',
+            siteId: siteId || '',
+          };
+        } else {
+          data =  {
+            orgID: orgId,
+            osType: osDropdownRef.current.value,
+            value: sha1InputRef.current.value,
+            description: descriptionTextareaRef.current.value,
+            createdDate: createdDate,
+            createdUserId: createdUserId,
+            type: 'white_hash',
+            groupId: groupId || '',
+            siteId: siteId || '',
+            accountId: accountId || '',
+          };
         }
       } else if (selectedValue === 'Certificate') {
-        data = {
-          orgID: orgId,
-          osType: osDropdownRef.current.value,
-          value: signerInputRef.current.value,
-          description: descriptionTextareaRef.current.value,
-          createdDate: createdDate,
-          createdUserId: createdUserId,
-          type: 'certificate',
-          groupId: groupId || '',
-          siteId: siteId || '',
-          accountId: accountId || '',
+        if (sentinalTesting === "true") {
+          data =  {
+            orgID: orgId,
+            osType: osDropdownRef.current.value,
+            value: signerInputRef.current.value,
+            description: descriptionTextareaRef.current.value,
+            createdDate: createdDate,
+            createdUserId: createdUserId,
+            type: 'certificate',
+            siteId: siteId || '',
+          };
+        } else {
+          data =  {
+            orgID: orgId,
+            osType: osDropdownRef.current.value,
+            value: signerInputRef.current.value,
+            description: descriptionTextareaRef.current.value,
+            createdDate: createdDate,
+            createdUserId: createdUserId,
+            type: 'certificate',
+            groupId: groupId || '',
+            siteId: siteId || '',
+            accountId: accountId || '',
+          };
         }
       } else if (selectedValue === 'File Type') {
-        data = {
-          orgID: orgId,
-          osType: osDropdownRef.current.value,
-          value: fileInputRef.current.value,
-          description: descriptionTextareaRef.current.value,
-          createdDate: createdDate,
-          createdUserId: createdUserId,
-          type: 'file_type',
-          groupId: groupId || '',
-          siteId: siteId || '',
-          accountId: accountId || '',
-          actions: actions,
+        if (sentinalTesting === "true") {
+          data =  {
+            orgID: orgId,
+            osType: osDropdownRef.current.value,
+            value: fileInputRef.current.value,
+            description: descriptionTextareaRef.current.value,
+            createdDate: createdDate,
+            createdUserId: createdUserId,
+            type: 'file_type',
+            siteId: siteId || '',
+            actions: actions,
+          };
+        } else {
+          data =  {
+            orgID: orgId,
+            osType: osDropdownRef.current.value,
+            value: fileInputRef.current.value,
+            description: descriptionTextareaRef.current.value,
+            createdDate: createdDate,
+            createdUserId: createdUserId,
+            type: 'file_type',
+            groupId: groupId || '',
+            siteId: siteId || '',
+            accountId: accountId || '',
+            actions: actions,
+          };
         }
       } else if (selectedValue === 'Browser') {
-        data = {
-          orgID: orgId,
-          osType: osDropdownRef.current.value,
-          value: browserDropdownRef.current.value,
-          description: descriptionTextareaRef.current.value,
-          createdDate: createdDate,
-          createdUserId: createdUserId,
-          type: 'browser',
-          groupId: groupId || '',
-          siteId: siteId || '',
-          accountId: accountId || '',
+        if (sentinalTesting === "true") {
+          data =  {
+            orgID: orgId,
+            osType: osDropdownRef.current.value,
+            value: browserDropdownRef.current.value,
+            description: descriptionTextareaRef.current.value,
+            createdDate: createdDate,
+            createdUserId: createdUserId,
+            type: 'browser',
+            siteId: siteId || '',
+          };
+        } else {
+          data =  {
+            orgID: orgId,
+            osType: osDropdownRef.current.value,
+            value: browserDropdownRef.current.value,
+            description: descriptionTextareaRef.current.value,
+            createdDate: createdDate,
+            createdUserId: createdUserId,
+            type: 'browser',
+            groupId: groupId || '',
+            siteId: siteId || '',
+            accountId: accountId || '',
+          };
         }
       } else if (selectedValue === 'Path') {
         let pathExclusionType = 'file'
@@ -178,21 +232,36 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
           default:
             mode = 'suppress'
         }
-
-        data = {
-          orgID: orgId,
-          osType: osDropdownRef.current.value,
-          value: pathInputRef.current.value,
-          description: descriptionTextareaRef.current.value,
-          createdDate: createdDate,
-          createdUserId: createdUserId,
-          type: 'path',
-          groupId: groupId || '',
-          siteId: siteId || '',
-          accountId: accountId || '',
-          actions: actions,
-          pathExclusionType,
-          mode,
+        if (sentinalTesting === "true") {
+          data =  {
+            orgID: orgId,
+            osType: osDropdownRef.current.value,
+            value: pathInputRef.current.value,
+            description: descriptionTextareaRef.current.value,
+            createdDate: createdDate,
+            createdUserId: createdUserId,
+            type: 'path',
+            siteId: siteId || '',
+            actions: actions,
+            pathExclusionType,
+            mode,
+          };
+        } else {
+          data =  {
+            orgID: orgId,
+            osType: osDropdownRef.current.value,
+            value: pathInputRef.current.value,
+            description: descriptionTextareaRef.current.value,
+            createdDate: createdDate,
+            createdUserId: createdUserId,
+            type: 'path',
+            groupId: groupId || '',
+            siteId: siteId || '',
+            accountId: accountId || '',
+            actions: actions,
+            pathExclusionType,
+            mode,
+          };
         }
       } else {
         return

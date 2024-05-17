@@ -437,9 +437,6 @@ function Exclusions() {
               </div>
             </div>
             <div className="col-lg-6 text-right">
-              {/* <span className="gray inline-block mg-righ-20">
-                {exlusions.length} Items
-              </span> */}
               <Dropdown
                 isOpen={dropdownOpen}
                 toggle={() => setDropdownOpen(!dropdownOpen)}

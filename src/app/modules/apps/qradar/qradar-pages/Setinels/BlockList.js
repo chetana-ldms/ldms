@@ -75,7 +75,7 @@ function BlockList() {
 
   useEffect(() => {
     fetchData()
-  }, [limit]) 
+  }, [limit]) // Fetch data whenever cursor changes
 
   const handleLoadMore = () => {
     fetchData()

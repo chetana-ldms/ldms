@@ -13,6 +13,7 @@ const BlockListPopUp = ({ show, onClose, refreshParent }) => {
   const accountId =sessionStorage.getItem('accountId');
   const siteId = sessionStorage.getItem('siteId');
   const groupId = sessionStorage.getItem('groupId');
+  const sentinalTesting = sessionStorage.getItem('sentinalTesting');
 
   const handleSubmit = async () => {
     try {
@@ -20,22 +21,36 @@ const BlockListPopUp = ({ show, onClose, refreshParent }) => {
         notifyFail("Please fill out all mandatory fields.");
         return;
       }
-
-      const data = {
-        orgID: orgId,
-        osType: osDropdownRef.current.value,
-        value: sha1InputRef.current.value,
-        description: descriptionTextareaRef.current.value,
-        source: "",
-        createdDate: createdDate,
-        createdUserId: createdUserId,
-        groupId: groupId,
-        siteId: siteId,
-        accountId: accountId
-      };
+      let data;
+  
+      if (sentinalTesting === "true") {
+        data = {
+          orgID: orgId,
+          osType: osDropdownRef.current.value,
+          value: sha1InputRef.current.value,
+          description: descriptionTextareaRef.current.value,
+          source: "",
+          createdDate: createdDate,
+          createdUserId: createdUserId,
+          siteId: siteId,
+        };
+      } else {
+        data = {
+          orgID: orgId,
+          osType: osDropdownRef.current.value,
+          value: sha1InputRef.current.value,
+          description: descriptionTextareaRef.current.value,
+          source: "",
+          createdDate: createdDate,
+          createdUserId: createdUserId,
+          groupId: groupId || "",
+          siteId: siteId,
+          accountId: accountId || "",
+        };
+      }
       const responseData = await fetchAddToblockListUrl(data);
       const { isSuccess, message } = responseData;
-
+  
       if (isSuccess) {
         notify(message);
         onClose();
@@ -47,6 +62,7 @@ const BlockListPopUp = ({ show, onClose, refreshParent }) => {
       console.error("Error during API call:", error);
     }
   };
+  
 
   return (
     <Modal
