@@ -22,6 +22,7 @@ function Activity() {
   const orgId = Number(sessionStorage.getItem("orgId"));
   const [limit, setLimit] = useState(20);
   const [pageCount, setPageCount] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const [currentPage, setCurrentPage] = useState(1);
   console.log(currentPage, "currentPage");
 
@@ -191,6 +192,12 @@ function Activity() {
       setSelectedToDate(null);
     }
   };
+  const handleRefresh = (event) => {
+    event.preventDefault()
+    setIsRefreshing(true)
+    fetchData()
+    setTimeout(() => setIsRefreshing(false), 2000)
+  }
 
   return (
     <div className="activity-timeline">
@@ -250,6 +257,14 @@ function Activity() {
           >
             <i className="fa fa-search white" />
           </button>
+          <div className='ds-reload mt-2 ms-10 float-right'>
+            <span className='fs-13 fc-gray' onClick={handleRefresh}>
+              <i
+                className={`fa fa-refresh link ${isRefreshing ? 'rotate' : ''}`}
+                title='Auto refresh every 2 minutes'
+              />
+            </span>
+          </div>
         </div>
       </div>
       {loading ? (

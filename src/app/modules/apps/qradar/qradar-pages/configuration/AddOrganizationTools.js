@@ -382,7 +382,7 @@ const AddOrganizationTools = () => {
                       <option value="" disabled selected>
                         Select
                       </option>
-                      {toolActionTypes.map((item, index) => (
+                      {toolActionTypes?.map((item, index) => (
                         <option value={item.toolTypeActionName} key={index}>
                           {item.toolTypeActionName}
                         </option>

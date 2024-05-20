@@ -6,6 +6,7 @@ import {
   fetchRolesDetailUrl,
   fetchRolesUpdateUrl,
 } from "../../../../../api/ConfigurationApi";
+import { ToastContainer } from "react-toastify";
 
 const UpdateRoleData = () => {
   const navigate = useNavigate();
@@ -59,7 +60,9 @@ const UpdateRoleData = () => {
 
       if (isSuccess) {
         notify("Role Updated");
-        navigate("/qradar/roles-data/list");
+        setTimeout(()=>{
+          navigate("/qradar/roles-data/list");
+        }, 2000)
       } else {
         notifyFail("Role Update Failed");
       }
@@ -72,6 +75,7 @@ const UpdateRoleData = () => {
 
   return (
     <div className="config card">
+      <ToastContainer />
       <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">
           <span className="white">Update User Role</span>

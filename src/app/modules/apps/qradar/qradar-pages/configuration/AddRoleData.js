@@ -37,7 +37,9 @@ const AddRoleData = () => {
 
       if (isSuccess) {
         notify(message);
-        navigate("/qradar/roles-data/list");
+        setTimeout(()=>{
+          navigate("/qradar/roles-data/list");
+        }, 2000)
       } else {
         notifyFail(message);
       }

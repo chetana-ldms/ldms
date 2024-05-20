@@ -98,11 +98,11 @@ const UserData = () => {
       <ToastContainer />
 
       <div className="header-filter row">
-        <div className="col-lg-6">
+        <div className="col-lg-4">
           <h3 className="lh-40">Users</h3>
         </div>
 
-        <div className="col-lg-4">
+        <div className="col-lg-6">
           <label className="form-label fw-normal fc-gray fs-14 lh-40 float-left">
             <span>Organization: </span>
           </label>
@@ -164,7 +164,7 @@ const UserData = () => {
           <tbody>
             {loading && <UsersListLoading />}
             {users !== null && users !== undefined ? (
-              users.map((item, index) => {
+              users?.map((item, index) => {
                 if (
                   globalAdminRole === 1 ||
                   clientAdminRole === 1 ||
@@ -172,10 +172,10 @@ const UserData = () => {
                 ) {
                   return (
                     <tr key={index} className="fs-12">
-                      <td>{item.userID}</td>
-                      <td>{item.name}</td>
-                      <td>{item.emailId}</td>
-                      <td>{item.roleName}</td>
+                      <td>{item?.userID}</td>
+                      <td>{item?.name}</td>
+                      <td>{item?.emailId}</td>
+                      <td>{item?.roleName}</td>
 
                       {globalAdminRole === 1 || clientAdminRole === 1 ? (
                         <td>

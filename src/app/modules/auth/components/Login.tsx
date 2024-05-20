@@ -175,7 +175,7 @@ export function Login() {
         </div>
       </div>
       <div className='fv-row mb-8'>
-        <label className='form-label fs-6 fw-bolder text-dark'>Organisation Name</label>
+        <label className='form-label fs-6 fw-bolder text-dark'>Organization Name</label>
         <div>
           {organisation === null && (
             
@@ -189,7 +189,7 @@ export function Login() {
              )}
              autoComplete='off'
            >
-              <option value="">Select Organisation</option>
+              <option value="">Select Organization</option>
             </select>
           )}
           {organisation !== null && (
@@ -204,7 +204,7 @@ export function Login() {
               )}
               autoComplete='off'
             >
-              <option value="" >Select Organisation</option>
+              <option value="" >Select Organization</option>
               {organisation.length >= 0 && organisation.map((user: Organisation) => (
                 <option key={user.orgID} value={user.orgID}>
                   {user.orgName}

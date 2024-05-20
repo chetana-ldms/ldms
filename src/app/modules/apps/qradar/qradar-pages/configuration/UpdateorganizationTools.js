@@ -385,13 +385,13 @@ const confirmDelete = async () => {
                   data-placeholder="Select option"
                   data-allow-clear="true"
                   id="toolID"
-                  value={toolTypeAction.toolTypeName}
+                  value={toolTypeAction?.toolTypeName}
                   onChange={(e) => handleChange(e, "toolTypeName")}
                   // ref={toolID}
                   required
                 >
                   <option value="">Select</option>
-                  {toolTypes.map((item, index) => (
+                  {toolTypes?.map((item, index) => (
                     <option
                       value={item.dataValue}
                       key={index}
@@ -417,13 +417,13 @@ const confirmDelete = async () => {
                   data-placeholder="Select option"
                   data-allow-clear="true"
                   id="toolID"
-                  value={toolTypeAction.toolName}
+                  value={toolTypeAction?.toolName}
                   onChange={(e) => handleChange(e, "toolName")}
                   ref={toolID}
                   required
                 >
                   <option value="">Select</option>
-                  {toolName.map((item, index) => (
+                  {toolName?.map((item, index) => (
                     <option
                       value={item.toolName}
                       key={index}

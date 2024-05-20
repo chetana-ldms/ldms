@@ -69,7 +69,7 @@ const LdpTools = () => {
       <ToastContainer />
       <div className="card-header no-pad mb-5 border-0">
         <h3 className="card-title align-items-start flex-column">
-          <span className="card-label fw-bold fs-3 mb-1">Ldc Tools</span>
+          <span className="card-label fw-bold fs-3 mb-1">LDC Tools</span>
         </h3>
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">

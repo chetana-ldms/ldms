@@ -86,7 +86,7 @@ const SidebarMenuMain = () => {
         <SidebarMenuItem hasBullet={true} to='/qradar/organizations/list' title='Organizations' />
         <SidebarMenuItem hasBullet={true} to='/qradar/users-data/list' title='Users' />
         <SidebarMenuItem hasBullet={true} to='/qradar/organization-tools/list' title='Organization Tools' />
-        <SidebarMenuItem hasBullet={true} to='/qradar/ldp-tools/list' title='LDP Tools' />
+        <SidebarMenuItem hasBullet={true} to='/qradar/ldp-tools/list' title='LDC Tools' />
         <SidebarMenuItem hasBullet={true} to='/qradar/rules-engine/list' title='Rules' />
         <SidebarMenuItem hasBullet={true} to='/qradar/rules-actions/list' title='Rules Actions' />
         <SidebarMenuItem hasBullet={true} to='/qradar/tool-actions/list' title='Tool Actions' />

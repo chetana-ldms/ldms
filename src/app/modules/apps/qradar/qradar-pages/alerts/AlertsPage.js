@@ -44,7 +44,6 @@ const AlertsPage = () => {
   const [inputValue, setInputValue] = useState('')
   const [selectedAlert, setselectedAlert] = useState([])
   const [validations, setValidations] = useState('')
-  console.log(validations, 'validations1111')
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
   const [loading, setLoading] = useState(false)
   const globalAdminRole = Number(sessionStorage.getItem('globalAdminRole'))
@@ -62,7 +61,6 @@ const AlertsPage = () => {
   const [selectedRow, setSelectedRow] = useState({})
   const [showPopup, setShowPopup] = useState(false)
   const [selectCheckBox, setSelectCheckBox] = useState(null)
-  console.log(selectCheckBox, 'selectCheckBox')
   const {severityNameDropDownData, statusDropDown, observableTagDropDown, analystVerdictDropDown} =
     dropdownData
   const handleFormSubmit = () => {
@@ -132,7 +130,6 @@ const AlertsPage = () => {
   console.log(currentPage, "currentPage")
   const [showForm, setShowForm] = useState(false)
   const [ignorVisible, setIgnorVisible] = useState(true)
-  const [generateReport, setGenerateReport] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [limit, setLimit] = useState(20)
   const [pageCount, setpageCount] = useState(0)
@@ -142,31 +139,28 @@ const AlertsPage = () => {
   const [addToExclusionsModal, setAddToExclusionsModal] = useState(false)
   const [addANoteModal, setAddANoteModal] = useState(false)
   const [sentinalOne, setSentinalOne] = useState([])
-  console.log(sentinalOne, 'sentinalOne')
   const [showDropdown, setShowDropdown] = useState(false)
   const [selectedValue, setSelectedValue] = useState('')
   const [selectedAlertId, setSelectedAlertId] = useState(null)
-  console.log(selectedAlertId, 'selectedAlertId')
   const [AnalystVerdictDropDown, setAnalystVerdictDropDown] = useState(false)
   const [selectedVerdict, setSelectedVerdict] = useState('')
   const [StatusDropDown, setStatusDropDown] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState('')
   const [endpointInfo, setEndpointInfo] = useState([])
-  console.log(endpointInfo, 'endpointInfo')
   const [networkHistory, setNetworkHistory] = useState([])
-  console.log(networkHistory, 'networkHistory')
   const [threatHeaderDtls, setThreatHeaderDtls] = useState([])
-  console.log(threatHeaderDtls, 'threatHeaderDtls')
   const [threatInfo, setThreatInfo] = useState([])
-  console.log(threatInfo, 'threatInfo')
   const [alertHistory, setAlertHistory] = useState([])
-  console.log(alertHistory, 'alertHistory')
   const dropdownRef = useRef(null)
   const dropdownRefSatus = useRef(null)
   const [refreshFlag, setRefreshFlag] = useState(false)
-  const handleRefreshActions = () => {
+  const handleRefreshActions = async () => {
     setRefreshFlag(!refreshFlag)
-    qradaralerts()
+    setCurrentPage(1); 
+    await qradaralerts(); 
+    await handlePageClick({ selected: 0 });
+    setselectedAlert([])
+    setIsCheckboxSelected(false)
     reloadHistory()
     reloadNotes()
     fetchAlertDetails()
@@ -362,15 +356,15 @@ const AlertsPage = () => {
     }
   }
   const handlePageClick = async (data) => {
-    let currentPage = data.selected + 1
-    setLoading(true)
-    const setOfAlertsData = await fetchSetOfAlerts(currentPage, orgId, userID, limit, accountId, siteId, groupId)
-    slaCal(setOfAlertsData)
-    setFilteredAlertDate(setOfAlertsData.filter((item) => item.ownerUserID === userID))
-    setFilteredAlertDate(setOfAlertsData)
-    setCurrentPage(currentPage)
-    setLoading(false)
-  }
+    let selectedPage  = data?.selected + 1 || 1; 
+    setLoading(true);
+    setCurrentPage(selectedPage );
+    const setOfAlertsData = await fetchSetOfAlerts(selectedPage , orgId, userID, limit, accountId, siteId, groupId);
+    slaCal(setOfAlertsData);
+    setFilteredAlertDate(setOfAlertsData);
+    setLoading(false);
+}
+
   const qradaralerts = async () => {
     let data2 = {
       orgID: orgId,
@@ -406,28 +400,12 @@ const AlertsPage = () => {
     slaCal(response?.alertsList)
     setFilteredAlertDate(response?.alertsList)
     setLoading(false)
-    // {
-    //   if (globalAdminRole === 1) {
-    //     setFilteredAlertDate(response.alertsList);
-    //   }
-    //    else {
-    //     let result =
-    //       response.alertsList != null
-    //         ? response.alertsList.filter((item) => item.ownerUserID === userID)
-    //         : [];
-    //     setFilteredAlertDate(result);
-    //   }
-    // }
   }
   useEffect(() => {
     qradaralerts()
   }, [limit])
   useEffect(() => {
     const fetchData = async () => {
-      // qradaralerts();
-      // setTimeout(() => {
-      //   setDelay((delay) => delay + 1);
-      // }, 60000);
       const response = await fetchUsers(orgId)
       setldp_security_user(response?.usersList != undefined ? response?.usersList : [])
     }
@@ -457,10 +435,6 @@ const AlertsPage = () => {
 
   console.log(filteredAlertData, 'filteredAlertData')
   const handleChange = (e, field) => {
-    console.log(e.target.value)
-    console.log(alertData)
-    console.log(field)
-    console.log(alertData.filter((it) => it[field] === e.target.value))
     let data = alertData.filter((it) => it[field] === e.target.value)
     setFilteredAlertDate(data.length > 0 ? data : alertData)
   }
@@ -471,7 +445,6 @@ const AlertsPage = () => {
     setShowForm(true)
     setEscalate(true)
     setIgnorVisible(true)
-    setGenerateReport(true)
   }
   const handleSort = (e, field) => {
     let temp = [...alertData]
@@ -482,7 +455,6 @@ const AlertsPage = () => {
     setFilteredAlertDate(data)
   }
   const handleSortDates = (e, field) => {
-    console.log(field)
     let temp = [...alertData]
     let data =
       e.target.value === 'New'
@@ -498,14 +470,17 @@ const AlertsPage = () => {
     )
     setFilteredAlertDate(data)
   }
-  const handleRefresh = (event) => {
+  const handleRefresh = async (event) => {
     event.preventDefault()
     setIsRefreshing(true)
-    qradaralerts()
+    setCurrentPage(1); 
+    await qradaralerts(); 
+    await handlePageClick({ selected: 0 }); 
     reloadNotes()
     reloadHistory()
     fetchAlertDetails()
-    setCurrentPage(1)
+    setselectedAlert([])
+    setIsCheckboxSelected(false)
     setTimeout(() => setIsRefreshing(false), 2000)
   }
   const RefreshInterval = 2 * 60 * 1000
@@ -528,65 +503,6 @@ const AlertsPage = () => {
       clearInterval(refreshIntervalId)
     }
   }, [currentPage])
-  // const handleTdClick = async (itemId) => {
-  //   setSelectedAlertId(itemId)
-  //   try {
-  //     if (orgId === 2) {
-  //       const sentinalOneDetails = await fetchSentinelOneAlert(itemId)
-  //       setSentinalOne(sentinalOneDetails)
-  //       const endpoint_Info = sentinalOneDetails.endpoint_Info
-  //       setEndpointInfo(endpoint_Info)
-  //       const networkHistory = sentinalOneDetails.networkHistory
-  //       setNetworkHistory(networkHistory)
-  //       const threatHeaderDtls = sentinalOneDetails.threatHeaderDtls
-  //       setThreatHeaderDtls(threatHeaderDtls)
-  //       const threatInfo = sentinalOneDetails.threatInfo
-  //       setThreatInfo(threatInfo)
-  //     } else {
-  //       console.log('No data found')
-  //     }
-  //   } catch (error) {
-  //     handleError(error)
-  //   }
-  // }
-
-  const handleGenerateReport = () => {
-    const tableData = [selectCheckBox]
-    generatePDFFromTable(tableData)
-    notify('Report generated successfully')
-    setGenerateReport(false)
-    setShowForm(false)
-  }
-  const generatePDFFromTable = (tableData) => {
-    const doc = new jsPDF()
-    doc.autoTable({
-      head: [
-        [
-          'Severity',
-          'SLA',
-          'Score',
-          'Status',
-          'Detected time',
-          'Name',
-          'Observables tags',
-          'Owner',
-          'Source',
-        ],
-      ],
-      body: tableData.map((item) => [
-        item.severityName,
-        item.sla,
-        item.score === null ? '0' : item.score,
-        item.status,
-        item.detectedtime,
-        item.name,
-        item.observableTag,
-        item.ownerusername,
-        item.source,
-      ]),
-    })
-    doc.save('Report.pdf')
-  }
   const handleMoreActionsClick = () => {
     setShowMoreActionsModal(false)
   }
@@ -1313,17 +1229,6 @@ const AlertsPage = () => {
                           </button>
                         </div>
                       )}
-                      {/* {actionsValue === "4" && generateReport && (
-                        <div className="d-flex justify-content-end">
-                          <button
-                            type="button"
-                            className="btn btn-small btn-new"
-                            onClick={handleGenerateReport}
-                          >
-                            Download Report
-                          </button>
-                        </div>
-                      )} */}
                     </div>
                   )}
                 </div>
@@ -1993,24 +1898,6 @@ const AlertsPage = () => {
                                       Timeline
                                     </a>
                                   </li>
-                                  {/* {orgId === 2 && (
-                                      <li
-                                        className="nav-item"
-                                        role="presentation"
-                                      >
-                                        <a
-                                          className="nav-link"
-                                          id={`otherActionsTab_${index}`}
-                                          data-bs-toggle="tab"
-                                          href={`#otherActions_${index}`}
-                                          role="tab"
-                                          aria-controls={`otherActions_${index}`}
-                                          aria-selected="false"
-                                        >
-                                          Other Action
-                                        </a>
-                                      </li>
-                                    )} */}
                                 </ul>
                                 <div className='tab-content pt-4'>
                                   <div
@@ -2087,17 +1974,17 @@ const AlertsPage = () => {
                                   >
                                     {orgId == 2 ? (
                                       <div className='h-300px scroll-y'>
-                                        <div className='row'>
-                                          {/* <div className="col-md-1 py-4 text-center">
+                                         <div className='float-right fs-13 fc-gray text-right ds-reload'>
+                                          <a href='#' onClick={handleRefresh}>
                                             <i
-                                              className="bi bi-check-square text-success"
-                                              style={{
-                                                fontSize: "2rem",
-                                                width: "2em",
-                                                height: "2em",
-                                              }}
-                                            ></i>
-                                          </div> */}
+                                              className={`fa fa-refresh link ${
+                                                isRefreshing ? 'rotate' : ''
+                                              }`}
+                                              title='Auto refresh every 2 minutes'
+                                            />
+                                          </a>
+                                        </div>
+                                        <div className='row'>
                                           <div className='col-md-8'>
                                             <div className='d-flex '>
                                               <div className='border-right pe-2'>
@@ -2117,14 +2004,6 @@ const AlertsPage = () => {
                                                 <span className='semi-bold'>
                                                   Analyst Verdict :{' '}
                                                 </span>
-                                                {/* <input
-                                                  type="text"
-                                                  className="ml-2"
-                                                  style={{ width: "110px" }}
-                                                  value={
-                                                    threatHeaderDtls.analysisVerdict
-                                                  }
-                                                /> */}
                                                 {threatHeaderDtls?.ldC_AnalysisVerdict}
                                               </div>
                                               <div className='px-1 d-flex align-items-center'>
@@ -2168,7 +2047,7 @@ const AlertsPage = () => {
                                             </div>
                                           </div>
                                           <div className='col-md-4'>
-                                            <div className='row'>
+                                            <div className='row  d-flex justify-content-end'>
                                               <div className='col-md-1 text-center py-3'>
                                                 <i className='bi bi-stopwatch fs-18'></i>
                                               </div>
@@ -2197,43 +2076,7 @@ const AlertsPage = () => {
                                             </div>
                                           </div>
                                         </div>
-                                        {/* <div className="fs-12">NETWORK HISTORY</div>
-                                  <hr className="my-2" />
-                                  <div className="row">
-                                    <div className="col-md-4 border-right">
-                                      <div className="row  p-3">
-                                        <div className="col-md-3">
-                                          <i className="bi bi-clock" style={{ fontSize: '3em', lineHeight: 1 }}></i>
-                                        </div>
-                                        <div className="col-md-9">
-                                          <p>First seen <span>Oct 30, 2023 08:41:36</span></p>
-                                          <p>Last seen <span>Oct 30, 2023 08:41:36</span></p>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-md-4 border-right">
-                                      <div className="row p-3">
-                                        <div className="col-md-3">
-                                          <i className="bi bi-circle" style={{ fontSize: '3em', lineHeight: 1 }}></i>
-                                        </div>
-                                        <div className="col-md-9">
-                                          <p>Only 1 time on the current endpoint</p>
-                                          <p>1 Account / 1 Set / 1 Group</p>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-md-4">
-                                      <div className="row p-3">
-                                        <div className="col-md-3">
-                                          <i className="bi bi-search" style={{ fontSize: '3em', lineHeight: 1 }}></i>
-                                        </div>
-                                        <div className="col-md-9">
-                                          <p>Find this Hash on Deep Visibality</p>
-                                          <button className="btn btn-dark btn-sm">Hunt Now</button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div> */}
+                                       
                                         <hr />
                                         <div className='row'>
                                           <div className='fs-12 col-md-6'>
@@ -2241,9 +2084,7 @@ const AlertsPage = () => {
                                             {threatInfo?.name}
                                           </div>
                                           <div className='fs-14 mt-5 text-primary col-md-6 text-end'>
-                                            {/* <span className="mx-5"><i className="fas fa-copy mx-3"></i> Copy Details</span>
-                                        <span className="mx-5"><i className="fas fa-file mx-3"></i> Download Threat Files</span> */}
-                                          </div>
+                                            </div>
                                         </div>
                                         <hr />
                                         <div className='row'>
@@ -2485,187 +2326,6 @@ const AlertsPage = () => {
                                       </div>
                                     </div>
                                   </div>
-                                  {/* <div className="tab-content">
-                                    {orgId === 2 && (
-                                      <div
-                                        className="tab-pane"
-                                        id={`otherActions_${index}`}
-                                        role="tabpanel"
-                                        aria-labelledby={`otherActionsTab_${index}`}
-                                      >
-                                        <>
-                                          <div className="m-0 text-center">
-                                            <a
-                                              href="#"
-                                              className="btn btn-small btn-flex btn-primary fw-bold fs-14 btn-new "
-                                              data-kt-menu-trigger="click"
-                                              data-kt-menu-placement="bottom-end"
-                                              onClick={handleThreatActions}
-                                            >
-                                              Other Action
-                                            </a>
-                                            <div
-                                              className="menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action"
-                                              data-kt-menu="true"
-                                            >
-                                              {showDropdown && (
-                                                <div className="px-3 py-3">
-                                                  <div className="mb-5">
-                                                    <div className="d-flex justify-content-end mb-5">
-                                                      <div>
-                                                        <div
-                                                          className="close fs-20 text-muted pointer"
-                                                          aria-label="Close"
-                                                          onClick={
-                                                            handleShowDropdown
-                                                          }
-                                                        >
-                                                          <span
-                                                            aria-hidden="true"
-                                                            style={{
-                                                              color: "inherit",
-                                                              textShadow:
-                                                                "none",
-                                                            }}
-                                                          >
-                                                            &times;
-                                                          </span>
-                                                        </div>
-                                                      </div>
-                                                    </div>
-                                                    <select
-                                                      onChange={
-                                                        handleDropdownSelect
-                                                      }
-                                                      className="form-select form-select-solid"
-                                                      data-kt-select2="true"
-                                                      data-control="select2"
-                                                      data-placeholder="Select option"
-                                                      data-allow-clear="true"
-                                                    >
-                                                      <option
-                                                        value=""
-                                                        className="p-2"
-                                                      >
-                                                        Select
-                                                      </option>
-                                                      <option
-                                                        value="MitigationAction"
-                                                        className="mb-2"
-                                                      >
-                                                        Mitigation Action
-                                                      </option>
-                                                      <option
-                                                        value="AddToBlockList"
-                                                        className="mb-2"
-                                                      >
-                                                        Add To Blocklist
-                                                      </option>
-                                                      <option
-                                                        value="AddToExclusions"
-                                                        className="p-2"
-                                                      >
-                                                        Add To Exclusions
-                                                      </option>
-                                                      <option
-                                                        value="Unquarantine"
-                                                        className="p-2"
-                                                      >
-                                                        Unquarantine
-                                                      </option>
-                                                      <option
-                                                        value="AddANote"
-                                                        className="p-2"
-                                                      >
-                                                        Add a Note
-                                                      </option>
-                                                      <option
-                                                        value="ConnectToNetwork"
-                                                        className="p-2"
-                                                      >
-                                                        Connect To Network
-                                                      </option>
-                                                      <option
-                                                        value="DisconnectFromNetwork"
-                                                        className="p-2"
-                                                      >
-                                                        Disconnect From Network
-                                                      </option>
-                                                    </select>
-                                                  </div>
-                                                </div>
-                                              )}
-                                            </div>
-                                            {showMoreActionsModal && (
-                                              <MitigationModal
-                                                show={showMoreActionsModal}
-                                                handleClose={
-                                                  handleCloseMoreActionsModal
-                                                }
-                                                handleAction={handleAction}
-                                                selectedValue={selectedValue}
-                                                selectedAlert={[
-                                                  selectedAlertId,
-                                                ]}
-                                              />
-                                            )}
-                                            {addToBlockListModal && (
-                                              <AddToBlockListModal
-                                                show={addToBlockListModal}
-                                                handleClose={
-                                                  handleCloseAddToBlockList
-                                                }
-                                                handleAction={
-                                                  handleActionAddToBlockList
-                                                }
-                                                selectedValue={selectedValue}
-                                                selectedAlert={[
-                                                  selectedAlertId,
-                                                ]}
-                                              />
-                                            )}
-                                            {addToExclusionsModal && (
-                                              <AddToExclusionsModal
-                                                show={addToExclusionsModal}
-                                                handleClose={
-                                                  handleCloseAddToExclusions
-                                                }
-                                                handleAction={
-                                                  handleActionAddToExclusions
-                                                }
-                                                selectedValue={selectedValue}
-                                                selectedAlert={[
-                                                  selectedAlertId,
-                                                ]}
-                                              />
-                                            )}
-                                            {addANoteModal && (
-                                              <AddANoteModal
-                                                show={addANoteModal}
-                                                handleClose={
-                                                  handleCloseAddANote
-                                                }
-                                                handleAction={
-                                                  handleActionAddANote
-                                                }
-                                                selectedValue={selectedValue}
-                                                selectedAlert={[
-                                                  selectedAlertId,
-                                                ]}
-                                              />
-                                            )}
-                                          </div>
-                                        </>
-                                      </div>
-                                    )}
-
-                                    <div
-                                      className="tab-pane"
-                                      id={`actions_${index}`}
-                                      role="tabpanel"
-                                      aria-labelledby={`actionsTab_${index}`}
-                                    ></div>
-                                  </div> */}
                                 </div>
                               </div>
                             </div>

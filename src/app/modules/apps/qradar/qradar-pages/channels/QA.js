@@ -12,6 +12,9 @@ import {
 } from "../../../../../api/ChannelApi";
 import { Modal, Button, Form } from "react-bootstrap";
 import { useErrorBoundary } from "react-error-boundary";
+import { notify, notifyFail } from "../components/notification/Notification";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const QA = ({ channelId, channelName }) => {
   const handleError = useErrorBoundary();
@@ -78,7 +81,12 @@ const QA = ({ channelId, channelName }) => {
     selectedAnswerId,
   ]);
 
-  const handlePostQuestion = () => {
+  const handlePostQuestion = async () => {
+    if (!questionTextRef.current.value) {
+      notifyFail('Please enter the question');
+      return;
+    }
+  
     const data = {
       channelId,
       orgId,
@@ -86,18 +94,30 @@ const QA = ({ channelId, channelName }) => {
       createdUserId,
       questionDescription: questionTextRef.current.value,
     };
-
-    fetchQuestionsAdd(data)
-      .then(() => {
+  
+    try {
+      const response = await fetchQuestionsAdd(data);
+      const { isSuccess, message } = response;
+  
+      if (isSuccess) {
+        notify(message);
         setShowQuestionModal(false);
-        fetchChannelQuestions();
-      })
-      .catch((error) => {
-        handleError(error);
-      });
+         fetchChannelQuestions(); 
+      } else {
+        notifyFail(message);
+      }
+    } catch (error) {
+      handleError(error);
+    }
   };
+  
 
-  const handleAddAnswer = () => {
+  const handleAddAnswer = async () => {
+    if (!answerTextRef.current.value) {
+      notifyFail('Please enter the Answer');
+      return;
+    }
+  
     const data = {
       channelId,
       orgId,
@@ -106,18 +126,29 @@ const QA = ({ channelId, channelName }) => {
       channelQuestionId: selectedQuestionId,
       answerDescription: answerTextRef.current.value,
     };
-
-    fetchQuestionsAnswerAdd(data)
-      .then(() => {
+  
+    try {
+      const response = await fetchQuestionsAnswerAdd(data);
+      const { isSuccess, message } = response;
+  
+      if (isSuccess) {
+        notify(message);
         setShowAnswerModal(false);
-        fetchChannelQuestions();
-      })
-      .catch((error) => {
-        handleError(error);
-      });
+        fetchChannelQuestions(); 
+      } else {
+        notifyFail(message);
+      }
+    } catch (error) {
+      handleError(error);
+    }
   };
+  
 
-  const handleEditQuestion = () => {
+  const handleEditQuestion = async () => {
+    if (!EditQuestionTextRef.current.value) {
+      notifyFail('Please enter the Question');
+      return;
+    }
     const data = {
       channelId,
       orgId,
@@ -126,16 +157,23 @@ const QA = ({ channelId, channelName }) => {
       questionId: selectedQuestionId,
       questionDescription: EditQuestionTextRef.current.value,
     };
-
-    fetchQuestionsUpdate(data)
-      .then(() => {
+  
+    try {
+      const response = await fetchQuestionsUpdate(data);
+      const { isSuccess, message } = response;
+  
+      if (isSuccess) {
+        notify(message);
         setShowEditQuestionModal(false);
-        fetchChannelQuestions();
-      })
-      .catch((error) => {
-        handleError(error);
-      });
+      fetchChannelQuestions(); 
+      } else {
+        notifyFail(message);
+      }
+    } catch (error) {
+      handleError(error);
+    }
   };
+  
 
   const handleDeleteQuestion = async () => {
     try {
@@ -144,15 +182,27 @@ const QA = ({ channelId, channelName }) => {
         deletedDate: createdDate,
         deletedUserId: createdUserId,
       };
-
-      await fetchQuestionsDelete(data);
-      fetchChannelQuestions();
+  
+      const response = await fetchQuestionsDelete(data);
+      const { isSuccess, message } = response;
+  
+      if (isSuccess) {
+        notify(message);
+        fetchChannelQuestions(); 
+      } else {
+        notifyFail(message);
+      }
     } catch (error) {
       handleError(error);
     }
   };
+  
 
-  const handleEditAnswer = () => {
+  const handleEditAnswer = async () => {
+    if (!EditanswerTextRef.current.value) {
+      notifyFail('Please enter the Answer');
+      return;
+    }
     const data = {
       channelId,
       orgId,
@@ -162,17 +212,22 @@ const QA = ({ channelId, channelName }) => {
       answerDescription: EditanswerTextRef.current.value,
       answerId: selectedAnswerId,
     };
-
-    fetchQuestionsAnswereUpdate(data)
-      .then(() => {
+  
+    try {
+      const response = await fetchQuestionsAnswereUpdate(data);
+      const { isSuccess, message } = response;
+  
+      if (isSuccess) {
+        notify(message);
         setShowEditModal(false);
-        fetchChannelQuestions();
-      })
-      .catch((error) => {
-        handleError(error);
-      });
+       fetchChannelQuestions();
+      } else {
+        notifyFail(message);
+      }
+    } catch (error) {
+      handleError(error);
+    }
   };
-
   const handleDeleteAnswer = async () => {
     try {
       const data = {
@@ -180,16 +235,25 @@ const QA = ({ channelId, channelName }) => {
         deletedDate: createdDate,
         deletedUserId: createdUserId,
       };
-
-      await fetchQuestionsAnswerDelete(data);
-      fetchChannelQuestions();
+  
+      const response = await fetchQuestionsAnswerDelete(data);
+      const { isSuccess, message } = response;
+  
+      if (isSuccess) {
+        notify(message);
+         fetchChannelQuestions();
+      } else {
+        notifyFail(message);
+      }
     } catch (error) {
       handleError(error);
     }
   };
+  
 
   return (
     <div>
+       <ToastContainer />
       <div className="clearfix">
         <p className="float-left channel-heading">
           <strong>{channelName}</strong>

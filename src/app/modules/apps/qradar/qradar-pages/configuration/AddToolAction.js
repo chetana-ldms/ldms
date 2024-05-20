@@ -142,7 +142,7 @@ const AddToolAction = () => {
                   required
                 >
                   <option value="">Select</option>
-                  {toolTypes.map((item, index) => (
+                  {toolTypes?.map((item, index) => (
                     <option value={item.dataID} key={index}>
                       {item.dataValue}
                     </option>
@@ -168,7 +168,7 @@ const AddToolAction = () => {
                   required
                 >
                   <option value="">Select</option>
-                  {ldpTools.map((item, index) => (
+                  {ldpTools?.map((item, index) => (
                     <option value={item.toolId} key={index}>
                       {item.toolName}
                     </option>

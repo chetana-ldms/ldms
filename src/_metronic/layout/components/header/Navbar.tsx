@@ -52,15 +52,12 @@ const Navbar = () => {
   const [siteName, setSiteName] = useState<string>('');
   const [groupName, setGroupName] = useState<string>('');
   const [toolExpireMessage, setToolExpireMessage] = useState<string | ToolExpireMessage>('');
-  console.log(toolExpireMessage, "toolExpireMessage")
   const [accountsStructure, setAccountsStructure] = useState<Account[]>([]);
-  console.log(accountsStructure, "accountsStructure");
   const [showDropdown, setShowDropdown] = useState<boolean>(false); 
   const ownerUserId = Number(sessionStorage.getItem('userId'));
   const [organizations, setOrganizations] = useState<{ orgID: number; orgName: string }[]>([]);
   const orgId = Number(sessionStorage.getItem('orgId'));
   const accountNameDefoult = sessionStorage.getItem('accountName');
-  console.log(accountNameDefoult, "accountNameDefoult")
  
   useEffect(() => {
     const fetchData = async () => {
@@ -216,13 +213,15 @@ const orgNames = organizations
             {`/ ${accountName || accountNames}`} 
         </Dropdown.Toggle>
         <Dropdown.Menu>
-            {accountsStructure
-                ?.find(account => account.name === (accountName || accountNames))
-                ?.sites.map((site, siteIndex) => (
-                    <Dropdown.Item key={siteIndex} onClick={() => handleAccordionClick(site.name, site.siteId)}>
-                        {site.name} {site.activeLicenses}
-                    </Dropdown.Item>
-                ))}
+        {accountsStructure
+    ?.find(account => account.name === (accountName || accountNames))
+    ?.sites
+    ?.map((site, siteIndex) => (
+        <Dropdown.Item key={siteIndex} onClick={() => handleAccordionClick(site.name, site.siteId)}>
+            {site.name} {site.activeLicenses}
+        </Dropdown.Item>
+    ))}
+
         </Dropdown.Menu>
     </Dropdown>
 ) : null}

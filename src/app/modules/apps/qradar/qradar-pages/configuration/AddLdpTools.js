@@ -72,7 +72,7 @@ const AddLdpTools = () => {
       <div className="card-header bg-heading mb-5">
         <h3 className="card-title">
           <span className="card-label white fs-3 mb-1">
-            Configure New LDP Tool
+            Add New LDC Tool
           </span>
         </h3>
         <div className="card-toolbar">

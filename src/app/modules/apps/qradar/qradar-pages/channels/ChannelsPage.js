@@ -40,30 +40,45 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
   };
 
   const handleSubmit = async () => {
+    if (!channelNames.current.value) {
+      notifyFail('Enter The Channel Name')
+      return
+    }
+
+    if (!channelDescriptions.current.value) {
+      notifyFail('Enter the Description')
+      return
+    }
     const data = {
       channelName: channelNames.current.value,
       channelDescription: channelDescriptions.current.value,
       displayOrder: 0,
       orgId,
-      // "msTeamsTeamsId": "string",
-      // "msTeamsChannelId": "string",
-      createdDate,
-      createdUserId,
+      createdDate : new Date().toISOString(),
+      createdUserId : Number(sessionStorage.getItem("userId")),
     };
-
-    await fetchChannelsAdd(data);
-    // const newChannel = { channelName: channelName, channelDescription: channelDescription };
+  
     try {
-      const result = await fetchChannels(orgId);
-      // setChannels(data);
-      onAdd(result[result.length - 1]);
+      const response = await fetchChannelsAdd(data);
+      const {isSuccess, message} = response
+      if (isSuccess) {
+        notify(message);
+        try {
+          const result = await fetchChannels(orgId);
+          onAdd(result[result.length - 1]);
+        } catch (error) {
+          console.log(error);
+        }
+  
+        onClose();
+      } else {
+        notifyFail(message);
+      }
     } catch (error) {
-      console.log(error);
+      console.log('Error adding channel:', error);
     }
-
-    onClose();
-    setShowSuccessMessage(true);
   };
+  
 
   const handleModalClose = () => {
     setChannelName("");
@@ -85,13 +100,6 @@ const NewChannelModal = ({ show, onClose, onAdd }) => {
         </button>
       </Modal.Header>
       <Modal.Body>
-        {
-          showSuccessMessage && (
-            <Alert variant="primary" className="fs-14">
-              Your request to add new channel will be processed within 24Hrs.
-            </Alert>
-          ) // show success message if the showSuccessMessage is true
-        }
         <Form className="form-section">
           <Form.Group controlId="channelName">
             <Form.Label>Channel name</Form.Label>
@@ -193,11 +201,11 @@ const ChannelsPage = () => {
   };
   const handleAccordionToggle = async (channelId) => {
     try {
-      const channelData = await fetchChannelDetails(channelId); // Call the API to fetch channel data
+      const channelData = await fetchChannelDetails(channelId); 
       setChannels((prevChannels) => {
         return prevChannels.map((channel) => {
           if (channel.channelId === channelId) {
-            setSelectedChannel(channelData); // Set the selected channel with the fetched data
+            setSelectedChannel(channelData);
             return {
               ...channel,
               isAccordionOpen: !channel.isAccordionOpen,
@@ -216,7 +224,6 @@ const ChannelsPage = () => {
     setChannels([...channels, channel]);
   };
 
-  // Render different templates based on channelTypeName
   const renderChannelTemplate = (channel) => {
     switch (channel.channelTypeName) {
       case "Report":
@@ -255,17 +262,28 @@ const ChannelsPage = () => {
         return (
           <div>
             <p>This is a default channel template.</p>
-            {/* Add more content for the default template */}
           </div>
         );
     }
   };
   const handleSave = async (channelId) => {
+    if (!channelNames.current.value) {
+      notifyFail('Enter The Channel Name')
+      return
+    }
+
+    if (!channelDescriptions.current.value) {
+      notifyFail('Enter the Description')
+      return
+    }
+    if (!channelTypes.current.value) {
+      notifyFail('Enter the Channel Type')
+      return
+    }
     const data = {
       channelId: channelId,
       channelName: channelNames.current.value,
       channelDescription: channelDescriptions.current.value,
-      // channelTypeId: channelTypes.current.value,
       channelTypeId: selectedChannel.selectedChannelID,
       displayOrder: 0,
       orgId,
@@ -277,11 +295,17 @@ const ChannelsPage = () => {
       const response = await fetchChannelsUpdate(data);
       handleAccordionToggle(channelId);
       fetchData();
+      const {isSuccess, message} = response;
+      if (isSuccess) {
+        notify(message);
+        fetchData();
+      } else {
+        notifyFail(message);
+      }
     } catch (error) {
       console.log(error);
     }
   };
-
   return (
     <div className="channel-list channels-page">
       <ToastContainer />

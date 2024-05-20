@@ -85,7 +85,7 @@ const Organizations = () => {
         </h3>
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">
-            {userID === 1 ? (
+            {globalAdminRole === 1 ? (
               <Link
                 to="/qradar/organizations/add"
                 className="btn btn-new btn-small"
@@ -122,7 +122,7 @@ const Organizations = () => {
                 <tr key={index} className="fs-12 table-row">
                   <td>{item.orgID}</td>
                   <td>{item.orgName}</td>
-                  <td className="wrap-txt" title="{item.address}">
+                  <td className="wrap-txt" title={item.address}>
                     {item.address}
                   </td>
                   <td>{item.mobileNo}</td>

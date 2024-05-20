@@ -344,7 +344,7 @@ export const fetchUsersUrl = async (orgId) => {
       }),
     });
     const responseData = await response.json();
-    const usersList = responseData.usersList;
+    const usersList = responseData?.usersList;
     return usersList;
   } catch (error) {
     console.log(error);
