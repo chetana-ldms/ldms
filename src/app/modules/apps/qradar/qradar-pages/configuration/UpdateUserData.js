@@ -1,7 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
 import {fetchOrganizations, fetchRoles} from '../../../../../api/Api'
-import {fetchUserDetails, fetchUserUpdateUrl} from '../../../../../api/ConfigurationApi'
+import {fetchRolesUrl, fetchUserDetails, fetchUserUpdateUrl} from '../../../../../api/ConfigurationApi'
 import axios from 'axios'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {useErrorBoundary} from 'react-error-boundary'
@@ -11,6 +11,7 @@ const UpdateUserData = () => {
   const handleError = useErrorBoundary()
   const orgId = Number(sessionStorage.getItem('orgId'))
   const roleID = Number(sessionStorage.getItem('roleID'))
+  const userID = Number(sessionStorage.getItem("userId"));
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [roleTypes, setRoleTypes] = useState([])
@@ -116,7 +117,7 @@ const UpdateUserData = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchRoles(orgId)
+        const data = await fetchRolesUrl(orgId, userID )
         setRoleTypes(data)
       } catch (error) {
         handleError(error)

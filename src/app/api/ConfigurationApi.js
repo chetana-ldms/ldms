@@ -332,15 +332,16 @@ export const fetchOrganizationUpdateUrl = async (data) => {
     console.log(error);
   }
 };
-export const fetchUsersUrl = async (orgId) => {
+export const fetchUsersUrl = async (orgId, userID) => {
   try {
-    const response = await fetch(`${UsersUrl}?orgId=${orgId}`, {
+    const response = await fetch(`${UsersUrl}?orgId=${orgId}&userid=${userID}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         orgId,
+        userID,
       }),
     });
     const responseData = await response.json();
@@ -351,15 +352,16 @@ export const fetchUsersUrl = async (orgId) => {
   }
 };
 
-export const fetchRolesUrl = async (orgId) => {
+export const fetchRolesUrl = async (orgId, userID) => {
   try {
-    const response = await fetch(`${RolesUrl}?orgId=${orgId}`, {
+    const response = await fetch(`${RolesUrl}?orgId=${orgId}&userid=${userID}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         orgId,
+        userID,
       }),
     });
     const responseData = await response.json();

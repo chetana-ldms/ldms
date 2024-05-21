@@ -10,6 +10,8 @@ import { toAbsoluteUrl} from '../../../../helpers'
 const SidebarMenuMain = () => {
   const intl = useIntl()
   const orgId = Number(sessionStorage.getItem('orgId'));
+  const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
+  const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
 
   return (
     <>
@@ -87,11 +89,14 @@ const SidebarMenuMain = () => {
         <SidebarMenuItem hasBullet={true} to='/qradar/users-data/list' title='Users' />
         <SidebarMenuItem hasBullet={true} to='/qradar/organization-tools/list' title='Organization Tools' />
         <SidebarMenuItem hasBullet={true} to='/qradar/ldp-tools/list' title='LDC Tools' />
-        <SidebarMenuItem hasBullet={true} to='/qradar/rules-engine/list' title='Rules' />
-        <SidebarMenuItem hasBullet={true} to='/qradar/rules-actions/list' title='Rules Actions' />
+        {/* <SidebarMenuItem hasBullet={true} to='/qradar/rules-engine/list' title='Rules' />
+        <SidebarMenuItem hasBullet={true} to='/qradar/rules-actions/list' title='Rules Actions' /> */}
         <SidebarMenuItem hasBullet={true} to='/qradar/tool-actions/list' title='Tool Actions' />
         <SidebarMenuItem hasBullet={true} to='/qradar/tool-type-actions/list' title='Tool Type Actions' />
-        <SidebarMenuItem hasBullet={true} to='/qradar/roles-data/list' title='Roles' />
+        {(globalAdminRole === 1 || clientAdminRole === 1) && (
+          <SidebarMenuItem hasBullet={true} to='/qradar/roles-data/list' title='Roles' />
+        )}
+
         {/* <SidebarMenuItem hasBullet={true} to='/qradar/master-data/list' title='Master Data' /> */}
 
         {/* <SidebarMenuItem hasBullet={true} to='/qradar/master-data/list' title='Master Data' /> */}
@@ -131,13 +136,13 @@ const SidebarMenuMain = () => {
         icon='/media/icons/duotune/general/gen017.svg'
       /> */}
 
-      <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen003.svg' title='Playbook'>
+      {/* <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen003.svg' title='Playbook'>
         <SidebarMenuItem hasBullet={true} to='/qradar/demo/v1' title='Alert Types' />
         <SidebarMenuItem hasBullet={true} to='/qradar/demoalert/updated' title='Playbook Alert' />
         <SidebarMenuItem hasBullet={true} to='/qradar/demoplaybooks' title='Alert Playbooks' />
-      </SidebarMenuItemWithSub>
+      </SidebarMenuItemWithSub> */}
 
-      <div className='d-flex align-items-center honeypot mt-1'>
+      {/* <div className='d-flex align-items-center honeypot mt-1'>
       <a
         href="https://honeypot.run/auth"
         target="_blank"
@@ -145,7 +150,6 @@ const SidebarMenuMain = () => {
         className="white"
         
       >
-        {/* <i className='fa fa-search me-3 fs-15'/> */}
         <img
             alt='Logo'
             src={toAbsoluteUrl('/media/honeypot.png')}
@@ -154,7 +158,7 @@ const SidebarMenuMain = () => {
         
         Honeypot
       </a>
-    </div>
+    </div> */}
       
       
        

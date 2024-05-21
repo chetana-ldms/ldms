@@ -2,7 +2,7 @@ import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {fetchOrganizations, fetchRoles} from '../../../../../api/Api'
 import axios from 'axios'
-import {fetchUserAddUrl} from '../../../../../api/ConfigurationApi'
+import {fetchRolesUrl, fetchUserAddUrl} from '../../../../../api/ConfigurationApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {useErrorBoundary} from 'react-error-boundary'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
@@ -12,6 +12,7 @@ const AddUserData = () => {
   const handleError = useErrorBoundary()
   const orgId = Number(sessionStorage.getItem('orgId'))
   const roleID = Number(sessionStorage.getItem('roleID'))
+  const userID = Number(sessionStorage.getItem("userId"));
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [roleTypes, setRoleTypes] = useState([])
@@ -71,16 +72,16 @@ const AddUserData = () => {
 
     event.preventDefault()
     const createdUserId = Number(sessionStorage.getItem('userId'))
-    const createdDete = new Date().toISOString()
+    const createdDate = new Date().toISOString()
     // const orgId = sessionStorage.getItem('orgId')
     var data = {
       name: userName.current.value,
       emailId: userEmail.current.value,
-      roleID: roleType.current.value,
+      roleID: Number(roleType.current.value),
       orgId: Number(orgID.current.value),
       sysUser: 0,
       createdUserId,
-      createdDete,
+      createdDate,
     }
     try {
       const responseData = await fetchUserAddUrl(data)
@@ -103,7 +104,7 @@ const AddUserData = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchRoles(orgId)
+        const data = await fetchRolesUrl(orgId, userID )
         setRoleTypes(data)
       } catch (error) {
         handleError(error)

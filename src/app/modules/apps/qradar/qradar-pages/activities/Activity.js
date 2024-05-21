@@ -9,6 +9,8 @@ import { getCurrentTimeZone } from "../../../../../../utils/helper";
 import ReactPaginate from "react-paginate";
 import { fetchUsersUrl } from "../../../../../api/ConfigurationApi";
 import Select from "react-select";
+import { ToastContainer } from "react-toastify";
+import { notifyFail } from "../components/notification/Notification";
 
 function Activity() {
   const [activity, setActivity] = useState([]);
@@ -20,6 +22,7 @@ function Activity() {
   const [selectedFromDate, setSelectedFromDate] = useState(null);
   const [selectedToDate, setSelectedToDate] = useState(null);
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const userID = Number(sessionStorage.getItem("userId"));
   const [limit, setLimit] = useState(20);
   const [pageCount, setPageCount] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false)
@@ -29,7 +32,7 @@ function Activity() {
   const reload = async () => {
     try {
       setLoading(true);
-      const data = await fetchUsersUrl(orgId);
+      const data = await fetchUsersUrl(orgId, userID);
       setUsers(data);
       setLoading(false);
     } catch (error) {
@@ -134,8 +137,8 @@ function Activity() {
     setSelectedActivityTypes(selectedOptions);
   };
 
-  const userOptions = users.map((user) => ({ label: user.name, value: user }));
-  const activityTypeOptions = activityType.map((type) => ({
+  const userOptions = users?.map((user) => ({ label: user.name, value: user }));
+  const activityTypeOptions = activityType?.map((type) => ({
     label: type.typeName,
     value: type,
   }));
@@ -156,12 +159,17 @@ function Activity() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (selectedToDate < selectedFromDate) {
+      notifyFail('From date should be less then to Date')
+      setLoading(false)
+      return
+    }
 
     const selectedUserIDs = selectedUsers?.value?.userID
       ? selectedUsers.value.userID
       : 0;
-    const selectedActivityTypeIDs = selectedActivityTypes.map(
-      (activityType) => activityType.value.activityTypeId
+    const selectedActivityTypeIDs = selectedActivityTypes?.map(
+      (activityType) => activityType?.value?.activityTypeId
     );
 
     const data = {
@@ -186,10 +194,10 @@ function Activity() {
       console.error(error);
     } finally {
       setLoading(false);
-      setSelectedUsers([]);
-      setSelectedActivityTypes([]);
-      setSelectedFromDate(null);
-      setSelectedToDate(null);
+      // setSelectedUsers([]);
+      // setSelectedActivityTypes([]);
+      // setSelectedFromDate(null);
+      // setSelectedToDate(null);
     }
   };
   const handleRefresh = (event) => {
@@ -200,7 +208,8 @@ function Activity() {
   }
 
   return (
-    <div className="activity-timeline">
+    <div className="activity-timeline">   
+    <ToastContainer />
       <h1 className="mb-5">Activity</h1>
       <div className="card header-filter mb-5 pad-10">
         <div className="d-flex">

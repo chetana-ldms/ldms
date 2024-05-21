@@ -18,6 +18,7 @@ const RoleData = () => {
   const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
   const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const userID = Number(sessionStorage.getItem("userId"));
   const orgIdFromSession = Number(sessionStorage.getItem("orgId"));
   const [selectedOrganization, setSelectedOrganization] = useState(
     orgIdFromSession
@@ -31,8 +32,7 @@ const RoleData = () => {
   const reload = async () => {
     try {
       setLoading(true);
-      // const orgId = Number(sessionStorage.getItem('orgId'));
-      const data = await fetchRolesUrl(orgId);
+      const data = await fetchRolesUrl(orgId, userID);
       setRoles(data);
       setLoading(false);
     } catch (error) {
@@ -78,30 +78,6 @@ const RoleData = () => {
     setShowConfirmation(false);
     setItemToDelete(null);
   };
-  // const handleDelete = async (item) => {
-  //   console.log(item, "item");
-  //   const deletedUserId = Number(sessionStorage.getItem("userId"));
-  //   const deletedDate = new Date().toISOString();
-  //   const data = {
-  //     roleID: item.roleID,
-  //     deletedDate,
-  //     deletedUserId,
-  //   };
-  //   try {
-  //     setLoading(true);
-  //     const responce = await fetchRolesDeleteUrl(data);
-  //     if (responce.isSuccess) {
-  //       notify("Role Deleted");
-  //     } else {
-  //       notifyFail("You cannot delete the system roles");
-  //     }
-  //     await reload();
-  //     setLoading(false);
-  //   } catch (error) {
-  //     setLoading(false);
-  //     handleError(error);
-  //   }
-  // };
   return (
     <div className="config card pad-10">
       <ToastContainer />

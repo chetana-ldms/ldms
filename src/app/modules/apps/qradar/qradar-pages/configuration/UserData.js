@@ -75,7 +75,8 @@ const UserData = () => {
     try {
       setLoading(true);
       // const orgId = Number(sessionStorage.getItem('orgId'));
-      const data = await fetchUsersUrl(selectedOrganization);
+      const data = await fetchUsersUrl(selectedOrganization, userID);
+      console.log(data, "data111")
       setUsers(data);
       setLoading(false);
     } catch (error) {
@@ -85,7 +86,10 @@ const UserData = () => {
   };
 
   useEffect(() => {
-    reload();
+    const timer = setTimeout(() => {
+      reload();
+    }, 300); 
+    return () => clearTimeout(timer);
   }, [selectedOrganization]);
   const handleOrganizationChange = (e) => {
     const newOrganizationId = Number(e.target.value);
