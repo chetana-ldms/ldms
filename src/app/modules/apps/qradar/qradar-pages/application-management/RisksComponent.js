@@ -12,6 +12,7 @@ import {
 } from "reactstrap";
 import { renderSortIcon, sortedItems } from "../../../../../../utils/Sorting";
 import Pagination from "../../../../../../utils/Pagination";
+import { fetchExportDataAddUrl } from "../../../../../api/Api";
 
 function RisksComponent() {
   const [dropdownOpen, setDropdownOpen] = useState(false); 
@@ -97,15 +98,37 @@ function RisksComponent() {
   };
 
   // Function to extract full table data
-  const exportTableToCSV = () => {
+  const exportTableToCSV = async () => {
     const tableData = extractTableData(filteredList);
     exportToCSV(tableData);
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Risk"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Function to extract current pagination table data
-  const exportCurrentTableToCSV = () => {
+  const exportCurrentTableToCSV = async () => {
     const tableData = extractTableData(currentItems);
     exportToCSV(tableData);
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Risk"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const extractTableData = (items) => {

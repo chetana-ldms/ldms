@@ -9,6 +9,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import { fetchExportDataAddUrl } from "../../../../../api/Api";
 
 function SignificantIncident() {
   const handleError = useErrorBoundary();
@@ -136,7 +137,7 @@ function SignificantIncident() {
   const endDate = today.toLocaleDateString("en-GB");
 
   //Export to PDF
-  const exportToPDF = () => {
+  const exportToPDF = async () => {
     const doc = new jsPDF();
     doc.autoTable({
       head: [["Status Name", "Percentage", "Alert Count"]],
@@ -147,11 +148,22 @@ function SignificantIncident() {
       ]),
     });
     doc.save("significant_incident_summary.pdf");
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Significant incident Report"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   //Export to CSV
 
-  const exportToExcel = () => {
+  const exportToExcel = async () => {
     const csvContent = [
       ["Status Name", "Percentage", "Alert Count"],
       ...alertData.map((alert) =>
@@ -173,6 +185,17 @@ function SignificantIncident() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    }
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Significant incident Report"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
     }
   };
 

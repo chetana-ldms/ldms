@@ -10,6 +10,7 @@ import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import BlockListEditPopup from './BlockListEditPopup'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
+import { fetchExportDataAddUrl } from '../../../../../api/Api'
 
 function BlockList() {
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -232,15 +233,37 @@ function BlockList() {
   }
 
   // Function to extract full table data
-  const exportTableToCSV = () => {
+  const exportTableToCSV = async () => {
     const tableData = extractTableData(filteredList)
     exportToCSV(tableData)
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Block List"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   // Function to extract current pagination table data
-  const exportCurrentTableToCSV = () => {
+  const exportCurrentTableToCSV = async () => {
     const tableData = extractTableData(currentItems)
     exportToCSV(tableData)
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Block List"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   }
   const handleFilterChange = (event) => {
     setFilterValue(event.target.value)

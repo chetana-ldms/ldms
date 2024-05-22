@@ -84,15 +84,31 @@ const SidebarMenuMain = () => {
         title='Configuration'
       >
 
-
-        <SidebarMenuItem hasBullet={true} to='/qradar/organizations/list' title='Organizations' />
+        {
+          globalAdminRole === 1 &&
+          <SidebarMenuItem hasBullet={true} to='/qradar/organizations/list' title='Organizations' />
+        }
+        {(globalAdminRole === 1 || clientAdminRole === 1) && (
         <SidebarMenuItem hasBullet={true} to='/qradar/users-data/list' title='Users' />
+        )}
+        {
+       globalAdminRole === 1 &&
         <SidebarMenuItem hasBullet={true} to='/qradar/organization-tools/list' title='Organization Tools' />
+        }
+      {
+        globalAdminRole === 1 &&
         <SidebarMenuItem hasBullet={true} to='/qradar/ldp-tools/list' title='LDC Tools' />
+        }
         {/* <SidebarMenuItem hasBullet={true} to='/qradar/rules-engine/list' title='Rules' />
         <SidebarMenuItem hasBullet={true} to='/qradar/rules-actions/list' title='Rules Actions' /> */}
+        {
+        globalAdminRole === 1 &&
         <SidebarMenuItem hasBullet={true} to='/qradar/tool-actions/list' title='Tool Actions' />
+        }
+        {
+          globalAdminRole === 1 &&
         <SidebarMenuItem hasBullet={true} to='/qradar/tool-type-actions/list' title='Tool Type Actions' />
+         }
         {(globalAdminRole === 1 || clientAdminRole === 1) && (
           <SidebarMenuItem hasBullet={true} to='/qradar/roles-data/list' title='Roles' />
         )}
@@ -112,11 +128,13 @@ const SidebarMenuMain = () => {
           to='/qradar/tasks/list'
           title='My Tasks'
         />
+         {(globalAdminRole === 1 || clientAdminRole === 1) && (
          <SidebarMenuItem
           icon='/media/icons/duotune/coding/cod001.svg'
           to='/qradar/settings/list'
           title='Settings'
         />
+         )}
          <SidebarMenuItem
           icon='/media/icons/duotune/communication/com009.svg'
           to='/qradar/activity/list'

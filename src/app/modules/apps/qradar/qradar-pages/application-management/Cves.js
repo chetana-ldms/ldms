@@ -10,6 +10,7 @@ import {
   DropdownItem,
 } from "reactstrap";
 import Pagination from "../../../../../../utils/Pagination";
+import { fetchExportDataAddUrl } from "../../../../../api/Api";
 
 function Cves({ id }) {
   const [currentPage, setCurrentPage] = useState(0)
@@ -73,9 +74,20 @@ function Cves({ id }) {
     }
   };
 
-  const exportTableToCSV = () => {
+  const exportTableToCSV = async () => {
     const tableData = extractTableData(endpoints);
     exportToCSV(tableData);
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Cves"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // let { id } = useParams();

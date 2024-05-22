@@ -6,6 +6,7 @@ import InventoryEndpointPopUp from './InventoryEndpointPopUp'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
 import {renderSortIcon, sortTable, sortedItems} from '../../../../../../utils/Sorting'
 import Pagination from '../../../../../../utils/Pagination'
+import { fetchExportDataAddUrl } from '../../../../../api/Api'
 
 function InventoryComponent() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -47,14 +48,36 @@ function InventoryComponent() {
     }
   }
 
-  const exportTableToCSV = () => {
-    const fullData = extractTableData(filteredList)
-    exportToCSV(fullData)
-  }
+  const exportTableToCSV = async () => {
+    const fullData = extractTableData(filteredList);
+    exportToCSV(fullData);
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Inventory"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  const exportCurrentTableToCSV = () => {
+  const exportCurrentTableToCSV = async() => {
     const currentData = extractTableData(currentItems)
     exportToCSV(currentData)
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Inventory"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   // Initialize states and data fetching

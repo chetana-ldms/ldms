@@ -54,10 +54,11 @@ function UsersProfile() {
   const reload = async () => {
     try {
       setLoading(true);
-      // const orgId = Number(sessionStorage.getItem('orgId'));
+      const orgId = Number(sessionStorage.getItem('orgId'));
       // const data = await fetchUsersUrl(orgId);
 
-      const data = await fetchUsersUrl(selectedOrganization);
+      // const data = await fetchUsersUrl(selectedOrganization);
+      const data = await fetchUsersUrl(orgId, userID);
       setUserProfiles(data);
       setLoading(false);
     } catch (error) {
@@ -68,7 +69,7 @@ function UsersProfile() {
 
   useEffect(() => {
     reload();
-  }, [selectedOrganization]);
+  }, []);
 
   const handleShowChangePwdModal = (userID) => {
     setSelectedUserID(userID);
@@ -107,29 +108,6 @@ function UsersProfile() {
     }
     setShowChangePwdModal(false);
   };
-
-  // const handleResetPassword = async (selectedUserID) => {
-  //   var data = {
-  //     modifiedUserId: userID,
-  //     modifiedDate: date,
-  //     userId: selectedUserID,
-  //   }
-  //   try {
-  //     setLoading(true)
-  //     const responseData = await fetchResetPasswordUrl(data)
-  //     const {isSuccess} = responseData
-
-  //     if (isSuccess) {
-  //       notify('Password Reset Successful')
-  //     } else {
-  //       notifyFail('Failed to reset the Password')
-  //     }
-  //     setLoading(false)
-  //   } catch (error) {
-  //     setLoading(false)
-  //     handleError(error)
-  //   }
-  // }
 
   const handleDelete = async (userID) => {
     const deletedUserId = Number(sessionStorage.getItem("userId"));
@@ -170,7 +148,7 @@ function UsersProfile() {
             </div>
           </div>
 
-          <div className="col-lg-7">
+          {/* <div className="col-lg-7">
             <div className="row">
               <label className="form-label fw-normal fs-12 col-lg-2 lh-40 fc-gray fs-14">
                 <span>Organization:</span>
@@ -204,7 +182,7 @@ function UsersProfile() {
                 </select>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         {loading ? (
           <UsersListLoading />
@@ -215,6 +193,7 @@ function UsersProfile() {
                 <th>User ID</th>
                 <th>Name</th>
                 <th>Role</th>
+                <th>Email</th>
                 <th align="right"></th>
               </tr>
             </thead>
@@ -222,13 +201,13 @@ function UsersProfile() {
               {userProfiles ? (
                 userProfiles.map(
                   (profile) =>
-                    (globalAdminRole === 1 ||
-                      clientAdminRole === 1 ||
+                    (
                       userID === profile.userID) && (
                       <tr key={profile.userID}>
                         <td>{profile.userID}</td>
                         <td>{profile.name}</td>
                         <td>{profile.roleName}</td>
+                        <td>{profile.emailId}</td>
                         <td align="right">
                           {userID == profile.userID && (
                             <span
@@ -241,15 +220,7 @@ function UsersProfile() {
                             </span>
                           )}
                           {"  "}
-                          {/* {globalAdminRole == 1 && (
-                            <span
-                              className='btn btn-small btn-new btn-primary'
-                              onClick={() => handleResetPassword(profile.userID)}
-                            >
-                              Reset pwd <i className='fa fa-pencil' />
-                            </span>
-                          )}{'  '} */}
-                          {globalAdminRole === 1 ? (
+                          {/* {globalAdminRole === 1 ? (
                             <span
                               className="btn btn-small btn-danger"
                               style={{ fontSize: "14px" }}
@@ -267,7 +238,7 @@ function UsersProfile() {
                             >
                               Delete <i className="fa fa-trash" />
                             </span>
-                          )}
+                          )} */}
                         </td>
                       </tr>
                     )

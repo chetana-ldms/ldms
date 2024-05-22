@@ -9,6 +9,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import { fetchExportDataAddUrl } from "../../../../../api/Api";
 
 function AlertsRule() {
   const handleError = useErrorBoundary();
@@ -120,7 +121,7 @@ function AlertsRule() {
   const endDate = today.toLocaleDateString("en-GB");
 
   // Function to handle CSV export
-  const handleExportCSV = () => {
+  const handleExportCSV = async () => {
     // Generate CSV content
     const csvContent =
       "Alert Rule, Alert Count\n" +
@@ -136,10 +137,21 @@ function AlertsRule() {
 
     // Trigger the click event to download the file
     link.click();
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Alerts Rule Report"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Function to handle PDF export
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     // Generate PDF file here
     const doc = new jsPDF();
     doc.autoTable({
@@ -147,6 +159,17 @@ function AlertsRule() {
       body: alertData.map((item) => [item.label, item.y]),
     });
     doc.save("alerts_report.pdf");
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Alerts Rule Report"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

@@ -9,6 +9,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import { fetchExportDataAddUrl } from "../../../../../api/Api";
 
 function ClosedIncidentReport() {
   const handleError = useErrorBoundary();
@@ -129,7 +130,7 @@ function ClosedIncidentReport() {
   const endDate = today.toLocaleDateString("en-GB");
 
   // Function to export data to Excel
-  const exportToExcel = () => {
+  const exportToExcel = async () => {
     // Convert alertData to CSV format
     const csvContent =
       "data:text/csv;charset=utf-8," +
@@ -150,10 +151,21 @@ function ClosedIncidentReport() {
 
     // Clean up
     document.body.removeChild(link);
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Closed incident Report"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Function to export data to PDF
-  const exportToPDF = () => {
+  const exportToPDF = async () => {
     // Create a new jsPDF instance
     const doc = new jsPDF();
     doc.autoTable({
@@ -163,6 +175,17 @@ function ClosedIncidentReport() {
 
     // Save the PDF
     doc.save("closed_incident_report.pdf");
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Closed incident Report"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

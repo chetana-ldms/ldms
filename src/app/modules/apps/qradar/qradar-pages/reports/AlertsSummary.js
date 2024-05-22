@@ -9,6 +9,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import { fetchExportDataAddUrl } from "../../../../../api/Api";
 
 function AlertsSummary() {
   const handleError = useErrorBoundary();
@@ -134,7 +135,7 @@ function AlertsSummary() {
   const endDate = today.toLocaleDateString("en-GB");
 
   // Function to handle export to Excel
-  const exportToExcel = () => {
+  const exportToExcel = async () => {
     // Define header text
     const headerText = `Alerts Summary for the last year (${startDate} to ${endDate})`;
 
@@ -167,10 +168,21 @@ function AlertsSummary() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Alerts Summary Report"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Function to handle export to PDF
-  const exportToPDF = () => {
+  const exportToPDF = async () => {
     const content = document.getElementById("alertsSummary");
     if (!content) {
       console.error("Element with ID 'alertsSummary' not found.");
@@ -198,6 +210,17 @@ function AlertsSummary() {
     });
 
     doc.save("alerts_summary.pdf");
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Alerts Summary Report"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Function to handle export based on selected format

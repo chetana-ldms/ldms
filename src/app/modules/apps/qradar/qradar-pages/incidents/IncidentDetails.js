@@ -61,7 +61,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
   const alertId = incidentData.alertId;
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetchUsers(orgId);
+      const response = await fetchUsers(orgId, userID);
       setldp_security_user(
         response?.usersList != undefined ? response?.usersList : []
       );

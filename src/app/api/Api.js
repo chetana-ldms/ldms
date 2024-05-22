@@ -20,6 +20,7 @@ const forgatePasswordUrl = process.env.REACT_APP_PASSWORD_RESET_ADD_URL
 const accountsStructureUrl= process.env.REACT_APP_ACCOUNTS_STRUCTURE_URL
 const LogoutAddUrl= process.env.REACT_APP_LOGOUT_ADD_URL
 const APITokenExpireUrl= process.env.REACT_APP_API_TOKEN_EXPIRE_URL
+const ExportDataAddUrl = "http://115.110.192.133:502/api/Activity/v1/ExportData/Add"
 
 export const fetchMasterData = async (maserDataType) => {
   try {
@@ -402,6 +403,24 @@ export const fetchLogoutAddUrl = async (data) => {
 export const fetchAPITokenExpireUrl = async (data) => {
   try {
     const response = await fetch(`${APITokenExpireUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchExportDataAddUrl = async (data) => {
+  try {
+    const response = await fetch(`${ExportDataAddUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

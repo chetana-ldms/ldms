@@ -10,6 +10,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import { fetchExportDataAddUrl } from "../../../../../api/Api";
 
 function SlaMeasurement() {
   const handleError = useErrorBoundary();
@@ -301,7 +302,7 @@ function SlaMeasurement() {
   }, [selectedTab]);
 
   // Function to handle CSV export
-  const handleExportCSV = () => {
+  const handleExportCSV = async () => {
     const currentChartData = chartOptions[selectedTab];
     const csvData = []; // Array to store CSV data
     csvData.push(["Severity", "Alert Number"]);
@@ -317,10 +318,21 @@ function SlaMeasurement() {
     link.setAttribute("download", `sla_measurement_${selectedTab}.csv`);
     document.body.appendChild(link);
     link.click();
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "SLA Measurement Report"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Function to handle PDF export
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     const currentChartData = chartOptions[selectedTab];
     const doc = new jsPDF();
     doc.text(
@@ -342,6 +354,17 @@ function SlaMeasurement() {
       ]),
     });
     doc.save(`sla_measurement_${selectedTab}.pdf`);
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "SLA Measurement Report"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

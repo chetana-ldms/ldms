@@ -10,6 +10,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import { fetchExportDataAddUrl } from "../../../../../api/Api";
 
 const InventoryEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
@@ -56,9 +57,20 @@ const InventoryEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
     }
   };
 
-  const exportTableToCSV = () => {
+  const exportTableToCSV = async () => {
     const tableData = extractTableData(endpoints);
     exportToCSV(tableData);
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Inventory Endpoints"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   console.log(selectedItem, "selectedItem");

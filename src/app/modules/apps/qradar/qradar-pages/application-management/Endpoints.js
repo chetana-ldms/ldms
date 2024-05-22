@@ -10,6 +10,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import { fetchExportDataAddUrl } from "../../../../../api/Api";
 
 function Endpoints({ shouldRender, id }) {
   const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
@@ -60,9 +61,20 @@ function Endpoints({ shouldRender, id }) {
     }
   };
 
-  const exportTableToCSV = () => {
+  const exportTableToCSV = async () => {
     const tableData = extractTableData(endpoints);
     exportToCSV(tableData);
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Endpoints"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const [loading, setLoading] = useState(false);

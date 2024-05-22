@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import {useFormik} from 'formik'
 import EditAlertsPopUp from './EditAlertsPopUp'
 import {notify, notifyFail} from '../components/notification/Notification'
-import {fetchMasterData, fetchUpdatSetAlertIrrelavantStatuseAlert} from '../../../../../api/Api'
+import {fetchExportDataAddUrl, fetchMasterData, fetchUpdatSetAlertIrrelavantStatuseAlert} from '../../../../../api/Api'
 import {
   fetchAlertData,
   fetchGetAlertNotesByAlertID,
@@ -126,6 +126,7 @@ const AlertsPage = () => {
   const [ldp_security_user, setldp_security_user] = useState([])
   const [alertNotesList, setAlertNotesList] = useState([])
   const [escalate, setEscalate] = useState(true)
+  const [activePage, setActivePage] = useState(1)
   const [currentPage, setCurrentPage] = useState(1)
   console.log(currentPage, "currentPage")
   const [showForm, setShowForm] = useState(false)
@@ -154,11 +155,11 @@ const AlertsPage = () => {
   const dropdownRef = useRef(null)
   const dropdownRefSatus = useRef(null)
   const [refreshFlag, setRefreshFlag] = useState(false)
-  const handleRefreshActions = async () => {
+  const handleRefreshActions = () => {
     setRefreshFlag(!refreshFlag)
     setCurrentPage(1); 
-    await qradaralerts(); 
-    await handlePageClick({ selected: 0 });
+    qradaralerts(1); 
+    setActivePage(1)
     setselectedAlert([])
     setIsCheckboxSelected(false)
     reloadHistory()
@@ -282,6 +283,8 @@ const AlertsPage = () => {
   const handlePageSelect = (event) => {
     const selectedPerPage = event.target.value
     setLimit(selectedPerPage)
+    setCurrentPage(1)
+    setActivePage(1)
   }
   const [delay, setDelay] = useState(1)
   const isLoading = true
@@ -355,24 +358,32 @@ const AlertsPage = () => {
       console.log('No data available')
     }
   }
-  const handlePageClick = async (data) => {
-    let selectedPage  = data?.selected + 1 || 1; 
-    setLoading(true);
-    setCurrentPage(selectedPage );
-    const setOfAlertsData = await fetchSetOfAlerts(selectedPage , orgId, userID, limit, accountId, siteId, groupId);
-    slaCal(setOfAlertsData);
-    setFilteredAlertDate(setOfAlertsData);
-    setLoading(false);
-}
+//   const handlePageClick = async (data) => {
+//     let selectedPage  = data?.selected + 1 || 1; 
+//     setLoading(true);
+//     const setOfAlertsData = await fetchSetOfAlerts(selectedPage , orgId, userID, limit, accountId, siteId, groupId);
+//     slaCal(setOfAlertsData);
+//     setFilteredAlertDate(setOfAlertsData);     
+//     setCurrentPage(selectedPage );
+//     setActivePage(1)
+//     setLoading(false);
+// }
+const handlePageClick = async (data) => {
+  const newPage = data.selected + 1;
+  setCurrentPage(newPage);
+  setActivePage(newPage);
+};
 
-  const qradaralerts = async () => {
+  const qradaralerts = async (page = 1) => {
+    const rangeStart = (page - 1) * limit + 1;
+    const rangeEnd = page * limit;
     let data2 = {
       orgID: orgId,
       toolID: '1',
       toolTypeID: '1',
       paging: {
-        rangeStart: 1,
-        rangeEnd: limit,
+        rangeStart: rangeStart,
+        rangeEnd: rangeEnd,
       },
       loggedInUserId: userID,
       orgAccountStructureLevel: [
@@ -403,10 +414,13 @@ const AlertsPage = () => {
   }
   useEffect(() => {
     qradaralerts()
-  }, [limit])
+  }, [])
+  useEffect(() => {
+    qradaralerts(currentPage);
+  }, [limit, currentPage]);
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetchUsers(orgId)
+      const response = await fetchUsers(orgId, userID)
       setldp_security_user(response?.usersList != undefined ? response?.usersList : [])
     }
     fetchData()
@@ -470,12 +484,12 @@ const AlertsPage = () => {
     )
     setFilteredAlertDate(data)
   }
-  const handleRefresh = async (event) => {
+  const handleRefresh = (event) => {
     event.preventDefault()
     setIsRefreshing(true)
     setCurrentPage(1); 
-    await qradaralerts(); 
-    await handlePageClick({ selected: 0 }); 
+     qradaralerts(1); 
+    setActivePage(1)
     reloadNotes()
     reloadHistory()
     fetchAlertDetails()
@@ -713,7 +727,7 @@ const AlertsPage = () => {
   }
 
   // Function to export data to CSV
-  const exportToExcel = () => {
+  const exportToExcel = async() => {
     // Add the heading
     let csvContent = 'Alerts Report\n'
 
@@ -749,6 +763,18 @@ const AlertsPage = () => {
     // Clean up
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
+
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem("userId")),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: "Alerts"
+    };
+    try {
+      const response = await fetchExportDataAddUrl(data);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   // Function to export data to PDF
@@ -2362,6 +2388,7 @@ const AlertsPage = () => {
               breakClassName={'page-item'}
               breakLinkClassName={'page-link'}
               activeClassName={'active'}
+              forcePage={activePage - 1}
             />
             <div className='col-md-3 d-flex justify-content-end align-items-center'>
               <span className='col-md-4'>Count: </span>

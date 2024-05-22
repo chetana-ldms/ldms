@@ -31,15 +31,16 @@ export const fetchAlertData = async (data) => {
     console.log(error)
   }
 }
-export const fetchUsers = async (id) => {
+export const fetchUsers = async (id, userID) => {
   try {
-    const response = await fetch(`${usersUrl}?OrgId=${id}`, {
+    const response = await fetch(`${usersUrl}?OrgId=${id}&userid=${userID}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         id: id,
+        userID:userID,
       }),
     })
 
