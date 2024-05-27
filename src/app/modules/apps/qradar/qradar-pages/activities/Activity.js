@@ -1,152 +1,185 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react';
 import {
   fetchActivitiesUrl,
   fetchActivityTypesUrl,
-  fetchSetOfActivity,
-} from '../../../../../api/ActivityApi'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
-import {getCurrentTimeZone} from '../../../../../../utils/helper'
-import ReactPaginate from 'react-paginate'
-import {fetchUsersUrl} from '../../../../../api/ConfigurationApi'
-import Select from 'react-select'
-import {ToastContainer} from 'react-toastify'
-import {notifyFail} from '../components/notification/Notification'
+} from '../../../../../api/ActivityApi';
+import { UsersListLoading } from '../components/loading/UsersListLoading';
+import { getCurrentTimeZone } from '../../../../../../utils/helper';
+import ReactPaginate from 'react-paginate';
+import { fetchUsersUrl } from '../../../../../api/ConfigurationApi';
+import Select from 'react-select';
+import { ToastContainer } from 'react-toastify';
+import { notifyFail } from '../components/notification/Notification';
 
 function Activity() {
-  const [activity, setActivity] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [users, setUsers] = useState([])
-  const [selectedUsers, setSelectedUsers] = useState([])
-  const [selectedActivityTypes, setSelectedActivityTypes] = useState([])
-  const [activityType, setActivityType] = useState([])
-  const [selectedFromDate, setSelectedFromDate] = useState(null)
-  const [selectedToDate, setSelectedToDate] = useState(null)
-  const orgId = Number(sessionStorage.getItem('orgId'))
-  const userID = Number(sessionStorage.getItem('userId'))
-  const [limit, setLimit] = useState(20)
-  const [pageCount, setPageCount] = useState(0)
-  const [isRefreshing, setIsRefreshing] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [activePage, setActivePage] = useState(1)
-  console.log(currentPage, 'currentPage')
+  const [activity, setActivity] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedActivityTypes, setSelectedActivityTypes] = useState([]);
+  const [activityType, setActivityType] = useState([]);
+  const [selectedFromDate, setSelectedFromDate] = useState(null);
+  const [selectedToDate, setSelectedToDate] = useState(null);
+  const orgId = Number(sessionStorage.getItem('orgId'));
+  const userID = Number(sessionStorage.getItem('userId'));
+  const [limit, setLimit] = useState(20);
+  const [pageCount, setPageCount] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [activePage, setActivePage] = useState(1);
 
-  const reload = async () => {
-    try {
-      setLoading(true)
-      const data = await fetchUsersUrl(orgId, userID)
-      setUsers(data)
-      setLoading(false)
-    } catch (error) {
-      console.log(error)
-      setLoading(false)
-    }
-  }
+  const [filters, setFilters] = useState({
+    userId: 0,
+    activityTypeIds: [],
+    fromDate: null,
+    toDate: null,
+  });
 
   useEffect(() => {
-    reload()
-  }, [])
+    const reload = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchUsersUrl(orgId, userID);
+        setUsers(data);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
+    };
 
-  const reloadActivityType = async () => {
-    try {
-      setLoading(true)
-      const data = await fetchActivityTypesUrl(null)
-      setActivityType(data)
-      setLoading(false)
-    } catch (error) {
-      console.log(error)
-      setLoading(false)
-    }
-  }
+    reload();
+  }, [orgId, userID]);
 
   useEffect(() => {
-    reloadActivityType()
-  }, [])
+    const reloadActivityType = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchActivityTypesUrl(null);
+        setActivityType(data);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
+    };
 
-  const fetchData = async () => {
+    reloadActivityType();
+  }, []);
+
+  const fetchActivityData = async (page, userID, activityTypeIDs, fromDate, toDate, limit) => {
+    const rangeStart = (page - 1) * limit + 1;
+    const rangeEnd = page * limit;
     const data = {
       orgId: orgId,
-      userId: 0,
-      activityTypeIds: [],
-      fromDateTime: selectedFromDate ? selectedFromDate.toISOString() : null,
-      toDateTime: selectedToDate ? selectedToDate.toISOString() : null,
+      userId: userID,
+      activityTypeIds: activityTypeIDs,
+      fromDateTime: fromDate ? fromDate.toISOString() : null,
+      toDateTime: toDate ? toDate.toISOString() : null,
       paging: {
-        rangeStart: 1,
-        rangeEnd: limit,
+        rangeStart: rangeStart,
+        rangeEnd: rangeEnd,
       },
-    }
+    };
 
     try {
-      setLoading(true)
-      const response = await fetchActivitiesUrl(data)
-      setActivity(response.activitiesList)
-      const total = response.totalActivitiesCount
-      setPageCount(Math.ceil(total / limit))
+      setLoading(true);
+      const response = await fetchActivitiesUrl(data);
+      setActivity(response.activitiesList);
+      const total = response.totalActivitiesCount;
+      setPageCount(Math.ceil(total / limit));
     } catch (error) {
-      console.error(error)
+      console.error(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchActivityData(1, filters.userId, filters.activityTypeIds, filters.fromDate, filters.toDate, limit);
+  }, [limit, filters]);
 
   const handlePageSelect = (event) => {
-    const selectedPerPage = event.target.value
-    setLimit(selectedPerPage)
-    setActivePage(1)
-  }
+    const selectedPerPage = event.target.value;
+    setLimit(selectedPerPage);
+    setActivePage(1);
+  };
 
   const handlePageClick = async (data) => {
-    let currentPage = data?.selected + 1 || 1
-    setLoading(true)
-    try {
-      const setOfAlertsData = await fetchSetOfActivity(
-        currentPage,
-        orgId,
-        0,
-        selectedFromDate,
-        selectedToDate,
-        limit
-      )
-      setActivity(setOfAlertsData)
-      setCurrentPage(currentPage)
+    let currentPage = data?.selected + 1 || 1;
+    const { userId, activityTypeIds, fromDate, toDate } = filters;
+    fetchActivityData(currentPage, userId, activityTypeIds, fromDate, toDate, limit);
+    setCurrentPage(currentPage);
     setActivePage(currentPage);
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchData()
-  }, [limit])
+  };
 
   const handleFromDateChange = (e) => {
-    const date = e.target.value ? new Date(e.target.value) : null
-    setSelectedFromDate(date)
-  }
+    const date = e.target.value ? new Date(e.target.value) : null;
+    setSelectedFromDate(date);
+  };
 
   const handleToDateChange = (e) => {
-    const date = e.target.value ? new Date(e.target.value) : null
-    setSelectedToDate(date)
-  }
+    const date = e.target.value ? new Date(e.target.value) : null;
+    setSelectedToDate(date);
+  };
 
   const handleUserChange = (selectedOptions) => {
-    setSelectedUsers(selectedOptions)
-  }
+    setSelectedUsers(selectedOptions);
+  };
 
   const handleActivityTypeChange = (selectedOptions) => {
-    setSelectedActivityTypes(selectedOptions)
-  }
+    setSelectedActivityTypes(selectedOptions);
+  };
 
-  const userOptions = users?.map((user) => ({label: user.name, value: user}))
-  const activityTypeOptions = activityType?.map((type) => ({
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (selectedToDate < selectedFromDate) {
+      notifyFail('From date should be less then to Date');
+      return;
+    }
+
+    const selectedUserIDs = selectedUsers?.value?.userID ? selectedUsers.value.userID : 0;
+    const selectedActivityTypeIDs = selectedActivityTypes?.map(activityType => activityType?.value?.activityTypeId) || [];
+
+    setFilters({
+      userId: selectedUserIDs,
+      activityTypeIds: selectedActivityTypeIDs,
+      fromDate: selectedFromDate,
+      toDate: selectedToDate,
+    });
+
+    fetchActivityData(1, selectedUserIDs, selectedActivityTypeIDs, selectedFromDate, selectedToDate, limit);
+  };
+
+  const handleRefresh = (event) => {
+    event.preventDefault();
+    setIsRefreshing(true);
+    setCurrentPage(1);
+    fetchActivityData(1, filters.userId, filters.activityTypeIds, filters.fromDate, filters.toDate, limit);
+    setActivePage(1);
+    setTimeout(() => setIsRefreshing(false), 2000);
+  };
+
+  const handleReset = () => {
+    setSelectedUsers([]);
+    setSelectedActivityTypes([]);
+    setSelectedFromDate(null);
+    setSelectedToDate(null);
+    setFilters({
+      userId: 0,
+      activityTypeIds: [],
+      fromDate: null,
+      toDate: null,
+    });
+    fetchActivityData(1, 0, [], null, null, limit);
+  };
+
+  const userOptions = users?.map(user => ({ label: user.name, value: user }));
+  const activityTypeOptions = activityType?.map(type => ({
     label: type.typeName,
     value: type,
-  }))
+  }));
+
   const css_classes = [
     'text-primary',
     'text-secondary',
@@ -156,64 +189,38 @@ function Activity() {
     'text-info',
     'text-dark',
     'text-muted',
-  ]
+  ];
 
   const getRandomClass = () => {
-    const randomIndex = Math.floor(Math.random() * css_classes.length)
-    return css_classes[randomIndex]
-  }
+    const randomIndex = Math.floor(Math.random() * css_classes.length);
+    return css_classes[randomIndex];
+  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (selectedToDate < selectedFromDate) {
-      notifyFail('From date should be less then to Date')
-      setLoading(false)
-      return
-    }
-
-    const selectedUserIDs = selectedUsers?.value?.userID ? selectedUsers.value.userID : 0
-    const selectedActivityTypeIDs = selectedActivityTypes?.map(
-      (activityType) => activityType?.value?.activityTypeId
-    )
-
-    const data = {
-      orgId: orgId,
-      userId: selectedUserIDs,
-      activityTypeIds: selectedActivityTypeIDs ? selectedActivityTypeIDs : [0],
-      fromDateTime: selectedFromDate ? selectedFromDate.toISOString() : null,
-      toDateTime: selectedToDate ? selectedToDate.toISOString() : null,
-      paging: {
-        rangeStart: 1,
-        rangeEnd: limit,
-      },
-    }
-
-    try {
-      setLoading(true)
-      const response = await fetchActivitiesUrl(data)
-      setActivity(response.activitiesList)
-      const total = response.totalActivitiesCount
-      setPageCount(Math.ceil(total / limit))
-      setActivePage(1);
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setLoading(false)
-      // setSelectedUsers([]);
-      // setSelectedActivityTypes([]);
-      // setSelectedFromDate(null);
-      // setSelectedToDate(null);
-    }
-  }
-
-  const handleRefresh = (event) => {
-    event.preventDefault()
-    setIsRefreshing(true)
-    setCurrentPage(1)
-    fetchData(1)
-    setActivePage(1);
-    setTimeout(() => setIsRefreshing(false), 2000)
-  }
+  const customStyles = {
+    control: (base, state) => ({
+      ...base,
+      minHeight: '40px',
+      width: '180px',
+    }),
+    valueContainer: (base) => ({
+      ...base,
+      height: '40px',
+      overflow: 'hidden',
+    }),
+    input: (base) => ({
+      ...base,
+      margin: 0,
+      padding: 0,
+    }),
+    multiValue: (base) => ({
+      ...base,
+      backgroundColor: 'lightgray',
+    }),
+    multiValueLabel: (base) => ({
+      ...base,
+      color: 'black',
+    }),
+  };
 
   return (
     <div className='activity-timeline'>
@@ -240,6 +247,7 @@ function Activity() {
               value={selectedActivityTypes}
               onChange={handleActivityTypeChange}
               placeholder='Select Activity Types'
+              styles={customStyles}
             />
           </div>
 
@@ -262,10 +270,13 @@ function Activity() {
             />
           </div>
 
-          <button className='btn btn-circle btn-new ms-5 pad-10 mt-1' onClick={handleSubmit}>
+          <button className='btn btn-circle btn-new ms-3 pad-10 mt-1' onClick={handleSubmit}>
             <i className='fa fa-search white' />
           </button>
-          <div className='ds-reload mt-2 ms-10 float-right'>
+          <button className='btn btn-primary btn-small ms-3 ' onClick={handleReset}>
+            Reset
+          </button>
+          <div className='ds-reload mt-2 ms-3 float-right'>
             <span className='fs-13 fc-gray' onClick={handleRefresh}>
               <i
                 className={`fa fa-refresh link ${isRefreshing ? 'rotate' : ''}`}
@@ -280,11 +291,11 @@ function Activity() {
       ) : (
         <div className='card'>
           <div className='timeline-label mt-10 mb-10 ps-20'>
-            {activity !== null && activity !== undefined ? (
+            {activity && activity.length > 0 ? (
               activity
                 .sort((a, b) => b.activityId - a.activityId)
                 .map((item) => {
-                  const formattedDateTime = getCurrentTimeZone(item.activityDate)
+                  const formattedDateTime = getCurrentTimeZone(item.activityDate);
 
                   return (
                     <div className='timeline-item' key={item.activityId}>
@@ -300,7 +311,7 @@ function Activity() {
                         {item.primaryDescription}
                       </div>
                     </div>
-                  )
+                  );
                 })
             ) : (
               <div className='text-gray-500 text-center'>No data found</div>
@@ -346,7 +357,7 @@ function Activity() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Activity
+export default Activity;

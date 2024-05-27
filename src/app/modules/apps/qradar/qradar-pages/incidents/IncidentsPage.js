@@ -41,6 +41,7 @@ const IncidentsPage = () => {
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
   const [selectedIncident, setSelectedIncident] = useState({});
+  console.log(selectedIncident, "selectedIncident")
   const [refreshParent, setRefreshParent] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageCount, setpageCount] = useState(0);
@@ -106,6 +107,7 @@ const IncidentsPage = () => {
     incidents();
   }, [limit]);
   const handleSearch = async () => {
+    setSelectedIncident({})
     const data = {
       orgID: orgId,
       paging: {
@@ -125,11 +127,7 @@ const IncidentsPage = () => {
       setIncident(response.incidentList);
       setTotalIncidentsCount(response.totalIncidentsCount);
       const total = response.totalIncidentsCount;
-      // const total = 40;
-
       setpageCount(Math.ceil(total / limit));
-
-      // incidents();
       setLoading(false);
     } catch (error) {
       handleError(error);
@@ -140,8 +138,19 @@ const IncidentsPage = () => {
     setSelectedIncident(item);
     console.log("Clicked incident:", item);
   };
+  const handleReset = () =>{
+    setSelectedIncident({})
+    setSearchValue("");
+    if (status.current) {
+      status.current.value = 0;
+    }
+    incidents();
+  }
   const refreshIncidents = () => {
-    // Function to refresh the incidents data
+    setSearchValue("");
+    if (status.current) {
+      status.current.value = 0;
+    }
     incidents();
   };
   useEffect(() => {
@@ -159,10 +168,6 @@ const IncidentsPage = () => {
       limit
     );
     setIncident(setOfAlertsData.incidentList);
-    // setFilteredAlertDate(
-    //   setOfAlertsData.filter((item) => item.ownerUserID === userID)
-    // );
-    // setFilteredAlertDate(setOfAlertsData);
     setCurrentPage(currentPage);
   };
   const handlePageSelect = (event) => {
@@ -192,19 +197,6 @@ const IncidentsPage = () => {
                   </h4>
                 </div>
                 <div className="p-1 bd-highlight"></div>
-                {/* <div className="d-flex justify-content-between bd-highlight mb-3">
-                  <div className="p-1 bd-highlight">
-                    <h6 className="card-title pt-3 pb-3 bg-header no-margin">
-                      <span className="white fw-bold fs-5 mb-1">
-                        Incidents{" "}
-                        <span className="text-black-50">
-                          ({totalIncidentsCount})
-                        </span>
-                      </span>
-                    </h6>
-                  </div>
-                  <div className="p-1 bd-highlight"></div>
-                </div> */}
 
                 <div className="card-title header-filter">
                   {/* begin::Search */}
@@ -248,7 +240,6 @@ const IncidentsPage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="mt-2 bd-highlight mt-5">Sort by</div>
                     <div className="mt-2 bd-highlight">
                       <div className="w-150px me-0">
                         <select
@@ -268,6 +259,7 @@ const IncidentsPage = () => {
                         </select>
                       </div>
                     </div>
+                    <div className="mt-2 ms-1 btn btn-primary btn-sm " onClick={handleReset}>Reset</div>
                   </div>
                   <div className="scroll-y h-500px">
                     <div className="incident-list">

@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import { notify, notifyFail } from "../components/notification/Notification";
 import "react-toastify/dist/ReactToastify.css";
 import { useErrorBoundary } from "react-error-boundary";
+import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
 
 const Document = ({ channelId, channelName }) => {
   const handleError = useErrorBoundary();
@@ -21,6 +22,8 @@ const Document = ({ channelId, channelName }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [error, setError] = useState(null);
   const [uploadDocumentModal, setUploadDocumentModal] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   const fetchData = async (channelId) => {
     try {
@@ -60,22 +63,76 @@ const Document = ({ channelId, channelName }) => {
     }
   };
 
-  const handleDelete = async (item) => {
-    try {
-      const response = await fetchDelete(item.fileId);
-      if (response.isSuccess) {
-        notify("File Deleted");
-      } else {
-        notifyFail("Failed to delete");
+  const handleDelete = (item) => {
+    setItemToDelete(item);
+    setShowConfirmation(true);
+  };
+
+  const confirmDelete = async () => {
+    if (itemToDelete) {
+      const data = {
+        orgId: Number(sessionStorage.getItem('orgId')),
+        channelId: channelId,
+        subitemId: 0,
+        deletedUserId: Number(sessionStorage.getItem("userId")),
+        deletedDate: new Date().toISOString(),
+        fileId: itemToDelete.fileId
       }
-      await fetchData(channelId);
-    } catch (error) {
-      handleError(error);
+
+      try {
+        const response = await fetchDelete(data);
+        const {isSuccess, message} = response
+        if (isSuccess) {
+          notify(message);
+          await fetchData(channelId);
+        } else {
+          notifyFail(message);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setShowConfirmation(false);
+        setItemToDelete(null);
+      }
     }
   };
+  const cancelDelete = () => {
+    setShowConfirmation(false);
+    setItemToDelete(null);
+  };
+  // const handleDownload = async (item) => {
+  //   try {
+  //     const data = {
+  //       orgId: Number(sessionStorage.getItem('orgId')),
+  //       channelId: channelId,
+  //       subitemId: 0,
+  //       downloadedUserId: Number(sessionStorage.getItem("userId")),
+  //       downloadedDate: new Date().toISOString(),
+  //       fileId: item.fileId
+  //     }
+  //     const response = await fetchFilesDownloadUrl(data);
+  //     if (response.ok) {
+  //       const fileBlob = await response.blob();
+  //       const url = URL.createObjectURL(fileBlob);
+  //       const link = document.createElement("a");
+  //       link.href = url;
+  //       link.download = item.fileName;
+  //       link.target = "_blank";
+  //       document.body.appendChild(link);
+  //       link.click();
+  //       document.body.removeChild(link);
+  //       notify("File downloaded successfully");
+  //     } else {
+  //       notifyFail("File not downloaded");
+  //     }
+  //   } catch (error) {
+  //     handleError(error);
+  //     notifyFail("Error occurred while downloading the file");
+  //   }
+  // };
   const handleDownload = async (item) => {
     try {
-      const response = await fetchFilesDownloadUrl(item.fileId);
+      const response = await fetchFilesDownloadUrl(item.fileId, CreatedUserId, orgId, channelId);
       if (response.ok) {
         const fileBlob = await response.blob();
         const url = URL.createObjectURL(fileBlob);
@@ -149,6 +206,14 @@ const Document = ({ channelId, channelName }) => {
                   >
                     <i className="fas fa-trash-alt"></i>
                   </button>
+                  
+              {showConfirmation && (
+                <DeleteConfirmation
+                  show={showConfirmation}
+                  onConfirm={confirmDelete}
+                  onCancel={cancelDelete}
+                />
+              )}
                 </li>
               ))
             ) : (

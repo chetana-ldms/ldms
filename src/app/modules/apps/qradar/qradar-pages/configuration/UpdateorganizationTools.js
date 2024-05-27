@@ -323,7 +323,7 @@ const confirmDelete = async () => {
   return (
     <div className="config card">
       <ToastContainer />
-      <div className="card-header bg-header">
+      <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">
           <span className="white">Update Organization Tool</span>
         </h3>

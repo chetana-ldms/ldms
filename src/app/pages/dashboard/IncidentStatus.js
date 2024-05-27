@@ -70,6 +70,7 @@ function IncidentStatus(props) {
         statusID: selectedStatus,
         priorityID: selectedPriority,
         orgId: orgId,
+        numberofDays: days,
         orgAccountStructureLevel: [
           {
             levelName: "AccountId",
@@ -86,7 +87,7 @@ function IncidentStatus(props) {
         ]
       };
       const response = await fetchGetIncidentCountByPriorityAndStatusUrl(requestData);
-      const { incidentCount } = response;
+      const incidentCount =  response?.incidentCount;
       setIncidentCount(incidentCount);
       setLoading(false);
     } catch (error) {
@@ -113,7 +114,7 @@ function IncidentStatus(props) {
           <span>Incident by Status & Priority :</span>
         </label>
         <div className="col-lg-4 header-filter">
-          {dropdownData.statusDropDown !== null ? (
+          {dropdownData.statusDropDown !== null && dropdownData.statusDropDown !== undefined  ? (
             <select
               name="incidentStatusName"
               data-control="select2"
@@ -183,7 +184,7 @@ function IncidentStatus(props) {
         </div>
 
         <div className="row bar-chart mt-10">
-          {incidentCount !== null ? (
+          {incidentCount !== null && incidentCount !== undefined ? (
             <>
               <div className="col-lg-2 fw-bold">Count:</div>
               <div className="col-lg-7">

@@ -61,6 +61,7 @@ const AlertsPage = () => {
   const [selectedRow, setSelectedRow] = useState({})
   const [showPopup, setShowPopup] = useState(false)
   const [selectCheckBox, setSelectCheckBox] = useState(null)
+  const [checkboxStates, setCheckboxStates] = useState({});
   const {severityNameDropDownData, statusDropDown, observableTagDropDown, analystVerdictDropDown} =
     dropdownData
   const handleFormSubmit = () => {
@@ -93,21 +94,35 @@ const AlertsPage = () => {
         handleError(error)
       })
   }, [])
-
   const handleselectedAlert = (item, e) => {
-    setSelectCheckBox(item)
-    // setIsCheckboxSelected(e.target.checked);
-    const {value, checked} = e.target
+    const { value, checked } = e.target;
+    setCheckboxStates((prev) => ({ ...prev, [value]: checked }));
+    setSelectCheckBox(item);
+  
     if (checked) {
-      setselectedAlert([...selectedAlert, value])
-      setIsCheckboxSelected(true)
+      setselectedAlert([...selectedAlert, value]);
+      setIsCheckboxSelected(true);
     } else {
-      // setselectedAlert(selectedAlert.filter((e) => e !== value))
-      const updatedAlert = selectedAlert.filter((e) => e !== value)
-      setselectedAlert(updatedAlert)
-      setIsCheckboxSelected(updatedAlert.length > 0)
+      const updatedAlert = selectedAlert.filter((e) => e !== value);
+      setselectedAlert(updatedAlert);
+      setIsCheckboxSelected(updatedAlert.length > 0);
     }
-  }
+  };
+  
+  // const handleselectedAlert = (item, e) => {
+  //   setSelectCheckBox(item)
+  //   // setIsCheckboxSelected(e.target.checked);
+  //   const {value, checked} = e.target
+  //   if (checked) {
+  //     setselectedAlert([...selectedAlert, value])
+  //     setIsCheckboxSelected(true)
+  //   } else {
+  //     // setselectedAlert(selectedAlert.filter((e) => e !== value))
+  //     const updatedAlert = selectedAlert.filter((e) => e !== value)
+  //     setselectedAlert(updatedAlert)
+  //     setIsCheckboxSelected(updatedAlert.length > 0)
+  //   }
+  // }
   const [actionsValue, setActionValue] = useState('')
   function createIncidentSubmit(e) {
     setActionValue(e.target.value)
@@ -155,19 +170,27 @@ const AlertsPage = () => {
   const dropdownRef = useRef(null)
   const dropdownRefSatus = useRef(null)
   const [refreshFlag, setRefreshFlag] = useState(false)
-  const handleRefreshActions = () => {
+  const handleRefreshActions = async () => {
     setRefreshFlag(!refreshFlag)
     setCurrentPage(1); 
-    qradaralerts(1); 
     setActivePage(1)
     setselectedAlert([])
     setIsCheckboxSelected(false)
+    const resetCheckboxStates = Object.keys(checkboxStates).reduce((acc, key) => {
+      acc[key] = false;
+      return acc;
+    }, {});
+    setCheckboxStates(resetCheckboxStates);
     reloadHistory()
     reloadNotes()
     fetchAlertDetails()
     setTimeout(() => {
       fetchAlertDetails()
     }, 5000)
+    qradaralerts(); 
+    setTimeout(() => {
+      qradaralerts()
+    }, 2000)
   }
   const fetchAlertDetails = async () => {
     try {
@@ -488,14 +511,15 @@ const handlePageClick = async (data) => {
     event.preventDefault()
     setIsRefreshing(true)
     setCurrentPage(1); 
-     qradaralerts(1); 
     setActivePage(1)
     reloadNotes()
     reloadHistory()
     fetchAlertDetails()
     setselectedAlert([])
+    setCheckboxStates({});
     setIsCheckboxSelected(false)
     setTimeout(() => setIsRefreshing(false), 2000)
+    qradaralerts(); 
   }
   const RefreshInterval = 2 * 60 * 1000
   useEffect(() => {
@@ -1794,6 +1818,7 @@ const handlePageClick = async (data) => {
                               type='checkbox'
                               value={item.alertID}
                               name={item.alertID}
+                              checked={checkboxStates[item.alertID] || false}
                               onChange={(e) => handleselectedAlert(item, e)}
                               autoComplete='off'
                             />

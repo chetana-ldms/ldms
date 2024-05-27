@@ -20,14 +20,16 @@ const listUrl = process.env.REACT_APP_CHANNEL_LIST_URL
 const ChannelsCreateUrl = process.env.REACT_APP_CHANNELS_CREATE_URL
 const FilesDownloadUrl = process.env.REACT_APP_CHANNELS_FILES_DOWNLOAD_URL
 
-export const fetchDelete = async (fileId) => {
+export const fetchDelete = async (data) => {
   try {
-    const response = await fetch(`${deleteUrl}?fileId=${fileId}`, {
+    const response = await fetch(`${deleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({fileId}),
+      body: JSON.stringify({
+        ...data,
+      }),
     })
 
     if (response.ok) {
@@ -368,9 +370,9 @@ export const fetchChannelsCreateUrl = async (data) => {
     console.log(error)
   }
 }
-export const fetchFilesDownloadUrl = async (fileId) => {
+export const fetchFilesDownloadUrl = async (fileId, CreatedUserId, orgId, channelId) => {
   try {
-    const response = await fetch(`${FilesDownloadUrl}?fileId=${fileId}`, {
+    const response = await fetch(`${FilesDownloadUrl}?fileId=${fileId}&Downloaduserid=${CreatedUserId}&OrgId=${orgId}&ChannelId=${channelId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -387,3 +389,26 @@ export const fetchFilesDownloadUrl = async (fileId) => {
     throw error
   }
 }
+// export const fetchFilesDownloadUrl = async (data) => {
+//   try {
+//     const response = await fetch(`${FilesDownloadUrl}`, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({
+//         ...data,
+//       }),
+//     })
+
+//     if (response.ok) {
+//       const responseData = await response.json()
+//       return responseData
+//     } else {
+//       throw new Error('File deletion failed')
+//     }
+//   } catch (error) {
+//     console.log(error)
+//     throw error
+//   }
+// }

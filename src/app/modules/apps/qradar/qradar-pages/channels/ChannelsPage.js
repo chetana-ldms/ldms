@@ -18,6 +18,7 @@ import {
   fetchChannelsUpdate,
 } from "../../../../../api/ChannelApi";
 import { fetchMasterData } from "../../../../../api/Api";
+import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
 
 //Modal
 const NewChannelModal = ({ show, onClose, onAdd }) => {
@@ -152,7 +153,11 @@ const ChannelsPage = () => {
   const channelNames = useRef();
   const channelDescriptions = useRef();
   const channelTypes = useRef();
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
   const [selectedChannel, setSelectedChannel] = useState({
+    channelTypeId:"",
+    channelTypeName:"",
     selectedChannelName: "",
     selectedChannelID: "",
   });
@@ -179,25 +184,40 @@ const ChannelsPage = () => {
   useEffect(() => {
     fetchData();
   }, []);
-  const handleDelete = async (channel) => {
-    const deletedUserId = Number(sessionStorage.getItem("userId"));
-    const deletedDate = new Date().toISOString();
-    const data = {
-      channelId: channel.channelId,
-      deletedDate,
-      deletedUserId,
-    };
-    try {
-      const responce = await fetchChannelsDelete(data);
-      if (responce.isSuccess) {
-        notify("Channel Deleted");
-      } else {
-        notifyFail("Failed to delete Channel");
+
+  const handleDelete = (channel) => {
+    setItemToDelete(channel);
+    setShowConfirmation(true);
+  };
+
+  const confirmDelete = async () => {
+    if (itemToDelete) {
+      const data = {
+        channelId: itemToDelete.channelId,
+        deletedDate: new Date().toISOString(),
+        deletedUserId: Number(sessionStorage.getItem("userId")),
+      };
+
+      try {
+        const response = await fetchChannelsDelete(data);
+        const {isSuccess, message} = response
+        if (isSuccess) {
+          notify(message);
+          await fetchData();
+        } else {
+          notifyFail(message);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setShowConfirmation(false);
+        setItemToDelete(null);
       }
-      await fetchData();
-    } catch (error) {
-      console.log(error);
     }
+  };
+  const cancelDelete = () => {
+    setShowConfirmation(false);
+    setItemToDelete(null);
   };
   const handleAccordionToggle = async (channelId) => {
     try {
@@ -284,7 +304,7 @@ const ChannelsPage = () => {
       channelId: channelId,
       channelName: channelNames.current.value,
       channelDescription: channelDescriptions.current.value,
-      channelTypeId: selectedChannel.selectedChannelID,
+      channelTypeId: selectedChannel.channelTypeId || "",
       displayOrder: 0,
       orgId,
       modifiedDate: deletedDate,
@@ -317,7 +337,7 @@ const ChannelsPage = () => {
           </span>
         </h4>
 
-        {globalAdminRole === 1 ? (
+        {(globalAdminRole === 1 || clientAdminRole === 1) ? (
           <span
             className="float-right add-btn btn-new"
             onClick={() => setShowModal(true)}
@@ -368,6 +388,13 @@ const ChannelsPage = () => {
           onClose={() => setShowModal(false)}
           onAdd={handleAddChannel}
         />
+          {showConfirmation && (
+          <DeleteConfirmation
+            show={showConfirmation}
+            onConfirm={confirmDelete}
+            onCancel={cancelDelete}
+          />
+        )}
       </div>
 
       <Modal
@@ -403,7 +430,7 @@ const ChannelsPage = () => {
                         <td>{channel.channelName}</td>
                         <td>{channel.channelTypeName}</td>
                         <td>
-                          {globalAdminRole === 1 ? (
+                        {(globalAdminRole === 1 || clientAdminRole === 1) ?  (
                             <button
                               className="btn-circle btn-new"
                               onClick={() =>
@@ -417,7 +444,7 @@ const ChannelsPage = () => {
                               <i className="fa fa-pencil white fs-15" />
                             </button>
                           )}
-                          {globalAdminRole === 1 ? (
+                          {(globalAdminRole === 1 || clientAdminRole === 1) ? (
                             <button
                               className="btn-circle btn-danger ms-5"
                               onClick={() => handleDelete(channel)}
@@ -426,10 +453,10 @@ const ChannelsPage = () => {
                             </button>
                           ) : (
                             <button
-                              className="btn btn-sm btn-danger btn-small ml-10"
+                              className="btn-circle btn-danger ms-5"
                               disabled
                             >
-                              Delete
+                              <i className="fa fa-trash white fs-15" />
                             </button>
                           )}
                         </td>
@@ -468,8 +495,8 @@ const ChannelsPage = () => {
                                   defaultValue={selectedChannel.channelTypeName}
                                   onChange={(e) =>
                                     setSelectedChannel({
-                                      selectedChannelName: e.target.value,
-                                      selectedChannelID: e.target.options[
+                                      channelTypeName: e.target.value,
+                                      channelTypeId: e.target.options[
                                         e.target.selectedIndex
                                       ].getAttribute("data-id"),
                                     })

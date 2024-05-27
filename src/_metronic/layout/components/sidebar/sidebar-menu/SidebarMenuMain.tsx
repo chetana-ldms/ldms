@@ -97,7 +97,7 @@ const SidebarMenuMain = () => {
         }
       {
         globalAdminRole === 1 &&
-        <SidebarMenuItem hasBullet={true} to='/qradar/ldp-tools/list' title='LDC Tools' />
+        <SidebarMenuItem hasBullet={true} to='/qradar/ldp-tools/list' title='Tools' />
         }
         {/* <SidebarMenuItem hasBullet={true} to='/qradar/rules-engine/list' title='Rules' />
         <SidebarMenuItem hasBullet={true} to='/qradar/rules-actions/list' title='Rules Actions' /> */}

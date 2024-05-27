@@ -143,7 +143,7 @@ export const fetchAlertsByAlertIds = async (data) => {
     })
 
     const responseData = await response.json()
-    const alertsList = responseData.alertsList[0]
+    const alertsList = responseData.alertsList
     return alertsList
   } catch (error) {
     console.log(error)

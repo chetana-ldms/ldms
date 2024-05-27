@@ -81,10 +81,10 @@ const UpdateLdpTools = () => {
 
   return (
     <div className="config card">
-      <div className="card-header bg-header mb-5">
+      <div className="card-header bg-heading mb-5">
         <h3 className="card-title">
-          <span className="card-label fs-3 mb-1 uppercase white">
-            Configure New LDP Tool
+          <span className="card-label fs-3 mb-1 white">
+            Update Tool
           </span>
         </h3>
         <div className="card-toolbar">

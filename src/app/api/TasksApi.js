@@ -1,5 +1,5 @@
 const tasksUrl = process.env.REACT_APP_TASK_LIST_URL
-const taskCancelUrl =process.env.REACT_APP_PASSWORDRESET_STATUS_UPDATE_URL
+const taskCancelUrl =process.env.REACT_APP_STATUS_CANCEL_URL
 
 export const fetchTasksUrl = async (ownerUserId) => {
     try {
@@ -14,7 +14,6 @@ export const fetchTasksUrl = async (ownerUserId) => {
       }
       const responseData = await response.json();
       const taskList = responseData.taskList;
-      console.log(taskList, "taskList");
       return taskList;
     } catch (error) {
       console.log(error);

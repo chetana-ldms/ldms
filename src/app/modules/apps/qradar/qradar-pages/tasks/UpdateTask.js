@@ -57,13 +57,12 @@ function UpdateTask() {
       console.log(error);
     }
   };
-  const handleCancelPassword = async (selectedUserID) => {
+  const handleCancelPassword = async (taskId) => {
     var data = {
-      modifiedUserId: userID,
-      modifiedDate: date,
-      userId: selectedUserID,
-      status: "Cancelled",
-    };
+      taskId: taskId,
+      cancelledUserId: userID,
+      cancelledDate: date,
+    }
     try {
       setLoading(true);
       const responseData = await fetchTaskCancelUrl(data);
@@ -123,7 +122,7 @@ function UpdateTask() {
                       {"  "}
                       <span
                         className="btn btn-small btn-danger"
-                        onClick={() => handleCancelPassword(task.taskForUserId)}
+                        onClick={() => handleCancelPassword(task.taskId)}
                       >
                         Cancel <i className="fa fa-trash ms-4" />
                       </span>
