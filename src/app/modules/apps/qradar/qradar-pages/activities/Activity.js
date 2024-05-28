@@ -221,6 +221,31 @@ function Activity() {
       color: 'black',
     }),
   };
+  const customStyle = {
+    control: (base, state) => ({
+      ...base,
+      minHeight: '40px',
+      width: '120px',
+    }),
+    valueContainer: (base) => ({
+      ...base,
+      height: '40px',
+      overflow: 'hidden',
+    }),
+    input: (base) => ({
+      ...base,
+      margin: 0,
+      padding: 0,
+    }),
+    multiValue: (base) => ({
+      ...base,
+      backgroundColor: 'lightgray',
+    }),
+    multiValueLabel: (base) => ({
+      ...base,
+      color: 'black',
+    }),
+  };
 
   return (
     <div className='activity-timeline'>
@@ -235,11 +260,12 @@ function Activity() {
               isMulti={false}
               value={selectedUsers}
               onChange={handleUserChange}
-              placeholder='Select Users'
+              placeholder='Users'
+              styles={customStyle}
             />
           </div>
 
-          <div className='d-flex align-items-center ps-5'>
+          <div className='d-flex align-items-center ps-2'>
             <label className='no-margin pr-2 semi-bold'>Activity Types:</label>
             <Select
               options={activityTypeOptions}
@@ -251,7 +277,7 @@ function Activity() {
             />
           </div>
 
-          <div className='ps-5'>
+          <div className='ps-2'>
             <label className='no-margin pr-2 semi-bold'>From Date: </label>
             <input
               className='date'
@@ -260,7 +286,7 @@ function Activity() {
               onChange={handleFromDateChange}
             />
           </div>
-          <div className='ps-5'>
+          <div className='ps-2'>
             <label className='no-margin pr-2 semi-bold'>To Date: </label>
             <input
               className='date'
@@ -270,10 +296,10 @@ function Activity() {
             />
           </div>
 
-          <button className='btn btn-circle btn-new ms-3 pad-10 mt-1' onClick={handleSubmit}>
+          <button className='btn btn-primary btn-small ms-1' onClick={handleSubmit}>
             <i className='fa fa-search white' />
           </button>
-          <button className='btn btn-primary btn-small ms-3 ' onClick={handleReset}>
+          <button className='btn btn-primary btn-small ms-1 ' onClick={handleReset}>
             Reset
           </button>
           <div className='ds-reload mt-2 ms-3 float-right'>
