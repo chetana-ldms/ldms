@@ -185,12 +185,14 @@ const ToolActions = () => {
             onCancel={cancelDelete}
           />
         )}
-        <Pagination
-          pageCount={Math.ceil(toolActions.length / itemsPerPage)}
-          handlePageClick={handlePageClick}
-          itemsPerPage={itemsPerPage}
-          handlePageSelect={handlePageSelect}
-        />
+        {toolActions && (
+          <Pagination
+            pageCount={Math.ceil(toolActions.length / itemsPerPage)}
+            handlePageClick={handlePageClick}
+            itemsPerPage={itemsPerPage}
+            handlePageSelect={handlePageSelect}
+          />
+        )}
       </div>
     </div>
   )

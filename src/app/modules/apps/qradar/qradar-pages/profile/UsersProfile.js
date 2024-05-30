@@ -143,7 +143,7 @@ function UsersProfile() {
           <div className="col-lg-2 d-flex align-items-center">
             <div className="text-center">
               <h3 className="align-items-end flex-column">
-                <span className="">Users Profile</span>
+                <span className="">User Profile</span>
               </h3>
             </div>
           </div>

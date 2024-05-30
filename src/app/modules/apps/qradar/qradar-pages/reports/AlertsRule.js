@@ -175,7 +175,7 @@ function AlertsRule() {
   return (
     <div>
       <h4 className="bg-heading mb-15">
-        Alerts Rule for the last year ({startDate} to {endDate})
+        Alerts Category for the last year ({startDate} to {endDate})
       </h4>
       {loading ? (
         <p>Loading...</p>

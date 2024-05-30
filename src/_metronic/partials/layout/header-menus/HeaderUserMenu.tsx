@@ -63,7 +63,7 @@ const HeaderUserMenu: FC = () => {
 
       <div className='menu-item px-5'>
         <Link to={'/qradar/profile'} className='menu-link px-5'>
-          Users Profile
+          User Profile
         </Link>
       </div>
 

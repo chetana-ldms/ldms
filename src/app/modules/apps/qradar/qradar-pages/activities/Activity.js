@@ -20,6 +20,7 @@ function Activity() {
   const [activityType, setActivityType] = useState([]);
   const [selectedFromDate, setSelectedFromDate] = useState(null);
   const [selectedToDate, setSelectedToDate] = useState(null);
+  console.log(selectedToDate, "selectedToDate")
   const orgId = Number(sessionStorage.getItem('orgId'));
   const userID = Number(sessionStorage.getItem('userId'));
   const [limit, setLimit] = useState(20);
@@ -118,10 +119,22 @@ function Activity() {
     setSelectedFromDate(date);
   };
 
+  // const handleToDateChange = (e) => {
+  //   const date = e.target.value ? new Date(e.target.value) : null;
+  //   setSelectedToDate(date);
+  // };
   const handleToDateChange = (e) => {
     const date = e.target.value ? new Date(e.target.value) : null;
+    if (date) {
+      const currentDate = new Date();
+      date.setUTCHours(currentDate.getUTCHours());
+      date.setUTCMinutes(currentDate.getUTCMinutes());
+      date.setUTCSeconds(currentDate.getUTCSeconds());
+      date.setUTCMilliseconds(currentDate.getUTCMilliseconds());
+    }
     setSelectedToDate(date);
   };
+  
 
   const handleUserChange = (selectedOptions) => {
     setSelectedUsers(selectedOptions);
@@ -147,7 +160,8 @@ function Activity() {
       fromDate: selectedFromDate,
       toDate: selectedToDate,
     });
-
+    setCurrentPage(1);
+    setActivePage(1);
     fetchActivityData(1, selectedUserIDs, selectedActivityTypeIDs, selectedFromDate, selectedToDate, limit);
   };
 
@@ -165,6 +179,8 @@ function Activity() {
     setSelectedActivityTypes([]);
     setSelectedFromDate(null);
     setSelectedToDate(null);
+    setCurrentPage(1);
+    setActivePage(1);
     setFilters({
       userId: 0,
       activityTypeIds: [],

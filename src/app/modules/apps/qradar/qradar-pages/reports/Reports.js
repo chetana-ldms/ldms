@@ -119,7 +119,7 @@ const Reports = () => {
               </div>
               <TabList className="tab-list mt-5">
                 <Tab>Alert Summary</Tab>
-                <Tab>Alerts Rule</Tab>
+                <Tab>Alerts Category</Tab>
                 <Tab>SLA Measurement</Tab>
                 <Tab>Status of Created Incidents</Tab>
                 <Tab>Closed Incidents</Tab>

@@ -146,6 +146,7 @@
   border: 1px solid #ddd;
   outline: none;
   padding: 15px;
+  padding-right: 82px;
 }
 .sendBtn {
   width: 40px;

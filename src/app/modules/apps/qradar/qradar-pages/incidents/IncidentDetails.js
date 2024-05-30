@@ -304,7 +304,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   Alerts
                 </a>
               </li>
-              <li className='nav-item'>
+              {/* <li className='nav-item'>
                 <a
                   className={`nav-link ${activeTab === 'playbooks' ? 'active' : ''}`}
                   data-bs-toggle='tab'
@@ -323,7 +323,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 >
                   Observables
                 </a>
-              </li>
+              </li> */}
               <li className='nav-item'>
                 <a
                   className={`nav-link ${activeTab === 'timeline' ? 'active' : ''}`}
