@@ -206,6 +206,8 @@
   padding: 10px;
   border-radius: 8px;
   font-size: 13px;
+  word-wrap: break-word; 
+  box-sizing: border-box; 
 }
 .message__recipient a{
   color: #fff;

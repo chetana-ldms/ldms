@@ -110,8 +110,8 @@ const Reports = ({channelId, channelName}) => {
         <div className='channel-report'>
           {/* Generate Report */}
           <div className='generate-report'>
-            {channelSubItems.length > 0 ? (
-              channelSubItems.map((subItem) => (
+            {channelSubItems !== null? (
+              channelSubItems?.map((subItem) => (
                 <div className='report-files mb-2' key={subItem.channelSubItemId}>
                   <label>
                     <input
@@ -133,7 +133,7 @@ const Reports = ({channelId, channelName}) => {
                 </div>
               ))
             ) : (
-              <div>Loading...</div>
+              <div>No Data found</div>
             )}
             {/* <button className='btn btn-new btn-primary btn-small mt-5'>Generate Report</button> */}
           </div>

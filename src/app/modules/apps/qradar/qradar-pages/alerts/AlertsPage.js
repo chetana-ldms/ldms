@@ -8,7 +8,11 @@ import 'react-toastify/dist/ReactToastify.css'
 import {useFormik} from 'formik'
 import EditAlertsPopUp from './EditAlertsPopUp'
 import {notify, notifyFail} from '../components/notification/Notification'
-import {fetchExportDataAddUrl, fetchMasterData, fetchUpdatSetAlertIrrelavantStatuseAlert} from '../../../../../api/Api'
+import {
+  fetchExportDataAddUrl,
+  fetchMasterData,
+  fetchUpdatSetAlertIrrelavantStatuseAlert,
+} from '../../../../../api/Api'
 import {
   fetchAlertData,
   fetchGetAlertNotesByAlertID,
@@ -37,6 +41,7 @@ import AddANoteModal from './AddANoteModal'
 import jsPDF from 'jspdf'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Form} from 'reactstrap'
 import {fetchActivitiesUrl} from '../../../../../api/ActivityApi'
+import { truncateText } from '../../../../../../utils/TruncateText'
 
 const AlertsPage = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -61,7 +66,7 @@ const AlertsPage = () => {
   const [selectedRow, setSelectedRow] = useState({})
   const [showPopup, setShowPopup] = useState(false)
   const [selectCheckBox, setSelectCheckBox] = useState(null)
-  const [checkboxStates, setCheckboxStates] = useState({});
+  const [checkboxStates, setCheckboxStates] = useState({})
   const {severityNameDropDownData, statusDropDown, observableTagDropDown, analystVerdictDropDown} =
     dropdownData
   const handleFormSubmit = () => {
@@ -95,20 +100,20 @@ const AlertsPage = () => {
       })
   }, [])
   const handleselectedAlert = (item, e) => {
-    const { value, checked } = e.target;
-    setCheckboxStates((prev) => ({ ...prev, [value]: checked }));
-    setSelectCheckBox(item);
-  
+    const {value, checked} = e.target
+    setCheckboxStates((prev) => ({...prev, [value]: checked}))
+    setSelectCheckBox(item)
+
     if (checked) {
-      setselectedAlert([...selectedAlert, value]);
-      setIsCheckboxSelected(true);
+      setselectedAlert([...selectedAlert, value])
+      setIsCheckboxSelected(true)
     } else {
-      const updatedAlert = selectedAlert.filter((e) => e !== value);
-      setselectedAlert(updatedAlert);
-      setIsCheckboxSelected(updatedAlert.length > 0);
+      const updatedAlert = selectedAlert.filter((e) => e !== value)
+      setselectedAlert(updatedAlert)
+      setIsCheckboxSelected(updatedAlert.length > 0)
     }
-  };
-  
+  }
+
   // const handleselectedAlert = (item, e) => {
   //   setSelectCheckBox(item)
   //   // setIsCheckboxSelected(e.target.checked);
@@ -143,10 +148,13 @@ const AlertsPage = () => {
   const [escalate, setEscalate] = useState(true)
   const [activePage, setActivePage] = useState(1)
   const [currentPage, setCurrentPage] = useState(1)
-  console.log(currentPage, "currentPage")
+  console.log(currentPage, 'currentPage')
   const [showForm, setShowForm] = useState(false)
   const [ignorVisible, setIgnorVisible] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [isRefreshingMoreDetails, setIsRefreshingMoreDetails] = useState(false)
+  const [isRefreshingNotes, setIsRefreshingNotes] = useState(false)
+  const [isRefreshingTimeLine, setIsRefreshingTimeLine] = useState(false)
   const [limit, setLimit] = useState(20)
   const [pageCount, setpageCount] = useState(0)
   const [source, setSource] = useState([])
@@ -163,7 +171,7 @@ const AlertsPage = () => {
   const [StatusDropDown, setStatusDropDown] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState('')
   const [endpointInfo, setEndpointInfo] = useState([])
-  console.log(endpointInfo, "endpointInfo")
+  console.log(endpointInfo, 'endpointInfo')
   const [networkHistory, setNetworkHistory] = useState([])
   const [threatHeaderDtls, setThreatHeaderDtls] = useState([])
   const [threatInfo, setThreatInfo] = useState([])
@@ -173,22 +181,22 @@ const AlertsPage = () => {
   const [refreshFlag, setRefreshFlag] = useState(false)
   const handleRefreshActions = async () => {
     setRefreshFlag(!refreshFlag)
-    setCurrentPage(1); 
+    setCurrentPage(1)
     setActivePage(1)
     setselectedAlert([])
     setIsCheckboxSelected(false)
     const resetCheckboxStates = Object.keys(checkboxStates).reduce((acc, key) => {
-      acc[key] = false;
-      return acc;
-    }, {});
-    setCheckboxStates(resetCheckboxStates);
+      acc[key] = false
+      return acc
+    }, {})
+    setCheckboxStates(resetCheckboxStates)
     reloadHistory()
     reloadNotes()
     fetchAlertDetails()
     setTimeout(() => {
       fetchAlertDetails()
     }, 5000)
-    qradaralerts(); 
+    qradaralerts()
     setTimeout(() => {
       qradaralerts()
     }, 2000)
@@ -382,25 +390,25 @@ const AlertsPage = () => {
       console.log('No data available')
     }
   }
-//   const handlePageClick = async (data) => {
-//     let selectedPage  = data?.selected + 1 || 1; 
-//     setLoading(true);
-//     const setOfAlertsData = await fetchSetOfAlerts(selectedPage , orgId, userID, limit, accountId, siteId, groupId);
-//     slaCal(setOfAlertsData);
-//     setFilteredAlertDate(setOfAlertsData);     
-//     setCurrentPage(selectedPage );
-//     setActivePage(1)
-//     setLoading(false);
-// }
-const handlePageClick = async (data) => {
-  const newPage = data.selected + 1;
-  setCurrentPage(newPage);
-  setActivePage(newPage);
-};
+  //   const handlePageClick = async (data) => {
+  //     let selectedPage  = data?.selected + 1 || 1;
+  //     setLoading(true);
+  //     const setOfAlertsData = await fetchSetOfAlerts(selectedPage , orgId, userID, limit, accountId, siteId, groupId);
+  //     slaCal(setOfAlertsData);
+  //     setFilteredAlertDate(setOfAlertsData);
+  //     setCurrentPage(selectedPage );
+  //     setActivePage(1)
+  //     setLoading(false);
+  // }
+  const handlePageClick = async (data) => {
+    const newPage = data.selected + 1
+    setCurrentPage(newPage)
+    setActivePage(newPage)
+  }
 
   const qradaralerts = async (page = 1) => {
-    const rangeStart = (page - 1) * limit + 1;
-    const rangeEnd = page * limit;
+    const rangeStart = (page - 1) * limit + 1
+    const rangeEnd = page * limit
     let data2 = {
       orgID: orgId,
       toolID: '1',
@@ -440,8 +448,8 @@ const handlePageClick = async (data) => {
     qradaralerts()
   }, [])
   useEffect(() => {
-    qradaralerts(currentPage);
-  }, [limit, currentPage]);
+    qradaralerts(currentPage)
+  }, [limit, currentPage])
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchUsers(orgId, userID)
@@ -511,16 +519,37 @@ const handlePageClick = async (data) => {
   const handleRefresh = (event) => {
     event.preventDefault()
     setIsRefreshing(true)
-    setCurrentPage(1); 
+    setCurrentPage(1)
     setActivePage(1)
     reloadNotes()
     reloadHistory()
     fetchAlertDetails()
     setselectedAlert([])
-    setCheckboxStates({});
+    setCheckboxStates({})
     setIsCheckboxSelected(false)
     setTimeout(() => setIsRefreshing(false), 2000)
-    qradaralerts(); 
+    qradaralerts()
+  }
+  const handleRefreshMoreDetails = () => {
+    fetchAlertDetails()
+    setIsRefreshingMoreDetails(true)
+    setTimeout(() => {
+      setIsRefreshingMoreDetails(false)
+    }, 2000)
+  }
+  const handleRefreshNotes = () => {
+    reloadNotes()
+    setIsRefreshingNotes(true)
+    setTimeout(() => {
+      setIsRefreshingNotes(false)
+    }, 2000)
+  }
+  const handleRefreshTimeLine = () => {
+    reloadHistory()
+    setIsRefreshingTimeLine(true)
+    setTimeout(() => {
+      setIsRefreshingTimeLine(false)
+    }, 2000)
   }
   const RefreshInterval = 2 * 60 * 1000
   useEffect(() => {
@@ -752,7 +781,7 @@ const handlePageClick = async (data) => {
   }
 
   // Function to export data to CSV
-  const exportToExcel = async() => {
+  const exportToExcel = async () => {
     // Add the heading
     let csvContent = 'Alerts Report\n'
 
@@ -791,14 +820,14 @@ const handlePageClick = async (data) => {
 
     const data = {
       createdDate: new Date().toISOString(),
-      createdUserId: Number(sessionStorage.getItem("userId")),
+      createdUserId: Number(sessionStorage.getItem('userId')),
       orgId: Number(sessionStorage.getItem('orgId')),
-      exportDataType: "Alerts"
-    };
+      exportDataType: 'Alerts',
+    }
     try {
-      const response = await fetchExportDataAddUrl(data);
+      const response = await fetchExportDataAddUrl(data)
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 
@@ -1198,7 +1227,13 @@ const handlePageClick = async (data) => {
                             data-allow-clear='true'
                           >
                             <option>Select</option>
-                            <option value='1' disabled={selectCheckBox.alertIncidentMappingId > 0 || selectCheckBox.positiveAnalysis == "False Positive"}>
+                            <option
+                              value='1'
+                              disabled={
+                                selectCheckBox.alertIncidentMappingId > 0 ||
+                                selectCheckBox.positiveAnalysis == 'False Positive'
+                              }
+                            >
                               Create Incident
                             </option>
                             <option value='2'>Escalate</option>
@@ -1843,7 +1878,7 @@ const handlePageClick = async (data) => {
                             </span>
                           </div>
                         </td>
-                       
+
                         <td>
                           <span className='text-dark d-block'>{item.severityName}</span>
                         </td>
@@ -1874,7 +1909,7 @@ const handlePageClick = async (data) => {
                           onClick={() => handleTdClick(item.alertID)}
                         >
                           <span className='link-txt' title={item.name}>
-                            {item.name}
+                            {truncateText(item.name, 20)}
                           </span>
                         </td>
                         <td className='text-dark fs-8'>{item.observableTag}</td>
@@ -2027,11 +2062,11 @@ const handlePageClick = async (data) => {
                                   >
                                     {orgId == 2 ? (
                                       <div className='h-300px scroll-y'>
-                                         <div className='float-right fs-13 fc-gray text-right ds-reload'>
-                                          <a href='#' onClick={handleRefresh}>
+                                        <div className='float-right fs-13 fc-gray text-right ds-reload'>
+                                          <a href='#' onClick={handleRefreshMoreDetails}>
                                             <i
                                               className={`fa fa-refresh link ${
-                                                isRefreshing ? 'rotate' : ''
+                                                isRefreshingMoreDetails ? 'rotate' : ''
                                               }`}
                                               // title='Auto refresh every 2 minutes'
                                             />
@@ -2063,8 +2098,7 @@ const handlePageClick = async (data) => {
                                                 <span className='semi-bold'>
                                                   Incident Status :{' '}
                                                 </span>
-                                                {threatHeaderDtls?.ldC_IncidentStatus
-}
+                                                {threatHeaderDtls?.ldC_IncidentStatus}
                                               </div>
                                             </div>
                                             {/* <hr /> */}
@@ -2129,15 +2163,14 @@ const handlePageClick = async (data) => {
                                             </div>
                                           </div>
                                         </div>
-                                       
+
                                         <hr />
                                         <div className='row'>
                                           <div className='fs-12 col-md-6'>
                                             <span className='semi-bold'>THREAT FILE NAME :</span>{' '}
                                             {threatInfo?.name}
                                           </div>
-                                          <div className='fs-14 mt-5 text-primary col-md-6 text-end'>
-                                            </div>
+                                          <div className='fs-14 mt-5 text-primary col-md-6 text-end'></div>
                                         </div>
                                         <hr />
                                         <div className='row'>
@@ -2157,7 +2190,7 @@ const handlePageClick = async (data) => {
                                                     whiteSpace: 'nowrap',
                                                     overflow: 'hidden',
                                                     textOverflow: 'ellipsis',
-                                                    maxWidth: '100ch', 
+                                                    maxWidth: '100ch',
                                                   }}
                                                   title={threatInfo?.path}
                                                 >
@@ -2208,9 +2241,7 @@ const handlePageClick = async (data) => {
                                                 </div> */}
                                                 <div className='col-md-9'>
                                                   <h6>{endpointInfo?.computerName}</h6>
-                                                  <p className='fs-12'>
-                                                  {endpointInfo?.scope}
-                                                  </p>
+                                                  <p className='fs-12'>{endpointInfo?.scope}</p>
                                                   <p className='fs-10'>
                                                     {endpointInfo?.agentOSType}
                                                   </p>
@@ -2258,9 +2289,15 @@ const handlePageClick = async (data) => {
                                                 <p>{endpointInfo?.uuid}</p>
                                                 {/* <p>{endpointInfo?.domain?? null}</p> */}
                                                 <p>{endpointInfo?.ipV4Address}</p>
-                                                <p>{endpointInfo?.ipV6Address}</p>
-                                                <p>{endpointInfo?.consoleVisibleIPAddress?? null}</p>
-                                                <p>{getCurrentTimeZone(endpointInfo?.subscriptionTime)}</p>
+                                                <p title={endpointInfo?.ipV6Address}>{truncateText(endpointInfo?.ipV6Address, 50)}</p>
+                                                <p>
+                                                  {endpointInfo?.consoleVisibleIPAddress ?? null}
+                                                </p>
+                                                <p>
+                                                  {getCurrentTimeZone(
+                                                    endpointInfo?.subscriptionTime
+                                                  )}
+                                                </p>
                                               </div>
                                             </div>
                                           </div>
@@ -2279,12 +2316,11 @@ const handlePageClick = async (data) => {
                                     {alertNotesList.length > 0 ? (
                                       <div className='notes-container alert-table'>
                                         <div className='float-right fs-13 fc-gray text-right ds-reload'>
-                                          <a href='#' onClick={handleRefresh}>
+                                          <a href='#' onClick={handleRefreshNotes}>
                                             <i
                                               className={`fa fa-refresh link ${
-                                                isRefreshing ? 'rotate' : ''
+                                                isRefreshingNotes ? 'rotate' : ''
                                               }`}
-                                              title='Auto refresh every 2 minutes'
                                             />
                                           </a>
                                         </div>
@@ -2325,12 +2361,11 @@ const handlePageClick = async (data) => {
                                             <div className='pt-6 h-600px'>
                                               <div className='timeline-label'>
                                                 <div className='float-right fs-13 fc-gray text-right ds-reload'>
-                                                  <a href='#' onClick={handleRefresh}>
+                                                  <a href='#' onClick={handleRefreshTimeLine}>
                                                     <i
                                                       className={`fa fa-refresh link ${
-                                                        isRefreshing ? 'rotate' : ''
+                                                        isRefreshingTimeLine ? 'rotate' : ''
                                                       }`}
-                                                      title='Auto refresh every 2 minutes'
                                                     />
                                                   </a>
                                                 </div>
