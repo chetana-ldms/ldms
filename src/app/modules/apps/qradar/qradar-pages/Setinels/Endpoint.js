@@ -350,7 +350,7 @@ function Endpoint() {
                     <td>{item.storageName ?? null}</td>
                     <td>{item.storageType ?? null}</td>
                     <td>{getCurrentTimeZone(item.lastSuccessfulScanDate)}</td>
-                    <td>{item.locations[0].name}</td>
+                    <td>{item?.locations?.[0]?.name ?? null}</td>
                   </tr>
                 ))
               ) : (

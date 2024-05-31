@@ -163,6 +163,7 @@ const AlertsPage = () => {
   const [StatusDropDown, setStatusDropDown] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState('')
   const [endpointInfo, setEndpointInfo] = useState([])
+  console.log(endpointInfo, "endpointInfo")
   const [networkHistory, setNetworkHistory] = useState([])
   const [threatHeaderDtls, setThreatHeaderDtls] = useState([])
   const [threatInfo, setThreatInfo] = useState([])
@@ -1842,17 +1843,9 @@ const handlePageClick = async (data) => {
                             </span>
                           </div>
                         </td>
-                        <td
-                          key={index}
-                          id={'kt_accordion_1_header_' + index}
-                          data-bs-toggle='collapse'
-                          data-bs-target={'#kt_accordion_1_body_' + index}
-                          aria-expanded='false'
-                          aria-controls={'kt_accordion_1_body_' + index}
-                          style={{cursor: 'pointer'}}
-                          onClick={() => handleTdClick(item.alertID)}
-                        >
-                          <span className='link underline'>{item.severityName}</span>
+                       
+                        <td>
+                          <span className='text-dark d-block'>{item.severityName}</span>
                         </td>
                         <td>
                           <span className='text-dark d-block'>{item.sla}</span>
@@ -1870,8 +1863,17 @@ const handlePageClick = async (data) => {
                             </span>
                           </span>
                         </td>
-                        <td className='text-dark fs-8 alert-name'>
-                          <span className='text-dark d-block' title={item.name}>
+                        <td
+                          key={index}
+                          id={'kt_accordion_1_header_' + index}
+                          data-bs-toggle='collapse'
+                          data-bs-target={'#kt_accordion_1_body_' + index}
+                          aria-expanded='false'
+                          aria-controls={'kt_accordion_1_body_' + index}
+                          style={{cursor: 'pointer'}}
+                          onClick={() => handleTdClick(item.alertID)}
+                        >
+                          <span className='link-txt' title={item.name}>
                             {item.name}
                           </span>
                         </td>
@@ -2031,7 +2033,7 @@ const handlePageClick = async (data) => {
                                               className={`fa fa-refresh link ${
                                                 isRefreshing ? 'rotate' : ''
                                               }`}
-                                              title='Auto refresh every 2 minutes'
+                                              // title='Auto refresh every 2 minutes'
                                             />
                                           </a>
                                         </div>
@@ -2199,18 +2201,18 @@ const handlePageClick = async (data) => {
                                                 Real Time Data about the end point:
                                               </p>
                                               <div className='row border-bottom'>
-                                                <div className='col-md-2'>
+                                                {/* <div className='col-md-2'>
                                                   <span>
                                                     <i className='fab fa-windows fs-40'></i>
                                                   </span>
-                                                </div>
+                                                </div> */}
                                                 <div className='col-md-9'>
-                                                  <h6>DESCTOP-UPU1TUD</h6>
+                                                  <h6>{endpointInfo?.computerName}</h6>
                                                   <p className='fs-12'>
-                                                    LANCESOFT INDIA PRIVATE LIMITE / Defoult site
+                                                  {endpointInfo?.scope}
                                                   </p>
                                                   <p className='fs-10'>
-                                                    (Connect Homes/ Defoult) Group
+                                                    {endpointInfo?.agentOSType}
                                                   </p>
                                                 </div>
                                               </div>
@@ -2240,7 +2242,7 @@ const handlePageClick = async (data) => {
                                                 <p className='semi-bold'> Policy:</p>
                                                 <p className='semi-bold'>Logged in user:</p>
                                                 <p className='semi-bold'>UUID:</p>
-                                                <p className='semi-bold'>Domain:</p>
+                                                {/* <p className='semi-bold'>Domain:</p> */}
                                                 <p className='semi-bold'>IP v4 Address:</p>
                                                 <p className='semi-bold'>IP v6 Address:</p>
                                                 <p className='semi-bold'>Console Visible adress:</p>
@@ -2254,11 +2256,11 @@ const handlePageClick = async (data) => {
                                                 <p>{endpointInfo?.policy}</p>
                                                 <p>{endpointInfo?.loggedInUser}</p>
                                                 <p>{endpointInfo?.uuid}</p>
-                                                <p>{endpointInfo?.domain}</p>
+                                                {/* <p>{endpointInfo?.domain?? null}</p> */}
                                                 <p>{endpointInfo?.ipV4Address}</p>
                                                 <p>{endpointInfo?.ipV6Address}</p>
-                                                <p>{endpointInfo?.consoleVisibleIPAddress}</p>
-                                                <p>{endpointInfo?.subscriptionTime}</p>
+                                                <p>{endpointInfo?.consoleVisibleIPAddress?? null}</p>
+                                                <p>{getCurrentTimeZone(endpointInfo?.subscriptionTime)}</p>
                                               </div>
                                             </div>
                                           </div>

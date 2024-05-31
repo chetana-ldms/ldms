@@ -222,12 +222,12 @@ const UpdateToolAction = () => {
                   data-allow-clear="true"
                   id="toolID"
                   ref={toolID}
-                  value={toolTypeAction.toolTypeName}
+                  value={toolTypeAction?.toolTypeName }
                   onChange={(e) => handleChange(e, "selectToolType")}
                   required
                 >
                   <option value="">Select Tool Type</option>
-                  {toolTypes.map((item, index) => (
+                  {toolTypes?.map((item, index) => (
                     <option
                       value={item.value}
                       key={index}
@@ -255,12 +255,12 @@ const UpdateToolAction = () => {
                   data-allow-clear="true"
                   id="toolId"
                   ref={toolId}
-                  value={toolTypeAction.toolName}
+                  value={toolTypeAction?.toolName}
                   onChange={(e) => handleChange(e, "tools")}
                   required
                 >
                   <option value="">Select Tools</option>
-                  {ldpTools.map((item, index) => (
+                  {ldpTools?.map((item, index) => (
                     <option
                       value={item.toolName}
                       key={index}
@@ -286,13 +286,13 @@ const UpdateToolAction = () => {
                   data-placeholder="Select option"
                   data-allow-clear="true"
                   id="toolTypeActionID"
-                  value={toolTypeAction.toolTypeActionName}
+                  value={toolTypeAction?.toolTypeActionName}
                   ref={toolTypeActionID}
                   onChange={(e) => handleChange(e, "toolActionType")}
                   required
                 >
                   <option value="">Select Tool Action Type</option>
-                  {toolActionTypes.map((item, index) => (
+                  {toolActionTypes?.map((item, index) => (
                     <option
                       value={item.toolTypeActionName}
                       key={index}

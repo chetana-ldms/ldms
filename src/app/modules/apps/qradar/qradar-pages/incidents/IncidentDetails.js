@@ -558,7 +558,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                                   </a>
                                 </div>
                               </div>
-                              <div className='p-1 bd-highlight'>
+                              {/* <div className='p-1 bd-highlight'>
                                 <a
                                   href='#'
                                   className='btn btn-sm btn-icon btn-light btn-secondary mx-1'
@@ -571,15 +571,15 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                                 >
                                   <i className='fa-solid fa-arrow-up'></i>
                                 </a>
-                              </div>
+                              </div> */}
                             </div>
 
-                            <div className='d-flex justify-content-between align-text-left bd-highlight'>
+                            {/* <div className='d-flex justify-content-between align-text-left bd-highlight'>
                               <div className='p-1 bd-highlight fw-bold fs-12'>Suspicious Rate</div>
                               <div className='p-1 bd-highlight fw-bold fs-12'>
                                 <i className='fa-solid fa-circle-check text-success'></i> 1
                               </div>
-                            </div>
+                            </div> */}
                             <div className='d-flex justify-content-between align-text-left bd-highlight'>
                               <div className='p-1 bd-highlight fs-12'>Detected date</div>
                               <div className='p-1 fs-12'>

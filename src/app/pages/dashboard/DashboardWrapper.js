@@ -430,7 +430,7 @@ const DashboardWrapper = () => {
                         {parseInt(
                           alertsResolvedMeanTime.alertsResolvedMeanTime
                         ) === 0
-                          ? "8H:30M:00"
+                          ? "00:00:00"
                           : alertsResolvedMeanTime.alertsResolvedMeanTime}
                       </span>
 

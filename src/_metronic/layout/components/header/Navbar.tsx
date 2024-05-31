@@ -218,7 +218,11 @@ const orgNames = organizations
     ?.sites
     ?.map((site, siteIndex) => (
         <Dropdown.Item key={siteIndex} onClick={() => handleAccordionClick(site.name, site.siteId)}>
-            {site.name} {site.activeLicenses}
+          <div className='d-flex justify-content-between '>
+            <div> {site.name}</div>
+            <div>
+            ({site.activeLicenses})</div>
+            </div>
         </Dropdown.Item>
     ))}
 
@@ -238,7 +242,11 @@ const orgNames = organizations
                 ?.sites.find(site => site.name === (siteName || siteNames))
                 ?.groups.map((group, groupIndex) => (
                     <Dropdown.Item key={groupIndex} onClick={() => handleGroupClick(group.name, group.groupId)}>
-                        {group.name} {group.totalAgents}
+                      <div className='d-flex justify-content-between '>
+                        <div>{group.name} </div>
+                        <div>({group.totalAgents})</div>
+                      </div>
+                       
                     </Dropdown.Item>
                 ))}
         </Dropdown.Menu>

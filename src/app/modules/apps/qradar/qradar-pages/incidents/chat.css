@@ -214,7 +214,7 @@
 .message__recipient p{
   margin-bottom: 0;
 }
-.message__sender{
+.message__sender {
   background-color: #4FD097;
   color: white;
   max-width: 250px;
@@ -224,7 +224,10 @@
   margin-left: 0;
   font-size: 13px;
   float: right;
+  word-wrap: break-word; 
+  box-sizing: border-box; 
 }
+
 .message__sender p{
   margin-bottom: 0;
 }
