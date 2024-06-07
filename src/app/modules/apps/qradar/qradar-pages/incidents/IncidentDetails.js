@@ -433,7 +433,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                         data-control='select2'
                         data-hide-search='true'
                         className='form-select form-control form-select-white form-select-sm fw-bold'
-                        value={incidentData?.type}
+                        value={incidentData?.type || ""}
                         onChange={(event) => handleChange(event, 'type')}
                       >
                         <option value=''>Select</option>
@@ -458,7 +458,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                         data-placeholder='Select option'
                         data-dropdown-parent='#kt_menu_637dc885a14bb'
                         data-allow-clear='true'
-                        value={incidentData?.ownerName}
+                        value={incidentData?.ownerName || ""}
                         onChange={(event) => handleChange(event, 'owner')}
                       >
                         <option>Select</option>

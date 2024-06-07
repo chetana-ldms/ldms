@@ -308,7 +308,7 @@ const DashboardWrapper = () => {
                         value={selectedFilter}
                         onChange={(e) => setSelectedFilter(e.target.value)}
                       >
-                        <option value="">Days</option>
+                        <option value="1">1</option>
                         <option value="30">30</option>
                         <option value="60">60</option>
                         <option value="90">90</option>

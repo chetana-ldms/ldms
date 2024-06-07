@@ -41,7 +41,7 @@ import AddANoteModal from './AddANoteModal'
 import jsPDF from 'jspdf'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Form} from 'reactstrap'
 import {fetchActivitiesUrl} from '../../../../../api/ActivityApi'
-import { truncateText } from '../../../../../../utils/TruncateText'
+import {truncateText} from '../../../../../../utils/TruncateText'
 
 const AlertsPage = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -895,6 +895,18 @@ const AlertsPage = () => {
   useEffect(() => {
     fetchValidations()
   }, [selectedAlert])
+  const getIconClass = (osType) => {
+    switch (osType) {
+      case 'windows':
+        return 'fab fa-windows fs-40'
+      case 'macos':
+        return 'fab fa-apple fs-40'
+      case 'linux':
+        return 'fab fa-linux fs-40'
+      default:
+        return '' // or a default icon class
+    }
+  }
 
   return (
     <KTCardBody className='alert-page'>
@@ -2234,11 +2246,15 @@ const AlertsPage = () => {
                                                 Real Time Data about the end point:
                                               </p>
                                               <div className='row border-bottom'>
-                                                {/* <div className='col-md-2'>
+                                                <div className='col-md-2'>
                                                   <span>
-                                                    <i className='fab fa-windows fs-40'></i>
+                                                    <i
+                                                      className={getIconClass(
+                                                        endpointInfo?.agentOSType
+                                                      )}
+                                                    ></i>
                                                   </span>
-                                                </div> */}
+                                                </div>
                                                 <div className='col-md-9'>
                                                   <h6>{endpointInfo?.computerName}</h6>
                                                   <p className='fs-12'>{endpointInfo?.scope}</p>
@@ -2256,7 +2272,7 @@ const AlertsPage = () => {
                                               </div>
                                               <div className='col-md-8'>
                                                 {/* <p>{endpointInfo.consoleConnectivity}</p> */}
-                                                <p>{endpointInfo?.fullDiskScan}</p>
+                                                <p>{getCurrentTimeZone(endpointInfo?.fullDiskScan)}</p>
                                                 <p>{endpointInfo?.pendinRreboot}</p>
                                                 {/* <p>0</p> */}
                                                 <p>{endpointInfo?.networkStatus}</p>
@@ -2289,7 +2305,9 @@ const AlertsPage = () => {
                                                 <p>{endpointInfo?.uuid}</p>
                                                 {/* <p>{endpointInfo?.domain?? null}</p> */}
                                                 <p>{endpointInfo?.ipV4Address}</p>
-                                                <p title={endpointInfo?.ipV6Address}>{truncateText(endpointInfo?.ipV6Address, 50)}</p>
+                                                <p title={endpointInfo?.ipV6Address}>
+                                                  {truncateText(endpointInfo?.ipV6Address, 50)}
+                                                </p>
                                                 <p>
                                                   {endpointInfo?.consoleVisibleIPAddress ?? null}
                                                 </p>

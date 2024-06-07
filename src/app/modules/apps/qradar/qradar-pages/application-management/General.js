@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchAEndPointDetailsUrl } from "../../../../../api/ApplicationSectionApi";
 import { UsersListLoading } from "../components/loading/UsersListLoading";
+import { getCurrentTimeZone } from "../../../../../../utils/helper";
 
 function General({ id }) {
   const orgId = Number(sessionStorage.getItem("orgId"));
@@ -48,7 +49,7 @@ function General({ id }) {
           <table className="table">
             <tr>
               <td className="bold">Last Active :</td>
-              <td>{general?.lastActiveDate}</td>
+              <td>{getCurrentTimeZone(general?.lastActiveDate)}</td>
               <td className="bold">Last Logged In :</td>
               <td>{general?.lastLoggedInUserName}</td>
             </tr>
@@ -56,7 +57,7 @@ function General({ id }) {
               <td className="bold">Agent Version :</td>
               <td>{general?.agentVersion}</td>
               <td className="bold">Full disc scan :</td>
-              <td>{general?.fullDiskScanLastUpdatedAt}</td>
+              <td>{getCurrentTimeZone(general?.fullDiskScanLastUpdatedAt)}</td>
             </tr>
             <tr>
               <td className="bold">CPU :</td>

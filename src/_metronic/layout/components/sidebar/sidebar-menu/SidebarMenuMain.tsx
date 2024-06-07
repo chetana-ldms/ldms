@@ -154,11 +154,11 @@ const SidebarMenuMain = () => {
         icon='/media/icons/duotune/general/gen017.svg'
       /> */}
 
-      {/* <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen003.svg' title='Playbook'>
+      <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen003.svg' title='Playbook'>
         <SidebarMenuItem hasBullet={true} to='/qradar/demo/v1' title='Alert Types' />
         <SidebarMenuItem hasBullet={true} to='/qradar/demoalert/updated' title='Playbook Alert' />
         <SidebarMenuItem hasBullet={true} to='/qradar/demoplaybooks' title='Alert Playbooks' />
-      </SidebarMenuItemWithSub> */}
+      </SidebarMenuItemWithSub>
 
       {/* <div className='d-flex align-items-center honeypot mt-1'>
       <a
