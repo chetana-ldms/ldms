@@ -12,6 +12,7 @@ const SidebarMenuMain = () => {
   const orgId = Number(sessionStorage.getItem('orgId'));
   const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
   const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
+  const isQA = process.env.REACT_APP_ENV === 'demo';
 
   return (
     <>
@@ -154,11 +155,13 @@ const SidebarMenuMain = () => {
         icon='/media/icons/duotune/general/gen017.svg'
       /> */}
 
-      <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen003.svg' title='Playbook'>
-        <SidebarMenuItem hasBullet={true} to='/qradar/demo/v1' title='Alert Types' />
-        <SidebarMenuItem hasBullet={true} to='/qradar/demoalert/updated' title='Playbook Alert' />
-        <SidebarMenuItem hasBullet={true} to='/qradar/demoplaybooks' title='Alert Playbooks' />
-      </SidebarMenuItemWithSub>
+    {isQA && (
+        <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen003.svg' title='Playbook'>
+          <SidebarMenuItem hasBullet={true} to='/qradar/demo/v1' title='Alert Types' />
+          <SidebarMenuItem hasBullet={true} to='/qradar/demoalert/updated' title='Playbook Alert' />
+          <SidebarMenuItem hasBullet={true} to='/qradar/demoplaybooks' title='Alert Playbooks' />
+        </SidebarMenuItemWithSub>
+      )}
 
       {/* <div className='d-flex align-items-center honeypot mt-1'>
       <a

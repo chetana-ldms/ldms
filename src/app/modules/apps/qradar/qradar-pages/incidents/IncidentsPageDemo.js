@@ -107,7 +107,8 @@ const IncidentsPageDemo = () => {
                 <div className="bg-heading">
                   <h4 className="no-margin no-pad">
                     <span className="white fw-bold block pt-3 pb-3">
-                      Incidents <span className="white">(135)</span>
+                      Incidents
+                       {/* <span className="white">(135)</span> */}
                     </span>
                   </h4>
                 </div>

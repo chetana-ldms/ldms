@@ -11,6 +11,7 @@ import {
   DropdownItem,
 } from "reactstrap";
 import { fetchExportDataAddUrl } from "../../../../../api/Api";
+import Pagination from "../../../../../../utils/Pagination";
 
 function Endpoints({ shouldRender, id }) {
   const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
@@ -83,6 +84,25 @@ function Endpoints({ shouldRender, id }) {
   const [selectedEndpoint, setSelectedEndpoint] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const [currentPage, setCurrentPage] = useState(0)
+  const [itemsPerPage, setItemsPerPage] = useState(5)
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = endpoints
+    ? endpoints.slice(indexOfFirstItem, indexOfLastItem)
+    : null;
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber)
+
+  const handlePageSelect = (event) => {
+    // setItemsPerPage(Number(event.target.value))
+    setItemsPerPage(5)
+    setCurrentPage(0)
+  }
+
+  const handlePageClick = (selected) => {
+    setCurrentPage(selected.selected)
+  }
 
   const fetchData = async () => {
     const data = {
@@ -152,8 +172,8 @@ function Endpoints({ shouldRender, id }) {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {endpoints !== undefined ? (
-              endpoints?.map((item) => (
+            {currentItems !== undefined ? (
+            currentItems?.map((item) => (
                 <tr key={item.applicationId}>
                   <td
                     onClick={() => handleEndpointClick(item)}
@@ -183,6 +203,15 @@ function Endpoints({ shouldRender, id }) {
           </tbody>
         </table>
       )}
+      
+      {currentItems && (
+            <Pagination
+              pageCount={Math.ceil(endpoints.length / itemsPerPage)}
+              handlePageClick={handlePageClick}
+              itemsPerPage={itemsPerPage}
+              handlePageSelect={handlePageSelect}
+            />
+          )}
       <EndpointPopup
         selectedEndpoint={selectedEndpoint}
         showModal={showPopup}
