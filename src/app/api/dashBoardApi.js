@@ -10,7 +10,7 @@ const MasterDataUrl = process.env.REACT_APP_DASHBOARD_MASTERDATA_URL
 const AllIncidentsSummeryUrl =process.env.REACT_APP_DASHBOARD_ALLINCIDENTSSUMMERY_URL
 const GetAlertsTrendDataUrl =process.env.REACT_APP_DASHBOARD_GETALERTSTRENDDATA_URL
 const GetIncidentCountByPriorityAndStatusUrl= process.env.REACT_APP_DASHBOARD_GET_INCIDENT_COUNTBY_PRIORITY_AND_STATUS_URL
-
+const NumberofDaysUrl= "http://115.110.192.133:502/api/PlattformMasterData/v1/MasterDataByOrganization"
 
 export const fetchOrganizations = async () => {
     try {
@@ -215,5 +215,22 @@ export const fetchOrganizations = async () => {
       console.log(error);
     }
   };
+
+  export const fetchNumberofDaysUrl = async (Dashboard_showdata_duration, orgId) => {
+    try {
+      const response = await fetch(`${NumberofDaysUrl}?datatype=${Dashboard_showdata_duration}&orgid=${orgId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      const responseData = await response.json();
+      const masterData = responseData.masterData
+      return masterData
+    } catch (error) {
+      console.log(error)
+    }
+  }
   
   
