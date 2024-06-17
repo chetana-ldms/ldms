@@ -14,6 +14,8 @@ import { fetchExportDataAddUrl } from '../../../../../api/Api'
 
 function BlockList() {
   const orgId = Number(sessionStorage.getItem('orgId'))
+  const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
+  const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
   const [loading, setLoading] = useState(false)
   const [blockList, setBlockList] = useState([])
   console.log(blockList, 'blockList111')
@@ -320,7 +322,9 @@ function BlockList() {
   }
   const handleTableRowClick = (item) => {
     setSelectedItem(item)
+    if (globalAdminRole === 1 || clientAdminRole === 1)  {
     setShowPopupEdit(true)
+    }
   }
   const handlePageSelect = (event) => {
     const selectedPerPage = event.target.value
@@ -363,7 +367,7 @@ function BlockList() {
                       type='checkbox'
                       name='thisScopeAndItsDescendants'
                       onChange={handleCheckboxChange}
-                      checked={includeChildren} //
+                      checked={includeChildren} 
                     />
                     <span>
                       <i className='link mg-right-5' /> This scope and its descendants
@@ -383,6 +387,7 @@ function BlockList() {
                 />
               )}
               <div className='float-left mg-left-10'>
+              {(globalAdminRole === 1 || clientAdminRole === 1) && (
                 <button
                   className={`btn btn-green btn-small float-left ${
                     !isCheckboxSelected && 'disabled'
@@ -391,6 +396,7 @@ function BlockList() {
                 >
                   Delete selection
                 </button>
+         )}
               </div>
             </div>
             <div className='col-lg-6 text-right'>

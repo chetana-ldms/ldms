@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react'
-import {Link, useParams} from 'react-router-dom'
+import {Link, useNavigate, useParams} from 'react-router-dom'
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios'
 
 import {ChartsWidget9} from '../../../_metronic/partials/widgets'
@@ -68,6 +68,7 @@ const DashboardWrapper = () => {
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
+  const navigate = useNavigate();
   const getCurrentTimeZoneDiff = (UTCDate) => {
     const inputTime = moment.tz(UTCDate, 'UTC')
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -297,7 +298,12 @@ const DashboardWrapper = () => {
       setShowModal(false)
     }
   }, [])
-
+  const handleUnhandaledIncident = () => {
+    navigate('/qradar/incidents'); 
+  };
+  const handleUnhandaledAlert = () => {
+    navigate('/qradar/alerts'); 
+  };
   return (
     <div className='dashboard-wrapper'>
       {loading ? (
@@ -381,7 +387,7 @@ const DashboardWrapper = () => {
               <div className='card alert-boxes pad-10'>
                 <div className='row'>
                   <div className='col-xl-3'>
-                    <div className='card bg-default py-5 text-center bg-secondary'>
+                    <div className='card bg-default py-5 text-center bg-secondary link-txt' onClick={handleUnhandaledIncident}>
                       <h4 className='text-gray-800 text-hover-primary mb-1 fs-16'>
                         Unhandled Incidents
                       </h4>
@@ -397,7 +403,7 @@ const DashboardWrapper = () => {
                   </div>
 
                   <div className='col-xl-3'>
-                    <div className='card bg-default py-5 text-center bg-light-warning'>
+                    <div className='card bg-default py-5 text-center bg-light-warning link-txt' onClick={handleUnhandaledAlert}>
                       <h4 className='text-gray-800 text-hover-primary mb-1 fs-16'>
                         Unhandled Alerts
                       </h4>

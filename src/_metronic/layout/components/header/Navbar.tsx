@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
-import { Dropdown, Button, Accordion, Card } from 'react-bootstrap';
+import { Dropdown, Button } from 'react-bootstrap';
 import { KTSVG, toAbsoluteUrl } from '../../../helpers';
 import { HeaderNotificationsMenu, HeaderUserMenu } from '../../../partials';
 import { useNavigate } from 'react-router-dom';
@@ -47,7 +47,7 @@ const Navbar = () => {
   const toolExpire = sessionStorage.getItem('toolExpire');
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [tasksData, setTasksData] = useState([]);
+  const [tasksData, setTasksData] = useState<Task[]>([]);
   const [accountName, setAccountName] = useState<string>('');
   const [siteName, setSiteName] = useState<string>('');
   const [groupName, setGroupName] = useState<string>('');
@@ -57,7 +57,8 @@ const Navbar = () => {
   const ownerUserId = Number(sessionStorage.getItem('userId'));
   const [organizations, setOrganizations] = useState<{ orgID: number; orgName: string }[]>([]);
   const orgId = Number(sessionStorage.getItem('orgId'));
-  const accountNameDefoult = sessionStorage.getItem('accountName');
+  const accountNameDefault = sessionStorage.getItem('accountName');
+  const openTaskCount = Number(sessionStorage.getItem('openTaskCount'))
  
   useEffect(() => {
     const fetchData = async () => {
@@ -70,6 +71,7 @@ const Navbar = () => {
     };
     fetchData();
   }, []);
+  
 const orgNames = organizations
   .filter((item) => item.orgID === orgId)
   .map((item) => item.orgName)
@@ -91,12 +93,16 @@ const orgNames = organizations
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      reload();
-    }, 2 * 60000);
+    let timer: ReturnType<typeof setTimeout>;
+
+    if (openTaskCount > 0) {
+      timer = setTimeout(() => {
+        reload();
+      }, 2 * 60000); 
+    }
 
     return () => clearTimeout(timer);
-  }, [tasksData]);
+  }, [tasksData, openTaskCount]);
 
   const userName = sessionStorage.getItem('userName');
 
@@ -156,10 +162,6 @@ const orgNames = organizations
     }
   }, [toolExpire]);
   
-  
-//   const accountNames = accountsStructure.map((item) => {
-// return item.name
-//   })
   const handleAccountClick = (accountId: string, accountName: string) => {
     sessionStorage.setItem('accountId', accountId);
     sessionStorage.setItem('accountName', accountName);
@@ -188,94 +190,86 @@ const orgNames = organizations
     sessionStorage.setItem('groupId', id);
     window.location.reload();
   };
+
   return (
     <div className='app-navbar flex-shrink-0 account-header'>
       <div className='d-flex mt-5 semi-bold acc-site'>
-  {accountsStructure !==null ? (
-    <>
-      <Dropdown>
-        <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-          {orgNames}
-           
-        </Dropdown.Toggle>
-        <Dropdown.Menu>
-          {accountsStructure.map((account, index) => (
-            <Dropdown.Item key={index} onClick={() => handleAccountClick(account.accountId, account.name)}>
-              {account.name}
-            </Dropdown.Item>
-          ))}
-        </Dropdown.Menu>
-      </Dropdown>
-      
-      {accountName || accountNames ? (
-    <Dropdown>
-        <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-            {`/ ${accountName || accountNames}`} 
-        </Dropdown.Toggle>
-        <Dropdown.Menu>
-        {accountsStructure
-    ?.find(account => account.name === (accountName || accountNames))
-    ?.sites
-    ?.map((site, siteIndex) => (
-        <Dropdown.Item key={siteIndex} onClick={() => handleAccordionClick(site.name, site.siteId)}>
-          <div className='d-flex justify-content-between '>
-            <div> {site.name}</div>
-            <div>
-            ({site.activeLicenses})</div>
-            </div>
-        </Dropdown.Item>
-    ))}
-
-        </Dropdown.Menu>
-    </Dropdown>
-) : null}
-
-      
-      {siteName || siteNames ? (
-    <Dropdown>
-        <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-            {`/ ${siteName || siteNames}`} 
-        </Dropdown.Toggle>
-        <Dropdown.Menu>
-            {accountsStructure
-                ?.find(account => account.name === (accountName || accountNames))
-                ?.sites.find(site => site.name === (siteName || siteNames))
-                ?.groups.map((group, groupIndex) => (
-                    <Dropdown.Item key={groupIndex} onClick={() => handleGroupClick(group.name, group.groupId)}>
-                      <div className='d-flex justify-content-between '>
-                        <div>{group.name} </div>
-                        <div>({group.totalAgents})</div>
-                      </div>
-                       
-                    </Dropdown.Item>
+        {accountsStructure !== null ? (
+          <>
+            <Dropdown>
+              <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
+                {orgNames}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {accountsStructure.map((account, index) => (
+                  <Dropdown.Item key={index} onClick={() => handleAccountClick(account.accountId, account.name)}>
+                    {account.name}
+                  </Dropdown.Item>
                 ))}
-        </Dropdown.Menu>
-    </Dropdown>
-) : null}
-      
-      {groupName || groupNames ? (
-        <Dropdown>
-          <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
-          {`/ ${groupName || groupNames}`}
-          </Dropdown.Toggle>
-        </Dropdown>
-        ) : null}
-    </>
-  ) : (
-    <div>{orgNames}</div>
-  )}
-</div>
-{toolExpireMessage && typeof toolExpireMessage === 'object' && (
-  <div className='d-flex align-items-center me-10'>{toolExpireMessage.message}</div>
-)}
+              </Dropdown.Menu>
+            </Dropdown>
+
+            {accountName || accountNames ? (
+              <Dropdown>
+                <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
+                  {`/ ${accountName || accountNames}`} 
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  {accountsStructure
+                    ?.find(account => account.name === (accountName || accountNames))
+                    ?.sites
+                    ?.map((site, siteIndex) => (
+                      <Dropdown.Item key={siteIndex} onClick={() => handleAccordionClick(site.name, site.siteId)}>
+                        <div className='d-flex justify-content-between '>
+                          <div>{site.name}</div>
+                          <div>({site.activeLicenses})</div>
+                        </div>
+                      </Dropdown.Item>
+                    ))}
+                </Dropdown.Menu>
+              </Dropdown>
+            ) : null}
+
+            {siteName || siteNames ? (
+              <Dropdown>
+                <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
+                  {`/ ${siteName || siteNames}`} 
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  {accountsStructure
+                    ?.find(account => account.name === (accountName || accountNames))
+                    ?.sites.find(site => site.name === (siteName || siteNames))
+                    ?.groups.map((group, groupIndex) => (
+                      <Dropdown.Item key={groupIndex} onClick={() => handleGroupClick(group.name, group.groupId)}>
+                        <div className='d-flex justify-content-between '>
+                          <div>{group.name}</div>
+                          <div>({group.totalAgents})</div>
+                        </div>
+                      </Dropdown.Item>
+                    ))}
+                </Dropdown.Menu>
+              </Dropdown>
+            ) : null}
+
+            {groupName || groupNames ? (
+              <Dropdown>
+                <Dropdown.Toggle variant="primary" className='no-btn' id="dropdown-basic">
+                  {`/ ${groupName || groupNames}`}
+                </Dropdown.Toggle>
+              </Dropdown>
+            ) : null}
+          </>
+        ) : (
+          <div>{orgNames}</div>
+        )}
+      </div>
+      {toolExpireMessage && typeof toolExpireMessage === 'object' && (
+        <div className='d-flex align-items-center me-10'>{toolExpireMessage.message}</div>
+      )}
       <div className='d-flex align-items-center'><span>Welcome <b>{userName}!</b></span></div>
-     
-      
       <div className={clsx('app-navbar-item', itemClass)}>
         <HeaderNotificationsMenu />
       </div>
-      
-
       <div className={clsx('app-navbar-item', itemClass)}>
         <div
           className={clsx('cursor-pointer symbol', userAvatarClass)}
@@ -287,7 +281,6 @@ const orgNames = organizations
         </div>
         <HeaderUserMenu />
       </div>
-
       <div className='notification' onClick={handleBellIcon}>
         <Dropdown>
           <Dropdown.Toggle as={Button} variant="link" id="dropdown-basic" className='bell'>
@@ -295,9 +288,8 @@ const orgNames = organizations
             {" "}
             <span className={tasksData?.length > 0 ? 'count' : 'count-zero'}></span>
           </Dropdown.Toggle>
-
           <Dropdown.Menu>
-            {tasksData ? (
+            {tasksData !==null ? (
               tasksData.map((task: Task) => (
                 <Dropdown.Item key={task.taskId} onClick={() => handleNotification(task.taskId)}>
                   {task.taskTitle}

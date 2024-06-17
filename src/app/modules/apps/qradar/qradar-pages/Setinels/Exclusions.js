@@ -28,6 +28,8 @@ import { fetchExportDataAddUrl } from "../../../../../api/Api";
 
 function Exclusions() {
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
+  const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
   const [loading, setLoading] = useState(false);
   const [exlusions, setExlusions] = useState([]);
   console.log(exlusions, "exlusions111");
@@ -353,7 +355,9 @@ function Exclusions() {
   };
   const handleTableRowClick = (item) => {
     setSelectedItem(item);
+    if (globalAdminRole === 1 || clientAdminRole === 1)  {
     setShowPopupEdit(true);
+    }
   };
   const handlePageSelect = (event) => {
     const selectedPerPage = event.target.value
@@ -367,7 +371,7 @@ function Exclusions() {
         <UsersListLoading />
       ) : (
         <div className="card pad-10">
-          <div className="row">
+          <div className="row mb-3">
             <div className="col-lg-6 d-flex">
               <Dropdown
                 isOpen={dropdown}
@@ -399,7 +403,7 @@ function Exclusions() {
                       type="checkbox"
                       name="thisScopeAndItsDescendants"
                       onChange={handleCheckboxChange}
-                      checked={includeChildren} //
+                      checked={includeChildren} 
                     />
                     <span>
                       <i className="link mg-right-5" /> This scope and its
@@ -408,7 +412,8 @@ function Exclusions() {
                   </label>
                 </DropdownMenu>
               </Dropdown>
-              <div className="mb-3">
+              <div className="">
+              {(globalAdminRole === 1 || clientAdminRole === 1) && (
                 <Dropdown
                   isOpen={dropdownOpenExclusion}
                   toggle={handleThreatActions}
@@ -431,7 +436,9 @@ function Exclusions() {
                     </DropdownItem> */}
                   </DropdownMenu>
                 </Dropdown>
+              )}
               </div>
+
               {showMoreActionsModal && (
                 <CreateExclusionModal
                   show={showMoreActionsModal}
@@ -449,6 +456,8 @@ function Exclusions() {
                 />
               )}
               <div className="float-left mg-left-10">
+                
+              {(globalAdminRole === 1 || clientAdminRole === 1) && (
                 <button
                   className={`btn btn-green btn-small float-left ${
                     !isCheckboxSelected && "disabled"
@@ -457,6 +466,7 @@ function Exclusions() {
                 >
                   Delete selection
                 </button>
+              )}
               </div>
             </div>
             <div className="col-lg-6 text-right">

@@ -166,6 +166,7 @@ const AlertsPage = () => {
   const [showDropdown, setShowDropdown] = useState(false)
   const [selectedValue, setSelectedValue] = useState('')
   const [selectedAlertId, setSelectedAlertId] = useState(null)
+  const [selectedToolId, setSelectedToolId] = useState(null)
   const [AnalystVerdictDropDown, setAnalystVerdictDropDown] = useState(false)
   const [selectedVerdict, setSelectedVerdict] = useState('')
   const [StatusDropDown, setStatusDropDown] = useState(false)
@@ -220,8 +221,9 @@ const AlertsPage = () => {
   useEffect(() => {
     fetchAlertDetails()
   }, [selectedAlertId])
-  const handleTdClick = (itemId) => {
-    setSelectedAlertId(itemId)
+  const handleTdClick = (item) => {
+    setSelectedAlertId(item.alertID)
+    setSelectedToolId(item.toolID)
   }
   const reloadHistory = () => {
     if (selectedAlertId !== null && selectedAlertId !== undefined) {
@@ -246,7 +248,11 @@ const AlertsPage = () => {
   const reloadNotes = async () => {
     try {
       if (selectedAlertId !== null && selectedAlertId !== undefined) {
-        const data = {alertID: selectedAlertId}
+        const data = {
+          alertID: selectedAlertId,
+          toolId: selectedToolId,
+          orgId: orgId
+        }
         const alertNotesList = await fetchGetAlertNotesByAlertID(data)
         const alertNoteSort = alertNotesList.sort((a, b) => {
           return b.alertsNotesId - a.alertsNotesId
@@ -1116,9 +1122,11 @@ const AlertsPage = () => {
                               <option value='AddToBlockList' className='mb-2'>
                                 Add To Blocklist
                               </option>
-                              <option value='AddToExclusions' className='p-2'>
-                                Add To Exclusions
-                              </option>
+                              {(globalAdminRole === 1 || clientAdminRole === 1) && (
+                                <option value='AddToExclusions' className='p-2'>
+                                  Add To Exclusions
+                                </option>
+                              )}
                               <option
                                 value='Unquarantine'
                                 className='p-2'
@@ -1918,7 +1926,7 @@ const AlertsPage = () => {
                           aria-expanded='false'
                           aria-controls={'kt_accordion_1_body_' + index}
                           style={{cursor: 'pointer'}}
-                          onClick={() => handleTdClick(item.alertID)}
+                          onClick={() => handleTdClick(item)}
                         >
                           <span className='link-txt' title={item.name}>
                             {truncateText(item.name, 20)}
@@ -2272,7 +2280,9 @@ const AlertsPage = () => {
                                               </div>
                                               <div className='col-md-8'>
                                                 {/* <p>{endpointInfo.consoleConnectivity}</p> */}
-                                                <p>{getCurrentTimeZone(endpointInfo?.fullDiskScan)}</p>
+                                                <p>
+                                                  {getCurrentTimeZone(endpointInfo?.fullDiskScan)}
+                                                </p>
                                                 <p>{endpointInfo?.pendinRreboot}</p>
                                                 {/* <p>0</p> */}
                                                 <p>{endpointInfo?.networkStatus}</p>

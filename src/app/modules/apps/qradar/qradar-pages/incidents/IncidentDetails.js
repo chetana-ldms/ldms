@@ -13,6 +13,7 @@ import {
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import {useErrorBoundary} from 'react-error-boundary'
 import {fetchActivitiesUrl} from '../../../../../api/ActivityApi'
+import IncidentAlertPopUp from './IncidentAlertPopUp'
 
 const IncidentDetails = ({incident, onRefreshIncidents}) => {
   console.log('incident11111', incident)
@@ -43,6 +44,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const [incidentHistory, setIncidentHistory] = useState([])
   console.log(incidentHistory, 'incidentHistory')
   const [alertsList, setAlertsList] = useState({})
+  console.log(alertsList, 'alertsList')
   const [ldp_security_user, setldp_security_user] = useState([])
   const [incidentData, setIncidentData] = useState({
     incidentStatus: '',
@@ -58,6 +60,11 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     alertId: [],
     significantIncident: 0,
   })
+  const [selectedAlertId, setSelectedAlertId] = useState(null)
+  console.log(selectedAlertId, "selectedAlertId")
+  const [selectedAlertPopUp, setSelectedAlertPopUp] = useState(false)
+  const handleShowModal = () => setSelectedAlertPopUp(true)
+  const handleCloseModal = () => setSelectedAlertPopUp(false)
 
   const alertId = incidentData.alertId
   console.log(alertId, 'alertId')
@@ -121,7 +128,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   }
   useEffect(() => {
     if (id !== null && id !== undefined) {
-        fetchData();
+      fetchData()
     }
   }, [id])
 
@@ -233,7 +240,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
       try {
         const data = alertId
         const alertsList = await fetchAlertsByAlertIds(data)
-        console.log(alertsList, 'alertsList1111')
         setAlertsList(alertsList)
       } catch (error) {
         handleError(error)
@@ -258,6 +264,10 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const getRandomClass = () => {
     const randomIndex = Math.floor(Math.random() * css_classes.length)
     return css_classes[randomIndex]
+  }
+  const handleAlert = (alertId) => {
+    setSelectedAlertId(alertId)
+    setSelectedAlertPopUp(true)
   }
 
   return (
@@ -405,7 +415,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                         data-control='select2'
                         data-hide-search='true'
                         className='form-select form-select-sm'
-                        value={incidentData?.severityName || ""}
+                        value={incidentData?.severityName || ''}
                         onChange={(event) => handleChange(event, 'severity')}
                       >
                         <option value=''>Select</option>
@@ -433,7 +443,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                         data-control='select2'
                         data-hide-search='true'
                         className='form-select form-control form-select-white form-select-sm fw-bold'
-                        value={incidentData?.type || ""}
+                        value={incidentData?.type || ''}
                         onChange={(event) => handleChange(event, 'type')}
                       >
                         <option value=''>Select</option>
@@ -458,7 +468,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                         data-placeholder='Select option'
                         data-dropdown-parent='#kt_menu_637dc885a14bb'
                         data-allow-clear='true'
-                        value={incidentData?.ownerName || ""}
+                        value={incidentData?.ownerName || ''}
                         onChange={(event) => handleChange(event, 'owner')}
                       >
                         <option>Select</option>
@@ -553,9 +563,14 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                                 style={{width: '190px', textAlign: 'left'}}
                               >
                                 <div className='text-dark mb-1'>
-                                  <a href='#' className='text-dark'>
-                                    <span className=''>{alert.name}</span>
-                                  </a>
+                                  <div>
+                                    <span
+                                      className='link-txt'
+                                      onClick={() => handleAlert(alert.alertID)}
+                                    >
+                                      {alert.name}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                               {/* <div className='p-1 bd-highlight'>
@@ -601,6 +616,14 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     )}
                   </tbody>
                 </table>
+                {selectedAlertPopUp && (
+                <IncidentAlertPopUp
+                selectedAlertId={selectedAlertId}
+                  show={selectedAlertPopUp}
+                  onClose={handleCloseModal}
+                  onSubmit={handleSubmit}
+                />
+                )}
               </div>
               <div className='tab-pane fade' id='kt_tab_pane_3' role='tabpanel'>
                 <table className='table align-middle gs-0 gy-4 dash-table'>
