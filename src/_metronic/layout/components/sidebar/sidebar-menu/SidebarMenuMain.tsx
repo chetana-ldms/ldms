@@ -159,6 +159,7 @@ const SidebarMenuMain = () => {
         <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen003.svg' title='Playbook'>
           <SidebarMenuItem hasBullet={true} to='/qradar/demo/v1' title='Alert Types' />
           <SidebarMenuItem hasBullet={true} to='/qradar/demoalert/updated' title='Playbook Alert' />
+          <SidebarMenuItem hasBullet={true} to='/qradar/incidentsDemo' title='Incidents' />
           <SidebarMenuItem hasBullet={true} to='/qradar/demoplaybooks' title='Alert Playbooks' />
         </SidebarMenuItemWithSub>
       )}

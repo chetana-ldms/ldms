@@ -84,7 +84,6 @@ const QradarPages = () => {
       <Route element={<Outlet />}>
         <Route path='alerts' element={<AlertsPage />} />
         <Route path='incidents' element={<IncidentsPage />} />
-        <Route path='incidentsDemo' element={<IncidentsPageDemo />} />
         <Route path='incidentsv1' element={<IncidentsPagev1 />} />
         <Route path='incidentscollaboration' element={<IncidentsPageCollaboration />} />
         <Route path='channels' element={<ChannelsPage />} />
@@ -111,6 +110,7 @@ const QradarPages = () => {
       </Route>
       <Route path='demoalert/:status' element={<DemoAlert />} />
       <Route path='demoalertv1/:status' element={<DemoAlertv1 />} />
+        <Route path='incidentsDemo' element={<IncidentsPageDemo />} />
       <Route path='demoplaybooks' element={<DemoPlaybooks />} />
       <Route path='profile' element={<UsersProfile />} />
       <Route path='demo/:status' element={<DemoPage />} />

@@ -113,7 +113,7 @@ const DemoAlertv1 = () => {
           notify('Incident created')
         }, 5000)
         setTimeout(() => {
-          navigate('/qradar/incidents')
+          navigate("/qradar/incidentsDemo")
         }, 10000)
       }
       if (alertLength === 0) {

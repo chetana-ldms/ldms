@@ -251,7 +251,7 @@ const AlertsPage = () => {
         const data = {
           alertID: selectedAlertId,
           toolId: selectedToolId,
-          orgId: orgId
+          orgId: orgId,
         }
         const alertNotesList = await fetchGetAlertNotesByAlertID(data)
         const alertNoteSort = alertNotesList.sort((a, b) => {
@@ -2361,13 +2361,19 @@ const AlertsPage = () => {
                                             </tr>
                                           </thead>
                                           <tbody>
-                                            {alertNotesList.map((note) => (
-                                              <tr key={note.alertsNotesId}>
-                                                <td>{note.createdUser}</td>
-                                                <td>{getCurrentTimeZone(note.createdDate)}</td>
-                                                <td>{note.notes}</td>
-                                              </tr>
-                                            ))}
+                                            {alertNotesList
+                                              .slice()
+                                              .sort(
+                                                (a, b) =>
+                                                  new Date(b.notesDate) - new Date(a.notesDate)
+                                              )
+                                              .map((note) => (
+                                                <tr key={note.alertsNotesId}>
+                                                  <td>{note.createdUser}</td>
+                                                  <td>{getCurrentTimeZone(note.notesDate)}</td>
+                                                  <td>{note.notes}</td>
+                                                </tr>
+                                              ))}
                                           </tbody>
                                         </table>
                                       </div>
