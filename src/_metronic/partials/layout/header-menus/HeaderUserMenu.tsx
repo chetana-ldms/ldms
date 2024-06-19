@@ -1,42 +1,43 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {FC} from 'react'
-import {Link} from 'react-router-dom'
-import {toAbsoluteUrl} from '../../../helpers'
-import { useNavigate } from 'react-router-dom'
-import UsersProfile from '../../../../app/modules/apps/qradar/qradar-pages/profile/UsersProfile'
-import { fetchLogoutAddUrl } from '../../../../app/api/Api'
-
+import { FC, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { toAbsoluteUrl } from '../../../helpers';
+import { fetchLogoutAddUrl } from '../../../../app/api/Api';
 
 const HeaderUserMenu: FC = () => {
-  const createdUserId = Number(sessionStorage.getItem('userId'))
-  const createdDate = new Date().toISOString()
+  const createdUserId = Number(sessionStorage.getItem('userId'));
+  const createdDate = new Date().toISOString();
   const orgId = Number(sessionStorage.getItem('orgId'));
-  const navigate = useNavigate()
-    const handleLogout = async() => {
-      const data = {
-        createdUserId,
-        createdDate,
-        orgId: Number(sessionStorage.getItem('orgId'))
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const data = {
+      createdUserId,
+      createdDate,
+      orgId: Number(sessionStorage.getItem('orgId')),
+    };
+    try {
+      const responseData = await fetchLogoutAddUrl(data);
+      const { isSuccess } = responseData;
+
+      if (isSuccess) {
+        sessionStorage.clear();
+        navigate('/auth'); // Redirect to the login page
       }
-      try {
-        const responseData = await fetchLogoutAddUrl(data)
-        const {isSuccess} = responseData
-  
-        if (isSuccess) {   
-      sessionStorage.clear();
-      // navigate('/pagelayout'); //  the code need uncomment if you want microsoft login page
-      navigate('/auth');       //  the code need comment if you want microsoft login page
-        } 
-      } catch (error) {
-        console.log(error)
-      } 
+    } catch (error) {
+      console.log(error);
+    }
   };
-    const userName = sessionStorage.getItem('userName');
-        const email = sessionStorage.getItem('email');
 
+  const userName = sessionStorage.getItem('userName');
+  const email = sessionStorage.getItem('email');
 
+  useEffect(() => {
+    if (!createdUserId) {
+      navigate('/auth'); 
+    }
+  }, [createdUserId]);
 
-  // const {currentUser, logout} = useAuth()
   return (
     <div
       className='menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-275px'
@@ -75,7 +76,7 @@ const HeaderUserMenu: FC = () => {
         </a>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export {HeaderUserMenu}
+export { HeaderUserMenu };
