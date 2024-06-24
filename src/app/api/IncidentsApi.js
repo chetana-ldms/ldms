@@ -58,7 +58,7 @@ export const fetchSetOfIncidents = async (currentPage, orgId, userID, limit) => 
     },
     loggedInUserId: userID,
   }
-  const response = await fetchIncidents(data2)
+  const response = await fetchGetIncidentSearchResult(data2)
   return response
 }
 export const fetchGetIncidentSearchResult = async (data) => {

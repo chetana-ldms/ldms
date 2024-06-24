@@ -27,7 +27,6 @@ import {
   fetchGetMyInternalIncidents,
   fetchGetUnAttendedAletsCount,
   fetchGetUnAttendedIncidentsCount,
-  fetchMasterData,
   fetchNumberofDaysUrl,
   fetchOrganizations,
   fetchUserActionsByUser,
@@ -37,12 +36,14 @@ import moment from 'moment-timezone'
 import {useErrorBoundary} from 'react-error-boundary'
 import {UsersListLoading} from '../../modules/apps/qradar/qradar-pages/components/loading/UsersListLoading'
 import TasksPopUp from '../../modules/auth/components/TasksPopUp'
+import { fetchMasterData } from '../../api/Api'
 
 const DashboardWrapper = () => {
   const handleError = useErrorBoundary()
   const userID = Number(sessionStorage.getItem('userId'))
   const roleID = Number(sessionStorage.getItem('roleID'))
   const orgId = Number(sessionStorage.getItem('orgId'))
+  const toolId = Number(sessionStorage.getItem('toolID'))
   const openTaskCount = Number(sessionStorage.getItem('openTaskCount'))
   const [unattendedIcount, setUnattendedIncidentcount] = useState({})
   const [unattendedAcount, setUnattendedAlertcount] = useState({})
@@ -99,12 +100,14 @@ const DashboardWrapper = () => {
   useEffect(() => {
     const fetchNumberOfDays = async () => {
       try {
-        const response = await fetchNumberofDaysUrl(
-          'Dashboard_showdata_duration',
-          selectedOrganization
-        )
-        setSelectedDays(response)
-        // setSelectedFilter(response);
+        const data = {
+          maserDataType: 'Dashboard_showdata_duration',
+          orgId: selectedOrganization,
+          toolId:toolId,
+        }
+      const masterDataResponse = await fetchMasterData(data)
+      const response = masterDataResponse
+      setSelectedDays(response)
       } catch (error) {
         handleError(error)
       }
@@ -118,8 +121,7 @@ const DashboardWrapper = () => {
       setLoading(true)
       const mostUsedTagsResponse = await fetchGetAlertsMostUsedTags({
         orgID: selectedOrganization,
-        toolID: 0,
-        toolTypeID: 0,
+        toolId: toolId,
         userID: userID,
         numberofDays: selectedFilter,
         orgAccountStructureLevel: [
@@ -161,8 +163,7 @@ const DashboardWrapper = () => {
       // GetUnAttendedIncidentsCount
       const unattendedIncidentsCountResponse = await fetchGetUnAttendedIncidentsCount({
         orgID: selectedOrganization,
-        toolID: 1,
-        toolTypeID: 1,
+        toolId: toolId,
         userID: userID,
         numberofDays: selectedFilter,
         orgAccountStructureLevel: [
@@ -186,8 +187,7 @@ const DashboardWrapper = () => {
       // GetUnAttendedAletsCount
       const unattendedAlertsCountResponse = await fetchGetUnAttendedAletsCount({
         orgID: selectedOrganization,
-        toolID: 1,
-        toolTypeID: 1,
+        toolId: toolId,
         userID: userID,
         numberofDays: selectedFilter,
         orgAccountStructureLevel: [
@@ -211,8 +211,7 @@ const DashboardWrapper = () => {
       // GetFalsePositiveAlertsCount
       const falsePositiveAlertsCountResponse = await fetchGetFalsePositiveAlertsCount({
         orgID: selectedOrganization,
-        toolID: 1,
-        toolTypeID: 1,
+        toolId: toolId,
         userID: userID,
         numberofDays: selectedFilter,
         positiveAnalysisID: 1,
@@ -237,8 +236,7 @@ const DashboardWrapper = () => {
       // GetAlertsResolvedMeanTime
       const alertsResolvedMeanTimeResponse = await fetchGetAlertsResolvedMeanTime({
         orgID: selectedOrganization,
-        toolID: 1,
-        toolTypeID: 1,
+        toolId: toolId,
         userID: userID,
         numberofDays: selectedFilter,
         orgAccountStructureLevel: [
@@ -260,11 +258,14 @@ const DashboardWrapper = () => {
       setAlertsResolvedMeanTime(alertsResolvedMeanTimeData)
 
       // MasterData
-      const masterDataResponse = await fetchMasterData({
-        maserDataType: 'alert_status',
-      })
-      const masterData = masterDataResponse.masterData
-      setAlertstatus(masterData)
+      // const data = {
+      //   maserDataType: 'alert_status',
+      //   orgId: selectedOrganization,
+      //   toolId:toolId,
+      // }
+      // const masterDataResponse = await fetchMasterData(data)
+      // const masterData = masterDataResponse.masterData
+      // setAlertstatus(masterData)
     } catch (error) {
       handleError(error)
     } finally {
@@ -299,11 +300,20 @@ const DashboardWrapper = () => {
     }
   }, [])
   const handleUnhandaledIncident = () => {
-    navigate('/qradar/incidents'); 
-  };
+    if (unattendedIcount.unattendedIncidentCount > 0) {
+      navigate('/qradar/incidents', { state: { status: "New", days: selectedFilter } });
+    }
+  };  
   const handleUnhandaledAlert = () => {
-    navigate('/qradar/alerts'); 
-  };
+    if (unattendedAcount.unattendedAlertsCount > 0) {
+      navigate('/qradar/alerts', { state: { status: "New", days: selectedFilter } });
+    }
+  };  
+  const handleFalsePositiveAlerts = () => {
+    if (falsePAcount.alertsCount > 0) {
+      navigate('/qradar/alerts', { state: { days: selectedFilter } });
+    }
+  };  
   return (
     <div className='dashboard-wrapper'>
       {loading ? (
@@ -327,7 +337,7 @@ const DashboardWrapper = () => {
                         value={selectedFilter}
                         onChange={(e) => setSelectedFilter(Number(e.target.value))}
                       >
-                        {selectedDays.map((day, index) => (
+                        {selectedDays?.map((day, index) => (
                           <option key={index} value={day.dataValue}>
                             {day.dataName}
                           </option>
@@ -396,9 +406,6 @@ const DashboardWrapper = () => {
                           ? unattendedIcount.unattendedIncidentCount
                           : '0'}
                       </span>
-                      {/* <span className="span-red">
-                        <i className="fa fa-arrow-down"></i> 67%
-                      </span> */}
                     </div>
                   </div>
 
@@ -419,7 +426,7 @@ const DashboardWrapper = () => {
                   </div>
 
                   <div className='col-xl-3'>
-                    <div className='card bg-default py-5 text-center bg-light-success'>
+                    <div className='card bg-default py-5 text-center bg-light-success link-txt' onClick={handleFalsePositiveAlerts}>
                       <h4 className='text-gray-800 text-hover-primary mb-1 fs-16'>
                         False Positive Alerts
                       </h4>

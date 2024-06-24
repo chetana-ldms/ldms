@@ -16,6 +16,8 @@ import { ToastContainer } from "react-toastify";
 import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
 
 const UpdateOrganizationTools = () => {
+  const orgId = Number(sessionStorage.getItem("orgId"));
+  const toolIds = Number(sessionStorage.getItem('toolID'))
   const handleError = useErrorBoundary();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -174,14 +176,24 @@ const UpdateOrganizationTools = () => {
     setLoading(false);
   };
   useEffect(() => {
-    fetchMasterData("Tool_Types")
-      .then((typeData) => {
+    const fetchToolTypesData = async () => {
+      const data = {
+        maserDataType: 'Tool_Types',
+        orgId: orgId,
+        toolId: toolIds,
+      };
+  
+      try {
+        const typeData = await fetchMasterData(data);
         setToolTypes(typeData);
-      })
-      .catch((error) => {
+      } catch (error) {
         handleError(error);
-      });
+      }
+    };
+  
+    fetchToolTypesData();
   }, []);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {

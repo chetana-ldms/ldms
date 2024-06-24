@@ -13,6 +13,8 @@ import { fetchLDPTools, fetchMasterData } from "../../../../../api/Api";
 import { useErrorBoundary } from "react-error-boundary";
 
 const UpdateRuleAction = () => {
+  const orgId = Number(sessionStorage.getItem("orgId"));
+  const toolIds = Number(sessionStorage.getItem('toolID'))
   const handleError = useErrorBoundary();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -131,14 +133,24 @@ const UpdateRuleAction = () => {
   };
 
   useEffect(() => {
-    fetchMasterData("Tool_Types")
-      .then((typeData) => {
+    const fetchToolTypesData = async () => {
+      const data = {
+        maserDataType: 'Tool_Types',
+        orgId: orgId,
+        toolId: toolIds,
+      };
+  
+      try {
+        const typeData = await fetchMasterData(data);
         setToolTypes(typeData);
-      })
-      .catch((error) => {
+      } catch (error) {
         handleError(error);
-      });
+      }
+    };
+  
+    fetchToolTypesData();
   }, []);
+  
   const handleSubmit = async (event) => {
     setLoading(true);
     if (!ruleActionName.current.value) {

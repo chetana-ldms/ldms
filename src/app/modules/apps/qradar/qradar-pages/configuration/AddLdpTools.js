@@ -8,6 +8,8 @@ import { useErrorBoundary } from "react-error-boundary";
 
 const AddLdpTools = () => {
   const handleError = useErrorBoundary();
+  const orgId = Number(sessionStorage.getItem("orgId"));
+  const toolId = Number(sessionStorage.getItem('toolID'))
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [toolTypes, setToolTypes] = useState([]);
@@ -58,14 +60,24 @@ const AddLdpTools = () => {
   };
 
   useEffect(() => {
-    fetchMasterData("Tool_Types")
-      .then((typeData) => {
+    const fetchToolTypesData = async () => {
+      const toolTypesDataRequest = {
+        maserDataType: 'Tool_Types',
+        orgId: orgId,
+        toolId: toolId,
+      };
+  
+      try {
+        const typeData = await fetchMasterData(toolTypesDataRequest);
         setToolTypes(typeData);
-      })
-      .catch((error) => {
+      } catch (error) {
         handleError(error);
-      });
+      }
+    };
+  
+    fetchToolTypesData();
   }, []);
+  
 
   return (
     <div className="config card">

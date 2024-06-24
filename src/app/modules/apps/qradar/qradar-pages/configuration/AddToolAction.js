@@ -12,6 +12,8 @@ import { fetchMasterData } from "../../../../../api/Api";
 import { useErrorBoundary } from "react-error-boundary";
 
 const AddToolAction = () => {
+  const orgId = Number(sessionStorage.getItem("orgId"));
+  const toolIds = Number(sessionStorage.getItem('toolID'))
   const handleError = useErrorBoundary();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -23,16 +25,27 @@ const AddToolAction = () => {
   const toolTypeActionID = useRef();
   const errors = {};
   useEffect(() => {
-    setLoading(true);
-    fetchMasterData("Tool_Types")
-      .then((typeData) => {
+    const fetchToolTypesData = async () => {
+       const data = {
+        maserDataType: 'Tool_Types',
+        orgId: orgId,
+        toolId: toolIds,
+      };
+  
+      try {
+        setLoading(true);
+        const typeData = await fetchMasterData(data);
         setToolTypes(typeData);
         setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         handleError(error);
-      });
+        setLoading(false); 
+      }
+    };
+  
+    fetchToolTypesData();
   }, []);
+  
   const handleSubmit = async (event) => {
     if (!toolID.current.value) {
       errors.toolID = "Enter Tool Type";

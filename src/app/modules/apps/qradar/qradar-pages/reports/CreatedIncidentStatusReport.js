@@ -14,6 +14,7 @@ import { fetchExportDataAddUrl } from "../../../../../api/Api";
 function CreatedIncidentStatusReport() {
   const handleError = useErrorBoundary();
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const toolId = Number(sessionStorage.getItem('toolID'))
   const [alertData, setAlertData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -86,6 +87,7 @@ function CreatedIncidentStatusReport() {
 
       const requestData = {
         orgId,
+        toolId:toolId,
         incidentFromDate: fromDateISO,
         incidentToDate: toDate,
         orgAccountStructureLevel: [

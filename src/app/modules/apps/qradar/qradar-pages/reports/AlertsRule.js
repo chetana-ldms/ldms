@@ -14,6 +14,7 @@ import { fetchExportDataAddUrl } from "../../../../../api/Api";
 function AlertsRule() {
   const handleError = useErrorBoundary();
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const toolId = Number(sessionStorage.getItem('toolID'))
   const [alertData, setAlertData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,6 +66,7 @@ function AlertsRule() {
 
       const requestData = {
         orgId,
+        toolId:toolId,
         alertFromDate: fromDateISO,
         alertToDate: toDate,
         orgAccountStructureLevel: [

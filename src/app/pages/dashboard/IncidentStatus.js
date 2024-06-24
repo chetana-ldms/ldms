@@ -4,6 +4,7 @@ import { fetchMasterData } from "../../api/Api";
 import { fetchGetIncidentCountByPriorityAndStatusUrl } from "../../api/dashBoardApi";
 
 function IncidentStatus(props) {
+  const toolId = Number(sessionStorage.getItem('toolID'))
   const { days, orgId } = props;
   const [incidentCount, setIncidentCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -21,13 +22,20 @@ function IncidentStatus(props) {
   });
 
   useEffect(() => {
-    Promise.all([
-      fetchMasterData("incident_severity"),
-      fetchMasterData("incident_status"),
-      fetchMasterData("incident_priority"),
-      fetchMasterData("Incident_Type"),
-    ])
-      .then(([severityData, statusData, priorityData, typeData]) => {
+    const fetchAllIncidentMasterData = async () => {
+      const severityDataRequest = { maserDataType: 'incident_severity', orgId: orgId, toolId: toolId };
+      const statusDataRequest = { maserDataType: 'incident_status', orgId: orgId, toolId: toolId };
+      const priorityDataRequest = { maserDataType: 'incident_priority', orgId: orgId, toolId: toolId };
+      const typeDataRequest = { maserDataType: 'Incident_Type', orgId: orgId, toolId: toolId };
+  
+      try {
+        const [severityData, statusData, priorityData, typeData] = await Promise.all([
+          fetchMasterData(severityDataRequest),
+          fetchMasterData(statusDataRequest),
+          fetchMasterData(priorityDataRequest),
+          fetchMasterData(typeDataRequest),
+        ]);
+  
         setDropdownData((prevDropdownData) => ({
           ...prevDropdownData,
           severityNameDropDownData: severityData,
@@ -35,19 +43,22 @@ function IncidentStatus(props) {
           priorityDropDown: priorityData,
           typeDropDown: typeData,
         }));
-
-        // Store the first status ID and priority ID
+  
         if (statusData.length > 0) {
           setSelectedStatus(statusData[0].dataID);
         }
         if (priorityData.length > 0) {
           setSelectedPriority(priorityData[0].dataID);
         }
-      })
-      .catch((error) => {
+  
+      } catch (error) {
         console.log(error);
-      });
+      }
+    };
+  
+    fetchAllIncidentMasterData();
   }, []);
+  
 
   useEffect(() => {
     if (selectedStatus && selectedPriority) {
@@ -114,7 +125,7 @@ function IncidentStatus(props) {
           <span>Incident by Status & Priority :</span>
         </label>
         <div className="col-lg-4 header-filter">
-          {dropdownData.statusDropDown !== null && dropdownData.statusDropDown !== undefined  ? (
+          {dropdownData?.statusDropDown !== null && dropdownData.statusDropDown !== undefined  ? (
             <select
               name="incidentStatusName"
               data-control="select2"
@@ -124,7 +135,7 @@ function IncidentStatus(props) {
               onChange={handleSelectStatusChange}
             >
               <option value="">Select</option>
-              {dropdownData.statusDropDown.map((status) => (
+              {dropdownData?.statusDropDown.map((status) => (
                 <option
                   key={status.dataID}
                   value={status.dataID}
@@ -149,7 +160,7 @@ function IncidentStatus(props) {
         </div>
 
         <div className="col-lg-3 header-filter">
-          {dropdownData.priorityDropDown !== null ? (
+          {dropdownData?.priorityDropDown !== null && dropdownData?.priorityDropDown !== undefined ? (
             <select
               name="priorityName"
               data-control="select2"
@@ -159,7 +170,7 @@ function IncidentStatus(props) {
               onChange={handleSelectPriorityChange}
             >
               <option value="">Select</option>
-              {dropdownData.priorityDropDown.map((priority) => (
+              {dropdownData?.priorityDropDown.map((priority) => (
                 <option
                   key={priority.dataID}
                   value={priority.dataID}

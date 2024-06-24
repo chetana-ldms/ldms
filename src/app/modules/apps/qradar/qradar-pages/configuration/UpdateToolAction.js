@@ -13,6 +13,8 @@ import {
 import { useErrorBoundary } from "react-error-boundary";
 
 const UpdateToolAction = () => {
+  const orgId = Number(sessionStorage.getItem("orgId"));
+  const toolIds = Number(sessionStorage.getItem('toolID'))
   const handleError = useErrorBoundary();
   const navigate = useNavigate();
   const { id } = useParams();
@@ -122,30 +124,38 @@ const UpdateToolAction = () => {
   }, []);
   useEffect(() => {
     setLoading(true);
-    var config = {
-      method: "get",
-      url: "http://115.110.192.133:502/api/LDPlattform/v1/ToolTypeActions",
-      headers: {
-        Accept: "text/plain",
-      },
-    };
-
-    axios(config)
-      .then(function (response) {
-        setToolActionTypes(response.data.toolTypeActionsList);
+    const fetch = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchToolTypeActions();
+        setToolActionTypes(response);
+      } catch (error) {
+        handleError(error);
+      } finally {
         setLoading(false);
-      })
-      .catch(function (error) {
-        handleError(error);
-      });
+      }
+    };
+    fetch();
 
-    fetchMasterData("Tool_Types")
-      .then((typeData) => {
+    const fetchToolTypesData = async () => {
+      const data = {
+        maserDataType: 'Tool_Types',
+        orgId: orgId,
+        toolId: toolIds,
+      };
+  
+      try {
+        setLoading(true);
+        const typeData = await fetchMasterData(data);
         setToolTypes(typeData);
-      })
-      .catch((error) => {
+        setLoading(false);
+      } catch (error) {
         handleError(error);
-      });
+        setLoading(false); 
+      }
+    };
+  
+    fetchToolTypesData();
   }, []);
   const handleSubmit = async (event, toolTypeAction) => {
     setLoading(true);

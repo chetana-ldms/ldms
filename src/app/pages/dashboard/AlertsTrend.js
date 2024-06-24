@@ -5,6 +5,7 @@ const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 function AlertsTrends(props) {
   const { days, orgId } = props;
+  const toolId = Number(sessionStorage.getItem('toolID'))
   const [alertData, setAlertData] = useState([]);
   console.log(alertData, "alertData");
   const [loading, setLoading] = useState(true);
@@ -71,6 +72,7 @@ function AlertsTrends(props) {
       try {
         const GetAlertsTrendDataResponse = await fetchGetAlertsTrendData({
           orgId: orgId,
+          toolId:toolId,
           orgAccountStructureLevel: [
             {
               levelName: "AccountId",

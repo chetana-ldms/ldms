@@ -142,6 +142,7 @@ const ChannelsPage = () => {
   console.log(channels, "channels11");
   const userID = Number(sessionStorage.getItem("userId"));
   const orgId = Number(sessionStorage.getItem("orgId"));
+  const toolId = Number(sessionStorage.getItem('toolID'))
   const deletedUserId = Number(sessionStorage.getItem("userId"));
   const deletedDate = new Date().toISOString();
   const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
@@ -171,16 +172,27 @@ const ChannelsPage = () => {
     }
   };
   useEffect(() => {
-    fetchMasterData("Channel_Type")
-      .then((typeData) => {
+    const fetchChannelTypeData = async () => {
+      
+      const channelTypeDataRequest = {
+        maserDataType: 'Channel_Type',
+        orgId: orgId,
+        toolId: toolId,
+      };
+  
+      try {
+        const typeData = await fetchMasterData(channelTypeDataRequest);
         setDropdownData({
           dropdownData: typeData,
         });
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log(error);
-      });
+      }
+    };
+  
+    fetchChannelTypeData();
   }, []);
+  
   useEffect(() => {
     fetchData();
   }, []);

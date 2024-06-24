@@ -22,16 +22,14 @@ const LogoutAddUrl= process.env.REACT_APP_LOGOUT_ADD_URL
 const APITokenExpireUrl= process.env.REACT_APP_API_TOKEN_EXPIRE_URL
 const ExportDataAddUrl = process.env.REACT_APP_EXPORT_DATA_ADD_URL
 
-export const fetchMasterData = async (maserDataType) => {
+export const fetchMasterData = async (data) => {
   try {
     const response = await fetch(`${masterDataUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        maserDataType: maserDataType,
-      }),
+      body: JSON.stringify(data),
     });
 
     const responseData = await response.json();
@@ -40,6 +38,7 @@ export const fetchMasterData = async (maserDataType) => {
     console.log(error);
   }
 };
+
 export const fetchAuthenticate = async (userName, password, orgId) => {
   try {
     const response = await fetch(`${authenticateUrl}`, {

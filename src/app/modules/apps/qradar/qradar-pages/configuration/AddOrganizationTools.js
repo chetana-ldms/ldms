@@ -16,6 +16,8 @@ import { useErrorBoundary } from "react-error-boundary";
 
 const AddOrganizationTools = () => {
   const handleError = useErrorBoundary();
+  const orgId = Number(sessionStorage.getItem("orgId"));
+  const toolId = Number(sessionStorage.getItem('toolID'))
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [toolTypes, setToolTypes] = useState([]);
@@ -97,14 +99,24 @@ const AddOrganizationTools = () => {
     }
   };
   useEffect(() => {
-    fetchMasterData("Tool_Types")
-      .then((typeData) => {
+    const fetchToolTypesData = async () => {
+      const data = {
+        maserDataType: 'Tool_Types',
+        orgId: orgId,
+        toolId: toolId,
+      };
+  
+      try {
+        const typeData = await fetchMasterData(data);
         setToolTypes(typeData);
-      })
-      .catch((error) => {
+      } catch (error) {
         handleError(error);
-      });
+      }
+    };
+  
+    fetchToolTypesData();
   }, []);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {

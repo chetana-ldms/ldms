@@ -82,6 +82,7 @@ export function Login() {
           sessionStorage.setItem('siteId', "");
           sessionStorage.setItem('groupName', "");
           sessionStorage.setItem('groupId', "");
+          sessionStorage.setItem('toolID', "3");
           sessionStorage.setItem('toolExpire', "true");
           sessionStorage.setItem('sentinalTesting', "false");
           const defaultPassword = authData.defaultPassword;

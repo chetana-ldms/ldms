@@ -12,6 +12,8 @@ import { fetchMasterData } from "../../../../../api/Api";
 import { useErrorBoundary } from "react-error-boundary";
 
 const AddRuleAction = () => {
+  const orgId = Number(sessionStorage.getItem("orgId"));
+  const toolIds = Number(sessionStorage.getItem('toolID'))
   const handleError = useErrorBoundary();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -59,14 +61,24 @@ const AddRuleAction = () => {
     result();
   };
   useEffect(() => {
-    fetchMasterData("Tool_Types")
-      .then((typeData) => {
+    const fetchToolTypesData = async () => {
+      const data = {
+        maserDataType: 'Tool_Types',
+        orgId: orgId,
+        toolId: toolIds,
+      };
+  
+      try {
+        const typeData = await fetchMasterData(data);
         setToolTypes(typeData);
-      })
-      .catch((error) => {
+      } catch (error) {
         handleError(error);
-      });
+      }
+    };
+  
+    fetchToolTypesData();
   }, []);
+  
   const handleSubmit = async (event) => {
     if (!ruleActionName.current.value) {
       errors.ruleActionName = "Enter Rule Action Name";

@@ -1,5 +1,5 @@
 import {useMemo, useEffect, useState, useRef} from 'react'
-import {Link, useNavigate, useParams} from 'react-router-dom'
+import {Link, useLocation, useNavigate, useParams} from 'react-router-dom'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {UsersListPagination} from '../components/pagination/UsersListPagination'
 import {KTCardBody} from '../../../../../../_metronic/helpers'
@@ -46,6 +46,8 @@ import {truncateText} from '../../../../../../utils/TruncateText'
 const AlertsPage = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const handleError = useErrorBoundary()
+  const toolId = Number(sessionStorage.getItem('toolID'))
+  const location = useLocation();
   const [inputValue, setInputValue] = useState('')
   const [selectedAlert, setselectedAlert] = useState([])
   const [validations, setValidations] = useState('')
@@ -67,6 +69,12 @@ const AlertsPage = () => {
   const [showPopup, setShowPopup] = useState(false)
   const [selectCheckBox, setSelectCheckBox] = useState(null)
   const [checkboxStates, setCheckboxStates] = useState({})
+  const [statusFromDashBoard, setStatusFromDashBoard] = useState(location.state?.status || '');
+  const [daysFromDashBoard, setDaysFromDashBoard] = useState(location.state?.days || '');
+  useEffect(() => {
+    setStatusFromDashBoard(location.state?.status || '');
+    setDaysFromDashBoard(location.state?.days || '');
+  }, [location.state]);
   const {severityNameDropDownData, statusDropDown, observableTagDropDown, analystVerdictDropDown} =
     dropdownData
   const handleFormSubmit = () => {
@@ -80,25 +88,35 @@ const AlertsPage = () => {
     setOpenEditPage(false)
   }
   useEffect(() => {
-    Promise.all([
-      fetchMasterData('alert_Sevirity'),
-      fetchMasterData('alert_status'),
-      fetchMasterData('alert_Tags'),
-      fetchMasterData('analyst_verdict'),
-    ])
-      .then(([severityData, statusData, tagsData, verdictData]) => {
+    const fetchAllMasterData = async () => {
+      const severityDataRequest = { maserDataType: 'alert_Sevirity', orgId: orgId, toolId: toolId };
+      const statusDataRequest = { maserDataType: 'alert_status', orgId: orgId, toolId: toolId };
+      const tagsDataRequest = { maserDataType: 'alert_Tags', orgId: orgId, toolId: toolId };
+      const verdictDataRequest = { maserDataType: 'analyst_verdict', orgId: orgId, toolId: toolId };
+  
+      try {
+        const [severityData, statusData, tagsData, verdictData] = await Promise.all([
+          fetchMasterData(severityDataRequest),
+          fetchMasterData(statusDataRequest),
+          fetchMasterData(tagsDataRequest),
+          fetchMasterData(verdictDataRequest),
+        ]);
+  
         setDropdownData((prevDropdownData) => ({
           ...prevDropdownData,
           severityNameDropDownData: severityData,
           statusDropDown: statusData,
           observableTagDropDown: tagsData,
           analystVerdictDropDown: verdictData,
-        }))
-      })
-      .catch((error) => {
-        handleError(error)
-      })
-  }, [])
+        }));
+      } catch (error) {
+        handleError(error);
+      }
+    };
+  
+    fetchAllMasterData();
+  }, []);
+  
   const handleselectedAlert = (item, e) => {
     const {value, checked} = e.target
     setCheckboxStates((prev) => ({...prev, [value]: checked}))
@@ -417,8 +435,6 @@ const AlertsPage = () => {
     const rangeEnd = page * limit
     let data2 = {
       orgID: orgId,
-      toolID: '1',
-      toolTypeID: '1',
       paging: {
         rangeStart: rangeStart,
         rangeEnd: rangeEnd,
@@ -438,6 +454,18 @@ const AlertsPage = () => {
           levelValue: groupId || '',
         },
       ],
+    };
+    if (statusFromDashBoard && daysFromDashBoard) {
+      const statusItem = statusDropDown.find((item) => item.dataValue === statusFromDashBoard);
+      if (statusItem) {
+        data2.statusId = statusItem.dataID;
+        data2.searchDurationInDays = daysFromDashBoard;
+      
+      }
+    }
+    if (!statusFromDashBoard && daysFromDashBoard) {
+      data2.searchDurationInDays = daysFromDashBoard;
+      data2.falsePositive = '1';
     }
     setLoading(true)
     const response = await fetchAlertData(data2)
@@ -450,12 +478,14 @@ const AlertsPage = () => {
     setFilteredAlertDate(response?.alertsList)
     setLoading(false)
   }
+  // useEffect(() => {
+  //   qradaralerts()
+  // }, [])
   useEffect(() => {
-    qradaralerts()
-  }, [])
-  useEffect(() => {
-    qradaralerts(currentPage)
-  }, [limit, currentPage])
+    if (statusDropDown.length > 0) {
+      qradaralerts(currentPage)
+    }
+  }, [statusDropDown, limit, currentPage]);
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchUsers(orgId, userID)

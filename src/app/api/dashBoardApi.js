@@ -6,11 +6,12 @@ const GetUnAttendedIncidentsCountUrl =process.env.REACT_APP_DASHBOARD_GETUNATTND
 const GetUnAttendedAletsCountUrl =process.env.REACT_APP_DASHBOARD_GETUNATTENDEDALERTSCOUNT_URL
 const GetFalsePositiveAlertsCountUrl =process.env.REACT_APP_DASHBOARD_GETFALSEPOSITIVEALERTSCOUNT_URL
 const GetAlertsResolvedMeanTimeUrl =process.env.REACT_APP_DASHBOARD_GETALERTSRESOLVEDMEANTIME_URL
-const MasterDataUrl = process.env.REACT_APP_DASHBOARD_MASTERDATA_URL
+const masterDataUrl = process.env.REACT_APP_MASTER_DATA_URL
+// const MasterDataUrl = process.env.REACT_APP_DASHBOARD_MASTERDATA_URL
 const AllIncidentsSummeryUrl =process.env.REACT_APP_DASHBOARD_ALLINCIDENTSSUMMERY_URL
 const GetAlertsTrendDataUrl =process.env.REACT_APP_DASHBOARD_GETALERTSTRENDDATA_URL
 const GetIncidentCountByPriorityAndStatusUrl= process.env.REACT_APP_DASHBOARD_GET_INCIDENT_COUNTBY_PRIORITY_AND_STATUS_URL
-const NumberofDaysUrl= "http://115.110.192.133:502/api/PlattformMasterData/v1/MasterDataByOrganization"
+
 
 export const fetchOrganizations = async () => {
     try {
@@ -148,7 +149,7 @@ export const fetchOrganizations = async () => {
   
   export const fetchMasterData = async (data) => {
     try {
-      const response = await fetch(`${MasterDataUrl}`, {
+      const response = await fetch(`${masterDataUrl}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -216,21 +217,5 @@ export const fetchOrganizations = async () => {
     }
   };
 
-  export const fetchNumberofDaysUrl = async (Dashboard_showdata_duration, orgId) => {
-    try {
-      const response = await fetch(`${NumberofDaysUrl}?datatype=${Dashboard_showdata_duration}&orgid=${orgId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      
-      const responseData = await response.json();
-      const masterData = responseData.masterData
-      return masterData
-    } catch (error) {
-      console.log(error)
-    }
-  }
   
   

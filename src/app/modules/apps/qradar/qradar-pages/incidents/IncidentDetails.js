@@ -31,6 +31,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const id = incidentID
   console.log(id, 'id')
   const [activeTab, setActiveTab] = useState('general')
+  const toolId = Number(sessionStorage.getItem('toolID'))
   const userID = Number(sessionStorage.getItem('userId'))
   const orgId = Number(sessionStorage.getItem('orgId'))
   const date = new Date().toISOString()
@@ -77,25 +78,35 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     fetchData()
   }, [])
   useEffect(() => {
-    Promise.all([
-      fetchMasterData('incident_severity'),
-      fetchMasterData('incident_status'),
-      fetchMasterData('incident_priority'),
-      fetchMasterData('Incident_Type'),
-    ])
-      .then(([severityData, statusData, priorityData, typeData]) => {
+    const fetchAllIncidentMasterData = async () => {
+      const severityDataRequest = { maserDataType: 'incident_severity', orgId: orgId, toolId: toolId };
+      const statusDataRequest = { maserDataType: 'incident_status', orgId: orgId, toolId: toolId };
+      const priorityDataRequest = { maserDataType: 'incident_priority', orgId: orgId, toolId: toolId };
+      const typeDataRequest = { maserDataType: 'Incident_Type', orgId: orgId, toolId: toolId };
+  
+      try {
+        const [severityData, statusData, priorityData, typeData] = await Promise.all([
+          fetchMasterData(severityDataRequest),
+          fetchMasterData(statusDataRequest),
+          fetchMasterData(priorityDataRequest),
+          fetchMasterData(typeDataRequest),
+        ]);
+  
         setDropdownData((prevDropdownData) => ({
           ...prevDropdownData,
           severityNameDropDownData: severityData,
           statusDropDown: statusData,
           priorityDropDown: priorityData,
           typeDropDown: typeData,
-        }))
-      })
-      .catch((error) => {
-        handleError(error)
-      })
-  }, [])
+        }));
+      } catch (error) {
+        handleError(error);
+      }
+    };
+  
+    fetchAllIncidentMasterData();
+  }, []);
+  
 
   const fetchData = async () => {
     try {
