@@ -47,7 +47,7 @@ const AlertsPage = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const handleError = useErrorBoundary()
   const toolId = Number(sessionStorage.getItem('toolID'))
-  const location = useLocation();
+  const location = useLocation()
   const [inputValue, setInputValue] = useState('')
   const [selectedAlert, setselectedAlert] = useState([])
   const [validations, setValidations] = useState('')
@@ -64,17 +64,39 @@ const AlertsPage = () => {
     observableTagDropDown: [],
     analystVerdictDropDown: [],
   })
+  const [selectedDays, setSelectedDays] = useState([])
+  const [searchValue, setSearchValue] = useState('')
+  // const [selectedFilter, setSelectedFilter] = useState(1)
+  const selectedFilter = useRef()
+  const status = useRef()
   const [openEditPage, setOpenEditPage] = useState(false)
   const [selectedRow, setSelectedRow] = useState({})
   const [showPopup, setShowPopup] = useState(false)
   const [selectCheckBox, setSelectCheckBox] = useState(null)
   const [checkboxStates, setCheckboxStates] = useState({})
-  const [statusFromDashBoard, setStatusFromDashBoard] = useState(location.state?.status || '');
-  const [daysFromDashBoard, setDaysFromDashBoard] = useState(location.state?.days || '');
+  const [statusFromDashBoard, setStatusFromDashBoard] = useState(location.state?.status || '')
+  const [daysFromDashBoard, setDaysFromDashBoard] = useState(location.state?.days || '')
   useEffect(() => {
-    setStatusFromDashBoard(location.state?.status || '');
-    setDaysFromDashBoard(location.state?.days || '');
-  }, [location.state]);
+    const fetchNumberOfDays = async () => {
+      try {
+        const data = {
+          maserDataType: 'Alert_Searchdata_duration',
+          orgId: orgId,
+          toolId: toolId,
+        }
+        const masterDataResponse = await fetchMasterData(data)
+        const response = masterDataResponse
+        setSelectedDays(response)
+      } catch (error) {
+        handleError(error)
+      }
+    }
+    fetchNumberOfDays()
+  }, [])
+  useEffect(() => {
+    setStatusFromDashBoard(location.state?.status || '')
+    setDaysFromDashBoard(location.state?.days || '')
+  }, [location.state])
   const {severityNameDropDownData, statusDropDown, observableTagDropDown, analystVerdictDropDown} =
     dropdownData
   const handleFormSubmit = () => {
@@ -89,34 +111,34 @@ const AlertsPage = () => {
   }
   useEffect(() => {
     const fetchAllMasterData = async () => {
-      const severityDataRequest = { maserDataType: 'alert_Sevirity', orgId: orgId, toolId: toolId };
-      const statusDataRequest = { maserDataType: 'alert_status', orgId: orgId, toolId: toolId };
-      const tagsDataRequest = { maserDataType: 'alert_Tags', orgId: orgId, toolId: toolId };
-      const verdictDataRequest = { maserDataType: 'analyst_verdict', orgId: orgId, toolId: toolId };
-  
+      const severityDataRequest = {maserDataType: 'alert_Sevirity', orgId: orgId, toolId: toolId}
+      const statusDataRequest = {maserDataType: 'alert_status', orgId: orgId, toolId: toolId}
+      const tagsDataRequest = {maserDataType: 'alert_Tags', orgId: orgId, toolId: toolId}
+      const verdictDataRequest = {maserDataType: 'analyst_verdict', orgId: orgId, toolId: toolId}
+
       try {
         const [severityData, statusData, tagsData, verdictData] = await Promise.all([
           fetchMasterData(severityDataRequest),
           fetchMasterData(statusDataRequest),
           fetchMasterData(tagsDataRequest),
           fetchMasterData(verdictDataRequest),
-        ]);
-  
+        ])
+
         setDropdownData((prevDropdownData) => ({
           ...prevDropdownData,
           severityNameDropDownData: severityData,
           statusDropDown: statusData,
           observableTagDropDown: tagsData,
           analystVerdictDropDown: verdictData,
-        }));
+        }))
       } catch (error) {
-        handleError(error);
+        handleError(error)
       }
-    };
-  
-    fetchAllMasterData();
-  }, []);
-  
+    }
+
+    fetchAllMasterData()
+  }, [])
+
   const handleselectedAlert = (item, e) => {
     const {value, checked} = e.target
     setCheckboxStates((prev) => ({...prev, [value]: checked}))
@@ -424,6 +446,65 @@ const AlertsPage = () => {
   //     setActivePage(1)
   //     setLoading(false);
   // }
+  const handleReset = () => {
+    // setSelectedIncident({})
+    setSearchValue('')
+    if (status.current) {
+      status.current.value = 0
+    }
+    if (selectedFilter.current) {
+      selectedFilter.current.value = 0
+    }
+    setFilteredAlertDate([])
+    setAlertsCount(0)
+    setpageCount(0)
+  }
+  const handleSearchAlert = async () => {
+    // setSelectedIncident({});
+    setActivePage(1)
+    setStatusFromDashBoard('')
+    setDaysFromDashBoard('')
+    const data2 = {
+      orgID: orgId,
+      paging: {
+        rangeStart: 1,
+        rangeEnd: limit,
+      },
+      loggedInUserId: userID,
+      statusId: status.current?.value || 0,
+      name: searchValue || '',
+      searchDurationInDays: selectedFilter.current?.value || 0,
+      orgAccountStructureLevel: [
+        {
+          levelName: 'AccountId',
+          levelValue: accountId || '',
+        },
+        {
+          levelName: 'SiteId',
+          levelValue: siteId || '',
+        },
+        {
+          levelName: 'GroupId',
+          levelValue: groupId || '',
+        },
+      ],
+    }
+    try {
+      setLoading(true)
+      const response = await fetchAlertData(data2)
+      setAlertsCount(response.totalOffenseCount)
+      setSource(response.source)
+      setAlertDate(response.alertsList != null ? response.alertsList : [])
+      const total = response.totalOffenseCount
+      setpageCount(Math.ceil(total / limit))
+      slaCal(response?.alertsList)
+      setFilteredAlertDate(response?.alertsList)
+      setLoading(false)
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+    }
+  }
   const handlePageClick = async (data) => {
     const newPage = data.selected + 1
     setCurrentPage(newPage)
@@ -431,8 +512,8 @@ const AlertsPage = () => {
   }
 
   const qradaralerts = async (page = 1) => {
-    const rangeStart = (page - 1) * limit + 1
-    const rangeEnd = page * limit
+    const rangeStart = (page - 1) * limit + 1;
+    const rangeEnd = page * limit;
     let data2 = {
       orgID: orgId,
       paging: {
@@ -460,32 +541,42 @@ const AlertsPage = () => {
       if (statusItem) {
         data2.statusId = statusItem.dataID;
         data2.searchDurationInDays = daysFromDashBoard;
-      
       }
-    }
-    if (!statusFromDashBoard && daysFromDashBoard) {
+    } else if (!statusFromDashBoard && daysFromDashBoard) {
       data2.searchDurationInDays = daysFromDashBoard;
       data2.falsePositive = '1';
+    } else if (!statusFromDashBoard && !daysFromDashBoard) {
+      if (searchValue || status.current || selectedFilter.current) {
+        data2.statusId = status.current?.value || 0;
+        data2.searchText = searchValue || '';
+        data2.searchDurationInDays = selectedFilter.current?.value || 0;
+      }
     }
-    setLoading(true)
-    const response = await fetchAlertData(data2)
-    setAlertsCount(response.totalOffenseCount)
-    setSource(response.source)
-    setAlertDate(response.alertsList != null ? response.alertsList : [])
-    const total = response.totalOffenseCount
-    setpageCount(Math.ceil(total / limit))
-    slaCal(response?.alertsList)
-    setFilteredAlertDate(response?.alertsList)
-    setLoading(false)
-  }
-  // useEffect(() => {
-  //   qradaralerts()
-  // }, [])
+    setLoading(true);
+    const response = await fetchAlertData(data2);
+    setAlertsCount(response.totalOffenseCount);
+    setSource(response.source);
+    setAlertDate(response.alertsList != null ? response.alertsList : []);
+    setpageCount(Math.ceil(response.totalOffenseCount / limit));
+    slaCal(response?.alertsList);
+    setFilteredAlertDate(response?.alertsList);
+    setLoading(false);
+  };
   useEffect(() => {
     if (statusDropDown.length > 0) {
-      qradaralerts(currentPage)
+      qradaralerts(currentPage);
     }
-  }, [statusDropDown, limit, currentPage]);
+    if (statusFromDashBoard) {
+        const statusItem = statusDropDown.find((item) => item.dataValue === statusFromDashBoard);
+        if (statusItem) {
+          status.current.value = statusItem.dataID;
+        }
+    }
+   
+    if (daysFromDashBoard) {
+      selectedFilter.current.value = daysFromDashBoard;
+    }
+  }, [statusDropDown, limit, currentPage, statusFromDashBoard, daysFromDashBoard]);
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchUsers(orgId, userID)
@@ -966,115 +1057,489 @@ const AlertsPage = () => {
       </div>
       <div className='clearfix' />
       <div className='card pad-10'>
-        <div className='pb-3 pt-3'>
-          <div className='card-toolbar float-left'>
-            <div className='d-flex align-items-center gap-2 gap-lg-3'>
-              <div className='m-0'>
-                <a
-                  href='#'
-                  className={`btn btn-small fs-14 btn-green ${!isCheckboxSelected && 'disabled'}`}
-                  data-kt-menu-trigger='click'
-                  data-kt-menu-placement='bottom-end'
-                  onClick={handleAnalystsVerdict}
-                >
-                  Analyst Verdict
-                </a>
+        <div className=''>
+          <div className='row'>
+            <div className='col-md-7'>
+              <div className='row'>
+                <div className='card-toolbar float-left'>
+                  <div className='d-flex align-items-center gap-2 gap-lg-3'>
+                    <div className='m-0'>
+                      <a
+                        href='#'
+                        className={`btn btn-small fs-14 btn-green ${
+                          !isCheckboxSelected && 'disabled'
+                        }`}
+                        data-kt-menu-trigger='click'
+                        data-kt-menu-placement='bottom-end'
+                        onClick={handleAnalystsVerdict}
+                      >
+                        Analyst Verdict
+                      </a>
 
-                <div
-                  ref={dropdownRef}
-                  className='menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action'
-                  data-kt-menu='true'
-                >
-                  {AnalystVerdictDropDown && (
-                    <div className='px-3 py-3'>
-                      <div className='mb-5'>
-                        <div className='d-flex justify-content-end mb-5'>
-                          <div>
-                            <div
-                              className='close fs-20 text-muted pointer'
-                              aria-label='Close'
-                              onClick={handleAnalystsVerdictClose}
-                            >
-                              <span aria-hidden='true' classNam='black'>
-                                &times;
-                              </span>
+                      <div
+                        ref={dropdownRef}
+                        className='menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action'
+                        data-kt-menu='true'
+                      >
+                        {AnalystVerdictDropDown && (
+                          <div className='px-3 py-3'>
+                            <div className='mb-5'>
+                              <div className='d-flex justify-content-end mb-5'>
+                                <div>
+                                  <div
+                                    className='close fs-20 text-muted pointer'
+                                    aria-label='Close'
+                                    onClick={handleAnalystsVerdictClose}
+                                  >
+                                    <span aria-hidden='true' classNam='black'>
+                                      &times;
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <select
+                                className='form-select form-select-solid'
+                                data-kt-select2='true'
+                                data-placeholder='Select option'
+                                data-dropdown-parent='#kt_menu_637dc885a14bb'
+                                data-allow-clear='true'
+                                onChange={handleAnalystsVerdictDropDown}
+                              >
+                                <option>Select</option>
+                                {analystVerdictDropDown.length > 0 &&
+                                  analystVerdictDropDown.map((item) => (
+                                    <option key={item.dataID} value={item.dataID}>
+                                      {item.dataValue}
+                                    </option>
+                                  ))}
+                              </select>
+                            </div>
+                            <div className='text-right'>
+                              <button
+                                className='btn btn-new btn-small'
+                                onClick={handleSubmitAnalystVerdict}
+                              >
+                                {' '}
+                                Submit{' '}
+                              </button>
                             </div>
                           </div>
-                        </div>
-                        <select
-                          className='form-select form-select-solid'
-                          data-kt-select2='true'
-                          data-placeholder='Select option'
-                          data-dropdown-parent='#kt_menu_637dc885a14bb'
-                          data-allow-clear='true'
-                          onChange={handleAnalystsVerdictDropDown}
-                        >
-                          <option>Select</option>
-                          {analystVerdictDropDown.length > 0 &&
-                            analystVerdictDropDown.map((item) => (
-                              <option key={item.dataID} value={item.dataID}>
-                                {item.dataValue}
-                              </option>
-                            ))}
-                        </select>
-                      </div>
-                      <div className='text-right'>
-                        <button
-                          className='btn btn-new btn-small'
-                          onClick={handleSubmitAnalystVerdict}
-                        >
-                          {' '}
-                          Submit{' '}
-                        </button>
+                        )}
                       </div>
                     </div>
-                  )}
-                </div>
-              </div>
-              <div className='m-0'>
-                <a
-                  href='#'
-                  className={`btn btn-small fw-bold fs-14 btn-green ${
-                    !isCheckboxSelected && 'disabled'
-                  }`}
-                  data-kt-menu-trigger='click'
-                  data-kt-menu-placement='bottom-end'
-                  onClick={handleStatus}
-                >
-                  Status
-                </a>
+                    <div className='m-0'>
+                      <a
+                        href='#'
+                        className={`btn btn-small fw-bold fs-14 btn-green ${
+                          !isCheckboxSelected && 'disabled'
+                        }`}
+                        data-kt-menu-trigger='click'
+                        data-kt-menu-placement='bottom-end'
+                        onClick={handleStatus}
+                      >
+                        Status
+                      </a>
 
-                <div
-                  ref={dropdownRefSatus}
-                  className='menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action'
-                  data-kt-menu='true'
-                >
-                  {StatusDropDown && (
-                    <div className='px-3 py-3'>
-                      <div className='mb-5'>
-                        <div className='d-flex justify-content-end mb-5'>
-                          <div>
-                            <div
-                              className='close fs-20 text-muted pointer'
-                              aria-label='Close'
-                              onClick={handleStatusClose}
-                            >
-                              <span
-                                aria-hidden='true'
-                                style={{color: 'inherit', textShadow: 'none'}}
+                      <div
+                        ref={dropdownRefSatus}
+                        className='menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action'
+                        data-kt-menu='true'
+                      >
+                        {StatusDropDown && (
+                          <div className='px-3 py-3'>
+                            <div className='mb-5'>
+                              <div className='d-flex justify-content-end mb-5'>
+                                <div>
+                                  <div
+                                    className='close fs-20 text-muted pointer'
+                                    aria-label='Close'
+                                    onClick={handleStatusClose}
+                                  >
+                                    <span
+                                      aria-hidden='true'
+                                      style={{color: 'inherit', textShadow: 'none'}}
+                                    >
+                                      &times;
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <select
+                                className='form-select form-select-solid'
+                                data-kt-select2='true'
+                                data-placeholder='Select option'
+                                data-dropdown-parent='#kt_menu_637dc885a14bb'
+                                data-allow-clear='true'
+                                onChange={handleStatusDropDown}
                               >
-                                &times;
-                              </span>
+                                <option value=''>Select</option>
+                                {statusDropDown.length > 0 &&
+                                  statusDropDown.map((item) => (
+                                    <option key={item.dataID} value={item.dataID}>
+                                      {item.dataValue}
+                                    </option>
+                                  ))}
+                              </select>
+                            </div>
+                            <div className='text-right'>
+                              <button
+                                className='btn btn-new btn-small'
+                                onClick={handleSubmitStatus}
+                              >
+                                {' '}
+                                Submit{' '}
+                              </button>
                             </div>
                           </div>
+                        )}
+                      </div>
+                    </div>
+                    {orgId === 2 && (
+                      <>
+                        <div className='m-0'>
+                          <a
+                            href='#'
+                            className={`btn btn-small fs-14 btn-green ${
+                              !isCheckboxSelected && 'disabled'
+                            }`}
+                            data-kt-menu-trigger='click'
+                            data-kt-menu-placement='bottom-end'
+                            onClick={handleThreatActions}
+                          >
+                            Other Action
+                          </a>
+                          <div
+                            className='menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action'
+                            data-kt-menu='true'
+                          >
+                            {showDropdown && selectedAlert.length > 0 && (
+                              <div className='px-3 py-3'>
+                                <div className='mb-5'>
+                                  <div className='d-flex justify-content-end mb-5'>
+                                    <div>
+                                      <div
+                                        className='close fs-20 text-muted pointer'
+                                        aria-label='Close'
+                                        onClick={handleShowDropdown}
+                                      >
+                                        <span
+                                          aria-hidden='true'
+                                          style={{
+                                            color: 'inherit',
+                                            textShadow: 'none',
+                                          }}
+                                        >
+                                          &times;
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <select
+                                    onChange={handleDropdownSelect}
+                                    className='form-select form-select-solid'
+                                    data-kt-select2='true'
+                                    data-control='select2'
+                                    data-placeholder='Select option'
+                                    data-allow-clear='true'
+                                  >
+                                    <option value='' className='p-2'>
+                                      Select
+                                    </option>
+                                    <option value='MitigationAction' className='mb-2'>
+                                      Mitigation Action
+                                    </option>
+                                    <option value='AddToBlockList' className='mb-2'>
+                                      Add To Blocklist
+                                    </option>
+                                    {(globalAdminRole === 1 || clientAdminRole === 1) && (
+                                      <option value='AddToExclusions' className='p-2'>
+                                        Add To Exclusions
+                                      </option>
+                                    )}
+                                    <option
+                                      value='Unquarantine'
+                                      className='p-2'
+                                      disabled={
+                                        selectedAlert.length == 1 && !validations.unQuarantine
+                                      }
+                                    >
+                                      Unquarantine
+                                    </option>
+                                    <option value='AddANote' className='p-2'>
+                                      Add A Note
+                                    </option>
+                                    <option
+                                      value='ConnectToNetwork'
+                                      className='p-2'
+                                      disabled={
+                                        selectedAlert.length == 1 && !validations.addToNetwork
+                                      }
+                                    >
+                                      Connect To Network
+                                    </option>
+                                    <option
+                                      value='DisconnectFromNetwork'
+                                      className='p-2'
+                                      disabled={
+                                        selectedAlert.length == 1 &&
+                                        !validations.disconnectFromNetwork
+                                      }
+                                    >
+                                      Disconnect From Network
+                                    </option>
+                                  </select>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          {showMoreActionsModal && (
+                            <MitigationModal
+                              show={showMoreActionsModal}
+                              handleClose={handleCloseMoreActionsModal}
+                              handleAction={handleAction}
+                              selectedValue={selectedValue}
+                              selectedAlert={selectedAlert}
+                              refreshParent={handleRefreshActions}
+                            />
+                          )}
+                          {addToBlockListModal && (
+                            <AddToBlockListModal
+                              show={addToBlockListModal}
+                              handleClose={handleCloseAddToBlockList}
+                              handleAction={handleActionAddToBlockList}
+                              selectedValue={selectedValue}
+                              selectedAlert={selectedAlert}
+                              refreshParent={handleRefreshActions}
+                            />
+                          )}
+                          {addToExclusionsModal && (
+                            <AddToExclusionsModal
+                              show={addToExclusionsModal}
+                              handleClose={handleCloseAddToExclusions}
+                              handleAction={handleActionAddToExclusions}
+                              selectedValue={selectedValue}
+                              selectedAlert={selectedAlert}
+                              refreshParent={handleRefreshActions}
+                            />
+                          )}
+                          {addANoteModal && (
+                            <AddANoteModal
+                              show={addANoteModal}
+                              handleClose={handleCloseAddANote}
+                              handleAction={handleActionAddANote}
+                              selectedValue={selectedValue}
+                              selectedAlert={selectedAlert}
+                              refreshParent={handleRefreshActions}
+                            />
+                          )}
                         </div>
+                      </>
+                    )}
+                    <div className='m-0'>
+                      <a
+                        href='#'
+                        className={`btn btn-small fs-14 btn-green ${
+                          !isCheckboxSelected && 'disabled'
+                        }`}
+                        data-kt-menu-trigger='click'
+                        data-kt-menu-placement='bottom-end'
+                        onClick={onActionsClick}
+                      >
+                        Actions
+                      </a>
+
+                      <div
+                        className='menu-sub menu-sub-dropdown w-250px w-md-300px alert-action'
+                        data-kt-menu='true'
+                        id='kt_menu_637dc6f8a1c15'
+                      >
+                        {showForm && selectedAlert.length > 0 && (
+                          <div className='px-3 py-3'>
+                            <div className='mb-5'>
+                              <div className='d-flex justify-content-end mb-5'>
+                                <div>
+                                  <div
+                                    className='close fs-20 text-muted pointer'
+                                    aria-label='Close'
+                                    onClick={handleCloseForm}
+                                  >
+                                    <span
+                                      aria-hidden='true'
+                                      style={{color: 'inherit', textShadow: 'none'}}
+                                    >
+                                      &times;
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className='header-filter'>
+                                <select
+                                  onChange={createIncidentSubmit}
+                                  className='form-select form-select-solid'
+                                  data-kt-select2='true'
+                                  data-control='select2'
+                                  data-placeholder='Select option'
+                                  data-dropdown-parent='#kt_menu_637dc6f8a1c15'
+                                  data-allow-clear='true'
+                                >
+                                  <option>Select</option>
+                                  <option
+                                    value='1'
+                                    disabled={
+                                      selectCheckBox.alertIncidentMappingId > 0 ||
+                                      selectCheckBox.positiveAnalysis == 'False Positive'
+                                    }
+                                  >
+                                    Create Incident
+                                  </option>
+                                  <option value='2'>Escalate</option>
+                                  <option value='3'>Irrelevant / Ignore</option>
+                                  {/* <option value="4">Generate Report</option> */}
+                                </select>
+                              </div>
+                            </div>
+                            {actionsValue === '2' && escalate && (
+                              <div>
+                                <form onSubmit={handleSubmit} className='header-filter'>
+                                  <div className='mb-5'>
+                                    <label className='form-label fw-bolder' htmlFor='ownerName'>
+                                      Owner <sup className='red'>*</sup>:
+                                    </label>
+                                    <div>
+                                      <select
+                                        id='ownerName'
+                                        className='form-select form-select-solid'
+                                        data-placeholder='Select option'
+                                        data-allow-clear='true'
+                                        value={values.owner}
+                                        name='owner'
+                                        onChange={handleEscalate}
+                                        required
+                                      >
+                                        <option value=''>Select</option>
+                                        {ldp_security_user.length > 0 &&
+                                          ldp_security_user.map((item, index) => {
+                                            return (
+                                              <option key={index} value={item?.userID}>
+                                                {item?.name}
+                                              </option>
+                                            )
+                                          })}
+                                      </select>
+                                    </div>
+                                  </div>
+                                  <div className='mb-5'>
+                                    <label
+                                      className='form-label fw-bolder'
+                                      htmlFor='excalatecomments'
+                                    >
+                                      Comments <sup className='red'>*</sup>:
+                                    </label>
+                                    <br />
+                                    <textarea
+                                      placeholder='Leave a comment here'
+                                      value={values.comments}
+                                      id='excalatecomments'
+                                      name='comments'
+                                      maxLength={4000}
+                                      onChange={handleEscalate}
+                                      className='form-control'
+                                      required
+                                    />
+                                  </div>
+
+                                  <div className='d-flex justify-content-end'>
+                                    <button
+                                      type='submit'
+                                      className='btn btn-primary btn-small btn-new'
+                                    >
+                                      Submit
+                                    </button>
+                                    &nbsp;&nbsp;
+                                    <button
+                                      className='btn btn-secondary btn-small ml-10'
+                                      onClick={handleCloseForm}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </form>
+                              </div>
+                            )}
+                            {actionsValue === '3' && ignorVisible && (
+                              <div className='d-flex justify-content-end'>
+                                <button
+                                  type='button'
+                                  className='btn btn-small btn-new'
+                                  onClick={handleIgnoreSubmit}
+                                >
+                                  Submit
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='row mt-2'>
+                <div className='d-flex'>
+                  <div className='export-report ms-2 '>
+                    <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
+                      <DropdownToggle caret>
+                        Export <i className='fa fa-file-export link mg-left-10' />
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        <DropdownItem onClick={exportToExcel}>
+                          Export to CSV <i className='fa fa-file-excel link float-right' />
+                        </DropdownItem>
+                        {/* <DropdownItem onClick={exportToPDF}>
+                  Export to PDF <i className='fa fa-file-pdf red float-right' />
+                </DropdownItem> */}
+                      </DropdownMenu>
+                    </Dropdown>
+                  </div>
+                  <div className='ds-reload mt-2 ms-5 '>
+                    <span className='fs-13 fc-gray' onClick={handleRefresh}>
+                      Auto refresh every 2 minutes{' '}
+                      <i
+                        className={`fa fa-refresh link ${isRefreshing ? 'rotate' : ''}`}
+                        title='Auto refresh every 2 minutes'
+                      />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className='col-md-5'>
+              <div className='card-title header-filter'>
+                {/* begin::Search */}
+                <div className='input-group'>
+                  <input
+                    type='text'
+                    className='form-control form-control-sm'
+                    placeholder='Search Alert'
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                  />
+                  <button className='btn btn-sm btn-primary' onClick={handleSearchAlert}>
+                    <i className='fas fa-search'></i>
+                  </button>
+                </div>
+                <div className='d-flex justify-content-between bd-highlight mb-3'>
+                  <div className='mt-2 bd-highlight'>
+                    <div className='w-150px me-2'>
+                      <div>
                         <select
-                          className='form-select form-select-solid'
+                          className='form-select form-select-sm'
                           data-kt-select2='true'
                           data-placeholder='Select option'
                           data-dropdown-parent='#kt_menu_637dc885a14bb'
                           data-allow-clear='true'
-                          onChange={handleStatusDropDown}
+                          ref={status}
+                          // onChange={handleStatusChange}
                         >
                           <option value=''>Select</option>
                           {statusDropDown.length > 0 &&
@@ -1085,316 +1550,34 @@ const AlertsPage = () => {
                             ))}
                         </select>
                       </div>
-                      <div className='text-right'>
-                        <button className='btn btn-new btn-small' onClick={handleSubmitStatus}>
-                          {' '}
-                          Submit{' '}
-                        </button>
-                      </div>
                     </div>
-                  )}
-                </div>
-              </div>
-              {orgId === 2 && (
-                <>
-                  <div className='m-0'>
-                    <a
-                      href='#'
-                      className={`btn btn-small fs-14 btn-green ${
-                        !isCheckboxSelected && 'disabled'
-                      }`}
-                      data-kt-menu-trigger='click'
-                      data-kt-menu-placement='bottom-end'
-                      onClick={handleThreatActions}
-                    >
-                      Other Action
-                    </a>
-                    <div
-                      className='menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action'
-                      data-kt-menu='true'
-                    >
-                      {showDropdown && selectedAlert.length > 0 && (
-                        <div className='px-3 py-3'>
-                          <div className='mb-5'>
-                            <div className='d-flex justify-content-end mb-5'>
-                              <div>
-                                <div
-                                  className='close fs-20 text-muted pointer'
-                                  aria-label='Close'
-                                  onClick={handleShowDropdown}
-                                >
-                                  <span
-                                    aria-hidden='true'
-                                    style={{
-                                      color: 'inherit',
-                                      textShadow: 'none',
-                                    }}
-                                  >
-                                    &times;
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                            <select
-                              onChange={handleDropdownSelect}
-                              className='form-select form-select-solid'
-                              data-kt-select2='true'
-                              data-control='select2'
-                              data-placeholder='Select option'
-                              data-allow-clear='true'
-                            >
-                              <option value='' className='p-2'>
-                                Select
-                              </option>
-                              <option value='MitigationAction' className='mb-2'>
-                                Mitigation Action
-                              </option>
-                              <option value='AddToBlockList' className='mb-2'>
-                                Add To Blocklist
-                              </option>
-                              {(globalAdminRole === 1 || clientAdminRole === 1) && (
-                                <option value='AddToExclusions' className='p-2'>
-                                  Add To Exclusions
-                                </option>
-                              )}
-                              <option
-                                value='Unquarantine'
-                                className='p-2'
-                                disabled={selectedAlert.length == 1 && !validations.unQuarantine}
-                              >
-                                Unquarantine
-                              </option>
-                              <option value='AddANote' className='p-2'>
-                                Add A Note
-                              </option>
-                              <option
-                                value='ConnectToNetwork'
-                                className='p-2'
-                                disabled={selectedAlert.length == 1 && !validations.addToNetwork}
-                              >
-                                Connect To Network
-                              </option>
-                              <option
-                                value='DisconnectFromNetwork'
-                                className='p-2'
-                                disabled={
-                                  selectedAlert.length == 1 && !validations.disconnectFromNetwork
-                                }
-                              >
-                                Disconnect From Network
-                              </option>
-                            </select>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    {showMoreActionsModal && (
-                      <MitigationModal
-                        show={showMoreActionsModal}
-                        handleClose={handleCloseMoreActionsModal}
-                        handleAction={handleAction}
-                        selectedValue={selectedValue}
-                        selectedAlert={selectedAlert}
-                        refreshParent={handleRefreshActions}
-                      />
-                    )}
-                    {addToBlockListModal && (
-                      <AddToBlockListModal
-                        show={addToBlockListModal}
-                        handleClose={handleCloseAddToBlockList}
-                        handleAction={handleActionAddToBlockList}
-                        selectedValue={selectedValue}
-                        selectedAlert={selectedAlert}
-                        refreshParent={handleRefreshActions}
-                      />
-                    )}
-                    {addToExclusionsModal && (
-                      <AddToExclusionsModal
-                        show={addToExclusionsModal}
-                        handleClose={handleCloseAddToExclusions}
-                        handleAction={handleActionAddToExclusions}
-                        selectedValue={selectedValue}
-                        selectedAlert={selectedAlert}
-                        refreshParent={handleRefreshActions}
-                      />
-                    )}
-                    {addANoteModal && (
-                      <AddANoteModal
-                        show={addANoteModal}
-                        handleClose={handleCloseAddANote}
-                        handleAction={handleActionAddANote}
-                        selectedValue={selectedValue}
-                        selectedAlert={selectedAlert}
-                        refreshParent={handleRefreshActions}
-                      />
-                    )}
                   </div>
-                </>
-              )}
-              <div className='m-0'>
-                <a
-                  href='#'
-                  className={`btn btn-small fs-14 btn-green ${!isCheckboxSelected && 'disabled'}`}
-                  data-kt-menu-trigger='click'
-                  data-kt-menu-placement='bottom-end'
-                  onClick={onActionsClick}
-                >
-                  Actions
-                </a>
-
-                <div
-                  className='menu-sub menu-sub-dropdown w-250px w-md-300px alert-action'
-                  data-kt-menu='true'
-                  id='kt_menu_637dc6f8a1c15'
-                >
-                  {showForm && selectedAlert.length > 0 && (
-                    <div className='px-3 py-3'>
-                      <div className='mb-5'>
-                        <div className='d-flex justify-content-end mb-5'>
-                          <div>
-                            <div
-                              className='close fs-20 text-muted pointer'
-                              aria-label='Close'
-                              onClick={handleCloseForm}
-                            >
-                              <span
-                                aria-hidden='true'
-                                style={{color: 'inherit', textShadow: 'none'}}
-                              >
-                                &times;
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className='header-filter'>
-                          <select
-                            onChange={createIncidentSubmit}
-                            className='form-select form-select-solid'
-                            data-kt-select2='true'
-                            data-control='select2'
-                            data-placeholder='Select option'
-                            data-dropdown-parent='#kt_menu_637dc6f8a1c15'
-                            data-allow-clear='true'
-                          >
-                            <option>Select</option>
-                            <option
-                              value='1'
-                              disabled={
-                                selectCheckBox.alertIncidentMappingId > 0 ||
-                                selectCheckBox.positiveAnalysis == 'False Positive'
-                              }
-                            >
-                              Create Incident
-                            </option>
-                            <option value='2'>Escalate</option>
-                            <option value='3'>Irrelevant / Ignore</option>
-                            {/* <option value="4">Generate Report</option> */}
-                          </select>
-                        </div>
-                      </div>
-                      {actionsValue === '2' && escalate && (
-                        <div>
-                          <form onSubmit={handleSubmit} className='header-filter'>
-                            <div className='mb-5'>
-                              <label className='form-label fw-bolder' htmlFor='ownerName'>
-                                Owner <sup className='red'>*</sup>:
-                              </label>
-                              <div>
-                                <select
-                                  id='ownerName'
-                                  className='form-select form-select-solid'
-                                  data-placeholder='Select option'
-                                  data-allow-clear='true'
-                                  value={values.owner}
-                                  name='owner'
-                                  onChange={handleEscalate}
-                                  required
-                                >
-                                  <option value=''>Select</option>
-                                  {ldp_security_user.length > 0 &&
-                                    ldp_security_user.map((item, index) => {
-                                      return (
-                                        <option key={index} value={item?.userID}>
-                                          {item?.name}
-                                        </option>
-                                      )
-                                    })}
-                                </select>
-                              </div>
-                            </div>
-                            <div className='mb-5'>
-                              <label className='form-label fw-bolder' htmlFor='excalatecomments'>
-                                Comments <sup className='red'>*</sup>:
-                              </label>
-                              <br />
-                              <textarea
-                                placeholder='Leave a comment here'
-                                value={values.comments}
-                                id='excalatecomments'
-                                name='comments'
-                                maxLength={4000}
-                                onChange={handleEscalate}
-                                className='form-control'
-                                required
-                              />
-                            </div>
-
-                            <div className='d-flex justify-content-end'>
-                              <button type='submit' className='btn btn-primary btn-small btn-new'>
-                                Submit
-                              </button>
-                              &nbsp;&nbsp;
-                              <button
-                                className='btn btn-secondary btn-small ml-10'
-                                onClick={handleCloseForm}
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          </form>
-                        </div>
-                      )}
-                      {actionsValue === '3' && ignorVisible && (
-                        <div className='d-flex justify-content-end'>
-                          <button
-                            type='button'
-                            className='btn btn-small btn-new'
-                            onClick={handleIgnoreSubmit}
-                          >
-                            Submit
-                          </button>
-                        </div>
-                      )}
+                  <div className='mt-2 bd-highlight'>
+                    <div className='w-150px me-0'>
+                      <select
+                        className='form-select form-select-sm'
+                        data-kt-select2='true'
+                        data-placeholder='Select option'
+                        data-dropdown-parent='#kt_menu_637dc885a14bb'
+                        data-allow-clear='true'
+                        ref={selectedFilter}
+                        // onChange={(e) => setSelectedFilter(Number(e.target.value))}
+                      >
+                        <option value=''>Select</option>
+                        {selectedDays?.map((day, index) => (
+                          <option key={index} value={day.dataValue}>
+                            {day.dataName}
+                          </option>
+                        ))}
+                      </select>
                     </div>
-                  )}
+                  </div>
+                  <div className='mt-2 ms-1 btn btn-primary btn-sm ' onClick={handleReset}>
+                      Reset
+                    </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className='export-report ms-2 float-right'>
-            <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
-              <DropdownToggle caret>
-                Export <i className='fa fa-file-export link mg-left-10' />
-              </DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem onClick={exportToExcel}>
-                  Export to CSV <i className='fa fa-file-excel link float-right' />
-                </DropdownItem>
-                {/* <DropdownItem onClick={exportToPDF}>
-                  Export to PDF <i className='fa fa-file-pdf red float-right' />
-                </DropdownItem> */}
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-          <div className='ds-reload mt-2 float-right'>
-            <span className='fs-13 fc-gray' onClick={handleRefresh}>
-              Auto refresh every 2 minutes{' '}
-              <i
-                className={`fa fa-refresh link ${isRefreshing ? 'rotate' : ''}`}
-                title='Auto refresh every 2 minutes'
-              />
-            </span>
           </div>
         </div>
         {openEditPage ? (
@@ -1409,7 +1592,7 @@ const AlertsPage = () => {
             onTableRefresh={handleTableRefresh}
           />
         ) : null}
-        <div className='card-body1 py-3' id='kt_accordion_1'>
+        <div className='card-body1' id='kt_accordion_1'>
           <div className='table-responsive alert-table scroll-x'>
             <table className='table align-middle gs-0 gy-4 fixed-header'>
               <thead>
@@ -2311,8 +2494,12 @@ const AlertsPage = () => {
                                               <div className='col-md-8'>
                                                 {/* <p>{endpointInfo.consoleConnectivity}</p> */}
                                                 <p>
-                                                  {getCurrentTimeZone(endpointInfo?.fullDiskScan)}
+                                                  {endpointInfo?.fullDiskScanStatus} at{' '}
+                                                  {getCurrentTimeZone(
+                                                    endpointInfo?.fullDiskScanDate
+                                                  )}
                                                 </p>
+
                                                 <p>{endpointInfo?.pendinRreboot}</p>
                                                 {/* <p>0</p> */}
                                                 <p>{endpointInfo?.networkStatus}</p>

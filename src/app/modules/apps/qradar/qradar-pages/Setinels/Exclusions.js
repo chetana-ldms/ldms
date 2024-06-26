@@ -58,6 +58,8 @@ function Exclusions() {
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
   const [cursor, setCursor] = useState(null) 
+  const [totalCount, setTotalCount] = useState('')
+  const [initialTotalCountSet, setInitialTotalCountSet] = useState(false)
   console.log(cursor, "cursor")
   const fetchData = async () => {
     const data = {
@@ -87,6 +89,10 @@ function Exclusions() {
       if (response !== null) {  
       setExlusions(response.exclusionList) 
       setCursor(response.pagination.nextCursor) 
+      if (!initialTotalCountSet) {
+        setTotalCount(response.pagination.totalItems)
+        setInitialTotalCountSet(true)
+      }
       } else {
         setExlusions([]);
       }
@@ -372,7 +378,7 @@ function Exclusions() {
       ) : (
         <div className="card pad-10">
           <div className="row mb-3">
-            <div className="col-lg-6 d-flex">
+            <div className="col-lg-8 d-flex">
               <Dropdown
                 isOpen={dropdown}
                 toggle={() => setDropdown(!dropdown)}
@@ -468,8 +474,10 @@ function Exclusions() {
                 </button>
               )}
               </div>
+              <div className="fs-15 mt-2 ms-5"> Total({currentItems.length}/{totalCount})</div> 
+
             </div>
-            <div className="col-lg-6 text-right">
+            <div className="col-lg-4 text-right">
               <Dropdown
                 isOpen={dropdownOpen}
                 toggle={() => setDropdownOpen(!dropdownOpen)}

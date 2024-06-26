@@ -447,7 +447,7 @@ const confirmDelete = async () => {
                 </select>
               </div>
             </div>
-            <div className="col-lg-4 mb-4 mt-5 mb-lg-0">
+            <div className="col-lg-12 mb-4 mt-5 mb-lg-0">
               <div className="fv-row mb-0">
                 <label
                   htmlFor="authKey"

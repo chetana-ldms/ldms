@@ -130,7 +130,7 @@ function InventoryComponent() {
 
   useEffect(() => {
     fetchData()
-  }, [accountId, siteId, groupId])
+  }, [accountId, siteId, groupId, itemsPerPage])
 
   const indexOfLastItem = (currentPage + 1) * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
@@ -165,6 +165,7 @@ function InventoryComponent() {
 
   const handleFilterChange = (event) => {
     setFilterValue(event.target.value)
+    setCurrentPage(0)
   }
 
   const handleSort = (key) => {
@@ -180,7 +181,7 @@ function InventoryComponent() {
       ) : (
         <>
           <div className='header-filter row'>
-            <div className='col-lg-10'>
+            <div className='col-lg-9'>
               <input
                 type='text'
                 placeholder='Search...'
@@ -189,7 +190,9 @@ function InventoryComponent() {
                 onChange={handleFilterChange}
               />
             </div>
-            <div className='col-lg-2'>
+            <div className="col-lg-3 d-flex justify-content-between">
+            <div className="fs-15 mt-2"> Total({currentItems.length}/{filteredList.length})</div>              
+            <div className=''>
               <div className='export-report border-0 float-right'>
                 <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
                   <DropdownToggle className='no-pad'>
@@ -208,6 +211,7 @@ function InventoryComponent() {
                 </Dropdown>
               </div>
             </div>
+              </div>
           </div>
           <div className='actions'>
             {loading ? (

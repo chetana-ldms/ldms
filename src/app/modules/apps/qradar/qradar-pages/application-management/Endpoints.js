@@ -132,7 +132,9 @@ function Endpoints({ shouldRender, id }) {
   return (
     <>
       <div className="header-filter">
-        <div className="border-0 float-right mb-5">
+        <div className="border-0 float-right d-flex mb-5 ">
+        <div className="fs-15 mt-2 me-5"> Total({currentItems.length}/{endpoints.length})</div>
+
           <Dropdown
             isOpen={dropdownOpen}
             toggle={() => setDropdownOpen(!dropdownOpen)}

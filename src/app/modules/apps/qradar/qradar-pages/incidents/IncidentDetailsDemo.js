@@ -1,242 +1,445 @@
-import React, { useState, useEffect, useRef } from "react";
-import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
-import { fetchMasterData } from "../../../../../api/Api";
-import { fetchUsers } from "../../../../../api/AlertsApi";
-import { notify, notifyFail } from "../components/notification/Notification";
+import React, {useState, useEffect, useRef} from 'react'
+import {toAbsoluteUrl} from '../../../../../../_metronic/helpers'
+import {fetchMasterData} from '../../../../../api/Api'
+import {fetchUsers} from '../../../../../api/AlertsApi'
+import {notify, notifyFail} from '../components/notification/Notification'
 import {
   fetchAlertsByAlertIds,
   fetchGetIncidentHistory,
   fetchIncidentDetails,
   fetchIncidents,
   fetchUpdateIncident,
-} from "../../../../../api/IncidentsApi";
-import { getCurrentTimeZone } from "../../../../../../utils/helper";
-import { useErrorBoundary } from "react-error-boundary";
+} from '../../../../../api/IncidentsApi'
+import {getCurrentTimeZone} from '../../../../../../utils/helper'
+import {useErrorBoundary} from 'react-error-boundary'
 
-const IncidentDetails = ({ incident, onRefreshIncidents }) => {
-  console.log("incident11111", incident);
-  const handleError = useErrorBoundary();
+const IncidentDetails = ({incident, onRefreshIncidents}) => {
+  console.log('incident11111', incident)
+  const handleError = useErrorBoundary()
 
   return (
-    <div className="col-md-4 border-1 border-gray-600  incident-details">
-      <div className="card">
-        <div className="bg-heading">
-          <h4 className="no-margin no-pad">
-            <span className="white fw-bold block pt-3 pb-3">
-              Incidents Details
-            </span>
-          </h4>
+    <div className='col-md-4 border-1 border-gray-600'>
+      <div className='card' style={{ height: '738px' }}>
+        <div className='d-flex justify-content-between bg-heading bd-highlight mb-3'>
+          <div className='p-2 bd-highlight'>
+            <h6 className='card-title align-items-start flex-column pt-2'>
+              <span className='card-label white fw-bold fs-3 mb-1'>Incidents Details</span>
+            </h6>
+          </div>
         </div>
-        <div className="mb-3 incident-tabs">
-          <div className="p-2 bd-highlight">
-            <ul className="nav nav-tabs nav-line-tabs mb-5 fs-8 no-pad">
-              <li className="nav-item">
+        <div className='d-flex justify-content-between bd-highlight mb-3 incident-tabs'>
+          <div className='p-2 bd-highlight'>
+            <ul className='nav nav-tabs nav-line-tabs mb-5 fs-8' role='tablist'>
+              <li className='nav-item' role='presentation'>
                 <a
-                  className="nav-link active"
-                  data-bs-toggle="tab"
-                  href="#kt_tab_pane_1"
+                  className='nav-link active'
+                  data-bs-toggle='tab'
+                  href='#kt_tab_pane_1'
+                  aria-selected='true'
+                  role='tab'
                 >
                   General
                 </a>
               </li>
-              <li className="nav-item">
+              <li className='nav-item' role='presentation'>
                 <a
-                  className="nav-link"
-                  data-bs-toggle="tab"
-                  href="#kt_tab_pane_2"
+                  className='nav-link'
+                  data-bs-toggle='tab'
+                  href='#kt_tab_pane_2'
+                  aria-selected='false'
+                  role='tab'
+                  tabindex='-1'
                 >
                   Alerts
                 </a>
               </li>
-              <li className="nav-item">
+              <li className='nav-item' role='presentation'>
                 <a
-                  className="nav-link"
-                  data-bs-toggle="tab"
-                  href="#kt_tab_pane_3"
+                  className='nav-link'
+                  data-bs-toggle='tab'
+                  href='#kt_tab_pane_3'
+                  aria-selected='false'
+                  role='tab'
+                  tabindex='-1'
                 >
                   Playbooks
                 </a>
               </li>
-              <li className="nav-item">
+              <li className='nav-item' role='presentation'>
                 <a
-                  className="nav-link"
-                  data-bs-toggle="tab"
-                  href="#kt_tab_pane_4"
+                  className='nav-link'
+                  data-bs-toggle='tab'
+                  href='#kt_tab_pane_4'
+                  aria-selected='false'
+                  role='tab'
+                  tabindex='-1'
                 >
                   Observables
                 </a>
               </li>
-              <li className="nav-item">
+              <li className='nav-item' role='presentation'>
                 <a
-                  className="nav-link"
-                  data-bs-toggle="tab"
-                  href="#kt_tab_pane_5"
+                  className='nav-link'
+                  data-bs-toggle='tab'
+                  href='#kt_tab_pane_5'
+                  aria-selected='false'
+                  role='tab'
+                  tabindex='-1'
                 >
                   Timeline
                 </a>
               </li>
             </ul>
-            <div
-              className="tab-pane fade show active me-n5 pe-5 h-500px header-filter"
-              id="kt_tab_pane_1"
-              role="tabpanel"
-            >
-              <div className="row bd-highlight mb-3">
-                <div className="col-md-3 bd-highlight mt-2 semi-bold">
-                  Status
+            <div className='tab-content' id='myTabContent'>
+              <div
+                className='tab-pane fade me-n5 pe-5 h-500px active show'
+                id='kt_tab_pane_1'
+                role='tabpanel'
+              >
+                <div className='row bd-highlight mb-3'>
+                  <div className='col-md-3 bd-highlight mt-2'>Status</div>
+                  <div className='col-md-9 bd-highlight'>
+                    <div className='w-120px'>
+                      <select
+                        name='status'
+                        data-control='select2'
+                        data-hide-search='true'
+                        className='form-select form-control form-select-white form-select-sm fw-bold'
+                      >
+                        <option value='1'>New</option>
+                        <option value='1'>Open</option>
+                        <option value='1'>Pending</option>
+                        <option value='1'>Closed</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
-                <div className="col-md-9 bd-highlight">
-                  <div className="w-120px">
-                    <select
-                      name="status"
-                      data-control="select2"
-                      data-hide-search="true"
-                      className="form-select form-control form-select-white form-select-sm fw-bold"
-                    >
-                      <option value="1">New</option>
-                      <option value="1">Open</option>
-                      <option value="1">Pending</option>
-                      <option value="1">Closed</option>
-                    </select>
+                <div className='row bd-highlight mb-3'>
+                  <div className='col-md-3 bd-highlight mt-2'>Priority</div>
+                  <div className='col-md-9 bd-highlight'>
+                    <div className='w-120px'>
+                      <select
+                        name='status'
+                        data-control='select2'
+                        data-hide-search='true'
+                        className='form-select form-control form-select-white form-select-sm fw-bold text-danger'
+                      >
+                        <option value='1' className='text-danger'>
+                          High
+                        </option>
+                        <option value='1' className='text-warning'>
+                          Medium
+                        </option>
+                        <option value='1' className='text-info'>
+                          Low
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className='row bd-highlight mb-3'>
+                  <div className='col-md-3 bd-highlight mt-2'>Severity</div>
+                  <div className='col-md-9 bd-highlight'>
+                    <div className='w-120px'>
+                      <select
+                        name='status'
+                        data-control='select2'
+                        data-hide-search='true'
+                        className='form-select form-control form-select-white form-select-sm fw-bold text-danger'
+                      >
+                        <option value='1' className='text-danger'>
+                          High
+                        </option>
+                        <option value='1' className='text-warning'>
+                          Medium
+                        </option>
+                        <option value='1' className='text-info'>
+                          Low
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className='row bd-highlight mb-3'>
+                  <div className='col-md-3 bd-highlight mt-2'>Type</div>
+                  <div className='col-md-9 bd-highlight'>
+                    <div className='w-120px'>
+                      <select
+                        name='status'
+                        data-control='select2'
+                        data-hide-search='true'
+                        className='form-select form-control form-select-white form-select-sm fw-bold'
+                      >
+                        <option value='1'>AD Failed Login</option>
+                        <option value='1'>AD Failed Login</option>
+                        <option value='1'>AD Failed Login</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className='bd-highlight mb-3 bdr-top'>
+                  <div className='col-md-12 bd-highlight'>
+                    <div className='d-flex align-items-center gap-2'>
+                      <span className='fw-bold'>Alert Name - </span> Multiple failed login for same
+                      IP
+                    </div>
+                  </div>
+                  <div className='col-md-12 bd-highlight'>
+                    <div className='d-flex align-items-center gap-2'>
+                      <span className='fw-bold'>Event ID - </span> 4625
+                    </div>
+                  </div>
+                  <div className='col-md-12 bd-highlight'>
+                    <div className='d-flex align-items-center gap-2'>
+                      <span className='fw-bold'> Destination User - </span> James James
+                    </div>
+                  </div>
+                  <div className='col-md-12 bd-highlight'>
+                    <div className='d-flex align-items-center gap-2'>
+                      <span className='fw-bold'>Source IP - </span> 192.168.0.1
+                    </div>
+                  </div>
+                  <div className='col-md-12 bd-highlight'>
+                    <div className='d-flex align-items-center gap-2'>
+                      <span className='fw-bold'>Vendor - </span> Microsoft
+                    </div>
+                  </div>
+                </div>
+                <div className='d-flex justify-content-between bd-highlight'>
+                  <div className='p-2 bd-highlight'>
+                    <div className='fs-13'>Incident ID</div>
+                  </div>
+                  <div className='p-2 bd-highlight'>
+                    <div className='badge text-black fs-13'>20210728-00056 </div>
+                  </div>
+                </div>
+                <div className='d-flex justify-content-between bd-highlight'>
+                  <div className='p-2 bd-highlight'>
+                    <div className='fs-13'>Owner</div>
+                  </div>
+                  <div className='p-2 bd-highlight'>
+                    <div className=''>
+                      <select
+                        name='status'
+                        data-control='select2'
+                        data-hide-search='true'
+                        className='form-select form-control form-select-white form-select-sm fw-bold'
+                      >
+                        <option value='1'>User 1</option>
+                        <option value='1'>User 2</option>
+                        <option value='1'>User 3</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className='d-flex justify-content-between bd-highlight'>
+                  <div className='p-2 bd-highlight'>
+                    <div className='fs-13'>Created</div>
+                  </div>
+                  <div className='p-2 bd-highlight'>
+                    <div className='badge text-black fw-normal'>Jul 28, 2022 02:02:02 PM</div>
+                  </div>
+                </div>
+                <div className='d-flex justify-content-between bd-highlight'>
+                  <div className='p-2 bd-highlight'>
+                    <div className='fs-13'>Updated</div>
+                  </div>
+                  <div className='p-2 bd-highlight'>
+                    <div className='badge text-black fw-normal'>Jul 29, 2022 01:12:32 AM</div>
                   </div>
                 </div>
               </div>
-              <div className="row bd-highlight mb-3">
-                <div className="col-md-3 bd-highlight mt-2 semi-bold">
-                  Priority
-                </div>
-                <div className="col-md-9 bd-highlight">
-                  <div className="w-120px">
-                    <select
-                      name="status"
-                      data-control="select2"
-                      data-hide-search="true"
-                      className="form-select form-control form-select-white form-select-sm fw-bold text-danger"
-                    >
-                      <option value="1" className="text-danger">
-                        High
-                      </option>
-                      <option value="1" className="text-warning">
-                        Medium
-                      </option>
-                      <option value="1" className="text-info">
-                        Low
-                      </option>
-                    </select>
-                  </div>
-                </div>
+              <div className='tab-pane fade' id='kt_tab_pane_2' role='tabpanel'>
+                <table
+                  className='scroll-y me-n5 pe-5 table table-hover table-row-dashed fs-6 gy-5 my-0 dataTable no-footer'
+                  id='kt_inbox_listing'
+                >
+                  <tbody>
+                    <tr className='bg-gray-100 mb-3'>
+                      <td className='p-2 pb-8'>
+                        <div className='d-flex justify-content-between bd-highlight'>
+                          <div className='p-1 bd-highlight fw-bold fs-12'>
+                            <div className='text-dark mb-1'>
+                              <a href='#' className='text-dark'>
+                                <span className='fw-bold'>Login Failure Alert</span>
+                              </a>
+                            </div>
+                          </div>
+                          <div className='p-1 bd-highlight'>
+                            <a
+                              href='#'
+                              className='btn btn-sm btn-icon btn-light btn-secondary mx-1'
+                            >
+                              <i className='fa-solid fa-trash'></i>
+                            </a>
+                            <a
+                              href='#'
+                              className='btn btn-sm btn-icon btn-light btn-secondary mx-1'
+                            >
+                              <i className='fa-solid fa-arrow-up'></i>
+                            </a>
+                          </div>
+                        </div>
+                        <div className='d-flex justify-content-between align-text-left bd-highlight'>
+                          <div className='p-1 bd-highlight fw-bold fs-12'>Suspicious Rate</div>
+                          <div className='p-1 bd-highlight fw-bold fs-12'>
+                            <i className='fa-solid fa-circle-check text-success'></i> 1
+                          </div>
+                        </div>
+                        <div className='d-flex justify-content-between align-text-left bd-highlight'>
+                          <div className='p-1 bd-highlight fw-bold fs-12'>Detected date</div>
+                          <div className='p-1 bd-highlight fs-12'>7/01/2023, 02:20 PM</div>
+                        </div>
+                        <hr className='my-0' />
+                      </td>
+                    </tr>
+                    <tr className='bg-gray-100'>
+                      <td className='min-w-80px p-2 pb-8'>
+                        <div className='d-flex justify-content-between bd-highlight'>
+                          <div className='p-1 bd-highlight fw-bold fs-12'>
+                            <div className='text-dark mb-1'>
+                              <a href='#' className='text-dark'>
+                                <span className='fw-bold'>CheckPoint - Malware Traffic</span>
+                              </a>
+                            </div>
+                          </div>
+                          <div className='p-1 bd-highlight'>
+                            <a
+                              href='#'
+                              className='btn btn-sm btn-icon btn-light btn-secondary mx-1'
+                            >
+                              <i className='fa-solid fa-trash'></i>
+                            </a>
+                            <a
+                              href='#'
+                              className='btn btn-sm btn-icon btn-light btn-secondary mx-1'
+                            >
+                              <i className='fa-solid fa-arrow-down'></i>
+                            </a>
+                          </div>
+                        </div>
+                        <div className='d-flex justify-content-between align-text-left bd-highlight'>
+                          <div className='p-1 bd-highlight fw-bold fs-12'>Suspicious Rate</div>
+                          <div className='p-1 bd-highlight fw-bold fs-12'>
+                            <i className='fa-solid fa-circle-check text-success'></i> 2
+                          </div>
+                        </div>
+                        <div className='d-flex justify-content-between align-text-left bd-highlight'>
+                          <div className='p-1 bd-highlight fw-bold fs-12'>Detected date</div>
+                          <div className='p-1 bd-highlight fs-12'>5/04/2023, 12:15 PM</div>
+                        </div>
+                        <hr className='my-0' />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <div className="row bd-highlight mb-3">
-                <div className="col-md-3 bd-highlight mt-2 semi-bold">
-                  Severity
-                </div>
-                <div className="col-md-9 bd-highlight">
-                  <div className="w-120px">
-                    <select
-                      name="status"
-                      data-control="select2"
-                      data-hide-search="true"
-                      className="form-select form-control form-select-white form-select-sm fw-bold text-danger"
-                    >
-                      <option value="1" className="text-danger">
-                        High
-                      </option>
-                      <option value="1" className="text-warning">
-                        Medium
-                      </option>
-                      <option value="1" className="text-info">
-                        Low
-                      </option>
-                    </select>
-                  </div>
-                </div>
+              <div className='tab-pane fade' id='kt_tab_pane_3' role='tabpanel'>
+                <table className='table align-middle gs-0 gy-4 dash-table'>
+                  <thead>
+                    <tr className='fw-bold text-muted bg-blue'>
+                      <th className='min-w-50px'>PlayBook Name</th>
+                      <th className='min-w-50px'>Description</th>
+                      <th className='min-w-50px'>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className='fs-12'>
+                      <td>Login Failure</td>
+                      <td>Failed Login</td>
+                      <td>
+                        <span className='badge badge-success'>Active</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <div className="row bd-highlight mb-3">
-                <div className="col-md-3 bd-highlight mt-2 semi-bold">Type</div>
-                <div className="col-md-9 bd-highlight">
-                  <div className="w-120px">
-                    <select
-                      name="status"
-                      data-control="select2"
-                      data-hide-search="true"
-                      className="form-select form-control form-select-white form-select-sm fw-bold"
-                    >
-                      <option value="1">AD Failed Login</option>
-                      <option value="1">AD Failed Login</option>
-                      <option value="1">AD Failed Login</option>
-                    </select>
-                  </div>
-                </div>
+              <div className='tab-pane fade' id='kt_tab_pane_4' role='tabpanel'>
+                Observables data
               </div>
-              <div className="row bd-highlight mb-3">
-                <div className="col-md-3 bd-highlight mt-2 semi-bold">
-                  Owner:
-                </div>
-                <div className="col-md-9 bd-highlight">
-                  <div className="w-120px">
-                    <select
-                      name="status"
-                      data-control="select2"
-                      data-hide-search="true"
-                      className="form-select form-control form-select-white form-select-sm fw-bold"
-                    >
-                      <option value="1">User 1</option>
-                      <option value="1">User 2</option>
-                      <option value="1">User 3</option>
-                    </select>
+              <div className='tab-pane fade' id='kt_tab_pane_5' role='tabpanel'>
+                <div className='card-body pt-6 h-600px'>
+                  <div className='timeline-label'>
+                    <div className='timeline-item'>
+                      <div className='timeline-label fw-bold text-gray-800 fs-6'>08:42</div>
+                      <div className='timeline-badge'>
+                        <i className='fa fa-genderless text-gray-600 fs-1'></i>
+                      </div>
+                      <div className='fw-semibold text-gray-700 ps-3 pb-5 fs-7'>
+                        Information passed to Concern team.
+                      </div>
+                    </div>
+                    <div className='timeline-item d-flex align-items-center'>
+                      <div className='timeline-label fw-bold text-gray-800 fs-6'>10:00</div>
+                      <div className='timeline-badge'>
+                        <i className='fa fa-genderless text-success fs-1'></i>
+                      </div>
+                      <div className='d-flex align-items-center'>
+                        <span className='fw-bold text-gray-800 px-3 p-10'>Alert Reviewed by </span>
+                        <div className='symbol symbol-35px me-3'>
+                          <img alt='Pic' src='/ldms/media/avatars/300-1.jpg' />
+                        </div>
+                        <div className='symbol symbol-35px'>
+                          <img alt='Pic' src='/ldms/media/avatars/300-2.jpg' />
+                        </div>
+                      </div>
+                    </div>
+                    <div className='timeline-item'>
+                      <div className='timeline-label fw-bold text-gray-800 fs-6'>14:37</div>
+                      <div className='timeline-badge'>
+                        <i className='fa fa-genderless text-danger fs-1'></i>
+                      </div>
+                      <div className='timeline-content fw-bold text-gray-800 pb-10 ps-3'>
+                        severity: notice message: undefined Rule:
+                        <a href='#' className='text-primary'>
+                          Count 9
+                        </a>
+                      </div>
+                    </div>
+                    <div className='timeline-item'>
+                      <div className='timeline-label fw-bold text-gray-800 fs-6'>16:50</div>
+                      <div className='timeline-badge'>
+                        <i className='fa fa-genderless text-primary fs-1'></i>
+                      </div>
+                      <div className='fw-semibold text-gray-700 ps-3 pb-10 fs-7'>
+                        Alert : IP address need to be blocked
+                      </div>
+                    </div>
+                    <div className='timeline-item'>
+                      <div className='timeline-label fw-bold text-gray-800 fs-6'>21:03</div>
+                      <div className='timeline-badge'>
+                        <i className='fa fa-genderless text-warning fs-1'></i>
+                      </div>
+                      <div className='timeline-content fw-semibold text-gray-800 pb-10 ps-3'>
+                        New Ticket Raised{' '}
+                        <a href='#' className='text-primary'>
+                          #XF-2356
+                        </a>
+                        .
+                      </div>
+                    </div>
+                    <div className='timeline-item'>
+                      <div className='timeline-label fw-bold text-gray-800 fs-6'>16:50</div>
+                      <div className='timeline-badge'>
+                        <i className='fa fa-genderless text-info fs-1'></i>
+                      </div>
+                      <div className='fw-semibold text-gray-700 ps-3 pb-10 fs-7'>
+                        Ticket status updated
+                      </div>
+                    </div>
+                    <div className='timeline-item'>
+                      <div className='timeline-label fw-bold text-gray-800 fs-6'>14:37</div>
+                      <div className='timeline-badge'>
+                        <i className='fa fa-genderless text-danger fs-1'></i>
+                      </div>
+                      <div className='timeline-content fw-bold text-gray-800 ps-3'>
+                        Ticket Closed -
+                        <a href='#' className='text-primary'>
+                          Issue Resolved
+                        </a>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="bd-highlight mb-3 mt-5 pt-5 bdr-top">
-                <div className="bd-highlight mb-2">
-                  <div className="d-flex align-items-center gap-2">
-                    <span className="fw-bold m-width">Alert Name </span>{" "}
-                    <b>:</b>
-                    Multiple failed login for same IP
-                  </div>
-                </div>
-                <div className="bd-highlight mb-2">
-                  <div className="d-flex align-items-center gap-2">
-                    <span className="fw-bold m-width">Event ID </span> <b>:</b>
-                    4625
-                  </div>
-                </div>
-                <div className="bd-highlight mb-2">
-                  <div className="d-flex align-items-center gap-2">
-                    <span className="fw-bold m-width"> Destination User </span>{" "}
-                    <b>:</b> James James
-                  </div>
-                </div>
-                <div className="bd-highlight mb-2">
-                  <div className="d-flex align-items-center gap-2">
-                    <span className="fw-bold m-width">Source IP </span> <b>:</b>{" "}
-                    192.168.0.1
-                  </div>
-                </div>
-                <div className="bd-highlight mb-2">
-                  <div className="d-flex align-items-center gap-2">
-                    <span className="fw-bold m-width">Vendor </span> <b>:</b>{" "}
-                    Microsoft
-                  </div>
-                </div>
-              </div>
-              <div className="bd-highlight">
-                <div className="d-flex align-items-center gap-2">
-                  <span className="fw-bold m-width">Incident ID </span> <b>:</b>{" "}
-                  20210728
-                </div>{" "}
-              </div>
-
-              <div className="bd-highlight">
-                <div className="d-flex align-items-center gap-2">
-                  <span className="fw-bold m-width">Created</span>
-                  <b>:</b> Jul 28, 2022 02:02:02 PM
-                </div>
-              </div>
-              <div className="bd-highlight">
-                <div className="d-flex align-items-center gap-2">
-                  <span className="fw-bold m-width">Updated</span>
-                  <b>:</b> Jul 29, 2022 01:12:32 AM
                 </div>
               </div>
             </div>
@@ -244,7 +447,7 @@ const IncidentDetails = ({ incident, onRefreshIncidents }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default IncidentDetails;
+export default IncidentDetails

@@ -352,7 +352,7 @@ const AddOrganizationTools = () => {
                 </div>
               </div>
             </div>
-            <div className="col-lg-4 mb-4 mb-lg-0">
+            <div className="col-lg-12 mb-4 mb-lg-0">
               <div className="fv-row mb-0">
                 <label
                   htmlFor="authKey"

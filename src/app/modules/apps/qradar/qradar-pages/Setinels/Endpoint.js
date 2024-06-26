@@ -155,7 +155,7 @@ function Endpoint() {
 
   useEffect(() => {
     fetchData();
-  }, [accountId, siteId, groupId]);
+  }, [accountId, siteId, groupId, itemsPerPage]);
 
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value));
@@ -193,6 +193,7 @@ function Endpoint() {
   };
   const handleFilterChange = (event) => {
     setFilterValue(event.target.value);
+    setCurrentPage(0)
   };
 
   return (
@@ -202,7 +203,7 @@ function Endpoint() {
       ) : (
         <div className="card pad-10">
           <div className="header-filter mg-btm-20 row">
-            <div className="col-lg-10">
+            <div className="col-lg-9">
               <input
                 type="text"
                 placeholder="Search..."
@@ -211,7 +212,9 @@ function Endpoint() {
                 onChange={handleFilterChange}
               />
             </div>
-            <div className="col-lg-2">
+            <div className="col-lg-3 d-flex justify-content-between">
+            <div className="fs-15 mt-2"> Total({currentItems.length}/{filteredList.length})</div>              
+              <div className="">
               <div className="export-report border-0 float-right">
                 <Dropdown
                   isOpen={dropdownOpen}
@@ -238,6 +241,8 @@ function Endpoint() {
                 </Dropdown>
               </div>
             </div>
+              </div>
+            
           </div>
           <table className="table alert-table fixed-table scroll-x">
             <thead>

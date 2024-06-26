@@ -10,18 +10,18 @@ import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import BlockListEditPopup from './BlockListEditPopup'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
-import { fetchExportDataAddUrl } from '../../../../../api/Api'
+import {fetchExportDataAddUrl} from '../../../../../api/Api'
 
 function BlockList() {
   const orgId = Number(sessionStorage.getItem('orgId'))
-  const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
-  const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
+  const globalAdminRole = Number(sessionStorage.getItem('globalAdminRole'))
+  const clientAdminRole = Number(sessionStorage.getItem('clientAdminRole'))
   const [loading, setLoading] = useState(false)
   const [blockList, setBlockList] = useState([])
   console.log(blockList, 'blockList111')
   const [refreshFlag, setRefreshFlag] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
-  
+
   const [limit, setLimit] = useState(20)
   const [showPopup, setShowPopup] = useState(false)
   const [showPopupEdit, setShowPopupEdit] = useState(false)
@@ -37,10 +37,12 @@ function BlockList() {
   })
   const [selectedItem, setSelectedItem] = useState(null)
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const [initialTotalCountSet, setInitialTotalCountSet] = useState(false)
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
-  const [cursor, setCursor] = useState(null) 
+  const [cursor, setCursor] = useState(null)
+  const [totalCount, setTotalCount] = useState('')
   const fetchData = async () => {
     const data = {
       orgID: orgId,
@@ -63,27 +65,32 @@ function BlockList() {
       nextCursor: cursor || '',
       pageSize: limit,
     }
-
+  
     try {
       setLoading(true)
       const response = await fetchBlokckedListUrl(data)
-      setBlockList(response.blockedItemList) // Append new data
-      setCursor(response.pagination.nextCursor) // Update cursor for next fetch
+      setBlockList(response.blockedItemList)
+      setCursor(response.pagination.nextCursor)
+      
+      if (!initialTotalCountSet) {
+        setTotalCount(response.pagination.totalItems)
+        setInitialTotalCountSet(true)
+      }
     } catch (error) {
       console.error(error)
     } finally {
       setLoading(false)
     }
   }
-
+  
   useEffect(() => {
     fetchData()
-  }, [limit]) // Fetch data whenever cursor changes
+  }, [limit])
 
   const handleLoadMore = () => {
     fetchData()
   }
-  const handleClickFirstPage = async () =>{
+  const handleClickFirstPage = async () => {
     const data = {
       orgID: orgId,
       includeChildren: includeChildren,
@@ -102,15 +109,15 @@ function BlockList() {
           levelValue: groupId || '',
         },
       ],
-      nextCursor:'',
+      nextCursor: '',
       pageSize: limit,
     }
 
     try {
       setLoading(true)
       const response = await fetchBlokckedListUrl(data)
-      setBlockList(response.blockedItemList) // Append new data
-      setCursor(response.pagination.nextCursor) // Update cursor for next fetch
+      setBlockList(response.blockedItemList)
+      setCursor(response.pagination.nextCursor)
     } catch (error) {
       console.error(error)
     } finally {
@@ -240,14 +247,14 @@ function BlockList() {
     exportToCSV(tableData)
     const data = {
       createdDate: new Date().toISOString(),
-      createdUserId: Number(sessionStorage.getItem("userId")),
+      createdUserId: Number(sessionStorage.getItem('userId')),
       orgId: Number(sessionStorage.getItem('orgId')),
-      exportDataType: "Block List"
-    };
+      exportDataType: 'Block List',
+    }
     try {
-      const response = await fetchExportDataAddUrl(data);
+      const response = await fetchExportDataAddUrl(data)
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 
@@ -257,14 +264,14 @@ function BlockList() {
     exportToCSV(tableData)
     const data = {
       createdDate: new Date().toISOString(),
-      createdUserId: Number(sessionStorage.getItem("userId")),
+      createdUserId: Number(sessionStorage.getItem('userId')),
       orgId: Number(sessionStorage.getItem('orgId')),
-      exportDataType: "Block List"
-    };
+      exportDataType: 'Block List',
+    }
     try {
-      const response = await fetchExportDataAddUrl(data);
+      const response = await fetchExportDataAddUrl(data)
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
   const handleFilterChange = (event) => {
@@ -322,8 +329,8 @@ function BlockList() {
   }
   const handleTableRowClick = (item) => {
     setSelectedItem(item)
-    if (globalAdminRole === 1 || clientAdminRole === 1)  {
-    setShowPopupEdit(true)
+    if (globalAdminRole === 1 || clientAdminRole === 1) {
+      setShowPopupEdit(true)
     }
   }
   const handlePageSelect = (event) => {
@@ -338,7 +345,7 @@ function BlockList() {
       ) : (
         <div className='card pad-10'>
           <div className='row mb-5'>
-            <div className='col-lg-6'>
+            <div className='col-lg-8 d-flex'>
               <Dropdown
                 isOpen={dropdown}
                 toggle={() => setDropdown(!dropdown)}
@@ -367,7 +374,7 @@ function BlockList() {
                       type='checkbox'
                       name='thisScopeAndItsDescendants'
                       onChange={handleCheckboxChange}
-                      checked={includeChildren} 
+                      checked={includeChildren}
                     />
                     <span>
                       <i className='link mg-right-5' /> This scope and its descendants
@@ -387,19 +394,20 @@ function BlockList() {
                 />
               )}
               <div className='float-left mg-left-10'>
-              {(globalAdminRole === 1 || clientAdminRole === 1) && (
-                <button
-                  className={`btn btn-green btn-small float-left ${
-                    !isCheckboxSelected && 'disabled'
-                  }`}
-                  onClick={handleDelete}
-                >
-                  Delete selection
-                </button>
-         )}
+                {(globalAdminRole === 1 || clientAdminRole === 1) && (
+                  <button
+                    className={`btn btn-green btn-small float-left ${
+                      !isCheckboxSelected && 'disabled'
+                    }`}
+                    onClick={handleDelete}
+                  >
+                    Delete selection
+                  </button>
+                )}
               </div>
+              <div className="fs-15 mt-2 ms-5"> Total({currentItems.length}/{totalCount})</div> 
             </div>
-            <div className='col-lg-6 text-right'>
+            <div className='col-lg-4 text-right'>
               {/* <span className="gray inline-block mg-righ-20">530 Items</span> */}
               <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
                 <DropdownToggle className='no-pad'>
@@ -508,24 +516,28 @@ function BlockList() {
               </table>
               <div className=' d-flex justify-content-end  '>
                 <button className='btn btn-primary btn-small me-5 ' onClick={handleClickFirstPage}>
-                 Go to page 1
+                  Go to page 1
                 </button>
-                <button className='btn btn-primary btn-small' onClick={handleLoadMore} disabled={cursor === null}>
+                <button
+                  className='btn btn-primary btn-small'
+                  onClick={handleLoadMore}
+                  disabled={cursor === null}
+                >
                   Load More
                 </button>
                 <div className='col-md-3 d-flex justify-content-end align-items-center'>
-              <span className='col-md-4'>Count: </span>
-              <select
-                className='form-select form-select-sm col-md-4'
-                value={limit}
-                onChange={handlePageSelect}
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={15}>15</option>
-                <option value={20}>20</option>
-              </select>
-            </div>
+                  <span className='col-md-4'>Count: </span>
+                  <select
+                    className='form-select form-select-sm col-md-4'
+                    value={limit}
+                    onChange={handlePageSelect}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={15}>15</option>
+                    <option value={20}>20</option>
+                  </select>
+                </div>
               </div>
 
               {showConfirmation && (
