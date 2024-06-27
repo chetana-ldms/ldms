@@ -20,9 +20,7 @@ function RisksComponent() {
   const [currentPage, setCurrentPage] = useState(0);
   console.log(currentPage, "currentPage")
   const [itemsPerPage, setItemsPerPage] = useState(20);
-  console.log(itemsPerPage, "itemsPerPage")
   const [activePage, setActivePage] = useState(0); 
-  console.log(activePage, "activePage")
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: 'ascending',

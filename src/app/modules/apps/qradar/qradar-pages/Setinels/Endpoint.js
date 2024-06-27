@@ -115,6 +115,7 @@ function Endpoint() {
   const [showPopup, setShowPopup] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [activePage, setActivePage] = useState(0); 
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
@@ -160,6 +161,7 @@ function Endpoint() {
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value));
     setCurrentPage(0);
+    setActivePage(0)
   };
 
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
@@ -186,6 +188,7 @@ function Endpoint() {
 
   const handlePageClick = (selected) => {
     setCurrentPage(selected.selected);
+    setActivePage(selected.selected)
   };
   const handleEndpointClick = (item) => {
     setSelectedEndpoint(item);
@@ -194,6 +197,7 @@ function Endpoint() {
   const handleFilterChange = (event) => {
     setFilterValue(event.target.value);
     setCurrentPage(0)
+    setActivePage(0)
   };
 
   return (
@@ -371,6 +375,7 @@ function Endpoint() {
               handlePageClick={handlePageClick}
               itemsPerPage={itemsPerPage}
               handlePageSelect={handlePageSelect}
+              forcePage={activePage}
             />
           )}
         </div>

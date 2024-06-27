@@ -8,6 +8,7 @@ import { fetchOrganizations, fetchUserDelete } from "../../../../../api/Api";
 import { fetchUsersUrl } from "../../../../../api/ConfigurationApi";
 import { useErrorBoundary } from "react-error-boundary";
 import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
+import Pagination from "../../../../../../utils/Pagination";
 
 const UserData = () => {
   const handleError = useErrorBoundary();
@@ -23,6 +24,10 @@ const UserData = () => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [organizations, setOrganizations] = useState([]);
+  const [filterValue, setFilterValue] = useState('')
+  const [currentPage, setCurrentPage] = useState(0)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [activePage, setActivePage] = useState(0); 
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
@@ -90,12 +95,37 @@ const UserData = () => {
       reload();
     }, 300); 
     return () => clearTimeout(timer);
-  }, [selectedOrganization]);
+  }, [selectedOrganization, itemsPerPage]);
   const handleOrganizationChange = (e) => {
     const newOrganizationId = Number(e.target.value);
     setSelectedOrganization(newOrganizationId);
     reload();
   };
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = users
+    ? users
+        .filter((item) => item.name.toLowerCase().includes(filterValue.toLowerCase()))
+        .slice(indexOfFirstItem, indexOfLastItem)
+    : null
+    const filteredList = filterValue
+    ? users.filter((item) => item.name.toLowerCase().includes(filterValue.toLowerCase()))
+    : users;
+
+  const handlePageSelect = (event) => {
+    setItemsPerPage(Number(event.target.value))
+    setCurrentPage(0)
+    setActivePage(0)
+  }
+  const handlePageClick = (selected) => {
+    setCurrentPage(selected.selected)
+    setActivePage(selected.selected);
+  }
+  const handleFilterChange = (event) => {
+    setFilterValue(event.target.value)
+    setCurrentPage(0)
+    setActivePage(0);
+  }
 
   return (
     <div className="config card pad-10">
@@ -103,7 +133,7 @@ const UserData = () => {
 
       <div className="header-filter row">
         <div className="col-lg-4">
-          <h3 className="lh-40">Users</h3>
+          <h3 className="lh-40">Users ({currentItems.length} / {filteredList.length})</h3>
         </div>
 
         <div className="col-lg-6">
@@ -150,7 +180,18 @@ const UserData = () => {
           <></>
         )}
       </div>
-      <div className="card-body no-pad mt-5">
+      <div className='row mb-5 mt-2'>
+        <div className='col-lg-12 header-filter'>
+          <input
+            type='text'
+            placeholder='Search...'
+            className='form-control'
+            value={filterValue}
+            onChange={handleFilterChange}
+          />
+        </div>
+      </div>
+      <div className="card-body no-pad">
         <table className="table align-middle gs-0 gy-4 dash-table alert-table">
           <thead>
             <tr className="fw-bold text-muted bg-blue">
@@ -167,8 +208,8 @@ const UserData = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {users !== null && users !== undefined ? (
-              users?.map((item, index) => {
+            {currentItems !== null && currentItems !== undefined ? (
+              currentItems?.map((item, index) => {
                 if (
                   globalAdminRole === 1 ||
                   clientAdminRole === 1 ||
@@ -223,6 +264,15 @@ const UserData = () => {
             show={showConfirmation}
             onConfirm={confirmDelete}
             onCancel={cancelDelete}
+          />
+        )}
+         {users && (
+          <Pagination
+            pageCount={Math.ceil(filteredList.length / itemsPerPage)}
+            handlePageClick={handlePageClick}
+            itemsPerPage={itemsPerPage}
+            handlePageSelect={handlePageSelect}
+            forcePage={activePage}
           />
         )}
       </div>

@@ -9,6 +9,8 @@ import { fetchOrganizationToolsUrl } from "../../../../../api/ConfigurationApi";
 import { useErrorBoundary } from "react-error-boundary";
 import { UsersListLoading } from "../components/loading/UsersListLoading";
 import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
+import Pagination from "../../../../../../utils/Pagination";
+import { truncateText } from "../../../../../../utils/TruncateText";
 
 const OrganizationTools = () => {
   const handleError = useErrorBoundary();
@@ -18,6 +20,10 @@ const OrganizationTools = () => {
   const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
   const [tools, setTools] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [filterValue, setFilterValue] = useState('')
+  const [currentPage, setCurrentPage] = useState(0)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [activePage, setActivePage] = useState(0); 
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
@@ -55,32 +61,6 @@ const OrganizationTools = () => {
     setShowConfirmation(false);
     setItemToDelete(null);
   };
-
-  // const handleDelete = async (item) => {
-  //   console.log(item, "item");
-  //   const deletedUserId = Number(sessionStorage.getItem("userId"));
-  //   const deletedDate = new Date().toISOString();
-  //   const data = {
-  //     orgToolID: item.orgToolID,
-  //     deletedDate,
-  //     deletedUserId,
-  //   };
-  //   try {
-  //     setLoading(true);
-  //     const responce = await fetchOrganizationToolsDelete(data);
-  //     if (responce.isSuccess) {
-  //       notify("Organizations Tool Deleted");
-  //     } else {
-  //       notifyFail("Organizations Tool not Deleted");
-  //     }
-  //     await reload();
-  //     setLoading(false);
-  //   } catch (error) {
-  //     setLoading(false);
-  //     handleError(error);
-  //   }
-  // };
-
   const reload = async () => {
     try {
       setLoading(true);
@@ -94,8 +74,33 @@ const OrganizationTools = () => {
   };
 
   useEffect(() => {
-    reload();
-  }, []);
+    reload()
+  }, [itemsPerPage])
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = tools
+    ? tools
+        .filter((item) => item.toolName.toLowerCase().includes(filterValue.toLowerCase()))
+        .slice(indexOfFirstItem, indexOfLastItem)
+    : null
+    const filteredList = filterValue
+    ? tools.filter((item) => item.toolName.toLowerCase().includes(filterValue.toLowerCase()))
+    : tools;
+
+  const handlePageSelect = (event) => {
+    setItemsPerPage(Number(event.target.value))
+    setCurrentPage(0)
+    setActivePage(0)
+  }
+  const handlePageClick = (selected) => {
+    setCurrentPage(selected.selected)
+    setActivePage(selected.selected);
+  }
+  const handleFilterChange = (event) => {
+    setFilterValue(event.target.value)
+    setCurrentPage(0)
+    setActivePage(0);
+  }
 
   return (
     <div className="config card pad-10">
@@ -103,7 +108,7 @@ const OrganizationTools = () => {
       <div className="card-header no-pad">
         <h3 className="card-title align-items-start flex-column">
           <span className="card-label fw-bold fs-3 mb-1">
-            Organizations Tools
+            Organizations Tools ({currentItems.length} / {filteredList.length})
           </span>
         </h3>
         <div className="card-toolbar">
@@ -119,6 +124,17 @@ const OrganizationTools = () => {
               <></>
             )}
           </div>
+        </div>
+      </div>
+      <div className='row mb-5 mt-2'>
+        <div className='col-lg-12 header-filter'>
+          <input
+            type='text'
+            placeholder='Search...'
+            className='form-control'
+            value={filterValue}
+            onChange={handleFilterChange}
+          />
         </div>
       </div>
       <div className="card-body no-pad">
@@ -140,14 +156,14 @@ const OrganizationTools = () => {
           <tbody>
             {loading ? (
               <UsersListLoading />
-            ) : tools === null ? (
+            ) : currentItems === null ? (
               <tr>
                 <td colSpan="6" className="text-center">
                   No data found.
                 </td>
               </tr>
             ) : (
-              tools.map((item, index) => {
+              currentItems.map((item, index) => {
                 const shouldDisplay =
                   globalAdminRole === 1 || item.orgID === orgId;
 
@@ -157,8 +173,8 @@ const OrganizationTools = () => {
                       <td>{index + 1}</td>
                       <td>{item.toolName}</td>
                       <td>{item.orgName}</td>
-                      <td style={{ maxWidth: "200px" }}>{item.authKey}</td>
-
+                      <td style={{ maxWidth: "250px" }} title={item.authKey}> {truncateText(item.authKey, 100)}</td>
+                    
                       {globalAdminRole === 1 || clientAdminRole === 1 ? (
                         <td>
                           <span>
@@ -198,6 +214,15 @@ const OrganizationTools = () => {
             show={showConfirmation}
             onConfirm={confirmDelete}
             onCancel={cancelDelete}
+          />
+        )}
+         {tools && (
+          <Pagination
+            pageCount={Math.ceil(filteredList.length / itemsPerPage)}
+            handlePageClick={handlePageClick}
+            itemsPerPage={itemsPerPage}
+            handlePageSelect={handlePageSelect}
+            forcePage={activePage}
           />
         )}
       </div>

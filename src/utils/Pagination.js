@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactPaginate from 'react-paginate';
 
-function Pagination({ pageCount, handlePageClick, itemsPerPage, handlePageSelect }) {
+function Pagination({ pageCount, handlePageClick, itemsPerPage, handlePageSelect, forcePage }) {
   return (
     <div className="d-flex justify-content-end align-items-center pagination-bar">
       <ReactPaginate
@@ -21,6 +21,7 @@ function Pagination({ pageCount, handlePageClick, itemsPerPage, handlePageSelect
         breakClassName={"page-item"}
         breakLinkClassName={"page-link"}
         activeClassName={"active"}
+        forcePage={forcePage} 
       />
       <div className="col-md-3 d-flex justify-content-end align-items-center">
         <span className="col-md-4">Count: </span>

@@ -9,6 +9,7 @@ import axios from "axios";
 import { fetchLDPToolsUrl } from "../../../../../api/ConfigurationApi";
 import { useErrorBoundary } from "react-error-boundary";
 import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
+import Pagination from "../../../../../../utils/Pagination";
 
 const LdpTools = () => {
   const handleError = useErrorBoundary();
@@ -16,6 +17,10 @@ const LdpTools = () => {
   const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
   const [loading, setLoading] = useState(false);
   const [tools, setTools] = useState([]);
+  const [filterValue, setFilterValue] = useState('')
+  const [currentPage, setCurrentPage] = useState(0)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [activePage, setActivePage] = useState(0); 
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
@@ -61,15 +66,40 @@ const LdpTools = () => {
     setLoading(false);
   };
   useEffect(() => {
-    reload();
-  }, []);
+    reload()
+  }, [itemsPerPage])
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = tools
+    ? tools
+        .filter((item) => item.toolName.toLowerCase().includes(filterValue.toLowerCase()))
+        .slice(indexOfFirstItem, indexOfLastItem)
+    : null
+    const filteredList = filterValue
+    ? tools.filter((item) => item.toolName.toLowerCase().includes(filterValue.toLowerCase()))
+    : tools;
+
+  const handlePageSelect = (event) => {
+    setItemsPerPage(Number(event.target.value))
+    setCurrentPage(0)
+    setActivePage(0)
+  }
+  const handlePageClick = (selected) => {
+    setCurrentPage(selected.selected)
+    setActivePage(selected.selected);
+  }
+  const handleFilterChange = (event) => {
+    setFilterValue(event.target.value)
+    setCurrentPage(0)
+    setActivePage(0);
+  }
 
   return (
     <div className="config card pad-10">
       <ToastContainer />
-      <div className="card-header no-pad mb-5 border-0">
+      <div className="card-header no-pad border-0">
         <h3 className="card-title align-items-start flex-column">
-          <span className="card-label fw-bold fs-3 mb-1">Tools</span>
+          <span className="card-label fw-bold fs-3 mb-1">Tools  ({currentItems.length} / {filteredList.length})</span>
         </h3>
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">
@@ -84,6 +114,17 @@ const LdpTools = () => {
               <></>
             )}
           </div>
+        </div>
+      </div>
+      <div className='row mb-5 mt-2'>
+        <div className='col-lg-12 header-filter'>
+          <input
+            type='text'
+            placeholder='Search...'
+            className='form-control'
+            value={filterValue}
+            onChange={handleFilterChange}
+          />
         </div>
       </div>
       <div className="card-body no-pad">
@@ -102,8 +143,8 @@ const LdpTools = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {tools !== null ? (
-              tools.map((item, index) => (
+            {currentItems !== null ? (
+              currentItems.map((item, index) => (
                 <tr key={index} className="fs-12">
                   <td>{item.toolId}</td>
                   <td>{item.toolName}</td>
@@ -149,6 +190,15 @@ const LdpTools = () => {
             show={showConfirmation}
             onConfirm={confirmDelete}
             onCancel={cancelDelete}
+          />
+        )}
+         {tools && (
+          <Pagination
+            pageCount={Math.ceil(filteredList.length / itemsPerPage)}
+            handlePageClick={handlePageClick}
+            itemsPerPage={itemsPerPage}
+            handlePageSelect={handlePageSelect}
+            forcePage={activePage}
           />
         )}
       </div>

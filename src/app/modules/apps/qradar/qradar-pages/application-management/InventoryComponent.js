@@ -89,6 +89,7 @@ function InventoryComponent() {
   const [showPopup, setShowPopup] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(20)
+  const [activePage, setActivePage] = useState(0); 
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: 'ascending',
@@ -152,6 +153,7 @@ function InventoryComponent() {
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value))
     setCurrentPage(0)
+    setActivePage(0)
   }
 
   const handleItemClick = (item) => {
@@ -161,11 +163,13 @@ function InventoryComponent() {
 
   const handlePageClick = (selected) => {
     setCurrentPage(selected.selected)
+    setActivePage(selected.selected)
   }
 
   const handleFilterChange = (event) => {
     setFilterValue(event.target.value)
     setCurrentPage(0)
+    setActivePage(0)
   }
 
   const handleSort = (key) => {
@@ -267,6 +271,7 @@ function InventoryComponent() {
               handlePageClick={handlePageClick}
               itemsPerPage={itemsPerPage}
               handlePageSelect={handlePageSelect}
+              forcePage={activePage}
             />
           )}
         </>

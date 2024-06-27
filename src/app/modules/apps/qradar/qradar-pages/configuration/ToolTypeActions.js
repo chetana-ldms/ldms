@@ -21,6 +21,7 @@ const ToolTypeActions = () => {
   const [filterValue, setFilterValue] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [activePage, setActivePage] = useState(0); 
   const [updateData, setUpdateData] = useState({});
   const { status } = useParams();
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -74,7 +75,7 @@ const ToolTypeActions = () => {
 
   useEffect(() => {
     reload();
-  }, []);
+  }, [itemsPerPage]);
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = toolTypeActions
@@ -84,16 +85,22 @@ const ToolTypeActions = () => {
         )
         .slice(indexOfFirstItem, indexOfLastItem)
     : null;
-
+    const filteredList = filterValue
+    ? toolTypeActions.filter((item) => item.toolAction.toLowerCase().includes(filterValue.toLowerCase()))
+    : toolTypeActions;
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value));
     setCurrentPage(0);
+    setActivePage(0)
   };
   const handlePageClick = (selected) => {
     setCurrentPage(selected.selected);
+    setActivePage(selected.selected);
   };
   const handleFilterChange = (event) => {
     setFilterValue(event.target.value);
+    setCurrentPage(0);
+    setActivePage(0);
   };
 
   return (
@@ -103,9 +110,9 @@ const ToolTypeActions = () => {
       <div className="card-header no-pad">
         <h3 className="card-title align-items-start flex-column">
           <span className="card-label fw-bold fs-3 mb-1">
-            Tool Type Actions
+            Tool Type Actions ({currentItems.length} / {filteredList.length})
           </span>
-        </h3>
+        </h3> 
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">
             {globalAdminRole === 1 || clientAdminRole === 1 ? (
@@ -195,10 +202,11 @@ const ToolTypeActions = () => {
           />
         )}
         <Pagination
-          pageCount={Math.ceil(toolTypeActions.length / itemsPerPage)}
+          pageCount={Math.ceil(filteredList.length / itemsPerPage)}
           handlePageClick={handlePageClick}
           itemsPerPage={itemsPerPage}
           handlePageSelect={handlePageSelect}
+          forcePage={activePage}
         />
       </div>
     </div>
