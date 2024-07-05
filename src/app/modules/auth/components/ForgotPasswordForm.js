@@ -1,61 +1,44 @@
-import React, {useEffect, useState} from 'react'
-import {Modal} from 'react-bootstrap'
-import * as Yup from 'yup'
-import clsx from 'clsx'
-import {useFormik} from 'formik'
-import {Link, useNavigate} from 'react-router-dom'
-import {fetchAuthenticate, fetchForgatePassword, fetchOrganizations} from '../../../api/Api'
-import {ToastContainer} from 'react-toastify'
-import {
-  notify,
-  notifyFail,
-} from '../../apps/qradar/qradar-pages/components/notification/Notification'
-import 'react-toastify/dist/ReactToastify.css'
-import {toAbsoluteUrl} from '../../../../_metronic/helpers'
+import React, { useState } from 'react';
+import * as Yup from 'yup';
+import clsx from 'clsx';
+import { useFormik } from 'formik';
+import { Link, useNavigate } from 'react-router-dom';
+import { fetchForgatePassword } from '../../../api/Api';
+import { ToastContainer } from 'react-toastify';
+import { notify, notifyFail } from '../../apps/qradar/qradar-pages/components/notification/Notification';
+import 'react-toastify/dist/ReactToastify.css';
+import { toAbsoluteUrl } from '../../../../_metronic/helpers';
 
 const loginSchema = Yup.object().shape({
   username: Yup.string().min(3, 'Minimum 3 symbols').required('Username is required'),
-  org: Yup.string()
-    .notOneOf(['0'], 'Please select an organisation')
-    .required('Organisation is required'),
-})
+  org: Yup.string().required('Organisation is required'),
+});
 
 const initialValues = {
   username: '',
-  org: 0,
-}
+  org: '',
+};
 
 const ForgotPasswordForm = () => {
-  const [loading, setLoading] = useState(false)
-  const [organisation, setOrganisation] = useState([])
-  const [message, setMessage] = useState('')
-  console.log(message, 'message')
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    fetchOrganizations()
-      .then((orgRes) => {
-        setOrganisation(orgRes)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }, [])
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  console.log(message, 'message');
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues,
     validationSchema: loginSchema,
-    onSubmit: async (values, {setStatus, setSubmitting}) => {
-      setLoading(true)
+    onSubmit: async (values, { setStatus, setSubmitting }) => {
+      setLoading(true);
       try {
-        const createdDate = new Date().toISOString()
+        const createdDate = new Date().toISOString();
         const authData = await fetchForgatePassword(
           values.username,
-          Number(values.org),
+          values.org,
           createdDate
-        )
-        console.log(authData, 'authData')
-        setMessage(authData)
+        );
+        console.log(authData, 'authData');
+        setMessage(authData);
         if (authData.isSuccess) {
           // notify(message)
           // setTimeout(() => {
@@ -68,13 +51,13 @@ const ForgotPasswordForm = () => {
           // }, 6000);
         }
       } catch (error) {
-        console.error(error)
-        setStatus('Given details are incorrect')
-        setSubmitting(false)
-        setLoading(false)
+        console.error(error);
+        setStatus('Given details are incorrect');
+        setSubmitting(false);
+        setLoading(false);
       }
     },
-  })
+  });
 
   return (
     <div className='card pad-20'>
@@ -122,39 +105,17 @@ const ForgotPasswordForm = () => {
           )}
         </div>
         <div className='fv-row mb-8'>
-          <label className='form-label fs-6 fw-bolder text-dark'>Organisation Name</label>
-          <div>
-            {organisation === null && (
-              <select
-                placeholder='Organisation'
-                {...formik.getFieldProps('org')}
-                className={clsx('form-select form-control bg-transparent', {
-                  'is-invalid': formik.touched.org && formik.errors.org,
-                })}
-                autoComplete='off'
-              >
-                <option value=''>Select</option>
-              </select>
-            )}
-            {organisation !== null && (
-              <select
-                placeholder='Organisation'
-                {...formik.getFieldProps('org')}
-                className={clsx('form-select form-control bg-transparent', {
-                  'is-invalid': formik.touched.org && formik.errors.org,
-                })}
-                autoComplete='off'
-              >
-                <option value=''>Select organisation</option>
-                {organisation.length >= 0 &&
-                  organisation.map((user) => (
-                    <option key={user.orgID} value={user.orgID}>
-                      {user.orgName}
-                    </option>
-                  ))}
-              </select>
-            )}
-          </div>
+          <label className='form-label fs-6 fw-bolder text-dark'>Organisation</label>
+          <input
+            placeholder='organisation'
+            {...formik.getFieldProps('org')}
+            className={clsx('form-control bg-transparent', {
+              'is-invalid': formik.touched.org && formik.errors.org,
+            })}
+            type='text'
+            name='org'
+            autoComplete='off'
+          />
           {formik.touched.org && formik.errors.org && (
             <div className='fv-plugins-message-container'>
               <span className='red' role='alert'>
@@ -182,7 +143,7 @@ const ForgotPasswordForm = () => {
         </Link>
       </p>
     </div>
-  )
+  );
 }
 
-export default ForgotPasswordForm
+export default ForgotPasswordForm;

@@ -39,7 +39,7 @@ export const fetchMasterData = async (data) => {
   }
 };
 
-export const fetchAuthenticate = async (userName, password, orgId) => {
+export const fetchAuthenticate = async (userName, password, orgName) => {
   try {
     const response = await fetch(`${authenticateUrl}`, {
       method: "POST",
@@ -49,7 +49,7 @@ export const fetchAuthenticate = async (userName, password, orgId) => {
       body: JSON.stringify({
         userName: userName,
         password: password,
-        orgId: orgId,
+        orgName: orgName,
       }),
     });
 
@@ -338,7 +338,7 @@ export const fetchRoles = async (orgId) => {
     console.log(error);
   }
 };
-export const fetchForgatePassword = async (userName, orgId,  createdDate) => {
+export const fetchForgatePassword = async (userName, orgName,  createdDate) => {
   try {
     const response = await fetch(`${forgatePasswordUrl}`, {
       method: "POST",
@@ -347,7 +347,7 @@ export const fetchForgatePassword = async (userName, orgId,  createdDate) => {
       },
       body: JSON.stringify({
         userName: userName,
-        orgId: orgId,
+        orgName: orgName,
         createdDate:createdDate,
       }),
     });

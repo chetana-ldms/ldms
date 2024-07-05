@@ -89,9 +89,7 @@ const SidebarMenuMain = () => {
           globalAdminRole === 1 &&
           <SidebarMenuItem hasBullet={true} to='/qradar/organizations/list' title='Organizations' />
         }
-        {(globalAdminRole === 1 || clientAdminRole === 1) && (
         <SidebarMenuItem hasBullet={true} to='/qradar/users-data/list' title='Users' />
-        )}
         {
        globalAdminRole === 1 &&
         <SidebarMenuItem hasBullet={true} to='/qradar/organization-tools/list' title='Organization Tools' />

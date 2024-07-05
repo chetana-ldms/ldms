@@ -66,9 +66,9 @@ const AlertsPage = () => {
   })
   const [selectedDays, setSelectedDays] = useState([])
   const [searchValue, setSearchValue] = useState('')
-  // const [selectedFilter, setSelectedFilter] = useState(1)
-  const selectedFilter = useRef()
+  const [selectedFilterValue, setSelectedFilterValue] = useState(1)
   const status = useRef()
+  const analystVerdict = useRef()
   const [openEditPage, setOpenEditPage] = useState(false)
   const [selectedRow, setSelectedRow] = useState({})
   const [showPopup, setShowPopup] = useState(false)
@@ -447,20 +447,18 @@ const AlertsPage = () => {
   //     setLoading(false);
   // }
   const handleReset = () => {
-    // setSelectedIncident({})
     setSearchValue('')
     if (status.current) {
       status.current.value = 0
     }
-    if (selectedFilter.current) {
-      selectedFilter.current.value = 0
+    if(analystVerdict.current){
+      analystVerdict.current.value = 0
     }
     setFilteredAlertDate([])
     setAlertsCount(0)
     setpageCount(0)
   }
   const handleSearchAlert = async () => {
-    // setSelectedIncident({});
     setActivePage(1)
     setStatusFromDashBoard('')
     setDaysFromDashBoard('')
@@ -472,8 +470,9 @@ const AlertsPage = () => {
       },
       loggedInUserId: userID,
       statusId: status.current?.value || 0,
+      analystVerdictId: analystVerdict.current?.value || 0,
       name: searchValue || '',
-      searchDurationInDays: selectedFilter.current?.value || 0,
+      searchDurationInDays: selectedFilterValue || 0,
       orgAccountStructureLevel: [
         {
           levelName: 'AccountId',
@@ -510,17 +509,22 @@ const AlertsPage = () => {
     setCurrentPage(newPage)
     setActivePage(newPage)
   }
-
-  const qradaralerts = async (page = 1) => {
-    const rangeStart = (page - 1) * limit + 1;
-    const rangeEnd = page * limit;
-    let data2 = {
+  const handleFilterChange = async (e) => {
+    const value = e.target.value
+    setDaysFromDashBoard('')
+    setSelectedFilterValue(value)
+    setActivePage(1)
+    const data2 = {
       orgID: orgId,
       paging: {
-        rangeStart: rangeStart,
-        rangeEnd: rangeEnd,
+        rangeStart: 1,
+        rangeEnd: limit,
       },
       loggedInUserId: userID,
+      statusId: status.current?.value || 0,
+      name: searchValue || '',
+      searchDurationInDays: value || 0,
+      analystVerdictId: analystVerdict.current?.value || 0,
       orgAccountStructureLevel: [
         {
           levelName: 'AccountId',
@@ -535,48 +539,93 @@ const AlertsPage = () => {
           levelValue: groupId || '',
         },
       ],
-    };
+    }
+    try {
+      setLoading(true)
+      const response = await fetchAlertData(data2)
+      setAlertsCount(response.totalOffenseCount)
+      setSource(response.source)
+      setAlertDate(response.alertsList != null ? response.alertsList : [])
+      const total = response.totalOffenseCount
+      setpageCount(Math.ceil(total / limit))
+      slaCal(response?.alertsList)
+      setFilteredAlertDate(response?.alertsList)
+      setLoading(false)
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+    }
+  }
+
+  const qradaralerts = async (page = 1) => {
+    const rangeStart = (page - 1) * limit + 1
+    const rangeEnd = page * limit
+    let data2 = {
+      orgID: orgId,
+      paging: {
+        rangeStart: rangeStart,
+        rangeEnd: rangeEnd,
+      },
+      loggedInUserId: userID,
+      analystVerdictId: analystVerdict.current?.value || 0,
+      searchDurationInDays: selectedFilterValue || 0,
+      searchDurationInDays : selectedFilterValue,
+      orgAccountStructureLevel: [
+        {
+          levelName: 'AccountId',
+          levelValue: accountId || '',
+        },
+        {
+          levelName: 'SiteId',
+          levelValue: siteId || '',
+        },
+        {
+          levelName: 'GroupId',
+          levelValue: groupId || '',
+        },
+      ],
+    }
     if (statusFromDashBoard && daysFromDashBoard) {
-      const statusItem = statusDropDown.find((item) => item.dataValue === statusFromDashBoard);
+      const statusItem = statusDropDown.find((item) => item.dataValue === statusFromDashBoard)
       if (statusItem) {
-        data2.statusId = statusItem.dataID;
-        data2.searchDurationInDays = daysFromDashBoard;
+        data2.statusId = statusItem.dataID
+        data2.searchDurationInDays = daysFromDashBoard
       }
     } else if (!statusFromDashBoard && daysFromDashBoard) {
-      data2.searchDurationInDays = daysFromDashBoard;
-      data2.falsePositive = '1';
+      data2.searchDurationInDays = daysFromDashBoard
+      data2.falsePositive = '1'
     } else if (!statusFromDashBoard && !daysFromDashBoard) {
-      if (searchValue || status.current || selectedFilter.current) {
-        data2.statusId = status.current?.value || 0;
-        data2.searchText = searchValue || '';
-        data2.searchDurationInDays = selectedFilter.current?.value || 0;
+      if (searchValue || status.current || selectedFilterValue) {
+        data2.statusId = status.current?.value || 0
+        data2.searchText = searchValue || ''
+        data2.searchDurationInDays = selectedFilterValue || 0
       }
     }
-    setLoading(true);
-    const response = await fetchAlertData(data2);
-    setAlertsCount(response.totalOffenseCount);
-    setSource(response.source);
-    setAlertDate(response.alertsList != null ? response.alertsList : []);
-    setpageCount(Math.ceil(response.totalOffenseCount / limit));
-    slaCal(response?.alertsList);
-    setFilteredAlertDate(response?.alertsList);
-    setLoading(false);
-  };
+    setLoading(true)
+    const response = await fetchAlertData(data2)
+    setAlertsCount(response.totalOffenseCount)
+    setSource(response.source)
+    setAlertDate(response.alertsList != null ? response.alertsList : [])
+    setpageCount(Math.ceil(response.totalOffenseCount / limit))
+    slaCal(response?.alertsList)
+    setFilteredAlertDate(response?.alertsList)
+    setLoading(false)
+  }
   useEffect(() => {
     if (statusDropDown.length > 0) {
-      qradaralerts(currentPage);
+      qradaralerts(currentPage)
     }
     if (statusFromDashBoard) {
-        const statusItem = statusDropDown.find((item) => item.dataValue === statusFromDashBoard);
-        if (statusItem) {
-          status.current.value = statusItem.dataID;
-        }
+      const statusItem = statusDropDown.find((item) => item.dataValue === statusFromDashBoard)
+      if (statusItem) {
+        status.current.value = statusItem.dataID
+      }
     }
-   
+
     if (daysFromDashBoard) {
-      selectedFilter.current.value = daysFromDashBoard;
+      setSelectedFilterValue(daysFromDashBoard)
     }
-  }, [statusDropDown, limit, currentPage, statusFromDashBoard, daysFromDashBoard]);
+  }, [statusDropDown, limit, currentPage])
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchUsers(orgId, userID)
@@ -1481,6 +1530,27 @@ const AlertsPage = () => {
                         )}
                       </div>
                     </div>
+
+                    <div className='mt-2 bd-highlight'>
+                      <div className='w-100px me-0'>
+                        <select
+                          className='form-select form-select-sm'
+                          data-kt-select2='true'
+                          data-placeholder='Select option'
+                          data-dropdown-parent='#kt_menu_637dc885a14bb'
+                          data-allow-clear='true'
+                          value={selectedFilterValue}
+                          onChange={handleFilterChange}
+                        >
+                          <option value=''>Select</option>
+                          {selectedDays?.map((day, index) => (
+                            <option key={index} value={day.dataValue}>
+                              {day.dataName}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1552,29 +1622,29 @@ const AlertsPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className='mt-2 bd-highlight'>
-                    <div className='w-150px me-0'>
+                  <div className='w-150px mt-2'>
+                    <div>
                       <select
                         className='form-select form-select-sm'
                         data-kt-select2='true'
                         data-placeholder='Select option'
                         data-dropdown-parent='#kt_menu_637dc885a14bb'
                         data-allow-clear='true'
-                        ref={selectedFilter}
-                        // onChange={(e) => setSelectedFilter(Number(e.target.value))}
+                        ref={analystVerdict}
                       >
-                        <option value=''>Select</option>
-                        {selectedDays?.map((day, index) => (
-                          <option key={index} value={day.dataValue}>
-                            {day.dataName}
-                          </option>
-                        ))}
+                        <option value="">Select</option>
+                        {analystVerdictDropDown.length > 0 &&
+                          analystVerdictDropDown.map((item) => (
+                            <option key={item.dataID} value={item.dataID}>
+                              {item.dataValue}
+                            </option>
+                          ))}
                       </select>
                     </div>
                   </div>
                   <div className='mt-2 ms-1 btn btn-primary btn-sm ' onClick={handleReset}>
-                      Reset
-                    </div>
+                    Reset
+                  </div>
                 </div>
               </div>
             </div>

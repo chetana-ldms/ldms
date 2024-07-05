@@ -49,6 +49,8 @@ const IncidentsPage = () => {
   const [loading, setLoading] = useState(false)
   const [statusFromDashBoard, setStatusFromDashBoard] = useState(location.state?.status || '')
   const [daysFromDashBoard, setDaysFromDashBoard] = useState(location.state?.days || '')
+  const [selectedDays, setSelectedDays] = useState([])
+  const [selectedFilterValue, setSelectedFilterValue] = useState(1)
 
   useEffect(() => {
     const fetchIncidentStatusAndSortOptions = async () => {
@@ -79,10 +81,30 @@ const IncidentsPage = () => {
     setStatusFromDashBoard(location.state?.status || '')
     setDaysFromDashBoard(location.state?.days || '')
   }, [location.state])
+  useEffect(() => {
+    const fetchNumberOfDays = async () => {
+      try {
+        const data = {
+          maserDataType: 'Incident_Searchdata_duration',
+          orgId: orgId,
+          toolId: toolId,
+        }
+        const masterDataResponse = await fetchMasterData(data)
+        const response = masterDataResponse
+        setSelectedDays(response)
+      } catch (error) {
+        handleError(error)
+      }
+    }
+    fetchNumberOfDays()
+  }, [])
 
   useEffect(() => {
     if (statusDropDown.length > 0) {
       fetchIncident()
+    }
+    if (daysFromDashBoard) {
+      setSelectedFilterValue(daysFromDashBoard)
     }
   }, [statusDropDown, limit])
 
@@ -115,6 +137,8 @@ const IncidentsPage = () => {
         data.statusId = statusItem.dataID
         data.searchDurationInDays = daysFromDashBoard
       }
+    } else if(!statusFromDashBoard){
+      data.searchDurationInDays = selectedFilterValue || 0
     }
     try {
       setLoading(true)
@@ -142,7 +166,7 @@ const IncidentsPage = () => {
 
   const handleSearch = async () => {
     setSelectedIncident({});
-    setActivePage(1); // Set current page to 1 when searching
+    setActivePage(1);
     setStatusFromDashBoard('');
     const data = {
       orgID: orgId,
@@ -154,6 +178,7 @@ const IncidentsPage = () => {
       statusId: status.current?.value || 0,
       searchText: searchValue || '',
       sortOptionId: sortOption.current?.value || 0,
+      searchDurationInDays: selectedFilterValue || 0,
       orgAccountStructureLevel: [
         {
           levelName: 'AccountId',
@@ -182,7 +207,51 @@ const IncidentsPage = () => {
       setLoading(false);
     }
   };
-  
+  const handleFilterChange = async (e) => {
+    setSelectedIncident({});
+    const value = e.target.value
+    setDaysFromDashBoard('')
+    setSelectedFilterValue(value)
+    setActivePage(1)
+    const data = {
+      orgID: orgId,
+      paging: {
+        rangeStart: 1,
+        rangeEnd: limit,
+      },
+      loggedInUserId: userID,
+      statusId: status.current?.value || 0,
+      searchText: searchValue || '',
+      sortOptionId: sortOption.current?.value || 0,
+      searchDurationInDays: value || 0,
+      orgAccountStructureLevel: [
+        {
+          levelName: 'AccountId',
+          levelValue: accountId || '',
+        },
+        {
+          levelName: 'SiteId',
+          levelValue: siteId || '',
+        },
+        {
+          levelName: 'GroupId',
+          levelValue: groupId || '',
+        },
+      ],
+    };
+    try {
+      setLoading(true);
+      const response = await fetchGetIncidentSearchResult(data);
+      setIncident(response.incidentList);
+      setTotalIncidentsCount(response.totalIncidentsCount);
+      const total = response.totalIncidentsCount;
+      setpageCount(Math.ceil(total / limit));
+      setLoading(false);
+    } catch (error) {
+      handleError(error);
+      setLoading(false);
+    }
+  }
 
   const handleIncidentClick = (item) => {
     setSelectedIncident(item)
@@ -251,10 +320,11 @@ const IncidentsPage = () => {
       }
     }
     if (!statusFromDashBoard) {
-    if (searchValue || status || sortOption) {
+    if (searchValue || status || sortOption || selectedFilterValue) {
       data.statusId= status.current?.value || 0;
       data.searchText= searchValue || '';
       data.sortOptionId= sortOption.current?.value || 0;
+      data.searchDurationInDays = selectedFilterValue || 0;
     }
   }
   
@@ -291,12 +361,30 @@ const IncidentsPage = () => {
           <div className='row'>
             <div className='col-md-4 border-1 border-gray-300 border-end'>
               <div className='card'>
-                <div className='bg-heading'>
+                <div className='bg-heading d-flex justify-content-between'>
                   <h4 className='no-margin no-pad'>
                     <span className='white fw-bold block pt-3 pb-3'>
                       Incidents <span className='white'>({totalIncidentsCount})</span>
                     </span>
                   </h4>
+                  <div className='w-100px mt-1'>
+                        <select
+                          className='form-select form-select-sm'
+                          data-kt-select2='true'
+                          data-placeholder='Select option'
+                          data-dropdown-parent='#kt_menu_637dc885a14bb'
+                          data-allow-clear='true'
+                          value={selectedFilterValue}
+                          onChange={handleFilterChange}
+                        >
+                          <option value=''>Select</option>
+                          {selectedDays?.map((day, index) => (
+                            <option key={index} value={day.dataValue}>
+                              {day.dataName}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                 </div>
                 <div className='p-1 bd-highlight'></div>
 

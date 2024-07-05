@@ -199,11 +199,7 @@ const UserData = () => {
               <th className="min-w-50px">User Name</th>
               <th className="min-w-50px">User Email</th>
               <th className="min-w-50px">User Role</th>
-              {globalAdminRole === 1 || clientAdminRole === 1 ? (
                 <th className="min-w-50px">Action</th>
-              ) : (
-                <></>
-              )}
             </tr>
           </thead>
           <tbody>
@@ -222,7 +218,6 @@ const UserData = () => {
                       <td>{item?.emailId}</td>
                       <td>{item?.roleName}</td>
 
-                      {globalAdminRole === 1 || clientAdminRole === 1 ? (
                         <td>
                           <Link
                             className="text-white"
@@ -233,6 +228,8 @@ const UserData = () => {
                               <i className="fa fa-pencil link" />
                             </span>
                           </Link>
+                          
+                      {globalAdminRole === 1 || clientAdminRole === 1 ? (
                           <span
                             className="ms-8"
                             onClick={() => {
@@ -242,10 +239,10 @@ const UserData = () => {
                           >
                             <i className="fa fa-trash red" />
                           </span>
-                        </td>
                       ) : (
                         <></>
                       )}
+                        </td>
                     </tr>
                   );
                 }

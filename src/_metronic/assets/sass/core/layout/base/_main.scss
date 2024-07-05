@@ -1835,6 +1835,17 @@ form{
     }
   }
 }
+.input-group-password .position-absolute {
+  right: 25px !important; 
+  top: 42% !important;
+  transform: translateY(-50%);
+  z-index: 2; 
+}
+
+.input-group-password input {
+  padding-right: 2.5rem; 
+}
+
 
 .scroll-y{
   overflow-x: hidden;
