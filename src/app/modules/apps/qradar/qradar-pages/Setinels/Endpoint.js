@@ -17,6 +17,21 @@ import { fetchExportDataAddUrl } from "../../../../../api/Api";
 function Endpoint() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [filterValue, setFilterValue] = useState("");
+  const globalAdminRole = Number(sessionStorage.getItem('globalAdminRole'))
+  const clientAdminRole = Number(sessionStorage.getItem('clientAdminRole'))
+  const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
+  const [selectedAlert, setselectedAlert] = useState([])
+  const handleselectedAlert = (item, e) => {
+    const {value, checked} = e.target
+    if (checked) {
+      setselectedAlert([...selectedAlert, value])
+      setIsCheckboxSelected(true)
+    } else {
+      const updatedAlert = selectedAlert.filter((e) => e !== value)
+      setselectedAlert(updatedAlert)
+      setIsCheckboxSelected(updatedAlert.length > 0)
+    }
+  }
   const extractTableData = (items) => {
     return items.map((item) => ({
       "Endpoint Name": item.computerName,
@@ -199,6 +214,12 @@ function Endpoint() {
     setCurrentPage(0)
     setActivePage(0)
   };
+  const handleActions = () =>{
+
+  }
+  const handleGroup = () =>{
+
+  }
 
   return (
     <div>
@@ -207,7 +228,33 @@ function Endpoint() {
       ) : (
         <div className="card pad-10">
           <div className="header-filter mg-btm-20 row">
-            <div className="col-lg-9">
+            <div className="col-lg-3">
+            <div className='float-left mg-left-10'>
+                {(globalAdminRole === 1 || clientAdminRole === 1) && (
+                  <button
+                    className={`btn btn-green btn-small float-left ${
+                      !isCheckboxSelected && 'disabled'
+                    }`}
+                    onClick={handleActions}
+                  >
+                    Actions
+                  </button>
+                )}
+              </div>
+              <div className='float-left mg-left-10'>
+                {(globalAdminRole === 1 || clientAdminRole === 1) && (
+                  <button
+                    className={`btn btn-green btn-small float-left ${
+                      !isCheckboxSelected && 'disabled'
+                    }`}
+                    onClick={handleGroup}
+                  >
+                    Groups
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="col-lg-6">
               <input
                 type="text"
                 placeholder="Search..."
@@ -251,6 +298,7 @@ function Endpoint() {
           <table className="table alert-table fixed-table scroll-x">
             <thead>
               <tr>
+              <th className='checkbox-th'></th>
                 <th onClick={() => handleSort("computerName")}>
                   Endpoint Name {renderSortIcon(sortConfig, "computerName")}
                 </th>
@@ -331,6 +379,17 @@ function Endpoint() {
               {currentItems !== null ? (
                 currentItems?.map((item, index) => (
                   <tr className="table-row" key={index}>
+                     <td>
+                          <input
+                            className='form-check-input widget-13-check'
+                            type='checkbox'
+                            value={item.id}
+                            name={item.id}
+                            onChange={(e) => handleselectedAlert(item, e)}
+                            autoComplete='off'
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </td>
                     <td
                       onClick={() => handleEndpointClick(item)}
                       className="link-txt"
