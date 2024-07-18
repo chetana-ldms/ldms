@@ -14,6 +14,7 @@ import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import {useErrorBoundary} from 'react-error-boundary'
 import {fetchActivitiesUrl} from '../../../../../api/ActivityApi'
 import IncidentAlertPopUp from './IncidentAlertPopUp'
+import useFeatureActions from '../configuration/useFeatureActions'
 
 const IncidentDetails = ({incident, onRefreshIncidents}) => {
   console.log('incident11111', incident)
@@ -31,9 +32,19 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const id = incidentID
   console.log(id, 'id')
   const [activeTab, setActiveTab] = useState('general')
-  const toolId = Number(sessionStorage.getItem('toolID'))
   const userID = Number(sessionStorage.getItem('userId'))
   const orgId = Number(sessionStorage.getItem('orgId'))
+  const toolId = Number(sessionStorage.getItem('toolID'))
+  const roleId = Number(sessionStorage.getItem('roleID'))
+  const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
+
+  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+
+  const isActionAuthorized = (actionName) => {
+    return featureActions?.some(
+      (action) => action.actionName === actionName && action.is_authorized === true
+    )
+  }
   const date = new Date().toISOString()
   const [dropdownData, setDropdownData] = useState({
     severityNameDropDownData: [],
@@ -62,7 +73,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     significantIncident: 0,
   })
   const [selectedAlertId, setSelectedAlertId] = useState(null)
-  console.log(selectedAlertId, "selectedAlertId")
+  console.log(selectedAlertId, 'selectedAlertId')
   const [selectedAlertPopUp, setSelectedAlertPopUp] = useState(false)
   const handleShowModal = () => setSelectedAlertPopUp(true)
   const handleCloseModal = () => setSelectedAlertPopUp(false)
@@ -79,34 +90,33 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   }, [])
   useEffect(() => {
     const fetchAllIncidentMasterData = async () => {
-      const severityDataRequest = { maserDataType: 'incident_severity', orgId: orgId, toolId: toolId };
-      const statusDataRequest = { maserDataType: 'incident_status', orgId: orgId, toolId: toolId };
-      const priorityDataRequest = { maserDataType: 'incident_priority', orgId: orgId, toolId: toolId };
-      const typeDataRequest = { maserDataType: 'Incident_Type', orgId: orgId, toolId: toolId };
-  
+      const severityDataRequest = {maserDataType: 'incident_severity', orgId: orgId, toolId: toolId}
+      const statusDataRequest = {maserDataType: 'incident_status', orgId: orgId, toolId: toolId}
+      const priorityDataRequest = {maserDataType: 'incident_priority', orgId: orgId, toolId: toolId}
+      const typeDataRequest = {maserDataType: 'Incident_Type', orgId: orgId, toolId: toolId}
+
       try {
         const [severityData, statusData, priorityData, typeData] = await Promise.all([
           fetchMasterData(severityDataRequest),
           fetchMasterData(statusDataRequest),
           fetchMasterData(priorityDataRequest),
           fetchMasterData(typeDataRequest),
-        ]);
-  
+        ])
+
         setDropdownData((prevDropdownData) => ({
           ...prevDropdownData,
           severityNameDropDownData: severityData,
           statusDropDown: statusData,
           priorityDropDown: priorityData,
           typeDropDown: typeData,
-        }));
+        }))
       } catch (error) {
-        handleError(error);
+        handleError(error)
       }
-    };
-  
-    fetchAllIncidentMasterData();
-  }, []);
-  
+    }
+
+    fetchAllIncidentMasterData()
+  }, [])
 
   const fetchData = async () => {
     try {
@@ -289,7 +299,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
             <h4 className=''>
               <span className='white fw-bold block pt-3 pb-3'>Incidents Details</span>
             </h4>
-            {activeTab === 'general' && (
+            {activeTab === 'general' && isActionAuthorized('Update') && (
               <div className='mt-2'>
                 <button
                   type='submit'
@@ -628,12 +638,12 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   </tbody>
                 </table>
                 {selectedAlertPopUp && (
-                <IncidentAlertPopUp
-                selectedAlertId={selectedAlertId}
-                  show={selectedAlertPopUp}
-                  onClose={handleCloseModal}
-                  onSubmit={handleSubmit}
-                />
+                  <IncidentAlertPopUp
+                    selectedAlertId={selectedAlertId}
+                    show={selectedAlertPopUp}
+                    onClose={handleCloseModal}
+                    onSubmit={handleSubmit}
+                  />
                 )}
               </div>
               <div className='tab-pane fade' id='kt_tab_pane_3' role='tabpanel'>

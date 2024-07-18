@@ -1,0 +1,39 @@
+.position-relative {
+    position: relative;
+  }
+  
+  .position-absolute {
+    position: absolute;
+    z-index: 9999;
+  }
+  
+  .top-0 {
+    top: 0;
+  }
+  
+  .start-100 {
+    left: 100%;
+  }
+  
+  .mt-0 {
+    margin-top: 0;
+  }
+  
+  .dropdown-item:hover .submenu {
+    display: block;
+  }
+  
+  .submenu {
+    /* display: none; */
+    min-width: 10rem;
+  }
+  
+  .dropdown-item:hover > .submenu {
+    display: block;
+  }
+  
+  .dropdown-item.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+  

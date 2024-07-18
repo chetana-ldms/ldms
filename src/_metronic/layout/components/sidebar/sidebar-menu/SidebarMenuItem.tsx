@@ -11,6 +11,7 @@ type Props = {
   icon?: string
   fontIcon?: string
   hasBullet?: boolean
+  onClick?: () => void // Add onClick to Props
 }
 
 const SidebarMenuItem: FC<Props & WithChildren> = ({
@@ -20,6 +21,7 @@ const SidebarMenuItem: FC<Props & WithChildren> = ({
   icon,
   fontIcon,
   hasBullet = false,
+  onClick, // Destructure onClick
 }) => {
   const {pathname} = useLocation()
   const isActive = checkIsActive(pathname, to)
@@ -28,7 +30,11 @@ const SidebarMenuItem: FC<Props & WithChildren> = ({
 
   return (
     <div className='menu-item'>
-      <Link className={clsx('menu-link without-sub', {active: isActive})} to={to}>
+      <Link
+        className={clsx('menu-link without-sub', {active: isActive})}
+        to={to}
+        onClick={onClick} // Attach onClick to Link
+      >
         {hasBullet && (
           <span className='menu-bullet'>
             <i className='fa fa-dot-circle fs-8'/>
@@ -36,7 +42,6 @@ const SidebarMenuItem: FC<Props & WithChildren> = ({
         )}
         {icon && app?.sidebar?.default?.menu?.iconType === 'svg' && (
           <span className='menu-icon'>
-            {' '}
             <KTSVG path={icon} className='svg-icon-2' />
           </span>
         )}

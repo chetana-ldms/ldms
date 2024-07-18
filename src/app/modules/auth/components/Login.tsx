@@ -136,6 +136,7 @@ export function Login() {
 
           sessionStorage.setItem('toolExpire', "true");
           sessionStorage.setItem('sentinalTesting', "false");
+          sessionStorage.setItem('selectedFeatureId', "1"); 
 
           const defaultPassword = authData.defaultPassword;
           if (defaultPassword) {

@@ -76,6 +76,14 @@ import InventoryComponent from './qradar-pages/application-management/InventoryC
 import Setinels from './qradar-pages/Setinels/Setinels'
 import Settings from './qradar-pages/settings/Settings'
 import Activity from './qradar-pages/activities/Activity'
+import Features from './qradar-pages/security/Features'
+import FeatureAction from './qradar-pages/security/FeatureAction'
+import RoleBasedAccess from './qradar-pages/security/RoleBasedAccess'
+import Endpoint from './qradar-pages/Setinels/Endpoint'
+import Exclusions from './qradar-pages/Setinels/Exclusions'
+import BlockList from './qradar-pages/Setinels/BlockList'
+import AccountDetalis from './qradar-pages/Setinels/AccountDetalis'
+import PolicySentinal from './qradar-pages/Setinels/Policy'
 
 
 const QradarPages = () => {
@@ -157,8 +165,16 @@ const QradarPages = () => {
       <Route path="/application/risk" element={<RisksComponent />} />
       <Route path="/application/inventory" element={<InventoryComponent />} />
       <Route path='setinels/:status' element={<Setinels />} />
+      <Route path='setinels/endpoits' element={<Endpoint />} />
+      <Route path='setinels/exclusions' element={<Exclusions />} />
+      <Route path='setinels/blockList' element={<BlockList />} />
+      <Route path='setinels/policy' element={<PolicySentinal />} />
+      <Route path='setinels/accountDetalis' element={<AccountDetalis />} />
       <Route path='settings/:status' element={<Settings />} />
       <Route path='activity/:status' element={<Activity />} />
+      <Route path='features/:status' element={<Features />} />
+      <Route path='featureaction/:status' element={<FeatureAction />} />
+      <Route path='rolebasedaccess/:status' element={<RoleBasedAccess />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )

@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react'
-import {Link, useNavigate, useParams} from 'react-router-dom'
+import {Link, useLocation, useNavigate, useParams} from 'react-router-dom'
 import {fetchOrganizations, fetchRoles} from '../../../../../api/Api'
 import {fetchRolesUrl, fetchUserDetails, fetchUserUpdateUrl} from '../../../../../api/ConfigurationApi'
 import axios from 'axios'
@@ -27,6 +27,11 @@ const UpdateUserData = () => {
   const orgID = useRef()
   const roleType = useRef()
   const errors = {}
+  const location = useLocation()
+  const [save, setSave] = useState(location.state?.save || '')
+  useEffect(() => {
+    setSave(location.state?.save || '')
+  }, [location.state])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -132,7 +137,11 @@ const UpdateUserData = () => {
       <ToastContainer />
       <div className='card-header bg-heading'>
         <h3 className='card-title align-items-start flex-column'>
-          <span className='white'>Update User</span>
+        {save ? (
+            <span className='white'>View User</span>
+          ) : (
+            <span className='white'>Update User</span>
+          )}
         </h3>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
@@ -254,11 +263,11 @@ const UpdateUserData = () => {
           </div>
         </div>
         <div className='card-footer d-flex justify-content-end pad-10'>
-          <button
+        <button
             type='submit'
             onClick={handleSubmit}
             className='btn btn-new btn-small'
-            disabled={loading}
+            style={{display: loading || save ? 'none' : 'inline-block'}}
           >
             {!loading && 'Update Changes'}
             {loading && (

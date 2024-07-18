@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { UsersListLoading } from "../components/loading/UsersListLoading";
 import { ToastContainer, toast } from "react-toastify";
 import { notify, notifyFail } from "../components/notification/Notification";
@@ -10,6 +10,7 @@ import { fetchLDPToolsUrl } from "../../../../../api/ConfigurationApi";
 import { useErrorBoundary } from "react-error-boundary";
 import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
 import Pagination from "../../../../../../utils/Pagination";
+import useFeatureActions from "./useFeatureActions";
 
 const LdpTools = () => {
   const handleError = useErrorBoundary();
@@ -23,7 +24,22 @@ const LdpTools = () => {
   const [activePage, setActivePage] = useState(0); 
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const navigate = useNavigate()
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const toolId = Number(sessionStorage.getItem('toolID'))
+  const roleId = Number(sessionStorage.getItem('roleID'))
+  const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
 
+  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+  
+   const isActionAuthorized = (actionName) => {
+    return featureActions?.some(
+      (action) => action.actionName === actionName && action.is_authorized === true
+    )
+  }
+  const handleNavigateToUpdate = (id) => {
+    navigate(`/qradar/ldp-tools/update/${id}`, {state: {save: true}})
+  }
   const handleDelete = (item) => {
     setItemToDelete(item);
     setShowConfirmation(true);
@@ -103,16 +119,12 @@ const LdpTools = () => {
         </h3>
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">
-            {globalAdminRole === 1 || clientAdminRole === 1 ? (
-              <Link
-                to="/qradar/ldp-tools/add"
-                className="btn btn-new btn-small"
-              >
-                Add
-              </Link>
-            ) : (
-              <></>
-            )}
+            <Link
+            to='/qradar/ldp-tools/add'
+            className={`btn btn-new btn-small ${!isActionAuthorized('Create') ? 'disabled' : ''}`}
+          >
+            Add
+          </Link>
           </div>
         </div>
       </div>
@@ -149,31 +161,46 @@ const LdpTools = () => {
                   <td>{item.toolId}</td>
                   <td>{item.toolName}</td>
                   <td>{item.toolType}</td>
-                  {/* <td>{item.createdDate}</td> */}
+                   <td>
+                        {isActionAuthorized('View') ? (
+                          <span className='me-8' title='View'>
+                            <i
+                              className='fa fa-eye cursor'
+                              onClick={() => handleNavigateToUpdate(item.toolId)}
+                            />
+                          </span>
+                        ) : (
+                          <span className='me-8' title='View'>
+                            <i className='fa fa-eye disabled' />
+                          </span>
+                        )}
 
-                  {globalAdminRole === 1 || clientAdminRole === 1 ? (
-                    <td>
-                      <span className="" title="Edit">
-                        <Link
-                          className="text-white"
-                          to={`/qradar/ldp-tools/update/${item.toolId}`}
-                        >
-                          <i className="fa fa-pencil link pointer fs-15" />
-                        </Link>
-                      </span>
-                      <span
-                        className="ms-8"
-                        onClick={() => {
-                          handleDelete(item);
-                        }}
-                        title="Delete"
-                      >
-                        <i className="fa fa-trash pointer red fs-15" />
-                      </span>
-                    </td>
-                  ) : (
-                    <></>
-                  )}
+                        {isActionAuthorized('Update') ? (
+                          <span>
+                            <Link
+                              className='text-white'
+                              to={`/qradar/ldp-tools/update/${item.toolId}`}
+                              title='Edit'
+                            >
+                              <i className='fa fa-pencil cursor link' />
+                            </Link>
+                          </span>
+                        ) : (
+                          <span className='' title='Edit'>
+                            <i className='fa fa-pencil disabled' />
+                          </span>
+                        )}
+
+                        {isActionAuthorized('Delete') ? (
+                          <span className='ms-8' onClick={() => handleDelete(item)} title='Delete'>
+                            <i className='fa fa-trash cursor red' />
+                          </span>
+                        ) : (
+                          <span className='ms-8' title='Delete'>
+                            <i className='fa fa-trash disabled' />
+                          </span>
+                        )}
+                      </td>
                 </tr>
               ))
             ) : (

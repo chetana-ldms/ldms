@@ -1,49 +1,60 @@
-import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
-import { UsersListLoading } from "../components/loading/UsersListLoading";
-import { ToastContainer, toast } from "react-toastify";
-import { notify, notifyFail } from "../components/notification/Notification";
-import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
-import { useErrorBoundary } from "react-error-boundary";
-import {
-  fetchRolesDeleteUrl,
-  fetchRolesUrl,
-} from "../../../../../api/ConfigurationApi";
-import { fetchLDPToolsDelete } from "../../../../../api/Api";
-import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
-import Pagination from "../../../../../../utils/Pagination";
+import React, {useState, useEffect} from 'react'
+import {Link, useNavigate, useParams} from 'react-router-dom'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
+import {ToastContainer, toast} from 'react-toastify'
+import {notify, notifyFail} from '../components/notification/Notification'
+import 'react-toastify/dist/ReactToastify.css'
+import axios from 'axios'
+import {useErrorBoundary} from 'react-error-boundary'
+import {fetchRolesDeleteUrl, fetchRolesUrl} from '../../../../../api/ConfigurationApi'
+import {fetchLDPToolsDelete} from '../../../../../api/Api'
+import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
+import Pagination from '../../../../../../utils/Pagination'
+import useFeatureActions from './useFeatureActions'
 
 const RoleData = () => {
-  const handleError = useErrorBoundary();
-  const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
-  const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
-  const orgId = Number(sessionStorage.getItem("orgId"));
-  const userID = Number(sessionStorage.getItem("userId"));
-  const orgIdFromSession = Number(sessionStorage.getItem("orgId"));
-  const [selectedOrganization, setSelectedOrganization] = useState(
-    orgIdFromSession
-  );
-  const [loading, setLoading] = useState(false);
-  const [roles, setRoles] = useState([]);
+  const handleError = useErrorBoundary()
+  const globalAdminRole = Number(sessionStorage.getItem('globalAdminRole'))
+  const clientAdminRole = Number(sessionStorage.getItem('clientAdminRole'))
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const userID = Number(sessionStorage.getItem('userId'))
+  const orgIdFromSession = Number(sessionStorage.getItem('orgId'))
+  const [selectedOrganization, setSelectedOrganization] = useState(orgIdFromSession)
+  const [loading, setLoading] = useState(false)
+  const [roles, setRoles] = useState([])
   const [filterValue, setFilterValue] = useState('')
   const [currentPage, setCurrentPage] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(10)
-  const [activePage, setActivePage] = useState(0); 
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState(null);
+  const [activePage, setActivePage] = useState(0)
+  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [itemToDelete, setItemToDelete] = useState(null)
+  const navigate = useNavigate()
+  const toolId = Number(sessionStorage.getItem('toolID'))
+  const roleId = Number(sessionStorage.getItem('roleID'))
+  const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
+
+  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+
+  const isActionAuthorized = (actionName) => {
+    return featureActions?.some(
+      (action) => action.actionName === actionName && action.is_authorized === true
+    )
+  }
+  const handleNavigateToUpdate = (id) => {
+    navigate(`/qradar/roles-data/update/${id}`, {state: {save: true}})
+  }
 
   const reload = async () => {
     try {
-      setLoading(true);
-      const data = await fetchRolesUrl(orgId, userID);
-      setRoles(data);
-      setLoading(false);
+      setLoading(true)
+      const data = await fetchRolesUrl(orgId, userID)
+      setRoles(data)
+      setLoading(false)
     } catch (error) {
-      handleError(error);
-      setLoading(false);
+      handleError(error)
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
     reload()
@@ -55,9 +66,9 @@ const RoleData = () => {
         .filter((item) => item.roleName.toLowerCase().includes(filterValue.toLowerCase()))
         .slice(indexOfFirstItem, indexOfLastItem)
     : null
-    const filteredList = filterValue
+  const filteredList = filterValue
     ? roles.filter((item) => item.roleName.toLowerCase().includes(filterValue.toLowerCase()))
-    : roles;
+    : roles
 
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value))
@@ -66,66 +77,64 @@ const RoleData = () => {
   }
   const handlePageClick = (selected) => {
     setCurrentPage(selected.selected)
-    setActivePage(selected.selected);
+    setActivePage(selected.selected)
   }
   const handleFilterChange = (event) => {
     setFilterValue(event.target.value)
     setCurrentPage(0)
-    setActivePage(0);
+    setActivePage(0)
   }
   const handleDelete = (item) => {
-    setItemToDelete(item);
-    setShowConfirmation(true);
-  };
+    setItemToDelete(item)
+    setShowConfirmation(true)
+  }
 
   const confirmDelete = async () => {
     if (itemToDelete) {
       const data = {
         roleID: itemToDelete.roleID,
         deletedDate: new Date().toISOString(),
-        deletedUserId: Number(sessionStorage.getItem("userId")),
-      };
+        deletedUserId: Number(sessionStorage.getItem('userId')),
+      }
 
       try {
-        const response = await fetchRolesDeleteUrl(data);
+        const response = await fetchRolesDeleteUrl(data)
         const {isSuccess, message} = response
         if (isSuccess) {
-          notify(message);
-          await reload();
+          notify(message)
+          await reload()
         } else {
-          notifyFail(message);
+          notifyFail(message)
         }
       } catch (error) {
-        handleError(error);
+        handleError(error)
       } finally {
-        setShowConfirmation(false);
-        setItemToDelete(null);
+        setShowConfirmation(false)
+        setItemToDelete(null)
       }
     }
-  };
+  }
   const cancelDelete = () => {
-    setShowConfirmation(false);
-    setItemToDelete(null);
-  };
+    setShowConfirmation(false)
+    setItemToDelete(null)
+  }
   return (
-    <div className="config card pad-10">
+    <div className='config card pad-10'>
       <ToastContainer />
-      <div className="card-header no-pad">
-        <h3 className="card-title align-items-start flex-column">
-          <span className="card-label fw-bold fs-3 mb-1">Roles ({currentItems.length} / {filteredList.length})</span>
+      <div className='card-header no-pad'>
+        <h3 className='card-title align-items-start flex-column'>
+          <span className='card-label fw-bold fs-3 mb-1'>
+            Roles ({currentItems.length} / {filteredList.length})
+          </span>
         </h3>
-        <div className="card-toolbar">
-          <div className="d-flex align-items-center gap-2 gap-lg-3">
-            {globalAdminRole === 1 || clientAdminRole === 1 ? (
-              <Link
-                to="/qradar/roles-data/add"
-                className="btn btn-new btn-small"
-              >
-                Add
-              </Link>
-            ) : (
-              <></>
-            )}
+        <div className='card-toolbar'>
+          <div className='d-flex align-items-center gap-2 gap-lg-3'>
+            <Link
+              to='/qradar/roles-data/add'
+              className={`btn btn-new btn-small ${!isActionAuthorized('Create') ? 'disabled' : ''}`}
+            >
+              Add
+            </Link>
           </div>
         </div>
       </div>
@@ -140,56 +149,67 @@ const RoleData = () => {
           />
         </div>
       </div>
-      <div className="card-body no-pad">
-        <table className="table align-middle gs-0 gy-4 dash-table alert-table">
+      <div className='card-body no-pad'>
+        <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
-            <tr className="fw-bold text-muted bg-blue">
+            <tr className='fw-bold text-muted bg-blue'>
               <th>Role ID</th>
               <th>Role Name</th>
-              {globalAdminRole === 1 || clientAdminRole === 1 ? (
-                <th>Actions</th>
-              ) : (
-                <></>
-              )}
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {currentItems !==null ? (
+            {currentItems !== null ? (
               currentItems.map((item, index) => (
-                <tr key={index} className="fs-12">
+                <tr key={index} className='fs-12'>
                   <td>{item.roleID}</td>
                   <td>{item.roleName}</td>
-                  {globalAdminRole === 1 || clientAdminRole === 1 ? (
-                    <td>
+                  <td>
+                    {isActionAuthorized('View') ? (
+                      <span className='me-8' title='View'>
+                        <i
+                          className='fa fa-eye cursor'
+                          onClick={() => handleNavigateToUpdate(item.roleID)}
+                        />
+                      </span>
+                    ) : (
+                      <span className='me-8' title='View'>
+                        <i className='fa fa-eye disabled' />
+                      </span>
+                    )}
+
+                    {isActionAuthorized('Update') ? (
                       <span>
                         <Link
-                          className="text-white"
+                          className='text-white'
                           to={`/qradar/roles-data/update/${item.roleID}`}
-                          title="Edit"
+                          title='Edit'
                         >
-                          <i className="fa fa-pencil link pointer fs-15" />
+                          <i className='fa fa-pencil cursor link' />
                         </Link>
                       </span>
-
-                      <span
-                        className="ms-8"
-                        style={{ fontSize: "14px" }}
-                        onClick={() => {
-                          handleDelete(item);
-                        }}
-                      >
-                        <i className="fa fa-trash red pointer fs-15" />
+                    ) : (
+                      <span className='' title='Edit'>
+                        <i className='fa fa-pencil disabled' />
                       </span>
-                    </td>
-                  ) : (
-                    <></>
-                  )}
+                    )}
+
+                    {isActionAuthorized('Delete') ? (
+                      <span className='ms-8' onClick={() => handleDelete(item)} title='Delete'>
+                        <i className='fa fa-trash cursor red' />
+                      </span>
+                    ) : (
+                      <span className='ms-8' title='Delete'>
+                        <i className='fa fa-trash disabled' />
+                      </span>
+                    )}
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="2">No data found</td>
+                <td colSpan='2'>No data found</td>
               </tr>
             )}
           </tbody>
@@ -201,7 +221,7 @@ const RoleData = () => {
             onCancel={cancelDelete}
           />
         )}
-         {roles && (
+        {roles && (
           <Pagination
             pageCount={Math.ceil(filteredList.length / itemsPerPage)}
             handlePageClick={handlePageClick}
@@ -212,7 +232,7 @@ const RoleData = () => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export { RoleData };
+export {RoleData}

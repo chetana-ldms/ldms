@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { fetchLDPToolDetails, fetchMasterData } from "../../../../../api/Api";
 import { notify, notifyFail } from "../components/notification/Notification";
 import axios from "axios";
@@ -20,6 +20,11 @@ const UpdateLdpTools = () => {
   const toolType = useRef();
   console.log(toolType, "toolType111");
   const errors = {};
+  const location = useLocation()
+  const [save, setSave] = useState(location.state?.save || '')
+  useEffect(() => {
+    setSave(location.state?.save || '')
+  }, [location.state])
   const handleSubmit = async (event) => {
     setLoading(true);
     if (!toolName.current.value) {
@@ -95,9 +100,11 @@ const UpdateLdpTools = () => {
     <div className="config card">
       <div className="card-header bg-heading mb-5">
         <h3 className="card-title">
-          <span className="card-label fs-3 mb-1 white">
-            Update Tool
-          </span>
+          {save ? (
+            <span className='white'>View Tool</span>
+          ) : (
+            <span className='white'>Update Tool</span>
+          )}
         </h3>
         <div className="card-toolbar">
           <div className="page-back">
@@ -175,11 +182,11 @@ const UpdateLdpTools = () => {
           </div>
         </div>
         <div className="card-footer d-flex justify-content-end pad-10">
-          <button
-            type="submit"
+        <button
+            type='submit'
             onClick={handleSubmit}
-            className="btn btn-new btn-small"
-            disabled={loading}
+            className='btn btn-new btn-small'
+            style={{display: loading || save ? 'none' : 'inline-block'}}
           >
             {!loading && "Update Changes"}
             {loading && (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { UsersListLoading } from "../components/loading/UsersListLoading";
 import { ToastContainer, toast } from "react-toastify";
 import { notify, notifyFail } from "../components/notification/Notification";
@@ -11,6 +11,7 @@ import { useErrorBoundary } from "react-error-boundary";
 import Pagination from "../../../../../../utils/Pagination";
 import { sortedItems } from "../../../../../../utils/Sorting";
 import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
+import useFeatureActions from "./useFeatureActions";
 
 const ToolTypeActions = () => {
   const handleError = useErrorBoundary();
@@ -26,6 +27,22 @@ const ToolTypeActions = () => {
   const { status } = useParams();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const navigate = useNavigate()
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const toolId = Number(sessionStorage.getItem('toolID'))
+  const roleId = Number(sessionStorage.getItem('roleID'))
+  const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
+
+  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+  
+   const isActionAuthorized = (actionName) => {
+    return featureActions?.some(
+      (action) => action.actionName === actionName && action.is_authorized === true
+    )
+  }
+  const handleNavigateToUpdate = (id) => {
+    navigate(`/qradar/tool-type-actions/update/${id}`, {state: {save: true}})
+  }
 
   const handleDelete = (item) => {
     setItemToDelete(item);
@@ -115,16 +132,12 @@ const ToolTypeActions = () => {
         </h3> 
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">
-            {globalAdminRole === 1 || clientAdminRole === 1 ? (
               <Link
-                to="/qradar/tool-type-actions/add"
-                className="btn btn-new btn-small"
-              >
-                Add
-              </Link>
-            ) : (
-              <></>
-            )}
+            to='/qradar/tool-type-actions/add'
+            className={`btn btn-new btn-small ${!isActionAuthorized('Create') ? 'disabled' : ''}`}
+          >
+            Add
+          </Link>
           </div>
         </div>
       </div>
@@ -145,11 +158,7 @@ const ToolTypeActions = () => {
             <tr className="fw-bold text-muted bg-blue">
               <th className="w-500px">Tool Action Type</th>
               <th className="w-400px">Tool Type</th>
-              {globalAdminRole === 1 || clientAdminRole === 1 ? (
-                <th className="w-100px">Action</th>
-              ) : (
-                <></>
-              )}
+                <th className="w-200px">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -159,30 +168,46 @@ const ToolTypeActions = () => {
                 <tr key={index} className="fs-12">
                   <td>{item.toolAction}</td>
                   <td>{item.toolTypeName}</td>
+                   <td>
+                        {isActionAuthorized('View') ? (
+                          <span className='me-8' title='View'>
+                            <i
+                              className='fa fa-eye cursor'
+                              onClick={() => handleNavigateToUpdate(item.toolTypeActionID)}
+                            />
+                          </span>
+                        ) : (
+                          <span className='me-8' title='View'>
+                            <i className='fa fa-eye disabled' />
+                          </span>
+                        )}
 
-                  {globalAdminRole === 1 || clientAdminRole === 1 ? (
-                    <td>
-                      <span>
-                        <Link
-                          className="text-white"
-                          to={`/qradar/tool-type-actions/update/${item.toolTypeActionID}`}
-                        >
-                          <i className="fa fa-pencil link" />
-                        </Link>
-                      </span>
+                        {isActionAuthorized('Update') ? (
+                          <span>
+                            <Link
+                              className='text-white'
+                              to={`/qradar/tool-type-actions/update/${item.toolTypeActionID}`}
+                              title='Edit'
+                            >
+                              <i className='fa fa-pencil cursor link' />
+                            </Link>
+                          </span>
+                        ) : (
+                          <span className='' title='Edit'>
+                            <i className='fa fa-pencil disabled' />
+                          </span>
+                        )}
 
-                      <span
-                        className="ms-8"
-                        onClick={() => {
-                          handleDelete(item);
-                        }}
-                      >
-                        <i className="fa fa-trash red" />
-                      </span>
-                    </td>
-                  ) : (
-                    <></>
-                  )}
+                        {isActionAuthorized('Delete') ? (
+                          <span className='ms-8' onClick={() => handleDelete(item)} title='Delete'>
+                            <i className='fa fa-trash cursor red' />
+                          </span>
+                        ) : (
+                          <span className='ms-8' title='Delete'>
+                            <i className='fa fa-trash disabled' />
+                          </span>
+                        )}
+                      </td>
                 </tr>
               ))
             ) : (

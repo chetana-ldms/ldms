@@ -11,6 +11,8 @@ import {ToastContainer} from 'react-toastify'
 import BlockListEditPopup from './BlockListEditPopup'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
 import {fetchExportDataAddUrl} from '../../../../../api/Api'
+import useFeatureActions from '../configuration/useFeatureActions'
+import { truncateText } from '../../../../../../utils/TruncateText'
 
 function BlockList() {
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -43,6 +45,17 @@ function BlockList() {
   const groupId = sessionStorage.getItem('groupId')
   const [cursor, setCursor] = useState(null)
   const [totalCount, setTotalCount] = useState('')
+  const toolId = Number(sessionStorage.getItem('toolID'))
+  const roleId = Number(sessionStorage.getItem('roleID'))
+  const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
+
+  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+
+  const isActionAuthorized = (actionName) => {
+    return featureActions?.some(
+      (action) => action.actionName === actionName && action.is_authorized === true
+    )
+  }
   const fetchData = async () => {
     const data = {
       orgID: orgId,
@@ -65,13 +78,13 @@ function BlockList() {
       nextCursor: cursor || '',
       pageSize: limit,
     }
-  
+
     try {
       setLoading(true)
       const response = await fetchBlokckedListUrl(data)
       setBlockList(response.blockedItemList)
       setCursor(response.pagination.nextCursor)
-      
+
       if (!initialTotalCountSet) {
         setTotalCount(response.pagination.totalItems)
         setInitialTotalCountSet(true)
@@ -82,7 +95,7 @@ function BlockList() {
       setLoading(false)
     }
   }
-  
+
   useEffect(() => {
     fetchData()
   }, [limit])
@@ -329,7 +342,7 @@ function BlockList() {
   }
   const handleTableRowClick = (item) => {
     setSelectedItem(item)
-    if (globalAdminRole === 1 || clientAdminRole === 1) {
+    if (isActionAuthorized('Update')) {
       setShowPopupEdit(true)
     }
   }
@@ -383,7 +396,13 @@ function BlockList() {
                 </DropdownMenu>
               </Dropdown>
 
-              <button className='btn btn-green btn-small float-left' onClick={openPopup}>
+              <button
+                className={`btn btn-green btn-small float-left ${
+                  !isActionAuthorized('AddToBlocklist') ? 'disabled' : ''
+                }`}
+                onClick={openPopup}
+              >
+                {' '}
                 Add New
               </button>
               {showPopup && (
@@ -394,18 +413,20 @@ function BlockList() {
                 />
               )}
               <div className='float-left mg-left-10'>
-                {(globalAdminRole === 1 || clientAdminRole === 1) && (
-                  <button
-                    className={`btn btn-green btn-small float-left ${
-                      !isCheckboxSelected && 'disabled'
-                    }`}
-                    onClick={handleDelete}
-                  >
-                    Delete selection
-                  </button>
-                )}
+                <button
+                  className={`btn btn-green btn-small float-left ${
+                    !isCheckboxSelected || !isActionAuthorized('Delete') ? 'disabled' : ''
+                  }`}
+                  onClick={handleDelete}
+                  disabled={!isCheckboxSelected || !isActionAuthorized('Delete')}
+                >
+                  Delete selection
+                </button>
               </div>
-              <div className="fs-15 mt-2 ms-5"> Total({currentItems.length}/{totalCount})</div> 
+              <div className='fs-15 mt-2 ms-5'>
+                {' '}
+                Total({currentItems.length}/{totalCount})
+              </div>
             </div>
             <div className='col-lg-4 text-right'>
               {/* <span className="gray inline-block mg-righ-20">530 Items</span> */}
@@ -485,20 +506,22 @@ function BlockList() {
                         style={{cursor: 'pointer'}}
                       >
                         <td>
-                          <input
-                            className='form-check-input widget-13-check'
-                            type='checkbox'
-                            value={item.id}
-                            name={item.id}
-                            onChange={(e) => handleselectedAlert(item, e)}
-                            autoComplete='off'
-                            onClick={(e) => e.stopPropagation()}
-                          />
+                          <div className='form-check form-check-sm form-check-custom form-check-solid px-3'>
+                            <input
+                              className='form-check-input widget-13-check'
+                              type='checkbox'
+                              value={item.id}
+                              name={item.id}
+                              onChange={(e) => handleselectedAlert(item, e)}
+                              autoComplete='off'
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                          </div>
                         </td>
                         <td>{item.osType}</td>
-                        <td title={item.description}>{item.description}</td>
-                        <td title={item.value}>{item.value}</td>
-                        <td title={item.scopePath}>{item.scopePath}</td>
+                        <td title={item.description}> {truncateText(item.description, 30)}</td>
+                        <td title={item.value}>{truncateText(item.value, 30)}</td>
+                        <td title={item.scopePath}>{truncateText(item.scopePath, 30)}</td>
                         <td>{item.userName}</td>
                         <td>{item.notRecommended}</td>
                         <td>{getCurrentTimeZone(item.updatedAt)}</td>

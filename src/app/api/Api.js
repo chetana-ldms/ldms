@@ -21,6 +21,8 @@ const accountsStructureUrl= process.env.REACT_APP_ACCOUNTS_STRUCTURE_URL
 const LogoutAddUrl= process.env.REACT_APP_LOGOUT_ADD_URL
 const APITokenExpireUrl= process.env.REACT_APP_API_TOKEN_EXPIRE_URL
 const ExportDataAddUrl = process.env.REACT_APP_EXPORT_DATA_ADD_URL
+const FeaturesAuthorizedUrl="http://115.110.192.133:502/api/LDPSecurity/v1/Features/Authorized"
+const FeaturesActionsAuthorizedUrl= "http://115.110.192.133:502/api/LDPSecurity/v1/Features/Actions/Authorized"
 
 export const fetchMasterData = async (data) => {
   try {
@@ -420,6 +422,42 @@ export const fetchAPITokenExpireUrl = async (data) => {
 export const fetchExportDataAddUrl = async (data) => {
   try {
     const response = await fetch(`${ExportDataAddUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchFeaturesAuthorizedUrl = async (data) => {
+  try {
+    const response = await fetch(`${FeaturesAuthorizedUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchFeaturesActionsAuthorizedUrl = async (data) => {
+  try {
+    const response = await fetch(`${FeaturesActionsAuthorizedUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

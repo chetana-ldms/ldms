@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { notify, notifyFail } from "../components/notification/Notification";
 import axios from "axios";
 import { UsersListLoading } from "../components/loading/UsersListLoading";
@@ -35,6 +35,11 @@ const UpdateToolAction = () => {
   const toolTypeActionID = useRef();
   const toolId = useRef();
   const errors = {};
+  const location = useLocation()
+  const [save, setSave] = useState(location.state?.save || '')
+  useEffect(() => {
+    setSave(location.state?.save || '')
+  }, [location.state])
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -200,7 +205,11 @@ const UpdateToolAction = () => {
       {loading && <UsersListLoading />}
       <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">
-          <span className="white">Update Tool Action</span>
+          {save ? (
+            <span className='white'>View Tool Action</span>
+          ) : (
+            <span className='white'>Update Tool Action</span>
+          )}
         </h3>
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">
@@ -322,7 +331,7 @@ const UpdateToolAction = () => {
             type="submit"
             onClick={(e) => handleSubmit(e, toolTypeAction)}
             className="btn btn-new btn-small"
-            disabled={loading}
+            style={{display: loading || save ? 'none' : 'inline-block'}}
           >
             {!loading && "Update Changes"}
             {loading && (
