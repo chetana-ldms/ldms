@@ -84,6 +84,10 @@ import Exclusions from './qradar-pages/Setinels/Exclusions'
 import BlockList from './qradar-pages/Setinels/BlockList'
 import AccountDetalis from './qradar-pages/Setinels/AccountDetalis'
 import PolicySentinal from './qradar-pages/Setinels/Policy'
+import AddFeatures from './qradar-pages/security/AddFeatures'
+import UpdateFeatures from './qradar-pages/security/UpdateFeatures'
+import AddFeatureAction from './qradar-pages/security/AddFeatureAction'
+import UpdateFeatureAction from './qradar-pages/security/UpdateFeatureAction'
 
 
 const QradarPages = () => {
@@ -173,7 +177,11 @@ const QradarPages = () => {
       <Route path='settings/:status' element={<Settings />} />
       <Route path='activity/:status' element={<Activity />} />
       <Route path='features/:status' element={<Features />} />
+      <Route path='features/update/:id' element={<UpdateFeatures />} />
+      <Route path='features/add' element={<AddFeatures />} />
       <Route path='featureaction/:status' element={<FeatureAction />} />
+      <Route path='featureaction/update/:id' element={<UpdateFeatureAction />} />
+      <Route path='featureaction/add' element={<AddFeatureAction />} />
       <Route path='rolebasedaccess/:status' element={<RoleBasedAccess />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>

@@ -3,6 +3,12 @@ const OrganizationToolsUrl= "http://115.110.192.133:502/api/LDPlattform/v1/Organ
 const OrganizationRolesUrl= "http://115.110.192.133:502/api/LDPSecurity/v1/Organization/Roles"
 const FeaturesActionsAuthorizedAccessUrl= "http://115.110.192.133:502/api/LDPSecurity/v1/Features/Actions/Authorized"
 const FeaturesActionsAuthorizationConfigurationUrl= "http://115.110.192.133:502/api/LDPSecurity/v1/Features/Actions/Authorization/Configuration"
+const FeaturesListUrl="http://115.110.192.133:502/api/LDPSecurity/v1/Features/List"
+const ActionsUrl="http://115.110.192.133:502/api/LDPSecurity/v1/Actions"
+const FeaturesAddUrl="http://115.110.192.133:502/api/LDPSecurity/v1/Features/Add"
+const FeaturesDeleteUrl="http://115.110.192.133:502/api/LDPSecurity/v1/Features/Delete"
+const FeaturesUpdateUrl= "http://115.110.192.133:502/api/LDPSecurity/v1/Features/Update"
+const FeatureDetailsUrl= "http://115.110.192.133:502/api/LDPSecurity/v1/Feature/Details"
 
 export const fetchFeaturesUrl = async (data) => {
     try {
@@ -90,3 +96,110 @@ export const fetchFeaturesUrl = async (data) => {
       console.log(error);
     }
   };
+  export const fetchFeaturesListUrl = async (data) => {
+    try {
+      const response = await fetch(`${FeaturesListUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchActionsUrl = async (data) => {
+    try {
+      const response = await fetch(`${ActionsUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      const featureActions = responseData.featureActions
+      return featureActions;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchFeaturesAddUrl = async (data) => {
+    try {
+      const response = await fetch(`${FeaturesAddUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchFeaturesDeleteUrl = async (data) => {
+    try {
+      const response = await fetch(`${FeaturesDeleteUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchFeaturesUpdateUrl = async (data) => {
+    try {
+      const response = await fetch(`${FeaturesUpdateUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchFeatureDetailsUrl = async (id) => {
+    try {
+      const response = await fetch(`${FeatureDetailsUrl}?featureid=${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const responseData = await response.json();
+      const feature = responseData.feature;
+      return feature;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  

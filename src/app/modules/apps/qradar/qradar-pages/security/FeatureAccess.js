@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { notifyFail, notify } from '../components/notification/Notification';
 import {
   fetchOrganizationRolesUrl,
-  fetchFeatureDetailsUrl,
-  fetchFeaturesActionsAuthorizedAccessUrl,
 } from '../../../../../api/securityApi';
 import FeaturesActionsAuthorized from './FeaturesActionsAuthorized';
 
