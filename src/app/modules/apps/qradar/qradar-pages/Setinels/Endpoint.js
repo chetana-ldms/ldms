@@ -7,8 +7,19 @@ import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Input} from 'reactstrap'
 import {renderSortIcon, sortedItems} from '../../../../../../utils/Sorting'
 import EndpointPopupSentinal from './EndpointPopupSentinal'
-import {fetchExportDataAddUrl} from '../../../../../api/Api'
+import {
+  fetchAgentActionUrl,
+  fetchExportDataAddUrl,
+  fetchFeaturesActionsAuthorizedUrl,
+} from '../../../../../api/Api'
 import DropdownItemWithSubmenu from './DropdownItemWithSubmenu'
+import useFeatureActions from '../configuration/useFeatureActions'
+import {actions} from 'react-table'
+import {notify, notifyFail} from '../components/notification/Notification'
+import {ToastContainer} from 'react-toastify'
+import ContinueConfirmation from '../../../../../../utils/ContinueConfirmation'
+import SendMessageModal from './SendMessageModal'
+import MoveAgentToAnotherSiteModal from './MoveAgentToAnotherSiteModal'
 
 function Endpoint() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -19,9 +30,29 @@ function Endpoint() {
   const globalAdminRole = Number(sessionStorage.getItem('globalAdminRole'))
   const clientAdminRole = Number(sessionStorage.getItem('clientAdminRole'))
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
-  const [selectedAlert, setselectedAlert] = useState([])
+  const [features, setFeatures] = useState([])
+  const [selectedActionId, setSelectedActionId] = useState(null)
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false)
   const toggleActionDropdown = () => setActionDropdownOpen(!actionDropdownOpen)
   const toggleGroupDropdown = () => setGroupDropdownOpen(!groupDropdownOpen)
+  const [moveAgentToSiteModalVisible, setMoveAgentToSiteModalVisible] = useState(false);
+  const [sendMessageModalVisible, setSendMessageModalVisible] = useState(false)
+  const [selectedAlert, setselectedAlert] = useState([])
+  const accountId = sessionStorage.getItem('accountId')
+  const siteId = sessionStorage.getItem('siteId')
+  const groupId = sessionStorage.getItem('groupId')
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const toolId = Number(sessionStorage.getItem('toolID'))
+  const roleId = Number(sessionStorage.getItem('roleID'))
+  const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
+
+  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+
+  const isActionAuthorized = (actionName) => {
+    return featureActions?.some(
+      (action) => action.actionName === actionName && action.is_authorized === true
+    )
+  }
   const handleselectedAlert = (item, e) => {
     const {value, checked} = e.target
     if (checked) {
@@ -33,6 +64,25 @@ function Endpoint() {
       setIsCheckboxSelected(updatedAlert.length > 0)
     }
   }
+  const fetchFeatureActions = async () => {
+    try {
+      const data = {
+        orgId: orgId,
+        toolId: toolId,
+        roleId: roleId,
+        featureId: featureId,
+      }
+      const response = await fetchFeaturesActionsAuthorizedUrl(data)
+      setFeatures(response.featureActions)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    fetchFeatureActions()
+  }, [])
+
   const extractTableData = (items) => {
     return items.map((item) => ({
       'Endpoint Name': item.computerName,
@@ -122,7 +172,6 @@ function Endpoint() {
     }
   }
 
-  const orgId = Number(sessionStorage.getItem('orgId'))
   const [loading, setLoading] = useState(false)
   const [endpoints, setEndpoints] = useState([])
   const [selectedEndpoint, setSelectedEndpoint] = useState(null)
@@ -134,10 +183,6 @@ function Endpoint() {
     key: null,
     direction: 'ascending',
   })
-
-  const accountId = sessionStorage.getItem('accountId')
-  const siteId = sessionStorage.getItem('siteId')
-  const groupId = sessionStorage.getItem('groupId')
   const fetchData = async () => {
     const data = {
       orgID: orgId,
@@ -213,37 +258,95 @@ function Endpoint() {
     setCurrentPage(0)
     setActivePage(0)
   }
-  const handleActions = () => {}
+  const handleActionClick = (actionId, actionDisplayName) => {
+    setSelectedActionId(actionId)
+
+    if (actionDisplayName === "Send Message") {
+      setSendMessageModalVisible(true);
+    } else if (actionDisplayName === "Agent Move To Site") {
+      setMoveAgentToSiteModalVisible(true);
+    } else {
+      setIsConfirmModalVisible(true);
+    }
+  };
+
+  const handleConfirm = async () => {
+    setIsConfirmModalVisible(false)
+    try {
+      const data = {
+        orgId,
+        toolId,
+        agentActionId: selectedActionId,
+        agentIds: selectedAlert,
+        orgAccountStructureLevel: [
+          {levelName: 'AccountId', levelValue: accountId || ''},
+          {levelName: 'SiteId', levelValue: siteId || ''},
+          {levelName: 'GroupId', levelValue: groupId || ''},
+        ],
+      }
+      const response = await fetchAgentActionUrl(data)
+      const {isSuccess, message} = response
+      if (isSuccess) {
+        notify(message)
+      } else {
+        notifyFail(message)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleDismiss = () => {
+    setIsConfirmModalVisible(false)
+  }
+
+  const handleSendMessage = (message) => {
+    // Logic for sending the message
+    console.log('Message sent:', message)
+    notify('Message sent successfully!')
+    setSendMessageModalVisible(false)
+  }
+
+  const handleCloseSendMessageModal = () => {
+    setSendMessageModalVisible(false)
+  }
+  const handleMoveAgent = (newSiteId) => {
+    // Logic for moving agent to another site
+    setMoveAgentToSiteModalVisible(false);
+    console.log(newSiteId); // Implement your move agent logic here
+  };
+
+  const handleCloseMoveAgentModal = () => {
+    setMoveAgentToSiteModalVisible(false);
+  };
   const handleGroup = () => {}
 
-  const handleActionItemClick = (actionName) => {
-    console.log(`Action clicked: ${actionName}`)
-  }
-  const actionItems = [
-    {name: 'Action 1', subItems: ['Sub Action 1', 'Sub Action 2']},
-    {name: 'Action 2', subItems: ['Sub Action 3', 'Sub Action 4']},
-    {name: 'Action 3', subItems: ['Sub Action 5', 'Sub Action 6']},
-    {name: 'Action 4', subItems: ['Sub Action 7', 'Sub Action 8']},
-    {name: 'Action 5', subItems: ['Sub Action 9', 'Sub Action 10']},
-    {name: 'Action 6', subItems: ['Sub Action 11', 'Sub Action 12']},
-    {name: 'Action 7', subItems: ['Sub Action 13', 'Sub Action 14']},
-    {name: 'Action 8', subItems: ['Sub Action 15', 'Sub Action 16']},
-    {name: 'Action 9', subItems: ['Sub Action 17', 'Sub Action 18']},
-    {name: 'Action 10', subItems: ['Sub Action 19', 'Sub Action 20']},
-  ]
-  const filteredActionItems = actionItems.filter(action =>
-    action.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // const actionItems = [
+  //   {name: 'Action 1', subItems: ['Sub Action 1', 'Sub Action 2']},
+  //   {name: 'Action 2', subItems: ['Sub Action 3', 'Sub Action 4']},
+  //   {name: 'Action 3', subItems: ['Sub Action 5', 'Sub Action 6']},
+  //   {name: 'Action 4', subItems: ['Sub Action 7', 'Sub Action 8']},
+  //   {name: 'Action 5', subItems: ['Sub Action 9', 'Sub Action 10']},
+  //   {name: 'Action 6', subItems: ['Sub Action 11', 'Sub Action 12']},
+  //   {name: 'Action 7', subItems: ['Sub Action 13', 'Sub Action 14']},
+  //   {name: 'Action 8', subItems: ['Sub Action 15', 'Sub Action 16']},
+  //   {name: 'Action 9', subItems: ['Sub Action 17', 'Sub Action 18']},
+  //   {name: 'Action 10', subItems: ['Sub Action 19', 'Sub Action 20']},
+  // ]
+  const filteredActionItems = featureActions
+    .filter((action) => action.actionDisplayName.toLowerCase().includes(searchQuery.toLowerCase()))
+    .filter((action) => action.actionName !== 'Access')
+    .filter((action) => isActionAuthorized(action.actionName))
   return (
     <div>
+      <ToastContainer />
       {loading ? (
         <UsersListLoading />
       ) : (
         <div className='card pad-10'>
           <div className='header-filter mg-btm-20 row'>
             <div className='col-lg-3 d-flex justify-content-between'>
-              {(globalAdminRole === 1 || clientAdminRole === 1) && (
-                <Dropdown
+              {/* <Dropdown
                   isOpen={actionDropdownOpen}
                   toggle={toggleActionDropdown}
                   className={!isCheckboxSelected ? 'disabled' : ''}
@@ -264,31 +367,56 @@ function Endpoint() {
                     {filteredActionItems.map((action, index) => (
                       <DropdownItemWithSubmenu
                         key={index}
-                        item={action.name}
-                        subItems={action.subItems}
+                        item={action.actionDisplayName}
+                        // subItems={action.subItems}
                         isCheckboxSelected={isCheckboxSelected}
                       />
                     ))}
                   </DropdownMenu>
-                </Dropdown>
-              )}
-              {(globalAdminRole === 1 || clientAdminRole === 1) && (
-                <Dropdown isOpen={groupDropdownOpen} toggle={toggleGroupDropdown}>
-                  <DropdownToggle className='no-pad'>
-                    <div className={`btn btn-green btn-small ${!isCheckboxSelected && 'disabled'}`}>
-                      Groups <i className='fa fa-caret-down link mg-left-5' />
-                    </div>
-                  </DropdownToggle>
-                  <DropdownMenu className='w-auto'>
+                </Dropdown> */}
+              <Dropdown
+                isOpen={actionDropdownOpen}
+                toggle={toggleActionDropdown}
+                className={!isCheckboxSelected ? 'disabled' : ''}
+              >
+                <DropdownToggle className='no-pad'>
+                  <div className={`btn btn-green btn-small ${!isCheckboxSelected && 'disabled'}`}>
+                    Actions
+                  </div>
+                </DropdownToggle>
+                <DropdownMenu className='w-200px p-3'>
+                  <Input
+                    type='text'
+                    placeholder='Search... '
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className='mb-2 bg-grey'
+                  />
+                  {filteredActionItems.map((action, index) => (
                     <DropdownItem
-                      onClick={handleGroup}
-                      className={!isCheckboxSelected ? 'disabled' : ''}
+                      key={index}
+                      onClick={() => handleActionClick(action.actionId, action.actionDisplayName)}
                     >
-                      <i className='fa fa-users link mg-right-5' /> Groups
+                      {action.actionDisplayName}
                     </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              )}
+                  ))}
+                </DropdownMenu>
+              </Dropdown>
+              <Dropdown isOpen={groupDropdownOpen} toggle={toggleGroupDropdown}>
+                <DropdownToggle className='no-pad'>
+                  <div className={`btn btn-green btn-small ${!isCheckboxSelected && 'disabled'}`}>
+                    Groups <i className='fa fa-caret-down link mg-left-5' />
+                  </div>
+                </DropdownToggle>
+                <DropdownMenu className='w-auto'>
+                  <DropdownItem
+                    onClick={handleGroup}
+                    className={!isCheckboxSelected ? 'disabled' : ''}
+                  >
+                    <i className='fa fa-users link mg-right-5' /> Groups
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
             </div>
             <div className='col-lg-6'>
               <input
@@ -456,6 +584,21 @@ function Endpoint() {
               )}
             </tbody>
           </table>
+          <ContinueConfirmation
+            isVisible={isConfirmModalVisible}
+            onContinue={handleConfirm}
+            onDismiss={handleDismiss}
+          />
+          <SendMessageModal
+            show={sendMessageModalVisible}
+            handleClose={handleCloseSendMessageModal}
+            handleSendMessage={handleSendMessage}
+          />
+          <MoveAgentToAnotherSiteModal
+            show={moveAgentToSiteModalVisible}
+            handleClose={handleCloseMoveAgentModal}
+            handleMoveAgent={handleMoveAgent}
+          />
           {endpoints && (
             <Pagination
               pageCount={Math.ceil(filteredList.length / itemsPerPage)}

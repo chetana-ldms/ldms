@@ -4,14 +4,14 @@ import './DropdownItemWithSubmenu.css';
 
 const DropdownItemWithSubmenu = ({ item, subItems }) => {
   const [submenuOpen, setSubmenuOpen] = useState(false);
-  const handleMouseEnter = () => setSubmenuOpen(true);
-  const handleMouseLeave = () => setSubmenuOpen(false);
+  // const handleMouseEnter = () => setSubmenuOpen(true);
+  // const handleMouseLeave = () => setSubmenuOpen(false);
 
   return (
     <div 
       className="position-relative" 
-      onMouseEnter={handleMouseEnter} 
-      onMouseLeave={handleMouseLeave}
+      // onMouseEnter={handleMouseEnter} 
+      // onMouseLeave={handleMouseLeave}
     >
       <Dropdown.Item>
         {item} <i className='fa fa-caret-right float-right pt-1' />

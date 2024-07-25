@@ -161,11 +161,6 @@ function UpdateFeatures() {
       setLoading(false)
       return
     }
-    if (!imagePathRef.current.value) {
-      notifyFail('Enter Image Path')
-      setLoading(false)
-      return
-    }
 
     if (actionIds.length === 0) {
       notifyFail("At least one action must be selected.");

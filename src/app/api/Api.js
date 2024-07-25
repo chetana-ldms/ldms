@@ -23,6 +23,7 @@ const APITokenExpireUrl= process.env.REACT_APP_API_TOKEN_EXPIRE_URL
 const ExportDataAddUrl = process.env.REACT_APP_EXPORT_DATA_ADD_URL
 const FeaturesAuthorizedUrl="http://115.110.192.133:502/api/LDPSecurity/v1/Features/Authorized"
 const FeaturesActionsAuthorizedUrl= "http://115.110.192.133:502/api/LDPSecurity/v1/Features/Actions/Authorized"
+const AgentActionUrl="http://115.110.192.133:502/api/Alerts/v1/Agent/Action"
 
 export const fetchMasterData = async (data) => {
   try {
@@ -458,6 +459,24 @@ export const fetchFeaturesAuthorizedUrl = async (data) => {
 export const fetchFeaturesActionsAuthorizedUrl = async (data) => {
   try {
     const response = await fetch(`${FeaturesActionsAuthorizedUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchAgentActionUrl = async (data) => {
+  try {
+    const response = await fetch(`${AgentActionUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

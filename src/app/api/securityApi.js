@@ -9,6 +9,9 @@ const FeaturesAddUrl="http://115.110.192.133:502/api/LDPSecurity/v1/Features/Add
 const FeaturesDeleteUrl="http://115.110.192.133:502/api/LDPSecurity/v1/Features/Delete"
 const FeaturesUpdateUrl= "http://115.110.192.133:502/api/LDPSecurity/v1/Features/Update"
 const FeatureDetailsUrl= "http://115.110.192.133:502/api/LDPSecurity/v1/Feature/Details"
+const ActionsAddUrl="http://115.110.192.133:502/api/LDPSecurity/v1/Actions/Add"
+const ActionsDeleteUrl="http://115.110.192.133:502/api/LDPSecurity/v1/Actions/Delete"
+const ActionsUpdateUrl="http://115.110.192.133:502/api/LDPSecurity/v1/Actions/Update"
 
 export const fetchFeaturesUrl = async (data) => {
     try {
@@ -198,6 +201,60 @@ export const fetchFeaturesUrl = async (data) => {
       const responseData = await response.json();
       const feature = responseData.feature;
       return feature;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchActionsAddUrl = async (data) => {
+    try {
+      const response = await fetch(`${ActionsAddUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchActionsDeleteUrl = async (data) => {
+    try {
+      const response = await fetch(`${ActionsDeleteUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchActionsUpdateUrl = async (data) => {
+    try {
+      const response = await fetch(`${ActionsUpdateUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
     } catch (error) {
       console.log(error);
     }

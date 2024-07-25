@@ -4,11 +4,8 @@ import {ToastContainer} from 'react-toastify'
 import useFeatureActions from '../configuration/useFeatureActions'
 import {Link, useNavigate} from 'react-router-dom'
 import {
+  fetchActionsDeleteUrl,
   fetchActionsUrl,
-  fetchFeaturesDeleteUrl,
-  fetchFeaturesListUrl,
-  fetchFeaturesUrl,
-  fetchOrganizationToolsSecurityUrl,
 } from '../../../../../api/securityApi'
 import { notify, notifyFail } from '../components/notification/Notification'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
@@ -21,6 +18,7 @@ function FeatureAction() {
   const [itemToDelete, setItemToDelete] = useState(null)
   const [tools, setTools] = useState([])
   const [actions, setActions] = useState([])
+  console.log(actions, "actions")
   const [selectedTool, setSelectedTool] = useState(null)
   const toolRef = useRef()
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -49,7 +47,7 @@ function FeatureAction() {
   const reload = async () => {
     try {
       const data = {
-        toolId: 0,
+        toolId: selectedTool || 0,
       }
       const featureResponse = await fetchActionsUrl(data)
       setActions(featureResponse)
@@ -89,13 +87,13 @@ function FeatureAction() {
   const confirmDelete = async () => {
     if (itemToDelete) {
       const data = {
-        featureId: itemToDelete.featureId,
+        actionId: itemToDelete.actionId,
         deletedDate: new Date().toISOString(),
         deletedUserId: Number(sessionStorage.getItem('userId')),
       }
 
       try {
-        const response = await fetchFeaturesDeleteUrl(data)
+        const response = await fetchActionsDeleteUrl(data)
         const {isSuccess, message} = response
         if (isSuccess) {
           notify(message)
@@ -117,7 +115,7 @@ function FeatureAction() {
     setItemToDelete(null)
   }
   const handleNavigateToUpdate = (id) => {
-    navigate(`/qradar/features/update/${id}`, {state: {save: true}})
+    navigate(`/qradar/featureaction/update/${id}`, {state: {save: true}})
   }
   return (
     <div className='activity-timeline'>
@@ -165,7 +163,7 @@ function FeatureAction() {
             <div className='card-toolbar'>
               <div className='d-flex align-items-center gap-2 gap-lg-3'>
                 <Link
-                  to='/qradar/features/add'
+                  to='/qradar/featureaction/add'
                   className={`btn btn-new btn-small ${
                     !isActionAuthorized('Create') ? 'disabled' : ''
                   }`}
@@ -196,7 +194,7 @@ function FeatureAction() {
                         <span className='me-8' title='View'>
                           <i
                             className='fa fa-eye cursor'
-                            onClick={() => handleNavigateToUpdate(item.featureId)}
+                            onClick={() => handleNavigateToUpdate(item.actionId)}
                           />
                         </span>
                       ) : (
@@ -209,7 +207,7 @@ function FeatureAction() {
                         <span>
                           <Link
                             className='text-white'
-                            to={`/qradar/features/update/${item.featureId}`}
+                            to={`/qradar/featureaction/update/${item.actionId}`}
                             title='Edit'
                           >
                             <i className='fa fa-pencil cursor link' />
