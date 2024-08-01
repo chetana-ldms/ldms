@@ -224,7 +224,7 @@ export function Login() {
               style={{ border: 'none', background: 'transparent' }} 
               onClick={togglePasswordVisibility}
             >
-              {showPassword ? <i className="fa fa-eye-slash" /> : <i className="fa fa-eye" />}
+              {showPassword ? <i className="fa fa-eye" /> : <i className="fa fa-eye-slash" />}
             </button>
           </div>
           {formik.touched.password && formik.errors.password && (
