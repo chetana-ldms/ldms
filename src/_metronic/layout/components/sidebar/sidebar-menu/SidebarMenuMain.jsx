@@ -19,10 +19,6 @@ const SidebarMenuMain = () => {
   const [selectedFeatureId, setSelectedFeatureId] = useState(null); 
   console.log(selectedFeatureId, "selectedFeatureId")
 
-  const handleFeature = () => {
-    sessionStorage.setItem('Naveen', "true");
-  };
-
   const reload = async () => {
     try {
       const data = {
@@ -88,7 +84,6 @@ const SidebarMenuMain = () => {
           icon={feature.featureImageUrl}
           title={feature.featureDisplayName}
           onClick={() => {
-            handleFeature();
             handleItemClick(feature.featureId); 
           }}
         />
@@ -124,6 +119,10 @@ const SidebarMenuMain = () => {
   <SidebarMenuItem hasBullet={true} to='/qradar/features/list' title='Features' />
   <SidebarMenuItem hasBullet={true} to='/qradar/featureaction/list' title='FeatureAction' />
   <SidebarMenuItem hasBullet={true} to='/qradar/rolebasedaccess/list' title='RoleBasedAccess' />
+</SidebarMenuItemWithSub> */}
+ {/* <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/coding/cod001.svg' title='Settings'>
+  <SidebarMenuItem hasBullet={true} to='/qradar/accounts/list' title='Accounts' />
+  <SidebarMenuItem hasBullet={true} to='/qradar/sites/list' title='Sites' />
 </SidebarMenuItemWithSub> */}
 
     </>

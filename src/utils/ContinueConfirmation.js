@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
 
-function ContinueConfirmation({ isVisible, onContinue, onDismiss }) {
+function ContinueConfirmation({ isVisible, onContinue, onDismiss, computerNames }) {
   return (
     <Modal
       show={isVisible}
@@ -9,6 +9,7 @@ function ContinueConfirmation({ isVisible, onContinue, onDismiss }) {
       className="application-modal small-modal border-0"
     >
       <Modal.Body className="border-btm">
+        <h6 className="text-center">Selected {computerNames}</h6>
         <p className="fs-15 text-center">Do you want to continue?</p>
       </Modal.Body>
       <Modal.Footer className="text-center margin-auto">

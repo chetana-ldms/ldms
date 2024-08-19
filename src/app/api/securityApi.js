@@ -12,6 +12,7 @@ const FeatureDetailsUrl= "http://115.110.192.133:502/api/LDPSecurity/v1/Feature/
 const ActionsAddUrl="http://115.110.192.133:502/api/LDPSecurity/v1/Actions/Add"
 const ActionsDeleteUrl="http://115.110.192.133:502/api/LDPSecurity/v1/Actions/Delete"
 const ActionsUpdateUrl="http://115.110.192.133:502/api/LDPSecurity/v1/Actions/Update"
+const ActionTypesUrl= "http://115.110.192.133:502/api/LDPSecurity/v1/ActionTypes"
 
 export const fetchFeaturesUrl = async (data) => {
     try {
@@ -259,4 +260,37 @@ export const fetchFeaturesUrl = async (data) => {
       console.log(error);
     }
   };
+  export const fetchActionTypesUrl = async (OrgId) => {
+    try {
+      const response = await fetch(`${ActionTypesUrl}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // export const fetchFeaturesUrl = async (data) => {
+  //   try {
+  //     const response = await fetch(`${FeaturesUrl}`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         ...data,
+  //       }),
+  //     });
+  
+  //     const responseData = await response.json();
+  //     const features = responseData.features;
+  //     return features;
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   

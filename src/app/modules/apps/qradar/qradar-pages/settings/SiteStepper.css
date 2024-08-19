@@ -1,0 +1,62 @@
+.stepper-container {
+    text-align: center;
+    margin: 0 auto;
+}
+
+.stepper-steps {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.stepper-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+}
+
+.stepper-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ccc;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.stepper-circle.active {
+    background-color: #007bff;
+}
+
+.stepper-label {
+    margin-left: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.stepper-line {
+    width: 2px;
+    height: 100px;
+    background-color: #ccc;
+    position: relative;
+    margin-right: 70px;
+  }
+.stepper-line.completed {
+    background-color: #007bff;
+}
+
+.stepper-item:last-child .stepper-line {
+    display: none; /* Hide the line after the last step */
+}
+
+.stepper-content {
+    margin-top: 40px;
+    text-align: left;
+}

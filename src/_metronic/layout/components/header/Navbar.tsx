@@ -59,6 +59,9 @@ const Navbar = () => {
   const orgId = Number(sessionStorage.getItem('orgId'));
   const accountNameDefault = sessionStorage.getItem('accountName');
   const openTaskCount = Number(sessionStorage.getItem('openTaskCount'))
+  const [totalSites, setTotalSites] = useState<number | null>(null);
+  const [totalGroups, setTotalGroups] = useState<number | null>(null);
+  const [totalAgents, setTotalAgents] = useState<number | null>(null);
  
   useEffect(() => {
     const fetchData = async () => {

@@ -88,6 +88,12 @@ import AddFeatures from './qradar-pages/security/AddFeatures'
 import UpdateFeatures from './qradar-pages/security/UpdateFeatures'
 import AddFeatureAction from './qradar-pages/security/AddFeatureAction'
 import UpdateFeatureAction from './qradar-pages/security/UpdateFeatureAction'
+import Accounts from './qradar-pages/settings/Accounts'
+import Sites from './qradar-pages/settings/Sites'
+import SiteName from './qradar-pages/settings/SiteName'
+import SiteType from './qradar-pages/settings/SiteType'
+import SitePolicy from './qradar-pages/settings/SitePolicy'
+import SiteStepper from './qradar-pages/settings/SiteStepper'
 
 
 const QradarPages = () => {
@@ -175,6 +181,8 @@ const QradarPages = () => {
       <Route path='setinels/policy' element={<PolicySentinal />} />
       <Route path='setinels/accountDetalis' element={<AccountDetalis />} />
       <Route path='settings/:status' element={<Settings />} />
+      <Route path='accounts/:status' element={<Accounts />} />
+      <Route path='sites/:status' element={<Sites />} />
       <Route path='activity/:status' element={<Activity />} />
       <Route path='features/:status' element={<Features />} />
       <Route path='features/update/:id' element={<UpdateFeatures />} />
@@ -183,6 +191,10 @@ const QradarPages = () => {
       <Route path='featureaction/update/:id' element={<UpdateFeatureAction />} />
       <Route path='featureaction/add' element={<AddFeatureAction />} />
       <Route path='rolebasedaccess/:status' element={<RoleBasedAccess />} />
+      <Route path="/site-stepper" element={<SiteStepper />} />
+      {/* <Route path="/site-name" element={<SiteName />} />
+      <Route path="/site-type" element={<SiteType />} />
+      <Route path="/site-policy" element={<SitePolicy />} /> */}
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )

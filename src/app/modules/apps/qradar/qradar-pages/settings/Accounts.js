@@ -27,11 +27,11 @@ function Accounts() {
     fetchData()
   }, [])
   return (
-    <div>
+    <div className='ldc-application'>
       {loading ? (
         <UsersListLoading />
       ) : (
-        <table className='table alert-table scroll-x'>
+        <table className='table alert-table scroll-x '>
           <thead>
             <tr>
               <th>Account Name</th>

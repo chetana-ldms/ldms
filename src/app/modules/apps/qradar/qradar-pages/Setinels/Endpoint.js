@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react'
+import React from 'react'
 import ReactPaginate from 'react-paginate'
 import {fetchAEndPointDetailsUrl} from '../../../../../api/ApplicationSectionApi'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
@@ -14,12 +15,17 @@ import {
 } from '../../../../../api/Api'
 import DropdownItemWithSubmenu from './DropdownItemWithSubmenu'
 import useFeatureActions from '../configuration/useFeatureActions'
-import {actions} from 'react-table'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import ContinueConfirmation from '../../../../../../utils/ContinueConfirmation'
 import SendMessageModal from './SendMessageModal'
 import MoveAgentToAnotherSiteModal from './MoveAgentToAnotherSiteModal'
+import DisableAgentModal from './DisableAgentModal'
+import EnableAgentModal from './EnableAgentModal'
+import MoveToGroupModal from './MoveToGroupModal'
+import DeleteGroupModal from './DeleteGroupModal'
+import AgentSoftwareUpdateModal from './AgentSoftwareUpdateModal'
+import FetchLogsModal from './FetchLogsModal'
 
 function Endpoint() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -31,12 +37,22 @@ function Endpoint() {
   const clientAdminRole = Number(sessionStorage.getItem('clientAdminRole'))
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
   const [features, setFeatures] = useState([])
+  const [openSubmenus, setOpenSubmenus] = useState({})
   const [selectedActionId, setSelectedActionId] = useState(null)
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false)
   const toggleActionDropdown = () => setActionDropdownOpen(!actionDropdownOpen)
   const toggleGroupDropdown = () => setGroupDropdownOpen(!groupDropdownOpen)
-  const [moveAgentToSiteModalVisible, setMoveAgentToSiteModalVisible] = useState(false);
+  const [moveAgentToSiteModalVisible, setMoveAgentToSiteModalVisible] = useState(false)
   const [sendMessageModalVisible, setSendMessageModalVisible] = useState(false)
+  const [isDisableAgentModalVisible, setIsDisableAgentModalVisible] = useState(false)
+  const [isEnableAgentModalVisible, setIsEnableAgentModalVisible] = useState(false)
+  const [isMoveToGroupModalVisible, setIsMoveToGroupModalVisible] = useState(false)
+  const [isDeleteGroupModalVisible, setIsDeleteGroupModalVisible] = useState(false)
+  const [isAgentSoftwareUpdateModalVisible, setIsAgentSoftwareUpdateModalVisible] = useState(false)
+  const [isFetchLogsModalVisible, setIsFetchLogsModalVisible] = useState(false)
+  const [items, setItems] = useState([])
+  console.log(items, 'items')
+  const [computerNames, setComputerNames] = useState('')
   const [selectedAlert, setselectedAlert] = useState([])
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
@@ -53,17 +69,30 @@ function Endpoint() {
       (action) => action.actionName === actionName && action.is_authorized === true
     )
   }
+  // const handleselectedAlert = (item, e) => {
+  //   const {value, checked} = e.target
+  //   if (checked) {
+  //     setselectedAlert([...selectedAlert, value])
+  //     setIsCheckboxSelected(true)
+  //   } else {
+  //     const updatedAlert = selectedAlert.filter((e) => e !== value)
+  //     setselectedAlert(updatedAlert)
+  //     setIsCheckboxSelected(updatedAlert.length > 0)
+  //   }
+  // }
   const handleselectedAlert = (item, e) => {
-    const {value, checked} = e.target
+    const {checked} = e.target
+
     if (checked) {
-      setselectedAlert([...selectedAlert, value])
+      setItems([...items, item])
       setIsCheckboxSelected(true)
     } else {
-      const updatedAlert = selectedAlert.filter((e) => e !== value)
-      setselectedAlert(updatedAlert)
-      setIsCheckboxSelected(updatedAlert.length > 0)
+      const updatedItems = items.filter((i) => i.id !== item.id)
+      setItems(updatedItems)
+      setIsCheckboxSelected(updatedItems.length > 0)
     }
   }
+
   const fetchFeatureActions = async () => {
     try {
       const data = {
@@ -215,7 +244,7 @@ function Endpoint() {
 
   useEffect(() => {
     fetchData()
-  }, [accountId, siteId, groupId, itemsPerPage])
+  }, [itemsPerPage])
 
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value))
@@ -261,33 +290,61 @@ function Endpoint() {
   const handleActionClick = (actionId, actionDisplayName) => {
     setSelectedActionId(actionId)
 
-    if (actionDisplayName === "Send Message") {
-      setSendMessageModalVisible(true);
-    } else if (actionDisplayName === "Agent Move To Site") {
-      setMoveAgentToSiteModalVisible(true);
-    } else {
-      setIsConfirmModalVisible(true);
+    switch (actionDisplayName) {
+      case 'Send Message':
+        setSendMessageModalVisible(true)
+        setActionDropdownOpen(false)
+        break
+      case 'Agent Move To Site':
+        setMoveAgentToSiteModalVisible(true)
+        setActionDropdownOpen(false)
+        break
+      case 'Disable Agent':
+        setIsDisableAgentModalVisible(true)
+        setActionDropdownOpen(false)
+        break
+      case 'Enable Agent':
+        setIsEnableAgentModalVisible(true)
+        setActionDropdownOpen(false)
+        break
+      case 'Agent Software Update':
+        setIsAgentSoftwareUpdateModalVisible(true)
+        setActionDropdownOpen(false)
+        break
+      case 'Fetch Logs':
+        setIsFetchLogsModalVisible(true)
+        setActionDropdownOpen(false)
+        break
+      default:
+        setIsConfirmModalVisible(true)
+        setActionDropdownOpen(false)
     }
-  };
+  }
 
-  const handleConfirm = async () => {
-    setIsConfirmModalVisible(false)
+  const sendSelectedItemsToBackend = async () => {
+    const endPointsData = items.map((item) => ({
+      agentIds: item.id,
+      accountIds: item.accountId,
+      groupIds: item.groupId,
+      siteIds: item.siteId,
+    }))
+
+    const payload = {
+      orgId,
+      toolId,
+      agentActionId: selectedActionId,
+      endPointsData,
+      executedUserId: Number(sessionStorage.getItem('userId')),
+      executedDate: new Date().toISOString(),
+    }
+
+    console.log(payload, 'payload')
     try {
-      const data = {
-        orgId,
-        toolId,
-        agentActionId: selectedActionId,
-        agentIds: selectedAlert,
-        orgAccountStructureLevel: [
-          {levelName: 'AccountId', levelValue: accountId || ''},
-          {levelName: 'SiteId', levelValue: siteId || ''},
-          {levelName: 'GroupId', levelValue: groupId || ''},
-        ],
-      }
-      const response = await fetchAgentActionUrl(data)
+      const response = await fetchAgentActionUrl(payload)
       const {isSuccess, message} = response
       if (isSuccess) {
         notify(message)
+        fetchData()
       } else {
         notifyFail(message)
       }
@@ -296,47 +353,60 @@ function Endpoint() {
     }
   }
 
+  const handleConfirm = async () => {
+    setIsConfirmModalVisible(false)
+    try {
+      await sendSelectedItemsToBackend()
+      setItems([])
+      setIsCheckboxSelected(false)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    if (items && items.length > 0) {
+      const names = items
+        .map((item, index) =>
+          index === items.length - 1 ? item.computerName : `${item.computerName}, `
+        )
+        .join('')
+      setComputerNames(names)
+    }
+  }, [items])
   const handleDismiss = () => {
     setIsConfirmModalVisible(false)
   }
 
-  const handleSendMessage = (message) => {
-    // Logic for sending the message
-    console.log('Message sent:', message)
-    notify('Message sent successfully!')
-    setSendMessageModalVisible(false)
+  const refreshData = () => {
+    fetchData()
+  }
+  const handleGroup = (actionId, actionDisplayName) => {
+    setSelectedActionId(actionId)
+
+    switch (actionDisplayName) {
+      case 'Agent Move To Group':
+        setIsMoveToGroupModalVisible(true)
+        break
+      case 'Agent Delete Group':
+        setIsDeleteGroupModalVisible(true)
+        break
+      default:
+        setIsConfirmModalVisible(true)
+    }
   }
 
-  const handleCloseSendMessageModal = () => {
-    setSendMessageModalVisible(false)
-  }
-  const handleMoveAgent = (newSiteId) => {
-    // Logic for moving agent to another site
-    setMoveAgentToSiteModalVisible(false);
-    console.log(newSiteId); // Implement your move agent logic here
-  };
-
-  const handleCloseMoveAgentModal = () => {
-    setMoveAgentToSiteModalVisible(false);
-  };
-  const handleGroup = () => {}
-
-  // const actionItems = [
-  //   {name: 'Action 1', subItems: ['Sub Action 1', 'Sub Action 2']},
-  //   {name: 'Action 2', subItems: ['Sub Action 3', 'Sub Action 4']},
-  //   {name: 'Action 3', subItems: ['Sub Action 5', 'Sub Action 6']},
-  //   {name: 'Action 4', subItems: ['Sub Action 7', 'Sub Action 8']},
-  //   {name: 'Action 5', subItems: ['Sub Action 9', 'Sub Action 10']},
-  //   {name: 'Action 6', subItems: ['Sub Action 11', 'Sub Action 12']},
-  //   {name: 'Action 7', subItems: ['Sub Action 13', 'Sub Action 14']},
-  //   {name: 'Action 8', subItems: ['Sub Action 15', 'Sub Action 16']},
-  //   {name: 'Action 9', subItems: ['Sub Action 17', 'Sub Action 18']},
-  //   {name: 'Action 10', subItems: ['Sub Action 19', 'Sub Action 20']},
-  // ]
   const filteredActionItems = featureActions
     .filter((action) => action.actionDisplayName.toLowerCase().includes(searchQuery.toLowerCase()))
     .filter((action) => action.actionName !== 'Access')
+    .filter((action) => action.actionType == 'End Point Action')
     .filter((action) => isActionAuthorized(action.actionName))
+  console.log(filteredActionItems, 'filteredActionItems')
+  const filteredGroupItems = featureActions
+    .filter((action) => action.actionName !== 'Access')
+    .filter((action) => action.actionType === 'Group Action')
+    .filter((action) => isActionAuthorized(action.actionName))
+  console.log(filteredGroupItems, 'filteredGroupItems')
   return (
     <div>
       <ToastContainer />
@@ -345,35 +415,7 @@ function Endpoint() {
       ) : (
         <div className='card pad-10'>
           <div className='header-filter mg-btm-20 row'>
-            <div className='col-lg-3 d-flex justify-content-between'>
-              {/* <Dropdown
-                  isOpen={actionDropdownOpen}
-                  toggle={toggleActionDropdown}
-                  className={!isCheckboxSelected ? 'disabled' : ''}
-                >
-                  <DropdownToggle className='no-pad'>
-                    <div className={`btn btn-green btn-small ${!isCheckboxSelected && 'disabled'}`}>
-                      Actions
-                    </div>
-                  </DropdownToggle>
-                  <DropdownMenu className='w-200px p-3'>
-                    <Input
-                      type='text'
-                      placeholder='Search... '
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className='mb-2 bg-grey'
-                    />
-                    {filteredActionItems.map((action, index) => (
-                      <DropdownItemWithSubmenu
-                        key={index}
-                        item={action.actionDisplayName}
-                        // subItems={action.subItems}
-                        isCheckboxSelected={isCheckboxSelected}
-                      />
-                    ))}
-                  </DropdownMenu>
-                </Dropdown> */}
+            <div className='col-lg-2 d-flex justify-content-between'>
               <Dropdown
                 isOpen={actionDropdownOpen}
                 toggle={toggleActionDropdown}
@@ -392,33 +434,108 @@ function Endpoint() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className='mb-2 bg-grey'
                   />
-                  {filteredActionItems.map((action, index) => (
+                  {filteredActionItems
+                    .filter((action) => action.parentActionId === 0)
+                    .map((action, index) => (
+                      <DropdownItemWithSubmenu
+                        key={index}
+                        item={action.actionDisplayName}
+                        subItems={filteredActionItems.filter(
+                          (subAction) => subAction.parentActionId === action.actionId
+                        )}
+                        onItemSelect={handleActionClick}
+                      />
+                    ))}
+                </DropdownMenu>
+              </Dropdown>
+              <ContinueConfirmation
+                isVisible={isConfirmModalVisible}
+                onContinue={handleConfirm}
+                onDismiss={handleDismiss}
+                // items={items}
+                computerNames={computerNames}
+              />
+              <SendMessageModal
+                show={sendMessageModalVisible}
+                handleClose={() => setSendMessageModalVisible(false)}
+                items={items}
+                selectedActionId={selectedActionId}
+                refreshData={refreshData}
+              />
+              <MoveAgentToAnotherSiteModal
+                show={moveAgentToSiteModalVisible}
+                handleClose={() => setMoveAgentToSiteModalVisible(false)}
+                items={items}
+                selectedActionId={selectedActionId}
+                refreshData={refreshData}
+              />
+              <DisableAgentModal
+                isOpen={isDisableAgentModalVisible}
+                toggle={() => setIsDisableAgentModalVisible(false)}
+                items={items}
+                selectedActionId={selectedActionId}
+                refreshData={refreshData}
+              />
+              <EnableAgentModal
+                isOpen={isEnableAgentModalVisible}
+                toggle={() => setIsEnableAgentModalVisible(false)}
+                items={items}
+                selectedActionId={selectedActionId}
+                refreshData={refreshData}
+              />
+              <AgentSoftwareUpdateModal
+                isOpen={isAgentSoftwareUpdateModalVisible}
+                toggle={() => setIsAgentSoftwareUpdateModalVisible(false)}
+                items={items}
+                selectedActionId={selectedActionId}
+                refreshData={refreshData}
+              />
+              <FetchLogsModal
+                isOpen={isFetchLogsModalVisible}
+                toggle={() => setIsFetchLogsModalVisible(false)}
+                items={items}
+                selectedActionId={selectedActionId}
+                refreshData={refreshData}
+              />
+
+              <Dropdown
+                isOpen={groupDropdownOpen}
+                toggle={toggleGroupDropdown}
+                style={{marginLeft: '5px'}}
+              >
+                <DropdownToggle className='no-pad'>
+                  <div className={`btn btn-green btn-small `}>Groups</div>
+                </DropdownToggle>
+                <DropdownMenu className='w-auto p-3'>
+                  {filteredGroupItems.map((action, index) => (
                     <DropdownItem
                       key={index}
-                      onClick={() => handleActionClick(action.actionId, action.actionDisplayName)}
+                      onClick={() => handleGroup(action.actionId, action.actionDisplayName)}
+                      disabled={
+                        action.actionDisplayName === 'Agent Move To Group' && !isCheckboxSelected
+                      }
                     >
                       {action.actionDisplayName}
                     </DropdownItem>
                   ))}
                 </DropdownMenu>
               </Dropdown>
-              <Dropdown isOpen={groupDropdownOpen} toggle={toggleGroupDropdown}>
-                <DropdownToggle className='no-pad'>
-                  <div className={`btn btn-green btn-small ${!isCheckboxSelected && 'disabled'}`}>
-                    Groups <i className='fa fa-caret-down link mg-left-5' />
-                  </div>
-                </DropdownToggle>
-                <DropdownMenu className='w-auto'>
-                  <DropdownItem
-                    onClick={handleGroup}
-                    className={!isCheckboxSelected ? 'disabled' : ''}
-                  >
-                    <i className='fa fa-users link mg-right-5' /> Groups
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
+              <MoveToGroupModal
+                show={isMoveToGroupModalVisible}
+                handleClose={() => setIsMoveToGroupModalVisible(false)}
+                items={items}
+                selectedActionId={selectedActionId}
+                refreshData={refreshData}
+              />
+              <DeleteGroupModal
+                show={isDeleteGroupModalVisible}
+                handleClose={() => setIsDeleteGroupModalVisible(false)}
+                items={items}
+                selectedActionId={selectedActionId}
+                refreshData={refreshData}
+              />
             </div>
-            <div className='col-lg-6'>
+            <div className='col-lg-7'>
               <input
                 type='text'
                 placeholder='Search...'
@@ -430,7 +547,8 @@ function Endpoint() {
             <div className='col-lg-3 d-flex justify-content-between'>
               <div className='fs-15 mt-2'>
                 {' '}
-                Total({currentItems.length}/{filteredList.length})
+                Total({currentItems ? currentItems.length : 0}/
+                {filteredList ? filteredList.length : 0})
               </div>
               <div className=''>
                 <div className='export-report border-0 float-right'>
@@ -541,7 +659,7 @@ function Endpoint() {
                         <input
                           className='form-check-input widget-13-check'
                           type='checkbox'
-                          value={item.id}
+                          value={item}
                           name={item.id}
                           onChange={(e) => handleselectedAlert(item, e)}
                           autoComplete='off'
@@ -584,21 +702,7 @@ function Endpoint() {
               )}
             </tbody>
           </table>
-          <ContinueConfirmation
-            isVisible={isConfirmModalVisible}
-            onContinue={handleConfirm}
-            onDismiss={handleDismiss}
-          />
-          <SendMessageModal
-            show={sendMessageModalVisible}
-            handleClose={handleCloseSendMessageModal}
-            handleSendMessage={handleSendMessage}
-          />
-          <MoveAgentToAnotherSiteModal
-            show={moveAgentToSiteModalVisible}
-            handleClose={handleCloseMoveAgentModal}
-            handleMoveAgent={handleMoveAgent}
-          />
+
           {endpoints && (
             <Pagination
               pageCount={Math.ceil(filteredList.length / itemsPerPage)}

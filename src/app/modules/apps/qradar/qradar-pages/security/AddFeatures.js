@@ -20,9 +20,6 @@ function AddFeatures() {
   const orgId = Number(sessionStorage.getItem('orgId'))
   const [parentFeatures, setParentFeatures] = useState([])
   const [actions, setActions] = useState([])
-  const [organizationList, setOrganizationList] = useState([])
-  const [selectedOrganizations, setSelectedOrganizations] = useState([])
-  console.log(organizationList, 'organizationList')
   const [selectedTool, setSelectedTool] = useState(null)
   const [selectedParentFeatures, setSelectedParentFeatures] = useState(null)
   const [isSubFeature, setIsSubFeature] = useState(false)
@@ -86,18 +83,6 @@ function AddFeatures() {
     }
     fetchActions()
   }, [selectedTool])
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const organizationsResponse = await fetchOrganizations()
-        setOrganizationList(organizationsResponse)
-      } catch (error) {
-        handleError(error)
-      }
-    }
-
-    fetchData()
-  }, [])
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -106,7 +91,6 @@ function AddFeatures() {
     const createdDate = new Date().toISOString()
 
     const actionIds = actions.filter(action => action.is_authorized).map(action => action.actionId)
-    const orgIds = selectedOrganizations.map(index => organizationList[index].orgID)
     
     if (!featureNameRef.current.value) {
       notifyFail('Enter Name')
@@ -120,11 +104,6 @@ function AddFeatures() {
     }
     if (!routePathRef.current.value) {
       notifyFail('Enter Route Path')
-      setLoading(false)
-      return
-    }
-    if (!imagePathRef.current.value) {
-      notifyFail('Enter Image Path')
       setLoading(false)
       return
     }
@@ -146,7 +125,6 @@ function AddFeatures() {
       featureUrl: routePathRef.current.value,
       featureImageUrl: imagePathRef.current.value,
       actionIds: actionIds,
-      orgIds: orgIds,
     }
 
     try {
@@ -178,18 +156,6 @@ function AddFeatures() {
       setSelectAll(false)
     }
   }
-  const handleCheckboxChangeOrg = (index) => {
-    const selected = [...selectedOrganizations]
-    if (selected.includes(index)) {
-      const updatedSelection = selected.filter((item) => item !== index)
-      setSelectedOrganizations(updatedSelection)
-      setSelectAllOrg(updatedSelection.length === organizationList.length)
-    } else {
-      selected.push(index)
-      setSelectedOrganizations(selected)
-      setSelectAllOrg(selected.length === organizationList.length)
-    }
-  }
 
   const handleSelectAllChange = () => {
     const updatedSelectAll = !selectAll
@@ -201,17 +167,7 @@ function AddFeatures() {
     }))
     setActions(updatedActions)
   }
-  const handleSelectAllChangeOrg = () => {
-    const updatedSelectAllOrg = !selectAllOrg
-    setSelectAllOrg(updatedSelectAllOrg)
 
-    if (updatedSelectAllOrg) {
-      const allIndexes = organizationList.map((_, index) => index)
-      setSelectedOrganizations(allIndexes)
-    } else {
-      setSelectedOrganizations([])
-    }
-  }
   return (
     <div className='config card'>
       <ToastContainer />
@@ -272,7 +228,6 @@ function AddFeatures() {
                 <input
                   type='text'
                   className='form-control form-control-lg form-control-solid'
-                  required
                   maxLength={200}
                   id='RoutePath'
                   ref={routePathRef}
@@ -399,49 +354,6 @@ function AddFeatures() {
                               htmlFor={`action-checkbox-${index}`}
                             >
                               {action.actionDisplayName}
-                            </label>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                ) : (
-                  <div>No Data Found</div>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className='col-md-6'>
-            <div className='card border border-2'>
-              <div className='card-body p-3'>
-                {organizationList && organizationList.length > 0 ? (
-                  <>
-                    <div className='form-check ms-5'>
-                      <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='select-all-org-checkbox'
-                        checked={selectAllOrg}
-                        onChange={handleSelectAllChangeOrg}
-                      />
-                      <label className='form-check-label' htmlFor='select-all-org-checkbox'>
-                        Select All Organizations
-                      </label>
-                    </div>
-                    <hr />
-                    <ul className='list-group list-group-flush ps-2 ms-5'>
-                      {organizationList.map((item, index) => (
-                        <li key={index} className='list-group-item'>
-                          <div className='form-check'>
-                            <input
-                              className='form-check-input'
-                              type='checkbox'
-                              id={`org-checkbox-${index}`}
-                              checked={selectedOrganizations.includes(index)}
-                              onChange={() => handleCheckboxChangeOrg(index)}
-                            />
-                            <label className='form-check-label' htmlFor={`org-checkbox-${index}`}>
-                              {item.orgName}
                             </label>
                           </div>
                         </li>

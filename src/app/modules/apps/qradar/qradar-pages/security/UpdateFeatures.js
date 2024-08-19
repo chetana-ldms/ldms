@@ -1,60 +1,55 @@
-import React, {useEffect, useRef, useState} from 'react'
-import {useErrorBoundary} from 'react-error-boundary'
-import {Link, useLocation, useNavigate, useParams} from 'react-router-dom'
-import {notify, notifyFail} from '../components/notification/Notification'
-import {fetchLDPToolsUrl, fetchOrganizationAddUrl} from '../../../../../api/ConfigurationApi'
-import {ToastContainer} from 'react-toastify'
+import React, { useEffect, useRef, useState } from 'react';
+import { useErrorBoundary } from 'react-error-boundary';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { notify, notifyFail } from '../components/notification/Notification';
+import { ToastContainer } from 'react-toastify';
 import {
   fetchActionsUrl,
   fetchFeatureDetailsUrl,
-  fetchFeaturesAddUrl,
   fetchFeaturesUpdateUrl,
-  fetchFeaturesUrl,
-  fetchOrganizationToolsSecurityUrl,
-} from '../../../../../api/securityApi'
-import {fetchOrganizations} from '../../../../../api/Api'
+  fetchFeaturesUrl
+} from '../../../../../api/securityApi';
+import { fetchLDPToolsUrl } from '../../../../../api/ConfigurationApi';
 
 function UpdateFeatures() {
-  const {id} = useParams()
-  const handleError = useErrorBoundary()
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
-  const [tools, setTools] = useState([])
-  const orgId = Number(sessionStorage.getItem('orgId'))
-  const [parentFeatures, setParentFeatures] = useState([])
-  const [featureDetails, setFeatureDetails] = useState({})
-  console.log(featureDetails, "featureDetails")
-  const [actions, setActions] = useState([])
-  console.log(actions, "actions")
-  const [organizationList, setOrganizationList] = useState([])
-  const [selectedOrganizations, setSelectedOrganizations] = useState([])
-  console.log(organizationList, 'organizationList')
-  const [selectedTool, setSelectedTool] = useState(null)
-  const [selectedParentFeatures, setSelectedParentFeatures] = useState(null)
-  const [isSubFeature, setIsSubFeature] = useState(false)
-  const [selectAll, setSelectAll] = useState(false)
-  const [selectAllOrg, setSelectAllOrg] = useState(false)
+  const { id } = useParams();
+  const handleError = useErrorBoundary();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [tools, setTools] = useState([]);
+  const orgId = Number(sessionStorage.getItem('orgId'));
+  const [parentFeatures, setParentFeatures] = useState([]);
+  const [featureDetails, setFeatureDetails] = useState({});
+  const [actions, setActions] = useState([]);
+  const [selectedTool, setSelectedTool] = useState(null);
+  const [selectedParentFeatures, setSelectedParentFeatures] = useState(null);
+  const [isSubFeature, setIsSubFeature] = useState(false);
+  const [selectAll, setSelectAll] = useState(false);
   const [selectedActions, setSelectedActions] = useState([]);
-  const toolRef = useRef()
-  const SubFeatureExistsRef = useRef()
-  const parentFeaturesRef = useRef()
-  const featureNameRef = useRef()
-  const displayNameRef = useRef()
-  const routePathRef = useRef()
-  const imagePathRef = useRef()
+  const toolRef = useRef();
+  const SubFeatureExistsRef = useRef();
+  const parentFeaturesRef = useRef();
+  const featureNameRef = useRef();
+  const displayNameRef = useRef();
+  const routePathRef = useRef();
+  const imagePathRef = useRef();
+  const location = useLocation();
+  const [save, setSave] = useState(location.state?.save || '');
+
   const handleToolChange = (e) => {
-    const newToolId = Number(e.target.value)
-    setSelectedTool(newToolId)
-  }
+    const newToolId = Number(e.target.value);
+    setSelectedTool(newToolId);
+  };
+
   const handleToolChangeParentFeatures = (e) => {
-    const newParentFeatures = Number(e.target.value)
-    setSelectedParentFeatures(newParentFeatures)
-  }
-  const location = useLocation()
-  const [save, setSave] = useState(location.state?.save || '')
+    const newParentFeatures = Number(e.target.value);
+    setSelectedParentFeatures(newParentFeatures);
+  };
+
   useEffect(() => {
-    setSave(location.state?.save || '')
-  }, [location.state])
+    setSave(location.state?.save || '');
+  }, [location.state]);
+
   useEffect(() => {
     const reload = async () => {
       try {
@@ -64,15 +59,6 @@ function UpdateFeatures() {
         setIsSubFeature(response.subfeatureExists === 1);
         setSelectedTool(response.toolId);
         setSelectedParentFeatures(response.parentFeatureId);
-        const selectedActionIndices = response.actionIds.map(actionId => 
-          actions.findIndex(action => action.actionId === actionId)
-        );
-        setSelectedActions(selectedActionIndices);
-        const selectedOrgIndices = response.orgIds.map(orgId => 
-          organizationList.findIndex(org => org.orgID === orgId)
-        );
-        setSelectedOrganizations(selectedOrgIndices);
-
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -80,18 +66,19 @@ function UpdateFeatures() {
       }
     };
     reload();
-  }, [id, organizationList]);
+  }, [id]);
+
   useEffect(() => {
     const reload = async () => {
       try {
-        const data = await fetchLDPToolsUrl()
-        setTools(data)
+        const data = await fetchLDPToolsUrl();
+        setTools(data);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    }
-      reload()
-  }, [])
+    };
+    reload();
+  }, []);
 
   useEffect(() => {
     const fetchDataFeatures = async () => {
@@ -100,66 +87,60 @@ function UpdateFeatures() {
           orgId: orgId,
           toolId: selectedTool || 0,
           featureId: 0,
-          parentFeatures: true,
-        }
-        const featureResponse = await fetchFeaturesUrl(data)
-        setParentFeatures(featureResponse)
+          parentFeatures: true
+        };
+        const featureResponse = await fetchFeaturesUrl(data);
+        setParentFeatures(featureResponse);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    }
-    fetchDataFeatures()
-  }, [selectedTool])
+    };
+    fetchDataFeatures();
+  }, [selectedTool]);
+
   useEffect(() => {
     const fetchActions = async () => {
       try {
         const data = {
-          toolId: selectedTool || 0,
+          toolId: selectedTool || 0
+        };
+        const actionResponse = await fetchActionsUrl(data);
+        setActions(actionResponse);
+        if (featureDetails.actionIds) {
+          const selectedActionIndices = actionResponse.map((action, index) => 
+            featureDetails.actionIds.includes(action.actionId) ? index : -1
+          ).filter(index => index !== -1);
+          setSelectedActions(selectedActionIndices);
         }
-        const featureResponse = await fetchActionsUrl(data)
-        setActions(featureResponse)
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    }
-    fetchActions()
-  }, [selectedTool])
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const organizationsResponse = await fetchOrganizations()
-        setOrganizationList(organizationsResponse)
-      } catch (error) {
-        handleError(error)
-      }
-    }
-
-    fetchData()
-  }, [])
+    };
+    fetchActions();
+  }, [selectedTool, featureDetails.actionIds]);
 
   const handleSubmit = async (event) => {
-    event.preventDefault()
-    setLoading(true)
-    const modifiedUserId = Number(sessionStorage.getItem('userId'))
-    const modifiedDate = new Date().toISOString()
+    event.preventDefault();
+    setLoading(true);
+    const modifiedUserId = Number(sessionStorage.getItem('userId'));
+    const modifiedDate = new Date().toISOString();
 
     const actionIds = selectedActions.map(index => actions[index].actionId);
-    const orgIds = selectedOrganizations.map(index => organizationList[index].orgID)
 
     if (!featureNameRef.current.value) {
-      notifyFail('Enter Name')
-      setLoading(false)
-      return
+      notifyFail('Enter Name');
+      setLoading(false);
+      return;
     }
     if (!displayNameRef.current.value) {
-      notifyFail('Enter Display Name')
-      setLoading(false)
-      return
+      notifyFail('Enter Display Name');
+      setLoading(false);
+      return;
     }
     if (!routePathRef.current.value) {
-      notifyFail('Enter Route Path')
-      setLoading(false)
-      return
+      notifyFail('Enter Route Path');
+      setLoading(false);
+      return;
     }
 
     if (actionIds.length === 0) {
@@ -179,75 +160,52 @@ function UpdateFeatures() {
       featureUrl: routePathRef.current.value,
       featureImageUrl: imagePathRef.current.value,
       actionIds: actionIds,
-      orgIds: orgIds,
-      featureId: id,
-    }
+      featureId: id
+    };
 
     try {
-      const responseData = await fetchFeaturesUpdateUrl(data)
-      const {isSuccess, message} = responseData
+      const responseData = await fetchFeaturesUpdateUrl(data);
+      const { isSuccess, message } = responseData;
 
       if (isSuccess) {
-        notify(message)
+        notify(message);
         setTimeout(() => {
-          navigate('/qradar/features/list')
-        }, 2000)
+          navigate('/qradar/features/list');
+        }, 2000);
       } else {
-        notifyFail(message)
+        notifyFail(message);
       }
     } catch (error) {
-      handleError(error)
+      handleError(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+
   const handleCheckboxChange = (index) => {
     const updatedSelectedActions = [...selectedActions];
     if (updatedSelectedActions.includes(index)) {
-      const updatedSelection = updatedSelectedActions.filter((item) => item !== index);
-      setSelectedActions(updatedSelection);
-      setSelectAll(updatedSelection.length === actions.length);
+      setSelectedActions(updatedSelectedActions.filter((item) => item !== index));
     } else {
-      updatedSelectedActions.push(index);
-      setSelectedActions(updatedSelectedActions);
-      setSelectAll(updatedSelectedActions.length === actions.length);
+      setSelectedActions([...updatedSelectedActions, index]);
     }
   };
-  const handleCheckboxChangeOrg = (index) => {
-    const selected = [...selectedOrganizations]
-    if (selected.includes(index)) {
-      const updatedSelection = selected.filter((item) => item !== index)
-      setSelectedOrganizations(updatedSelection)
-      setSelectAllOrg(updatedSelection.length === organizationList.length)
-    } else {
-      selected.push(index)
-      setSelectedOrganizations(selected)
-      setSelectAllOrg(selected.length === organizationList.length)
-    }
-  }
 
   const handleSelectAllChange = () => {
-    const updatedSelectAll = !selectAll;
-    setSelectAll(updatedSelectAll);
-
-    if (updatedSelectAll) {
-      const allIndexes = actions.map((_, index) => index);
-      setSelectedActions(allIndexes);
-    } else {
+    if (selectAll) {
       setSelectedActions([]);
-    }
-  };
-  const handleSelectAllChangeOrg = () => {
-    const updatedSelectAllOrg = !selectAllOrg
-    setSelectAllOrg(updatedSelectAllOrg)
-
-    if (updatedSelectAllOrg) {
-      const allIndexes = organizationList.map((_, index) => index)
-      setSelectedOrganizations(allIndexes)
     } else {
-      setSelectedOrganizations([])
+      setSelectedActions(actions.map((_, index) => index));
     }
-  }
+    setSelectAll(!selectAll);
+  };
+
+  const getSortedActions = () => {
+    const selected = actions.filter((_, index) => selectedActions.includes(index));
+    const notSelected = actions.filter((_, index) => !selectedActions.includes(index));
+    return [...selected, ...notSelected];
+  };
+
   return (
     <div className='config card'>
       <ToastContainer />
@@ -430,64 +388,21 @@ function UpdateFeatures() {
                     </div>
                     <hr />
                     <ul className='list-group list-group-flush ps-2 ms-5'>
-                      {actions.map((action, index) => (
+                      {getSortedActions().map((action, index) => (
                         <li key={index} className='list-group-item'>
                           <div className='form-check'>
                             <input
                               className='form-check-input'
                               type='checkbox'
                               id={`action-checkbox-${index}`}
-                              checked={selectedActions.includes(index)}
-                              onChange={() => handleCheckboxChange(index)}
+                              checked={selectedActions.includes(actions.indexOf(action))}
+                              onChange={() => handleCheckboxChange(actions.indexOf(action))}
                             />
                             <label
                               className='form-check-label'
                               htmlFor={`action-checkbox-${index}`}
                             >
                               {action.actionDisplayName}
-                            </label>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                ) : (
-                  <div>No Data Found</div>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className='col-md-6'>
-            <div className='card border border-2'>
-              <div className='card-body p-3'>
-                {organizationList && organizationList.length > 0 ? (
-                  <>
-                    <div className='form-check ms-5'>
-                      <input
-                        className='form-check-input'
-                        type='checkbox'
-                        id='select-all-org-checkbox'
-                        checked={selectAllOrg}
-                        onChange={handleSelectAllChangeOrg}
-                      />
-                      <label className='form-check-label' htmlFor='select-all-org-checkbox'>
-                        Select All Organizations
-                      </label>
-                    </div>
-                    <hr />
-                    <ul className='list-group list-group-flush ps-2 ms-5'>
-                      {organizationList.map((item, index) => (
-                        <li key={index} className='list-group-item'>
-                          <div className='form-check'>
-                            <input
-                              className='form-check-input'
-                              type='checkbox'
-                              id={`org-checkbox-${index}`}
-                              checked={selectedOrganizations.includes(index)}
-                              onChange={() => handleCheckboxChangeOrg(index)}
-                            />
-                            <label className='form-check-label' htmlFor={`org-checkbox-${index}`}>
-                              {item.orgName}
                             </label>
                           </div>
                         </li>
@@ -514,7 +429,7 @@ function UpdateFeatures() {
         </div>
       </form>
     </div>
-  )
+  );
 }
 
-export default UpdateFeatures
+export default UpdateFeatures;

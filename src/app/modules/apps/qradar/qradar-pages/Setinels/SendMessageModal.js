@@ -1,8 +1,12 @@
 // SendMessageModal.js
 import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
+import { fetchAgentActionUrl } from "../../../../../api/Api";
+import { notify, notifyFail } from "../components/notification/Notification";
 
-const SendMessageModal = ({ show, handleClose, handleSendMessage }) => {
+const SendMessageModal = ({ show, handleClose, items, selectedActionId, refreshData }) => {
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const toolId = Number(sessionStorage.getItem('toolID'))
   const [message, setMessage] = useState("");
   const maxCharacters = 140;
 
@@ -10,8 +14,39 @@ const SendMessageModal = ({ show, handleClose, handleSendMessage }) => {
     setMessage(event.target.value);
   };
 
+  const sendSelectedItemsToBackend = async () => {
+    const endPointsData = items.map((item) => ({
+      agentIds: item.id,
+      accountIds: item.accountId,
+      groupIds: item.groupId,
+      siteIds: item.siteId,
+    }))
+
+    const payload = {
+      orgId,
+      toolId,
+      agentActionId: selectedActionId,
+      endPointsData,
+      sendMessageText: message,
+      executedUserId: Number(sessionStorage.getItem('userId')),
+      executedDate: new Date().toISOString(),
+    }
+    try {
+      const response = await fetchAgentActionUrl(payload)
+      const {isSuccess, message} = response
+      if (isSuccess) {
+        notify(message)
+        refreshData();
+        handleClose();
+      } else {
+        notifyFail(message)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
   const handleSubmit = () => {
-    handleSendMessage(message);
+    sendSelectedItemsToBackend()
     setMessage(""); 
   };
 
