@@ -12,7 +12,8 @@ import BlockListEditPopup from './BlockListEditPopup'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
 import {fetchExportDataAddUrl} from '../../../../../api/Api'
 import useFeatureActions from '../configuration/useFeatureActions'
-import { truncateText } from '../../../../../../utils/TruncateText'
+import {truncateText} from '../../../../../../utils/TruncateText'
+import BlockListImportPopUp from './BlockListImportPopUp'
 
 function BlockList() {
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -26,6 +27,7 @@ function BlockList() {
 
   const [limit, setLimit] = useState(20)
   const [showPopup, setShowPopup] = useState(false)
+  const [showImportPopup, setShowImportPopup] = useState(false)
   const [showPopupEdit, setShowPopupEdit] = useState(false)
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
   const [dropdown, setDropdown] = useState(false)
@@ -189,8 +191,7 @@ function BlockList() {
     }
   }
 
-  const [dropdownOpen, setDropdownOpen] = useState(false) // State to manage dropdown toggle
-  // Function to extract table data
+  const [dropdownOpen, setDropdownOpen] = useState(false) 
   const extractTableData = (items) => {
     return items.map((item) => ({
       OS: item.osType,
@@ -205,7 +206,6 @@ function BlockList() {
       Imported: item.imported ? 'Yes' : 'No',
     }))
   }
-  // Function to convert data to CSV format
   const convertToCSV = (data) => {
     const csvRows = []
 
@@ -254,7 +254,6 @@ function BlockList() {
     }
   }
 
-  // Function to extract full table data
   const exportTableToCSV = async () => {
     const tableData = extractTableData(filteredList)
     exportToCSV(tableData)
@@ -271,7 +270,6 @@ function BlockList() {
     }
   }
 
-  // Function to extract current pagination table data
   const exportCurrentTableToCSV = async () => {
     const tableData = extractTableData(currentItems)
     exportToCSV(tableData)
@@ -350,6 +348,47 @@ function BlockList() {
     const selectedPerPage = event.target.value
     setLimit(selectedPerPage)
   }
+  const openImportPopup = () => {
+    setShowImportPopup(true)
+  }
+
+  const closeImportPopup = () => {
+    setShowImportPopup(false)
+  }
+  const handleExportTemplate = () =>{
+    const headers = [
+      'OS',
+      'Description',
+      'Value',
+      'Scope',
+      'Scope Path',
+      'User',
+      'Last Updated',
+      'Source',
+    ];
+  
+    // Convert the headers to a CSV string
+    const csvHeader = headers.join(',') + '\n';
+  
+    // Create a Blob from the CSV string
+    const blob = new Blob([csvHeader], { type: 'text/csv;charset=utf-8;' });
+  
+    // Trigger the download
+    const link = document.createElement('a');
+    const fileName = 'blocklist_template.csv';
+  
+    if (navigator.msSaveBlob) {
+      // IE 10+
+      navigator.msSaveBlob(blob, fileName);
+    } else {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
   return (
     <div>
       <ToastContainer />
@@ -358,7 +397,7 @@ function BlockList() {
       ) : (
         <div className='card pad-10'>
           <div className='row mb-5'>
-            <div className='col-lg-8 d-flex'>
+            <div className='col-lg-10 d-flex'>
               <Dropdown
                 isOpen={dropdown}
                 toggle={() => setDropdown(!dropdown)}
@@ -397,7 +436,7 @@ function BlockList() {
               </Dropdown>
 
               <button
-                className={`btn btn-green btn-small float-left ${
+                className={`btn btn-green btn-small ms-3 ${
                   !isActionAuthorized('AddToBlocklist') ? 'disabled' : ''
                 }`}
                 onClick={openPopup}
@@ -423,12 +462,26 @@ function BlockList() {
                   Delete selection
                 </button>
               </div>
+              <button className={`btn btn-green btn-small ms-3 `} onClick={openImportPopup}>
+                {' '}
+                Import
+              </button>
+              {showImportPopup && (
+                <BlockListImportPopUp
+                  show={openImportPopup}
+                  onClose={closeImportPopup}
+                  refreshParent={handleRefreshActions}
+                />
+              )}
+              <button className='btn btn-green btn-small ms-3' onClick={handleExportTemplate}>
+                Download Template
+              </button>
               <div className='fs-15 mt-2 ms-5'>
                 {' '}
                 Total({currentItems.length}/{totalCount})
               </div>
             </div>
-            <div className='col-lg-4 text-right'>
+            <div className='col-lg-2 text-right'>
               {/* <span className="gray inline-block mg-righ-20">530 Items</span> */}
               <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
                 <DropdownToggle className='no-pad'>

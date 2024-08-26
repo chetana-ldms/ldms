@@ -8,14 +8,44 @@ import './SiteStepper.css'
 const SiteStepper = () => {
   const [activeStep, setActiveStep] = useState('site-name')
 
+  // State to hold the data for SiteName and SiteType components
+  const [siteNameData, setSiteNameData] = useState({siteName: '', siteDescription: ''})
+  const [siteTypeData, setSiteTypeData] = useState({
+    siteType: 'trial',
+    selectedExpirationDate: '',
+    isNonExpireChecked: true,
+    skuSelected: false,
+    totalAgents: '1',
+    isUnlimitedLicenses: false,
+    isRoguesChecked: false,
+  })
+
   const renderContent = () => {
     switch (activeStep) {
       case 'site-name':
-        return <SiteName setActiveStep={setActiveStep} />
+        return (
+          <SiteName
+            setActiveStep={setActiveStep}
+            siteNameData={siteNameData}
+            setSiteNameData={setSiteNameData}
+          />
+        )
       case 'site-type':
-        return <SiteType setActiveStep={setActiveStep} />
+        return (
+          <SiteType
+            setActiveStep={setActiveStep}
+            siteTypeData={siteTypeData}
+            setSiteTypeData={setSiteTypeData} // Pass setSiteTypeData here
+          />
+        )
       case 'site-policy':
-        return <SitePolicy setActiveStep={setActiveStep} />
+        return (
+          <SitePolicy
+            setActiveStep={setActiveStep}
+            siteNameData={siteNameData}
+            siteTypeData={siteTypeData}
+          />
+        )
       default:
         return <SiteName setActiveStep={setActiveStep} />
     }

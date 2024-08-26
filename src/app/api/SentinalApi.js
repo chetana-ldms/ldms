@@ -12,6 +12,10 @@ const ExcludedListItemUpdateUrl=process.env.REACT_APP_EXCLUSDEDLISTITEM_UPDATE_U
 const GroupActionUrl= "http://115.110.192.133:502/api/Alerts/v1/Agent/GroupAction"
 const GroupsUrl= "http://115.110.192.133:502/api/SentinalOne/v1/Groups"
 const SoftwarePackagesUpdateUrl ="http://115.110.192.133:502/api/Alerts/v1/SoftwarePackages/Update"
+const BlockedListImportUrl ="http://115.110.192.133:502/api/Alerts/v1/BlockedList/Import"
+const BlockedListImportReportUrl = "http://115.110.192.133:502/api/Alerts/v1/BlockedList/ImportReport"
+const ExclusionItemsImportUrl ="http://115.110.192.133:502/api/Alerts/v1/ExclusionItems/Import"
+const ExclusionItemsImportReportUrl="http://115.110.192.133:502/api/Alerts/v1/ExclusionItems/ImportReport"
 
 export const fetchExclusionListUrl = async (data) => {
     try {
@@ -236,6 +240,68 @@ export const fetchExclusionListUrl = async (data) => {
   export const fetchSoftwarePackagesUpdateUrl = async (data) => {
     try {
       const response = await fetch(`${SoftwarePackagesUpdateUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchBlockedListImportUrl = async (formData) => {
+    try {
+      const response = await fetch(`${BlockedListImportUrl}`, {
+        method: 'POST',
+        body: formData,
+      })
+  
+      const responseData = await response.json()
+      return responseData
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  export const fetchBlockedListImportReportUrl = async (data) => {
+    try {
+      const response = await fetch(`${BlockedListImportReportUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchExclusionItemsImportUrl = async (formData) => {
+    try {
+      const response = await fetch(`${ExclusionItemsImportUrl}`, {
+        method: 'POST',
+        body: formData,
+      })
+  
+      const responseData = await response.json()
+      return responseData
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  export const fetchExclusionItemsImportReportUrl = async (data) => {
+    try {
+      const response = await fetch(`${ExclusionItemsImportReportUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

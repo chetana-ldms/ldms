@@ -2,22 +2,26 @@ import React, {useEffect, useState} from 'react'
 import {fetchPolicyDetailsUrl} from '../../../../../api/SentinalApi'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom'
 
 function SitePolicy({setActiveStep}) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const orgId = Number(sessionStorage.getItem('orgId'))
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
+  const [isConfigEnabled, setIsConfigEnabled] = useState(false);
+
+  const handleConfigChange = () => {
+    setIsConfigEnabled(true);
+  };
 
   const handleNext = (event) => {
     event.preventDefault()
-    setActiveStep('summary')
   }
   const handleBack = (event) => {
     event.preventDefault()
-    setActiveStep('site-policy')
+    setActiveStep('site-type')
   }
   const handleQuit = () => {
     navigate('/qradar/sites/list')
@@ -194,15 +198,17 @@ function SitePolicy({setActiveStep}) {
         <UsersListLoading />
       ) : (
         <>
-          <div className='row'>
-            <div className='col-md-6'>
-              <p>
-                <i className='fa fa-circle-exclamation incident-icon blue mg0right-5' /> Last
-                Modified at {getCurrentTimeZone(policy?.updatedAt)}
-              </p>
+          <div className='row mb-4 bg-gray p-3'>
+            <div className='col-md-6 d-flex align-items-center'>
+              <i className='fa fa-circle-exclamation pe-3' /> Inherited from account default policy
             </div>
-            <div className='col-md-6 d-flex justify-content-end'>
-              <p>Revert to default inherited policy</p>
+            <div className='col-md-6 d-flex justify-content-end link-primary'>
+            {!isConfigEnabled && (
+                <span onClick={handleConfigChange} style={{ cursor: 'pointer' }}>
+                  Change Configuration
+                </span>
+              )}
+
             </div>
           </div>
           <div className='row'>
@@ -223,6 +229,7 @@ function SitePolicy({setActiveStep}) {
                         value='detect'
                         checked={policy?.mitigationMode === 'detect'}
                         onChange={handleRadioChange}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label mr-3' htmlFor='detect'>
                         Detect
@@ -237,6 +244,7 @@ function SitePolicy({setActiveStep}) {
                         value='protect'
                         checked={policy?.mitigationMode === 'protect'}
                         onChange={handleRadioChange}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label mr-3' htmlFor='protect'>
                         Protect
@@ -262,6 +270,7 @@ function SitePolicy({setActiveStep}) {
                         value='detect'
                         checked={policy?.mitigationModeSuspicious === 'detect'}
                         onChange={handleRadioChange}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label mr-3' htmlFor='detectSuspicious'>
                         Detect
@@ -276,13 +285,14 @@ function SitePolicy({setActiveStep}) {
                         value='protect'
                         checked={policy?.mitigationModeSuspicious === 'protect'}
                         onChange={handleRadioChange}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label mr-3' htmlFor='protectSuspicious'>
                         Protect
                       </label>
                     </div>
                     <div className='form-check form-check-inline'>
-                      {policy?.mitigationMode === 'detect' ? (
+                      {policy?.mitigationModeSuspicious === 'detect' ? (
                         <span>Alerts only</span>
                       ) : (
                         <span>Kill & Quarantine</span>
@@ -325,6 +335,7 @@ function SitePolicy({setActiveStep}) {
                     name='removeMacros'
                     checked={policy?.removeMacros}
                     onChange={handleCheckboxChange}
+                    disabled={!isConfigEnabled}
                   />
                   <label>
                     Remove malicious Macros from the office file instead of placing the files in
@@ -344,6 +355,7 @@ function SitePolicy({setActiveStep}) {
                         name='containment'
                         checked={policy?.containment}
                         onChange={handleCheckboxChange}
+                        disabled={!isConfigEnabled}
                       />
                       <label>Disconnect from the network</label>
                     </span>
@@ -364,6 +376,7 @@ function SitePolicy({setActiveStep}) {
                       id='reputation'
                       checked={policy?.engines?.reputation}
                       onChange={() => handleDetectionEngineChange('reputation')}
+                      disabled={!isConfigEnabled}
                     />
                     <label className='form-check-label' htmlFor='reputation'>
                       Reputation
@@ -376,6 +389,7 @@ function SitePolicy({setActiveStep}) {
                       id='preExecution'
                       checked={policy?.engines?.preExecution == 'on'}
                       onChange={() => handleDetectionEngineChange('preExecution')}
+                      disabled={!isConfigEnabled}
                     />
                     <label className='form-check-label' htmlFor='preExecution'>
                       Static AI
@@ -388,6 +402,7 @@ function SitePolicy({setActiveStep}) {
                       id='preExecutionSuspicious'
                       checked={policy?.engines?.preExecutionSuspicious == 'on'}
                       onChange={() => handleDetectionEngineChange('preExecutionSuspicious')}
+                      disabled={!isConfigEnabled}
                     />
                     <label className='form-check-label' htmlFor='preExecutionSuspicious'>
                       Static AI - Suspicious
@@ -400,6 +415,7 @@ function SitePolicy({setActiveStep}) {
                       id='behavioralAi'
                       checked={policy?.engines?.executables}
                       onChange={() => handleDetectionEngineChange('executables')}
+                      disabled={!isConfigEnabled}
                     />
                     <label className='form-check-label' htmlFor='executables'>
                       Behavioral AI - Executable
@@ -412,6 +428,7 @@ function SitePolicy({setActiveStep}) {
                       id='documentScript'
                       checked={policy?.engines?.dataFiles}
                       onChange={() => handleDetectionEngineChange('dataFiles')}
+                      disabled={!isConfigEnabled}
                     />
                     <label className='form-check-label' htmlFor='dataFiles'>
                       Document, Script
@@ -424,6 +441,7 @@ function SitePolicy({setActiveStep}) {
                       id='lateralMovements'
                       checked={policy?.engines?.lateralMovement}
                       onChange={() => handleDetectionEngineChange('lateralMovement')}
+                      disabled={!isConfigEnabled}
                     />
                     <label className='form-check-label' htmlFor='lateralMovements'>
                       Lateral Movements
@@ -436,6 +454,7 @@ function SitePolicy({setActiveStep}) {
                       id='antiExploitation'
                       checked={policy?.engines?.exploits}
                       onChange={() => handleDetectionEngineChange('exploits')}
+                      disabled={!isConfigEnabled}
                     />
                     <label className='form-check-label' htmlFor='antiExploitation'>
                       Anti Exploitation / Fileless
@@ -448,6 +467,7 @@ function SitePolicy({setActiveStep}) {
                       id='pup'
                       checked={policy?.engines?.pup}
                       onChange={() => handleDetectionEngineChange('pup')}
+                      disabled={!isConfigEnabled}
                     />
                     <label className='form-check-label' htmlFor='pup'>
                       Potential Unwanted Applications
@@ -460,6 +480,7 @@ function SitePolicy({setActiveStep}) {
                       id='applicationControls'
                       checked={policy?.engines?.applicationControl}
                       onChange={() => handleDetectionEngineChange('applicationControl')}
+                      disabled={!isConfigEnabled}
                     />
                     <label className='form-check-label' htmlFor='applicationControls'>
                       Application Controls
@@ -472,6 +493,7 @@ function SitePolicy({setActiveStep}) {
                       id='penetration'
                       checked={policy?.engines?.penetration}
                       onChange={() => handleDetectionEngineChange('penetration')}
+                      disabled={!isConfigEnabled}
                     />
                     <label className='form-check-label' htmlFor='penetration'>
                       Detect Alternative Threats
@@ -501,6 +523,7 @@ function SitePolicy({setActiveStep}) {
                           name='snapshotsOn'
                           checked={policy?.snapshotsOn}
                           onChange={handleCheckboxChange}
+                          disabled={!isConfigEnabled}
                         />
                         <label className='form-check-label' htmlFor='snapshots'>
                           Snapshots
@@ -514,6 +537,7 @@ function SitePolicy({setActiveStep}) {
                           name='antiTamperingOn'
                           checked={policy?.antiTamperingOn}
                           onChange={handleCheckboxChange}
+                          disabled={!isConfigEnabled}
                         />
                         <label className='form-check-label' htmlFor='antiTamper'>
                           Anti Tamper
@@ -527,6 +551,7 @@ function SitePolicy({setActiveStep}) {
                           name='scanNewAgents'
                           checked={policy?.scanNewAgents}
                           onChange={handleCheckboxChange}
+                          disabled={!isConfigEnabled}
                         />
                         <label className='form-check-label' htmlFor='scanNewAgents'>
                           Scan new agents
@@ -540,6 +565,7 @@ function SitePolicy({setActiveStep}) {
                           name='signedDriverBlockingOn'
                           checked={policy?.signedDriverBlockingOn}
                           onChange={handleCheckboxChange}
+                          disabled={!isConfigEnabled}
                         />
                         <label className='form-check-label' htmlFor='suspiciousDriveBlocking'>
                           Suspicious Drive Blocking
@@ -553,6 +579,7 @@ function SitePolicy({setActiveStep}) {
                           name='agentLoggingOn'
                           checked={policy?.agentLoggingOn}
                           onChange={handleCheckboxChange}
+                          disabled={!isConfigEnabled}
                         />
                         <label className='form-check-label' htmlFor='logging'>
                           Logging
@@ -578,6 +605,7 @@ function SitePolicy({setActiveStep}) {
                     name='agentUiOn'
                     checked={policy?.agentUi?.agentUiOn}
                     onChange={() => handleAgentUiChange('agentUiOn')}
+                    disabled={!isConfigEnabled}
                   />
                   <label htmlFor='agentUi'>Show Agent UI & tray icon on endpoints</label>
 
@@ -594,6 +622,7 @@ function SitePolicy({setActiveStep}) {
                         name='threatPopUpNotifications'
                         checked={policy?.agentUi?.threatPopUpNotifications}
                         onChange={() => handleAgentUiChange('threatPopUpNotifications')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label w-150px' htmlFor='threatMitigation'>
                         Threat and Mitigation
@@ -607,6 +636,7 @@ function SitePolicy({setActiveStep}) {
                         name='devicePopUpNotifications'
                         checked={policy?.agentUi?.devicePopUpNotifications}
                         onChange={() => handleAgentUiChange('devicePopUpNotifications')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label w-150px' htmlFor='blockedDevices'>
                         Blocked Devices
@@ -623,6 +653,7 @@ function SitePolicy({setActiveStep}) {
                         name='showSuspicious'
                         checked={policy?.agentUi?.showSuspicious}
                         onChange={() => handleAgentUiChange('showSuspicious')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='includeSuspicious'>
                         Include Suspicious
@@ -639,6 +670,7 @@ function SitePolicy({setActiveStep}) {
                         name='showAgentWarnings'
                         checked={policy?.agentUi?.showAgentWarnings}
                         onChange={() => handleAgentUiChange('showAgentWarnings')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='includeWarning'>
                         Include warning
@@ -655,6 +687,7 @@ function SitePolicy({setActiveStep}) {
                         name='maxEventAgeDays'
                         value={policy?.agentUi?.maxEventAgeDays}
                         onChange={() => handleAgentUiChange('maxEventAgeDays')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='showLast30Days'>
                         days
@@ -671,6 +704,7 @@ function SitePolicy({setActiveStep}) {
                         name='showDeviceTab'
                         checked={policy?.agentUi?.showDeviceTab}
                         onChange={() => handleAgentUiChange('showDeviceTab')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='threatMitigationMenu'>
                         Blocked Devices
@@ -684,6 +718,7 @@ function SitePolicy({setActiveStep}) {
                         name='showQuarantineTab'
                         checked={policy?.agentUi?.showQuarantineTab}
                         onChange={() => handleAgentUiChange('showQuarantineTab')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='blockedDevicesMenu'>
                         Quarantined Files
@@ -697,6 +732,7 @@ function SitePolicy({setActiveStep}) {
                         name='showSupport'
                         checked={policy?.agentUi?.showSupport}
                         onChange={() => handleAgentUiChange('showSupport')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='contactSupportMenu'>
                         Contact Support
@@ -736,6 +772,7 @@ function SitePolicy({setActiveStep}) {
                         id='deepVisibility'
                         checked={deepVisibilityEnabled}
                         onChange={() => setDeepVisibilityEnabled(!deepVisibilityEnabled)}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='deepVisibility'>
                         Enable deep Visibility
@@ -753,6 +790,7 @@ function SitePolicy({setActiveStep}) {
                         id='process'
                         checked={policy?.iocAttributes?.process}
                         onChange={() => handleIoCAttributeChange('process')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='process'>
                         Process
@@ -765,6 +803,7 @@ function SitePolicy({setActiveStep}) {
                         id='file'
                         checked={policy?.iocAttributes?.file}
                         onChange={() => handleIoCAttributeChange('file')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='file'>
                         File
@@ -777,6 +816,7 @@ function SitePolicy({setActiveStep}) {
                         id='url'
                         checked={policy?.iocAttributes?.url}
                         onChange={() => handleIoCAttributeChange('url')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='url'>
                         URL
@@ -789,6 +829,7 @@ function SitePolicy({setActiveStep}) {
                         id='dns'
                         checked={policy?.iocAttributes?.dns}
                         onChange={() => handleIoCAttributeChange('dns')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='dns'>
                         DNS
@@ -801,6 +842,7 @@ function SitePolicy({setActiveStep}) {
                         id='ip'
                         checked={policy?.iocAttributes?.ip}
                         onChange={() => handleIoCAttributeChange('ip')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='ip'>
                         IP
@@ -813,6 +855,7 @@ function SitePolicy({setActiveStep}) {
                         id='login'
                         checked={policy?.iocAttributes?.login}
                         onChange={() => handleIoCAttributeChange('login')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='login'>
                         Login
@@ -825,6 +868,7 @@ function SitePolicy({setActiveStep}) {
                         id='registryKeys'
                         checked={policy?.iocAttributes?.registry}
                         onChange={() => handleIoCAttributeChange('registry')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='registryKeys'>
                         Registry Keys
@@ -837,6 +881,7 @@ function SitePolicy({setActiveStep}) {
                         id='scheduledTasks'
                         checked={policy?.iocAttributes?.scheduledTask}
                         onChange={() => handleIoCAttributeChange('scheduledTask')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='scheduledTasks'>
                         Scheduled Tasks
@@ -849,6 +894,7 @@ function SitePolicy({setActiveStep}) {
                         id='behavioralIndicators'
                         checked={policy?.iocAttributes?.behavioralIndicators}
                         onChange={() => handleIoCAttributeChange('behavioralIndicators')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='behavioralIndicators'>
                         Behavioral Indicators
@@ -861,6 +907,7 @@ function SitePolicy({setActiveStep}) {
                         id='commandScripts'
                         checked={policy?.iocAttributes?.commandScripts}
                         onChange={() => handleIoCAttributeChange('commandScripts')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='commandScripts'>
                         Command Scripts
@@ -873,6 +920,7 @@ function SitePolicy({setActiveStep}) {
                         id='crossProcess'
                         checked={policy?.iocAttributes?.crossProcess}
                         onChange={() => handleIoCAttributeChange('crossProcess')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='crossProcess'>
                         Cross Process
@@ -885,6 +933,7 @@ function SitePolicy({setActiveStep}) {
                         id='driverLoad'
                         checked={policy?.iocAttributes?.driver}
                         onChange={() => handleIoCAttributeChange('driver')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='driverLoad'>
                         Driver Load
@@ -897,6 +946,7 @@ function SitePolicy({setActiveStep}) {
                         id='dataMasking'
                         checked={policy?.iocAttributes?.dataMasking}
                         onChange={() => handleIoCAttributeChange('dataMasking')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='dataMasking'>
                         Data Masking
@@ -909,6 +959,7 @@ function SitePolicy({setActiveStep}) {
                         id='fileMonitoring'
                         checked={policy?.iocAttributes?.smartFileMonitoring}
                         onChange={() => handleIoCAttributeChange('smartFileMonitoring')}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='fileMonitoring'>
                         Focused File Monitoring
@@ -966,6 +1017,7 @@ function SitePolicy({setActiveStep}) {
                         type='checkbox'
                         checked={policy?.autoFileUpload?.enabled}
                         onChange={handleAutoFileUploadChange}
+                        disabled={!isConfigEnabled}
                       />
                       <label>Enable automatic File Upload</label>
                     </span>
@@ -994,6 +1046,7 @@ function SitePolicy({setActiveStep}) {
                           value={
                             policy?.autoFileUpload?.maxFileSizeLimit / (1024 * 1024) + ' ' + 'MB'
                           }
+                          disabled={!isConfigEnabled}
                           placeholder='250 MB'
                         />
                       </p>
@@ -1007,6 +1060,7 @@ function SitePolicy({setActiveStep}) {
                             'MB'
                           }
                           placeholder='500 MB'
+                          disabled={!isConfigEnabled}
                         />
                       </p>
                       <p>
@@ -1019,6 +1073,7 @@ function SitePolicy({setActiveStep}) {
                             'MB'
                           }
                           placeholder='2048 MB'
+                          disabled={!isConfigEnabled}
                         />
                       </p>
                     </div>
@@ -1043,6 +1098,7 @@ function SitePolicy({setActiveStep}) {
                         id='autoDecommission'
                         checked={policy?.autoDecommissionOn}
                         onChange={handleAutoDecommissionChange}
+                        disabled={!isConfigEnabled}
                       />
                       <label className='form-check-label' htmlFor='autoDecommission'>
                         Auto Decommission after {policy?.autoDecommissionDays} days offline
@@ -1057,6 +1113,7 @@ function SitePolicy({setActiveStep}) {
                         type='checkbox'
                         checked={policy?.removeMacros}
                         onChange={handleRemoteShellChange}
+                        disabled={!isConfigEnabled}
                       />
                       <label>Enable Remote Shell</label>
                     </div>
@@ -1066,23 +1123,26 @@ function SitePolicy({setActiveStep}) {
             </div>
           </div>
           <div className='row card-footer pad-10'>
-        <div className='col-md-6'>
-          <button type='button' onClick={handleBack} className='btn btn-new btn-small'>
-            Back
-          </button>
-        </div>
-        <div className='col-md-6 d-flex justify-content-end'>
-          <button type='submit' onClick={handleNext} className='btn btn-new btn-small'>
-            Create Site
-          </button>
-          <button type='button' onClick={handleQuit} className='btn btn-secondary btn-small ms-3'>
-            Quit
-          </button>
-        </div>
-      </div>
+            <div className='col-md-6'>
+              <button type='button' onClick={handleBack} className='btn btn-new btn-small'>
+                Back
+              </button>
+            </div>
+            <div className='col-md-6 d-flex justify-content-end'>
+              <button type='submit' onClick={handleNext} className='btn btn-new btn-small'>
+                Create Site
+              </button>
+              <button
+                type='button'
+                onClick={handleQuit}
+                className='btn btn-secondary btn-small ms-3'
+              >
+                Quit
+              </button>
+            </div>
+          </div>
         </>
       )}
-     
     </div>
   )
 }

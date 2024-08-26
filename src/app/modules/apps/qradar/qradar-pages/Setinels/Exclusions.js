@@ -27,6 +27,7 @@ import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
 import { fetchExportDataAddUrl } from "../../../../../api/Api";
 import useFeatureActions from "../configuration/useFeatureActions";
 import { truncateText } from "../../../../../../utils/TruncateText";
+import ExclusionsImportPopUp from "./ExclusionsImportPopUp";
 
 function Exclusions() {
   const orgId = Number(sessionStorage.getItem("orgId"));
@@ -36,6 +37,7 @@ function Exclusions() {
   const [exlusions, setExlusions] = useState([]);
   console.log(exlusions, "exlusions111");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showImportPopup, setShowImportPopup] = useState(false);
   const [showMoreActionsModal, setShowMoreActionsModal] = useState(false);
   const [addToBlockListModal, setAddToBlockListModal] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
@@ -381,6 +383,52 @@ function Exclusions() {
     const selectedPerPage = event.target.value
     setLimit(selectedPerPage)
   }
+  const openImportPopup = () => {
+    setShowImportPopup(true);
+  };
+  
+  const closeImportPopup = () => {
+    setShowImportPopup(false);
+  };
+  const handleExportTemplate = () =>{
+    const headers = [
+      'Type',
+      'OS',
+      'Description',
+      'Value',
+      'Scope',
+      'Scope Path',
+      'User',
+      'Path Type',
+      'Subfolders',
+      'Mode',
+      'Last Updated',
+      'Applied To',
+      'Source',
+    ];
+  
+    // Convert the headers to a CSV string
+    const csvHeader = headers.join(',') + '\n';
+  
+    // Create a Blob from the CSV string
+    const blob = new Blob([csvHeader], { type: 'text/csv;charset=utf-8;' });
+  
+    // Trigger the download
+    const link = document.createElement('a');
+    const fileName = 'exclusion_template.csv';
+  
+    if (navigator.msSaveBlob) {
+      // IE 10+
+      navigator.msSaveBlob(blob, fileName);
+    } else {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
 
   return (
     <div>
@@ -390,7 +438,7 @@ function Exclusions() {
       ) : (
         <div className="card pad-10">
           <div className="row mb-3">
-            <div className="col-lg-8 d-flex">
+            <div className="col-lg-10 d-flex">
               <Dropdown
                 isOpen={dropdown}
                 toggle={() => setDropdown(!dropdown)}
@@ -486,10 +534,27 @@ function Exclusions() {
                   Delete selection
                 </button>
               </div>
+              <button
+                className={`btn btn-green btn-small ms-3 `}
+                onClick={openImportPopup}
+              >
+                {' '}
+                Import
+              </button>
+              {showImportPopup && (
+                <ExclusionsImportPopUp
+                  show={openImportPopup}
+                  onClose={closeImportPopup}
+                  refreshParent={handleRefreshActions}
+                />
+              )}
+               <button className='btn btn-green btn-small ms-3' onClick={handleExportTemplate}>
+                Download Template
+              </button>
               <div className="fs-15 mt-2 ms-5"> Total({currentItems.length}/{totalCount})</div> 
 
             </div>
-            <div className="col-lg-4 text-right">
+            <div className="col-lg-2 text-right">
               <Dropdown
                 isOpen={dropdownOpen}
                 toggle={() => setDropdownOpen(!dropdownOpen)}

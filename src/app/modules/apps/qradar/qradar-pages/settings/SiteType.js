@@ -1,65 +1,67 @@
-import React, {useState} from 'react'
-import { useNavigate } from 'react-router-dom';
+import React from 'react'
+import {useNavigate} from 'react-router-dom'
+import {notifyFail} from '../components/notification/Notification'
+import {ToastContainer} from 'react-toastify'
 
-const SiteType = ({setActiveStep}) => {
-  const navigate = useNavigate();
-  const [siteType, setSiteType] = useState('trial')
-  const [selectedExpirationDate, setSelectedExpirationDate] = useState('')
-  const [isNonExpireChecked, setIsNonExpireChecked] = useState(true)
-  const [skuSelected, setSkuSelected] = useState(false)
-  const [totalAgents, setTotalAgents] = useState('')
-  const [isUnlimitedLicenses, setIsUnlimitedLicenses] = useState(false)
-  const [isRoguesChecked, setIsRoguesChecked] = useState(false)
+const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData}) => {
+  const navigate = useNavigate()
 
   const handleNext = (event) => {
     event.preventDefault()
+    if (!siteTypeData.skuSelected) {
+      notifyFail('Please select a SKU')
+      return
+    }
     setActiveStep('site-policy')
   }
-const handleBack = (event) =>{
-  event.preventDefault()
-  setActiveStep('site-name')
-}
+
+  const handleBack = (event) => {
+    event.preventDefault()
+    setActiveStep('site-name')
+  }
+
   const handleQuit = () => {
-    navigate('/qradar/sites/list'); 
+    navigate('/qradar/sites/list')
   }
 
   const handleExpirationDateChange = (event) => {
-    setSelectedExpirationDate(event.target.value)
+    setSiteTypeData({...siteTypeData, selectedExpirationDate: event.target.value})
   }
 
   const handleNonExpireChange = (event) => {
-    setIsNonExpireChecked(event.target.checked)
+    setSiteTypeData({...siteTypeData, isNonExpireChecked: event.target.checked})
     if (event.target.checked) {
-      setSelectedExpirationDate('') // Clear the date if Non-Expire is checked
+      setSiteTypeData({...siteTypeData, selectedExpirationDate: ''}) // Clear the date if Non-Expire is checked
     }
   }
 
   const handleSkuChange = (event) => {
     if (event.target.value === 'complete') {
-      setSkuSelected(true)
+      setSiteTypeData({...siteTypeData, skuSelected: true})
     } else {
-      setSkuSelected(false)
+      setSiteTypeData({...siteTypeData, skuSelected: false})
     }
   }
 
   const handleDeleteSku = () => {
-    setSkuSelected(false)
+    setSiteTypeData({...siteTypeData, skuSelected: false})
   }
 
   const handleTotalAgentsChange = (event) => {
-    setTotalAgents(event.target.value)
+    setSiteTypeData({...siteTypeData, totalAgents: event.target.value})
   }
 
   const handleUnlimitedLicensesChange = (event) => {
-    setIsUnlimitedLicenses(event.target.checked)
+    setSiteTypeData({...siteTypeData, isUnlimitedLicenses: event.target.checked})
   }
 
   const handleRoguesChange = (event) => {
-    setIsRoguesChecked(event.target.checked)
+    setSiteTypeData({...siteTypeData, isRoguesChecked: event.target.checked})
   }
 
   return (
     <div className='config card'>
+      <ToastContainer />
       <div className='row'>
         <div className='col-md-2'></div>
         <div className='col-md-10'>
@@ -76,8 +78,8 @@ const handleBack = (event) =>{
                       <input
                         type='radio'
                         value='trial'
-                        checked={siteType === 'trial'}
-                        onChange={() => setSiteType('trial')}
+                        checked={siteTypeData.siteType === 'trial'}
+                        onChange={() => setSiteTypeData({...siteTypeData, siteType: 'trial'})}
                       />{' '}
                       Trial
                     </label>
@@ -85,8 +87,8 @@ const handleBack = (event) =>{
                       <input
                         type='radio'
                         value='paid'
-                        checked={siteType === 'paid'}
-                        onChange={() => setSiteType('paid')}
+                        checked={siteTypeData.siteType === 'paid'}
+                        onChange={() => setSiteTypeData({...siteTypeData, siteType: 'paid'})}
                       />{' '}
                       Paid
                     </label>
@@ -99,13 +101,12 @@ const handleBack = (event) =>{
                     <div>
                       <label className='no-margin pr-2 semi-bold'>Expiration Date: </label>
                     </div>
-
                     <input
                       className='date'
                       type='date'
-                      value={selectedExpirationDate}
+                      value={siteTypeData.selectedExpirationDate}
                       onChange={handleExpirationDateChange}
-                      disabled={isNonExpireChecked}
+                      disabled={siteTypeData.isNonExpireChecked}
                     />
                   </div>
                 </div>
@@ -115,7 +116,7 @@ const handleBack = (event) =>{
                   <label>
                     <input
                       type='checkbox'
-                      checked={isNonExpireChecked}
+                      checked={siteTypeData.isNonExpireChecked}
                       onChange={handleNonExpireChange}
                     />{' '}
                     Non-Expire
@@ -125,7 +126,7 @@ const handleBack = (event) =>{
 
               {/* Add New SKU Dropdown */}
               <hr />
-              {!skuSelected ? (
+              {!siteTypeData.skuSelected ? (
                 <div className='row justify-content-start mb-3'>
                   <div className='col-md-12'>
                     <select className='form-control' onChange={handleSkuChange}>
@@ -148,21 +149,23 @@ const handleBack = (event) =>{
                       </div>
                       <div className='card-body'>
                         <strong>Surfaces</strong>
-                        <div className='row'>
-                          <div className='col-md-6 d-flex align-items-center'>
-                            <label style={{width: '180px'}}>Total Agents</label>
-                            <input
-                              type='number'
-                              className='form-control'
-                              value={totalAgents}
-                              onChange={handleTotalAgentsChange}
-                            />
+                        <div className='row mt-4 mb-3'>
+                          <div className='col-md-4'>
+                            <label>
+                              Total Agents{' '}
+                              <input
+                                type='text'
+                                className='form-control'
+                                value={siteTypeData.totalAgents}
+                                onChange={handleTotalAgentsChange}
+                              />
+                            </label>
                           </div>
-                          <div className='col-md-6 d-flex align-items-center'>
+                          <div className='col-md-8 mt-4'>
                             <label>
                               <input
                                 type='checkbox'
-                                checked={isUnlimitedLicenses}
+                                checked={siteTypeData.isUnlimitedLicenses}
                                 onChange={handleUnlimitedLicensesChange}
                               />{' '}
                               Unlimited licenses
@@ -177,7 +180,7 @@ const handleBack = (event) =>{
                             <label>
                               <input
                                 type='checkbox'
-                                checked={isRoguesChecked}
+                                checked={siteTypeData.isRoguesChecked}
                                 onChange={handleRoguesChange}
                               />{' '}
                               Rogues{' '}
@@ -197,25 +200,25 @@ const handleBack = (event) =>{
                   </div>
                 </div>
               )}
-            </div>
 
-            <div className='row card-footer pad-10'>
-              <div className='col-md-6'>
-                <button type='button' onClick={handleBack} className='btn btn-new btn-small'>
-                  Back
-                </button>
-              </div>
-              <div className='col-md-6 d-flex justify-content-end'>
-                <button type='submit' onClick={handleNext} className='btn btn-new btn-small'>
-                  Next
-                </button>
-                <button
-                  type='button'
-                  onClick={handleQuit}
-                  className='btn btn-secondary btn-small ms-3'
-                >
-                  Quit
-                </button>
+              <div className='row card-footer pad-10'>
+                <div className='col-md-6'>
+                  <button type='button' onClick={handleBack} className='btn btn-new btn-small'>
+                    Back
+                  </button>
+                </div>
+                <div className='col-md-6 d-flex justify-content-end'>
+                  <button type='submit' onClick={handleNext} className='btn btn-new btn-small'>
+                    Next
+                  </button>
+                  <button
+                    type='button'
+                    onClick={handleQuit}
+                    className='btn btn-secondary btn-small ms-3'
+                  >
+                    Quit
+                  </button>
+                </div>
               </div>
             </div>
           </form>

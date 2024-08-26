@@ -269,7 +269,7 @@ function Policy() {
                       </label>
                     </div>
                     <div className='form-check form-check-inline'>
-                      {policy?.mitigationMode === 'detect' ? (
+                      {policy?.mitigationModeSuspicious === 'detect' ? (
                         <span>Alerts only</span>
                       ) : (
                         <span>Kill & Quarantine</span>
