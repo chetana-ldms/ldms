@@ -1,67 +1,59 @@
-import { useEffect, useState } from "react";
-import ReactPaginate from "react-paginate";
-import { fetchAEndPointDetailsUrl } from "../../../../../api/ApplicationSectionApi";
-import { UsersListLoading } from "../components/loading/UsersListLoading";
-import Pagination from "../../../../../../utils/Pagination";
-import { getCurrentTimeZone } from "../../../../../../utils/helper";
-import {
-  fetchExcludedListItemDeleteUrl,
-  fetchExclusionListUrl,
-} from "../../../../../api/SentinalApi";
-import { useAbsoluteLayout } from "react-table";
-import MitigationModal from "../alerts/MitigationModal";
-import AddToBlockListModal from "../alerts/AddToBlockListModal";
-import CreateExclusionModal from "./CreateExclusionModal";
-import AddFromExclusionsCatalogModal from "./AddFromExclusionsCatalogModal";
-import {
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
-import { renderSortIcon, sortedItems } from "../../../../../../utils/Sorting";
-import { notify, notifyFail } from "../components/notification/Notification";
-import { ToastContainer } from "react-toastify";
-import CreateExclusionModalEdit from "./CreateExclusionModalEdit";
-import DeleteConfirmation from "../../../../../../utils/DeleteConfirmation";
-import { fetchExportDataAddUrl } from "../../../../../api/Api";
-import useFeatureActions from "../configuration/useFeatureActions";
-import { truncateText } from "../../../../../../utils/TruncateText";
-import ExclusionsImportPopUp from "./ExclusionsImportPopUp";
+import {useEffect, useState} from 'react'
+import ReactPaginate from 'react-paginate'
+import {fetchAEndPointDetailsUrl} from '../../../../../api/ApplicationSectionApi'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
+import Pagination from '../../../../../../utils/Pagination'
+import {getCurrentTimeZone} from '../../../../../../utils/helper'
+import {fetchExcludedListItemDeleteUrl, fetchExclusionListUrl} from '../../../../../api/SentinalApi'
+import {useAbsoluteLayout} from 'react-table'
+import MitigationModal from '../alerts/MitigationModal'
+import AddToBlockListModal from '../alerts/AddToBlockListModal'
+import CreateExclusionModal from './CreateExclusionModal'
+import AddFromExclusionsCatalogModal from './AddFromExclusionsCatalogModal'
+import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
+import {renderSortIcon, sortedItems} from '../../../../../../utils/Sorting'
+import {notify, notifyFail} from '../components/notification/Notification'
+import {ToastContainer} from 'react-toastify'
+import CreateExclusionModalEdit from './CreateExclusionModalEdit'
+import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
+import {fetchExportDataAddUrl} from '../../../../../api/Api'
+import useFeatureActions from '../configuration/useFeatureActions'
+import {truncateText} from '../../../../../../utils/TruncateText'
+import ExclusionsImportPopUp from './ExclusionsImportPopUp'
 
 function Exclusions() {
-  const orgId = Number(sessionStorage.getItem("orgId"));
-  const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
-  const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
-  const [loading, setLoading] = useState(false);
-  const [exlusions, setExlusions] = useState([]);
-  console.log(exlusions, "exlusions111");
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [showImportPopup, setShowImportPopup] = useState(false);
-  const [showMoreActionsModal, setShowMoreActionsModal] = useState(false);
-  const [addToBlockListModal, setAddToBlockListModal] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("");
-  console.log(exlusions, "exlusions111");
-  const [dropdown, setDropdown] = useState(false);
-  const [refreshFlag, setRefreshFlag] = useState(false);
-  const [includeChildren, setIncludeChildren] = useState(true);
-  const [includeParents, setIncludeParents] = useState(true);
-  const [currentPage, setCurrentPage] = useState(0);
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const globalAdminRole = Number(sessionStorage.getItem('globalAdminRole'))
+  const clientAdminRole = Number(sessionStorage.getItem('clientAdminRole'))
+  const [loading, setLoading] = useState(false)
+  const [exlusions, setExlusions] = useState([])
+  console.log(exlusions, 'exlusions111')
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [showImportPopup, setShowImportPopup] = useState(false)
+  const [showMoreActionsModal, setShowMoreActionsModal] = useState(false)
+  const [addToBlockListModal, setAddToBlockListModal] = useState(false)
+  const [selectedValue, setSelectedValue] = useState('')
+  console.log(exlusions, 'exlusions111')
+  const [dropdown, setDropdown] = useState(false)
+  const [refreshFlag, setRefreshFlag] = useState(false)
+  const [includeChildren, setIncludeChildren] = useState(true)
+  const [includeParents, setIncludeParents] = useState(true)
+  const [currentPage, setCurrentPage] = useState(0)
   const [limit, setLimit] = useState(20)
-  const [filterValue, setFilterValue] = useState("");
-  const [selectedAlert, setselectedAlert] = useState([]);
-  const [isCheckboxSelected, setIsCheckboxSelected] = useState(false);
+  const [filterValue, setFilterValue] = useState('')
+  const [selectedAlert, setselectedAlert] = useState([])
+  const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
   const [sortConfig, setSortConfig] = useState({
     key: null,
-    direction: "ascending",
-  });
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [showPopupEdit, setShowPopupEdit] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
+    direction: 'ascending',
+  })
+  const [selectedItem, setSelectedItem] = useState(null)
+  const [showPopupEdit, setShowPopupEdit] = useState(false)
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
-  const [cursor, setCursor] = useState(null) 
+  const [cursor, setCursor] = useState(null)
   const [totalCount, setTotalCount] = useState('')
   const [initialTotalCountSet, setInitialTotalCountSet] = useState(false)
   const toolId = Number(sessionStorage.getItem('toolID'))
@@ -74,59 +66,8 @@ function Exclusions() {
     return featureActions?.some(
       (action) => action.actionName === actionName && action.is_authorized === true
     )
-  } 
-  const fetchData = async () => {
-    const data = {
-      orgID: orgId,
-      includeChildren: includeChildren,
-      includeParents: includeParents,
-      orgAccountStructureLevel: [
-        {
-          levelName: "AccountId",
-          levelValue: accountId || ""
-        },
-     {
-          levelName: "SiteId",
-          levelValue:  siteId || ""
-        },
-    {
-          levelName: "GroupId",
-          levelValue: groupId || ""
-        }
-      ],
-      nextCursor: cursor || '',
-      pageSize: limit,
-    };
-    try {
-      setLoading(true);
-      const response = await fetchExclusionListUrl(data);
-      if (response !== null) {  
-      setExlusions(response.exclusionList) 
-      setCursor(response.pagination.nextCursor) 
-      if (!initialTotalCountSet) {
-        setTotalCount(response.pagination.totalItems)
-        setInitialTotalCountSet(true)
-      }
-      } else {
-        setExlusions([]);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [limit]);
-  useEffect(() => {
-    fetchData();
-  }, [includeChildren, includeParents]);
-  const handleLoadMore = () => {
-    fetchData()
   }
-  const handleClickFirstPage = async () =>{
+  const fetchData = async () => {
     const data = {
       orgID: orgId,
       includeChildren: includeChildren,
@@ -145,252 +86,299 @@ function Exclusions() {
           levelValue: groupId || '',
         },
       ],
-      nextCursor:'',
+      nextCursor: cursor || '',
       pageSize: limit,
     }
-
     try {
       setLoading(true)
       const response = await fetchExclusionListUrl(data)
-      setExlusions(response.exclusionList) 
-      setCursor(response.pagination.nextCursor) 
+      if (response !== null) {
+        setExlusions(response.exclusionList)
+        setCursor(response.pagination.nextCursor)
+        if (!initialTotalCountSet) {
+          setTotalCount(response.pagination.totalItems)
+          setInitialTotalCountSet(true)
+        }
+      } else {
+        setExlusions([])
+      }
     } catch (error) {
       console.error(error)
     } finally {
       setLoading(false)
     }
   }
- 
+
+  useEffect(() => {
+    fetchData()
+  }, [limit])
+  useEffect(() => {
+    fetchData()
+  }, [includeChildren, includeParents])
+  const handleLoadMore = () => {
+    fetchData()
+  }
+  const handleClickFirstPage = async () => {
+    const data = {
+      orgID: orgId,
+      includeChildren: includeChildren,
+      includeParents: includeParents,
+      orgAccountStructureLevel: [
+        {
+          levelName: 'AccountId',
+          levelValue: accountId || '',
+        },
+        {
+          levelName: 'SiteId',
+          levelValue: siteId || '',
+        },
+        {
+          levelName: 'GroupId',
+          levelValue: groupId || '',
+        },
+      ],
+      nextCursor: '',
+      pageSize: limit,
+    }
+
+    try {
+      setLoading(true)
+      const response = await fetchExclusionListUrl(data)
+      setExlusions(response.exclusionList)
+      setCursor(response.pagination.nextCursor)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const currentItems =
     exlusions !== null
       ? sortedItems(
-          exlusions.filter((item) =>
-            item.osType.toLowerCase().includes(filterValue.toLowerCase())
-          ),
+          exlusions.filter((item) => item.osType.toLowerCase().includes(filterValue.toLowerCase())),
           sortConfig
         )
-      : null;
-      const filteredList = filterValue
-      ? exlusions.filter((item) => item.osType.toLowerCase().includes(filterValue.toLowerCase()))
-      : exlusions;
+      : null
+  const filteredList = filterValue
+    ? exlusions.filter((item) => item.osType.toLowerCase().includes(filterValue.toLowerCase()))
+    : exlusions
 
   const handleSort = (key) => {
     const direction =
-      sortConfig.key === key && sortConfig.direction === "ascending"
-        ? "descending"
-        : "ascending";
-    setSortConfig({ key, direction });
-  };
+      sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending'
+    setSortConfig({key, direction})
+  }
   const handleThreatActions = () => {
-    setDropdownOpenExclusion(!dropdownOpenExclusion);
-  };
+    setDropdownOpenExclusion(!dropdownOpenExclusion)
+  }
   const handleCloseMoreActionsModal = () => {
-    setShowMoreActionsModal(false);
-    setShowDropdown(false);
-  };
+    setShowMoreActionsModal(false)
+    setShowDropdown(false)
+  }
   const handleAction = () => {
-    handleCloseMoreActionsModal();
-  };
+    handleCloseMoreActionsModal()
+  }
   const handleCloseAddToBlockList = () => {
-    setAddToBlockListModal(false);
-    setShowDropdown(false);
-  };
+    setAddToBlockListModal(false)
+    setShowDropdown(false)
+  }
   const handleActionAddToBlockList = () => {
-    setAddToBlockListModal(false);
-  };
+    setAddToBlockListModal(false)
+  }
   const handleCheckboxChange = (event) => {
-    const checkboxName = event.target.name;
-    const isChecked = event.target.checked;
+    const checkboxName = event.target.name
+    const isChecked = event.target.checked
 
-    if (checkboxName === "thisScopeAndItsAncestors") {
-      setIncludeParents(isChecked);
-    } else if (checkboxName === "thisScopeAndItsDescendants") {
-      setIncludeChildren(isChecked);
+    if (checkboxName === 'thisScopeAndItsAncestors') {
+      setIncludeParents(isChecked)
+    } else if (checkboxName === 'thisScopeAndItsDescendants') {
+      setIncludeChildren(isChecked)
     }
-  };
+  }
 
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [dropdownOpenExclusion, setDropdownOpenExclusion] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [dropdownOpenExclusion, setDropdownOpenExclusion] = useState(false)
 
   // Function to extract table data
   const extractTableData = (items) => {
     return items.map((item) => ({
-      "Exclusion Type": "null",
+      'Exclusion Type': 'null',
       OS: item.osType,
-      "Application Name": item.applicationName,
-      "Inventory Listed": "null",
+      'Application Name': item.applicationName,
+      'Inventory Listed': 'null',
       Description: item.description,
       Value: item.value,
       Scope: item.scopePath,
       User: item.agentVersion,
       Mode: item.mode,
-      "Last Updated": getCurrentTimeZone(item.updatedAt),
+      'Last Updated': getCurrentTimeZone(item.updatedAt),
       Source: item.source,
       Scope: item.scopeName,
-      Imported: item.imported ? "Yes" : "No",
-    }));
-  };
+      Imported: item.imported ? 'Yes' : 'No',
+    }))
+  }
   // Function to convert data to CSV format
   const convertToCSV = (data) => {
-    const csvRows = [];
+    const csvRows = []
 
     // Add header row
-    const header = Object.keys(data[0]);
-    csvRows.push(header.join(","));
+    const header = Object.keys(data[0])
+    csvRows.push(header.join(','))
 
     // Add data rows
     data.forEach((item) => {
       const values = header.map((key) => {
-        let value = item[key];
+        let value = item[key]
         // Escape double quotes in values
-        if (typeof value === "string") {
-          value = value.replace(/"/g, '""');
+        if (typeof value === 'string') {
+          value = value.replace(/"/g, '""')
         }
         // Enclose value in double quotes if it contains special characters
         if (/[",\n]/.test(value)) {
-          value = `"${value}"`;
+          value = `"${value}"`
         }
-        return value;
-      });
-      csvRows.push(values.join(","));
-    });
+        return value
+      })
+      csvRows.push(values.join(','))
+    })
 
     // Combine rows into a single string
-    return csvRows.join("\n");
-  };
+    return csvRows.join('\n')
+  }
 
   const exportToCSV = (data) => {
-    const csvData = convertToCSV(data);
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    const fileName = "exclusions.csv";
+    const csvData = convertToCSV(data)
+    const blob = new Blob([csvData], {type: 'text/csv;charset=utf-8;'})
+    const fileName = 'exclusions.csv'
     if (navigator.msSaveBlob) {
       // IE 10+
-      navigator.msSaveBlob(blob, fileName);
+      navigator.msSaveBlob(blob, fileName)
     } else {
-      const link = document.createElement("a");
+      const link = document.createElement('a')
       if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const url = URL.createObjectURL(blob)
+        link.setAttribute('href', url)
+        link.setAttribute('download', fileName)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       }
     }
-  };
+  }
 
   // Function to extract full table data
   const exportTableToCSV = async () => {
-    const tableData = extractTableData(filteredList);
-    exportToCSV(tableData);
+    const tableData = extractTableData(filteredList)
+    exportToCSV(tableData)
     const data = {
       createdDate: new Date().toISOString(),
-      createdUserId: Number(sessionStorage.getItem("userId")),
+      createdUserId: Number(sessionStorage.getItem('userId')),
       orgId: Number(sessionStorage.getItem('orgId')),
-      exportDataType: "Exclusions"
-    };
-    try {
-      const response = await fetchExportDataAddUrl(data);
-    } catch (error) {
-      console.error(error);
+      exportDataType: 'Exclusions',
     }
-  };
+    try {
+      const response = await fetchExportDataAddUrl(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   // Function to extract current pagination table data
   const exportCurrentTableToCSV = async () => {
-    const tableData = extractTableData(currentItems);
-    exportToCSV(tableData);
+    const tableData = extractTableData(currentItems)
+    exportToCSV(tableData)
     const data = {
       createdDate: new Date().toISOString(),
-      createdUserId: Number(sessionStorage.getItem("userId")),
+      createdUserId: Number(sessionStorage.getItem('userId')),
       orgId: Number(sessionStorage.getItem('orgId')),
-      exportDataType: "Exclusions"
-    };
+      exportDataType: 'Exclusions',
+    }
     try {
-      const response = await fetchExportDataAddUrl(data);
+      const response = await fetchExportDataAddUrl(data)
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-  };
+  }
   const handleFilterChange = (event) => {
-    setFilterValue(event.target.value);
-  };
+    setFilterValue(event.target.value)
+  }
   const handleselectedAlert = (item, e) => {
-    const { value, checked } = e.target;
+    const {value, checked} = e.target
     if (checked) {
-      setselectedAlert([...selectedAlert, value]);
-      setIsCheckboxSelected(true);
+      setselectedAlert([...selectedAlert, value])
+      setIsCheckboxSelected(true)
     } else {
-      const updatedAlert = selectedAlert.filter((e) => e !== value);
-      setselectedAlert(updatedAlert);
-      setIsCheckboxSelected(updatedAlert.length > 0);
+      const updatedAlert = selectedAlert.filter((e) => e !== value)
+      setselectedAlert(updatedAlert)
+      setIsCheckboxSelected(updatedAlert.length > 0)
     }
-  };
+  }
   const handleDelete = () => {
-    setShowConfirmation(true);
-  };
+    setShowConfirmation(true)
+  }
 
   const confirmDelete = async () => {
     if (selectedAlert) {
       const data = {
         orgId: orgId,
         ids: selectedAlert,
-        type: "",
+        type: '',
         deletedDate: new Date().toISOString(),
-        deletedUserId: Number(sessionStorage.getItem("userId")),
-      };
+        deletedUserId: Number(sessionStorage.getItem('userId')),
+      }
 
       try {
-        const response = await fetchExcludedListItemDeleteUrl(data);
+        const response = await fetchExcludedListItemDeleteUrl(data)
         const {isSuccess, message} = response
         if (isSuccess) {
-          notify(message);
-          await fetchData();
-          setIsCheckboxSelected(false);
-          setselectedAlert([]);
+          notify(message)
+          await fetchData()
+          setIsCheckboxSelected(false)
+          setselectedAlert([])
         } else {
-          notifyFail(message);
+          notifyFail(message)
         }
       } catch (error) {
-        console.log(error);
+        console.log(error)
       } finally {
-        setShowConfirmation(false);
+        setShowConfirmation(false)
       }
     }
-  };
+  }
   const cancelDelete = () => {
-    setShowConfirmation(false);
-  };
+    setShowConfirmation(false)
+  }
 
   const handleRefreshActions = () => {
-    setRefreshFlag(!refreshFlag);
-    fetchData();
-  };
+    setRefreshFlag(!refreshFlag)
+    fetchData()
+  }
   const openPopupEdit = () => {
-    setShowPopupEdit(true);
-  };
+    setShowPopupEdit(true)
+  }
 
   const closePopupEdit = () => {
-    setShowPopupEdit(false);
-  };
+    setShowPopupEdit(false)
+  }
   const handleTableRowClick = (item) => {
-    setSelectedItem(item);
+    setSelectedItem(item)
     if (isActionAuthorized('Update')) {
-    setShowPopupEdit(true);
+      setShowPopupEdit(true)
     }
-  };
+  }
   const handlePageSelect = (event) => {
     const selectedPerPage = event.target.value
     setLimit(selectedPerPage)
   }
   const openImportPopup = () => {
-    setShowImportPopup(true);
-  };
-  
+    setShowImportPopup(true)
+  }
+
   const closeImportPopup = () => {
-    setShowImportPopup(false);
-  };
-  const handleExportTemplate = () =>{
+    setShowImportPopup(false)
+  }
+  const handleExportTemplate = () => {
     const headers = [
       'Type',
       'OS',
@@ -405,28 +393,28 @@ function Exclusions() {
       'Last Updated',
       'Applied To',
       'Source',
-    ];
-  
+    ]
+
     // Convert the headers to a CSV string
-    const csvHeader = headers.join(',') + '\n';
-  
+    const csvHeader = headers.join(',') + '\n'
+
     // Create a Blob from the CSV string
-    const blob = new Blob([csvHeader], { type: 'text/csv;charset=utf-8;' });
-  
+    const blob = new Blob([csvHeader], {type: 'text/csv;charset=utf-8;'})
+
     // Trigger the download
-    const link = document.createElement('a');
-    const fileName = 'exclusion_template.csv';
-  
+    const link = document.createElement('a')
+    const fileName = 'exclusion_template.csv'
+
     if (navigator.msSaveBlob) {
       // IE 10+
-      navigator.msSaveBlob(blob, fileName);
+      navigator.msSaveBlob(blob, fileName)
     } else {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', fileName);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const url = URL.createObjectURL(blob)
+      link.setAttribute('href', url)
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     }
   }
 
@@ -436,66 +424,60 @@ function Exclusions() {
       {loading ? (
         <UsersListLoading />
       ) : (
-        <div className="card pad-10">
-          <div className="row mb-3">
-            <div className="col-lg-10 d-flex">
+        <div className='card pad-10'>
+          <div className='row mb-3'>
+            <div className='col-lg-10 d-flex'>
               <Dropdown
                 isOpen={dropdown}
                 toggle={() => setDropdown(!dropdown)}
-                className="float-left mg-right-10"
+                className='float-left mg-right-10'
               >
-                <DropdownToggle className="no-pad btn btn-small btn-border">
-                  <div className="fs-12 normal">
-                    All Related Scopes{" "}
-                    <i className="fa fa-chevron-down link mg-left-5" />
+                <DropdownToggle className='no-pad btn btn-small btn-border'>
+                  <div className='fs-12 normal'>
+                    All Related Scopes <i className='fa fa-chevron-down link mg-left-5' />
                   </div>
                 </DropdownToggle>
-                <DropdownMenu className="w-auto px-5">
-                  <label className="dropdown-checkbox">
+                <DropdownMenu className='w-auto px-5'>
+                  <label className='dropdown-checkbox'>
                     <input
-                      type="checkbox"
-                      name="thisScopeAndItsAncestors"
+                      type='checkbox'
+                      name='thisScopeAndItsAncestors'
                       onChange={handleCheckboxChange}
                       checked={includeParents}
                     />
                     <span>
-                      <i className="link mg-right-5" /> This scope and its
-                      ancestors
+                      <i className='link mg-right-5' /> This scope and its ancestors
                     </span>
-                  </label>{" "}
+                  </label>{' '}
                   <br />
-                  <label className="dropdown-checkbox">
+                  <label className='dropdown-checkbox'>
                     <input
-                      type="checkbox"
-                      name="thisScopeAndItsDescendants"
+                      type='checkbox'
+                      name='thisScopeAndItsDescendants'
                       onChange={handleCheckboxChange}
-                      checked={includeChildren} 
+                      checked={includeChildren}
                     />
                     <span>
-                      <i className="link mg-right-5" /> This scope and its
-                      descendants
+                      <i className='link mg-right-5' /> This scope and its descendants
                     </span>
                   </label>
                 </DropdownMenu>
               </Dropdown>
-              <div className="">
+              <div className=''>
                 <Dropdown
                   isOpen={dropdownOpenExclusion}
                   toggle={handleThreatActions}
-                  className={`${
-                    !isActionAuthorized('AddToExclusion') ? 'disabled' : ''
-                  }`}
+                  className={`${!isActionAuthorized('AddToExclusion') ? 'disabled' : ''}`}
                 >
-                  <DropdownToggle className="no-pad btn btn-border btn-small">
-                    <div className="normal">
-                      New Exclusion{" "}
-                      <i className="fa fa-chevron-down link mg-left-5" />
+                  <DropdownToggle className='no-pad btn btn-border btn-small'>
+                    <div className='normal'>
+                      New Exclusion <i className='fa fa-chevron-down link mg-left-5' />
                     </div>
                   </DropdownToggle>
-                  <DropdownMenu className="w-auto">
+                  <DropdownMenu className='w-auto'>
                     <DropdownItem
                       onClick={() => setShowMoreActionsModal(true)}
-                      className="border-btm"
+                      className='border-btm'
                     >
                       Create Exclusion
                     </DropdownItem>
@@ -522,10 +504,9 @@ function Exclusions() {
                   refreshParent={handleRefreshActions}
                 />
               )}
-              <div className="float-left mg-left-10">
-                
+              <div className='float-left mg-left-10'>
                 <button
-                   className={`btn btn-green btn-small float-left ${
+                  className={`btn btn-green btn-small float-left ${
                     !isCheckboxSelected || !isActionAuthorized('Delete') ? 'disabled' : ''
                   }`}
                   onClick={handleDelete}
@@ -534,10 +515,7 @@ function Exclusions() {
                   Delete selection
                 </button>
               </div>
-              <button
-                className={`btn btn-green btn-small ms-3 `}
-                onClick={openImportPopup}
-              >
+              <button className={`btn btn-green btn-small ms-3 `} onClick={openImportPopup}>
                 {' '}
                 Import
               </button>
@@ -548,89 +526,80 @@ function Exclusions() {
                   refreshParent={handleRefreshActions}
                 />
               )}
-               <button className='btn btn-green btn-small ms-3' onClick={handleExportTemplate}>
+              <button className='btn btn-green btn-small ms-3' onClick={handleExportTemplate}>
                 Download Template
               </button>
-              <div className="fs-15 mt-2 ms-5"> Total({currentItems.length}/{totalCount})</div> 
-
+              <div className='fs-15 mt-2 ms-5'>
+                {' '}
+                Total({currentItems.length}/{totalCount})
+              </div>
             </div>
-            <div className="col-lg-2 text-right">
-              <Dropdown
-                isOpen={dropdownOpen}
-                toggle={() => setDropdownOpen(!dropdownOpen)}
-              >
-                <DropdownToggle className="no-pad btn btn-border btn-small">
+            <div className='col-lg-2 text-right'>
+              <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
+                <DropdownToggle className='no-pad btn btn-border btn-small'>
                   <div>
-                    Export <i className="fa fa-file-export link mg-left-5" />
+                    Export <i className='fa fa-file-export link mg-left-5' />
                   </div>
                 </DropdownToggle>
-                <DropdownMenu className="w-auto">
-                  <DropdownItem
-                    onClick={exportTableToCSV}
-                    className="border-btm"
-                  >
-                    <i className="fa fa-file-excel link mg-right-5" /> Export
-                    Full Report
+                <DropdownMenu className='w-auto'>
+                  <DropdownItem onClick={exportTableToCSV} className='border-btm'>
+                    <i className='fa fa-file-excel link mg-right-5' /> Export Full Report
                   </DropdownItem>
                   <DropdownItem onClick={exportCurrentTableToCSV}>
-                    <i className="fa fa-file-excel link mg-right-5" /> Export
-                    Current Page Report
+                    <i className='fa fa-file-excel link mg-right-5' /> Export Current Page Report
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </div>
           </div>
-          <div className="header-filter mg-btm-20 row">
-            <div className="col-lg-12">
+          <div className='header-filter mg-btm-20 row'>
+            <div className='col-lg-12'>
               <input
-                type="text"
-                placeholder="Search..."
-                className="form-control"
+                type='text'
+                placeholder='Search...'
+                className='form-control'
                 value={filterValue}
                 onChange={handleFilterChange}
               />
             </div>
           </div>
-          <table className="table alert-table fixed-table scroll-x">
+          <table className='table alert-table fixed-table scroll-x'>
             <thead>
               <tr>
-                <th className="checkbox-th">
-                  {/* <input type="checkbox" name="selectAll" /> */}
-                </th>
+                <th className='checkbox-th'>{/* <input type="checkbox" name="selectAll" /> */}</th>
 
-                <th onClick={() => handleSort("osType")}>
-                  OS {renderSortIcon(sortConfig, "osType")}
+                <th onClick={() => handleSort('osType')}>
+                  OS {renderSortIcon(sortConfig, 'osType')}
                 </th>
-                <th onClick={() => handleSort("applicationName")}>
-                  Application Name{" "}
-                  {renderSortIcon(sortConfig, "applicationName")}
+                <th onClick={() => handleSort('applicationName')}>
+                  Application Name {renderSortIcon(sortConfig, 'applicationName')}
                 </th>
-                <th onClick={() => handleSort("description")}>
-                  Description {renderSortIcon(sortConfig, "description")}
+                <th onClick={() => handleSort('description')}>
+                  Description {renderSortIcon(sortConfig, 'description')}
                 </th>
-                <th onClick={() => handleSort("value")}>
-                  Value {renderSortIcon(sortConfig, "value")}
+                <th onClick={() => handleSort('value')}>
+                  Value {renderSortIcon(sortConfig, 'value')}
                 </th>
-                <th onClick={() => handleSort("scopePath")}>
-                  Scope Path {renderSortIcon(sortConfig, "scopePath")}
+                <th onClick={() => handleSort('scopePath')}>
+                  Scope Path {renderSortIcon(sortConfig, 'scopePath')}
                 </th>
-                <th onClick={() => handleSort("userName")}>
-                  User {renderSortIcon(sortConfig, "userName")}
+                <th onClick={() => handleSort('userName')}>
+                  User {renderSortIcon(sortConfig, 'userName')}
                 </th>
-                <th onClick={() => handleSort("mode")}>
-                  Mode {renderSortIcon(sortConfig, "mode")}
+                <th onClick={() => handleSort('mode')}>
+                  Mode {renderSortIcon(sortConfig, 'mode')}
                 </th>
-                <th onClick={() => handleSort("updatedAt")}>
-                  Last Update {renderSortIcon(sortConfig, "updatedAt")}
+                <th onClick={() => handleSort('updatedAt')}>
+                  Last Update {renderSortIcon(sortConfig, 'updatedAt')}
                 </th>
-                <th onClick={() => handleSort("source")}>
-                  Source {renderSortIcon(sortConfig, "source")}
+                <th onClick={() => handleSort('source')}>
+                  Source {renderSortIcon(sortConfig, 'source')}
                 </th>
-                <th onClick={() => handleSort("scopeName")}>
-                  Scope {renderSortIcon(sortConfig, "scopeName")}
+                <th onClick={() => handleSort('scopeName')}>
+                  Scope {renderSortIcon(sortConfig, 'scopeName')}
                 </th>
-                <th onClick={() => handleSort("imported")}>
-                  Imported {renderSortIcon(sortConfig, "imported")}
+                <th onClick={() => handleSort('imported')}>
+                  Imported {renderSortIcon(sortConfig, 'imported')}
                 </th>
               </tr>
             </thead>
@@ -638,22 +607,22 @@ function Exclusions() {
               {currentItems !== null ? (
                 currentItems?.map((item, index) => (
                   <tr
-                    className="table-row"
+                    className='table-row'
                     key={item.id}
                     onClick={() => handleTableRowClick(item)}
-                    style={{ cursor: "pointer" }}
+                    style={{cursor: 'pointer'}}
                   >
                     <td>
-                    <div className="form-check form-check-sm form-check-custom form-check-solid px-3">
-                      <input
-                        className="form-check-input widget-13-check"
-                        type="checkbox"
-                        value={item.id}
-                        name={item.id}
-                        onChange={(e) => handleselectedAlert(item, e)}
-                        autoComplete="off"
-                        onClick={(e) => e.stopPropagation()}
-                      />
+                      <div className='form-check form-check-sm form-check-custom form-check-solid px-3'>
+                        <input
+                          className='form-check-input widget-13-check'
+                          type='checkbox'
+                          value={item.id}
+                          name={item.id}
+                          onChange={(e) => handleselectedAlert(item, e)}
+                          autoComplete='off'
+                          onClick={(e) => e.stopPropagation()}
+                        />
                       </div>
                     </td>
                     <td>{item.osType}</td>
@@ -666,24 +635,28 @@ function Exclusions() {
                     <td>{getCurrentTimeZone(item.updatedAt)}</td>
                     <td>{item.source}</td>
                     <td>{item.scopeName}</td>
-                    <td>{item.imported ? "Yes" : "No"}</td>
+                    <td>{item.imported ? 'Yes' : 'No'}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="24">No data found</td>
+                  <td colSpan='24'>No data found</td>
                 </tr>
               )}
             </tbody>
           </table>
           <div className=' d-flex justify-content-end  '>
-                <button className='btn btn-primary btn-small me-5 ' onClick={handleClickFirstPage}>
-                 Go to page 1
-                </button>
-                <button className='btn btn-primary btn-small' onClick={handleLoadMore} disabled={cursor === null}>
-                  Load More
-                </button>
-                <div className='col-md-3 d-flex justify-content-end align-items-center'>
+            <button className='btn btn-primary btn-small me-5 ' onClick={handleClickFirstPage}>
+              Go to page 1
+            </button>
+            <button
+              className='btn btn-primary btn-small'
+              onClick={handleLoadMore}
+              disabled={cursor === null}
+            >
+              Load More
+            </button>
+            <div className='col-md-3 d-flex justify-content-end align-items-center'>
               <span className='col-md-4'>Count: </span>
               <select
                 className='form-select form-select-sm col-md-4'
@@ -696,14 +669,14 @@ function Exclusions() {
                 <option value={20}>20</option>
               </select>
             </div>
-              </div>
+          </div>
           {showConfirmation && (
-          <DeleteConfirmation
-            show={showConfirmation}
-            onConfirm={confirmDelete}
-            onCancel={cancelDelete}
-          />
-        )}
+            <DeleteConfirmation
+              show={showConfirmation}
+              onConfirm={confirmDelete}
+              onCancel={cancelDelete}
+            />
+          )}
           {showPopupEdit && selectedItem && (
             <CreateExclusionModalEdit
               show={openPopupEdit}
@@ -715,7 +688,7 @@ function Exclusions() {
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default Exclusions;
+export default Exclusions

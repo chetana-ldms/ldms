@@ -149,11 +149,6 @@ const UpdateOrganizationTools = () => {
       setLoading(false)
       return errors
     }
-    // if (!apiUrl.current.value) {
-    //   errors.apiUrl = 'Enter api url'
-    //   setLoading(false)
-    //   return errors
-    // }
     event.preventDefault()
     const modifiedUserId = Number(sessionStorage.getItem('userId'))
     const modifiedDate = new Date().toISOString()
@@ -326,11 +321,6 @@ const UpdateOrganizationTools = () => {
     setItemToDelete(null)
   }
 
-  // const handleDelete = (index) => {
-  //   const updatedTableData = [...tableData];
-  //   updatedTableData.splice(index, 1);
-  //   setTableData(updatedTableData);
-  // };
   const handleEdit = (index) => {
     setEditingIndex(index)
     const editedItem = tableData[index]
@@ -552,7 +542,7 @@ const UpdateOrganizationTools = () => {
                     {filteredList.map((item, index) => (
                       <tr key={index}>
                         <td>{item.toolAction}</td>
-                        <td className='wrap-txt' title='{item.apiUrl}'>
+                        <td className='wrap-txt' title={item.apiUrl}>
                           {item.apiUrl}
                         </td>
                         <td>

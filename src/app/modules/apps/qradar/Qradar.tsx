@@ -94,6 +94,8 @@ import SiteName from './qradar-pages/settings/SiteName'
 import SiteType from './qradar-pages/settings/SiteType'
 import SitePolicy from './qradar-pages/settings/SitePolicy'
 import SiteStepper from './qradar-pages/settings/SiteStepper'
+import SentinelsReport from './qradar-pages/sentinels-report/SentinelsReport'
+import LoadReportTask from './qradar-pages/sentinels-report/LoadReportTask'
 
 
 const QradarPages = () => {
@@ -192,9 +194,8 @@ const QradarPages = () => {
       <Route path='featureaction/add' element={<AddFeatureAction />} />
       <Route path='rolebasedaccess/:status' element={<RoleBasedAccess />} />
       <Route path="/site-stepper" element={<SiteStepper />} />
-      {/* <Route path="/site-name" element={<SiteName />} />
-      <Route path="/site-type" element={<SiteType />} />
-      <Route path="/site-policy" element={<SitePolicy />} /> */}
+      <Route path="/sentinelsReport" element={<SentinelsReport />} />
+      <Route path='load-report-task/:status' element={<LoadReportTask />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )

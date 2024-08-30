@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 
-const IDLE_TIMEOUT = 10 * 60 * 1000; // 1 minute in milliseconds
+const IDLE_TIMEOUT = 30 * 60 * 1000; // 1 minute in milliseconds
 
 const IdleTimeoutManager = () => {
   const [lastActiveTime, setLastActiveTime] = useState(Date.now());

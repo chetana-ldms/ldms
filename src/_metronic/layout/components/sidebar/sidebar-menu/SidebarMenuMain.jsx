@@ -124,6 +124,12 @@ const SidebarMenuMain = () => {
   <SidebarMenuItem hasBullet={true} to='/qradar/accounts/list' title='Accounts' />
   <SidebarMenuItem hasBullet={true} to='/qradar/sites/list' title='Sites' />
 </SidebarMenuItemWithSub> */}
+<SidebarMenuItem
+        to='/qradar/SentinelsReport'
+        title='Sentinels Report'
+        fontIcon='bi-sticky'
+        icon='/media/icons/duotune/abstract/abs013.svg'
+      ></SidebarMenuItem>
 
     </>
   );
