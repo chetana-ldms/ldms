@@ -227,7 +227,7 @@ function Sites() {
                 onDismiss={handleDismiss}
                 computerNames={computerNames}
               />
-              <button className='btn btn-green btn-small ms-5' onClick={handleNewSiteClick}>
+              <button className='btn btn-green btn-small ms-5' onClick={handleNewSiteClick} style={{ display: 'none' }}>
                 New Site
               </button>
             </div>

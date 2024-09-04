@@ -46,7 +46,7 @@ const DisableAgentModal = ({ isOpen, toggle, items, selectedActionId, refreshDat
       endPointsData,
       disableAgent: {
         expiration: expirationTime,
-        expirationTimeZone: 'GMT+05:30',
+        expirationTimeZone: 'GMT+00:00',
         shouldReboot: isRebootChecked,
       },
       executedUserId: Number(sessionStorage.getItem('userId')),

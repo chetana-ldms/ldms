@@ -667,8 +667,11 @@ function Endpoint() {
                         />
                       </div>
                     </td>
-                    <td onClick={() => handleEndpointClick(item)} className='link-txt'>
-                      {item.computerName}
+                    <td onClick={() => handleEndpointClick(item)}>
+                      <span className='link border-bottom border-1 border-primary'>
+                        {item.computerName}
+                      </span>
+                      <div className='fs-10'>{item.isPendingUninstall ? 'Pending Uninstall' : ''}</div>
                     </td>
                     <td>{item.accountName}</td>
                     <td>{item.siteName}</td>

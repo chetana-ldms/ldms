@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {Button, Accordion, Card} from 'react-bootstrap'
 import ReportTaskModal from './ReportTaskModal'
 import {ToastContainer} from 'react-toastify'
@@ -8,6 +8,7 @@ import Pagination from '../../../../../../utils/Pagination'
 import {
   fetchSentinelReportDeleteUrl,
   fetchSentinelReportsDownloadUrl,
+  fetchSentinelReportsTasksUrl,
   fetchSentinelReportsUrl,
 } from '../../../../../api/SentinelsReportApi'
 import {truncateText} from '../../../../../../utils/TruncateText'
@@ -21,12 +22,10 @@ import jsPDF from 'jspdf'
 function SentinelsReport() {
   const navigate = useNavigate()
   const [expandedRow, setExpandedRow] = useState(null)
-  const handleOpenModal = () => {
-    navigate(`/qradar/load-report-task/list`)
-  }
   const handleError = useErrorBoundary()
   const [tools, setTools] = useState([])
-  console.log(tools, 'tools')
+  const [tasks, setTasks] = useState([])
+  const taskId = useRef()
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [selectedAlert, setselectedAlert] = useState([])
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
@@ -66,6 +65,7 @@ function SentinelsReport() {
             levelValue: siteId || '',
           },
         ],
+        reportTaskId: taskId.current.value || '',
       }
       setLoading(true)
       const response = await fetchSentinelReportsUrl(data)
@@ -75,6 +75,9 @@ function SentinelsReport() {
     } finally {
       setLoading(false)
     }
+  }
+  const handleSelectChange = () => {
+    reload()
   }
 
   useEffect(() => {
@@ -163,58 +166,46 @@ function SentinelsReport() {
   const handleDownloadPdf = async (id) => {
     try {
       const data = {
-        orgId: orgId,
-        toolId: toolId,
+        orgId: orgId, // Replace with actual orgId
+        toolId: toolId, // Replace with actual toolId
         reportFormat: 'pdf',
         reportId: id,
-      };
-  
-      const response = await fetchSentinelReportsDownloadUrl(data);
-  
+      }
+
+      const response = await fetchSentinelReportsDownloadUrl(data)
+
       if (response.isSuccess) {
-        // Step 1: Get the response stream
-        const reader = response.text.getReader();
-  
-        // Step 2: Convert the stream to a Uint8Array
-        const chunks = [];
-        let receivedLength = 0;
-  
-        // Read the stream
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          chunks.push(value);
-          receivedLength += value.length;
+        // const byteArray = response.byteArrayData; // Assuming this is a Uint8Array
+        const convertByteArrayToString = (byteArray) => {
+          const decoder = new TextDecoder('utf-8') // Specify the encoding if known, e.g., 'utf-8'
+          return decoder.decode(byteArray)
         }
-  
-        // Combine chunks into a single Uint8Array
-        const bytes = new Uint8Array(receivedLength);
-        let position = 0;
-        for (const chunk of chunks) {
-          bytes.set(chunk, position);
-          position += chunk.length;
-        }
-  
-        // Step 3: Create a Blob from the Uint8Array
-        const blob = new Blob([bytes], { type: 'application/pdf' });
-  
-        // Step 4: Create a URL and download the file
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `report_${id}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
+
+        // Example usage
+        const byteArray = new Uint8Array(response.byteArrayData) // Represents "Hello"
+        const stringString = convertByteArrayToString(byteArray)
+
+        // Create a Blob from the byte array
+        const blob = new Blob([stringString], {type: 'application/pdf'})
+
+        // Generate a URL for the Blob and download it
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `report_${id}.pdf` // Set the filename
+        document.body.appendChild(a)
+        a.click()
+
+        // Cleanup: revoke the object URL and remove the anchor element
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
       } else {
-        console.error('Failed to download PDF:', response.statusText);
+        console.error('Failed to download PDF:', response.statusText)
       }
     } catch (error) {
-      console.error('Error downloading PDF:', error);
+      console.error('Error downloading PDF:', error)
     }
-  };
-  
+  }
 
   const handleDownloadHtml = async (id) => {
     try {
@@ -224,17 +215,40 @@ function SentinelsReport() {
         reportFormat: 'html',
         reportId: id,
       }
+
       const response = await fetchSentinelReportsDownloadUrl(data)
 
       if (response.isSuccess) {
-        const text = await response.text
-        const blob = new Blob([text], {type: 'text/html'})
+        // Check if byteArrayData is a base64-encoded string
+        let htmlContent
+        if (typeof response.byteArrayData === 'string') {
+          // Decode the base64-encoded string
+          const decodedData = atob(response.byteArrayData) // atob decodes base64 to binary string
+          // Convert binary string to a Uint8Array
+          const bytes = new Uint8Array(decodedData.length)
+          for (let i = 0; i < decodedData.length; i++) {
+            bytes[i] = decodedData.charCodeAt(i)
+          }
+          // Convert Uint8Array to a string
+          const decoder = new TextDecoder('utf-8')
+          htmlContent = decoder.decode(bytes)
+        } else {
+          // Handle other cases if byteArrayData is not a string
+          htmlContent = response.byteArrayData
+        }
+
+        // Create a Blob from the HTML content
+        const blob = new Blob([htmlContent], {type: 'text/html'})
+
+        // Generate a URL for the Blob and download it
         const url = window.URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
         a.download = `report_${id}.html`
         document.body.appendChild(a)
         a.click()
+
+        // Cleanup the URL and remove the anchor element
         window.URL.revokeObjectURL(url)
         document.body.removeChild(a)
       } else {
@@ -244,34 +258,72 @@ function SentinelsReport() {
       console.error('Error downloading HTML:', error)
     }
   }
+  const reloadTask = async () => {
+    try {
+      const data = {
+        orgId: orgId,
+        toolId: toolId,
+        scopeName: siteId ? 'SiteId' : 'AccountId',
+        scopeValue: siteId || accountId,
+      }
+      setLoading(true)
+      const response = await fetchSentinelReportsTasksUrl(data)
+      setTasks(response.reportData)
+    } catch (error) {
+      handleError(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    reloadTask()
+  }, [])
 
   return (
     <div className='card pad-10 config'>
       <ToastContainer />
       <div className='card-header no-pad'>
         <div className=' d-flex'>
-          <div>
-            <button className='btn btn-green btn-small' onClick={handleOpenModal}>
-              Load Report Task
-            </button>
-          </div>
-          <div className='float-left mg-left-10'>
+          <div className='me-4'>
             <button
-              className='btn btn-green btn-small'
+              className={`btn btn-green btn-small float-left ${
+                !isCheckboxSelected || !isActionAuthorized('Delete') ? 'disabled' : ''
+              }`}
               onClick={handleDelete}
-              disabled={!isCheckboxSelected}
+              disabled={!isCheckboxSelected || !isActionAuthorized('Delete')}
             >
               Delete selection
             </button>
           </div>
+          <div className='me-5'>
+            <select
+              className='form-select'
+              data-kt-select2='true'
+              data-placeholder='Select option'
+              data-allow-clear='true'
+              id='toolId'
+              ref={taskId}
+              onChange={handleSelectChange}
+            >
+              <option value=''>Select Name</option>
+              {tasks?.map((item, index) => (
+                <option value={item.id} key={index}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <div className='card-toolbar'>
-          <h3 className='card-title align-items-start flex-column'>
-            <span className='card-label fw-bold fs-3 mb-1'>
-              Reports ({currentItems ? currentItems.length : 0} /{' '}
-              {filteredList ? filteredList.length : 0})
-            </span>
-          </h3>
+          <div>
+            <h3 className='card-title align-items-start flex-column'>
+              <span className='card-label fw-bold fs-3 mb-1'>
+                Reports ({currentItems ? currentItems.length : 0} /{' '}
+                {filteredList ? filteredList.length : 0})
+              </span>
+            </h3>
+          </div>
         </div>
       </div>
 
@@ -333,25 +385,30 @@ function SentinelsReport() {
                     <td>
                       {getCurrentTimeZone(item.fromDate)} - {getCurrentTimeZone(item.toDate)}
                     </td>
-                    <td></td>
+                    <td>{item.status == 'success' ? 'Ready to Download' : item.status}</td>
                     <td>
-                      <span
-                        className='me-3'
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleDownloadPdf(item.id)
-                        }}
-                      >
-                        DownloadPDF
-                      </span>
-                      <span
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleDownloadHtml(item.id)
-                        }}
-                      >
-                        DownloadHTML
-                      </span>
+                      {item.status === 'success' && (
+                        <>
+                          <span
+                            className='me-3 link-txt'
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDownloadPdf(item.id)
+                            }}
+                          >
+                            DownloadPDF
+                          </span>
+                          <span
+                            className='link-txt'
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDownloadHtml(item.id)
+                            }}
+                          >
+                            DownloadHTML
+                          </span>
+                        </>
+                      )}
                     </td>
                   </tr>
                   {expandedRow === index && (

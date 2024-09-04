@@ -2592,15 +2592,15 @@ const AlertsPage = () => {
                                                   </p>
                                                 </div>
                                               </div>
-                                              <div className='col-md-4 '>
-                                                {/* <p>Console connectivity</p> */}
+                                              <div className='col-md-4 mt-2 '>
+                                                <p className='mb-2 semi-bold'>Console connectivity</p>
                                                 <p className='mb-2 semi-bold'>Full Disc scan:</p>
                                                 <p className='semi-bold'>Pending Reboot:</p>
                                                 {/* <p>Number of not Mitigated Threats</p> */}
                                                 <p className='semi-bold'> Network status:</p>
                                               </div>
-                                              <div className='col-md-8'>
-                                                {/* <p>{endpointInfo.consoleConnectivity}</p> */}
+                                              <div className='col-md-8 mt-2'>
+                                                <p>{endpointInfo?.consoleConnectivity ? endpointInfo?.consoleConnectivity : "Offline" }</p>
                                                 <p>
                                                   {endpointInfo?.fullDiskScanStatus} at{' '}
                                                   {getCurrentTimeZone(

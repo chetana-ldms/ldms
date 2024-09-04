@@ -157,12 +157,11 @@ function LoadReportTask() {
       reload()
     }, 5000)
   }
-  const handleBack = () => {
-    navigate(`/qradar/sentinelsReport`)
-  }
   const handleTableRowClick = (item) => {
     setSelectedItem(item)
-    setShowPopupEdit(true)
+    if (isActionAuthorized('Update')) {
+      setShowPopupEdit(true)
+    }
   }
   const openPopupEdit = () => {
     setShowPopupEdit(true)
@@ -178,7 +177,12 @@ function LoadReportTask() {
       <div className='card-header no-pad'>
         <div className=' d-flex'>
           <div>
-            <button className='btn btn-green btn-small' onClick={handleOpenModal}>
+            <button
+              className={`btn btn-green btn-small ${
+                !isActionAuthorized('Create') ? 'disabled' : ''
+              }`}
+              onClick={handleOpenModal}
+            >
               New Report Task
             </button>
             <ReportTaskModal
@@ -189,24 +193,23 @@ function LoadReportTask() {
           </div>
           <div className='float-left mg-left-10'>
             <button
-              className='btn btn-green btn-small'
+              className={`btn btn-green btn-small float-left ${
+                !isCheckboxSelected || !isActionAuthorized('Delete') ? 'disabled' : ''
+              }`}
               onClick={handleDelete}
-              disabled={!isCheckboxSelected}
+              disabled={!isCheckboxSelected || !isActionAuthorized('Delete')}
             >
               Delete selection
             </button>
           </div>
+        </div>
+        <div className='card-toolbar'>
           <h3 className='mt-2'>
             <span className='card-label fw-bold fs-3 mb-1 ms-5'>
               Load Report Task ({currentItems ? currentItems.length : 0} /{' '}
               {filteredList ? filteredList.length : 0})
             </span>
           </h3>
-        </div>
-        <div className='card-toolbar'>
-          <div className='back btn btn-small btn-border' onClick={handleBack}>
-            Back
-          </div>
         </div>
       </div>
 

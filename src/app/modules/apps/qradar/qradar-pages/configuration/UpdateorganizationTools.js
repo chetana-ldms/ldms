@@ -58,7 +58,7 @@ const UpdateOrganizationTools = () => {
   const errors = {}
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [itemToDelete, setItemToDelete] = useState(null)
-   const location = useLocation()
+  const location = useLocation()
   const [save, setSave] = useState(location.state?.save || '')
   useEffect(() => {
     setSave(location.state?.save || '')
@@ -322,19 +322,22 @@ const UpdateOrganizationTools = () => {
   }
 
   const handleEdit = (index) => {
-    setEditingIndex(index)
-    const editedItem = tableData[index]
-    setSelectedToolAction(editedItem.toolAction)
-    setEnteredApiUrl(editedItem.apiUrl)
-    setIsEditing(true)
-  }
+    const actualIndex = tableData.findIndex(
+      (item) => item === filteredList[index]
+    );
+    setEditingIndex(actualIndex);
+    const editedItem = tableData[actualIndex];
+    setSelectedToolAction(editedItem.toolAction);
+    setEnteredApiUrl(editedItem.apiUrl);
+    setIsEditing(true);
+  };
 
   return (
     <div className='config card'>
       <ToastContainer />
       <div className='card-header bg-heading'>
         <h3 className='card-title align-items-start flex-column'>
-        {save ? (
+          {save ? (
             <span className='white'>View Organization Tool</span>
           ) : (
             <span className='white'>Update Organization Tool</span>
