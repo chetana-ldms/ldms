@@ -452,7 +452,6 @@ function Endpoint() {
                 isVisible={isConfirmModalVisible}
                 onContinue={handleConfirm}
                 onDismiss={handleDismiss}
-                // items={items}
                 computerNames={computerNames}
               />
               <SendMessageModal

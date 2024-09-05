@@ -9,13 +9,13 @@ const blockedListItemUpdateUrl = process.env.REACT_APP_BLOCKEDLISTITEM_UPDATE_UR
 const AddToExclusionListUrl= process.env.REACT_APP_ADDTOEXCLUSIONLIST_URL
 const ExcludedListItemDeleteUrl=process.env.REACT_APP_EXCLUSDEDLISTITEM_DELETE_URL
 const ExcludedListItemUpdateUrl=process.env.REACT_APP_EXCLUSDEDLISTITEM_UPDATE_URL
-const GroupActionUrl= "http://115.110.192.133:502/api/Alerts/v1/Agent/GroupAction"
-const GroupsUrl= "http://115.110.192.133:502/api/SentinalOne/v1/Groups"
-const SoftwarePackagesUpdateUrl ="http://115.110.192.133:502/api/Alerts/v1/SoftwarePackages/Update"
-const BlockedListImportUrl ="http://115.110.192.133:502/api/Alerts/v1/BlockedList/Import"
-const BlockedListImportReportUrl = "http://115.110.192.133:502/api/Alerts/v1/BlockedList/ImportReport"
-const ExclusionItemsImportUrl ="http://115.110.192.133:502/api/Alerts/v1/ExclusionItems/Import"
-const ExclusionItemsImportReportUrl="http://115.110.192.133:502/api/Alerts/v1/ExclusionItems/ImportReport"
+const GroupActionUrl= process.env.REACT_APP_AGENT_GROUPACTION_URL
+const GroupsUrl= process.env.REACT_APP_GROUPS_URL
+const SoftwarePackagesUpdateUrl =process.env.REACT_APP_SOFTWAREPACKAGES_UPDATE_URL
+const BlockedListImportUrl =process.env.REACT_APP_BLOCKEDLIST_IMPORT_URL
+const BlockedListImportReportUrl = process.env.REACT_APP_BLOCKEDLIST_IMPORTREPORT_URL
+const ExclusionItemsImportUrl =process.env.REACT_APP_EXCLUSIONITEMS_IMPORT_URL
+const ExclusionItemsImportReportUrl=process.env.REACT_APP_EXCLUSIONITEMS_IMPORTREPORT_URL
 
 export const fetchExclusionListUrl = async (data) => {
     try {

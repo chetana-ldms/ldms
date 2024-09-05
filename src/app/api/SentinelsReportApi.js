@@ -1,15 +1,11 @@
-const SentinelReportsUrl = 'http://115.110.192.133:502/api/Alerts/v1/SentinelReports'
-const SentinelReportsTypesUrl = 'http://115.110.192.133:502/api/Alerts/v1/SentinelReports/Types'
-const SentinelReportTaskCreateUrl =
-  'http://115.110.192.133:502/api/Alerts/v1/SentinelReport/Task/Create'
-const SentinelReportDeleteUrl = 'http://115.110.192.133:502/api/Alerts/v1/SentinelReport/Delete'
-const SentinelReportsTasksUrl = 'http://115.110.192.133:502/api/Alerts/v1/SentinelReports/Tasks'
-const SentinelReportTaskDeleteUrl =
-  'http://115.110.192.133:502/api/Alerts/v1/SentinelReport/Task/Delete'
-const SentinelReportsDownloadUrl =
-  'http://115.110.192.133:502/api/Alerts/v1/SentinelReports/Download'
-const SentinelReportsTaskUpdateUrl =
-  'http://115.110.192.133:502/api/Alerts/v1/SentinelReports/Task/Update'
+const SentinelReportsUrl = process.env.REACT_APP_SENTINELREPORTS_URL
+const SentinelReportsTypesUrl = process.env.REACT_APP_SENTINELREPORTS_TYPES_URL
+const SentinelReportTaskCreateUrl =process.env.REACT_APP_SENTINELREPORTS_TASK_CREAT_URL
+const SentinelReportDeleteUrl = process.env.REACT_APP_SENTINELREPORTS_DELETE_URL
+const SentinelReportsTasksUrl = process.env.REACT_APP_SENTINELREPORTS_TASKS_URL
+const SentinelReportTaskDeleteUrl =process.env.REACT_APP_SENTINELREPORTS_TASKS_DELETE_URL
+const SentinelReportsDownloadUrl =process.env.REACT_APP_SENTINELREPORTS_DOWNLOAD_URL
+const SentinelReportsTaskUpdateUrl =process.env.REACT_APP_SENTINELREPORTS_TASK_UPDATE_URL
 
 export const fetchSentinelReportsUrl = async (data) => {
   try {

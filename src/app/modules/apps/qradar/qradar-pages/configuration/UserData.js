@@ -147,7 +147,7 @@ const UserData = () => {
       <div className='header-filter row'>
         <div className='col-lg-4'>
           <h3 className='lh-40'>
-            Users ({currentItems.length} / {filteredList.length})
+            Users ({currentItems?currentItems.length:0} / {filteredList?filteredList.length:0})
           </h3>
         </div>
 

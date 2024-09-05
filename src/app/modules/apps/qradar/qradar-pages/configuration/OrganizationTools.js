@@ -123,7 +123,7 @@ const OrganizationTools = () => {
       <div className='card-header no-pad'>
         <h3 className='card-title align-items-start flex-column'>
           <span className='card-label fw-bold fs-3 mb-1'>
-            Organizations Tools ({currentItems.length} / {filteredList.length})
+            Organizations Tools ({currentItems?currentItems.length:0} / {filteredList?filteredList.length:0})
           </span>
         </h3>
         <div className='card-toolbar'>
