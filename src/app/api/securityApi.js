@@ -1,5 +1,5 @@
 const FeaturesUrl = process.env.REACT_APP_FEATURES_URL
-const OrganizationToolsUrl = process.env.REACT_APP_ORGANIZATION_TOOLS_URL
+const OrganizationToolsUrl = process.env.REACT_APP_ORGANIZATION_TOOLS_SECURITY_URL
 const OrganizationRolesUrl = process.env.REACT_APP_ORGANIZATION_ROLES_URL
 const FeaturesActionsAuthorizedAccessUrl = process.env.REACT_APP_FEATURES_ACTIONS_AUTHORIZED_URL
 const FeaturesActionsAuthorizationConfigurationUrl =

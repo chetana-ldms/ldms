@@ -15,8 +15,10 @@ function Tags({id}) {
     try {
       setLoading(true)
       const response = await fetchAEndPointDetailsUrl(data)
-      const [firstEndpoint] = response
-      setTags(firstEndpoint.tags)
+      console.log(response, "response")
+      // const [firstEndpoint] = response
+      // setTags(firstEndpoint.tags)
+      setTags(response)
     } catch (error) {
       console.error(error)
     } finally {
