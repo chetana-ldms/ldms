@@ -305,9 +305,12 @@ const AlertsPage = () => {
           orgId: orgId,
         }
         const alertNotesList = await fetchGetAlertNotesByAlertID(data)
-        const alertNoteSort = alertNotesList.sort((a, b) => {
-          return b.alertsNotesId - a.alertsNotesId
-        })
+        const alertNoteSort = alertNotesList?.sort((a, b) => {
+          const dateA = a.createdDate || 0; 
+          const dateB = b.createdDate || 0;
+          return dateB - dateA;
+        });
+        
         setAlertNotesList(alertNoteSort)
       }
     } catch (error) {
@@ -2384,14 +2387,14 @@ const AlertsPage = () => {
                                         </div>
                                       </div>
                                       <div className='col-md-2'>
-                                      {isActionAuthorized('Update') && (
-                                        <div
-                                          className='btn btn-primary btn-new btn-small'
-                                          onClick={() => openEditPopUp(item)}
-                                        >
-                                          Edit
-                                        </div>
-                                  )}
+                                        {isActionAuthorized('Update') && (
+                                          <div
+                                            className='btn btn-primary btn-new btn-small'
+                                            onClick={() => openEditPopUp(item)}
+                                          >
+                                            Edit
+                                          </div>
+                                        )}
                                       </div>
                                     </div>
                                   </div>
@@ -2593,14 +2596,20 @@ const AlertsPage = () => {
                                                 </div>
                                               </div>
                                               <div className='col-md-4 mt-2 '>
-                                                <p className='mb-2 semi-bold'>Console connectivity</p>
+                                                <p className='mb-2 semi-bold'>
+                                                  Console connectivity
+                                                </p>
                                                 <p className='mb-2 semi-bold'>Full Disc scan:</p>
                                                 <p className='semi-bold'>Pending Reboot:</p>
                                                 {/* <p>Number of not Mitigated Threats</p> */}
                                                 <p className='semi-bold'> Network status:</p>
                                               </div>
                                               <div className='col-md-8 mt-2'>
-                                                <p>{endpointInfo?.consoleConnectivity ? endpointInfo?.consoleConnectivity : "Offline" }</p>
+                                                <p>
+                                                  {endpointInfo?.consoleConnectivity
+                                                    ? endpointInfo?.consoleConnectivity
+                                                    : 'Offline'}
+                                                </p>
                                                 <p>
                                                   {endpointInfo?.fullDiskScanStatus} at{' '}
                                                   {getCurrentTimeZone(
@@ -2666,7 +2675,7 @@ const AlertsPage = () => {
                                     role='tabpanel'
                                     aria-labelledby={`notesTab_${index}`}
                                   >
-                                    {alertNotesList.length > 0 ? (
+                                    {alertNotesList !== null ? (
                                       <div className='notes-container alert-table'>
                                         <div className='float-right fs-13 fc-gray text-right ds-reload'>
                                           <a href='#' onClick={handleRefreshNotes}>
@@ -2686,19 +2695,13 @@ const AlertsPage = () => {
                                             </tr>
                                           </thead>
                                           <tbody>
-                                            {alertNotesList
-                                              .slice()
-                                              .sort(
-                                                (a, b) =>
-                                                  new Date(b.notesDate) - new Date(a.notesDate)
-                                              )
-                                              .map((note) => (
-                                                <tr key={note.alertsNotesId}>
-                                                  <td>{note.createdUser}</td>
-                                                  <td>{getCurrentTimeZone(note.notesDate)}</td>
-                                                  <td>{note.notes}</td>
-                                                </tr>
-                                              ))}
+                                            {alertNotesList?.slice().map((note) => (
+                                              <tr key={note?.alertsNotesId}>
+                                                <td>{note?.createdUser}</td>
+                                                <td>{getCurrentTimeZone(note?.notesDate)}</td>
+                                                <td>{note?.notes}</td>
+                                              </tr>
+                                            ))}
                                           </tbody>
                                         </table>
                                       </div>

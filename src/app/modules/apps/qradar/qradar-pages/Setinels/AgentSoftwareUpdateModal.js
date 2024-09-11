@@ -5,18 +5,20 @@ import { fetchSoftwarePackagesUpdateUrl } from '../../../../../api/SentinalApi'
 import { notify, notifyFail } from '../components/notification/Notification'
 
 const AgentSoftwareUpdateModal = ({isOpen, toggle, items, selectedActionId, refreshData}) => {
+  console.log(items, "items")
   const [updateTiming, setUpdateTiming] = useState('Immediately')
   const [selectedUpdate, setSelectedUpdate] = useState(null)
+  const [filterValue, setFilterValue] = useState('')
   const [platform, setPlatform] = useState('windows')
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
   const [updates, setUpdates] = useState([])
+  console.log(updates, "updates")
   const [showDowngrade, setShowDowngrade] = useState(false)
   const [allowDowngrade, setAllowDowngrade] = useState(false)
   const osTypes = items && items.length > 0 
   ? [...new Set(items.map((item) => item?.osType?.toLowerCase() || 'windows'))] 
   : ['windows'];
-
 
   const sendSelectedItemsToBackend = async () => {
     const endPointsData = items.map((item) => ({
@@ -93,7 +95,14 @@ const AgentSoftwareUpdateModal = ({isOpen, toggle, items, selectedActionId, refr
     }
     fetchData()
   }, [platform])
-
+  const handleFilterChange = (event) => {
+    setFilterValue(event.target.value)
+  }
+  const filteredList = filterValue
+  ? updates.filter((item) =>
+      item.searchData.toLowerCase().includes(filterValue.toLowerCase())
+    )
+  : updates
   return (
     <Modal show={isOpen} onHide={toggle} className='AgentSoftwareUpdateModal application-modal'>
       <Modal.Header closeButton>
@@ -153,8 +162,17 @@ const AgentSoftwareUpdateModal = ({isOpen, toggle, items, selectedActionId, refr
             <label htmlFor='maintenance-window'>According to Maintenance Window</label>
           </div>
         </div>
+        <div className=''>
+              <input
+                type='text'
+                placeholder='Search...'
+                className='form-control'
+                value={filterValue}
+                onChange={handleFilterChange}
+              />
+            </div>
         <ul className='list-unstyled mt-4' style={{maxHeight: '270px', overflowY: 'auto'}}>
-          {updates?.map((update) => (
+          {filteredList?.map((update) => (
             <li key={update.id} className='d-flex align-items-center border-top border-1'>
                <input
                 type='radio'

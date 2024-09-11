@@ -55,7 +55,7 @@ const EnableAgentModal = ({isOpen, toggle, items, selectedActionId, refreshData}
         </button>
       </Modal.Header>
       <Modal.Body>
-        <h4 className='mb-5'>Are you sure you want to disable the selected agent(s)?</h4>
+        <h4 className='mb-5'>Are you sure you want to Enable the selected agent(s)?</h4>
         <div className='d-flex justify-content-between align-items-center'>
           <p className='mt-5 mb-3'>
             All detection engines are disabled <i className='bi bi-exclamation-circle' />
