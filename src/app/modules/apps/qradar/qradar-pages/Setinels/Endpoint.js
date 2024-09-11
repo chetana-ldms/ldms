@@ -721,6 +721,7 @@ function Endpoint() {
         selectedEndpoint={selectedEndpoint}
         showModal={showPopup}
         setShowModal={setShowPopup}
+        refreshData={refreshData}
       />
     </div>
   )

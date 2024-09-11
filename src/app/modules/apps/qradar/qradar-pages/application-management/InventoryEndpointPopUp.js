@@ -11,6 +11,7 @@ import {
   DropdownItem,
 } from "reactstrap";
 import { fetchExportDataAddUrl } from "../../../../../api/Api";
+import EndpointPopupSentinal from "../Setinels/EndpointPopupSentinal";
 
 const InventoryEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
@@ -79,8 +80,8 @@ const InventoryEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
   const orgId = Number(sessionStorage.getItem("orgId"));
   const [loading, setLoading] = useState(false);
   const [endpoints, setEndpoints] = useState([]);
-  console.log(endpoints, "endpoints");
   const [selectedEndpoint, setSelectedEndpoint] = useState(null);
+  console.log(selectedEndpoint, "selectedEndpoint")
   const [showPopup, setShowPopup] = useState(false);
   const fetchData = async () => {
     const data = {
@@ -101,7 +102,9 @@ const InventoryEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
   useEffect(() => {
     fetchData();
   }, [name, vendor]);
-
+  const refreshData = () => {
+    fetchData()
+  }
   const handleEndpointClick = (item) => {
     setSelectedEndpoint(item);
     setShowPopup(true);
@@ -193,10 +196,11 @@ const InventoryEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
           </tbody>
         </table>
         <EndpointPopup
-          selectedEndpoint={selectedEndpoint}
-          showModal={showPopup}
-          setShowModal={setShowPopup}
-        />
+        selectedEndpoint={selectedEndpoint}
+        showModal={showPopup}
+        setShowModal={setShowPopup}
+        refreshData={refreshData}
+      />
       </Modal.Body>
     </Modal>
   );

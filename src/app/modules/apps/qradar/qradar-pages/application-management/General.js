@@ -7,7 +7,6 @@ function General({id}) {
   const orgId = Number(sessionStorage.getItem('orgId'))
   const [loading, setLoading] = useState(false)
   const [general, setGeneral] = useState([])
-  console.log(general, 'general')
   const fetchData = async () => {
     const data = {
       orgID: orgId,

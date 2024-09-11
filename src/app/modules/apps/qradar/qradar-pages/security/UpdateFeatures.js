@@ -20,6 +20,7 @@ function UpdateFeatures() {
   const orgId = Number(sessionStorage.getItem('orgId'));
   const [parentFeatures, setParentFeatures] = useState([]);
   const [featureDetails, setFeatureDetails] = useState({});
+  console.log(featureDetails, "featureDetails")
   const [actions, setActions] = useState([]);
   const [selectedTool, setSelectedTool] = useState(null);
   const [selectedParentFeatures, setSelectedParentFeatures] = useState(null);
@@ -106,9 +107,9 @@ function UpdateFeatures() {
         };
         const actionResponse = await fetchActionsUrl(data);
         setActions(actionResponse);
-        if (featureDetails.actionIds) {
-          const selectedActionIndices = actionResponse.map((action, index) => 
-            featureDetails.actionIds.includes(action.actionId) ? index : -1
+        if (featureDetails?.actionIds) {
+          const selectedActionIndices = actionResponse?.map((action, index) => 
+            featureDetails?.actionIds.includes(action.actionId) ? index : -1
           ).filter(index => index !== -1);
           setSelectedActions(selectedActionIndices);
         }
@@ -117,7 +118,7 @@ function UpdateFeatures() {
       }
     };
     fetchActions();
-  }, [selectedTool, featureDetails.actionIds]);
+  }, [selectedTool, featureDetails?.actionIds]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -243,7 +244,7 @@ function UpdateFeatures() {
                   id='Name'
                   ref={featureNameRef}
                   placeholder=''
-                  defaultValue={featureDetails.featureName || ''}
+                  defaultValue={featureDetails?.featureName || ''}
                 />
               </div>
             </div>
@@ -260,7 +261,7 @@ function UpdateFeatures() {
                   id='DisplayName'
                   ref={displayNameRef}
                   placeholder=''
-                  defaultValue={featureDetails.featureDisplayName || ''}
+                  defaultValue={featureDetails?.featureDisplayName || ''}
                 />
               </div>
             </div>
@@ -277,7 +278,7 @@ function UpdateFeatures() {
                   id='RoutePath'
                   ref={routePathRef}
                   placeholder=''
-                  defaultValue={featureDetails.featureUrl || ''}
+                  defaultValue={featureDetails?.featureUrl || ''}
                 />
               </div>
             </div>
@@ -294,7 +295,7 @@ function UpdateFeatures() {
                   id='ImagePath'
                   ref={imagePathRef}
                   placeholder=''
-                  defaultValue={featureDetails.featureImageUrl || ''}
+                  defaultValue={featureDetails?.featureImageUrl || ''}
                 />
               </div>
             </div>

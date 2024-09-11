@@ -51,6 +51,7 @@ function RoleBasedAccess() {
         setLoading(true)
         const data = await fetchOrganizationToolsSecurityUrl(selectedOrganization)
         setTools(data)
+        setFeatureAccess([]) // Reset feature access when tools change
         setLoading(false)
       } catch (error) {
         handleError(error)
@@ -66,19 +67,19 @@ function RoleBasedAccess() {
 
   useEffect(() => {
     const fetchDataFeatures = async () => {
-      
-        try {
-          const data = {
-            orgId: selectedOrganization,
-            toolId: selectedTool || 0,
-            featureId: 0,
-            parentFeatures: true,
-          }
-          const featureResponse = await fetchFeaturesUrl(data)
-          setParentFeatures(featureResponse)
-        } catch (error) {
-          handleError(error)
+      try {
+        const data = {
+          orgId: selectedOrganization,
+          toolId: selectedTool || 0,
+          featureId: 0,
+          parentFeatures: true,
         }
+        const featureResponse = await fetchFeaturesUrl(data)
+        setParentFeatures(featureResponse)
+        setFeatureAccess([]) 
+      } catch (error) {
+        handleError(error)
+      }
     }
     fetchDataFeatures()
   }, [selectedTool])
@@ -86,11 +87,16 @@ function RoleBasedAccess() {
   const handleOrganizationChange = (e) => {
     const newOrganizationId = Number(e.target.value)
     setSelectedOrganization(newOrganizationId)
+    setFeatureAccess([]) 
   }
 
   const handleToolChange = (e) => {
     const newToolId = Number(e.target.value)
     setSelectedTool(newToolId)
+    setFeatureAccess([]) 
+  }
+  const handleParentFeaturesChanges = () =>{
+    setFeatureAccess([])
   }
 
   const handleSubmit = async (event) => {
@@ -111,7 +117,7 @@ function RoleBasedAccess() {
 
     try {
       const response = await fetchFeaturesUrl(data)
-      setFeatureAccess(response)
+      setFeatureAccess(response) 
     } catch (error) {
       handleError(error)
     } finally {
@@ -192,6 +198,7 @@ function RoleBasedAccess() {
                 data-placeholder='Select option'
                 data-allow-clear='true'
                 ref={parentFeaturesRef}
+                onChange={handleParentFeaturesChanges}
               >
                 <option value=''>Select</option>
                 {parentFeatures !== null &&

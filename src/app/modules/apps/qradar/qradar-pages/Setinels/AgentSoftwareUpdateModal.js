@@ -7,15 +7,16 @@ import { notify, notifyFail } from '../components/notification/Notification'
 const AgentSoftwareUpdateModal = ({isOpen, toggle, items, selectedActionId, refreshData}) => {
   const [updateTiming, setUpdateTiming] = useState('Immediately')
   const [selectedUpdate, setSelectedUpdate] = useState(null)
-  console.log(selectedUpdate, "selectedUpdate")
   const [platform, setPlatform] = useState('windows')
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
   const [updates, setUpdates] = useState([])
-  console.log(updates, "updates")
   const [showDowngrade, setShowDowngrade] = useState(false)
   const [allowDowngrade, setAllowDowngrade] = useState(false)
-  const osTypes = [...new Set(items.map((item) => item.osType.toLowerCase()))]
+  const osTypes = items && items.length > 0 
+  ? [...new Set(items.map((item) => item?.osType?.toLowerCase() || 'windows'))] 
+  : ['windows'];
+
 
   const sendSelectedItemsToBackend = async () => {
     const endPointsData = items.map((item) => ({
@@ -116,9 +117,9 @@ const AgentSoftwareUpdateModal = ({isOpen, toggle, items, selectedActionId, refr
                 value={platform}
                 onChange={handlePlatformChange}
               >
-                {osTypes.map((osType, index) => (
+                {osTypes?.map((osType, index) => (
                   <option key={index} value={osType}>
-                    {osType.charAt(0).toUpperCase() + osType.slice(1)}
+                    {osType?.charAt(0).toUpperCase() + osType?.slice(1)}
                   </option>
                 ))}
               </select>

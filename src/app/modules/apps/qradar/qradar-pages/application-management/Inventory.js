@@ -7,8 +7,6 @@ function Inventory({ id }) {
   const orgId = Number(sessionStorage.getItem("orgId"));
   const [loading, setLoading] = useState(false);
   const [inventory, setInventory] = useState([]);
-  console.log(id, "id");
-  console.log(inventory, "inventory");
   const fetchData = async () => {
     const data = {
       orgID: orgId,

@@ -1,18 +1,18 @@
 // SendMessageModal.js
-import React, { useState } from "react";
-import { Modal, Button } from "react-bootstrap";
-import { fetchAgentActionUrl } from "../../../../../api/Api";
-import { notify, notifyFail } from "../components/notification/Notification";
+import React, {useState} from 'react'
+import {Modal, Button} from 'react-bootstrap'
+import {fetchAgentActionUrl} from '../../../../../api/Api'
+import {notify, notifyFail} from '../components/notification/Notification'
 
-const SendMessageModal = ({ show, handleClose, items, selectedActionId, refreshData }) => {
+const SendMessageModal = ({show, handleClose, items, selectedActionId, refreshData}) => {
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
-  const [message, setMessage] = useState("");
-  const maxCharacters = 140;
+  const [message, setMessage] = useState('')
+  const maxCharacters = 140
 
   const handleChange = (event) => {
-    setMessage(event.target.value);
-  };
+    setMessage(event.target.value)
+  }
 
   const sendSelectedItemsToBackend = async () => {
     const endPointsData = items.map((item) => ({
@@ -36,8 +36,8 @@ const SendMessageModal = ({ show, handleClose, items, selectedActionId, refreshD
       const {isSuccess, message} = response
       if (isSuccess) {
         notify(message)
-        refreshData();
-        handleClose();
+        refreshData()
+        handleClose()
       } else {
         notifyFail(message)
       }
@@ -46,45 +46,53 @@ const SendMessageModal = ({ show, handleClose, items, selectedActionId, refreshD
     }
   }
   const handleSubmit = () => {
-    sendSelectedItemsToBackend()
-    setMessage(""); 
-  };
+    if (!message) {
+      notifyFail('please enter message')
+    } else {
+      sendSelectedItemsToBackend()
+      setMessage('')
+    }
+  }
 
   const handleCloseWithReset = () => {
-    setMessage(""); 
-    handleClose();
-  };
+    setMessage('')
+    handleClose()
+  }
 
   return (
-    <Modal show={show} onHide={handleCloseWithReset} className="application-modal small-modal border-0">
+    <Modal
+      show={show}
+      onHide={handleCloseWithReset}
+      className='application-modal small-modal border-0'
+    >
       <Modal.Header closeButton>
         <Modal.Title>Send Message</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="mb-2 header-filter">
+        <div className='mb-2 header-filter'>
           <textarea
-            className="form-control"
-            placeholder="Type your message..."
+            className='form-control'
+            placeholder='Type your message...'
             maxLength={maxCharacters}
-            rows="4"
+            rows='4'
             value={message}
             onChange={handleChange}
           ></textarea>
-          <div className="text-right mt-2">
+          <div className='text-right mt-2'>
             <small>{maxCharacters - message.length} characters left</small>
           </div>
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleCloseWithReset} className="btn-small">
+        <Button variant='secondary' onClick={handleCloseWithReset} className='btn-small'>
           Close
         </Button>
-        <Button variant="primary" onClick={handleSubmit} className="btn-new btn-small">
+        <Button variant='primary' onClick={handleSubmit} className='btn-new btn-small'>
           Send
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
-export default SendMessageModal;
+export default SendMessageModal
