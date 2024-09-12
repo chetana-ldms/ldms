@@ -22,6 +22,7 @@ const EndpointPopupSentinal = ({selectedEndpoint, showModal, setShowModal, refre
   const id = selectedEndpoint?.endpointId || selectedEndpoint?.id;
   const [actionDropdownOpen, setActionDropdownOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [selectedActionDisplayName, setSelectedActionDisplayName] = useState('');
   const [sendMessageModalVisible, setSendMessageModalVisible] = useState(false)
   const [isDisableAgentModalVisible, setIsDisableAgentModalVisible] = useState(false)
   const [isEnableAgentModalVisible, setIsEnableAgentModalVisible] = useState(false)
@@ -49,6 +50,7 @@ const EndpointPopupSentinal = ({selectedEndpoint, showModal, setShowModal, refre
   const toggleActionDropdown = () => setActionDropdownOpen(!actionDropdownOpen)
   const handleActionClick = (actionId, actionDisplayName) => {
     setSelectedActionId(actionId)
+    setSelectedActionDisplayName(actionDisplayName)
 
     switch (actionDisplayName) {
       case 'Send Message':
@@ -253,7 +255,7 @@ const EndpointPopupSentinal = ({selectedEndpoint, showModal, setShowModal, refre
                       isVisible={isConfirmModalVisible}
                       onContinue={handleConfirm}
                       onDismiss={handleDismiss}
-                      // items={items}
+                      selectedActionDisplayName={selectedActionDisplayName}
                       computerNames={computerNames}
                     />
                     <SendMessageModal

@@ -17,13 +17,13 @@ import General from './General'
 import Inventory from './Inventory'
 import Updates from './Updates'
 import Tags from './Tags'
-import { ToastContainer } from 'react-toastify'
+import {ToastContainer} from 'react-toastify'
 
 const EndpointPopup = ({selectedEndpoint, showModal, setShowModal, refreshData}) => {
   const [activeTab, setActiveTab] = useState('general')
   const id = selectedEndpoint?.endpointId || selectedEndpoint?.id
   const [generalData, setGeneralData] = useState([])
-  console.log(generalData, 'generalData')
+  const [selectedActionDisplayName, setSelectedActionDisplayName] = useState('');
   const [actionDropdownOpen, setActionDropdownOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [sendMessageModalVisible, setSendMessageModalVisible] = useState(false)
@@ -59,6 +59,7 @@ const EndpointPopup = ({selectedEndpoint, showModal, setShowModal, refreshData})
 
   const handleActionClick = (actionId, actionDisplayName) => {
     setSelectedActionId(actionId)
+    setSelectedActionDisplayName(actionDisplayName)
 
     switch (actionDisplayName) {
       case 'Send Message':
@@ -174,7 +175,7 @@ const EndpointPopup = ({selectedEndpoint, showModal, setShowModal, refreshData})
 
   return (
     <Modal className='application-modal' show={showModal} onHide={() => setShowModal(false)}>
-       <ToastContainer />
+      <ToastContainer />
       <Modal.Header closeButton className='pad-10'>
         <Modal.Title>
           {selectedEndpoint?.computerName || selectedEndpoint?.endpointName}
@@ -275,7 +276,7 @@ const EndpointPopup = ({selectedEndpoint, showModal, setShowModal, refreshData})
                       isVisible={isConfirmModalVisible}
                       onContinue={handleConfirm}
                       onDismiss={handleDismiss}
-                      // items={items}
+                      selectedActionDisplayName={selectedActionDisplayName}
                       computerNames={computerNames}
                     />
                     <SendMessageModal

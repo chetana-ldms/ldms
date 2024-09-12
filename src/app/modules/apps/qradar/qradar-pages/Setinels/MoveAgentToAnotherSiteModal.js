@@ -118,7 +118,7 @@ const MoveAgentToAnotherSiteModal = ({show, handleClose, items, selectedActionId
       className='application-modal small-modal border-0'
     >
       <Modal.Header closeButton>
-        <Modal.Title>Move Agent to Another Site</Modal.Title>
+        <Modal.Title>Move Agent to Another Site {items && items.length > 0 && `(${items[0]?.computerName || items[0]?.endpointName})`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className='mb-2 header-filter'>

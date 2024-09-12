@@ -39,6 +39,7 @@ function Endpoint() {
   const [features, setFeatures] = useState([])
   const [openSubmenus, setOpenSubmenus] = useState({})
   const [selectedActionId, setSelectedActionId] = useState(null)
+  const [selectedActionDisplayName, setSelectedActionDisplayName] = useState('');
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false)
   const toggleActionDropdown = () => setActionDropdownOpen(!actionDropdownOpen)
   const toggleGroupDropdown = () => setGroupDropdownOpen(!groupDropdownOpen)
@@ -289,7 +290,7 @@ function Endpoint() {
   }
   const handleActionClick = (actionId, actionDisplayName) => {
     setSelectedActionId(actionId)
-
+    setSelectedActionDisplayName(actionDisplayName)
     switch (actionDisplayName) {
       case 'Send Message':
         setSendMessageModalVisible(true)
@@ -452,7 +453,7 @@ function Endpoint() {
                 isVisible={isConfirmModalVisible}
                 onContinue={handleConfirm}
                 onDismiss={handleDismiss}
-                // items={items}
+                selectedActionDisplayName={selectedActionDisplayName}
                 computerNames={computerNames}
               />
               <SendMessageModal

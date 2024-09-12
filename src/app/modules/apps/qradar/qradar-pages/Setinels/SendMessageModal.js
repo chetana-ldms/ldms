@@ -66,7 +66,7 @@ const SendMessageModal = ({show, handleClose, items, selectedActionId, refreshDa
       className='application-modal small-modal border-0'
     >
       <Modal.Header closeButton>
-        <Modal.Title>Send Message</Modal.Title>
+        <Modal.Title>Send Message {items && items.length > 0 && `(${items[0]?.computerName || items[0]?.endpointName})`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className='mb-2 header-filter'>

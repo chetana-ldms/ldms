@@ -24,7 +24,7 @@ function Sites() {
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false)
   const toggleActionDropdown = () => setActionDropdownOpen(!actionDropdownOpen)
   const [items, setItems] = useState([])
-  console.log(items, 'items')
+  const [selectedActionDisplayName, setSelectedActionDisplayName] = useState('');
   const [computerNames, setComputerNames] = useState('')
   const [loading, setLoading] = useState(false)
   const disableActions = ['Delete Site', 'Expire Site', 'Reactivate Site']
@@ -99,6 +99,7 @@ function Sites() {
   }, [])
   const handleActionClick = (actionId, actionDisplayName) => {
     setSelectedActionId(actionId)
+    setSelectedActionDisplayName(actionDisplayName)
 
     switch (actionDisplayName) {
       // case 'Send Message':
@@ -225,6 +226,7 @@ function Sites() {
                 isVisible={isConfirmModalVisible}
                 onContinue={handleConfirm}
                 onDismiss={handleDismiss}
+                selectedActionDisplayName={selectedActionDisplayName}
                 computerNames={computerNames}
               />
               <button className='btn btn-green btn-small ms-5' onClick={handleNewSiteClick}>

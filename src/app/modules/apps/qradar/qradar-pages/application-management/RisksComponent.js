@@ -194,7 +194,7 @@ function RisksComponent() {
               <div className='col-lg-3 d-flex justify-content-between'>
                 <div className='fs-15 mt-2'>
                   {' '}
-                  Total({currentItems.length}/{filteredList.length})
+                  Total({currentItems?currentItems.length:0} / {filteredList?filteredList.length:0})
                 </div>
                 <div className=''>
                   <div className='export-report border-0 float-right'>

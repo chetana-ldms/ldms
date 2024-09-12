@@ -531,7 +531,7 @@ function Exclusions() {
               </button>
               <div className='fs-15 mt-2 ms-5'>
                 {' '}
-                Total({currentItems.length}/{totalCount})
+                Total({currentItems?currentItems.length:0} / {totalCount?totalCount.length:0})
               </div>
             </div>
             <div className='col-lg-2 text-right'>

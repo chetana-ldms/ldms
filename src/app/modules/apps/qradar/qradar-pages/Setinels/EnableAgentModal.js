@@ -49,7 +49,7 @@ const EnableAgentModal = ({isOpen, toggle, items, selectedActionId, refreshData}
   return (
     <Modal show={isOpen} onHide={toggle} className='EnableAgentModal application-modal'>
       <Modal.Header closeButton>
-        <Modal.Title>Enable Agent</Modal.Title>
+        <Modal.Title>Enable Agent {items && items.length > 0 && `(${items[0]?.computerName || items[0]?.endpointName})`}</Modal.Title>
         <button type='button' className='application-modal-close' aria-label='Close'>
           <i className='fa fa-close' />
         </button>

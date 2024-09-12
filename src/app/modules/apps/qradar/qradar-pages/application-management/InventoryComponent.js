@@ -195,7 +195,7 @@ function InventoryComponent() {
               />
             </div>
             <div className="col-lg-3 d-flex justify-content-between">
-            <div className="fs-15 mt-2"> Total({currentItems.length}/{filteredList.length})</div>              
+            <div className="fs-15 mt-2"> Total({currentItems?currentItems.length:0} / {filteredList?filteredList.length:0})</div>              
             <div className=''>
               <div className='export-report border-0 float-right'>
                 <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>

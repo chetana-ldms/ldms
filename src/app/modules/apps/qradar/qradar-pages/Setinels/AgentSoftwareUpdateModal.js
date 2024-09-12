@@ -13,7 +13,6 @@ const AgentSoftwareUpdateModal = ({isOpen, toggle, items, selectedActionId, refr
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
   const [updates, setUpdates] = useState([])
-  console.log(updates, "updates")
   const [showDowngrade, setShowDowngrade] = useState(false)
   const [allowDowngrade, setAllowDowngrade] = useState(false)
   const osTypes = items && items.length > 0 
@@ -106,7 +105,7 @@ const AgentSoftwareUpdateModal = ({isOpen, toggle, items, selectedActionId, refr
   return (
     <Modal show={isOpen} onHide={toggle} className='AgentSoftwareUpdateModal application-modal'>
       <Modal.Header closeButton>
-        <Modal.Title>Update Agent</Modal.Title>
+        <Modal.Title>Update Agent {items && items.length > 0 && `(${items[0]?.computerName || items[0]?.endpointName})`}</Modal.Title>
         <button type='button' className='application-modal-close' aria-label='Close'>
           <i className='fa fa-close' />
         </button>
