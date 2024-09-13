@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { notify, notifyFail } from "../components/notification/Notification";
-import axios from "axios";
+import 'react-toastify/dist/ReactToastify.css'
 import { UsersListLoading } from "../components/loading/UsersListLoading";
 import {
   fetchLDPToolsByToolType,
@@ -10,6 +10,7 @@ import {
 } from "../../../../../api/ConfigurationApi";
 import { fetchMasterData } from "../../../../../api/Api";
 import { useErrorBoundary } from "react-error-boundary";
+import { ToastContainer } from "react-toastify";
 
 const AddToolAction = () => {
   const orgId = Number(sessionStorage.getItem("orgId"));
@@ -46,43 +47,47 @@ const AddToolAction = () => {
     fetchToolTypesData();
   }, []);
   
-  const handleSubmit = async (event) => {
-    if (!toolID.current.value) {
-      errors.toolID = "Enter Tool Type";
-      setLoading(false);
-      return errors;
-    }
-    if (!toolTypeActionID.current.value) {
-      errors.toolTypeActionID = "Enter Tool Action Type";
-      setLoading(false);
-      return errors;
-    }
-    setLoading(true);
-    event.preventDefault();
-    const createdUserId = Number(sessionStorage.getItem("userId"));
-    const createdDate = new Date().toISOString();
-    var data = {
-      toolID: toolID.current.value,
-      toolTypeActionID: toolTypeActionID.current.value,
-      createdDate,
-      createdUserId,
-    };
-    try {
-      const responseData = await fetchToolActionAddUrl(data);
-      const { isSuccess } = responseData;
+ const handleSubmit = async (event) => {
+  event.preventDefault(); 
+  if (!toolID.current.value) {
+    notifyFail("Please select a Tool");
+    return; 
+  }
 
-      if (isSuccess) {
-        notify("Tool Action Saved");
-        navigate("/qradar/tool-actions/updated");
-      } else {
-        notifyFail("Failed to save Tool Action");
-      }
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setLoading(false);
-    }
+  if (!toolTypeActionID.current.value) {
+    notifyFail("Please select a Tool Action Type");
+    return; 
+  }
+
+  setLoading(true);
+  
+  const createdUserId = Number(sessionStorage.getItem("userId"));
+  const createdDate = new Date().toISOString();
+
+  const data = {
+    toolID: toolID.current.value,
+    toolTypeActionID: toolTypeActionID.current.value,
+    createdDate,
+    createdUserId,
   };
+
+  try {
+    const responseData = await fetchToolActionAddUrl(data);
+    const { isSuccess } = responseData;
+
+    if (isSuccess) {
+      notify("Tool Action Saved");
+      navigate("/qradar/tool-actions/updated");
+    } else {
+      notifyFail("Failed to save Tool Action");
+    }
+  } catch (error) {
+    handleError(error);
+  } finally {
+    setLoading(false); 
+  }
+};
+
   let handleChangeToolType = (event) => {
     let selectedValue = event.target.value;
     const result = async () => {
@@ -117,10 +122,11 @@ const AddToolAction = () => {
   };
   return (
     <div className="config card">
+      <ToastContainer />
       {loading && <UsersListLoading />}
       <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">
-          <span className="white">Add New Tool Action</span>
+          <span className="white">Add Tool Action</span>
         </h3>
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">
@@ -143,7 +149,7 @@ const AddToolAction = () => {
                   htmlFor="toolID"
                   className="form-label fs-6 fw-bolder mb-3"
                 >
-                  Select Tool Type
+                  Tool Type
                 </label>
                 <select
                   className="form-select form-select-solid"
@@ -152,7 +158,6 @@ const AddToolAction = () => {
                   data-allow-clear="true"
                   id="toolID"
                   onChange={handleChangeToolType}
-                  required
                 >
                   <option value="">Select</option>
                   {toolTypes?.map((item, index) => (
@@ -169,7 +174,7 @@ const AddToolAction = () => {
                   htmlFor="toolID"
                   className="form-label fs-6 fw-bolder mb-3"
                 >
-                  Select Tools
+                  Tools
                 </label>
                 <select
                   className="form-select form-select-solid"
@@ -178,7 +183,6 @@ const AddToolAction = () => {
                   data-allow-clear="true"
                   id="toolId"
                   ref={toolID}
-                  required
                 >
                   <option value="">Select</option>
                   {ldpTools?.map((item, index) => (
@@ -195,7 +199,7 @@ const AddToolAction = () => {
                   htmlFor="toolTypeActionID"
                   className="form-label fs-6 fw-bolder mb-3"
                 >
-                  Select Tool Action Type
+                  Tool Action Type
                 </label>
                 <select
                   className="form-select form-select-solid"
@@ -204,7 +208,6 @@ const AddToolAction = () => {
                   data-allow-clear="true"
                   id="toolTypeActionID"
                   ref={toolTypeActionID}
-                  required
                 >
                   <option value="">Select</option>
                   {toolActionTypes.map((item, index) => (

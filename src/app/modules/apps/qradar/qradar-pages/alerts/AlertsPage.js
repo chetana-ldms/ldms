@@ -336,7 +336,9 @@ const AlertsPage = () => {
     return css_classes[randomIndex]
   }
   const handleCloseForm = () => {
+    setActionValue('')
     setShowForm(false)
+    resetForm()
   }
   const handleIgnoreSubmit = async () => {
     try {
@@ -385,6 +387,7 @@ const AlertsPage = () => {
     values,
     handleChange: handleEscalate,
     handleSubmit,
+    resetForm, 
   } = useFormik({
     initialValues: {
       owner: '',
@@ -410,24 +413,12 @@ const AlertsPage = () => {
         reloadNotes()
         notify(message)
         setEscalate(false)
+        setActionValue('')
         setShowForm(false)
       } else {
         notifyFail(message)
       }
-      handleEscalate({
-        target: {
-          name: 'owner',
-          value: '',
-        },
-      })
-      handleEscalate({
-        target: {
-          name: 'comments',
-          value: '',
-        },
-      }).catch((error) => {
-        handleError(error)
-      })
+      resetForm()
     },
   })
   const slaCal = (data) => {
@@ -469,6 +460,7 @@ const AlertsPage = () => {
       analystVerdict.current.value = 0
     }
     setFilteredAlertDate([])
+    setSelectedFilterValue(1)
     setAlertsCount(0)
     setpageCount(0)
   }
@@ -610,7 +602,7 @@ const AlertsPage = () => {
     } else if (!statusFromDashBoard && !daysFromDashBoard) {
       if (searchValue || status.current || selectedFilterValue) {
         data2.statusId = status.current?.value || 0
-        data2.searchText = searchValue || ''
+        data2.name = searchValue || ''
         data2.searchDurationInDays = selectedFilterValue || 0
       }
     }
@@ -1581,7 +1573,6 @@ const AlertsPage = () => {
                           value={selectedFilterValue}
                           onChange={handleFilterChange}
                         >
-                          <option value=''>Select</option>
                           {selectedDays?.map((day, index) => (
                             <option key={index} value={day.dataValue}>
                               {day.dataName}

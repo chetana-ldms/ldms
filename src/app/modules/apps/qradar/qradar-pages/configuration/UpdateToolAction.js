@@ -1,40 +1,42 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { notify, notifyFail } from "../components/notification/Notification";
-import axios from "axios";
-import { UsersListLoading } from "../components/loading/UsersListLoading";
-import { fetchLDPTools, fetchMasterData } from "../../../../../api/Api";
+import React, {useState, useRef, useEffect} from 'react'
+import {Link, useLocation, useNavigate, useParams} from 'react-router-dom'
+import {notify, notifyFail} from '../components/notification/Notification'
+import 'react-toastify/dist/ReactToastify.css'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
+import {fetchLDPTools, fetchMasterData} from '../../../../../api/Api'
 import {
   fetchLDPToolsByToolType,
   fetchToolActionDetails,
   fetchToolActionUpdateUrl,
   fetchToolTypeActions,
-} from "../../../../../api/ConfigurationApi";
-import { useErrorBoundary } from "react-error-boundary";
+} from '../../../../../api/ConfigurationApi'
+import {useErrorBoundary} from 'react-error-boundary'
+import { ToastContainer } from 'react-toastify'
 
 const UpdateToolAction = () => {
-  const orgId = Number(sessionStorage.getItem("orgId"));
+  const orgId = Number(sessionStorage.getItem('orgId'))
   const toolIds = Number(sessionStorage.getItem('toolID'))
-  const handleError = useErrorBoundary();
-  const navigate = useNavigate();
-  const { id } = useParams();
-  const [loading, setLoading] = useState(false);
-  const [toolTypes, setToolTypes] = useState([]);
-  const [toolActionTypes, setToolActionTypes] = useState([]);
+  const handleError = useErrorBoundary()
+  const navigate = useNavigate()
+  const {id} = useParams()
+  const [loading, setLoading] = useState(false)
+  const [toolTypes, setToolTypes] = useState([])
+  console.log(toolTypes, "toolTypes")
+  const [toolActionTypes, setToolActionTypes] = useState([])
   const [toolTypeAction, setToolTypeAction] = useState({
-    toolTypeName: "",
-    toolName: "",
-    toolID: "",
-    toolTypeActionName: "",
-    toolTypeActionID: "",
-    selectedToolId: "",
-  });
-  console.log(toolTypeAction, "toolTypeAction");
-  const [ldpTools, setLdpTools] = useState([]);
-  const toolID = useRef();
-  const toolTypeActionID = useRef();
-  const toolId = useRef();
-  const errors = {};
+    toolTypeName: '',
+    toolName: '',
+    toolID: '',
+    toolTypeActionName: '',
+    toolTypeActionID: '',
+    selectedToolId: '',
+  })
+  console.log(toolTypeAction, 'toolTypeAction')
+  const [ldpTools, setLdpTools] = useState([])
+  const toolID = useRef()
+  const toolTypeActionID = useRef()
+  const toolId = useRef()
+  const errors = {}
   const location = useLocation()
   const [save, setSave] = useState(location.state?.save || '')
   useEffect(() => {
@@ -43,215 +45,199 @@ const UpdateToolAction = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchToolActionDetails(id);
+        const data = await fetchToolActionDetails(id)
         setToolTypeAction((prevToolTypeAction) => ({
           ...prevToolTypeAction,
           toolTypeName: data.toolTypeName,
           toolName: data.toolName,
           toolTypeActionName: data.toolTypeActionName,
-          toolID: data.toolID, //2nd field
-          toolTypeId: data.toolTypeId, //1st field
-          toolTypeActionID: data.toolTypeActionID, //3rd field
-        }));
+          toolID: data.toolID,
+          toolTypeId: data.toolTypeId,
+          toolTypeActionID: data.toolTypeActionID,
+        }))
+        if (data.toolID) { 
+          const ldpToolsData = await fetchLDPTools();
+          const filteredData = ldpToolsData.filter((tool) => tool.toolId === data.toolID);
+          setLdpTools(filteredData);
+        }
+        if (data.toolTypeActionID) { 
+          const toolActions = await fetchToolTypeActions();
+          // const filteredData = toolActions.filter((tool) => tool.toolTypeID === data.toolID);
+          setToolActionTypes(toolActions);
+        }
+        
       } catch (error) {
-        handleError(error);
+        handleError(error)
       }
-    };
+    }
 
-    fetchData();
-  }, [id]);
+    fetchData()
+  }, [id])
 
   const handleChange = (event, field) => {
-    let selectedId = event.target.options[
-      event.target.selectedIndex
-    ].getAttribute("data-id");
-    if (field === "selectToolType") {
+    let selectedId = event.target.options[event.target.selectedIndex].getAttribute('data-id')
+    if (field === 'selectToolType') {
       setToolTypeAction({
         ...toolTypeAction,
         selectedToolId: selectedId,
         toolTypeName: event.target.value,
-      });
+      })
       const result = async () => {
         try {
           const data = {
             toolTypeId: Number(selectedId),
-          };
-          const response = await fetchLDPToolsByToolType(data);
-          const result = response.ldpToolsList;
-          setLdpTools(result);
+          }
+          const response = await fetchLDPToolsByToolType(data)
+          const result = response.ldpToolsList
+          setLdpTools(result)
         } catch (error) {
-          handleError(error);
+          handleError(error)
         }
-      };
+      }
 
-      result();
+      result()
       const fetch = async () => {
         try {
-          setLoading(true);
-          const response = await fetchToolTypeActions();
-          const result = response.filter(
-            (item) => item.toolTypeID === Number(selectedId)
-          );
-          setToolActionTypes(result);
+          setLoading(true)
+          const response = await fetchToolTypeActions()
+          const result = response.filter((item) => item.toolTypeID === Number(selectedId))
+          setToolActionTypes(result)
         } catch (error) {
-          handleError(error);
+          handleError(error)
         } finally {
-          setLoading(false);
+          setLoading(false)
         }
-      };
-      fetch();
-    } else if (field === "tools") {
+      }
+      fetch()
+    } else if (field === 'tools') {
       setToolTypeAction({
         ...toolTypeAction,
         toolName: event.target.value,
         toolID: selectedId,
-      });
-    } else if (field === "toolActionType") {
+      })
+    } else if (field === 'toolActionType') {
       setToolTypeAction({
         ...toolTypeAction,
         toolTypeActionName: event.target.value,
         toolTypeActionID: selectedId,
-      });
+      })
     }
-  };
+  }
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchLDPTools();
-        setLdpTools(data);
-      } catch (error) {
-        handleError(error);
-      }
-    };
-
-    fetchData();
-  }, []);
-  useEffect(() => {
-    setLoading(true);
-    const fetch = async () => {
-      try {
-        setLoading(true);
-        const response = await fetchToolTypeActions();
-        setToolActionTypes(response);
-      } catch (error) {
-        handleError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetch();
+    // setLoading(true)
+    // const fetch = async () => {
+    //   try {
+    //     setLoading(true)
+    //     const response = await fetchToolTypeActions()
+    //     setToolActionTypes(response)
+    //   } catch (error) {
+    //     handleError(error)
+    //   } finally {
+    //     setLoading(false)
+    //   }
+    // }
+    // fetch()
 
     const fetchToolTypesData = async () => {
       const data = {
         maserDataType: 'Tool_Types',
         orgId: orgId,
         toolId: toolIds,
-      };
-  
-      try {
-        setLoading(true);
-        const typeData = await fetchMasterData(data);
-        setToolTypes(typeData);
-        setLoading(false);
-      } catch (error) {
-        handleError(error);
-        setLoading(false); 
       }
-    };
-  
-    fetchToolTypesData();
-  }, []);
+
+      try {
+        setLoading(true)
+        const typeData = await fetchMasterData(data)
+        setToolTypes(typeData)
+        setLoading(false)
+      } catch (error) {
+        handleError(error)
+        setLoading(false)
+      }
+    }
+
+    fetchToolTypesData()
+  }, [])
   const handleSubmit = async (event, toolTypeAction) => {
-    setLoading(true);
-    if (!toolTypeActionID.current.value) {
-      errors.toolTypeActionID = "Select Tool Action";
-      setLoading(false);
-      return errors;
+    event.preventDefault()
+    if (!toolTypeAction.toolID) {
+      notifyFail("Please select a Tool");
+      return; 
     }
-    if (!toolID.current.value) {
-      errors.toolID = "Select Tool Type";
-      setLoading(false);
-      return errors;
+    if (!toolTypeAction.toolTypeActionID) {
+      notifyFail("Please select a Tool Action Type");
+      return; 
     }
-    event.preventDefault();
-    const modifiedUserId = Number(sessionStorage.getItem("userId"));
-    const modifiedDate = new Date().toISOString();
+    setLoading(true)
+    const modifiedUserId = Number(sessionStorage.getItem('userId'))
+    const modifiedDate = new Date().toISOString()
     var data = {
       toolID: toolTypeAction.toolID,
       toolTypeActionID: toolTypeAction.toolTypeActionID,
       toolActionID: Number(id),
       modifiedDate,
       modifiedUserId,
-    };
+    }
     try {
-      const responseData = await fetchToolActionUpdateUrl(data);
-      const { isSuccess } = responseData;
+      const responseData = await fetchToolActionUpdateUrl(data)
+      const {isSuccess} = responseData
 
       if (isSuccess) {
-        notify("Tool Action Updated");
-        navigate("/qradar/tool-actions/updated");
+        notify('Tool Action Updated')
+        navigate('/qradar/tool-actions/updated')
       } else {
-        notifyFail("Failed to update Tool Action");
+        notifyFail('Failed to update Tool Action')
       }
     } catch (error) {
-      handleError(error);
+      handleError(error)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
-    <div className="config card">
+    <div className='config card'>
+       <ToastContainer />
       {loading && <UsersListLoading />}
-      <div className="card-header bg-heading">
-        <h3 className="card-title align-items-start flex-column">
+      <div className='card-header bg-heading'>
+        <h3 className='card-title align-items-start flex-column'>
           {save ? (
             <span className='white'>View Tool Action</span>
           ) : (
             <span className='white'>Update Tool Action</span>
           )}
         </h3>
-        <div className="card-toolbar">
-          <div className="d-flex align-items-center gap-2 gap-lg-3">
-            <Link
-              to="/qradar/tool-actions/list"
-              className="white fs-15 text-underline"
-            >
-              <i className="fa fa-chevron-left white mg-right-5" />
+        <div className='card-toolbar'>
+          <div className='d-flex align-items-center gap-2 gap-lg-3'>
+            <Link to='/qradar/tool-actions/list' className='white fs-15 text-underline'>
+              <i className='fa fa-chevron-left white mg-right-5' />
               Back
             </Link>
           </div>
         </div>
       </div>
       <form>
-        <div className="card-body pad-10">
-          <div className="row mb-6 table-filter">
-            <div className="col-lg-4 mb-4 mb-lg-0">
-              <div className="fv-row mb-0">
-                <label
-                  htmlFor="toolID"
-                  className="form-label fs-6 fw-bolder mb-3"
-                >
-                  Select Tool Type
+        <div className='card-body pad-10'>
+          <div className='row mb-6 table-filter'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
+                  Tool Type
                 </label>
                 <select
-                  className="form-select form-select-solid"
-                  data-kt-select2="true"
-                  data-placeholder="Select option"
-                  data-allow-clear="true"
-                  id="toolID"
+                  className='form-select form-select-solid'
+                  data-kt-select2='true'
+                  data-placeholder='Select option'
+                  data-allow-clear='true'
+                  id='toolID'
                   ref={toolID}
-                  value={toolTypeAction?.toolTypeName }
-                  onChange={(e) => handleChange(e, "selectToolType")}
+                  value={toolTypeAction?.toolTypeName}
+                  onChange={(e) => handleChange(e, 'selectToolType')}
                   required
                 >
-                  <option value="">Select Tool Type</option>
+                  <option value=''>Select Tool Type</option>
                   {toolTypes?.map((item, index) => (
-                    <option
-                      value={item.value}
-                      key={index}
-                      data-id={item.dataID}
-                    >
+                    <option value={item.value} key={index} data-id={item.dataID}>
                       {item.dataValue}
                     </option>
                   ))}
@@ -259,58 +245,46 @@ const UpdateToolAction = () => {
               </div>
             </div>
 
-            <div className="col-lg-4 mb-4 mb-lg-0">
-              <div className="fv-row mb-0">
-                <label
-                  htmlFor="toolID"
-                  className="form-label fs-6 fw-bolder mb-3"
-                >
-                  Select Tools
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
+                  Tools
                 </label>
                 <select
-                  className="form-select form-select-solid"
-                  data-kt-select2="true"
-                  data-placeholder="Select option"
-                  data-allow-clear="true"
-                  id="toolId"
+                  className='form-select form-select-solid'
+                  data-kt-select2='true'
+                  data-placeholder='Select option'
+                  data-allow-clear='true'
+                  id='toolId'
                   ref={toolId}
                   value={toolTypeAction?.toolName}
-                  onChange={(e) => handleChange(e, "tools")}
-                  required
+                  onChange={(e) => handleChange(e, 'tools')}
                 >
-                  <option value="">Select Tools</option>
+                  <option value=''>Select Tools</option>
                   {ldpTools?.map((item, index) => (
-                    <option
-                      value={item.toolName}
-                      key={index}
-                      data-id={item.toolId}
-                    >
+                    <option value={item.toolName} key={index} data-id={item.toolId}>
                       {item.toolName}
                     </option>
                   ))}
                 </select>
               </div>
             </div>
-            <div className="col-lg-4 mb-4 mb-lg-0">
-              <div className="fv-row mb-0">
-                <label
-                  htmlFor="toolTypeActionID"
-                  className="form-label fs-6 fw-bolder mb-3"
-                >
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='toolTypeActionID' className='form-label fs-6 fw-bolder mb-3'>
                   Tool Action Type
                 </label>
                 <select
-                  className="form-select form-select-solid"
-                  data-kt-select2="true"
-                  data-placeholder="Select option"
-                  data-allow-clear="true"
-                  id="toolTypeActionID"
+                  className='form-select form-select-solid'
+                  data-kt-select2='true'
+                  data-placeholder='Select option'
+                  data-allow-clear='true'
+                  id='toolTypeActionID'
                   value={toolTypeAction?.toolTypeActionName}
                   ref={toolTypeActionID}
-                  onChange={(e) => handleChange(e, "toolActionType")}
-                  required
+                  onChange={(e) => handleChange(e, 'toolActionType')}
                 >
-                  <option value="">Select Tool Action Type</option>
+                  <option value=''>Select Tool Action Type</option>
                   {toolActionTypes?.map((item, index) => (
                     <option
                       value={item.toolTypeActionName}
@@ -326,25 +300,25 @@ const UpdateToolAction = () => {
           </div>
         </div>
 
-        <div className="card-footer pad-10 float-right">
+        <div className='card-footer pad-10 float-right'>
           <button
-            type="submit"
+            type='submit'
             onClick={(e) => handleSubmit(e, toolTypeAction)}
-            className="btn btn-new btn-small"
+            className='btn btn-new btn-small'
             style={{display: loading || save ? 'none' : 'inline-block'}}
           >
-            {!loading && "Update Changes"}
+            {!loading && 'Update Changes'}
             {loading && (
-              <span className="indicator-progress" style={{ display: "block" }}>
-                Please wait...{" "}
-                <span className="spinner-border spinner-border-sm align-middle ms-2"></span>
+              <span className='indicator-progress' style={{display: 'block'}}>
+                Please wait...{' '}
+                <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
               </span>
             )}
           </button>
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export { UpdateToolAction };
+export {UpdateToolAction}
