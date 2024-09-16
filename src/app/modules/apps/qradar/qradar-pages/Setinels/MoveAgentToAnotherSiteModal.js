@@ -102,6 +102,14 @@ const MoveAgentToAnotherSiteModal = ({show, handleClose, items, selectedActionId
     }
   }
   const handleSubmit = () => {
+    if(!accountId){
+      notifyFail("Please select an Account")
+      return;
+    }
+    if(!siteId){
+      notifyFail("Please select the Site")
+      return;
+    }
     sendSelectedItemsToBackend()
     window.location.reload();
   }

@@ -69,6 +69,10 @@ const DisableAgentModal = ({isOpen, toggle, items, selectedActionId, refreshData
   }
 
   const handleDisable = () => {
+    if (isExpirationChecked && (!inputValue || isNaN(parseInt(inputValue, 10)))) {
+      notifyFail('Please select a valid expiration time in hours.')
+      return
+    }
     sendSelectedItemsToBackend()
   }
 

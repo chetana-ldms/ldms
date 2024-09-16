@@ -4,8 +4,8 @@ import {fetchAgentActionUrl} from '../../../../../api/Api'
 import {notify, notifyFail} from '../components/notification/Notification'
 
 const FetchLogsModal = ({isOpen, toggle, items, selectedActionId, refreshData}) => {
-  const [agentLogsChecked, setAgentLogsChecked] = useState(false)
-  const [endpointLogsChecked, setEndpointLogsChecked] = useState(false)
+  const [agentLogsChecked, setAgentLogsChecked] = useState(true)
+  const [endpointLogsChecked, setEndpointLogsChecked] = useState(true)
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
 
@@ -46,6 +46,10 @@ const FetchLogsModal = ({isOpen, toggle, items, selectedActionId, refreshData}) 
     }
   }
   const handleSubmit = () => {
+    if (!agentLogsChecked && !endpointLogsChecked) {
+      notifyFail('You must select at least one type of logs to fetch.')
+      return
+    }
     sendSelectedItemsToBackend()
   }
 
