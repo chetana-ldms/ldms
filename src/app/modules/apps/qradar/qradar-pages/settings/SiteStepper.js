@@ -9,7 +9,7 @@ const SiteStepper = () => {
   const [activeStep, setActiveStep] = useState('site-name')
   const [siteNameData, setSiteNameData] = useState({siteName: '', siteDescription: ''})
   const [siteTypeData, setSiteTypeData] = useState({
-    siteType: 'trial',
+    siteType: 'Trial',
     selectedExpirationDate: '',
     isNonExpireChecked: true,
     skuSelected: false,
@@ -33,17 +33,18 @@ const SiteStepper = () => {
           <SiteType
             setActiveStep={setActiveStep}
             siteTypeData={siteTypeData}
+            siteNameData={siteNameData}
             setSiteTypeData={setSiteTypeData} 
           />
         )
-      case 'site-policy':
-        return (
-          <SitePolicy
-            setActiveStep={setActiveStep}
-            siteNameData={siteNameData}
-            siteTypeData={siteTypeData}
-          />
-        )
+      // case 'site-policy':
+      //   return (
+      //     <SitePolicy
+      //       setActiveStep={setActiveStep}
+      //       siteNameData={siteNameData}
+      //       siteTypeData={siteTypeData}
+      //     />
+      //   )
       default:
         return <SiteName setActiveStep={setActiveStep} />
     }
@@ -73,16 +74,16 @@ const SiteStepper = () => {
                   <div className='stepper-circle'>2</div>
                   <div className='stepper-label'>Site Type</div>
                 </div>
-                <div
+                {/* <div
                   className={`stepper-line ${activeStep !== 'site-type' ? 'completed' : ''}`}
-                ></div>
-                <div
+                ></div> */}
+                {/* <div
                   className={`stepper-item ${activeStep === 'site-policy' ? 'active' : ''}`}
                   onClick={() => setActiveStep('site-policy')}
                 >
                   <div className='stepper-circle'>3</div>
                   <div className='stepper-label'>Site Policy</div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

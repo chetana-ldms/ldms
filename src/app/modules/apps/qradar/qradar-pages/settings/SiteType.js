@@ -1,18 +1,60 @@
 import React from 'react'
 import {useNavigate} from 'react-router-dom'
-import {notifyFail} from '../components/notification/Notification'
+import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
+import { fetchSitesCreateUrl } from '../../../../../api/SettingsApi'
 
-const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData}) => {
+const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData, siteNameData}) => {
+  const accountId = sessionStorage.getItem('accountId')
+  const siteId = sessionStorage.getItem('siteId')
   const navigate = useNavigate()
 
-  const handleNext = (event) => {
+  const handleNext = async (event) => {
     event.preventDefault()
     if (!siteTypeData.skuSelected) {
       notifyFail('Please select a SKU')
       return
     }
-    setActiveStep('site-policy')
+    
+    // setActiveStep('site-policy')
+    const expirationDate = siteTypeData?.selectedExpirationDate
+    ? new Date(siteTypeData.selectedExpirationDate).toISOString()
+    : null
+
+    const data = {
+      expiration: expirationDate,
+      unlimitedExpiration: siteTypeData?.isNonExpireChecked,
+      unlimitedLicenses: siteTypeData?.isUnlimitedLicenses,
+      inherits: true,
+      name: siteNameData?.siteName,
+      siteType: siteTypeData?.siteType,
+      accountId: accountId,
+      description: siteNameData?.siteDescription,
+      totalLicenses: siteTypeData?.totalAgents,
+      orgId : Number(sessionStorage.getItem('orgId')),
+      toolId : Number(sessionStorage.getItem('toolID')),
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem('userId')),
+      siteId: siteId
+    }
+    console.log(siteTypeData, "siteTypeData")
+    console.log(siteNameData, "siteNameData")
+
+    try {
+      const responseData = await fetchSitesCreateUrl(data)
+      const {isSuccess, message} = responseData
+
+      if (isSuccess) {
+        notify(message)
+        setTimeout(() => {
+          navigate('/qradar/sites/list')
+        }, 2000)
+      } else {
+        notifyFail(message)
+      }
+    } catch (error) {
+      console.log(error)
+    } 
   }
 
   const handleBack = (event) => {
@@ -31,7 +73,7 @@ const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData}) => {
   const handleNonExpireChange = (event) => {
     setSiteTypeData({...siteTypeData, isNonExpireChecked: event.target.checked})
     if (event.target.checked) {
-      setSiteTypeData({...siteTypeData, selectedExpirationDate: ''}) // Clear the date if Non-Expire is checked
+      setSiteTypeData({...siteTypeData, selectedExpirationDate: ''}) 
     }
   }
 
@@ -77,18 +119,18 @@ const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData}) => {
                     <label className='me-3'>
                       <input
                         type='radio'
-                        value='trial'
-                        checked={siteTypeData.siteType === 'trial'}
-                        onChange={() => setSiteTypeData({...siteTypeData, siteType: 'trial'})}
+                        value='Trial'
+                        checked={siteTypeData.siteType === 'Trial'}
+                        onChange={() => setSiteTypeData({...siteTypeData, siteType: 'Trial'})}
                       />{' '}
                       Trial
                     </label>
                     <label>
                       <input
                         type='radio'
-                        value='paid'
-                        checked={siteTypeData.siteType === 'paid'}
-                        onChange={() => setSiteTypeData({...siteTypeData, siteType: 'paid'})}
+                        value='Paid'
+                        checked={siteTypeData.siteType === 'Paid'}
+                        onChange={() => setSiteTypeData({...siteTypeData, siteType: 'Paid'})}
                       />{' '}
                       Paid
                     </label>
@@ -147,8 +189,8 @@ const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData}) => {
                           <i className='bi bi-trash'></i> {/* Bootstrap trash icon */}
                         </button>
                       </div>
-                      <div className='card-body'>
-                        <strong>Surfaces</strong>
+                      <div className='card-body p-0 m-0'>
+                        <strong className='mt-2'>Surfaces</strong>
                         <div className='row mt-4 mb-3'>
                           <div className='col-md-4'>
                             <label>
@@ -162,18 +204,22 @@ const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData}) => {
                             </label>
                           </div>
                           <div className='col-md-8 mt-4'>
-                            <label>
-                              <input
+                            <div className='ms-5 mt-5'>
+                            <input
+                              className='form-check-input widget-13-check'
                                 type='checkbox'
                                 checked={siteTypeData.isUnlimitedLicenses}
                                 onChange={handleUnlimitedLicensesChange}
                               />{' '}
+                              <label className='ms-5'>
                               Unlimited licenses
                             </label>
+                            </div>
+                              
                           </div>
                         </div>
                       </div>
-                      <div className='card-body'>
+                      <div className='card-body p-0 m-0'>
                         <strong>Add-ons</strong>
                         <div className='row'>
                           <div className='col-md-6 d-flex align-items-center mt-4'>
@@ -182,6 +228,7 @@ const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData}) => {
                                 type='checkbox'
                                 checked={siteTypeData.isRoguesChecked}
                                 onChange={handleRoguesChange}
+                                className='disabled'
                               />{' '}
                               Rogues{' '}
                               <i

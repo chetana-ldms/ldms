@@ -10,6 +10,7 @@ import {notify, notifyFail} from '../components/notification/Notification'
 import DropdownItemWithSubmenu from '../Setinels/DropdownItemWithSubmenu'
 import ContinueConfirmation from '../../../../../../utils/ContinueConfirmation'
 import { useNavigate } from 'react-router-dom'
+import UpdateSiteModel from './UpdateSiteModel'
 
 function Sites() {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ function Sites() {
   const [selectedActionDisplayName, setSelectedActionDisplayName] = useState('');
   const [computerNames, setComputerNames] = useState('')
   const [loading, setLoading] = useState(false)
+  const [updateSiteModel, setUpdateSiteModel] = useState(false)
   const disableActions = ['Delete Site', 'Expire Site', 'Reactivate Site']
 
   const accountId = sessionStorage.getItem('accountId')
@@ -102,9 +104,9 @@ function Sites() {
     setSelectedActionDisplayName(actionDisplayName)
 
     switch (actionDisplayName) {
-      // case 'Send Message':
-      //   setSendMessageModalVisible(true)
-      //   break
+      case 'Site Update':
+        setUpdateSiteModel(true)
+        break
       // case 'Agent Move To Site':
       //   setMoveAgentToSiteModalVisible(true)
       //   break
@@ -118,17 +120,6 @@ function Sites() {
         setIsConfirmModalVisible(true)
     }
   }
-  // const handleselectedAlert = (item, e) => {
-  //   const {value, checked} = e.target
-  //   if (checked) {
-  //     setselectedAlert([...selectedAlert, value])
-  //     setIsCheckboxSelected(true)
-  //   } else {
-  //     const updatedAlert = selectedAlert.filter((e) => e !== value)
-  //     setselectedAlert(updatedAlert)
-  //     setIsCheckboxSelected(updatedAlert.length > 0)
-  //   }
-  // }
   const sendSelectedItemsToBackend = async () => {
     const siteId = items.map((item) => item.id).join(',')
     const payload = {
@@ -171,7 +162,7 @@ function Sites() {
     if (items && items.length > 0) {
       const names = items
         .map((item, index) =>
-          index === items.length - 1 ? item.accountName : `${item.accountName}, `
+          index === items.length - 1 ? item.name : `${item.name}, `
         )
         .join('')
       setComputerNames(names)
@@ -229,6 +220,13 @@ function Sites() {
                 selectedActionDisplayName={selectedActionDisplayName}
                 computerNames={computerNames}
               />
+               <UpdateSiteModel
+                show={updateSiteModel}
+                handleClose={() => setUpdateSiteModel(false)}
+                items={items}
+                selectedActionId={selectedActionId}
+                refreshData={refreshData}
+              />
               <button className='btn btn-green btn-small ms-5' onClick={handleNewSiteClick}>
                 New Site
               </button>
@@ -282,7 +280,7 @@ function Sites() {
                         />
                       </div>
                     </td>
-                    <td>{item.accountName}</td>
+                    <td>{item.name}</td>
                     <td>
                       {item.sku}({item.totalLicenses})
                     </td>
