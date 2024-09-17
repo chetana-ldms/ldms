@@ -94,13 +94,16 @@ function General({id}) {
               <td>{general?.externalIp}</td>
             </tr>
             <tr>
+              <td className='bold'>Console connectivity</td>
+              <td>{general?.isActive ? "Online": "Offline"}</td>
+              <td className='bold'>Health status</td>
+              <td>{general?.infected ? "Infected": "Healthy"}</td>
+            </tr>
+            <tr>
               <td className='bold'>Serial Number</td>
               <td>{general?.serialNumber}</td>
             </tr>
-            {/* <tr>
-              <td className='bold'>Console connectivity</td>
-              <td>{general?.serialNumber}</td>
-            </tr> */}
+            
           </table>
         </div>
       </div>

@@ -7,8 +7,6 @@ import './SiteStepper.css'
 
 const SiteStepper = () => {
   const [activeStep, setActiveStep] = useState('site-name')
-
-  // State to hold the data for SiteName and SiteType components
   const [siteNameData, setSiteNameData] = useState({siteName: '', siteDescription: ''})
   const [siteTypeData, setSiteTypeData] = useState({
     siteType: 'trial',
@@ -35,7 +33,7 @@ const SiteStepper = () => {
           <SiteType
             setActiveStep={setActiveStep}
             siteTypeData={siteTypeData}
-            setSiteTypeData={setSiteTypeData} // Pass setSiteTypeData here
+            setSiteTypeData={setSiteTypeData} 
           />
         )
       case 'site-policy':

@@ -242,12 +242,12 @@ function Sites() {
                 onChange={handleFilterChange}
               />
             </div> */}
-            <div className='col-lg-3 d-flex justify-content-between'>
-              {/* <div className='fs-15 mt-2'>
+            <div className='col-lg-9 d-flex justify-content-end'>
+              <div className='fs-15 mt-2'>
                 {' '}
-                Total({currentItems ? currentItems.length : 0}/
-                {filteredList ? filteredList.length : 0})
-              </div> */}
+                Total({sites ? sites.length : 0}/
+                {sites ? sites.length : 0})
+              </div>
             </div>
           </div>
           <table className='table alert-table scroll-x '>
