@@ -1,8 +1,8 @@
 const SitesUrl = process.env.REACT_APP_SITES_URL
 const SiteActionUrl = process.env.REACT_APP_AGENT_SITEACTION_URL
 const SoftwarePackagesUrl = process.env.REACT_APP_SOFTWAREPACKAGES_URL
-const SitesCreateUrl = 'http://115.110.192.133:502/api/Alerts/v1/Sites/Create'
-const SitesUpdateUrl ="http://115.110.192.133:502/api/Alerts/v1/Sites/Update"
+const SitesCreateUrl = 'http://115.110.192.133:502/api/Alerts/v1/Site/Create'
+const SitesUpdateUrl ="http://115.110.192.133:502/api/Alerts/v1/Site/Update"
 
 export const fetchSitesUrl = async (data) => {
   try {
