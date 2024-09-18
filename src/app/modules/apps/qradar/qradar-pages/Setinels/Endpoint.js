@@ -26,6 +26,7 @@ import MoveToGroupModal from './MoveToGroupModal'
 import DeleteGroupModal from './DeleteGroupModal'
 import AgentSoftwareUpdateModal from './AgentSoftwareUpdateModal'
 import FetchLogsModal from './FetchLogsModal'
+import CreateGroupModal from './CreateGroupModal'
 
 function Endpoint() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -39,7 +40,7 @@ function Endpoint() {
   const [features, setFeatures] = useState([])
   const [openSubmenus, setOpenSubmenus] = useState({})
   const [selectedActionId, setSelectedActionId] = useState(null)
-  const [selectedActionDisplayName, setSelectedActionDisplayName] = useState('');
+  const [selectedActionDisplayName, setSelectedActionDisplayName] = useState('')
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false)
   const toggleActionDropdown = () => setActionDropdownOpen(!actionDropdownOpen)
   const toggleGroupDropdown = () => setGroupDropdownOpen(!groupDropdownOpen)
@@ -49,6 +50,7 @@ function Endpoint() {
   const [isEnableAgentModalVisible, setIsEnableAgentModalVisible] = useState(false)
   const [isMoveToGroupModalVisible, setIsMoveToGroupModalVisible] = useState(false)
   const [isDeleteGroupModalVisible, setIsDeleteGroupModalVisible] = useState(false)
+  const [isCreateGroupModalVisible, setIsCreateGroupModalVisible] = useState(false)
   const [isAgentSoftwareUpdateModalVisible, setIsAgentSoftwareUpdateModalVisible] = useState(false)
   const [isFetchLogsModalVisible, setIsFetchLogsModalVisible] = useState(false)
   const [items, setItems] = useState([])
@@ -392,6 +394,9 @@ function Endpoint() {
       case 'Agent Delete Group':
         setIsDeleteGroupModalVisible(true)
         break
+      case 'Create Group':
+        setIsCreateGroupModalVisible(true)
+        break
       default:
         setIsConfirmModalVisible(true)
     }
@@ -498,29 +503,31 @@ function Endpoint() {
                 selectedActionId={selectedActionId}
                 refreshData={refreshData}
               />
-
-              <Dropdown
-                isOpen={groupDropdownOpen}
-                toggle={toggleGroupDropdown}
-                style={{marginLeft: '5px'}}
-              >
-                <DropdownToggle className='no-pad'>
-                  <div className={`btn btn-green btn-small `}>Groups</div>
-                </DropdownToggle>
-                <DropdownMenu className='w-auto p-3'>
-                  {filteredGroupItems.map((action, index) => (
-                    <DropdownItem
-                      key={index}
-                      onClick={() => handleGroup(action.actionId, action.actionDisplayName)}
-                      disabled={
-                        action.actionDisplayName === 'Agent Move To Group' && !isCheckboxSelected
-                      }
-                    >
-                      {action.actionDisplayName}
-                    </DropdownItem>
-                  ))}
-                </DropdownMenu>
-              </Dropdown>
+                <Dropdown
+                  isOpen={groupDropdownOpen}
+                  toggle={toggleGroupDropdown}
+                  style={{marginLeft: '5px'}}
+                  className={!siteId ? 'disabled' : ''}
+                >
+                  <DropdownToggle className='no-pad'>
+                    <div className={`btn btn-green btn-small `}>Groups</div>
+                  </DropdownToggle>
+                  <DropdownMenu className='w-auto p-3'>
+                    {filteredGroupItems.map((action, index) => (
+                      <DropdownItem
+                        key={index}
+                        onClick={() => handleGroup(action.actionId, action.actionDisplayName)}
+                        disabled={
+                          (action.actionDisplayName === 'Agent Move To Group' &&
+                            !isCheckboxSelected) ||
+                          (action.actionDisplayName === 'Create Group' && isCheckboxSelected)
+                        }
+                      >
+                        {action.actionDisplayName}
+                      </DropdownItem>
+                    ))}
+                  </DropdownMenu>
+                </Dropdown>
               <MoveToGroupModal
                 show={isMoveToGroupModalVisible}
                 handleClose={() => setIsMoveToGroupModalVisible(false)}
@@ -531,6 +538,13 @@ function Endpoint() {
               <DeleteGroupModal
                 show={isDeleteGroupModalVisible}
                 handleClose={() => setIsDeleteGroupModalVisible(false)}
+                items={items}
+                selectedActionId={selectedActionId}
+                refreshData={refreshData}
+              />
+              <CreateGroupModal
+                show={isCreateGroupModalVisible}
+                handleClose={() => setIsCreateGroupModalVisible(false)}
                 items={items}
                 selectedActionId={selectedActionId}
                 refreshData={refreshData}
@@ -672,7 +686,9 @@ function Endpoint() {
                       <span className='link border-bottom border-1 border-primary'>
                         {item.computerName}
                       </span>
-                      <div className='fs-10'>{item.isPendingUninstall ? 'Pending Uninstall' : ''}</div>
+                      <div className='fs-10'>
+                        {item.isPendingUninstall ? 'Pending Uninstall' : ''}
+                      </div>
                     </td>
                     <td>{item.accountName}</td>
                     <td>{item.siteName}</td>

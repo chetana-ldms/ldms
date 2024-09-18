@@ -14,7 +14,7 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
     skuSelected: false,
     totalAgents: '1',
     isUnlimitedLicenses: false,
-    isRoguesChecked: false,
+    siteId: "",
   })
 
   const [siteNameData, setSiteNameData] = useState({
@@ -24,7 +24,6 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
 
   const navigate = useNavigate()
   const accountId = sessionStorage.getItem('accountId')
-  const siteId = sessionStorage.getItem('siteId')
 
   useEffect(() => {
     if (items && items.length > 0) {
@@ -36,9 +35,9 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
           : '',
         isNonExpireChecked: !item.expiration,
         skuSelected: item.sku || false,
-        totalAgents: item.totalAgents || '1',
+        totalAgents: item.totalLicenses || "0",
         isUnlimitedLicenses: item.unlimitedLicenses || false,
-        isRoguesChecked: item.isRoguesChecked || false,
+        siteId: item.id || "",
       })
 
       setSiteNameData({
@@ -68,12 +67,12 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
       siteType: siteTypeData?.siteType,
       accountId: accountId,
       description: siteNameData?.siteDescription,
-      totalLicenses: siteTypeData?.totalAgents,
+      totalLicenses: siteTypeData.isUnlimitedLicenses ? "0" : siteTypeData?.totalAgents,
       orgId: Number(sessionStorage.getItem('orgId')),
       toolId: Number(sessionStorage.getItem('toolID')),
       createdDate: new Date().toISOString(),
       createdUserId: Number(sessionStorage.getItem('userId')),
-      siteId: items?.id,
+      siteId: siteTypeData?.siteId,
     }
    
 
@@ -83,6 +82,8 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
 
       if (isSuccess) {
         notify(message)
+        refreshData()
+        handleClose()
         setTimeout(() => {
           navigate('/qradar/sites/list')
         }, 2000)
@@ -275,8 +276,9 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
                                   <input
                                     type='text'
                                     className='form-control'
-                                    value={siteTypeData.totalAgents}
+                                    value={siteTypeData.isUnlimitedLicenses ? "" : siteTypeData.totalAgents}
                                     onChange={handleTotalAgentsChange}
+                                    disabled={siteTypeData.isUnlimitedLicenses}
                                   />
                                 </label>
                               </div>

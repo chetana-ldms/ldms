@@ -2,7 +2,7 @@ import React from 'react'
 import {useNavigate} from 'react-router-dom'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
-import { fetchSitesCreateUrl } from '../../../../../api/SettingsApi'
+import {fetchSitesCreateUrl} from '../../../../../api/SettingsApi'
 
 const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData, siteNameData}) => {
   const accountId = sessionStorage.getItem('accountId')
@@ -15,11 +15,11 @@ const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData, siteNameData}) 
       notifyFail('Please select a SKU')
       return
     }
-    
+
     // setActiveStep('site-policy')
     const expirationDate = siteTypeData?.selectedExpirationDate
-    ? new Date(siteTypeData.selectedExpirationDate).toISOString()
-    : null
+      ? new Date(siteTypeData.selectedExpirationDate).toISOString()
+      : null
 
     const data = {
       expiration: expirationDate,
@@ -30,12 +30,12 @@ const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData, siteNameData}) 
       siteType: siteTypeData?.siteType,
       accountId: accountId,
       description: siteNameData?.siteDescription,
-      totalLicenses: siteTypeData?.totalAgents,
-      orgId : Number(sessionStorage.getItem('orgId')),
-      toolId : Number(sessionStorage.getItem('toolID')),
+      totalLicenses: siteTypeData.isUnlimitedLicenses ? "0" : siteTypeData?.totalAgents,
+      orgId: Number(sessionStorage.getItem('orgId')),
+      toolId: Number(sessionStorage.getItem('toolID')),
       createdDate: new Date().toISOString(),
       createdUserId: Number(sessionStorage.getItem('userId')),
-      siteId: siteId
+      siteId: siteId,
     }
 
     try {
@@ -52,7 +52,7 @@ const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData, siteNameData}) 
       }
     } catch (error) {
       console.log(error)
-    } 
+    }
   }
 
   const handleBack = (event) => {
@@ -71,7 +71,7 @@ const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData, siteNameData}) 
   const handleNonExpireChange = (event) => {
     setSiteTypeData({...siteTypeData, isNonExpireChecked: event.target.checked})
     if (event.target.checked) {
-      setSiteTypeData({...siteTypeData, selectedExpirationDate: ''}) 
+      setSiteTypeData({...siteTypeData, selectedExpirationDate: ''})
     }
   }
 
@@ -196,28 +196,28 @@ const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData, siteNameData}) 
                               <input
                                 type='text'
                                 className='form-control'
-                                value={siteTypeData.totalAgents}
+                                value={
+                                  siteTypeData.isUnlimitedLicenses ? '' : siteTypeData.totalAgents
+                                }
                                 onChange={handleTotalAgentsChange}
+                                disabled={siteTypeData.isUnlimitedLicenses}
                               />
                             </label>
                           </div>
                           <div className='col-md-8 mt-4'>
                             <div className='ms-5 mt-5'>
-                            <input
-                              className='form-check-input widget-13-check'
+                              <input
+                                className='form-check-input widget-13-check'
                                 type='checkbox'
                                 checked={siteTypeData.isUnlimitedLicenses}
                                 onChange={handleUnlimitedLicensesChange}
                               />{' '}
-                              <label className='ms-5'>
-                              Unlimited licenses
-                            </label>
+                              <label className='ms-5'>Unlimited licenses</label>
                             </div>
-                              
                           </div>
                         </div>
                       </div>
-                      <div className='card-body p-0 m-0' style={{display:'none'}}>
+                      <div className='card-body p-0 m-0' style={{display: 'none'}}>
                         <strong>Add-ons</strong>
                         <div className='row'>
                           <div className='col-md-6 d-flex align-items-center mt-4'>

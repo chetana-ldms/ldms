@@ -16,6 +16,8 @@ const BlockedListImportUrl =process.env.REACT_APP_BLOCKEDLIST_IMPORT_URL
 const BlockedListImportReportUrl = process.env.REACT_APP_BLOCKEDLIST_IMPORTREPORT_URL
 const ExclusionItemsImportUrl =process.env.REACT_APP_EXCLUSIONITEMS_IMPORT_URL
 const ExclusionItemsImportReportUrl=process.env.REACT_APP_EXCLUSIONITEMS_IMPORTREPORT_URL
+const GroupsCreateUrl=process.env.REACT_APP_GROUPS_CREATE_URL
+
 
 export const fetchExclusionListUrl = async (data) => {
     try {
@@ -302,6 +304,24 @@ export const fetchExclusionListUrl = async (data) => {
   export const fetchExclusionItemsImportReportUrl = async (data) => {
     try {
       const response = await fetch(`${ExclusionItemsImportReportUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchGroupsCreateUrl = async (data) => {
+    try {
+      const response = await fetch(`${GroupsCreateUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

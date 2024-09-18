@@ -9,11 +9,11 @@ import {fetchAgentActionUrl, fetchFeaturesActionsAuthorizedUrl} from '../../../.
 import {notify, notifyFail} from '../components/notification/Notification'
 import DropdownItemWithSubmenu from '../Setinels/DropdownItemWithSubmenu'
 import ContinueConfirmation from '../../../../../../utils/ContinueConfirmation'
-import { useNavigate } from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 import UpdateSiteModel from './UpdateSiteModel'
 
 function Sites() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const [sites, setSites] = useState([])
   console.log(sites, 'sites')
   const [selectedAlert, setselectedAlert] = useState([])
@@ -25,7 +25,7 @@ function Sites() {
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false)
   const toggleActionDropdown = () => setActionDropdownOpen(!actionDropdownOpen)
   const [items, setItems] = useState([])
-  const [selectedActionDisplayName, setSelectedActionDisplayName] = useState('');
+  const [selectedActionDisplayName, setSelectedActionDisplayName] = useState('')
   const [computerNames, setComputerNames] = useState('')
   const [loading, setLoading] = useState(false)
   const [updateSiteModel, setUpdateSiteModel] = useState(false)
@@ -73,11 +73,10 @@ function Sites() {
       setLoading(false)
     }
   }
-  
 
   const handleNewSiteClick = () => {
-    navigate('/qradar/site-stepper');
-  };
+    navigate('/qradar/site-stepper')
+  }
   useEffect(() => {
     fetchData()
   }, [])
@@ -145,6 +144,9 @@ function Sites() {
       console.log(error)
     }
   }
+  const refreshData = () => {
+    fetchData()
+  }
 
   const handleConfirm = async () => {
     setIsConfirmModalVisible(false)
@@ -161,9 +163,7 @@ function Sites() {
   useEffect(() => {
     if (items && items.length > 0) {
       const names = items
-        .map((item, index) =>
-          index === items.length - 1 ? item.name : `${item.name}, `
-        )
+        .map((item, index) => (index === items.length - 1 ? item.name : `${item.name}, `))
         .join('')
       setComputerNames(names)
     }
@@ -171,10 +171,6 @@ function Sites() {
 
   const handleDismiss = () => {
     setIsConfirmModalVisible(false)
-  }
-
-  const refreshData = () => {
-    fetchData()
   }
   const filteredActionItems = featureActions
     .filter((action) => action.actionName !== 'Access')
@@ -220,7 +216,7 @@ function Sites() {
                 selectedActionDisplayName={selectedActionDisplayName}
                 computerNames={computerNames}
               />
-               <UpdateSiteModel
+              <UpdateSiteModel
                 show={updateSiteModel}
                 handleClose={() => setUpdateSiteModel(false)}
                 items={items}
@@ -243,8 +239,7 @@ function Sites() {
             <div className='col-lg-9 d-flex justify-content-end'>
               <div className='fs-15 mt-2'>
                 {' '}
-                Total({sites ? sites.length : 0}/
-                {sites ? sites.length : 0})
+                Total({sites ? sites.length : 0}/{sites ? sites.length : 0})
               </div>
             </div>
           </div>
@@ -266,21 +261,28 @@ function Sites() {
             <tbody>
               {sites !== null && sites.length > 0 ? (
                 sites?.map((item, index) => (
-                  <tr className='table-row' key={index}>
+                  <tr
+                  className={`table-row ${item.state === 'deleted' ? 'text-muted bg-light pointer-events-none' : ''}`}
+                  key={index}
+                >
                     <td>
-                      <div className='form-check form-check-sm form-check-custom form-check-solid pe-2 me-5'>
-                        <input
-                          className='form-check-input widget-13-check'
-                          type='checkbox'
-                          value={item}
-                          name={item.id}
-                          onChange={(e) => handleselectedAlert(item, e)}
-                          autoComplete='off'
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      </div>
+                      {item.state == 'active' ? (
+                        <div className='form-check form-check-sm form-check-custom form-check-solid pe-2 me-5'>
+                          <input
+                            className='form-check-input widget-13-check'
+                            type='checkbox'
+                            value={item}
+                            name={item.id}
+                            onChange={(e) => handleselectedAlert(item, e)}
+                            autoComplete='off'
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </div>
+                      ) : null}
                     </td>
-                    <td>{item.name}</td>
+                    <td>
+                      {item.name} {item.state === 'deleted' ? '(Deleted)' : ''}
+                    </td>
                     <td>
                       {item.sku}({item.totalLicenses})
                     </td>
