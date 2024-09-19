@@ -54,9 +54,7 @@ function Endpoint() {
   const [isAgentSoftwareUpdateModalVisible, setIsAgentSoftwareUpdateModalVisible] = useState(false)
   const [isFetchLogsModalVisible, setIsFetchLogsModalVisible] = useState(false)
   const [items, setItems] = useState([])
-  console.log(items, 'items')
   const [computerNames, setComputerNames] = useState('')
-  const [selectedAlert, setselectedAlert] = useState([])
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
@@ -72,17 +70,6 @@ function Endpoint() {
       (action) => action.actionName === actionName && action.is_authorized === true
     )
   }
-  // const handleselectedAlert = (item, e) => {
-  //   const {value, checked} = e.target
-  //   if (checked) {
-  //     setselectedAlert([...selectedAlert, value])
-  //     setIsCheckboxSelected(true)
-  //   } else {
-  //     const updatedAlert = selectedAlert.filter((e) => e !== value)
-  //     setselectedAlert(updatedAlert)
-  //     setIsCheckboxSelected(updatedAlert.length > 0)
-  //   }
-  // }
   const handleselectedAlert = (item, e) => {
     const {checked} = e.target
 

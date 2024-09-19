@@ -71,8 +71,8 @@ function AlertsTrends(props) {
     const fetchData = async () => {
       try {
         const GetAlertsTrendDataResponse = await fetchGetAlertsTrendData({
-          orgId: orgId,
-          toolId:toolId,
+          orgID: orgId,
+          toolID:toolId,
           orgAccountStructureLevel: [
             {
               levelName: "AccountId",

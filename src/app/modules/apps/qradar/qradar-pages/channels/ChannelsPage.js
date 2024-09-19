@@ -423,30 +423,19 @@ const ChannelsPage = () => {
                         <td>{channel.channelName}</td>
                         <td>{channel.channelTypeName}</td>
                         <td>
-                          {globalAdminRole === 1 || clientAdminRole === 1 ? (
                             <button
                               className='btn-circle btn-new'
                               onClick={() => handleAccordionToggle(channel.channelId)}
                             >
                               <i className='fa fa-pencil white fs-15' />
                             </button>
-                          ) : (
-                            <button className='btn-circle btn-new' disabled>
-                              <i className='fa fa-pencil white fs-15' />
-                            </button>
-                          )}
-                          {globalAdminRole === 1 || clientAdminRole === 1 ? (
+                         
                             <button
                               className='btn-circle btn-danger ms-5'
                               onClick={() => handleDelete(channel)}
                             >
                               <i className='fa fa-trash white fs-15' />
                             </button>
-                          ) : (
-                            <button className='btn-circle btn-danger ms-5' disabled>
-                              <i className='fa fa-trash white fs-15' />
-                            </button>
-                          )}
                         </td>
                       </tr>
                       {channel.isAccordionOpen && (

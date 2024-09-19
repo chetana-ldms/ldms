@@ -37,6 +37,7 @@ import {useErrorBoundary} from 'react-error-boundary'
 import {UsersListLoading} from '../../modules/apps/qradar/qradar-pages/components/loading/UsersListLoading'
 import TasksPopUp from '../../modules/auth/components/TasksPopUp'
 import { fetchMasterData } from '../../api/Api'
+import useFeatureActions from '../../modules/apps/qradar/qradar-pages/configuration/useFeatureActions'
 
 const DashboardWrapper = () => {
   const handleError = useErrorBoundary()
@@ -69,6 +70,16 @@ const DashboardWrapper = () => {
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
+  const roleId = Number(sessionStorage.getItem('roleID'))
+  const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
+
+  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+
+  const isActionAuthorized = (actionName) => {
+    return featureActions?.some(
+      (action) => action.actionName === actionName && action.is_authorized === true
+    )
+  } 
   const navigate = useNavigate();
   const getCurrentTimeZoneDiff = (UTCDate) => {
     const inputTime = moment.tz(UTCDate, 'UTC')
@@ -121,7 +132,7 @@ const DashboardWrapper = () => {
       setLoading(true)
       const mostUsedTagsResponse = await fetchGetAlertsMostUsedTags({
         orgID: selectedOrganization,
-        toolId: toolId,
+        toolID: toolId,
         userID: userID,
         numberofDays: selectedFilter,
         orgAccountStructureLevel: [
@@ -300,17 +311,17 @@ const DashboardWrapper = () => {
     }
   }, [])
   const handleUnhandaledIncident = () => {
-    if (unattendedIcount.unattendedIncidentCount > 0) {
+    if (unattendedIcount.unattendedIncidentCount > 0 && isActionAuthorized('AlertAccess')) {
       navigate('/qradar/incidents', { state: { status: "New", days: selectedFilter } });
     }
   };  
   const handleUnhandaledAlert = () => {
-    if (unattendedAcount.unattendedAlertsCount > 0) {
+    if (unattendedAcount.unattendedAlertsCount > 0 && isActionAuthorized('IncidentAccess')) {
       navigate('/qradar/alerts', { state: { status: "New", days: selectedFilter } });
     }
   };  
   const handleFalsePositiveAlerts = () => {
-    if (falsePAcount.alertsCount > 0) {
+    if (falsePAcount.alertsCount > 0 && isActionAuthorized('AlertAccess')) {
       navigate('/qradar/alerts', { state: { days: selectedFilter } });
     }
   };  
