@@ -84,9 +84,9 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
         notify(message)
         refreshData()
         handleClose()
-        setTimeout(() => {
-          navigate('/qradar/sites/list')
-        }, 2000)
+        // setTimeout(() => {
+        //   navigate('/qradar/sites/list')
+        // }, 2000)
       } else {
         notifyFail(message)
       }

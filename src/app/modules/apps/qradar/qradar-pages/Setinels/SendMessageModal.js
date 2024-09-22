@@ -20,6 +20,7 @@ const SendMessageModal = ({show, handleClose, items, selectedActionId, refreshDa
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
+      agentName:item.computerName || item.endpointName
     }))
 
     const payload = {

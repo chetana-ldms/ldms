@@ -4,6 +4,7 @@ import {fetchGroupActionUrl, fetchGroupsUrl} from '../../../../../api/SentinalAp
 import {notify, notifyFail} from '../components/notification/Notification'
 
 const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshData}) => {
+  console.log(items, 'items')
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
   const siteId = sessionStorage.getItem('siteId')
@@ -34,17 +35,22 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
+      agentName: item.computerName, 
     }))
-
+    const currentGroupName = items.length > 0 ? items[0].groupName : null
+  
     const payload = {
       orgId,
       toolId,
       actionId: selectedActionId,
-      groupId: selectedGroup,
+      groupId: selectedGroup, 
+      groupName: currentGroupName, 
+      moveToGroupName: selectedGroupName,
       endPointsData,
       executedUserId: Number(sessionStorage.getItem('userId')),
       executedDate: new Date().toISOString(),
     }
+  
     try {
       const response = await fetchGroupActionUrl(payload)
       const {isSuccess, message} = response
@@ -59,6 +65,7 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
       console.log(error)
     }
   }
+  
 
   const handleSave = () => {
     if (!selectedGroup) {
@@ -81,10 +88,7 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
       <Modal.Body>
         <p>Select a new Group for this endpoint:</p>
         <DropdownButton id='dropdown-basic-button' title={selectedGroupName}>
-          <Dropdown.Item
-            key='select-option'
-            onClick={() => handleSelect(null, 'Select Group')}
-          >
+          <Dropdown.Item key='select-option' onClick={() => handleSelect(null, 'Select Group')}>
             Select Group
           </Dropdown.Item>
           {groups.map((group) => (

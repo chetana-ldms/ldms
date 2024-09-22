@@ -54,6 +54,7 @@ function Endpoint() {
   const [isAgentSoftwareUpdateModalVisible, setIsAgentSoftwareUpdateModalVisible] = useState(false)
   const [isFetchLogsModalVisible, setIsFetchLogsModalVisible] = useState(false)
   const [items, setItems] = useState([])
+  console.log(items, "items")
   const [computerNames, setComputerNames] = useState('')
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
@@ -317,6 +318,7 @@ function Endpoint() {
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
+      agentName:item.computerName
     }))
 
     const payload = {

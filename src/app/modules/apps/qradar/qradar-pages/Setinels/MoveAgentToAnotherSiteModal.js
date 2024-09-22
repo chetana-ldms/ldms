@@ -10,8 +10,10 @@ const MoveAgentToAnotherSiteModal = ({show, handleClose, items, selectedActionId
   const toolId = Number(sessionStorage.getItem('toolID'))
   const [accountId, setAccountId] = useState('')
   const [siteId, setSiteId] = useState('')
+  const [siteName, setSiteName] = useState('');
   const [accounts, setAccounts] = useState([])
   const [sites, setSites] = useState([])
+  console.log(sites, "sites")
   const siteRef = useRef()
 
   const handleToolChange = (e) => {
@@ -66,15 +68,17 @@ const MoveAgentToAnotherSiteModal = ({show, handleClose, items, selectedActionId
   };
 
   const handleChange = (event) => {
-    setSiteId(event.target.value)
-  }
-
+    const selectedSite = sites?.find((site) => site?.id === event.target.value); 
+    setSiteId(selectedSite?.id || '');
+    setSiteName(selectedSite?.name || '');
+  };
   const sendSelectedItemsToBackend = async () => {
     const endPointsData = items.map((item) => ({
       agentIds: item.id,
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
+      agentName:item.computerName || item.endpointName
     }))
 
     const payload = {
@@ -83,6 +87,7 @@ const MoveAgentToAnotherSiteModal = ({show, handleClose, items, selectedActionId
       agentActionId: selectedActionId,
       endPointsData,
       moveToTargetSiteId: siteId,
+      moveToTargetSiteName: siteName,
       executedUserId: Number(sessionStorage.getItem('userId')),
       executedDate: new Date().toISOString(),
     }
@@ -111,7 +116,7 @@ const MoveAgentToAnotherSiteModal = ({show, handleClose, items, selectedActionId
       return;
     }
     sendSelectedItemsToBackend()
-    window.location.reload();
+    // window.location.reload();
   }
 
   const handleCloseWithReset = () => {
@@ -159,7 +164,7 @@ const MoveAgentToAnotherSiteModal = ({show, handleClose, items, selectedActionId
             data-allow-clear='true'
             ref={siteRef}
             onChange={handleChange}
-            value={siteId}
+            // value={siteId}
           >
             <option value=''>Select</option>
             {sites?.map((item, index) => (

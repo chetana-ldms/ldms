@@ -26,6 +26,7 @@ function SentinelsReport() {
   const [tools, setTools] = useState([])
   const [tasks, setTasks] = useState([])
   const taskId = useRef()
+  const [selectedNames, setSelectedNames] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [selectedAlert, setselectedAlert] = useState([])
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
@@ -113,16 +114,20 @@ function SentinelsReport() {
   }
 
   const handleselectedAlert = (item, e) => {
-    const {value, checked} = e.target
+    const { value, checked } = e.target;
+    
     if (checked) {
-      setselectedAlert([...selectedAlert, value])
-      setIsCheckboxSelected(true)
+      setselectedAlert([...selectedAlert, value]); 
+      setSelectedNames([...selectedNames, item.name]); 
+      setIsCheckboxSelected(true);
     } else {
-      const updatedAlert = selectedAlert.filter((e) => e !== value)
-      setselectedAlert(updatedAlert)
-      setIsCheckboxSelected(updatedAlert.length > 0)
+      const updatedAlert = selectedAlert.filter((id) => id !== value);
+      const updatedNames = selectedNames.filter((name) => name !== item.name);
+      setselectedAlert(updatedAlert); 
+      setSelectedNames(updatedNames); 
+      setIsCheckboxSelected(updatedAlert.length > 0);
     }
-  }
+  };
 
   const handleDelete = () => {
     setShowConfirmation(true)
@@ -134,6 +139,7 @@ function SentinelsReport() {
         orgId: orgId,
         toolId: toolId,
         ids: selectedAlert,
+        name: selectedNames.join(','),
         deletedDate: new Date().toISOString(),
         deletedUserId: Number(sessionStorage.getItem('userId')),
       }

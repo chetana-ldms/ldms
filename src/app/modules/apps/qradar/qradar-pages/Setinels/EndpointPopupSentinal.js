@@ -89,6 +89,7 @@ const EndpointPopupSentinal = ({selectedEndpoint, showModal, setShowModal, refre
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
+      agentName:item.computerName
     }))
 
     const payload = {

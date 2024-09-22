@@ -15,6 +15,7 @@ const FetchLogsModal = ({isOpen, toggle, items, selectedActionId, refreshData}) 
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
+      agentName:item.computerName || item.endpointName
     }))
 
     const payload = {

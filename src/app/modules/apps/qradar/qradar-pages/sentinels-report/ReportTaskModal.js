@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import {Modal, Button} from 'react-bootstrap'
-import {fetchSentinelReportTaskCreateUrl, fetchSentinelReportsTypesUrl} from '../../../../../api/SentinelsReportApi'
+import {
+  fetchSentinelReportTaskCreateUrl,
+  fetchSentinelReportsTypesUrl,
+} from '../../../../../api/SentinelsReportApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 
 function ReportTaskModal({show, handleClose, refreshParent}) {
@@ -121,6 +124,8 @@ function ReportTaskModal({show, handleClose, refreshParent}) {
       attachmentTypes: Object.keys(reportFormats).filter((format) => reportFormats[format]),
       orgId: orgId,
       toolId: toolId,
+      createdUserId: Number(sessionStorage.getItem('userId')),
+      createdDate: new Date().toISOString(),
       orgAccountStructureLevel: [
         {
           levelName: 'AccountId',

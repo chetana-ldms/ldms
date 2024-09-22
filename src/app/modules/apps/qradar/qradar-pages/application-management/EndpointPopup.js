@@ -98,6 +98,7 @@ const EndpointPopup = ({selectedEndpoint, showModal, setShowModal, refreshData})
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
+      agentName: item.endpointName
     }))
 
     const payload = {

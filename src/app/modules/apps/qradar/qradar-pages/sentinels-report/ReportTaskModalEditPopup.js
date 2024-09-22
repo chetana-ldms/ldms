@@ -103,6 +103,8 @@ function ReportTaskModalEditPopup({show, onClose, refreshParent, selectedItem}) 
       orgId: orgId,
       toolId: toolId,
       id: selectedItem.id,
+      modifiedUserId: Number(sessionStorage.getItem('userId')),
+      modifiedDate: new Date().toISOString(),
     }
     try {
       const responseData = await fetchSentinelReportsTaskUpdateUrl(data)

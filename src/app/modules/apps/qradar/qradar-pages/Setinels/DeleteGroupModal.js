@@ -35,6 +35,7 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
       toolId,
       actionId: selectedActionId,
       groupId: selectedGroup,
+      groupName: selectedGroupName, 
       executedUserId: Number(sessionStorage.getItem('userId')),
       executedDate: new Date().toISOString(),
     }
@@ -52,6 +53,7 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
       console.log(error)
     }
   }
+  
 
   const handleSave = () => {
     if (!selectedGroup) {

@@ -7,10 +7,11 @@ import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Input} from 'react
 import useFeatureActions from '../configuration/useFeatureActions'
 import {fetchAgentActionUrl, fetchFeaturesActionsAuthorizedUrl} from '../../../../../api/Api'
 import {notify, notifyFail} from '../components/notification/Notification'
-import DropdownItemWithSubmenu from '../Setinels/DropdownItemWithSubmenu'
+import 'react-toastify/dist/ReactToastify.css'
 import ContinueConfirmation from '../../../../../../utils/ContinueConfirmation'
 import {useNavigate} from 'react-router-dom'
 import UpdateSiteModel from './UpdateSiteModel'
+import { ToastContainer } from 'react-toastify'
 
 function Sites() {
   const navigate = useNavigate()
@@ -29,7 +30,7 @@ function Sites() {
   const [computerNames, setComputerNames] = useState('')
   const [loading, setLoading] = useState(false)
   const [updateSiteModel, setUpdateSiteModel] = useState(false)
-  const disableActions = ['Delete Site', 'Expire Site', 'Reactivate Site']
+  const disableActions = ['Delete Site', 'Expire Site', 'Reactivate Site', 'Site Update']
 
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
@@ -106,30 +107,24 @@ function Sites() {
       case 'Site Update':
         setUpdateSiteModel(true)
         break
-      // case 'Agent Move To Site':
-      //   setMoveAgentToSiteModalVisible(true)
-      //   break
-      // case 'Disable Agent':
-      //   setIsDisableAgentModalVisible(true)
-      //   break
-      // case 'Enable Agent':
-      //   setIsEnableAgentModalVisible(true)
-      //   break
       default:
         setIsConfirmModalVisible(true)
     }
   }
   const sendSelectedItemsToBackend = async () => {
-    const siteId = items.map((item) => item.id).join(',')
+    const siteId = items.map((item) => item.id).join(',') 
+    const siteNames = items.map((item) => item.name).join(', ') 
+  
     const payload = {
       orgId,
       toolId,
       actionId: selectedActionId,
       siteId: siteId,
+      siteName: siteNames, 
       executedUserId: Number(sessionStorage.getItem('userId')),
       executedDate: new Date().toISOString(),
     }
-
+  
     console.log(payload, 'payload')
     try {
       const response = await fetchSiteActionUrl(payload)
@@ -144,6 +139,7 @@ function Sites() {
       console.log(error)
     }
   }
+  
   const refreshData = () => {
     fetchData()
   }
@@ -179,6 +175,7 @@ function Sites() {
   console.log(filteredActionItems, 'filteredActionItems')
   return (
     <div className='ldc-application'>
+       <ToastContainer />
       {loading ? (
         <UsersListLoading />
       ) : (
@@ -227,15 +224,6 @@ function Sites() {
                 New Site
               </button>
             </div>
-            {/* <div className='col-lg-7'>
-              <input
-                type='text'
-                placeholder='Search...'
-                className='form-control'
-                value={filterValue}
-                onChange={handleFilterChange}
-              />
-            </div> */}
             <div className='col-lg-9 d-flex justify-content-end'>
               <div className='fs-15 mt-2'>
                 {' '}

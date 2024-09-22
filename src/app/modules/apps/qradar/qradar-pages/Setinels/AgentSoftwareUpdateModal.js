@@ -25,6 +25,7 @@ const AgentSoftwareUpdateModal = ({isOpen, toggle, items, selectedActionId, refr
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
+      agentName:item.computerName || item.endpointName
     }))
 
     const payload = {
