@@ -113,11 +113,9 @@ function UpdateSiteMoreModel({show, handleClose, items, selectedActionId, refres
     <>
       <Modal show={show} onHide={handleClose} className='application-modal'>
         <Modal.Header closeButton>
-          <Modal.Title>
             <Modal.Title>
               Update Site - {items.length} ({items.map((item) => item.name).join(', ')})
             </Modal.Title>
-          </Modal.Title>
           <button type='button' className='application-modal-close' aria-label='Close'>
             <i className='fa fa-close' />
           </button>

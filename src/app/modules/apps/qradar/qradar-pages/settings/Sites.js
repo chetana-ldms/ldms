@@ -142,6 +142,7 @@ function Sites() {
 
   const refreshData = () => {
     fetchData()
+    setItems([])
   }
 
   const handleConfirm = async () => {
@@ -239,6 +240,7 @@ function Sites() {
                 items={items}
                 selectedActionId={selectedActionId}
                 refreshData={refreshData}
+                computerNames={computerNames}
               />
               <button className='btn btn-green btn-small ms-5' onClick={handleNewSiteClick}>
                 New Site
