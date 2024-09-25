@@ -45,12 +45,16 @@ function ReportTaskModal({show, handleClose, refreshParent}) {
   }
 
   const handleFromDateChange = (e) => {
-    setSelectedFromDate(new Date(e.target.value))
-  }
+    const value = e.target.value; 
+    setSelectedFromDate(value ? new Date(value) : null); 
+  };
+  
 
   const handleToDateChange = (e) => {
-    setSelectedToDate(new Date(e.target.value))
-  }
+    const value = e.target.value;
+    setSelectedToDate(value ? new Date(value) : null); 
+  };
+  
 
   const handleFrequencyChange = (e) => {
     setFrequency(e.target.value)
@@ -82,24 +86,42 @@ function ReportTaskModal({show, handleClose, refreshParent}) {
       notifyFail('Enter Report Content')
       return
     }
+    if (frequency === 'scheduled') {
+      if (!scheduleInterval) {
+        notifyFail('Interval is required for scheduled reports');
+        return;
+      }
+      if (scheduleInterval === 'weekly' && !selectedDay) {
+        notifyFail('Day of the Week is required for weekly scheduled reports');
+        return;
+      }
+    }
     if (selectedInterval === 'manual') {
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-
+      if (!selectedFromDate) {
+        notifyFail('From Date is required for manual reports');
+        return;
+      }
+      if (!selectedToDate) {
+        notifyFail('To Date is required for manual reports');
+        return;
+      }
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+  
       if (selectedFromDate > selectedToDate) {
-        notifyFail('From Date should not be greater than To Date')
-        return
+        notifyFail('From Date should not be greater than To Date');
+        return;
       }
       if (selectedFromDate >= today) {
-        notifyFail("From Date should be less than today's date")
-        return
+        notifyFail("From Date should be less than today's date");
+        return;
       }
-      const adjustedToDate = new Date(selectedToDate)
-      adjustedToDate.setHours(0, 0, 0, 0)
-
+      const adjustedToDate = new Date(selectedToDate);
+      adjustedToDate.setHours(0, 0, 0, 0);
+  
       if (adjustedToDate > today) {
-        notifyFail("To Date should be less than or equal to today's date")
-        return
+        notifyFail("To Date should be less than or equal to today's date");
+        return;
       }
     }
     const selectObject = reportContent.filter((item) => {
@@ -342,7 +364,7 @@ function ReportTaskModal({show, handleClose, refreshParent}) {
                     <input
                       className='date'
                       type='date'
-                      value={selectedFromDate ? selectedFromDate.toISOString().split('T')[0] : ''}
+                      value={selectedFromDate ? selectedFromDate.toISOString().split('T')[0] : ''} 
                       onChange={handleFromDateChange}
                     />
                   </div>

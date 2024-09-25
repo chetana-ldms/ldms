@@ -116,7 +116,7 @@ const MoveAgentToAnotherSiteModal = ({show, handleClose, items, selectedActionId
       return;
     }
     sendSelectedItemsToBackend()
-    // window.location.reload();
+    window.location.reload();
   }
 
   const handleCloseWithReset = () => {

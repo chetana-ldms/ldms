@@ -61,6 +61,7 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
       return
     }
     sendSelectedItemsToBackend()
+    window.location.reload();
   }
 
   const handleSelect = (groupId, groupName) => {
@@ -89,7 +90,7 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
       </Modal.Body>
       <Modal.Footer>
         <Button variant='primary' onClick={handleSave}>
-          Save
+          Delete Group
         </Button>
         <Button variant='secondary' onClick={handleClose}>
           Cancel

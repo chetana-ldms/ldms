@@ -1,16 +1,15 @@
 import React, {useState, useEffect} from 'react'
 import {Modal, Button} from 'react-bootstrap'
-import {useNavigate} from 'react-router-dom'
 import {ToastContainer} from 'react-toastify'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {fetchSitesUpdateUrl} from '../../../../../api/SettingsApi'
 
-function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshData}) {
+function UpdateSiteMoreModel({show, handleClose, items, selectedActionId, refreshData}) {
   console.log(items, 'items')
   const [siteTypeData, setSiteTypeData] = useState({
-    siteType: 'Trial',
+    siteType: '',
     selectedExpirationDate: '',
-    isNonExpireChecked: true,
+    isNonExpireChecked: false,
     skuSelected: false,
     totalAgents: '0',
     isUnlimitedLicenses: false,
@@ -24,34 +23,8 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
 
   const accountId = sessionStorage.getItem('accountId')
 
-  useEffect(() => {
-    if (items && items.length > 0) {
-      const item = items[0]
-      setSiteTypeData({
-        siteType: item.siteType || 'Trial',
-        selectedExpirationDate: item.expiration
-          ? new Date(item.expiration).toISOString().split('T')[0]
-          : '',
-        isNonExpireChecked: !item.expiration,
-        skuSelected: item.sku || false,
-        totalAgents: item.totalLicenses || '0',
-        isUnlimitedLicenses: item.unlimitedLicenses || false,
-        siteId: item.id || '',
-      })
-
-      setSiteNameData({
-        siteName: item.name || '',
-        siteDescription: item.description || '',
-      })
-    }
-  }, [items])
-
   const handleNext = async (event) => {
     event.preventDefault()
-    if (!siteTypeData.skuSelected) {
-      notifyFail('Please select a SKU')
-      return
-    }
 
     const expirationDate = siteTypeData?.selectedExpirationDate
       ? new Date(siteTypeData.selectedExpirationDate).toISOString()
@@ -62,7 +35,7 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
       unlimitedExpiration: siteTypeData?.isNonExpireChecked,
       unlimitedLicenses: siteTypeData?.isUnlimitedLicenses,
       inherits: true,
-      name: siteNameData?.siteName,
+      name: items.map(item => item.name).join(', '),
       siteType: siteTypeData?.siteType,
       accountId: accountId,
       description: siteNameData?.siteDescription,
@@ -71,7 +44,7 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
       toolId: Number(sessionStorage.getItem('toolID')),
       createdDate: new Date().toISOString(),
       createdUserId: Number(sessionStorage.getItem('userId')),
-      siteIds: [siteTypeData?.siteId],
+      siteIds: items.map(item => item.id),
     }
 
     try {
@@ -95,10 +68,13 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
   }
 
   const handleNonExpireChange = (event) => {
-    setSiteTypeData({...siteTypeData, isNonExpireChecked: event.target.checked})
-    if (event.target.checked) {
-      setSiteTypeData({...siteTypeData, selectedExpirationDate: ''})
-    }
+    const isChecked = event.target.checked
+
+    setSiteTypeData((prevState) => ({
+      ...prevState,
+      isNonExpireChecked: isChecked,
+      selectedExpirationDate: isChecked ? '' : prevState.selectedExpirationDate,
+    }))
   }
 
   const handleSkuChange = (event) => {
@@ -138,8 +114,9 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
       <Modal show={show} onHide={handleClose} className='application-modal'>
         <Modal.Header closeButton>
           <Modal.Title>
-            Update Site
-            {items && items.length > 0 && ` (${items[0]?.computerName || items[0]?.name})`}
+            <Modal.Title>
+              Update Site - {items.length} ({items.map((item) => item.name).join(', ')})
+            </Modal.Title>
           </Modal.Title>
           <button type='button' className='application-modal-close' aria-label='Close'>
             <i className='fa fa-close' />
@@ -147,7 +124,7 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
         </Modal.Header>
         <Modal.Body>
           <div className='config card'>
-            <ToastContainer />
+            {/* <ToastContainer /> */}
             <div>
               <form>
                 <div className='form-group'>
@@ -164,6 +141,7 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
                         placeholder='Enter Site Name...'
                         value={siteNameData.siteName}
                         onChange={handleSiteNameChange}
+                        disabled
                       />
                     </div>
                   </div>
@@ -173,7 +151,7 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
                         Site Description
                       </label>
                       <textarea
-                        className='p-2'
+                      className='p-2'
                         placeholder='Enter Site Description...'
                         maxLength={500}
                         rows={2}
@@ -338,4 +316,4 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
   )
 }
 
-export default UpdateSiteModel
+export default UpdateSiteMoreModel

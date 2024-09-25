@@ -17,14 +17,10 @@ import BlockListImportPopUp from './BlockListImportPopUp'
 
 function BlockList() {
   const orgId = Number(sessionStorage.getItem('orgId'))
-  const globalAdminRole = Number(sessionStorage.getItem('globalAdminRole'))
-  const clientAdminRole = Number(sessionStorage.getItem('clientAdminRole'))
   const [loading, setLoading] = useState(false)
   const [blockList, setBlockList] = useState([])
   console.log(blockList, 'blockList111')
   const [refreshFlag, setRefreshFlag] = useState(false)
-  const [currentPage, setCurrentPage] = useState(0)
-
   const [limit, setLimit] = useState(20)
   const [showPopup, setShowPopup] = useState(false)
   const [showImportPopup, setShowImportPopup] = useState(false)
@@ -46,6 +42,7 @@ function BlockList() {
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
   const [cursor, setCursor] = useState(null)
+  const [currentCursor, setCurrentCursor] = useState(null);
   const [totalCount, setTotalCount] = useState('')
   const toolId = Number(sessionStorage.getItem('toolID'))
   const roleId = Number(sessionStorage.getItem('roleID'))
@@ -77,7 +74,8 @@ function BlockList() {
           levelValue: groupId || '',
         },
       ],
-      nextCursor: cursor || '',
+      nextCursor: "",
+      previousCursor:currentCursor,
       pageSize: limit,
     }
 
@@ -86,6 +84,7 @@ function BlockList() {
       const response = await fetchBlokckedListUrl(data)
       setBlockList(response.blockedItemList)
       setCursor(response.pagination.nextCursor)
+      setCurrentCursor(response.pagination.previousCursor || null);
 
       if (!initialTotalCountSet) {
         setTotalCount(response.pagination.totalItems)
@@ -102,8 +101,40 @@ function BlockList() {
     fetchData()
   }, [limit])
 
-  const handleLoadMore = () => {
-    fetchData()
+  const handleLoadMore = async() => {
+    const data = {
+      orgID: orgId,
+      includeChildren: includeChildren,
+      includeParents: includeParents,
+      orgAccountStructureLevel: [
+        {
+          levelName: 'AccountId',
+          levelValue: accountId || '',
+        },
+        {
+          levelName: 'SiteId',
+          levelValue: siteId || '',
+        },
+        {
+          levelName: 'GroupId',
+          levelValue: groupId || '',
+        },
+      ],
+      nextCursor: cursor,
+      // previousCursor:currentCursor,
+      pageSize: limit,
+    }
+
+    try {
+      setLoading(true)
+      const response = await fetchBlokckedListUrl(data)
+      setBlockList(response.blockedItemList)
+      setCursor(response.pagination.nextCursor)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
   }
   const handleClickFirstPage = async () => {
     const data = {
@@ -125,6 +156,7 @@ function BlockList() {
         },
       ],
       nextCursor: '',
+      previousCursor: "",
       pageSize: limit,
     }
 
@@ -143,9 +175,6 @@ function BlockList() {
   useEffect(() => {
     fetchData()
   }, [includeChildren, includeParents])
-
-  // const indexOfLastItem = (currentPage + 1) * itemsPerPage
-  // const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems =
     blockList !== null
       ? sortedItems(
@@ -161,10 +190,6 @@ function BlockList() {
     const direction =
       sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending'
     setSortConfig({key, direction})
-  }
-
-  const handlePageClick = (selected) => {
-    setCurrentPage(selected.selected)
   }
   const openPopup = () => {
     setShowPopup(true)
@@ -335,9 +360,10 @@ function BlockList() {
     setShowConfirmation(false)
   }
   const handleRefreshActions = () => {
-    setRefreshFlag(!refreshFlag)
-    fetchData()
-  }
+    setRefreshFlag(!refreshFlag);
+    fetchData();
+  };
+  
   const handleTableRowClick = (item) => {
     setSelectedItem(item)
     if (isActionAuthorized('Update')) {

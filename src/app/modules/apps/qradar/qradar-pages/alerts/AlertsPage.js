@@ -65,8 +65,7 @@ const AlertsPage = () => {
   const [validations, setValidations] = useState('')
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
   const [loading, setLoading] = useState(false)
-  const globalAdminRole = Number(sessionStorage.getItem('globalAdminRole'))
-  const clientAdminRole = Number(sessionStorage.getItem('clientAdminRole'))
+  const [activeAccordion, setActiveAccordion] = useState(null);
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
@@ -199,7 +198,6 @@ const AlertsPage = () => {
   const [escalate, setEscalate] = useState(true)
   const [activePage, setActivePage] = useState(1)
   const [currentPage, setCurrentPage] = useState(1)
-  console.log(currentPage, 'currentPage')
   const [showForm, setShowForm] = useState(false)
   const [ignorVisible, setIgnorVisible] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
@@ -233,24 +231,24 @@ const AlertsPage = () => {
   const [refreshFlag, setRefreshFlag] = useState(false)
   const handleRefreshActions = async () => {
     setRefreshFlag(!refreshFlag)
-    setCurrentPage(1)
-    setActivePage(1)
+    // setCurrentPage(1)
+    setActivePage(currentPage)
     setselectedAlert([])
-    setIsCheckboxSelected(false)
-    const resetCheckboxStates = Object.keys(checkboxStates).reduce((acc, key) => {
-      acc[key] = false
-      return acc
-    }, {})
-    setCheckboxStates(resetCheckboxStates)
+    // setIsCheckboxSelected(false)
+    // const resetCheckboxStates = Object.keys(checkboxStates).reduce((acc, key) => {
+    //   acc[key] = false
+    //   return acc
+    // }, {})
+    // setCheckboxStates(resetCheckboxStates)
     reloadHistory()
     reloadNotes()
     fetchAlertDetails()
     setTimeout(() => {
       fetchAlertDetails()
     }, 5000)
-    qradaralerts()
+    qradaralerts(currentPage)
     setTimeout(() => {
-      qradaralerts()
+      qradaralerts(currentPage)
     }, 2000)
   }
   const fetchAlertDetails = async () => {
@@ -272,9 +270,14 @@ const AlertsPage = () => {
   useEffect(() => {
     fetchAlertDetails()
   }, [selectedAlertId])
-  const handleTdClick = (item) => {
+  useEffect(() => {
+    setActiveAccordion(null);
+  }, [currentPage]);
+
+  const handleTdClick = (item, index) => {
     setSelectedAlertId(item.alertID)
     setSelectedToolId(item.toolID)
+    setActiveAccordion((prev) => (prev === index ? null : index));
   }
   const reloadHistory = () => {
     if (selectedAlertId !== null && selectedAlertId !== undefined) {
@@ -306,11 +309,11 @@ const AlertsPage = () => {
         }
         const alertNotesList = await fetchGetAlertNotesByAlertID(data)
         const alertNoteSort = alertNotesList?.sort((a, b) => {
-          const dateA = a.createdDate || 0; 
-          const dateB = b.createdDate || 0;
-          return dateB - dateA;
-        });
-        
+          const dateA = a.createdDate || 0
+          const dateB = b.createdDate || 0
+          return dateB - dateA
+        })
+
         setAlertNotesList(alertNoteSort)
       }
     } catch (error) {
@@ -358,7 +361,7 @@ const AlertsPage = () => {
         notify(response.message)
         setIgnorVisible(false)
         setShowForm(false)
-        qradaralerts()
+        qradaralerts(currentPage)
         reloadHistory()
         reloadNotes()
       } else {
@@ -369,7 +372,8 @@ const AlertsPage = () => {
     }
   }
   const handleTableRefresh = () => {
-    qradaralerts()
+    setActiveAccordion(null)
+    qradaralerts(currentPage)
     reloadHistory()
     reloadNotes()
     fetchAlertDetails()
@@ -387,7 +391,7 @@ const AlertsPage = () => {
     values,
     handleChange: handleEscalate,
     handleSubmit,
-    resetForm, 
+    resetForm,
   } = useFormik({
     initialValues: {
       owner: '',
@@ -408,7 +412,7 @@ const AlertsPage = () => {
       const response = await fetchSetAlertEscalationStatus(data)
       const {isSuccess, message} = response
       if (isSuccess) {
-        qradaralerts()
+        qradaralerts(currentPage)
         reloadHistory()
         reloadNotes()
         notify(message)
@@ -514,6 +518,7 @@ const AlertsPage = () => {
     const newPage = data.selected + 1
     setCurrentPage(newPage)
     setActivePage(newPage)
+    qradaralerts(newPage)
   }
   const handleFilterChange = async (e) => {
     const value = e.target.value
@@ -563,7 +568,7 @@ const AlertsPage = () => {
     }
   }
 
-  const qradaralerts = async (page = 1) => {
+  const qradaralerts = async (page = currentPage) => {
     const rangeStart = (page - 1) * limit + 1
     const rangeEnd = page * limit
     let data2 = {
@@ -709,7 +714,7 @@ const AlertsPage = () => {
     setCheckboxStates({})
     setIsCheckboxSelected(false)
     setTimeout(() => setIsRefreshing(false), 2000)
-    qradaralerts()
+    qradaralerts(currentPage)
   }
   const handleRefreshMoreDetails = () => {
     fetchAlertDetails()
@@ -780,7 +785,7 @@ const AlertsPage = () => {
         const responseData = await fetchConnectToNetworkUrl(data)
         const {isSuccess, message} = responseData
         if (isSuccess) {
-          qradaralerts()
+          qradaralerts(currentPage)
           fetchValidations()
           fetchAlertDetails()
           notify(message)
@@ -802,7 +807,7 @@ const AlertsPage = () => {
         const responseData = await fetchDisConnectFromNetworkUrl(data)
         const {isSuccess, message} = responseData
         if (isSuccess) {
-          qradaralerts()
+          qradaralerts(currentPage)
           fetchValidations()
           fetchAlertDetails()
           notify(message)
@@ -830,7 +835,7 @@ const AlertsPage = () => {
         const responseData = await fetchThreatsActionUrl(data)
         const {isSuccess, message} = responseData
         if (isSuccess) {
-          qradaralerts()
+          qradaralerts(currentPage)
           fetchValidations()
           fetchAlertDetails()
           notify(message)
@@ -903,7 +908,7 @@ const AlertsPage = () => {
       const {isSuccess, message} = responseData
       if (isSuccess) {
         notify(message)
-        qradaralerts()
+        qradaralerts(currentPage)
         reloadHistory()
         reloadNotes()
         handleAnalystsVerdictClose()
@@ -945,7 +950,7 @@ const AlertsPage = () => {
       const {isSuccess, message} = responseData
       if (isSuccess) {
         notify(message)
-        qradaralerts()
+        qradaralerts(currentPage)
         reloadHistory()
         reloadNotes()
         handleStatusClose()
@@ -1088,6 +1093,7 @@ const AlertsPage = () => {
         return '' // or a default icon class
     }
   }
+  
 
   return (
     <KTCardBody className='alert-page'>
@@ -2232,14 +2238,13 @@ const AlertsPage = () => {
                           </span>
                         </td>
                         <td
-                          key={index}
                           id={'kt_accordion_1_header_' + index}
                           data-bs-toggle='collapse'
                           data-bs-target={'#kt_accordion_1_body_' + index}
-                          aria-expanded='false'
+                          aria-expanded={activeAccordion === index ? 'true' : 'false'}
                           aria-controls={'kt_accordion_1_body_' + index}
                           style={{cursor: 'pointer'}}
-                          onClick={() => handleTdClick(item)}
+                          onClick={() => handleTdClick(item, index)} 
                         >
                           <span className='link-txt' title={item.name}>
                             {truncateText(item.name, 20)}
@@ -2251,7 +2256,9 @@ const AlertsPage = () => {
                       </tr>
                       <tr
                         id={'kt_accordion_1_body_' + index}
-                        className='accordion-collapse collapse'
+                        className={`accordion-collapse collapse ${
+                          activeAccordion === index ? 'show' : ''
+                        }`}
                         aria-labelledby={'kt_accordion_1_header_' + index}
                         data-bs-parent='#kt_accordion_1'
                       >

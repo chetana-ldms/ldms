@@ -118,20 +118,6 @@ function CreateGroupModal({ show, handleClose, items, selectedActionId, refreshD
                 Manual Group
               </label>
             </div>
-            {/* <div className="form-radio mt-3">
-              <input
-                className="form-radio-input me-3"
-                type="radio"
-                id="dynamic"
-                name="groupType"
-                value="dynamic"
-                checked={selectedGroupType === 'dynamic'}
-                onChange={handleRadioChange}
-              />
-              <label className="form-check-label" htmlFor="dynamic">
-                Dynamic Group
-              </label>
-            </div> */}
             <div className="form-radio mt-3">
               <input
                 className="form-radio-input me-3"

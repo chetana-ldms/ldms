@@ -23,8 +23,6 @@ import ExclusionsImportPopUp from './ExclusionsImportPopUp'
 
 function Exclusions() {
   const orgId = Number(sessionStorage.getItem('orgId'))
-  const globalAdminRole = Number(sessionStorage.getItem('globalAdminRole'))
-  const clientAdminRole = Number(sessionStorage.getItem('clientAdminRole'))
   const [loading, setLoading] = useState(false)
   const [exlusions, setExlusions] = useState([])
   console.log(exlusions, 'exlusions111')
@@ -32,13 +30,10 @@ function Exclusions() {
   const [showImportPopup, setShowImportPopup] = useState(false)
   const [showMoreActionsModal, setShowMoreActionsModal] = useState(false)
   const [addToBlockListModal, setAddToBlockListModal] = useState(false)
-  const [selectedValue, setSelectedValue] = useState('')
-  console.log(exlusions, 'exlusions111')
   const [dropdown, setDropdown] = useState(false)
   const [refreshFlag, setRefreshFlag] = useState(false)
   const [includeChildren, setIncludeChildren] = useState(true)
   const [includeParents, setIncludeParents] = useState(true)
-  const [currentPage, setCurrentPage] = useState(0)
   const [limit, setLimit] = useState(20)
   const [filterValue, setFilterValue] = useState('')
   const [selectedAlert, setselectedAlert] = useState([])
@@ -48,6 +43,7 @@ function Exclusions() {
     direction: 'ascending',
   })
   const [selectedItem, setSelectedItem] = useState(null)
+  const [currentCursor, setCurrentCursor] = useState(null);
   const [showPopupEdit, setShowPopupEdit] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
   const accountId = sessionStorage.getItem('accountId')
@@ -86,7 +82,8 @@ function Exclusions() {
           levelValue: groupId || '',
         },
       ],
-      nextCursor: cursor || '',
+      nextCursor: '',
+      previousCursor:currentCursor,
       pageSize: limit,
     }
     try {
@@ -115,8 +112,40 @@ function Exclusions() {
   useEffect(() => {
     fetchData()
   }, [includeChildren, includeParents])
-  const handleLoadMore = () => {
-    fetchData()
+  const handleLoadMore = async () => {
+    const data = {
+      orgID: orgId,
+      includeChildren: includeChildren,
+      includeParents: includeParents,
+      orgAccountStructureLevel: [
+        {
+          levelName: 'AccountId',
+          levelValue: accountId || '',
+        },
+        {
+          levelName: 'SiteId',
+          levelValue: siteId || '',
+        },
+        {
+          levelName: 'GroupId',
+          levelValue: groupId || '',
+        },
+      ],
+      nextCursor: cursor,
+      pageSize: limit,
+    }
+
+    try {
+      setLoading(true)
+      const response = await fetchExclusionListUrl(data)
+      setExlusions(response.exclusionList)
+      setCursor(response.pagination.nextCursor)
+      setCurrentCursor(response.pagination.previousCursor || null);
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
   }
   const handleClickFirstPage = async () => {
     const data = {
@@ -138,6 +167,7 @@ function Exclusions() {
         },
       ],
       nextCursor: '',
+      previousCursor: "",
       pageSize: limit,
     }
 
@@ -531,7 +561,7 @@ function Exclusions() {
               </button>
               <div className='fs-15 mt-2 ms-5'>
                 {' '}
-                Total({currentItems?currentItems.length:0} / {totalCount?totalCount.length:0})
+                Total({currentItems ? currentItems.length : 0}/{totalCount ? totalCount : 0})
               </div>
             </div>
             <div className='col-lg-2 text-right'>

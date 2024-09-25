@@ -11,15 +11,15 @@ import 'react-toastify/dist/ReactToastify.css'
 import ContinueConfirmation from '../../../../../../utils/ContinueConfirmation'
 import {useNavigate} from 'react-router-dom'
 import UpdateSiteModel from './UpdateSiteModel'
-import { ToastContainer } from 'react-toastify'
+import {ToastContainer} from 'react-toastify'
+import UpdateSiteMoreModel from './UpdateSiteMoreModel'
+import ReactivateSiteModel from './ReactivateSiteModel'
 
 function Sites() {
   const navigate = useNavigate()
   const [sites, setSites] = useState([])
   console.log(sites, 'sites')
-  const [selectedAlert, setselectedAlert] = useState([])
   const [actionDropdownOpen, setActionDropdownOpen] = useState(false)
-  const [filterValue, setFilterValue] = useState('')
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
   const [features, setFeatures] = useState([])
   const [selectedActionId, setSelectedActionId] = useState(null)
@@ -30,7 +30,9 @@ function Sites() {
   const [computerNames, setComputerNames] = useState('')
   const [loading, setLoading] = useState(false)
   const [updateSiteModel, setUpdateSiteModel] = useState(false)
-  const disableActions = ['Delete Site', 'Expire Site', 'Reactivate Site', 'Site Update']
+  const [updateSiteMoreModel, setUpdateSiteMoreModel] = useState(false)
+  const [reactivateSiteModel, setReactivateSiteModel] = useState(false)
+  const disableActions = ['Delete Site', 'Expire Site', 'Reactivate Site']
 
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
@@ -67,7 +69,16 @@ function Sites() {
     try {
       setLoading(true)
       const response = await fetchSitesUrl(data)
-      setSites(response.sites)
+      let fetchedSites = response.sites
+
+      if (groupId) {
+        setSites([])
+      } else if (siteId) {
+        const filteredSite = fetchedSites.filter((site) => site.id === siteId)
+        setSites(filteredSite)
+      } else {
+        setSites(fetchedSites)
+      }
     } catch (error) {
       console.error(error)
     } finally {
@@ -81,50 +92,39 @@ function Sites() {
   useEffect(() => {
     fetchData()
   }, [])
-  const fetchFeatureActions = async () => {
-    try {
-      const data = {
-        orgId: orgId,
-        toolId: toolId,
-        roleId: roleId,
-        featureId: featureId,
-      }
-      const response = await fetchFeaturesActionsAuthorizedUrl(data)
-      setFeatures(response.featureActions)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(() => {
-    fetchFeatureActions()
-  }, [])
   const handleActionClick = (actionId, actionDisplayName) => {
     setSelectedActionId(actionId)
     setSelectedActionDisplayName(actionDisplayName)
 
     switch (actionDisplayName) {
       case 'Site Update':
-        setUpdateSiteModel(true)
+        if (items.length > 1) {
+          setUpdateSiteMoreModel(true)
+        } else {
+          setUpdateSiteModel(true)
+        }
+        break
+      case 'Reactivate Site':
+        setReactivateSiteModel(true)
         break
       default:
         setIsConfirmModalVisible(true)
     }
   }
   const sendSelectedItemsToBackend = async () => {
-    const siteId = items.map((item) => item.id).join(',') 
-    const siteNames = items.map((item) => item.name).join(', ') 
-  
+    const siteId = items.map((item) => item.id).join(',')
+    const siteNames = items.map((item) => item.name).join(', ')
+
     const payload = {
       orgId,
       toolId,
       actionId: selectedActionId,
       siteId: siteId,
-      siteName: siteNames, 
+      siteName: siteNames,
       executedUserId: Number(sessionStorage.getItem('userId')),
       executedDate: new Date().toISOString(),
     }
-  
+
     console.log(payload, 'payload')
     try {
       const response = await fetchSiteActionUrl(payload)
@@ -139,7 +139,7 @@ function Sites() {
       console.log(error)
     }
   }
-  
+
   const refreshData = () => {
     fetchData()
   }
@@ -175,7 +175,7 @@ function Sites() {
   console.log(filteredActionItems, 'filteredActionItems')
   return (
     <div className='ldc-application'>
-       <ToastContainer />
+      <ToastContainer />
       {loading ? (
         <UsersListLoading />
       ) : (
@@ -198,7 +198,13 @@ function Sites() {
                       key={index}
                       onClick={() => handleActionClick(action.actionId, action.actionDisplayName)}
                       disabled={
-                        items.length > 1 && disableActions.includes(action.actionDisplayName)
+                        (items.length > 1 && disableActions.includes(action.actionDisplayName)) ||
+                        (action.actionDisplayName === 'Expire Site' &&
+                          items.some((item) => item.state === 'expired')) ||
+                        (action.actionDisplayName === 'Reactivate Site' &&
+                          items.some((item) => item.state == 'active')) ||
+                        (action.actionDisplayName === 'Delete Site' &&
+                          items.some((item) => item.state === 'deleted'))
                       }
                     >
                       {action.actionDisplayName}
@@ -216,6 +222,20 @@ function Sites() {
               <UpdateSiteModel
                 show={updateSiteModel}
                 handleClose={() => setUpdateSiteModel(false)}
+                items={items}
+                selectedActionId={selectedActionId}
+                refreshData={refreshData}
+              />
+              <UpdateSiteMoreModel
+                show={updateSiteMoreModel}
+                handleClose={() => setUpdateSiteMoreModel(false)}
+                items={items}
+                selectedActionId={selectedActionId}
+                refreshData={refreshData}
+              />
+              <ReactivateSiteModel
+                show={reactivateSiteModel}
+                handleClose={() => setReactivateSiteModel(false)}
                 items={items}
                 selectedActionId={selectedActionId}
                 refreshData={refreshData}
@@ -250,11 +270,15 @@ function Sites() {
               {sites !== null && sites.length > 0 ? (
                 sites?.map((item, index) => (
                   <tr
-                  className={`table-row ${item.state === 'deleted' ? 'text-muted bg-light pointer-events-none' : ''}`}
-                  key={index}
-                >
+                    className={`table-row ${
+                      item.state === 'deleted' || item.state === 'expired'
+                        ? 'text-muted bg-light pointer-events-none'
+                        : ''
+                    }`}
+                    key={index}
+                  >
                     <td>
-                      {item.state == 'active' ? (
+                      {item.state == 'active' || item.state === 'expired' ? (
                         <div className='form-check form-check-sm form-check-custom form-check-solid pe-2 me-5'>
                           <input
                             className='form-check-input widget-13-check'
@@ -286,7 +310,7 @@ function Sites() {
                         </span>
                       ))}
                     </td>
-                    <td>{item.totalLicenses}</td>
+                    <td>{item.totalLicenses == '0' ? 'Unlimited' : item.totalLicenses}</td>
                     <td>{item.activeLicenses}</td>
                     <td>{getCurrentTimeZone(item.createdAt)}</td>
                     <td>{getCurrentTimeZone(item.expiration)}</td>

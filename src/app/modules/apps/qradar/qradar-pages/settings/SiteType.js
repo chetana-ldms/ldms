@@ -15,8 +15,18 @@ const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData, siteNameData}) 
       notifyFail('Please select a SKU')
       return
     }
+    if (siteTypeData?.selectedExpirationDate) {
+      const expirationDateObj = new Date(siteTypeData.selectedExpirationDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); 
+    
+      if (expirationDateObj <= today) { 
+        notifyFail("Expiration date cannot be today or earlier");
+        return;
+      }
+    }
+    
 
-    // setActiveStep('site-policy')
     const expirationDate = siteTypeData?.selectedExpirationDate
       ? new Date(siteTypeData.selectedExpirationDate).toISOString()
       : null
@@ -30,7 +40,7 @@ const SiteType = ({setActiveStep, siteTypeData, setSiteTypeData, siteNameData}) 
       siteType: siteTypeData?.siteType,
       accountId: accountId,
       description: siteNameData?.siteDescription,
-      totalLicenses: siteTypeData.isUnlimitedLicenses ? "0" : siteTypeData?.totalAgents,
+      totalLicenses: siteTypeData.isUnlimitedLicenses ? "0" : (siteTypeData?.totalAgents ? siteTypeData.totalAgents : "0"),
       orgId: Number(sessionStorage.getItem('orgId')),
       toolId: Number(sessionStorage.getItem('toolID')),
       createdDate: new Date().toISOString(),
