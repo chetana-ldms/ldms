@@ -372,6 +372,8 @@ function Endpoint() {
 
   const refreshData = () => {
     fetchData()
+    setItems([])
+    setIsCheckboxSelected(false)
   }
   const handleGroup = (actionId, actionDisplayName) => {
     setSelectedActionId(actionId)

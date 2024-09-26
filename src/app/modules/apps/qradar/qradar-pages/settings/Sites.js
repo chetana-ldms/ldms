@@ -132,6 +132,7 @@ function Sites() {
       if (isSuccess) {
         fetchData()
         notify(message)
+        window.location.reload()
       } else {
         notifyFail(message)
       }

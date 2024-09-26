@@ -198,6 +198,7 @@ const AlertsPage = () => {
   const [escalate, setEscalate] = useState(true)
   const [activePage, setActivePage] = useState(1)
   const [currentPage, setCurrentPage] = useState(1)
+  console.log(currentPage, 'currentPage')
   const [showForm, setShowForm] = useState(false)
   const [ignorVisible, setIgnorVisible] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
@@ -231,9 +232,9 @@ const AlertsPage = () => {
   const [refreshFlag, setRefreshFlag] = useState(false)
   const handleRefreshActions = async () => {
     setRefreshFlag(!refreshFlag)
-    // setCurrentPage(1)
+    setCurrentPage(currentPage)
     setActivePage(currentPage)
-    setselectedAlert([])
+    // setselectedAlert([])
     // setIsCheckboxSelected(false)
     // const resetCheckboxStates = Object.keys(checkboxStates).reduce((acc, key) => {
     //   acc[key] = false
@@ -2718,9 +2719,9 @@ const AlertsPage = () => {
                                         <div className='col-md-1'></div>
                                         <div className='col-md-11'>
                                           <div className='timeline-section h-300px scroll-y'>
-                                            <div className='pt-6 h-600px'>
+                                            <div className='pt-6 h-600px'style={{ width: '95%', textWrap: "wrap" }}>
                                               <div className='timeline-label'>
-                                                <div className='float-right fs-13 fc-gray text-right ds-reload'>
+                                                <div className='float-right fs-13 fc-gray text-right ds-reload ms-5'>
                                                   <a href='#' onClick={handleRefreshTimeLine}>
                                                     <i
                                                       className={`fa fa-refresh link ${
