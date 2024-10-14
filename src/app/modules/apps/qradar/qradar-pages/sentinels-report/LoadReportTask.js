@@ -39,6 +39,7 @@ function LoadReportTask() {
   const groupId = sessionStorage.getItem('groupId')
   const [loading, setLoading] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
+  console.log(selectedItem, "selectedItem")
   const [showPopupEdit, setShowPopupEdit] = useState(false)
   const userID = Number(sessionStorage.getItem('userId'))
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -255,7 +256,7 @@ function LoadReportTask() {
                     style={{cursor: 'pointer'}}
                   >
                     <td>
-                      <div className='form-check form-check-sm form-check-custom form-check-solid px-3'>
+                    <label className='form-check form-check-sm form-check-custom form-check-solid px-3'>
                         <input
                           className='form-check-input widget-13-check'
                           type='checkbox'
@@ -266,7 +267,7 @@ function LoadReportTask() {
                           autoComplete='off'
                           onClick={(e) => e.stopPropagation()}
                         />
-                      </div>
+                      </label>
                     </td>
                     <td>{item.name}</td>
                     <td>{item.scope}</td>

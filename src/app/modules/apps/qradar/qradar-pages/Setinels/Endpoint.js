@@ -128,10 +128,9 @@ function Endpoint() {
       'Storage Name': item.storageName ?? null,
       'Storage Type': item.storageType ?? null,
       'Last successfull scan time': getCurrentTimeZone(item.lastSuccessfulScanDate),
-      Locations: item.locations[0].name,
+      Locations: item.locations[0]?.name,
     }))
   }
-  // Function to convert data to CSV format
   const convertToCSV = (data) => {
     const header = Object.keys(data[0]).join(',') + '\n'
     const body = data.map((item) => Object.values(item).join(',')).join('\n')
@@ -143,7 +142,6 @@ function Endpoint() {
     const blob = new Blob([csvData], {type: 'text/csv;charset=utf-8;'})
     const fileName = 'endpoints.csv'
     if (navigator.msSaveBlob) {
-      // IE 10+
       navigator.msSaveBlob(blob, fileName)
     } else {
       const link = document.createElement('a')
@@ -158,9 +156,9 @@ function Endpoint() {
     }
   }
 
-  // Function to extract full table data
   const exportTableToCSV = async () => {
     const tableData = extractTableData(filteredList)
+    console.log(tableData, "filteredList");
     exportToCSV(tableData)
     const data = {
       createdDate: new Date().toISOString(),
@@ -175,9 +173,9 @@ function Endpoint() {
     }
   }
 
-  // Function to extract current pagination table data
   const exportCurrentTableToCSV = async () => {
     const tableData = extractTableData(currentItems)
+    console.log(tableData, "currentItems");
     exportToCSV(tableData)
     const data = {
       createdDate: new Date().toISOString(),

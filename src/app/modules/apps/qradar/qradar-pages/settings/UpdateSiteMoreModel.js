@@ -221,10 +221,10 @@ function UpdateSiteMoreModel({show, handleClose, items, selectedActionId, refres
 
                   {!siteTypeData.skuSelected ? (
                     <div className='row justify-content-start mb-3'>
-                      <div className='col-md-12'>
-                        <select className='form-control' onChange={handleSkuChange}>
+                      <div className='col-md-12 disabled'>
+                        <select className='form-control ' onChange={handleSkuChange} disabled>
                           <option value=''>Select SKU</option>
-                          <option value='complete'>Complete</option>
+                          <option value='complete '>Complete</option>
                         </select>
                       </div>
                     </div>

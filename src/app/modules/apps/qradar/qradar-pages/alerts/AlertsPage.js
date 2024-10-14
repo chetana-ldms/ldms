@@ -763,6 +763,7 @@ const AlertsPage = () => {
   }
   const handleThreatActions = () => {
     setShowDropdown(true)
+    fetchValidations()
   }
   const handleDropdownSelect = async (event) => {
     const value = event.target.value
@@ -2595,20 +2596,20 @@ const AlertsPage = () => {
                                                 </div>
                                               </div>
                                               <div className='col-md-4 mt-2 '>
-                                                <p className='mb-2 semi-bold'>
+                                                {/* <p className='mb-2 semi-bold'>
                                                   Console connectivity
-                                                </p>
+                                                </p> */}
                                                 <p className='mb-2 semi-bold'>Full Disc scan:</p>
                                                 <p className='semi-bold'>Pending Reboot:</p>
                                                 {/* <p>Number of not Mitigated Threats</p> */}
                                                 <p className='semi-bold'> Network status:</p>
                                               </div>
                                               <div className='col-md-8 mt-2'>
-                                                <p>
+                                                {/* <p>
                                                   {endpointInfo?.consoleConnectivity
                                                     ? endpointInfo?.consoleConnectivity
                                                     : 'Offline'}
-                                                </p>
+                                                </p> */}
                                                 <p>
                                                   {endpointInfo?.fullDiskScanStatus} at{' '}
                                                   {getCurrentTimeZone(

@@ -45,7 +45,8 @@ const MoveAgentToAnotherSiteModal = ({show, handleClose, items, selectedActionId
         accountId: String(accountId),
       }
       const response = await fetchSitesUrl(data)
-      setSites(response.sites)
+      const sitesAvailable = response?.sites.filter((item)=>item.state == "active")
+      setSites(sitesAvailable)
     } catch (error) {
       console.log(error)
     }

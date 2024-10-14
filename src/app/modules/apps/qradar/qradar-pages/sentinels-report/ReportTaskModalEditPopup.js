@@ -24,6 +24,7 @@ function ReportTaskModalEditPopup({show, onClose, refreshParent, selectedItem}) 
   const [scheduleInterval, setScheduleInterval] = useState('')
   const [selectedDay, setSelectedDay] = useState('')
   const [reportFormats, setReportFormats] = useState({pdf: false, html: false})
+  console.log(reportFormats, 'reportFormats')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,6 +95,14 @@ function ReportTaskModalEditPopup({show, onClose, refreshParent, selectedItem}) 
   const handleCreate = async () => {
     if (!reportName) {
       notifyFail('Enter Report Name')
+      return
+    }
+    if (!recipients && Object.values(reportFormats).some((format) => format)) {
+      notifyFail('Enter Recipients email')
+      return
+    }
+    if (recipients && !Object.values(reportFormats).some((format) => format)) {
+      notifyFail('Please select atleast one report format')
       return
     }
     const data = {
@@ -326,8 +335,8 @@ function ReportTaskModalEditPopup({show, onClose, refreshParent, selectedItem}) 
               onChange={(e) => setRecipients(e.target.value)}
             />
           </div>
-          {recipients && (
-            <div className='form-group mt-3 '>
+          {(recipients || Object.values(reportFormats).some((format) => format)) && (
+            <div className='form-group mt-3'>
               <label>Report Format</label>
               <div className='d-flex'>
                 <div className='form-check mr-5 d-flex align-items-center'>

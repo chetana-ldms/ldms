@@ -51,9 +51,9 @@ const Document = ({ channelId, channelName }) => {
       try {
         const response = await fetchUpload(formData);
         if (response.isSuccess) {
-          notify("File updated successfully");
+          notify("File uploaded successfully");
         } else {
-          notifyFail("Failed to update file");
+          notifyFail("Failed to upload the file");
         }
         setUploadDocumentModal(false);
         fetchData(channelId);

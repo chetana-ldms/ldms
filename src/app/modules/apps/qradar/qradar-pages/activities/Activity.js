@@ -23,10 +23,11 @@ function Activity() {
   console.log(selectedToDate, "selectedToDate")
   const orgId = Number(sessionStorage.getItem('orgId'));
   const userID = Number(sessionStorage.getItem('userId'));
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(5);
   const [pageCount, setPageCount] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  console.log(currentPage, "currentPage")
   const [activePage, setActivePage] = useState(1);
 
   const [filters, setFilters] = useState({
@@ -166,13 +167,25 @@ function Activity() {
   };
 
   const handleRefresh = (event) => {
-    event.preventDefault();
+    if (event) {
+      event.preventDefault();
+    }
     setIsRefreshing(true);
     setCurrentPage(1);
     fetchActivityData(1, filters.userId, filters.activityTypeIds, filters.fromDate, filters.toDate, limit);
     setActivePage(1);
     setTimeout(() => setIsRefreshing(false), 2000);
   };
+  
+  useEffect(() => {
+    if (currentPage === 1) {
+      const intervalId = setInterval(() => {
+        handleRefresh();
+      }, 40000); 
+      return () => clearInterval(intervalId);
+    }
+  }, [currentPage]);
+  
 
   const handleReset = () => {
     setSelectedUsers([]);
@@ -189,7 +202,6 @@ function Activity() {
     });
     fetchActivityData(1, 0, [], null, null, limit);
   };
-
   const userOptions = users?.map(user => ({ label: user.name, value: user }));
   const activityTypeOptions = activityType?.map(type => ({
     label: type.typeName,
@@ -266,8 +278,8 @@ function Activity() {
   return (
     <div className='activity-timeline'>
       <ToastContainer />
-      <h1 className='mb-5'>Activity</h1>
-      <div className='card header-filter mb-5 pad-10'>
+      <h2 className='mb-2'>Activity</h2>
+      <div className='card header-filter mb-2 pad-10'>
         <div className='d-flex'>
           <div className='d-flex align-items-center'>
             <label className='no-margin pr-2 semi-bold'>Users:</label>
@@ -362,7 +374,7 @@ function Activity() {
         </div>
       )}
 
-      <div className='card mt-5'>
+      <div className='card mt-2'>
         <div className='d-flex justify-content-end align-items-center pagination-bar pt-3 pb-3'>
           <ReactPaginate
             previousLabel={<i className='fa fa-chevron-left' />}

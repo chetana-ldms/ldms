@@ -16,8 +16,11 @@ function ReportTaskModal({show, handleClose, refreshParent}) {
   const [selectedFromDate, setSelectedFromDate] = useState(null)
   const [selectedToDate, setSelectedToDate] = useState(null)
   const [reportName, setReportName] = useState('')
+  const [grouptName, setGrouptName] = useState('')
   const [reportContent, setReportContent] = useState([])
+  console.log(reportContent, "reportContent")
   const [selectedContent, setSelectedContent] = useState(null)
+  console.log(selectedContent, "selectedContent")
   const [frequency, setFrequency] = useState('one-time')
   const [recipients, setRecipients] = useState('')
   const [scheduleInterval, setScheduleInterval] = useState('')
@@ -45,16 +48,14 @@ function ReportTaskModal({show, handleClose, refreshParent}) {
   }
 
   const handleFromDateChange = (e) => {
-    const value = e.target.value; 
-    setSelectedFromDate(value ? new Date(value) : null); 
-  };
-  
+    const value = e.target.value
+    setSelectedFromDate(value ? new Date(value) : null)
+  }
 
   const handleToDateChange = (e) => {
-    const value = e.target.value;
-    setSelectedToDate(value ? new Date(value) : null); 
-  };
-  
+    const value = e.target.value
+    setSelectedToDate(value ? new Date(value) : null)
+  }
 
   const handleFrequencyChange = (e) => {
     setFrequency(e.target.value)
@@ -88,52 +89,66 @@ function ReportTaskModal({show, handleClose, refreshParent}) {
     }
     if (frequency === 'scheduled') {
       if (!scheduleInterval) {
-        notifyFail('Interval is required for scheduled reports');
-        return;
+        notifyFail('Interval is required for scheduled reports')
+        return
       }
       if (scheduleInterval === 'weekly' && !selectedDay) {
-        notifyFail('Day of the Week is required for weekly scheduled reports');
-        return;
+        notifyFail('Day of the Week is required for weekly scheduled reports')
+        return
       }
     }
     if (selectedInterval === 'manual') {
       if (!selectedFromDate) {
-        notifyFail('From Date is required for manual reports');
-        return;
+        notifyFail('From Date is required for manual reports')
+        return
       }
       if (!selectedToDate) {
-        notifyFail('To Date is required for manual reports');
-        return;
+        notifyFail('To Date is required for manual reports')
+        return
       }
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-  
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+
       if (selectedFromDate > selectedToDate) {
-        notifyFail('From Date should not be greater than To Date');
-        return;
+        notifyFail('From Date should not be greater than To Date')
+        return
       }
-      if (selectedFromDate >= today) {
-        notifyFail("From Date should be less than today's date");
-        return;
-      }
-      const adjustedToDate = new Date(selectedToDate);
-      adjustedToDate.setHours(0, 0, 0, 0);
-  
+      // if (selectedFromDate >= today) {
+      //   notifyFail("From Date should be less than today's date");
+      //   return;
+      // }
+      const adjustedToDate = new Date(selectedToDate)
+      adjustedToDate.setHours(0, 0, 0, 0)
+
       if (adjustedToDate > today) {
-        notifyFail("To Date should be less than or equal to today's date");
-        return;
+        notifyFail("To Date should be less than or equal to today's date")
+        return
       }
     }
-    const selectObject = reportContent.filter((item) => {
-      return item.report_Id_Name === selectedContent
-    })
+    const selectObject = reportContent
+    .filter((item) => item.report_Id_Name === selectedContent)
+    .map((item) => {
+      // If selectedContent matches 'group_exec_insights', set the value of 'group_name'
+      if (selectedContent === 'group_exec_insights') {
+        const updatedItem = { ...item };
+        updatedItem.report_Args = updatedItem.report_Args.map((arg) => {
+          if (arg.name === 'group_name') {
+            return { ...arg, value: grouptName }; // Assign grouptName to the value field
+          }
+          return arg;
+        });
+        return updatedItem;
+      }
+      return item;
+    });
+    console.log(selectObject, "selectObject")
     const data = {
       scope: siteId ? 'site' : 'Account',
       name: reportName,
       insightTypes: selectObject,
       scheduleType: frequency === 'one-time' ? 'manually' : 'scheduled',
       recipients: recipients ? recipients.split(',').map((email) => email.trim()) : [],
-      isTrend: selectedInterval === 'last-30-days' ? true : false,
+      isTrend: frequency !== 'one-time' ? false : (selectedInterval === 'last-30-days' ? true : false),
       toDate: selectedToDate ? selectedToDate.toISOString() : null,
       fromDate: selectedFromDate ? selectedFromDate.toISOString() : null,
       frequency:
@@ -246,6 +261,24 @@ function ReportTaskModal({show, handleClose, refreshParent}) {
                   </select>
                 </div>
               </div>
+
+              {selectedContent === 'group_exec_insights' && (
+                <div className='col-lg-4 mb-4 mb-lg-0'>
+                  <div className='form-group'>
+                    <label htmlFor='grouptName'>
+                      Group Name <sup className='red'>*</sup>
+                    </label>
+                    <input
+                      type='text'
+                      className='form-control'
+                      id='grouptName'
+                      placeholder='Enter Group name'
+                      value={grouptName}
+                      onChange={(e) => setGrouptName(e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
             <div className='row'>
               <div className='col-lg-12'>
@@ -364,7 +397,7 @@ function ReportTaskModal({show, handleClose, refreshParent}) {
                     <input
                       className='date'
                       type='date'
-                      value={selectedFromDate ? selectedFromDate.toISOString().split('T')[0] : ''} 
+                      value={selectedFromDate ? selectedFromDate.toISOString().split('T')[0] : ''}
                       onChange={handleFromDateChange}
                     />
                   </div>

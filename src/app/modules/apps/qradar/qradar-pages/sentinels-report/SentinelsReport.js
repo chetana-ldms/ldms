@@ -34,6 +34,7 @@ function SentinelsReport() {
   const [currentPage, setCurrentPage] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(20)
   const [activePage, setActivePage] = useState(0)
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
@@ -285,6 +286,25 @@ function SentinelsReport() {
   useEffect(() => {
     reloadTask()
   }, [])
+  const handleRefresh = (event) => {
+    if (event) {
+      event.preventDefault();
+    }
+    setIsRefreshing(true);
+    setCurrentPage(0);
+    setActivePage(0);
+    reload();
+    setTimeout(() => setIsRefreshing(false), 2000);
+  };
+  
+  useEffect(() => {
+    if (currentPage === 0) {
+      const intervalId = setInterval(() => {
+        handleRefresh();
+      }, 10000); 
+      return () => clearInterval(intervalId);
+    }
+  }, [currentPage]);
 
   return (
     <div className='card pad-10 config'>
@@ -319,6 +339,14 @@ function SentinelsReport() {
                 </option>
               ))}
             </select>
+          </div>
+          <div className='ds-reload mt-2 ms-3 float-right'>
+            <span className='fs-13 fc-gray' onClick={handleRefresh}>
+              <i
+                className={`fa fa-refresh link ${isRefreshing ? 'rotate' : ''}`}
+                title='Auto refresh every 2 minutes'
+              />
+            </span>
           </div>
         </div>
         <div className='card-toolbar'>
@@ -428,7 +456,7 @@ function SentinelsReport() {
                                 <p>Creator</p>
                               </div>
                               <div className='col-md-8'>
-                                <p>{item?.insightTypes[0]?.display_Name}</p>
+                                <p>{item?.insightTypes[0]?.display_Name ? item?.insightTypes[0]?.display_Name : "N/A"}</p>
                                 <p> {item?.creatorName}</p>
                               </div>
                             </div>
