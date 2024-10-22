@@ -163,7 +163,7 @@ export const dndinitialNodes = [
     },
     className: 'cdc_out',
     data: {
-      label: 'CDC Out',
+      label: 'LDC Out',
     },
     width: 56,
     height: 21,
@@ -250,7 +250,7 @@ export const dndinitialNodes = [
     },
     className: 'cdc_query',
     data: {
-      label: 'CDC Query',
+      label: 'LDC Query',
     },
     width: 63,
     height: 21,

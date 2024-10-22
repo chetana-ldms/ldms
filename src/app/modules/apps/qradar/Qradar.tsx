@@ -96,6 +96,9 @@ import SitePolicy from './qradar-pages/settings/SitePolicy'
 import SiteStepper from './qradar-pages/settings/SiteStepper'
 import SentinelsReport from './qradar-pages/sentinels-report/SentinelsReport'
 import LoadReportTask from './qradar-pages/sentinels-report/LoadReportTask'
+import MaintenanceWindow from './qradar-pages/Setinels/MaintenanceWindow'
+import SentinelLiveUpdates from './qradar-pages/Setinels/SentinelLiveUpdates'
+import { AutoUpgrade } from './qradar-pages/Setinels/AutoUpgrade'
 
 
 const QradarPages = () => {
@@ -182,6 +185,9 @@ const QradarPages = () => {
       <Route path='setinels/blockList' element={<BlockList />} />
       <Route path='setinels/policy' element={<PolicySentinal />} />
       <Route path='setinels/accountDetalis' element={<AccountDetalis />} />
+      <Route path='setinels/autoupgrade' element={<AutoUpgrade />} />
+      <Route path='setinels/maintenancewindow' element={<MaintenanceWindow />} />
+      <Route path='setinels/sentinelliveupdates' element={<SentinelLiveUpdates />} />
       <Route path='settings/:status' element={<Settings />} />
       <Route path='accounts/:status' element={<Accounts />} />
       <Route path='sites/:status' element={<Sites />} />

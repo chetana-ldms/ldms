@@ -42,6 +42,7 @@ const DemoPlaybooks = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -205,11 +206,11 @@ const DemoPlaybooks = () => {
                 </div>
                 <div
                   className="btn btn3 btn-sm mb-1 dndnode"
-                  onDragStart={(event) => onDragStart(event, "CDC Out")}
+                  onDragStart={(event) => onDragStart(event, "LDC Out")}
                   draggable
                 >
                   {/* <i className='fas fa-search'></i> */}
-                  <span> CDC Out</span>
+                  <span> LDC Out</span>
                 </div>
                 <div
                   className="btn btn4 btn-sm mb-1 dndnode"
@@ -247,11 +248,11 @@ const DemoPlaybooks = () => {
                 </div>
                 <div
                   className="btn btn8 btn-sm mb-1 dndnode"
-                  onDragStart={(event) => onDragStart(event, "CDC Query")}
+                  onDragStart={(event) => onDragStart(event, "LDC Query")}
                   draggable
                 >
                   {/* <i className='fas fa-search'></i> */}
-                  <span> CDC Query</span>
+                  <span> LDC Query</span>
                 </div>
                 <div
                   className="btn btn1 btn-sm mb-1 dndnode"

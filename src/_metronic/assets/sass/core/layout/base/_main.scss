@@ -1117,8 +1117,9 @@ form{
       font-size: 18px;
       color: #506cd6;
       position: relative;
-      left: 210px;
-      float: left;
+      // left: 210px;
+      // float: left;
+      text-align: center;
     }
     &:last-child {
       font-size: 15px;
@@ -1126,7 +1127,7 @@ form{
       position: relative;
       right: 100px;
       float: right;
-      margin-top: 28px !important;
+      margin-top: 5px !important;
     }
   }
 }

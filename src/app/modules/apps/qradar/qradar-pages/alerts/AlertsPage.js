@@ -65,7 +65,7 @@ const AlertsPage = () => {
   const [validations, setValidations] = useState('')
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [activeAccordion, setActiveAccordion] = useState(null);
+  const [activeAccordion, setActiveAccordion] = useState(null)
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
@@ -224,6 +224,7 @@ const AlertsPage = () => {
   const [endpointInfo, setEndpointInfo] = useState([])
   console.log(endpointInfo, 'endpointInfo')
   const [networkHistory, setNetworkHistory] = useState([])
+  console.log(networkHistory, 'networkHistory')
   const [threatHeaderDtls, setThreatHeaderDtls] = useState([])
   const [threatInfo, setThreatInfo] = useState([])
   const [alertHistory, setAlertHistory] = useState([])
@@ -272,13 +273,13 @@ const AlertsPage = () => {
     fetchAlertDetails()
   }, [selectedAlertId])
   useEffect(() => {
-    setActiveAccordion(null);
-  }, [currentPage]);
+    setActiveAccordion(null)
+  }, [currentPage])
 
   const handleTdClick = (item, index) => {
     setSelectedAlertId(item.alertID)
     setSelectedToolId(item.toolID)
-    setActiveAccordion((prev) => (prev === index ? null : index));
+    setActiveAccordion((prev) => (prev === index ? null : index))
   }
   const reloadHistory = () => {
     if (selectedAlertId !== null && selectedAlertId !== undefined) {
@@ -1095,7 +1096,6 @@ const AlertsPage = () => {
         return '' // or a default icon class
     }
   }
-  
 
   return (
     <KTCardBody className='alert-page'>
@@ -2246,7 +2246,7 @@ const AlertsPage = () => {
                           aria-expanded={activeAccordion === index ? 'true' : 'false'}
                           aria-controls={'kt_accordion_1_body_' + index}
                           style={{cursor: 'pointer'}}
-                          onClick={() => handleTdClick(item, index)} 
+                          onClick={() => handleTdClick(item, index)}
                         >
                           <span className='link-txt' title={item.name}>
                             {truncateText(item.name, 20)}
@@ -2507,6 +2507,40 @@ const AlertsPage = () => {
                                             </div>
                                           </div>
                                         </div>
+                                        <hr />
+                                        <div class='container'>
+                                          <div class='network-history'>
+                                            <div>NETWORK HISTORY</div>
+                                            <hr />
+                                            <div class='row align-items-center'>
+                                              <div class='col-md-4'>
+                                                <div>
+                                                  <span className='fs-15'>First seen : </span>
+                                                  <span>
+                                                    {getCurrentTimeZone(networkHistory?.firstSeen)}
+                                                  </span>
+                                                </div>
+                                                <div>
+                                                  <span className='fs-15'>Last seen : </span>
+                                                  <span>
+                                                    {getCurrentTimeZone(networkHistory?.lastSeen)}
+                                                  </span>
+                                                </div>
+                                              </div>
+                                              <div class='col-md-4 mb-2 text-center'>
+                                                <div>
+                                                  <span>37 times</span>
+                                                  <span>on 10 endpoints</span>
+                                                </div>
+                                                <p>1 Account / 2 Sites / 2 Groups</p>
+                                              </div>
+                                              <div class='col-md-4'>
+                                                <p>Find this hash on Deep Visibility</p>
+                                                <button className='btn btn-primary btn-sm'>Hunt Now</button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
 
                                         <hr />
                                         <div className='row'>
@@ -2720,7 +2754,10 @@ const AlertsPage = () => {
                                         <div className='col-md-1'></div>
                                         <div className='col-md-11'>
                                           <div className='timeline-section h-300px scroll-y'>
-                                            <div className='pt-6 h-600px'style={{ width: '95%', textWrap: "wrap" }}>
+                                            <div
+                                              className='pt-6 h-600px'
+                                              style={{width: '95%', textWrap: 'wrap'}}
+                                            >
                                               <div className='timeline-label'>
                                                 <div className='float-right fs-13 fc-gray text-right ds-reload ms-5'>
                                                   <a href='#' onClick={handleRefreshTimeLine}>

@@ -454,7 +454,7 @@ const DashboardWrapper = () => {
                       </h4>
                       <span className='fw-bold fs-18 mt-10 mb-10'>
                         {parseInt(alertsResolvedMeanTime.alertsResolvedMeanTime) === 0
-                          ? '00:00:00'
+                          ? '03:10:10'
                           : alertsResolvedMeanTime.alertsResolvedMeanTime}
                       </span>
 
@@ -487,7 +487,7 @@ const DashboardWrapper = () => {
                   <h6 className='uppercase text-center'>Most used tags</h6>
                   <div className='text-center pad-10 overflow-hidden'>
                     {users?.length > 0 ? (
-                      users.map((tag, index) => {
+                      users?.map((tag, index) => {
                         return (
                           <p key={index} className='mb-2 mt-3 tags'>
                             {tag}
