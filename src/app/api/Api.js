@@ -57,7 +57,7 @@ export const fetchAuthenticate = async (userName, password, orgName) => {
     })
 
     const responseData = await response.json()
-    console.log('responseData123', responseData)
+    console.log('responseData', responseData)
     return responseData
   } catch (error) {
     console.log(error)
