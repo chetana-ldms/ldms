@@ -1,3 +1,5 @@
+import FetchWithToken from "../modules/auth/FetchWithToken"
+
 const SentinelReportsUrl = process.env.REACT_APP_SENTINELREPORTS_URL
 const SentinelReportsTypesUrl = process.env.REACT_APP_SENTINELREPORTS_TYPES_URL
 const SentinelReportTaskCreateUrl =process.env.REACT_APP_SENTINELREPORTS_TASK_CREAT_URL
@@ -9,7 +11,7 @@ const SentinelReportsTaskUpdateUrl =process.env.REACT_APP_SENTINELREPORTS_TASK_U
 
 export const fetchSentinelReportsUrl = async (data) => {
   try {
-    const response = await fetch(`${SentinelReportsUrl}`, {
+    const response = await FetchWithToken(`${SentinelReportsUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -27,7 +29,7 @@ export const fetchSentinelReportsUrl = async (data) => {
 }
 export const fetchSentinelReportsTypesUrl = async (data) => {
   try {
-    const response = await fetch(`${SentinelReportsTypesUrl}`, {
+    const response = await FetchWithToken(`${SentinelReportsTypesUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -45,7 +47,7 @@ export const fetchSentinelReportsTypesUrl = async (data) => {
 }
 export const fetchSentinelReportTaskCreateUrl = async (data) => {
   try {
-    const response = await fetch(`${SentinelReportTaskCreateUrl}`, {
+    const response = await FetchWithToken(`${SentinelReportTaskCreateUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -63,7 +65,7 @@ export const fetchSentinelReportTaskCreateUrl = async (data) => {
 }
 export const fetchSentinelReportDeleteUrl = async (data) => {
   try {
-    const response = await fetch(`${SentinelReportDeleteUrl}`, {
+    const response = await FetchWithToken(`${SentinelReportDeleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -81,7 +83,7 @@ export const fetchSentinelReportDeleteUrl = async (data) => {
 }
 export const fetchSentinelReportsTasksUrl = async (data) => {
   try {
-    const response = await fetch(`${SentinelReportsTasksUrl}`, {
+    const response = await FetchWithToken(`${SentinelReportsTasksUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -99,7 +101,7 @@ export const fetchSentinelReportsTasksUrl = async (data) => {
 }
 export const fetchSentinelReportTaskDeleteUrl = async (data) => {
   try {
-    const response = await fetch(`${SentinelReportTaskDeleteUrl}`, {
+    const response = await FetchWithToken(`${SentinelReportTaskDeleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -117,7 +119,7 @@ export const fetchSentinelReportTaskDeleteUrl = async (data) => {
 }
 export const fetchSentinelReportsDownloadUrl = async (data) => {
   try {
-    const response = await fetch(`${SentinelReportsDownloadUrl}`, {
+    const response = await FetchWithToken(`${SentinelReportsDownloadUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -135,7 +137,7 @@ export const fetchSentinelReportsDownloadUrl = async (data) => {
 }
 export const fetchSentinelReportsTaskUpdateUrl = async (data) => {
   try {
-    const response = await fetch(`${SentinelReportsTaskUpdateUrl}`, {
+    const response = await FetchWithToken(`${SentinelReportsTaskUpdateUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

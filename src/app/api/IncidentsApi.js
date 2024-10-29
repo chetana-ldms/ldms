@@ -1,3 +1,5 @@
+import FetchWithToken from "../modules/auth/FetchWithToken"
+
 const createIncidentUrl = process.env.REACT_APP_CREATE_INCIDENT_URL
 const incidentsUrl = process.env.REACT_APP_INCIDENTS_URL
 const getIncidentSearchResultUrl = process.env.REACT_APP_GET_INCIDENT_SEARCH_RESULT_URL
@@ -11,7 +13,7 @@ const DownloadAttachmentUrl = process.env.REACT_APP_DOWNLOAD_ATTACHMENT_URL
 
 export const fetchCreateIncident = async (data) => {
   try {
-    const response = await fetch(`${createIncidentUrl}`, {
+    const response = await FetchWithToken(`${createIncidentUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -29,7 +31,7 @@ export const fetchCreateIncident = async (data) => {
 }
 export const fetchIncidents = async (data) => {
   try {
-    const response = await fetch(`${incidentsUrl}`, {
+    const response = await FetchWithToken(`${incidentsUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -63,7 +65,7 @@ export const fetchSetOfIncidents = async (currentPage, orgId, userID, limit) => 
 }
 export const fetchGetIncidentSearchResult = async (data) => {
   try {
-    const response = await fetch(`${getIncidentSearchResultUrl}`, {
+    const response = await FetchWithToken(`${getIncidentSearchResultUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -82,7 +84,7 @@ export const fetchGetIncidentSearchResult = async (data) => {
 }
 export const fetchIncidentDetails = async (incidentID) => {
   try {
-    const response = await fetch(`${incidentDetailsUrl}?incidentId=${incidentID}`, {
+    const response = await FetchWithToken(`${incidentDetailsUrl}?incidentId=${incidentID}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -97,7 +99,7 @@ export const fetchIncidentDetails = async (incidentID) => {
 }
 export const fetchUpdateIncident = async (data) => {
   try {
-    const response = await fetch(`${updateIncidentUrl}`, {
+    const response = await FetchWithToken(`${updateIncidentUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -115,7 +117,7 @@ export const fetchUpdateIncident = async (data) => {
 }
 export const fetchGetIncidentHistory = async (data) => {
   try {
-    const response = await fetch(`${getIncidentHistoryUrl}`, {
+    const response = await FetchWithToken(`${getIncidentHistoryUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -134,7 +136,7 @@ export const fetchGetIncidentHistory = async (data) => {
 }
 export const fetchAlertsByAlertIds = async (data) => {
   try {
-    const response = await fetch(`${alertsByAlertIdsUrl}`, {
+    const response = await FetchWithToken(`${alertsByAlertIdsUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -151,7 +153,7 @@ export const fetchAlertsByAlertIds = async (data) => {
 }
 export const fetchGetChatHistory = async (data) => {
   try {
-    const response = await fetch(`${getChatHistoryUrl}`, {
+    const response = await FetchWithToken(`${getChatHistoryUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -170,7 +172,7 @@ export const fetchGetChatHistory = async (data) => {
 }
 export const fetchAddChatMessage = async (formData) => {
   try {
-    const response = await fetch(`${addChatMessageUrl}`, {
+    const response = await FetchWithToken(`${addChatMessageUrl}`, {
       method: 'POST',
       body: formData,
     })
@@ -184,7 +186,7 @@ export const fetchAddChatMessage = async (formData) => {
 
 export const fetchDownloadAttachmentUrl = async (data) => {
   try {
-    const response = await fetch(`${DownloadAttachmentUrl}`, {
+    const response = await FetchWithToken(`${DownloadAttachmentUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

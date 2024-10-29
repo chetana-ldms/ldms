@@ -1,3 +1,5 @@
+import FetchWithToken from "../modules/auth/FetchWithToken";
+
 const ldptoolsByToolTypeUrl = process.env.REACT_APP_LDPTOOLS_BY_TOOLTYPE_URL;
 const toolTypeActionDetailsUrl = process.env.REACT_APP_TOOLTYPEACTION_DETAILS_URL;
 const userDetailsUrl = process.env.REACT_APP_USER_DETAILS_URL;
@@ -42,7 +44,7 @@ const RuleActionUpdateUrl= process.env.REACT_APP_RULE_ACTION_UPDATE_URL
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {
-    const response = await fetch(`${ldptoolsByToolTypeUrl}`, {
+    const response = await FetchWithToken(`${ldptoolsByToolTypeUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -60,7 +62,7 @@ export const fetchLDPToolsByToolType = async (data) => {
 };
 export const fetchToolTypeActionDetails = async (id, toolNameRef) => {
   try {
-    const response = await fetch(`${toolTypeActionDetailsUrl}?id=${id}`, {
+    const response = await FetchWithToken(`${toolTypeActionDetailsUrl}?id=${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -80,7 +82,7 @@ export const fetchToolTypeActionDetails = async (id, toolNameRef) => {
 
 export const fetchUserDetails = async (id, userName, emailId ) => {
   try {
-    const response = await fetch(`${userDetailsUrl}?id=${id}`, {
+    const response = await FetchWithToken(`${userDetailsUrl}?id=${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -98,7 +100,7 @@ export const fetchUserDetails = async (id, userName, emailId ) => {
 };
 export const fetchToolActionDetails = async (id) => {
   try {
-    const response = await fetch(`${toolActionDetailsUrl}?id=${id}`, {
+    const response = await FetchWithToken(`${toolActionDetailsUrl}?id=${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -114,7 +116,7 @@ export const fetchToolActionDetails = async (id) => {
 
 export const fetchOrganizationToolDetails = async (id) => {
   try {
-    const response = await fetch(`${organizationToolDetailsUrl}?id=${id}`, {
+    const response = await FetchWithToken(`${organizationToolDetailsUrl}?id=${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -129,7 +131,7 @@ export const fetchOrganizationToolDetails = async (id) => {
 };
 export const fetchRules = async (orgId) => {
   try {
-    const response = await fetch(`${rulesUrl}?orgId=${orgId}`, {
+    const response = await FetchWithToken(`${rulesUrl}?orgId=${orgId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -145,7 +147,7 @@ export const fetchRules = async (orgId) => {
 };
 export const fetchRuleDetails = async (id, toolNameRef) => {
   try {
-    const response = await fetch(`${ruleDetailsUrl}?ruleID=${id}`, {
+    const response = await FetchWithToken(`${ruleDetailsUrl}?ruleID=${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -164,7 +166,7 @@ export const fetchRuleDetails = async (id, toolNameRef) => {
 };
 export const fetchRuleActions = async (orgId) => {
   try {
-    const response = await fetch(`${ruleActionsUrl}?orgId=${orgId}`, {
+    const response = await FetchWithToken(`${ruleActionsUrl}?orgId=${orgId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -180,7 +182,7 @@ export const fetchRuleActions = async (orgId) => {
 };
 export const fetchToolActions = async () => {
   try {
-    const response = await fetch(`${toolActionsUrl}`, {
+    const response = await FetchWithToken(`${toolActionsUrl}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -195,7 +197,7 @@ export const fetchToolActions = async () => {
 };
 export const fetchRuleActionDetails = async (id) => {
   try {
-    const response = await fetch(`${ruleActionDetailsUrl}?id=${id}`, {
+    const response = await FetchWithToken(`${ruleActionDetailsUrl}?id=${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -213,7 +215,7 @@ export const fetchRuleActionDetails = async (id) => {
 };
 export const fetchGetToolActionsByToolURL = async (data) => {
   try {
-    const response = await fetch(`${GetToolActionsByToolURL}`, {
+    const response = await FetchWithToken(`${GetToolActionsByToolURL}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -232,7 +234,7 @@ export const fetchGetToolActionsByToolURL = async (data) => {
 
 export const fetchToolTypeActions = async () => {
   try {
-    const response = await fetch(`${ToolTypeActionsUrl}`, {
+    const response = await FetchWithToken(`${ToolTypeActionsUrl}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -247,7 +249,7 @@ export const fetchToolTypeActions = async () => {
 };
 export const fetchToolTypeActionUpdate = async (data) => {
   try {
-    const response = await fetch(`${ToolTypeActionUpdateUrl}`, {
+    const response = await FetchWithToken(`${ToolTypeActionUpdateUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -265,7 +267,7 @@ export const fetchToolTypeActionUpdate = async (data) => {
 };
 export const fetchToolTypeActionAddUrl = async (data) => {
   try {
-    const response = await fetch(`${ToolTypeActionAddUrl}`, {
+    const response = await FetchWithToken(`${ToolTypeActionAddUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -283,7 +285,7 @@ export const fetchToolTypeActionAddUrl = async (data) => {
 };
 export const fetchOrganizationsUrl = async () => {
   try {
-    const response = await fetch(`${OrganizationsUrl}`, {
+    const response = await FetchWithToken(`${OrganizationsUrl}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -298,7 +300,7 @@ export const fetchOrganizationsUrl = async () => {
 };
 export const fetchOrganizationAddUrl = async (data) => {
   try {
-    const response = await fetch(`${OrganizationAddUrl}`, {
+    const response = await FetchWithToken(`${OrganizationAddUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -316,7 +318,7 @@ export const fetchOrganizationAddUrl = async (data) => {
 };
 export const fetchOrganizationUpdateUrl = async (data) => {
   try {
-    const response = await fetch(`${OrganizationUpdateUrl}`, {
+    const response = await FetchWithToken(`${OrganizationUpdateUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -334,7 +336,7 @@ export const fetchOrganizationUpdateUrl = async (data) => {
 };
 export const fetchUsersUrl = async (orgId, userID) => {
   try {
-    const response = await fetch(`${UsersUrl}?orgId=${orgId}&userid=${userID}`, {
+    const response = await FetchWithToken(`${UsersUrl}?orgId=${orgId}&userid=${userID}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -354,7 +356,7 @@ export const fetchUsersUrl = async (orgId, userID) => {
 
 export const fetchRolesUrl = async (orgId, userID) => {
   try {
-    const response = await fetch(`${RolesUrl}?orgId=${orgId}&userid=${userID}`, {
+    const response = await FetchWithToken(`${RolesUrl}?orgId=${orgId}&userid=${userID}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -373,7 +375,7 @@ export const fetchRolesUrl = async (orgId, userID) => {
 };
 export const fetchRolesAddUrl = async (data) => {
   try {
-    const response = await fetch(`${RolesAddUrl}`, {
+    const response = await FetchWithToken(`${RolesAddUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -391,7 +393,7 @@ export const fetchRolesAddUrl = async (data) => {
 };
 export const fetchRolesUpdateUrl = async (data) => {
   try {
-    const response = await fetch(`${RolesUpdateUrl}`, {
+    const response = await FetchWithToken(`${RolesUpdateUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -409,7 +411,7 @@ export const fetchRolesUpdateUrl = async (data) => {
 };
 export const fetchRolesDeleteUrl = async (data) => {
   try {
-    const response = await fetch(`${RolesDeleteUrl}`, {
+    const response = await FetchWithToken(`${RolesDeleteUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -429,7 +431,7 @@ export const fetchRolesDeleteUrl = async (data) => {
 
 export const fetchUserAddUrl = async (data) => {
   try {
-    const response = await fetch(`${UserAddUrl}`, {
+    const response = await FetchWithToken(`${UserAddUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -447,7 +449,7 @@ export const fetchUserAddUrl = async (data) => {
 };
 export const fetchUserUpdateUrl = async (data) => {
   try {
-    const response = await fetch(`${UserUpdateUrl}`, {
+    const response = await FetchWithToken(`${UserUpdateUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -465,7 +467,7 @@ export const fetchUserUpdateUrl = async (data) => {
 };
 export const fetchLDPToolsUrl = async () => {
   try {
-    const response = await fetch(`${LDPToolsUrl}`, {
+    const response = await FetchWithToken(`${LDPToolsUrl}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -480,7 +482,7 @@ export const fetchLDPToolsUrl = async () => {
 };
 export const fetchLDPToolsAddUrl = async (data) => {
   try {
-    const response = await fetch(`${LDPToolsAddUrl}`, {
+    const response = await FetchWithToken(`${LDPToolsAddUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -498,7 +500,7 @@ export const fetchLDPToolsAddUrl = async (data) => {
 };
 export const fetchLDPToolsUpdateUrl = async (data) => {
   try {
-    const response = await fetch(`${LDPToolsUpdateUrl}`, {
+    const response = await FetchWithToken(`${LDPToolsUpdateUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -516,7 +518,7 @@ export const fetchLDPToolsUpdateUrl = async (data) => {
 };
 export const fetchToolActionsUrl = async () => {
   try {
-    const response = await fetch(`${ToolActionsUrl}`, {
+    const response = await FetchWithToken(`${ToolActionsUrl}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -531,7 +533,7 @@ export const fetchToolActionsUrl = async () => {
 };
 export const fetchToolActionAddUrl = async (data) => {
   try {
-    const response = await fetch(`${ToolActionAddUrl}`, {
+    const response = await FetchWithToken(`${ToolActionAddUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -549,7 +551,7 @@ export const fetchToolActionAddUrl = async (data) => {
 };
 export const fetchToolActionUpdateUrl = async (data) => {
   try {
-    const response = await fetch(`${ToolActionUpdateUrl}`, {
+    const response = await FetchWithToken(`${ToolActionUpdateUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -567,7 +569,7 @@ export const fetchToolActionUpdateUrl = async (data) => {
 };
 export const fetchOrganizationToolsUrl = async () => {
   try {
-    const response = await fetch(`${OrganizationToolsUrl}`, {
+    const response = await FetchWithToken(`${OrganizationToolsUrl}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -582,7 +584,7 @@ export const fetchOrganizationToolsUrl = async () => {
 };
 export const fetchOrganizationToolsAddUrl = async (data) => {
   try {
-    const response = await fetch(`${OrganizationToolsAddUrl}`, {
+    const response = await FetchWithToken(`${OrganizationToolsAddUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -600,7 +602,7 @@ export const fetchOrganizationToolsAddUrl = async (data) => {
 };
 export const fetchOrganizationToolsUpdateUrl = async (data) => {
   try {
-    const response = await fetch(`${OrganizationToolsUpdateUrl}`, {
+    const response = await FetchWithToken(`${OrganizationToolsUpdateUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -619,7 +621,7 @@ export const fetchOrganizationToolsUpdateUrl = async (data) => {
 export const fetchRuleCatagoriesUrl = async (MasterDataType) => {
   try {
     const url = `${RuleCatagoriesUrl}?MasterDataType=${encodeURIComponent(MasterDataType)}`;
-    const response = await fetch(url, {
+    const response = await FetchWithToken(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -634,7 +636,7 @@ export const fetchRuleCatagoriesUrl = async (MasterDataType) => {
 };
 export const fetchRulesAddUrl = async (data) => {
   try {
-    const response = await fetch(`${RulesAddUrl}`, {
+    const response = await FetchWithToken(`${RulesAddUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -652,7 +654,7 @@ export const fetchRulesAddUrl = async (data) => {
 };
 export const fetchRulesUpdateUrl = async (data) => {
   try {
-    const response = await fetch(`${RulesUpdateUrl}`, {
+    const response = await FetchWithToken(`${RulesUpdateUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -670,7 +672,7 @@ export const fetchRulesUpdateUrl = async (data) => {
 };
 export const fetchRuleActionUrl = async (data) => {
   try {
-    const response = await fetch(`${RuleActionUrl}`, {
+    const response = await FetchWithToken(`${RuleActionUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -688,7 +690,7 @@ export const fetchRuleActionUrl = async (data) => {
 };
 export const fetchRuleActionUpdateUrl = async (data) => {
   try {
-    const response = await fetch(`${RuleActionUpdateUrl}`, {
+    const response = await FetchWithToken(`${RuleActionUpdateUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -706,7 +708,7 @@ export const fetchRuleActionUpdateUrl = async (data) => {
 };
 export const fetchRolesDetailUrl = async (id) => {
   try {
-    const response = await fetch(`${RolesDetailUrl}?id=${id}`, {
+    const response = await FetchWithToken(`${RolesDetailUrl}?id=${id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

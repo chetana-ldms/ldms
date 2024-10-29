@@ -1,3 +1,5 @@
+import FetchWithToken from "../modules/auth/FetchWithToken"
+
 const FeaturesUrl = process.env.REACT_APP_FEATURES_URL
 const OrganizationToolsUrl = process.env.REACT_APP_ORGANIZATION_TOOLS_SECURITY_URL
 const OrganizationRolesUrl = process.env.REACT_APP_ORGANIZATION_ROLES_URL
@@ -17,7 +19,7 @@ const ActionTypesUrl = process.env.REACT_APP_ACTIONSTYPES_URL
 
 export const fetchFeaturesUrl = async (data) => {
   try {
-    const response = await fetch(`${FeaturesUrl}`, {
+    const response = await FetchWithToken(`${FeaturesUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,7 +38,7 @@ export const fetchFeaturesUrl = async (data) => {
 }
 export const fetchOrganizationToolsSecurityUrl = async (OrgId) => {
   try {
-    const response = await fetch(`${OrganizationToolsUrl}?OrgId=${OrgId}`, {
+    const response = await FetchWithToken(`${OrganizationToolsUrl}?OrgId=${OrgId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +53,7 @@ export const fetchOrganizationToolsSecurityUrl = async (OrgId) => {
 }
 export const fetchOrganizationRolesUrl = async (OrgId) => {
   try {
-    const response = await fetch(`${OrganizationRolesUrl}?OrgId=${OrgId}`, {
+    const response = await FetchWithToken(`${OrganizationRolesUrl}?OrgId=${OrgId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -66,7 +68,7 @@ export const fetchOrganizationRolesUrl = async (OrgId) => {
 }
 export const fetchFeaturesActionsAuthorizedAccessUrl = async (data) => {
   try {
-    const response = await fetch(`${FeaturesActionsAuthorizedAccessUrl}`, {
+    const response = await FetchWithToken(`${FeaturesActionsAuthorizedAccessUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -85,7 +87,7 @@ export const fetchFeaturesActionsAuthorizedAccessUrl = async (data) => {
 }
 export const fetchFeaturesActionsAuthorizationConfigurationUrl = async (data) => {
   try {
-    const response = await fetch(`${FeaturesActionsAuthorizationConfigurationUrl}`, {
+    const response = await FetchWithToken(`${FeaturesActionsAuthorizationConfigurationUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -103,7 +105,7 @@ export const fetchFeaturesActionsAuthorizationConfigurationUrl = async (data) =>
 }
 export const fetchFeaturesListUrl = async (data) => {
   try {
-    const response = await fetch(`${FeaturesListUrl}`, {
+    const response = await FetchWithToken(`${FeaturesListUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -121,7 +123,7 @@ export const fetchFeaturesListUrl = async (data) => {
 }
 export const fetchActionsUrl = async (data) => {
   try {
-    const response = await fetch(`${ActionsUrl}`, {
+    const response = await FetchWithToken(`${ActionsUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -140,7 +142,7 @@ export const fetchActionsUrl = async (data) => {
 }
 export const fetchFeaturesAddUrl = async (data) => {
   try {
-    const response = await fetch(`${FeaturesAddUrl}`, {
+    const response = await FetchWithToken(`${FeaturesAddUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -158,7 +160,7 @@ export const fetchFeaturesAddUrl = async (data) => {
 }
 export const fetchFeaturesDeleteUrl = async (data) => {
   try {
-    const response = await fetch(`${FeaturesDeleteUrl}`, {
+    const response = await FetchWithToken(`${FeaturesDeleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -176,7 +178,7 @@ export const fetchFeaturesDeleteUrl = async (data) => {
 }
 export const fetchFeaturesUpdateUrl = async (data) => {
   try {
-    const response = await fetch(`${FeaturesUpdateUrl}`, {
+    const response = await FetchWithToken(`${FeaturesUpdateUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -194,7 +196,7 @@ export const fetchFeaturesUpdateUrl = async (data) => {
 }
 export const fetchFeatureDetailsUrl = async (id) => {
   try {
-    const response = await fetch(`${FeatureDetailsUrl}?featureid=${id}`, {
+    const response = await FetchWithToken(`${FeatureDetailsUrl}?featureid=${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -209,7 +211,7 @@ export const fetchFeatureDetailsUrl = async (id) => {
 }
 export const fetchActionsAddUrl = async (data) => {
   try {
-    const response = await fetch(`${ActionsAddUrl}`, {
+    const response = await FetchWithToken(`${ActionsAddUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -227,7 +229,7 @@ export const fetchActionsAddUrl = async (data) => {
 }
 export const fetchActionsDeleteUrl = async (data) => {
   try {
-    const response = await fetch(`${ActionsDeleteUrl}`, {
+    const response = await FetchWithToken(`${ActionsDeleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -245,7 +247,7 @@ export const fetchActionsDeleteUrl = async (data) => {
 }
 export const fetchActionsUpdateUrl = async (data) => {
   try {
-    const response = await fetch(`${ActionsUpdateUrl}`, {
+    const response = await FetchWithToken(`${ActionsUpdateUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -263,7 +265,7 @@ export const fetchActionsUpdateUrl = async (data) => {
 }
 export const fetchActionTypesUrl = async (OrgId) => {
   try {
-    const response = await fetch(`${ActionTypesUrl}`, {
+    const response = await FetchWithToken(`${ActionTypesUrl}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -277,7 +279,7 @@ export const fetchActionTypesUrl = async (OrgId) => {
 }
 // export const fetchFeaturesUrl = async (data) => {
 //   try {
-//     const response = await fetch(`${FeaturesUrl}`, {
+//     const response = await FetchWithToken(`${FeaturesUrl}`, {
 //       method: "POST",
 //       headers: {
 //         "Content-Type": "application/json",

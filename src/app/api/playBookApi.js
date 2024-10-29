@@ -1,10 +1,12 @@
+import FetchWithToken from "../modules/auth/FetchWithToken";
+
 const playBooksUrl = process.env.REACT_APP_PLAYBOOKS_URL;
 const deletePlaybookUrl = process.env.REACT_APP_DELETE_PLAYBOOK_URL;
 const playbookByIdUrl = process.env.REACT_APP_PLAYBOOK_BY_ID_URL;
 
 export const fetchDelete = async (data) => {
   try {
-    const response = await fetch(`${deletePlaybookUrl}`, {
+    const response = await FetchWithToken(`${deletePlaybookUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -23,7 +25,7 @@ export const fetchDelete = async (data) => {
 };
 export const fetchPlayBooks = async (orgId) => {
   try {
-    const response = await fetch(`${playBooksUrl}?orgId=${orgId}`, {
+    const response = await FetchWithToken(`${playBooksUrl}?orgId=${orgId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -39,7 +41,7 @@ export const fetchPlayBooks = async (orgId) => {
 };
 export const fetchPlaybookByID = async (id, toolNameRef, remarksRef) => {
   try {
-    const response = await fetch(`${playbookByIdUrl}?PlaybookID=${id}`, {
+    const response = await FetchWithToken(`${playbookByIdUrl}?PlaybookID=${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

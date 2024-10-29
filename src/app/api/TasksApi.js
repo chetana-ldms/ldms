@@ -1,9 +1,11 @@
+import FetchWithToken from "../modules/auth/FetchWithToken";
+
 const tasksUrl = process.env.REACT_APP_TASK_LIST_URL
 const taskCancelUrl =process.env.REACT_APP_STATUS_CANCEL_URL
 
 export const fetchTasksUrl = async (ownerUserId) => {
     try {
-      const response = await fetch(`${tasksUrl}?ownerUserId=${ownerUserId}`, {
+      const response = await FetchWithToken(`${tasksUrl}?ownerUserId=${ownerUserId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -21,7 +23,7 @@ export const fetchTasksUrl = async (ownerUserId) => {
   };
   export const fetchTaskCancelUrl = async (data) => {
     try {
-      const response = await fetch(`${taskCancelUrl}`, {
+      const response = await FetchWithToken(`${taskCancelUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

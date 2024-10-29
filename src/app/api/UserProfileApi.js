@@ -1,3 +1,4 @@
+import FetchWithToken from "../modules/auth/FetchWithToken";
 
 
 const ChangePasswordUrl= process.env.REACT_APP_CHANGE_PASSWORD_URL
@@ -5,7 +6,7 @@ const ResetPasswordUrl=process.env.REACT_APP_RESET_PASSWORD_URL
 
 export const fetchChangePasswordUrl = async (data) => {
     try {
-      const response = await fetch(`${ChangePasswordUrl}`, {
+      const response = await FetchWithToken(`${ChangePasswordUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -23,7 +24,7 @@ export const fetchChangePasswordUrl = async (data) => {
   };
   export const fetchResetPasswordUrl = async (data) => {
     try {
-      const response = await fetch(`${ResetPasswordUrl}`, {
+      const response = await FetchWithToken(`${ResetPasswordUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

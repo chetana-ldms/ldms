@@ -1,3 +1,5 @@
+import FetchWithToken from "../modules/auth/FetchWithToken"
+
 const OrganizationsUrl = process.env.REACT_APP_DASHBOARD_ORGANIZATION_URL
 const GetAlertsMostUsedTagesUrl=process.env.REACT_APP_DASHBOARD_GETALERTSMOSTUSEDTAGES_URL
 const UserActionsByUserUrl=process.env.REACT_APP_DASHBOARD_USERACTIONSBYUSER_URL
@@ -15,7 +17,7 @@ const GetIncidentCountByPriorityAndStatusUrl= process.env.REACT_APP_DASHBOARD_GE
 
 export const fetchOrganizations = async () => {
     try {
-      const response = await fetch(`${OrganizationsUrl}`, {
+      const response = await FetchWithToken(`${OrganizationsUrl}`, {
         method: 'GET',
         headers: {
           Accept: 'text/plain',
@@ -31,7 +33,7 @@ export const fetchOrganizations = async () => {
   
   export const fetchGetAlertsMostUsedTags = async (data) => {
     try {
-      const response = await fetch(`${GetAlertsMostUsedTagesUrl}`, {
+      const response = await FetchWithToken(`${GetAlertsMostUsedTagesUrl}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +49,7 @@ export const fetchOrganizations = async () => {
   
   export const fetchUserActionsByUser = async (data) => {
     try {
-      const response = await fetch(`${UserActionsByUserUrl}`, {
+      const response = await FetchWithToken(`${UserActionsByUserUrl}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,7 +66,7 @@ export const fetchOrganizations = async () => {
   
   export const fetchGetMyInternalIncidents = async (data) => {
     try {
-      const response = await fetch(`${GetMyInternalIncidentsUrl}`, {
+      const response = await FetchWithToken(`${GetMyInternalIncidentsUrl}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,7 +83,7 @@ export const fetchOrganizations = async () => {
   
   export const fetchGetUnAttendedIncidentsCount = async (data) => {
     try {
-      const response = await fetch(`${GetUnAttendedIncidentsCountUrl}`, {
+      const response = await FetchWithToken(`${GetUnAttendedIncidentsCountUrl}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +100,7 @@ export const fetchOrganizations = async () => {
   
   export const fetchGetUnAttendedAletsCount = async (data) => {
     try {
-      const response = await fetch(`${GetUnAttendedAletsCountUrl}`, {
+      const response = await FetchWithToken(`${GetUnAttendedAletsCountUrl}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +117,7 @@ export const fetchOrganizations = async () => {
   
   export const fetchGetFalsePositiveAlertsCount = async (data) => {
     try {
-      const response = await fetch(`${GetFalsePositiveAlertsCountUrl}`, {
+      const response = await FetchWithToken(`${GetFalsePositiveAlertsCountUrl}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -132,7 +134,7 @@ export const fetchOrganizations = async () => {
   
   export const fetchGetAlertsResolvedMeanTime = async (data) => {
     try {
-      const response = await fetch(`${GetAlertsResolvedMeanTimeUrl}`, {
+      const response = await FetchWithToken(`${GetAlertsResolvedMeanTimeUrl}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -149,7 +151,7 @@ export const fetchOrganizations = async () => {
   
   export const fetchMasterData = async (data) => {
     try {
-      const response = await fetch(`${masterDataUrl}`, {
+      const response = await FetchWithToken(`${masterDataUrl}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -166,7 +168,7 @@ export const fetchOrganizations = async () => {
 
   export const fetchAllIncidentsSummery = async (data) => {
     try {
-      const response = await fetch(`${AllIncidentsSummeryUrl}`, {
+      const response = await FetchWithToken(`${AllIncidentsSummeryUrl}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -183,7 +185,7 @@ export const fetchOrganizations = async () => {
 
   export const fetchGetAlertsTrendData = async (data) => {
     try {
-      const response = await fetch( `${GetAlertsTrendDataUrl}`, {
+      const response = await FetchWithToken( `${GetAlertsTrendDataUrl}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -200,7 +202,7 @@ export const fetchOrganizations = async () => {
 
   export const fetchGetIncidentCountByPriorityAndStatusUrl = async (data) => {
     try {
-      const response = await fetch(`${GetIncidentCountByPriorityAndStatusUrl}`, {
+      const response = await FetchWithToken(`${GetIncidentCountByPriorityAndStatusUrl}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

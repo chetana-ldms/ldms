@@ -1,10 +1,12 @@
+import FetchWithToken from "../modules/auth/FetchWithToken";
+
 const ActivitiesUrl =process.env.REACT_APP_ACTIVITIES_URL
 const ActivityTypesUrl= process.env.REACT_APP_ACTIVITY_TYPES_URL
 
 
 export const fetchActivitiesUrl = async (data) => {
     try {
-      const response = await fetch(`${ActivitiesUrl}`, {
+      const response = await FetchWithToken(`${ActivitiesUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -40,7 +42,7 @@ export const fetchActivitiesUrl = async (data) => {
 
   export const fetchActivityTypesUrl = async () => {
     try {
-      const response = await fetch(`${ActivityTypesUrl}`, {
+      const response = await FetchWithToken(`${ActivityTypesUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

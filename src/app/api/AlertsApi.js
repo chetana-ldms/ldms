@@ -1,3 +1,5 @@
+import FetchWithToken from "../modules/auth/FetchWithToken"
+
 const alertsUrl = process.env.REACT_APP_ALERTS_URL
 const setAlertEscalationStatusUrl = process.env.REACT_APP_SET_ALERT_ESCALATION_URL
 const usersUrl = process.env.REACT_APP_LDP_SECURIY_USER_URL
@@ -17,7 +19,7 @@ const MitigateActionValidationUrl = process.env.REACT_APP_MITIGATE_ACTION_VALIDA
 
 export const fetchAlertData = async (data) => {
   try {
-    const response = await fetch(`${alertsUrl}`, {
+    const response = await FetchWithToken(`${alertsUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -33,7 +35,7 @@ export const fetchAlertData = async (data) => {
 }
 export const fetchUsers = async (id, userID) => {
   try {
-    const response = await fetch(`${usersUrl}?OrgId=${id}&userid=${userID}`, {
+    const response = await FetchWithToken(`${usersUrl}?OrgId=${id}&userid=${userID}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,7 +54,7 @@ export const fetchUsers = async (id, userID) => {
 }
 export const fetchSetAlertEscalationStatus = async (data) => {
   try {
-    const response = await fetch(`${setAlertEscalationStatusUrl}`, {
+    const response = await FetchWithToken(`${setAlertEscalationStatusUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -101,7 +103,7 @@ export const fetchSetOfAlerts = async (currentPage, orgId, userID, limit, accoun
 }
 export const fetchGetAlertNotesByAlertID = async (data) => {
   try {
-    const response = await fetch(`${getAlertNotesByAlertIDUrl}`, {
+    const response = await FetchWithToken(`${getAlertNotesByAlertIDUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -118,7 +120,7 @@ export const fetchGetAlertNotesByAlertID = async (data) => {
 }
 export const fetchGetalertHistory = async (data) => {
   try {
-    const response = await fetch(`${GetalertHistoryUrl}`, {
+    const response = await FetchWithToken(`${GetalertHistoryUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -137,7 +139,7 @@ export const fetchGetalertHistory = async (data) => {
 }
 export const fetchSentinelOneAlert = async (id) => {
   try {
-    const response = await fetch(`${getSentinalOneUrl}?alertId=${id}`, {
+    const response = await FetchWithToken(`${getSentinalOneUrl}?alertId=${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -152,7 +154,7 @@ export const fetchSentinelOneAlert = async (id) => {
 }
 export const fetchAnalystVerdictUpdateUrl = async (data) => {
   try {
-    const response = await fetch(`${AnalystVerdictUpdateUrl}`, {
+    const response = await FetchWithToken(`${AnalystVerdictUpdateUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -170,7 +172,7 @@ export const fetchAnalystVerdictUpdateUrl = async (data) => {
 }
 export const fetchMitigateActionUrl = async (data) => {
   try {
-    const response = await fetch(`${MitigateActionUrl}`, {
+    const response = await FetchWithToken(`${MitigateActionUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -188,7 +190,7 @@ export const fetchMitigateActionUrl = async (data) => {
 }
 export const fetchThreatNotesUrl = async (data) => {
   try {
-    const response = await fetch(`${ThreatNotesUrl}`, {
+    const response = await FetchWithToken(`${ThreatNotesUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -206,7 +208,7 @@ export const fetchThreatNotesUrl = async (data) => {
 }
 export const fetchAddToblockListUrl = async (data) => {
   try {
-    const response = await fetch(`${AddToblockListUrl}`, {
+    const response = await FetchWithToken(`${AddToblockListUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -224,7 +226,7 @@ export const fetchAddToblockListUrl = async (data) => {
 }
 export const fetchAddToExclusionListUrl = async (data) => {
   try {
-    const response = await fetch(`${AddToExclusionListUrl}`, {
+    const response = await FetchWithToken(`${AddToExclusionListUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -242,7 +244,7 @@ export const fetchAddToExclusionListUrl = async (data) => {
 }
 export const fetchConnectToNetworkUrl = async (data) => {
   try {
-    const response = await fetch(`${ConnectToNetworkUrl}`, {
+    const response = await FetchWithToken(`${ConnectToNetworkUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -260,7 +262,7 @@ export const fetchConnectToNetworkUrl = async (data) => {
 }
 export const fetchDisConnectFromNetworkUrl = async (data) => {
   try {
-    const response = await fetch(`${DisConnectFromNetworkUrl}`, {
+    const response = await FetchWithToken(`${DisConnectFromNetworkUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -278,7 +280,7 @@ export const fetchDisConnectFromNetworkUrl = async (data) => {
 }
 export const fetchThreatsActionUrl = async (data) => {
   try {
-    const response = await fetch(`${ThreatsActionUrl}`, {
+    const response = await FetchWithToken(`${ThreatsActionUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -296,7 +298,7 @@ export const fetchThreatsActionUrl = async (data) => {
 }
 export const fetchAlertsStatusUpdateUrl = async (data) => {
   try {
-    const response = await fetch(`${AlertsStatusUpdateUrl}`, {
+    const response = await FetchWithToken(`${AlertsStatusUpdateUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -314,7 +316,7 @@ export const fetchAlertsStatusUpdateUrl = async (data) => {
 }
 export const fetchMitigateActionValidationUrl = async (data) => {
   try {
-    const response = await fetch(`${MitigateActionValidationUrl}`, {
+    const response = await FetchWithToken(`${MitigateActionValidationUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

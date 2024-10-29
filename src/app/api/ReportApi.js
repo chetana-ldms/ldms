@@ -1,3 +1,5 @@
+import FetchWithToken from "../modules/auth/FetchWithToken"
+
 const AlertsSummeryUrl = process.env.REACT_APP_ALERTS_SUMMERY_URL
 const AlertsRuleUrl = process.env.REACT_APP_ALERTS_RULE_SUMMERY_URL
 const SLAMeasurementSummeryUrl = process.env.REACT_APP_SLA_MEASURMENT_SUMMERY_URL
@@ -9,7 +11,7 @@ const SignificantsIncidentsSummeryUrl= process.env.REACT_APP_SIGNIFICANTS_INCIDE
 
 export const fetchAlertsSummeryUrl = async (data) => {
   try {
-    const response = await fetch(AlertsSummeryUrl, {
+    const response = await FetchWithToken(AlertsSummeryUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -31,7 +33,7 @@ export const fetchAlertsSummeryUrl = async (data) => {
 };
 export const fetchAlertsRuleUrl = async (data) => {
   try {
-    const response = await fetch(AlertsRuleUrl, {
+    const response = await FetchWithToken(AlertsRuleUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -53,7 +55,7 @@ export const fetchAlertsRuleUrl = async (data) => {
 };
 export const fetchSLAMeasurementSummeryUrl = async (data) => {
   try {
-    const response = await fetch(SLAMeasurementSummeryUrl, {
+    const response = await FetchWithToken(SLAMeasurementSummeryUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -75,7 +77,7 @@ export const fetchSLAMeasurementSummeryUrl = async (data) => {
 };
 export const fetchAllIncidentsSummeryUrl = async (data) => {
   try {
-    const response = await fetch(AllIncidentsSummeryUrl, {
+    const response = await FetchWithToken(AllIncidentsSummeryUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -97,7 +99,7 @@ export const fetchAllIncidentsSummeryUrl = async (data) => {
 };
 export const fetchClosedIncidentsSummeryUrl = async (data) => {
   try {
-    const response = await fetch(ClosedIncidentsSummeryUrl, {
+    const response = await FetchWithToken(ClosedIncidentsSummeryUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -119,7 +121,7 @@ export const fetchClosedIncidentsSummeryUrl = async (data) => {
 };
 export const fetchOpenIncidentsSummeryUrl = async (data) => {
   try {
-    const response = await fetch(OpenIncidentsSummeryUrl, {
+    const response = await FetchWithToken(OpenIncidentsSummeryUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -141,7 +143,7 @@ export const fetchOpenIncidentsSummeryUrl = async (data) => {
 };
 export const fetchSignificantsIncidentsSummeryUrl = async (data) => {
   try {
-    const response = await fetch(SignificantsIncidentsSummeryUrl, {
+    const response = await FetchWithToken(SignificantsIncidentsSummeryUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

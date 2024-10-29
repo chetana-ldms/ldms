@@ -69,6 +69,8 @@ export function Login() {
           sessionStorage.setItem('userName', authData.userName)
           sessionStorage.setItem('globalAdminRole', authData.globalAdminRole.toString())
           sessionStorage.setItem('clientAdminRole', authData.clientAdminRole.toString())
+          sessionStorage.setItem('accessToken', authData.accessToken.toString())
+          sessionStorage.setItem('refreshToken', authData.refreshToken.toString())
           sessionStorage.setItem('openTaskCount', authData.openTaskCount.toString())
           sessionStorage.setItem('defaultPassword', authData.defaultPassword.toString())
           if (authData.orgToolsData && authData.orgToolsData.length > 0) {

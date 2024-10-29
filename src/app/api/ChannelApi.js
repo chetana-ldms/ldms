@@ -1,3 +1,5 @@
+import FetchWithToken from "../modules/auth/FetchWithToken"
+
 const deleteUrl = process.env.REACT_APP_FILE_DELETE
 const uploadUrl = process.env.REACT_APP_FILE_UPLOAD
 const getUploadedFilesListUrl = process.env.REACT_APP_GET_UPLOADED_FILES
@@ -22,7 +24,7 @@ const FilesDownloadUrl = process.env.REACT_APP_CHANNELS_FILES_DOWNLOAD_URL
 
 export const fetchDelete = async (data) => {
   try {
-    const response = await fetch(`${deleteUrl}`, {
+    const response = await FetchWithToken(`${deleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -46,7 +48,7 @@ export const fetchDelete = async (data) => {
 
 export const fetchUpload = async (formData) => {
   try {
-    const response = await fetch(`${uploadUrl}`, {
+    const response = await FetchWithToken(`${uploadUrl}`, {
       method: 'POST',
       body: formData,
     })
@@ -59,7 +61,7 @@ export const fetchUpload = async (formData) => {
 }
 export const fetchGetUploadedFilesListByChannelId = async (channelId) => {
   try {
-    const response = await fetch(`${getUploadedFilesListUrl}?channelId=${channelId}`, {
+    const response = await FetchWithToken(`${getUploadedFilesListUrl}?channelId=${channelId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -74,7 +76,7 @@ export const fetchGetUploadedFilesListByChannelId = async (channelId) => {
 }
 export const fetchSubItemsByOrgChannel = async (data) => {
   try {
-    const response = await fetch(`${subItemsByOrgChannelUrl}`, {
+    const response = await FetchWithToken(`${subItemsByOrgChannelUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -94,7 +96,7 @@ export const fetchSubItemsByOrgChannel = async (data) => {
 }
 export const fetchQuestions = async (data) => {
   try {
-    const response = await fetch(`${questionsUrl}`, {
+    const response = await FetchWithToken(`${questionsUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -113,7 +115,7 @@ export const fetchQuestions = async (data) => {
 }
 export const fetchQuestionsAdd = async (data) => {
   try {
-    const response = await fetch(`${questionsAddUrl}`, {
+    const response = await FetchWithToken(`${questionsAddUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -131,7 +133,7 @@ export const fetchQuestionsAdd = async (data) => {
 }
 export const fetchQuestionsAnswerAdd = async (data) => {
   try {
-    const response = await fetch(`${questionsAnswerAddUrl}`, {
+    const response = await FetchWithToken(`${questionsAnswerAddUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -149,7 +151,7 @@ export const fetchQuestionsAnswerAdd = async (data) => {
 }
 export const fetchQuestionsUpdate = async (data) => {
   try {
-    const response = await fetch(`${questionsUpdateUrl}`, {
+    const response = await FetchWithToken(`${questionsUpdateUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -167,7 +169,7 @@ export const fetchQuestionsUpdate = async (data) => {
 }
 export const fetchQuestionsDelete = async (data) => {
   try {
-    const response = await fetch(`${questionsDeleteUrl}`, {
+    const response = await FetchWithToken(`${questionsDeleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -185,7 +187,7 @@ export const fetchQuestionsDelete = async (data) => {
 }
 export const fetchQuestionsAnswereUpdate = async (data) => {
   try {
-    const response = await fetch(`${questionsAnswerUpdateUrl}`, {
+    const response = await FetchWithToken(`${questionsAnswerUpdateUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -203,7 +205,7 @@ export const fetchQuestionsAnswereUpdate = async (data) => {
 }
 export const fetchQuestionsAnswerDelete = async (data) => {
   try {
-    const response = await fetch(`${questionsAnswerDeleteUrl}`, {
+    const response = await FetchWithToken(`${questionsAnswerDeleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -221,7 +223,7 @@ export const fetchQuestionsAnswerDelete = async (data) => {
 }
 export const fetcQuestionDetails = async (questionId) => {
   try {
-    const response = await fetch(`${questionDetailsUrl}?QuestionId=${questionId}`, {
+    const response = await FetchWithToken(`${questionDetailsUrl}?QuestionId=${questionId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -236,7 +238,7 @@ export const fetcQuestionDetails = async (questionId) => {
 }
 export const fetchAnswerDetails = async (answerId) => {
   try {
-    const response = await fetch(`${answerDetailsUrl}?AnswerId=${answerId}`, {
+    const response = await FetchWithToken(`${answerDetailsUrl}?AnswerId=${answerId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -251,7 +253,7 @@ export const fetchAnswerDetails = async (answerId) => {
 }
 export const fetchChannels = async (orgId) => {
   try {
-    const response = await fetch(`${channelsUrl}?orgId=${orgId}`, {
+    const response = await FetchWithToken(`${channelsUrl}?orgId=${orgId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -268,7 +270,7 @@ export const fetchChannels = async (orgId) => {
 }
 export const fetchChannelsDelete = async (data) => {
   try {
-    const response = await fetch(`${channelsDeleteUrl}`, {
+    const response = await FetchWithToken(`${channelsDeleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -286,7 +288,7 @@ export const fetchChannelsDelete = async (data) => {
 }
 export const fetchChannelsAdd = async (data) => {
   try {
-    const response = await fetch(`${channelsAddUrl}`, {
+    const response = await FetchWithToken(`${channelsAddUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -304,7 +306,7 @@ export const fetchChannelsAdd = async (data) => {
 }
 export const fetchChannelsUpdate = async (data) => {
   try {
-    const response = await fetch(`${channelsUpdateUrl}`, {
+    const response = await FetchWithToken(`${channelsUpdateUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -322,7 +324,7 @@ export const fetchChannelsUpdate = async (data) => {
 }
 export const fetchChannelDetails = async (channelId) => {
   try {
-    const response = await fetch(`${channelDetailsUrl}?channelId=${channelId}`, {
+    const response = await FetchWithToken(`${channelDetailsUrl}?channelId=${channelId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -337,7 +339,7 @@ export const fetchChannelDetails = async (channelId) => {
 }
 export const fetchlistUrl = async (orgId) => {
   try {
-    const response = await fetch(`${listUrl}?orgId=${orgId}`, {
+    const response = await FetchWithToken(`${listUrl}?orgId=${orgId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -354,7 +356,7 @@ export const fetchlistUrl = async (orgId) => {
 }
 export const fetchChannelsCreateUrl = async (data) => {
   try {
-    const response = await fetch(`${ChannelsCreateUrl}`, {
+    const response = await FetchWithToken(`${ChannelsCreateUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -372,7 +374,7 @@ export const fetchChannelsCreateUrl = async (data) => {
 }
 export const fetchFilesDownloadUrl = async (fileId, CreatedUserId, orgId, channelId) => {
   try {
-    const response = await fetch(`${FilesDownloadUrl}?fileId=${fileId}&Downloaduserid=${CreatedUserId}&OrgId=${orgId}&ChannelId=${channelId}`, {
+    const response = await FetchWithToken(`${FilesDownloadUrl}?fileId=${fileId}&Downloaduserid=${CreatedUserId}&OrgId=${orgId}&ChannelId=${channelId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -391,7 +393,7 @@ export const fetchFilesDownloadUrl = async (fileId, CreatedUserId, orgId, channe
 }
 // export const fetchFilesDownloadUrl = async (data) => {
 //   try {
-//     const response = await fetch(`${FilesDownloadUrl}`, {
+//     const response = await FetchWithToken(`${FilesDownloadUrl}`, {
 //       method: 'POST',
 //       headers: {
 //         'Content-Type': 'application/json',

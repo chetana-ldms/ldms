@@ -1,3 +1,5 @@
+import FetchWithToken from "../modules/auth/FetchWithToken"
+
 const ApplicationsAndRisksUrl= process.env.REACT_APP_RISKS_APPLICATIONS_URL
 const ApplicationInventoryUrl=process.env.REACT_APP_INVENTORY_APPLICATIONS_URL
 const ApplicationEndPointsUrl=process.env.REACT_APP_RISKS_APPLICATIONS_ENDPOINTS_URL
@@ -10,7 +12,7 @@ const ApplicationManagementSettingsUrl=process.env.REACT_APP_APPLICATION_MANAGEM
 
 export const fetchApplicationsAndRisksUrl = async (data) => {
     try {
-      const response = await fetch(`${ApplicationsAndRisksUrl}`, {
+      const response = await FetchWithToken(`${ApplicationsAndRisksUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,7 +31,7 @@ export const fetchApplicationsAndRisksUrl = async (data) => {
   };
   export const fetchApplicationInventoryUrl = async (data) => {
     try {
-      const response = await fetch(`${ApplicationInventoryUrl}`, {
+      const response = await FetchWithToken(`${ApplicationInventoryUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -48,7 +50,7 @@ export const fetchApplicationsAndRisksUrl = async (data) => {
   };
   export const fetchApplicationEndPointsUrl = async (data) => {
     try {
-      const response = await fetch(`${ApplicationEndPointsUrl}`, {
+      const response = await FetchWithToken(`${ApplicationEndPointsUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +69,7 @@ export const fetchApplicationsAndRisksUrl = async (data) => {
   };
   export const fetchApplicationCVSUrl = async (data) => {
     try {
-      const response = await fetch(`${ApplicationCVSUrl}`, {
+      const response = await FetchWithToken(`${ApplicationCVSUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -86,7 +88,7 @@ export const fetchApplicationsAndRisksUrl = async (data) => {
   };
   export const fetchAEndPointDetailsUrl = async (data) => {
     try {
-      const response = await fetch(`${EndPointDetailsUrl}`, {
+      const response = await FetchWithToken(`${EndPointDetailsUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -105,7 +107,7 @@ export const fetchApplicationsAndRisksUrl = async (data) => {
   };
   export const fetchEndPointApplicationsUrl = async (data) => {
     try {
-      const response = await fetch(`${EndPointApplicationsUrl}`, {
+      const response = await FetchWithToken(`${EndPointApplicationsUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -124,7 +126,7 @@ export const fetchApplicationsAndRisksUrl = async (data) => {
   };
   export const fetchInventoryApplicationsEndpointsUrl = async (data) => {
     try {
-      const response = await fetch(`${InventoryApplicationsEndpointsUrl}`, {
+      const response = await FetchWithToken(`${InventoryApplicationsEndpointsUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -143,7 +145,7 @@ export const fetchApplicationsAndRisksUrl = async (data) => {
   };
   export const fetchEndPointUpdatesUrl = async (data) => {
     try {
-      const response = await fetch(`${EndPointUpdatesUrl}`, {
+      const response = await FetchWithToken(`${EndPointUpdatesUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -162,7 +164,7 @@ export const fetchApplicationsAndRisksUrl = async (data) => {
   };
   export const fetchApplicationManagementSettingsUrl = async (data) => {
     try {
-      const response = await fetch(`${ApplicationManagementSettingsUrl}`, {
+      const response = await FetchWithToken(`${ApplicationManagementSettingsUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

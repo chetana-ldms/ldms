@@ -1,3 +1,5 @@
+import FetchWithToken from "../modules/auth/FetchWithToken"
+
 const SitesUrl = process.env.REACT_APP_SITES_URL
 const SiteActionUrl = process.env.REACT_APP_AGENT_SITEACTION_URL
 const SoftwarePackagesUrl = process.env.REACT_APP_SOFTWAREPACKAGES_URL
@@ -6,7 +8,7 @@ const SitesUpdateUrl = process.env.REACT_APP_SITE_UPDATE_URL
 
 export const fetchSitesUrl = async (data) => {
   try {
-    const response = await fetch(`${SitesUrl}`, {
+    const response = await FetchWithToken(`${SitesUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -25,7 +27,7 @@ export const fetchSitesUrl = async (data) => {
 }
 export const fetchSiteActionUrl = async (data) => {
   try {
-    const response = await fetch(`${SiteActionUrl}`, {
+    const response = await FetchWithToken(`${SiteActionUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +45,7 @@ export const fetchSiteActionUrl = async (data) => {
 }
 export const fetchSoftwarePackagesUrl = async (data) => {
   try {
-    const response = await fetch(`${SoftwarePackagesUrl}`, {
+    const response = await FetchWithToken(`${SoftwarePackagesUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -61,7 +63,7 @@ export const fetchSoftwarePackagesUrl = async (data) => {
 }
 export const fetchSitesCreateUrl = async (data) => {
   try {
-    const response = await fetch(`${SitesCreateUrl}`, {
+    const response = await FetchWithToken(`${SitesCreateUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -79,7 +81,7 @@ export const fetchSitesCreateUrl = async (data) => {
 }
 export const fetchSitesUpdateUrl = async (data) => {
   try {
-    const response = await fetch(`${SitesUpdateUrl}`, {
+    const response = await FetchWithToken(`${SitesUpdateUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

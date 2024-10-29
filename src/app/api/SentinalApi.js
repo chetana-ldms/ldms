@@ -1,3 +1,4 @@
+import FetchWithToken from "../modules/auth/FetchWithToken"
 
 const ExclusionListUrl =process.env.REACT_APP_EXCLUSION_LIST_URL
 const BlokckedListUrl =process.env.REACT_APP_BLOCKEDLIST_URL
@@ -21,7 +22,7 @@ const GroupsCreateUrl=process.env.REACT_APP_GROUPS_CREATE_URL
 
 export const fetchExclusionListUrl = async (data) => {
     try {
-      const response = await fetch(`${ExclusionListUrl}`, {
+      const response = await FetchWithToken(`${ExclusionListUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -40,7 +41,7 @@ export const fetchExclusionListUrl = async (data) => {
   };
   export const fetchBlokckedListUrl = async (data) => {
     try {
-      const response = await fetch(`${BlokckedListUrl}`, {
+      const response = await FetchWithToken(`${BlokckedListUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,7 +60,7 @@ export const fetchExclusionListUrl = async (data) => {
   };
   export const fetchAccountDetailsUrl = async (data) => {
     try {
-      const response = await fetch(`${AccountDetailsUrl}`, {
+      const response = await FetchWithToken(`${AccountDetailsUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -78,7 +79,7 @@ export const fetchExclusionListUrl = async (data) => {
   };
   export const fetchPolicyDetailsUrl = async (data) => {
     try {
-      const response = await fetch(`${PolicyDetailsUrl}`, {
+      const response = await FetchWithToken(`${PolicyDetailsUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -97,7 +98,7 @@ export const fetchExclusionListUrl = async (data) => {
   };
   export const fetchblockedListItemDeleteUrl = async (data) => {
     try {
-      const response = await fetch(`${blockedListItemDeleteUrl}`, {
+      const response = await FetchWithToken(`${blockedListItemDeleteUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -115,7 +116,7 @@ export const fetchExclusionListUrl = async (data) => {
   };
   export const fetchAddToblockListUrl = async (data) => {
     try {
-      const response = await fetch(`${AddToblockListUrl}`, {
+      const response = await FetchWithToken(`${AddToblockListUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -133,7 +134,7 @@ export const fetchExclusionListUrl = async (data) => {
   };
   export const fetchblockedListItemUpdateUrl = async (data) => {
     try {
-      const response = await fetch(`${blockedListItemUpdateUrl}`, {
+      const response = await FetchWithToken(`${blockedListItemUpdateUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -151,7 +152,7 @@ export const fetchExclusionListUrl = async (data) => {
   };
   export const fetchAddToExclusionListUrl = async (data) => {
     try {
-      const response = await fetch(`${AddToExclusionListUrl}`, {
+      const response = await FetchWithToken(`${AddToExclusionListUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -169,7 +170,7 @@ export const fetchExclusionListUrl = async (data) => {
   };
   export const fetchExcludedListItemDeleteUrl = async (data) => {
     try {
-      const response = await fetch(`${ExcludedListItemDeleteUrl}`, {
+      const response = await FetchWithToken(`${ExcludedListItemDeleteUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -187,7 +188,7 @@ export const fetchExclusionListUrl = async (data) => {
   };
   export const fetchExcludedListItemUpdateUrl = async (data) => {
     try {
-      const response = await fetch(`${ExcludedListItemUpdateUrl}`, {
+      const response = await FetchWithToken(`${ExcludedListItemUpdateUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -205,7 +206,7 @@ export const fetchExclusionListUrl = async (data) => {
   };
   export const fetchGroupActionUrl = async (data) => {
     try {
-      const response = await fetch(`${GroupActionUrl}`, {
+      const response = await FetchWithToken(`${GroupActionUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -223,7 +224,7 @@ export const fetchExclusionListUrl = async (data) => {
   };
   export const fetchGroupsUrl = async (data) => {
     try {
-      const response = await fetch(`${GroupsUrl}`, {
+      const response = await FetchWithToken(`${GroupsUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -241,7 +242,7 @@ export const fetchExclusionListUrl = async (data) => {
   };
   export const fetchSoftwarePackagesUpdateUrl = async (data) => {
     try {
-      const response = await fetch(`${SoftwarePackagesUpdateUrl}`, {
+      const response = await FetchWithToken(`${SoftwarePackagesUpdateUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -259,7 +260,7 @@ export const fetchExclusionListUrl = async (data) => {
   };
   export const fetchBlockedListImportUrl = async (formData) => {
     try {
-      const response = await fetch(`${BlockedListImportUrl}`, {
+      const response = await FetchWithToken(`${BlockedListImportUrl}`, {
         method: 'POST',
         body: formData,
       })
@@ -272,7 +273,7 @@ export const fetchExclusionListUrl = async (data) => {
   }
   export const fetchBlockedListImportReportUrl = async (data) => {
     try {
-      const response = await fetch(`${BlockedListImportReportUrl}`, {
+      const response = await FetchWithToken(`${BlockedListImportReportUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -290,7 +291,7 @@ export const fetchExclusionListUrl = async (data) => {
   };
   export const fetchExclusionItemsImportUrl = async (formData) => {
     try {
-      const response = await fetch(`${ExclusionItemsImportUrl}`, {
+      const response = await FetchWithToken(`${ExclusionItemsImportUrl}`, {
         method: 'POST',
         body: formData,
       })
@@ -303,7 +304,7 @@ export const fetchExclusionListUrl = async (data) => {
   }
   export const fetchExclusionItemsImportReportUrl = async (data) => {
     try {
-      const response = await fetch(`${ExclusionItemsImportReportUrl}`, {
+      const response = await FetchWithToken(`${ExclusionItemsImportReportUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -321,7 +322,7 @@ export const fetchExclusionListUrl = async (data) => {
   };
   export const fetchGroupsCreateUrl = async (data) => {
     try {
-      const response = await fetch(`${GroupsCreateUrl}`, {
+      const response = await FetchWithToken(`${GroupsCreateUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

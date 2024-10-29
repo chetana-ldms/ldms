@@ -1,7 +1,9 @@
 import axios from 'axios'
+import FetchWithToken from '../modules/auth/FetchWithToken'
 const masterDataUrl = process.env.REACT_APP_MASTER_DATA_URL
 const organizationsUrl = process.env.REACT_APP_ORGANIZATIONS_URL
 const authenticateUrl = process.env.REACT_APP_AUTHENTICATE_URL
+const refreshToken = "http://115.110.192.133:502/api/Auth/refresh-token"
 const updateAlertUrl = process.env.REACT_APP_UPDATE_ALERT_URL
 const setAlertIrrelevantStatusUrl = process.env.REACT_APP_SET_ALERT_IRRELEVANT_STATUS_URL
 const toolTypeActionDeleteUrl = process.env.REACT_APP_TOOL_TYPE_ACTION_DELETE_URL
@@ -27,7 +29,7 @@ const AgentActionUrl = process.env.REACT_APP_AGENT_ACTION_URL
 
 export const fetchMasterData = async (data) => {
   try {
-    const response = await fetch(`${masterDataUrl}`, {
+    const response = await FetchWithToken(`${masterDataUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -44,7 +46,7 @@ export const fetchMasterData = async (data) => {
 
 export const fetchAuthenticate = async (userName, password, orgName) => {
   try {
-    const response = await fetch(`${authenticateUrl}`, {
+    const response = await FetchWithToken(`${authenticateUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -63,9 +65,29 @@ export const fetchAuthenticate = async (userName, password, orgName) => {
     console.log(error)
   }
 }
+
+export const fetchrefreshToken = async (refreshtoken, userName) => {
+  try {
+    const response = await FetchWithToken(`${refreshToken}?refreshtoken=${refreshtoken}&username=${userName}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        refreshtoken,
+        userName,
+      }),
+    })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export const fetchOrganizations = async () => {
   try {
-    const response = await fetch(`${organizationsUrl}`, {
+    const response = await FetchWithToken(`${organizationsUrl}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -79,7 +101,7 @@ export const fetchOrganizations = async () => {
 }
 export const fetchUpdateAlert = async (data) => {
   try {
-    const response = await fetch(`${updateAlertUrl}`, {
+    const response = await FetchWithToken(`${updateAlertUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -97,7 +119,7 @@ export const fetchUpdateAlert = async (data) => {
 }
 export const fetchUpdatSetAlertIrrelavantStatuseAlert = async (data) => {
   try {
-    const response = await fetch(`${setAlertIrrelevantStatusUrl}`, {
+    const response = await FetchWithToken(`${setAlertIrrelevantStatusUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -115,7 +137,7 @@ export const fetchUpdatSetAlertIrrelavantStatuseAlert = async (data) => {
 }
 export const fetchToolTypeActionDelete = async (data) => {
   try {
-    const response = await fetch(`${toolTypeActionDeleteUrl}`, {
+    const response = await FetchWithToken(`${toolTypeActionDeleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -133,7 +155,7 @@ export const fetchToolTypeActionDelete = async (data) => {
 }
 export const fetchOrganizationDelete = async (data) => {
   try {
-    const response = await fetch(`${organizationDeleteUrl}`, {
+    const response = await FetchWithToken(`${organizationDeleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -151,7 +173,7 @@ export const fetchOrganizationDelete = async (data) => {
 }
 export const fetchLDPToolsDelete = async (data) => {
   try {
-    const response = await fetch(`${ldpToolsDeleteUrl}`, {
+    const response = await FetchWithToken(`${ldpToolsDeleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -169,7 +191,7 @@ export const fetchLDPToolsDelete = async (data) => {
 }
 export const fetchOrganizationToolsDelete = async (data) => {
   try {
-    const response = await fetch(`${organizationToolsDeleteUrl}`, {
+    const response = await FetchWithToken(`${organizationToolsDeleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -188,7 +210,7 @@ export const fetchOrganizationToolsDelete = async (data) => {
 }
 export const fetchUserDelete = async (data) => {
   try {
-    const response = await fetch(`${userDeleteUrl}`, {
+    const response = await FetchWithToken(`${userDeleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -207,7 +229,7 @@ export const fetchUserDelete = async (data) => {
 }
 export const fetchToolActionDelete = async (data) => {
   try {
-    const response = await fetch(`${toolActionDeleteUrl}`, {
+    const response = await FetchWithToken(`${toolActionDeleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -226,7 +248,7 @@ export const fetchToolActionDelete = async (data) => {
 }
 export const fetchRulesDelete = async (data) => {
   try {
-    const response = await fetch(`${rulesDeleteUrl}`, {
+    const response = await FetchWithToken(`${rulesDeleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -245,7 +267,7 @@ export const fetchRulesDelete = async (data) => {
 }
 export const fetchRuleActionDelete = async (data) => {
   try {
-    const response = await fetch(`${ruleActionDeleteUrl}`, {
+    const response = await FetchWithToken(`${ruleActionDeleteUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -264,7 +286,7 @@ export const fetchRuleActionDelete = async (data) => {
 }
 export const fetchLDPTools = async () => {
   try {
-    const response = await fetch(`${ldpToolsUrl}`, {
+    const response = await FetchWithToken(`${ldpToolsUrl}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -285,7 +307,7 @@ export const fetchOrganizationDetails = async (
   emailRef
 ) => {
   try {
-    const response = await fetch(`${organizationDetailsUrl}?id=${id}`, {
+    const response = await FetchWithToken(`${organizationDetailsUrl}?id=${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -304,7 +326,7 @@ export const fetchOrganizationDetails = async (
 }
 export const fetchLDPToolDetails = async (id, toolNameRef) => {
   try {
-    const response = await fetch(`${ldpToolDetailsUrl}?id=${id}`, {
+    const response = await FetchWithToken(`${ldpToolDetailsUrl}?id=${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -324,7 +346,7 @@ export const fetchLDPToolDetails = async (id, toolNameRef) => {
 
 export const fetchRoles = async (orgId) => {
   try {
-    const response = await fetch(`${rolesUrl}?orgId=${orgId}`, {
+    const response = await FetchWithToken(`${rolesUrl}?orgId=${orgId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -343,7 +365,7 @@ export const fetchRoles = async (orgId) => {
 }
 export const fetchForgatePassword = async (userName, orgName, createdDate) => {
   try {
-    const response = await fetch(`${forgatePasswordUrl}`, {
+    const response = await FetchWithToken(`${forgatePasswordUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -364,7 +386,7 @@ export const fetchForgatePassword = async (userName, orgName, createdDate) => {
 
 export const fetchAccountsStructureUrl = async (data) => {
   try {
-    const response = await fetch(`${accountsStructureUrl}`, {
+    const response = await FetchWithToken(`${accountsStructureUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -384,7 +406,7 @@ export const fetchAccountsStructureUrl = async (data) => {
 
 export const fetchLogoutAddUrl = async (data) => {
   try {
-    const response = await fetch(`${LogoutAddUrl}`, {
+    const response = await FetchWithToken(`${LogoutAddUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -403,7 +425,7 @@ export const fetchLogoutAddUrl = async (data) => {
 
 export const fetchAPITokenExpireUrl = async (data) => {
   try {
-    const response = await fetch(`${APITokenExpireUrl}`, {
+    const response = await FetchWithToken(`${APITokenExpireUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -421,7 +443,7 @@ export const fetchAPITokenExpireUrl = async (data) => {
 }
 export const fetchExportDataAddUrl = async (data) => {
   try {
-    const response = await fetch(`${ExportDataAddUrl}`, {
+    const response = await FetchWithToken(`${ExportDataAddUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -439,7 +461,7 @@ export const fetchExportDataAddUrl = async (data) => {
 }
 export const fetchFeaturesAuthorizedUrl = async (data) => {
   try {
-    const response = await fetch(`${FeaturesAuthorizedUrl}`, {
+    const response = await FetchWithToken(`${FeaturesAuthorizedUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -457,7 +479,7 @@ export const fetchFeaturesAuthorizedUrl = async (data) => {
 }
 export const fetchFeaturesActionsAuthorizedUrl = async (data) => {
   try {
-    const response = await fetch(`${FeaturesActionsAuthorizedUrl}`, {
+    const response = await FetchWithToken(`${FeaturesActionsAuthorizedUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -475,7 +497,7 @@ export const fetchFeaturesActionsAuthorizedUrl = async (data) => {
 }
 export const fetchAgentActionUrl = async (data) => {
   try {
-    const response = await fetch(`${AgentActionUrl}`, {
+    const response = await FetchWithToken(`${AgentActionUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
