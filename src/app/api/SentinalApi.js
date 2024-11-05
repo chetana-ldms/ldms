@@ -18,6 +18,13 @@ const BlockedListImportReportUrl = process.env.REACT_APP_BLOCKEDLIST_IMPORTREPOR
 const ExclusionItemsImportUrl =process.env.REACT_APP_EXCLUSIONITEMS_IMPORT_URL
 const ExclusionItemsImportReportUrl=process.env.REACT_APP_EXCLUSIONITEMS_IMPORTREPORT_URL
 const GroupsCreateUrl=process.env.REACT_APP_GROUPS_CREATE_URL
+const UpgradePoliciesUrl= "http://115.110.192.133:502/api/Alerts/v1/Sentinel/Upgrade-Policies"
+const AvailablePackagesUrl= "http://115.110.192.133:502/api/Alerts/v1/Sentinel/Upgrade-Policy/AvailablePackages"
+const UpgradePolicyUrl= "http://115.110.192.133:502/api/Alerts/v1/Sentinel/Upgrade-Policy"
+const ParentUpgradePoliciesUrl="http://115.110.192.133:502/api/Alerts/v1/Sentinel/Parent-Upgrade-Policies"
+const UpgradePolicyActionsUrl="http://115.110.192.133:502/api/Alerts/v1/Sentinel/Upgrade-Policy/Actions"
+const UpgradePoliciesSetInheritingUrl ="http://115.110.192.133:502/api/Alerts/v1/Sentinel/Upgrade-Policies/SetInheriting"
+const UpgradePoliciesDeActivateUrl ="http://115.110.192.133:502/api/Alerts/v1/Sentinel/Upgrade-Policies/DeActivate"
 
 
 export const fetchExclusionListUrl = async (data) => {
@@ -323,6 +330,133 @@ export const fetchExclusionListUrl = async (data) => {
   export const fetchGroupsCreateUrl = async (data) => {
     try {
       const response = await FetchWithToken(`${GroupsCreateUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchUpgradePoliciesUrl = async (data) => {
+    try {
+      const response = await FetchWithToken(`${UpgradePoliciesUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchAvailablePackagesUrl = async (data) => {
+    try {
+      const response = await FetchWithToken(`${AvailablePackagesUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      const result = responseData.data.packages
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchUpgradePolicyUrl = async (data) => {
+    try {
+      const response = await FetchWithToken(`${UpgradePolicyUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchParentUpgradePoliciesUrl = async (data) => {
+    try {
+      const response = await FetchWithToken(`${ParentUpgradePoliciesUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchUpgradePolicyActionsUrl = async (data) => {
+    try {
+      const response = await FetchWithToken(`${UpgradePolicyActionsUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchUpgradePoliciesSetInheritingUrl = async (data) => {
+    try {
+      const response = await FetchWithToken(`${UpgradePoliciesSetInheritingUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchUpgradePoliciesDeActivateUrl = async (data) => {
+    try {
+      const response = await FetchWithToken(`${UpgradePoliciesDeActivateUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
