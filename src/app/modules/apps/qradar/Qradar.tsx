@@ -99,6 +99,7 @@ import LoadReportTask from './qradar-pages/sentinels-report/LoadReportTask'
 import MaintenanceWindow from './qradar-pages/Setinels/MaintenanceWindow'
 import SentinelLiveUpdates from './qradar-pages/Setinels/SentinelLiveUpdates'
 import { AutoUpgrade } from './qradar-pages/Setinels/AutoUpgrade'
+import Tags from './qradar-pages/Setinels/Tags'
 
 
 const QradarPages = () => {
@@ -186,6 +187,7 @@ const QradarPages = () => {
       <Route path='setinels/policy' element={<PolicySentinal />} />
       <Route path='setinels/accountDetalis' element={<AccountDetalis />} />
       <Route path='setinels/autoupgrade' element={<AutoUpgrade />} />
+      <Route path='setinels/tags' element={<Tags />} />
       <Route path='setinels/maintenancewindow' element={<MaintenanceWindow />} />
       <Route path='setinels/sentinelliveupdates' element={<SentinelLiveUpdates />} />
       <Route path='settings/:status' element={<Settings />} />

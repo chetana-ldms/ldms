@@ -18,14 +18,17 @@ const BlockedListImportReportUrl = process.env.REACT_APP_BLOCKEDLIST_IMPORTREPOR
 const ExclusionItemsImportUrl =process.env.REACT_APP_EXCLUSIONITEMS_IMPORT_URL
 const ExclusionItemsImportReportUrl=process.env.REACT_APP_EXCLUSIONITEMS_IMPORTREPORT_URL
 const GroupsCreateUrl=process.env.REACT_APP_GROUPS_CREATE_URL
-const UpgradePoliciesUrl= "http://115.110.192.133:502/api/Alerts/v1/Sentinel/Upgrade-Policies"
-const AvailablePackagesUrl= "http://115.110.192.133:502/api/Alerts/v1/Sentinel/Upgrade-Policy/AvailablePackages"
-const UpgradePolicyUrl= "http://115.110.192.133:502/api/Alerts/v1/Sentinel/Upgrade-Policy"
-const ParentUpgradePoliciesUrl="http://115.110.192.133:502/api/Alerts/v1/Sentinel/Parent-Upgrade-Policies"
-const UpgradePolicyActionsUrl="http://115.110.192.133:502/api/Alerts/v1/Sentinel/Upgrade-Policy/Actions"
-const UpgradePoliciesSetInheritingUrl ="http://115.110.192.133:502/api/Alerts/v1/Sentinel/Upgrade-Policies/SetInheriting"
-const UpgradePoliciesDeActivateUrl ="http://115.110.192.133:502/api/Alerts/v1/Sentinel/Upgrade-Policies/DeActivate"
-
+const UpgradePoliciesUrl= process.env.REACT_APP_SENTINEL_UPGRADE_POLICIES_UR
+const AvailablePackagesUrl= process.env.REACT_APP_SENTINEL_UPGRADE_POLICY_AVAILABLE_PACKAGES_URL
+const UpgradePolicyUrl= process.env.REACT_APP_SENTINEL_UPGRADE_POLICY_URL
+const ParentUpgradePoliciesUrl=process.env.REACT_APP_SENTINEL_PARENT_UPGRADE_POLICIES_URL
+const UpgradePolicyActionsUrl=process.env.REACT_APP_SENTINEL_UPGRADE_POLICY_ACTIONS_URL
+const UpgradePoliciesSetInheritingUrl =process.env.REACT_APP_SENTINEL_UPGRADE_POLICIES_SETINHERITING_URL
+const UpgradePoliciesDeActivateUrl =process.env.REACT_APP_SENTINEL_UPGRADE_POLICIES_DEACTIVATE_URL
+const TagsUrl =process.env.REACT_APP_SENTINEL_TAGS_URL
+const TagAddUrl =process.env.REACT_APP_SENTINEL_TAG_ADD_URL
+const TagUpdateUrl =process.env.REACT_APP_SENTINEL_TAG_UPDATE_URL
+const TagsDeleteUrl =process.env.REACT_APP_SENTINEL_TAGS_DELETE_URL
 
 export const fetchExclusionListUrl = async (data) => {
     try {
@@ -457,6 +460,78 @@ export const fetchExclusionListUrl = async (data) => {
   export const fetchUpgradePoliciesDeActivateUrl = async (data) => {
     try {
       const response = await FetchWithToken(`${UpgradePoliciesDeActivateUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchTagsUrl = async (data) => {
+    try {
+      const response = await FetchWithToken(`${TagsUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchTagAddUrl = async (data) => {
+    try {
+      const response = await FetchWithToken(`${TagAddUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchTagUpdateUrl = async (data) => {
+    try {
+      const response = await FetchWithToken(`${TagUpdateUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchTagsDeleteUrl = async (data) => {
+    try {
+      const response = await FetchWithToken(`${TagsDeleteUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
