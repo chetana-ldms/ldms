@@ -131,7 +131,9 @@ function Tags() {
         const {isSuccess, message} = response
         if (isSuccess) {
           notify(message)
-          await fetchData()
+          setTimeout(()=>{
+           fetchData()
+          },2000)
           setIsCheckboxSelected(false)
           setselectedAlert([])
         } else {
@@ -273,10 +275,10 @@ function Tags() {
                           </div>
                         </td>
                         <td>{item.key}</td>
-                        <td title={item.value}> {truncateText(item.value, 20)}</td>
+                        <td title={item.value}> {truncateText(item.value, 15)}</td>
                         <td title={item.description}>{truncateText(item.description, 20)}</td>
                         <td title={item.totalEndpoints}>{item.totalEndpoints}</td>
-                        <td title={item.scopePath}>{truncateText(item.scopePath, 20)}</td>
+                        <td title={item.scopePath}>{truncateText(item.scopePath, 43)}</td>
                         <td>{item.updatedBy}</td>
                         <td>{getCurrentTimeZone(item.updatedAt)}</td>
                       </tr>

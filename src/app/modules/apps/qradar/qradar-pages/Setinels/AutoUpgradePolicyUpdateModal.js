@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {Modal, Button, Form, Row, Col} from 'react-bootstrap'
-import {fetchAvailablePackagesUrl, fetchUpgradePolicyUrl} from '../../../../../api/SentinalApi'
+import {fetchAvailablePackagesUrl, fetchTagsUrl, fetchUpgradePolicyUrl} from '../../../../../api/SentinalApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 
 const AutoUpgradePolicyUpdateModal = ({
@@ -18,41 +18,88 @@ const AutoUpgradePolicyUpdateModal = ({
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
   const [save, setSave] = useState(modalState?.save || '')
-  console.log(save, 'save')
   const [version, setVersion] = useState([])
-  console.log(version, 'version')
   const [loading, setLoading] = useState(false)
   const [policyName, setPolicyName] = useState('')
   const [policyDescription, setPolicyDescription] = useState('')
   const [agentVersion, setAgentVersion] = useState('')
-  console.log(agentVersion, 'agentVersion')
   const [maxRetries, setMaxRetries] = useState('')
   const [updateTiming, setUpdateTiming] = useState('immediate')
   const [affectedEndpoints, setAffectedEndpoints] = useState('allEndpoints')
+  const [tags, setTags] = useState([])
+  console.log(tags, 'tags')
+  const [tagKey, setTagKey] = useState('')
+  const [tagValue, setTagValue] = useState('')
+  const [dropdownTags, setDropdownTags] = useState([])
+  const fetchDropdownTags = async () => {
+    const data = {
+      orgId: orgId,
+      toolId: toolId,
+      includeChildren: true,
+      includeParents: true,
+      orgAccountStructureLevel: [
+        {levelName: 'AccountId', levelValue: accountId || ''},
+        {levelName: 'SiteId', levelValue: siteId || ''},
+        {levelName: 'GroupId', levelValue: groupId || ''},
+      ],
+    }
+    try {
+      const response = await fetchTagsUrl(data)
+      setDropdownTags(response?.data || [])
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  useEffect(() => {
+    fetchDropdownTags()
+  }, [])
+  const handleAddTag = () => {
+    if (tagKey && tagValue) {
+      const isDuplicate = tags.some((tag) => tag.key === tagKey && tag.value === tagValue)
+      if (isDuplicate) {
+        notifyFail('This tag already exists.')
+        return
+      }
+      const matchingTag = dropdownTags.find((tag) => tag.key === tagKey && tag.value === tagValue)
+
+      if (matchingTag) {
+        setTags([...tags, {key: tagKey, value: tagValue, id: matchingTag.id}])
+        setTagKey('')
+        setTagValue('')
+      } else {
+        notifyFail('Tag not found in dropdown.')
+      }
+    }
+  }
+
+  const handleRemoveTag = (index) => {
+    setTags(tags.filter((_, i) => i !== index))
+  }
 
   useEffect(() => {
     setSave(modalState?.save || '')
   }, [modalState])
   useEffect(() => {
     if (selectedItem) {
-      setPolicyName(selectedItem.name || '')
-      setPolicyDescription(selectedItem.description || '')
-      const versionString = `${selectedItem.package?.major} ${selectedItem.package?.minor
-        ?.toString()
-        .toUpperCase()} (${selectedItem.package?.build})`
-      const matchingVersion = version?.find((ver) => ver.displayName === versionString)
-
-      if (matchingVersion) {
-        setAgentVersion(matchingVersion.displayName)
-      } else {
-        setAgentVersion(versionString)
-      }
-
-      setMaxRetries(selectedItem.maxRetries || '')
-      setUpdateTiming(selectedItem.isScheduled == false ? 'immediate' : 'maintenance')
-      setAffectedEndpoints(selectedItem.allEndpoints ? 'allEndpoints' : 'filteredEndpoints')
+      setPolicyName(selectedItem.name || '');
+      setPolicyDescription(selectedItem.description || '');
+      
+      const versionString = `${selectedItem.package?.major} ${selectedItem.package?.minor?.toString().toUpperCase()} (${selectedItem.package?.build})`;
+      const matchingVersion = version?.find((ver) => ver.displayName === versionString);
+  
+      setAgentVersion(matchingVersion ? matchingVersion.displayName : versionString);
+      setMaxRetries(selectedItem.maxRetries || '');
+      setUpdateTiming(selectedItem.isScheduled === false ? 'immediate' : 'maintenance');
+      setAffectedEndpoints(selectedItem.allEndpoints ? 'allEndpoints' : 'filteredEndpoints');
+      const matchedTags = selectedItem.tags?.map(tagId => {
+        const matchingTag = dropdownTags.find(tag => tag.id === tagId);
+        return matchingTag ? { key: matchingTag.key, value: matchingTag.value, id: matchingTag.id } : null;
+      }).filter(Boolean); 
+  
+      setTags(matchedTags || []);
     }
-  }, [selectedItem])
+  }, [selectedItem, dropdownTags]);
+  
 
   const reload = async () => {
     try {
@@ -90,8 +137,11 @@ const AutoUpgradePolicyUpdateModal = ({
   }, [])
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (affectedEndpoints === 'filteredEndpoints' && tags.length === 0) {
+      notifyFail('Please add at least one tag when using "Filtered by endpoint tag".');
+      return;
+    }
     const selectedPackage = version.find((ver) => ver.displayName === agentVersion)
-    console.log(selectedPackage, 'selectedPackage')
     if (!selectedPackage) {
       notifyFail('Selected agent version not found in the version list.')
     }
@@ -105,6 +155,7 @@ const AutoUpgradePolicyUpdateModal = ({
       scopeLevel = 'site'
       scopeId = siteId
     }
+    const tagIds = tags.map((tag) => tag.id)
     const data = {
       scopeLevel: scopeLevel,
       scopeId: scopeId,
@@ -123,6 +174,7 @@ const AutoUpgradePolicyUpdateModal = ({
       allEndpoints: affectedEndpoints == 'allEndpoints' ? true : false,
       orgId,
       toolId,
+      tags: tagIds,
     }
 
     try {
@@ -292,6 +344,57 @@ const AutoUpgradePolicyUpdateModal = ({
               </Col>
             </Row>
           </Form.Group>
+          {affectedEndpoints === 'filteredEndpoints' && (
+            <>
+              <Form.Group controlId='tagSelection' className='mb-3'>
+                <Row>
+                  <Col sm='4'></Col>
+                  <Col sm='3'>
+                    <Form.Select value={tagKey} onChange={(e) => setTagKey(e.target.value)}>
+                      <option value=''> select Tag Key</option>
+                      {dropdownTags.map((tag, index) => (
+                        <option key={index} value={tag.key}>
+                          {tag.key}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Col>
+                  <Col sm='3'>
+                    <Form.Select
+                      value={tagValue}
+                      onChange={(e) => setTagValue(e.target.value)}
+                      disabled={!tagKey}
+                    >
+                      <option value=''>select Tag Value</option>
+                      {dropdownTags
+                        .filter((tag) => tag.key === tagKey)
+                        .map((tag, index) => (
+                          <option key={index} value={tag.value}>
+                            {tag.value}
+                          </option>
+                        ))}
+                    </Form.Select>
+                  </Col>
+                  <Col sm='2'>
+                    <Button variant='primary' onClick={handleAddTag}>
+                      Add
+                    </Button>
+                  </Col>
+                </Row>
+              </Form.Group>
+              <div>
+                Tags:
+                {tags.map((tag, index) => (
+                  <span key={index} className='badge badge-secondary mx-1'>
+                    {tag.key}: {tag.value}{' '}
+                    <Button variant='link' onClick={() => handleRemoveTag(index)}>
+                      ×
+                    </Button>
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
         </Form>
       </Modal.Body>
       <Modal.Footer>

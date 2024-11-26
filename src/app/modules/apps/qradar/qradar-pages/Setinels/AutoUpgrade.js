@@ -3,12 +3,13 @@ import {Link, useNavigate} from 'react-router-dom'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import Sortable from 'react-sortablejs';
+import Sortable from 'react-sortablejs'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {useErrorBoundary} from 'react-error-boundary'
 import useFeatureActions from '../configuration/useFeatureActions'
 import {
   fetchParentUpgradePoliciesUrl,
+  fetchTagsUrl,
   fetchUpgradePoliciesDeActivateUrl,
   fetchUpgradePoliciesSetInheritingUrl,
   fetchUpgradePoliciesUrl,
@@ -23,12 +24,12 @@ import ConfirmationModal from './ConfirmationModal'
 const AutoUpgrade = () => {
   const handleError = useErrorBoundary()
   const [tools, setTools] = useState([])
-  console.log(tools, "tools")
+  console.log(tools, 'tools')
   const [toolsParent, setToolsParent] = useState([])
   const [isToggledParent, setIsToggledParent] = useState([])
   const [loading, setLoading] = useState(false)
-  const [showToggleConfirmation, setShowToggleConfirmation] = useState(false);
-  const [pendingToggleState, setPendingToggleState] = useState(null);
+  const [showToggleConfirmation, setShowToggleConfirmation] = useState(false)
+  const [pendingToggleState, setPendingToggleState] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [selectedOS, setSelectedOS] = useState('windows')
   const [selectedItem, setSelectedItem] = useState(null)
@@ -43,9 +44,32 @@ const AutoUpgrade = () => {
   const toolId = Number(sessionStorage.getItem('toolID'))
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
-
+  const [dropdownTags, setDropdownTags] = useState([])
+  console.log(dropdownTags, 'dropdownTags')
   const [isToggled, setIsToggled] = useState(true)
-  console.log(isToggled, "isToggled")
+  const fetchDropdownTags = async () => {
+    const data = {
+      orgId: orgId,
+      toolId: toolId,
+      includeChildren: true,
+      includeParents: true,
+      orgAccountStructureLevel: [
+        {levelName: 'AccountId', levelValue: accountId || ''},
+        {levelName: 'SiteId', levelValue: siteId || ''},
+        {levelName: 'GroupId', levelValue: groupId || ''},
+      ],
+    }
+    try {
+      const response = await fetchTagsUrl(data)
+      setDropdownTags(response?.data || [])
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    fetchDropdownTags()
+  }, [])
   const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
 
   const reload = async () => {
@@ -90,12 +114,10 @@ const AutoUpgrade = () => {
     reload()
   }
   const toggleGroupDropdown = (index) => {
-    setGroupDropdownOpen((prevIndex) => (prevIndex === index ? null : index));
-  };
+    setGroupDropdownOpen((prevIndex) => (prevIndex === index ? null : index))
+  }
 
   const handleGroupAction = async (action, item) => {
-    console.log(item, 'item')
-    console.log(action, 'action')
     const data = {
       orgId: orgId,
       toolId: toolId,
@@ -145,25 +167,25 @@ const AutoUpgrade = () => {
   const handleCloseModal = () => setShowModal(false)
   const handleCloseUpdateModal = () => setShowPopup(false)
   const handleToggleChange = (e) => {
-    const newToggleState = e.target.checked;
-    setPendingToggleState(newToggleState);
-    setShowToggleConfirmation(true);
-  };
+    const newToggleState = e.target.checked
+    setPendingToggleState(newToggleState)
+    setShowToggleConfirmation(true)
+  }
 
   const confirmToggle = async () => {
-    setIsToggled(pendingToggleState);
-    setShowToggleConfirmation(false);
+    setIsToggled(pendingToggleState)
+    setShowToggleConfirmation(false)
     let scopeLevel = 'account'
-      let scopeId = accountId
+    let scopeId = accountId
 
-      if (groupId) {
-        scopeLevel = 'group'
-        scopeId = groupId
-      } else if (siteId) {
-        scopeLevel = 'site'
-        scopeId = siteId
-      }
-   const data = {
+    if (groupId) {
+      scopeLevel = 'group'
+      scopeId = groupId
+    } else if (siteId) {
+      scopeLevel = 'site'
+      scopeId = siteId
+    }
+    const data = {
       orgId: orgId,
       toolId: toolId,
       isInheriting: pendingToggleState,
@@ -172,35 +194,35 @@ const AutoUpgrade = () => {
     }
 
     try {
-      const response = await fetchUpgradePoliciesSetInheritingUrl(data);
-      const { isSuccess, message } = response;
+      const response = await fetchUpgradePoliciesSetInheritingUrl(data)
+      const {isSuccess, message} = response
       if (isSuccess) {
-        notify(message);
+        notify(message)
         reload()
       } else {
-        notifyFail(message);
+        notifyFail(message)
       }
     } catch (error) {
-      handleError(error);
+      handleError(error)
     }
-  };
+  }
 
   const cancelToggle = () => {
-    setShowToggleConfirmation(false);
-    setPendingToggleState(null);
-  };
-  const handleDisableAllUpgradePolicies = async() =>{
+    setShowToggleConfirmation(false)
+    setPendingToggleState(null)
+  }
+  const handleDisableAllUpgradePolicies = async () => {
     let scopeLevel = 'account'
-      let scopeId = accountId
+    let scopeId = accountId
 
-      if (groupId) {
-        scopeLevel = 'group'
-        scopeId = groupId
-      } else if (siteId) {
-        scopeLevel = 'site'
-        scopeId = siteId
-      }
-   const data = {
+    if (groupId) {
+      scopeLevel = 'group'
+      scopeId = groupId
+    } else if (siteId) {
+      scopeLevel = 'site'
+      scopeId = siteId
+    }
+    const data = {
       orgId: orgId,
       toolId: toolId,
       osType: selectedOS,
@@ -208,16 +230,16 @@ const AutoUpgrade = () => {
       scopeId: scopeId,
     }
     try {
-      const response = await fetchUpgradePoliciesDeActivateUrl(data);
-      const { isSuccess, message } = response;
+      const response = await fetchUpgradePoliciesDeActivateUrl(data)
+      const {isSuccess, message} = response
       if (isSuccess) {
-        notify(message);
+        notify(message)
         reload()
       } else {
-        notifyFail(message);
+        notifyFail(message)
       }
     } catch (error) {
-      handleError(error);
+      handleError(error)
     }
   }
   return (
@@ -248,10 +270,7 @@ const AutoUpgrade = () => {
                   Create Upgrade Policy
                 </button>
               </div>
-              <div className='fs-15 mt-0'>
-                {' '}
-                Total({tools ? tools.length : 0})
-              </div>
+              <div className='fs-15 mt-0'> Total({tools ? tools.length : 0})</div>
             </div>
             <AutoUpgradePolicyModal
               show={showModal}
@@ -271,7 +290,9 @@ const AutoUpgrade = () => {
         </div>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
-            <button className='btn btn-success btn-small' onClick={handleDisableAllUpgradePolicies}>Disable All Upgrade Policies</button>
+            <button className='btn btn-success btn-small' onClick={handleDisableAllUpgradePolicies}>
+              Disable All Upgrade Policies
+            </button>
           </div>
         </div>
       </div>
@@ -303,7 +324,37 @@ const AutoUpgrade = () => {
                     </td>
 
                     <td>{item.scopeLevel}</td>
-                    <td>{item.allEndpoints ? 'All Endpoints in scope' : 'N/A'}</td>
+                    <td>
+                      {item.tags && item.tags.length > 0 ? (
+                        <span
+                          title={item.tags
+                            .map((tagId) => {
+                              const tag = dropdownTags.find(
+                                (dropdownTag) => dropdownTag.id === tagId
+                              )
+                              return tag ? `${tag.key}: ${tag.value}` : ''
+                            })
+                            .filter(Boolean)
+                            .join(', ')}
+                        >
+                          {item.tags
+                            .map((tagId) => {
+                              const tag = dropdownTags.find(
+                                (dropdownTag) => dropdownTag.id === tagId
+                              )
+                              return tag ? `${tag.key}: ${tag.value}` : ''
+                            })
+                            .filter(Boolean)
+                            .join(', ')
+                            .slice(0, 20) + (item.tags.join(', ').length > 20 ? '...' : '')}
+                        </span>
+                      ) : item.allEndpoints ? (
+                        'All Endpoints in scope'
+                      ) : (
+                        'N/A'
+                      )}
+                    </td>
+
                     <td className='d-flex align-items-center'>
                       {isActionAuthorized('View') ? (
                         <span className='me-6' title='View'>
@@ -339,16 +390,16 @@ const AutoUpgrade = () => {
                           <span className='btn btn-green btn-small'>Actions</span>
                         </DropdownToggle>
                         <DropdownMenu className='w-auto p-3'>
-                        {!item.isActive &&
-                          <DropdownItem onClick={() => handleGroupAction('Activate', item)}>
-                            Activate
-                          </DropdownItem>
-}
-                          {item.isActive &&
-                          <DropdownItem onClick={() => handleGroupAction('Deactivate', item)}>
-                            Deactivate
-                          </DropdownItem>
-}
+                          {!item.isActive && (
+                            <DropdownItem onClick={() => handleGroupAction('Activate', item)}>
+                              Activate
+                            </DropdownItem>
+                          )}
+                          {item.isActive && (
+                            <DropdownItem onClick={() => handleGroupAction('Deactivate', item)}>
+                              Deactivate
+                            </DropdownItem>
+                          )}
                           <DropdownItem onClick={() => handleGroupAction('Delete', item)}>
                             Delete
                           </DropdownItem>
@@ -422,14 +473,16 @@ const AutoUpgrade = () => {
             </tbody>
           </table>
         )}
-          {showToggleConfirmation && (
-        <ConfirmationModal
-          show={showToggleConfirmation}
-          onConfirm={confirmToggle}
-          onCancel={cancelToggle}
-          message={`Are you sure you want to turn ${pendingToggleState ? 'ON' : 'OFF'} the policy?`}
-        />
-      )}
+        {showToggleConfirmation && (
+          <ConfirmationModal
+            show={showToggleConfirmation}
+            onConfirm={confirmToggle}
+            onCancel={cancelToggle}
+            message={`Are you sure you want to turn ${
+              pendingToggleState ? 'ON' : 'OFF'
+            } the policy?`}
+          />
+        )}
         {!toolsParent && !tools && (
           <div className='text-center'>
             <h6>No Upgrade Policies are configured in this scope</h6>
@@ -441,13 +494,13 @@ const AutoUpgrade = () => {
         <div className='d-flex align-items-center'>
           <span className='me-3 fw-bold'>Inherit Upgrade Policy</span>
           <Form.Check
-          type='switch'
-          id='inherit-policy-switch'
-          checked={isToggled?.isInherited}
-          onChange={handleToggleChange}
-          label={isToggled?.isInherited ? 'ON' : 'OFF'}
-          className={`custom-toggle ${isToggled ? 'text-success' : 'text-muted'}`}
-        />
+            type='switch'
+            id='inherit-policy-switch'
+            checked={isToggled?.isInherited}
+            onChange={handleToggleChange}
+            label={isToggled?.isInherited ? 'ON' : 'OFF'}
+            className={`custom-toggle ${isToggled ? 'text-success' : 'text-muted'}`}
+          />
         </div>
         {!toolsParent && !tools && <div>There is no Upgrade Policy to inherit</div>}
       </div>

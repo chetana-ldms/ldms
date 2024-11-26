@@ -10,10 +10,8 @@ const ruleDetailsUrl = process.env.REACT_APP_RULE_DETAILS_URL;
 const ruleActionsUrl = process.env.REACT_APP_RULE_ACTIONS_URL;
 const toolActionsUrl = process.env.REACT_APP_TOOL_ACTIONS_URL;
 const ruleActionDetailsUrl = process.env.REACT_APP_RULE_ACTION_DETAILS_URL;
-
 const ToolTypeActionsUrl = process.env.REACT_APP_TOOL_TYPE_ACTIONS_URL;
 const GetToolActionsByToolURL = process.env.REACT_APP_GET_TOOL_ACTIONS_BY_TOOL_URL;
-
 const ToolTypeActionUpdateUrl = process.env.REACT_APP_TOOL_TYPE_ACTION_UPDATE_URL;
 const ToolTypeActionAddUrl= process.env.REACT_APP_TOOL_TYPE_ACTION_ADD_URL
 const OrganizationsUrl= process.env.REACT_APP_ORGANIZATIONS_URL
@@ -41,6 +39,7 @@ const RulesAddUrl = process.env.REACT_APP_RULE_RULE_ADD_URL
 const RulesUpdateUrl= process.env.REACT_APP_RULE_RULES_UPDATE_URL
 const RuleActionUrl= process.env.REACT_APP_RULE_ACTION_ADD_URL
 const RuleActionUpdateUrl= process.env.REACT_APP_RULE_ACTION_UPDATE_URL
+const AllMasterDataUrl= "http://115.110.192.133:502/api/PlattformMasterData/v1/AllMasterData"
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {
@@ -720,6 +719,20 @@ export const fetchRolesDetailUrl = async (id) => {
     const responseData = await response.json();
     const roleData = responseData.roleData;
     return roleData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchAllMasterDataUrl = async () => {
+  try {
+    const response = await FetchWithToken(`${AllMasterDataUrl}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const responseData = await response.json();
+    return responseData;
   } catch (error) {
     console.log(error);
   }

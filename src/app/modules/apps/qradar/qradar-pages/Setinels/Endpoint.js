@@ -27,6 +27,7 @@ import DeleteGroupModal from './DeleteGroupModal'
 import AgentSoftwareUpdateModal from './AgentSoftwareUpdateModal'
 import FetchLogsModal from './FetchLogsModal'
 import CreateGroupModal from './CreateGroupModal'
+import {truncateText} from '../../../../../../utils/TruncateText'
 
 function Endpoint() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -54,7 +55,7 @@ function Endpoint() {
   const [isAgentSoftwareUpdateModalVisible, setIsAgentSoftwareUpdateModalVisible] = useState(false)
   const [isFetchLogsModalVisible, setIsFetchLogsModalVisible] = useState(false)
   const [items, setItems] = useState([])
-  console.log(items, "items")
+  console.log(items, 'items')
   const [computerNames, setComputerNames] = useState('')
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
@@ -158,7 +159,7 @@ function Endpoint() {
 
   const exportTableToCSV = async () => {
     const tableData = extractTableData(filteredList)
-    console.log(tableData, "filteredList");
+    console.log(tableData, 'filteredList')
     exportToCSV(tableData)
     const data = {
       createdDate: new Date().toISOString(),
@@ -175,7 +176,7 @@ function Endpoint() {
 
   const exportCurrentTableToCSV = async () => {
     const tableData = extractTableData(currentItems)
-    console.log(tableData, "currentItems");
+    console.log(tableData, 'currentItems')
     exportToCSV(tableData)
     const data = {
       createdDate: new Date().toISOString(),
@@ -192,6 +193,7 @@ function Endpoint() {
 
   const [loading, setLoading] = useState(false)
   const [endpoints, setEndpoints] = useState([])
+  console.log(endpoints, 'endpoints')
   const [selectedEndpoint, setSelectedEndpoint] = useState(null)
   const [showPopup, setShowPopup] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
@@ -316,7 +318,7 @@ function Endpoint() {
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
-      agentName:item.computerName
+      agentName: item.computerName,
     }))
 
     const payload = {
@@ -492,31 +494,31 @@ function Endpoint() {
                 selectedActionId={selectedActionId}
                 refreshData={refreshData}
               />
-                <Dropdown
-                  isOpen={groupDropdownOpen}
-                  toggle={toggleGroupDropdown}
-                  style={{marginLeft: '5px'}}
-                  className={!siteId ? 'disabled' : ''}
-                >
-                  <DropdownToggle className='no-pad'>
-                    <div className={`btn btn-green btn-small `}>Groups</div>
-                  </DropdownToggle>
-                  <DropdownMenu className='w-auto p-3'>
-                    {filteredGroupItems.map((action, index) => (
-                      <DropdownItem
-                        key={index}
-                        onClick={() => handleGroup(action.actionId, action.actionDisplayName)}
-                        disabled={
-                          (action.actionDisplayName === 'Agent Move To Group' &&
-                            !isCheckboxSelected) ||
-                          (action.actionDisplayName === 'Create Group' && isCheckboxSelected)
-                        }
-                      >
-                        {action.actionDisplayName}
-                      </DropdownItem>
-                    ))}
-                  </DropdownMenu>
-                </Dropdown>
+              <Dropdown
+                isOpen={groupDropdownOpen}
+                toggle={toggleGroupDropdown}
+                style={{marginLeft: '5px'}}
+                className={!siteId ? 'disabled' : ''}
+              >
+                <DropdownToggle className='no-pad'>
+                  <div className={`btn btn-green btn-small `}>Groups</div>
+                </DropdownToggle>
+                <DropdownMenu className='w-auto p-3'>
+                  {filteredGroupItems.map((action, index) => (
+                    <DropdownItem
+                      key={index}
+                      onClick={() => handleGroup(action.actionId, action.actionDisplayName)}
+                      disabled={
+                        (action.actionDisplayName === 'Agent Move To Group' &&
+                          !isCheckboxSelected) ||
+                        (action.actionDisplayName === 'Create Group' && isCheckboxSelected)
+                      }
+                    >
+                      {action.actionDisplayName}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              </Dropdown>
               <MoveToGroupModal
                 show={isMoveToGroupModalVisible}
                 handleClose={() => setIsMoveToGroupModalVisible(false)}
@@ -583,6 +585,7 @@ function Endpoint() {
                 <th onClick={() => handleSort('computerName')}>
                   Endpoint Name {renderSortIcon(sortConfig, 'computerName')}
                 </th>
+                <th>Endpoint Tags</th>
                 <th onClick={() => handleSort('accountName')}>
                   Account {renderSortIcon(sortConfig, 'accountName')}
                 </th>
@@ -640,12 +643,12 @@ function Endpoint() {
                 <th onClick={() => handleSort('installerType')}>
                   Installer Type {renderSortIcon(sortConfig, 'installerType')}
                 </th>
-                <th onClick={() => handleSort('storageName')}>
+                {/* <th onClick={() => handleSort('storageName')}>
                   Storage Name {renderSortIcon(sortConfig, 'storageName')}
                 </th>
                 <th onClick={() => handleSort('storageType')}>
                   Storage Type {renderSortIcon(sortConfig, 'storageType')}
-                </th>
+                </th> */}
                 <th onClick={() => handleSort('lastSuccessfulScanDate')}>
                   Last Successful Scan Time {renderSortIcon(sortConfig, 'lastSuccessfulScanDate')}
                 </th>
@@ -679,7 +682,16 @@ function Endpoint() {
                         {item.isPendingUninstall ? 'Pending Uninstall' : ''}
                       </div>
                     </td>
-                    <td>{item.accountName}</td>
+                    <td>
+                      {item?.tags?.sentinelone?.length > 0
+                        ? item.tags.sentinelone.map((tag, index) => (
+                            <div key={index}>
+                              {tag.key} : {truncateText(tag.value, 15)}
+                            </div>
+                          ))
+                        : 'N/A'}
+                    </td>
+                    <td title={item.accountName}>{truncateText(item.accountName, 20)}</td>
                     <td>{item.siteName}</td>
                     <td>{item.lastLoggedInUserName}</td>
                     <td>{getCurrentTimeZone(item.lastActiveDate)}</td>
@@ -690,7 +702,7 @@ function Endpoint() {
                     <td>{getCurrentTimeZone(item.registeredAt)}</td>
                     <td>{item.machineType}</td>
                     <td>{item.osName}</td>
-                    <td>{item.osRevision}</td>
+                    <td title={item.osRevision}>{truncateText(item.osRevision, 20)}</td>
                     <td>{item.osArch}</td>
                     <td>{item.cpuCount}</td>
                     <td>{item.coreCount}</td>
@@ -698,8 +710,8 @@ function Endpoint() {
                     <td>{getCurrentTimeZone(item.lastSuccessfulScanDate)}</td>
                     <td>{item.lastIpToMgmt}</td>
                     <td>{item.installerType}</td>
-                    <td>{item.storageName ?? null}</td>
-                    <td>{item.storageType ?? null}</td>
+                    {/* <td>{item.storageName ?? null}</td>
+                    <td>{item.storageType ?? null}</td> */}
                     <td>{getCurrentTimeZone(item.lastSuccessfulScanDate)}</td>
                     <td>{item?.locations?.[0]?.name ?? null}</td>
                   </tr>

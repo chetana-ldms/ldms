@@ -1,11 +1,14 @@
 import {useEffect, useState} from 'react'
 import {fetchAEndPointDetailsUrl} from '../../../../../api/ApplicationSectionApi'
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
+import ManageEndpointTagsModal from './ManageEndpointTagsModal'
 
 function Tags({id}) {
   const orgId = Number(sessionStorage.getItem('orgId'))
   const [loading, setLoading] = useState(false)
   const [tags, setTags] = useState([])
+  const [isManageTagsModalVisible, setIsManageTagsModalVisible] = useState(false)
+
   const fetchData = async () => {
     const data = {
       orgID: orgId,
@@ -25,6 +28,12 @@ function Tags({id}) {
   useEffect(() => {
     fetchData()
   }, [])
+
+  const handleSave = () => {
+    // Logic to save updated tags
+    fetchData() // Optionally refresh data after saving
+  }
+
   return (
     <>
       <div className='d-flex my-3'>
@@ -32,7 +41,12 @@ function Tags({id}) {
           Endpoint Tags ({tags ? tags.length : 0})
         </div>
         <div>
-          <button className='btn btn-green btn-small'>Manage Endpoint Tags</button>
+          <button
+            className='btn btn-green btn-small'
+            onClick={() => setIsManageTagsModalVisible(true)}
+          >
+            Manage Endpoint Tags
+          </button>
         </div>
       </div>
       {tags !== null ? (
@@ -59,6 +73,13 @@ function Tags({id}) {
       ) : (
         <div>No Data found</div>
       )}
+      <ManageEndpointTagsModal
+        show={isManageTagsModalVisible}
+        handleClose={() => setIsManageTagsModalVisible(false)}
+        tags={tags}
+        onSave={handleSave}
+        id={id}
+      />
     </>
   )
 }

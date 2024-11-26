@@ -1,6 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import {Modal, Button, Form, Row, Col} from 'react-bootstrap'
-import {fetchAvailablePackagesUrl, fetchUpgradePolicyUrl} from '../../../../../api/SentinalApi'
+import {
+  fetchAvailablePackagesUrl,
+  fetchTagsUrl,
+  fetchUpgradePolicyUrl,
+} from '../../../../../api/SentinalApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 
 const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
@@ -10,7 +14,6 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
   const [version, setVersion] = useState([])
-  console.log(version, "version")
   const [loading, setLoading] = useState(false)
   const [policyName, setPolicyName] = useState('')
   const [policyDescription, setPolicyDescription] = useState('')
@@ -18,13 +21,71 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
   const [maxRetries, setMaxRetries] = useState('')
   const [updateTiming, setUpdateTiming] = useState('immediate')
   const [affectedEndpoints, setAffectedEndpoints] = useState('allEndpoints')
+  const [tags, setTags] = useState([])
+  console.log(tags, 'tags')
+  const [tagKey, setTagKey] = useState('')
+  const [tagValue, setTagValue] = useState('')
+  const [dropdownTags, setDropdownTags] = useState([])
+  const fetchDropdownTags = async () => {
+    const data = {
+      orgId: orgId,
+      toolId: toolId,
+      includeChildren: true,
+      includeParents: true,
+      orgAccountStructureLevel: [
+        {levelName: 'AccountId', levelValue: accountId || ''},
+        {levelName: 'SiteId', levelValue: siteId || ''},
+        {levelName: 'GroupId', levelValue: groupId || ''},
+      ],
+    }
+    try {
+      const response = await fetchTagsUrl(data)
+      setDropdownTags(response?.data || [])
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  const tagKeyOptions = dropdownTags.map((tag) => ({
+    value: tag.key,
+    label: tag.key,
+  }))
 
+  const tagValueOptions = tagKey
+    ? dropdownTags
+        .filter((tag) => tag.key === tagKey)
+        .map((tag) => ({value: tag.value, label: tag.value}))
+    : []
+
+  useEffect(() => {
+    fetchDropdownTags()
+  }, [])
+  const handleAddTag = () => {
+    if (tagKey && tagValue) {
+      const isDuplicate = tags.some((tag) => tag.key === tagKey && tag.value === tagValue)
+      if (isDuplicate) {
+        notifyFail('This tag already exists.')
+        return
+      }
+      const matchingTag = dropdownTags.find((tag) => tag.key === tagKey && tag.value === tagValue)
+
+      if (matchingTag) {
+        setTags([...tags, {key: tagKey, value: tagValue, id: matchingTag.id}])
+        setTagKey('')
+        setTagValue('')
+      } else {
+        notifyFail('Tag not found in dropdown.')
+      }
+    }
+  }
+
+  const handleRemoveTag = (index) => {
+    setTags(tags.filter((_, i) => i !== index))
+  }
   const reload = async () => {
     try {
       setLoading(true)
       let scopeLevel = 'account'
       let scopeId = accountId
-
       if (groupId) {
         scopeLevel = 'group'
         scopeId = groupId
@@ -32,7 +93,6 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
         scopeLevel = 'site'
         scopeId = siteId
       }
-
       const data = {
         orgId: orgId,
         toolId: toolId,
@@ -40,7 +100,6 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
         scopeId: scopeId,
         osType: selectedOS,
       }
-
       const response = await fetchAvailablePackagesUrl(data)
       setVersion(response)
     } catch (error) {
@@ -49,22 +108,24 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
       setLoading(false)
     }
   }
-
   useEffect(() => {
     reload()
   }, [])
   const resetFields = () => {
-    setPolicyName('');
-    setPolicyDescription('');
-    setAgentVersion('');
-    setMaxRetries('');
-    setUpdateTiming('immediate');
-    setAffectedEndpoints('allEndpoints');
-  };
+    setPolicyName('')
+    setPolicyDescription('')
+    setAgentVersion('')
+    setMaxRetries('')
+    setUpdateTiming('immediate')
+    setAffectedEndpoints('allEndpoints')
+  }
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (affectedEndpoints === 'filteredEndpoints' && tags.length === 0) {
+      notifyFail('Please add at least one tag when using "Filtered by endpoint tag".');
+      return;
+    }
     const selectedPackage = version.find((ver) => ver.displayName === agentVersion)
-    console.log(selectedPackage, "selectedPackage")
     if (!selectedPackage) {
       notifyFail('Selected agent version not found in the version list.')
     }
@@ -78,6 +139,7 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
       scopeLevel = 'site'
       scopeId = siteId
     }
+    const tagIds = tags.map((tag) => tag.id)
     const data = {
       scopeLevel: scopeLevel,
       scopeId: scopeId,
@@ -86,7 +148,7 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
       osType: selectedOS,
       package: {
         build: selectedPackage.build,
-        fileId: selectedPackage.fileId || "0",
+        fileId: selectedPackage.fileId || '0',
         major: selectedPackage.major,
         minor: selectedPackage.minor,
       },
@@ -95,8 +157,8 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
       allEndpoints: affectedEndpoints == 'allEndpoints' ? true : false,
       orgId,
       toolId,
+      tags: tagIds,
     }
-
     try {
       const response = await fetchUpgradePolicyUrl(data)
       const {isSuccess, message} = response
@@ -113,10 +175,9 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
     }
   }
   const handleClose = () => {
-    resetFields();
-    onClose();
-  };
-
+    resetFields()
+    onClose()
+  }
   return (
     <Modal show={show} onHide={handleClose} className='application-modal'>
       <Modal.Header closeButton>
@@ -156,7 +217,6 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
               </Col>
             </Row>
           </Form.Group>
-
           <Form.Group controlId='policyDescription' className='mb-3'>
             <Row>
               <Col sm='4'>
@@ -173,7 +233,6 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
               </Col>
             </Row>
           </Form.Group>
-
           <Form.Group controlId='agentVersion' className='mb-3'>
             <Row>
               <Col sm='4'>
@@ -182,18 +241,15 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
               <Col sm='8'>
                 <Form.Select value={agentVersion} onChange={(e) => setAgentVersion(e.target.value)}>
                   <option>Select agent version</option>
-                  { 
-                    version?.map((ver, index) => (
-                      <option key={index} value={ver.displayName}>
-                        {ver.displayName}
-                      </option>
-                    ))
-                  }
+                  {version?.map((ver, index) => (
+                    <option key={index} value={ver.displayName}>
+                      {ver.displayName}
+                    </option>
+                  ))}
                 </Form.Select>
               </Col>
             </Row>
           </Form.Group>
-
           <Form.Group controlId='maxRetries' className='mb-3'>
             <Row>
               <Col sm='4'>
@@ -209,7 +265,6 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
               </Col>
             </Row>
           </Form.Group>
-
           <Form.Group controlId='updateTiming' className='mb-3'>
             <Row>
               <Col sm='4'>
@@ -235,7 +290,6 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
               </Col>
             </Row>
           </Form.Group>
-
           <Form.Group controlId='affectedEndpoints' className='mb-3'>
             <Row>
               <Col sm='4'>
@@ -261,6 +315,57 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
               </Col>
             </Row>
           </Form.Group>
+          {affectedEndpoints === 'filteredEndpoints' && (
+            <>
+              <Form.Group controlId='tagSelection' className='mb-3'>
+                <Row>
+                  <Col sm='4'></Col>
+                  <Col sm='3'>
+                    <Form.Select value={tagKey} onChange={(e) => setTagKey(e.target.value)}>
+                      <option value=''> select Tag Key</option>
+                      {dropdownTags.map((tag, index) => (
+                        <option key={index} value={tag.key}>
+                          {tag.key}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Col>
+                  <Col sm='3'>
+                    <Form.Select
+                      value={tagValue}
+                      onChange={(e) => setTagValue(e.target.value)}
+                      disabled={!tagKey}
+                    >
+                      <option value=''>select Tag Value</option>
+                      {dropdownTags
+                        .filter((tag) => tag.key === tagKey)
+                        .map((tag, index) => (
+                          <option key={index} value={tag.value}>
+                            {tag.value}
+                          </option>
+                        ))}
+                    </Form.Select>
+                  </Col>
+                  <Col sm='2'>
+                    <Button variant='primary' onClick={handleAddTag}>
+                      Add
+                    </Button>
+                  </Col>
+                </Row>
+              </Form.Group>
+              <div>
+                Tags:
+                {tags.map((tag, index) => (
+                  <span key={index} className='badge badge-secondary mx-1'>
+                    {tag.key}: {tag.value}{' '}
+                    <Button variant='link' onClick={() => handleRemoveTag(index)}>
+                      ×
+                    </Button>
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
         </Form>
       </Modal.Body>
       <Modal.Footer>
