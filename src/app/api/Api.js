@@ -3,7 +3,7 @@ import FetchWithToken from '../modules/auth/FetchWithToken'
 const masterDataUrl = process.env.REACT_APP_MASTER_DATA_URL
 const organizationsUrl = process.env.REACT_APP_ORGANIZATIONS_URL
 const authenticateUrl = process.env.REACT_APP_AUTHENTICATE_URL
-const refreshToken = "http://115.110.192.133:502/api/Auth/refresh-token"
+const refreshToken = process.env.REACT_APP_REFRESH_TOKEN_URL
 const updateAlertUrl = process.env.REACT_APP_UPDATE_ALERT_URL
 const setAlertIrrelevantStatusUrl = process.env.REACT_APP_SET_ALERT_IRRELEVANT_STATUS_URL
 const toolTypeActionDeleteUrl = process.env.REACT_APP_TOOL_TYPE_ACTION_DELETE_URL
