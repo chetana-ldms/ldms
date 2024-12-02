@@ -29,7 +29,7 @@ const TagsUrl =process.env.REACT_APP_SENTINEL_TAGS_URL
 const TagAddUrl =process.env.REACT_APP_SENTINEL_TAG_ADD_URL
 const TagUpdateUrl =process.env.REACT_APP_SENTINEL_TAG_UPDATE_URL
 const TagsDeleteUrl =process.env.REACT_APP_SENTINEL_TAGS_DELETE_URL
-const TagsActionsUrl ="http://115.110.192.133:502/api/Alerts/v1/Sentinel/EndPoint/Tags/Actions"
+const TagsActionsUrl ="http://10.41.3.232:502/api/Alerts/v1/Sentinel/EndPoint/Tags/Actions"
 
 export const fetchExclusionListUrl = async (data) => {
     try {

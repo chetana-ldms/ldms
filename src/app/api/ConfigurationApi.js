@@ -39,7 +39,7 @@ const RulesAddUrl = process.env.REACT_APP_RULE_RULE_ADD_URL
 const RulesUpdateUrl= process.env.REACT_APP_RULE_RULES_UPDATE_URL
 const RuleActionUrl= process.env.REACT_APP_RULE_ACTION_ADD_URL
 const RuleActionUpdateUrl= process.env.REACT_APP_RULE_ACTION_UPDATE_URL
-const AllMasterDataUrl= "http://115.110.192.133:502/api/PlattformMasterData/v1/AllMasterData"
+const AllMasterDataUrl= "http://10.41.3.232:502/api/PlattformMasterData/v1/AllMasterData"
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {

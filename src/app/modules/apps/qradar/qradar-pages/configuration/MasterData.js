@@ -10,6 +10,7 @@ import ManageMasterDataModal from './ManageMasterDataModal'
 const MasterData = () => {
   const handleError = useErrorBoundary()
   const [tools, setTools] = useState([])
+  console.log(tools, "tools")
   const [filterValue, setFilterValue] = useState('')
   const [dataTypeFilter, setDataTypeFilter] = useState('')
   const [toolNameFilter, setToolNameFilter] = useState('')
@@ -67,7 +68,7 @@ const MasterData = () => {
   const filteredList = applyFilters()
   const indexOfLastItem = (currentPage + 1) * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = filteredList.slice(indexOfFirstItem, indexOfLastItem)
+  const currentItems = filteredList?.slice(indexOfFirstItem, indexOfLastItem)
 
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value))
@@ -86,7 +87,7 @@ const MasterData = () => {
       <div className='card-header no-pad'>
         <h3 className='card-title align-items-start flex-column'>
           <span className='card-label fw-bold fs-3 mb-1'>
-            MasterData ({currentItems.length} / {filteredList.length})
+            MasterData ({currentItems?.length} / {filteredList?.length})
           </span>
         </h3>
         <div className='card-toolbar'>

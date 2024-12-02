@@ -172,7 +172,7 @@ export const fetchGetChatHistory = async (data) => {
 }
 export const fetchAddChatMessage = async (formData) => {
   try {
-    const response = await FetchWithToken(`${addChatMessageUrl}`, {
+    const response = await fetch(`${addChatMessageUrl}`, {
       method: 'POST',
       body: formData,
     })
