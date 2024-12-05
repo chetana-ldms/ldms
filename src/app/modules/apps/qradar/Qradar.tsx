@@ -100,6 +100,9 @@ import MaintenanceWindow from './qradar-pages/Setinels/MaintenanceWindow'
 import SentinelLiveUpdates from './qradar-pages/Setinels/SentinelLiveUpdates'
 import { AutoUpgrade } from './qradar-pages/Setinels/AutoUpgrade'
 import Tags from './qradar-pages/Setinels/Tags'
+import { ConfigurationData } from './qradar-pages/configuration/ConfigurationData'
+import { AddConfigurationData } from './qradar-pages/configuration/AddConfigurationData'
+import { UpdateConfigurationData } from './qradar-pages/configuration/UpdateConfigurationData'
 
 
 const QradarPages = () => {
@@ -165,6 +168,9 @@ const QradarPages = () => {
       <Route path='master-data/:status' element={<MasterData />} />
       <Route path='master-data/add' element={<AddMasterData />} />
       <Route path='/master-data/update/:id' element={<UpdateMasterData />} />
+      <Route path='configuration-data/:status' element={<ConfigurationData />} />
+      <Route path='configuration-data/add' element={<AddConfigurationData />} />
+      <Route path='/configuration-data/update/:id' element={<UpdateConfigurationData />} />
       <Route path='users-data/:status' element={<UserData />} />
       <Route path='users-data/add' element={<AddUserData />} />
       <Route path='/users-data/update/:id' element={<UpdateUserData />} />

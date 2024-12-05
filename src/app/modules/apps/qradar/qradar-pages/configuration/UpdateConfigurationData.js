@@ -1,15 +1,17 @@
 import React, {useState, useEffect} from 'react'
 import {Link, useLocation, useNavigate, useParams} from 'react-router-dom'
 import {
+  fetchAllConfigurationDataDetailUrl,
   fetchAllMasterDataDetailUrl,
   fetchAllMasterDataManageUrl,
+  fetchConfigurationDataManageUrl,
   fetchLDPToolsUrl,
   fetchOrganizationsUrl,
 } from '../../../../../api/ConfigurationApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 
-const UpdateMasterData = () => {
+const UpdateConfigurationData = () => {
   const location = useLocation()
   const {id} = useParams()
   const [save, setSave] = useState(location.state?.save || '')
@@ -53,16 +55,13 @@ const UpdateMasterData = () => {
   const reload = async () => {
     try {
       setLoading(true)
-      const response = await fetchAllMasterDataDetailUrl(id)
-      const masterDataDetails = response?.masterDataList[0] || {}
+      const response = await fetchAllConfigurationDataDetailUrl(id)
+      const masterDataDetails = response?.data[0] || {}
 
-      // Set form values
       setMasterData(masterDataDetails)
       setDataType(masterDataDetails.dataType || '')
       setDataName(masterDataDetails.dataName || '')
       setDataValue(masterDataDetails.dataValue || '')
-      setToolType(masterDataDetails.toolId || '')
-      setOrganizationName(masterDataDetails.orgId || '')
     } catch (error) {
       console.error('Failed to fetch master data details:', error)
     } finally {
@@ -74,12 +73,15 @@ const UpdateMasterData = () => {
     reload()
   }, [id])
 
-  // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault()
 
     if (!dataType) {
       notifyFail('Enter Data Type')
+      return
+    }
+    if (!dataName) {
+      notifyFail('Enter Data Name')
       return
     }
     if (!dataValue) {
@@ -94,20 +96,18 @@ const UpdateMasterData = () => {
       dataType,
       dataName,
       dataValue,
-      toolId: Number(toolType),
-      orgId: Number(organizationName),
       userId: Number(sessionStorage.getItem('userId')),
       transactionDate: new Date().toISOString(),
     }
 
     try {
-      const responseData = await fetchAllMasterDataManageUrl(data)
+      const responseData = await fetchConfigurationDataManageUrl(data)
       const {isSuccess, message} = responseData
 
       if (isSuccess) {
         notify(message)
         setTimeout(() => {
-          navigate('/qradar/master-data/list')
+          navigate('/qradar/configuration-data/list')
         }, 2000)
       } else {
         notifyFail(message)
@@ -125,13 +125,13 @@ const UpdateMasterData = () => {
       <div className='card-header bg-heading'>
         <h3 className='card-title align-items-start flex-column'>
           {save ? (
-            <span className='white'>View Master Data</span>
+            <span className='white'>View Configuration Data</span>
           ) : (
-            <span className='white'>Update Master Data</span>
+            <span className='white'>Update Configuration Data</span>
           )}
         </h3>
         <div className='card-toolbar'>
-          <Link to='/qradar/master-data/list' className='white fs-15 text-underline'>
+          <Link to='/qradar/configuration-data/list' className='white fs-15 text-underline'>
             <i className='fa fa-chevron-left white mg-right-5' /> Back
           </Link>
         </div>
@@ -167,38 +167,6 @@ const UpdateMasterData = () => {
               />
             </div>
           </div>
-          <div className='row mb-4'>
-            <div className='col-lg-4'>
-              <label>Tool Name</label>
-              <select
-                className='form-control'
-                value={toolType}
-                onChange={(e) => setToolType(e.target.value)}
-              >
-                <option value=''>Select Tool Type</option>
-                {tools.map((tool, idx) => (
-                  <option key={idx} value={tool.toolId}>
-                    {tool.toolName}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className='col-lg-4'>
-              <label>Organization</label>
-              <select
-                className='form-control'
-                value={organizationName}
-                onChange={(e) => setOrganizationName(e.target.value)}
-              >
-                <option value=''>Select Organization</option>
-                {organizations.map((org, idx) => (
-                  <option key={idx} value={org.orgID}>
-                    {org.orgName}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
         </div>
         <div className='card-footer d-flex justify-content-end pad-10'>
           <button
@@ -222,4 +190,4 @@ const UpdateMasterData = () => {
   )
 }
 
-export {UpdateMasterData}
+export {UpdateConfigurationData}

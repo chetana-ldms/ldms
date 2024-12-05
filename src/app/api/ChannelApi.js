@@ -48,7 +48,7 @@ export const fetchDelete = async (data) => {
 
 export const fetchUpload = async (formData) => {
   try {
-    const response = await FetchWithToken(`${uploadUrl}`, {
+    const response = await fetch(`${uploadUrl}`, {
       method: 'POST',
       body: formData,
     })

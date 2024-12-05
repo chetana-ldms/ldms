@@ -39,7 +39,12 @@ const RulesAddUrl = process.env.REACT_APP_RULE_RULE_ADD_URL
 const RulesUpdateUrl= process.env.REACT_APP_RULE_RULES_UPDATE_URL
 const RuleActionUrl= process.env.REACT_APP_RULE_ACTION_ADD_URL
 const RuleActionUpdateUrl= process.env.REACT_APP_RULE_ACTION_UPDATE_URL
-const AllMasterDataUrl= "http://10.41.3.232:502/api/PlattformMasterData/v1/AllMasterData"
+const AllMasterDataUrl= process.env.REACT_APP_ALLMASTERDATA_URL
+const AllMasterDataManageUrl= process.env.REACT_APP_MASTERDATA_MANAGE_URL
+const AllMasterDataDeleteUrl= process.env.REACT_APP_MASTERDATA_DELETE_URL
+const ConfigurationDataUrl="http://10.41.3.232:501/api/PlattformMasterData/v1/ConfigurationData"
+const ConfigurationDataDeleteUrl="http://10.41.3.232:501/api/PlattformMasterData/v1/ConfigurationData/Delete"
+const ConfigurationDataManageUrl="http://10.41.3.232:501/api/PlattformMasterData/v1/ConfigurationData/Manage"
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {
@@ -730,6 +735,116 @@ export const fetchAllMasterDataUrl = async () => {
       headers: {
         "Content-Type": "application/json",
       },
+    });
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchAllMasterDataDetailUrl = async (masterdataid) => {
+  try {
+    const response = await FetchWithToken(`${AllMasterDataUrl}?masterdataid=${masterdataid}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchAllMasterDataManageUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${AllMasterDataManageUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchAAllMasterDataDeleteUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${AllMasterDataDeleteUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchConfigurationDataUrl = async () => {
+  try {
+    const response = await FetchWithToken(`${ConfigurationDataUrl}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchAllConfigurationDataDetailUrl = async (configurationId) => {
+  try {
+    const response = await FetchWithToken(`${ConfigurationDataUrl}?configurationId=${configurationId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchConfigurationDataDeleteUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${ConfigurationDataDeleteUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchConfigurationDataManageUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${ConfigurationDataManageUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
     });
     const responseData = await response.json();
     return responseData;
