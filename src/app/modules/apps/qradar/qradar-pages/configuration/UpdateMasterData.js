@@ -5,24 +5,28 @@ import {
   fetchAllMasterDataManageUrl,
   fetchLDPToolsUrl,
   fetchOrganizationsUrl,
+  fetchAllMasterDataUrl
 } from '../../../../../api/ConfigurationApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
+import CreatableSelect from 'react-select/creatable'
 
 const UpdateMasterData = () => {
   const location = useLocation()
   const {id} = useParams()
   const [save, setSave] = useState(location.state?.save || '')
   const [masterData, setMasterData] = useState({})
-  console.log(masterData, 'masterData')
   const [loading, setLoading] = useState(false)
   const [organizations, setOrganizations] = useState([])
   const [tools, setTools] = useState([])
   const navigate = useNavigate()
 
-  const [dataType, setDataType] = useState('')
-  const [dataName, setDataName] = useState('')
-  const [dataValue, setDataValue] = useState('')
+  const [dataTypeOptions, setDataTypeOptions] = useState([])
+  const [dataNameOptions, setDataNameOptions] = useState([])
+  const [dataValueOptions, setDataValueOptions] = useState([])
+  const [selectedDataType, setSelectedDataType] = useState('')
+  const [selectedDataName, setSelectedDataName] = useState('')
+  const [selectedDataValue, setSelectedDataValue] = useState('')
   const [toolType, setToolType] = useState('')
   const [organizationName, setOrganizationName] = useState('')
 
@@ -44,10 +48,41 @@ const UpdateMasterData = () => {
     }
   }
 
+  const reloadMasterData = async () => {
+    try {
+      const response = await fetchAllMasterDataUrl()
+      const data = response?.masterDataList || []
+
+      // Set Data Type Options
+      const dataTypes = [...new Set(data.map((item) => item.dataType))]
+      setDataTypeOptions(dataTypes.map((type) => ({label: type, value: type})))
+
+      // Filter Data Name and Data Value options based on selected Data Type
+      if (selectedDataType) {
+        const filteredData = data.filter(item => item.dataType === selectedDataType)
+
+        const dataNames = [...new Set(filteredData.map((item) => item.dataName))]
+        setDataNameOptions(dataNames.map((name) => ({label: name, value: name})))
+
+        const dataValues = [...new Set(filteredData.map((item) => item.dataValue))]
+        setDataValueOptions(dataValues.map((value) => ({label: value, value: value})))
+      } else {
+        setDataNameOptions([])
+        setDataValueOptions([])
+      }
+    } catch (error) {
+      console.error('Failed to fetch master data:', error)
+    }
+  }
+
   useEffect(() => {
     reloadOrg()
     reloadTools()
   }, [])
+
+  useEffect(() => {
+    reloadMasterData()
+  }, [selectedDataType])  // Reload options when selectedDataType changes
 
   // Fetch master data details
   const reload = async () => {
@@ -58,9 +93,9 @@ const UpdateMasterData = () => {
 
       // Set form values
       setMasterData(masterDataDetails)
-      setDataType(masterDataDetails.dataType || '')
-      setDataName(masterDataDetails.dataName || '')
-      setDataValue(masterDataDetails.dataValue || '')
+      setSelectedDataType(masterDataDetails.dataType || '')
+      setSelectedDataName(masterDataDetails.dataName || '')
+      setSelectedDataValue(masterDataDetails.dataValue || '')
       setToolType(masterDataDetails.toolId || '')
       setOrganizationName(masterDataDetails.orgId || '')
     } catch (error) {
@@ -78,11 +113,11 @@ const UpdateMasterData = () => {
   const handleSubmit = async (event) => {
     event.preventDefault()
 
-    if (!dataType) {
+    if (!selectedDataType) {
       notifyFail('Enter Data Type')
       return
     }
-    if (!dataValue) {
+    if (!selectedDataValue) {
       notifyFail('Enter Data Value')
       return
     }
@@ -91,9 +126,9 @@ const UpdateMasterData = () => {
 
     const data = {
       dataID: masterData.dataID || 0,
-      dataType,
-      dataName,
-      dataValue,
+      dataType: selectedDataType,
+      dataName: selectedDataName,
+      dataValue: selectedDataValue,
       toolId: Number(toolType),
       orgId: Number(organizationName),
       userId: Number(sessionStorage.getItem('userId')),
@@ -118,6 +153,17 @@ const UpdateMasterData = () => {
       setLoading(false)
     }
   }
+  useEffect(() => {
+    if (toolType) {
+      setOrganizationName('');
+    }
+  }, [toolType]);
+  
+  useEffect(() => {
+    if (organizationName) {
+      setToolType(''); 
+    }
+  }, [organizationName]);
 
   return (
     <div className='config card'>
@@ -141,29 +187,47 @@ const UpdateMasterData = () => {
           <div className='row mb-4'>
             <div className='col-lg-4'>
               <label>Data Type</label>
-              <input
-                type='text'
-                className='form-control'
-                value={dataType}
-                onChange={(e) => setDataType(e.target.value)}
+              <CreatableSelect
+                options={dataTypeOptions}
+                value={{label: selectedDataType, value: selectedDataType}}
+                onChange={(selectedOption) => setSelectedDataType(selectedOption.value)}
+                onCreateOption={(inputValue) => {
+                  const newOption = {label: inputValue, value: inputValue}
+                  setDataTypeOptions((prev) => [...prev, newOption])
+                  setSelectedDataType(inputValue) // Set the new value as selected
+                }}
+                placeholder='Create or select...'
+                isClearable
               />
             </div>
             <div className='col-lg-4'>
               <label>Data Name</label>
-              <input
-                type='text'
-                className='form-control'
-                value={dataName}
-                onChange={(e) => setDataName(e.target.value)}
+              <CreatableSelect
+                options={dataNameOptions}
+                value={{label: selectedDataName, value: selectedDataName}}
+                onChange={(selectedOption) => setSelectedDataName(selectedOption.value)}
+                onCreateOption={(inputValue) => {
+                  const newOption = {label: inputValue, value: inputValue}
+                  setDataNameOptions((prev) => [...prev, newOption])
+                  setSelectedDataName(inputValue) // Set the new value as selected
+                }}
+                placeholder='Create or select...'
+                isClearable
               />
             </div>
             <div className='col-lg-4'>
               <label>Data Value</label>
-              <input
-                type='text'
-                className='form-control'
-                value={dataValue}
-                onChange={(e) => setDataValue(e.target.value)}
+              <CreatableSelect
+                options={dataValueOptions}
+                value={{label: selectedDataValue, value: selectedDataValue}}
+                onChange={(selectedOption) => setSelectedDataValue(selectedOption.value)}
+                onCreateOption={(inputValue) => {
+                  const newOption = {label: inputValue, value: inputValue}
+                  setDataValueOptions((prev) => [...prev, newOption])
+                  setSelectedDataValue(inputValue) // Set the new value as selected
+                }}
+                placeholder='Create or select...'
+                isClearable
               />
             </div>
           </div>
@@ -208,7 +272,6 @@ const UpdateMasterData = () => {
             disabled={loading}
           >
             {!loading && 'Save Changes'}
-
             {loading && (
               <span className='indicator-progress' style={{display: 'block'}}>
                 Please wait...{' '}

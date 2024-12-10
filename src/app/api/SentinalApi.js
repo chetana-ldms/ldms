@@ -30,6 +30,8 @@ const TagAddUrl =process.env.REACT_APP_SENTINEL_TAG_ADD_URL
 const TagUpdateUrl =process.env.REACT_APP_SENTINEL_TAG_UPDATE_URL
 const TagsDeleteUrl =process.env.REACT_APP_SENTINEL_TAGS_DELETE_URL
 const TagsActionsUrl =process.env.REACT_APP_SENTINEL_ENDPOINT_TAGS_ACTIONS_URL
+const UpgradeMaintenanceDetailsUrl="http://10.41.3.232:501/api/Alerts/v1/Sentinel/UpgradeMaintenanceDetails"
+const UpgradeMaintenanceDetailsUpdateUrl ="http://10.41.3.232:501/api/Alerts/v1/Sentinel/UpgradeMaintenanceDetails/Update"
 
 export const fetchExclusionListUrl = async (data) => {
     try {
@@ -551,6 +553,42 @@ export const fetchExclusionListUrl = async (data) => {
   export const fetchTagsActionsUrl = async (data) => {
     try {
       const response = await FetchWithToken(`${TagsActionsUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchUpgradeMaintenanceDetailsUrl = async (data) => {
+    try {
+      const response = await FetchWithToken(`${UpgradeMaintenanceDetailsUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+        }),
+      });
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  export const fetchUpgradeMaintenanceDetailsUpdateUrl = async (data) => {
+    try {
+      const response = await FetchWithToken(`${UpgradeMaintenanceDetailsUpdateUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
