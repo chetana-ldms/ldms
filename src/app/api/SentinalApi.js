@@ -30,8 +30,8 @@ const TagAddUrl =process.env.REACT_APP_SENTINEL_TAG_ADD_URL
 const TagUpdateUrl =process.env.REACT_APP_SENTINEL_TAG_UPDATE_URL
 const TagsDeleteUrl =process.env.REACT_APP_SENTINEL_TAGS_DELETE_URL
 const TagsActionsUrl =process.env.REACT_APP_SENTINEL_ENDPOINT_TAGS_ACTIONS_URL
-const UpgradeMaintenanceDetailsUrl="http://10.41.3.232:501/api/Alerts/v1/Sentinel/UpgradeMaintenanceDetails"
-const UpgradeMaintenanceDetailsUpdateUrl ="http://10.41.3.232:501/api/Alerts/v1/Sentinel/UpgradeMaintenanceDetails/Update"
+const UpgradeMaintenanceDetailsUrl=process.env.REACT_APP_UPGRADE_MAINTENANCE_DETAILS_URL
+const UpgradeMaintenanceDetailsUpdateUrl =process.env.REACT_APP_UPGRADE_MAINTENANCE_DETAILS_UPDATE_URL
 
 export const fetchExclusionListUrl = async (data) => {
     try {

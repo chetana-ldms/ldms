@@ -1,10 +1,19 @@
 import React, {useEffect, useState} from 'react'
-import {fetchUpgradeMaintenanceDetailsUrl} from '../../../../../api/SentinalApi'
+import {
+  fetchUpgradeMaintenanceDetailsUpdateUrl,
+  fetchUpgradeMaintenanceDetailsUrl,
+} from '../../../../../api/SentinalApi'
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
+import {notify, notifyFail} from '../components/notification/Notification'
+import {ToastContainer} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
+import {timezones} from './timezones'
+import {convertTo24HourFormat, convertTo12HourFormat} from './timeUtils'
 
 const MaintenanceWindow = () => {
   const [maintenanceWindow, setMaintenanceWindow] = useState([])
-  console.log(maintenanceWindow, 'maintenanceWindow')
+  console.log(maintenanceWindow.inheritParentConcurrencyConfig, 'maintenanceWindow')
   const [loading, setLoading] = useState(false)
   const [maintenanceType, setMaintenanceType] = useState('agent_version_change')
   const toolId = Number(sessionStorage.getItem('toolID'))
@@ -14,34 +23,8 @@ const MaintenanceWindow = () => {
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
   const orgId = Number(sessionStorage.getItem('orgId'))
-  const timezones = [
-    {value: 'GMT+14:00', label: 'GMT+14:00'},
-    {value: 'GMT+13:00', label: 'GMT+13:00'},
-    {value: 'GMT+12:00', label: 'GMT+12:00'},
-    {value: 'GMT+11:00', label: 'GMT+11:00'},
-    {value: 'GMT+10:00', label: 'GMT+10:00'},
-    {value: 'GMT+09:00', label: 'GMT+09:00'},
-    {value: 'GMT+08:00', label: 'GMT+08:00'},
-    {value: 'GMT+07:00', label: 'GMT+07:00'},
-    {value: 'GMT+06:00', label: 'GMT+06:00'},
-    {value: 'GMT+05:00', label: 'GMT+05:00'},
-    {value: 'GMT+04:00', label: 'GMT+04:00'},
-    {value: 'GMT+03:00', label: 'GMT+03:00'},
-    {value: 'GMT+02:00', label: 'GMT+02:00'},
-    {value: 'GMT+01:00', label: 'GMT+01:00'},
-    {value: 'GMT+00:00', label: 'GMT+00:00'},
-    {value: 'GMT-01:00', label: 'GMT-01:00'},
-    {value: 'GMT-02:00', label: 'GMT-02:00'},
-    {value: 'GMT-03:00', label: 'GMT-03:00'},
-    {value: 'GMT-04:00', label: 'GMT-04:00'},
-    {value: 'GMT-05:00', label: 'GMT-05:00'},
-    {value: 'GMT-06:00', label: 'GMT-06:00'},
-    {value: 'GMT-07:00', label: 'GMT-07:00'},
-    {value: 'GMT-08:00', label: 'GMT-08:00'},
-    {value: 'GMT-09:00', label: 'GMT-09:00'},
-    {value: 'GMT-10:00', label: 'GMT-10:00'},
-    {value: 'GMT-11:00', label: 'GMT-11:00'},
-  ]
+  const [concurrencyConfig, setConcurrencyConfig] = useState(false)
+  const [maintenanceConfig, setMaintenanceConfig] = useState(false)
   const [maintenanceSettings, setMaintenanceSettings] = useState({
     timezone: 'GMT+00:00',
     days: {
@@ -70,11 +53,8 @@ const MaintenanceWindow = () => {
       setLoading(true)
       const response = await fetchUpgradeMaintenanceDetailsUrl(data)
       const maintenanceWindowsByDay = response?.data?.maintenanceWindowsByDay || {}
-
       const days = Object.keys(maintenanceWindowsByDay).reduce((acc, day) => {
         const {isMaintenanceAllDay, maintenanceHours} = maintenanceWindowsByDay[day]
-
-        // Set 'enabled' and 'type' based on the backend data
         acc[day] = {
           enabled: !!isMaintenanceAllDay || maintenanceHours.length > 0,
           type: isMaintenanceAllDay ? 'All Day' : 'Custom',
@@ -90,18 +70,25 @@ const MaintenanceWindow = () => {
       }, {})
 
       setMaintenanceWindow(response?.data)
+      const allDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+      allDays.forEach((day) => {
+        if (!days[day]) {
+          days[day] = {enabled: false, type: 'All Day', customTime: {start: '', end: ''}}
+        }
+      })
       setMaintenanceSettings((prev) => ({
         ...prev,
         timezone: response?.data?.timezoneGmt || 'GMT+00:00',
         days,
       }))
+      setConcurrencyConfig(response?.data?.inheritParentConcurrencyConfig || false)
+      setMaintenanceConfig(response?.data?.inheritParentMaintenanceConfig || false)
     } catch (error) {
       console.error('Error loading maintenance settings:', error)
     } finally {
       setLoading(false)
     }
   }
-
   useEffect(() => {
     reload()
   }, [maintenanceType])
@@ -120,30 +107,87 @@ const MaintenanceWindow = () => {
       },
     }))
   }
-  const convertTo24HourFormat = (time) => {
-    const [hourMinute, period] = time.split(' ')
-    let [hours, minutes] = hourMinute.split(':').map(Number)
-
-    if (period?.toLowerCase() === 'pm' && hours !== 12) {
-      hours += 12
-    }
-    if (period?.toLowerCase() === 'am' && hours === 12) {
-      hours = 0
-    }
-
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+  const handleMaxConcurrentChange = (event) => {
+    const newValue = event.target.value
+    setMaintenanceWindow((prev) => ({
+      ...prev,
+      maxConcurrent: newValue,
+    }))
   }
-
-  const convertTo12HourFormat = (time) => {
-    const [hours, minutes] = time.split(':').map(Number)
-    const period = hours >= 12 ? 'PM' : 'AM'
-    const hour = hours % 12 || 12
-
-    return `${hour}:${minutes.toString().padStart(2, '0')} ${period}`
+  const handleInheritSettingsChange = (isChecked) => {
+    setConcurrencyConfig(isChecked)
+    setMaintenanceWindow((prev) => ({
+      ...prev,
+      inheritParentConcurrencyConfig: isChecked,
+    }))
   }
+  const handleInheritSettingsChangeMaintenance = (isChecked) => {
+    setMaintenanceConfig(isChecked)
+    setMaintenanceWindow((prev) => ({
+      ...prev,
+      inheritParentMaintenanceConfig: isChecked,
+    }))
+  }
+  const handleSave = async () => {
+    // Filter out only the days that are enabled
+    const enabledDays = Object.keys(maintenanceSettings.days).reduce((acc, day) => {
+      const daySettings = maintenanceSettings.days[day];
+      if (daySettings.enabled) {
+        acc[day] = {
+          isMaintenanceAllDay: daySettings.type === 'All Day',
+          maintenanceHours:
+            daySettings.type === 'Custom'
+              ? [
+                  {
+                    fromTime: convertTo24HourFormat(daySettings.customTime.start),
+                    toTime: convertTo24HourFormat(daySettings.customTime.end),
+                  },
+                ]
+              : [],
+        };
+      }
+      return acc;
+    }, {});
+    const payload = {
+      data: {
+        inheritParentConcurrencyConfig: concurrencyConfig,
+        inheritParentMaintenanceConfig: maintenanceConfig,
+        maxConcurrent: Number(maintenanceWindow?.maxConcurrent),
+        maintenanceWindowsByDay: enabledDays,
+        taskType: maintenanceType,
+        timezoneGmt: maintenanceSettings.timezone,
+      },
+      orgId,
+      toolId,
+      orgAccountStructureLevel: [
+        { levelName: 'AccountId', levelValue: accountId || '' },
+        { levelName: 'SiteId', levelValue: siteId || '' },
+        { levelName: 'GroupId', levelValue: groupId || '' },
+      ],
+    };
+  
+    try {
+      setLoading(true);
+      const response = await fetchUpgradeMaintenanceDetailsUpdateUrl(payload);
+      const { isSuccess, message } = response;
+      if (isSuccess) {
+        notify(message);
+        reload(); // Reload the data
+      } else {
+        notifyFail(message);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
   return (
     <div className='container'>
+      <ToastContainer />
+      {loading && <UsersListLoading />}
       {/* Maximum Concurrent Downloads Card */}
       <div className='card mb-1'>
         <div className='card-body p-0 m-0 px-5'>
@@ -164,28 +208,46 @@ const MaintenanceWindow = () => {
           </div>
         </div>
       </div>
-
       <div className='card mb-1'>
         <div className='card-body p-0 m-0 px-5'>
           <div className='d-flex justify-content-between align-items-center'>
             <span className='text-muted'>
-              Last modified: {getCurrentTimeZone(maintenanceWindow?.concurrencyConfigUpdatedAt)} by{' '}
-              {maintenanceWindow?.concurrencyConfigUpdatedBy}.
+              {concurrencyConfig === true
+                ? groupId && siteId && accountId
+                  ? 'Inherited from the site level'
+                  : siteId && accountId
+                  ? 'Inherited from the account level'
+                  : accountId
+                  ? 'Inherited from the global level'
+                  : `Last modified: ${getCurrentTimeZone(
+                      maintenanceWindow?.concurrencyConfigUpdatedAt
+                    )} by ${maintenanceWindow?.concurrencyConfigUpdatedBy}.`
+                : `Last modified: ${getCurrentTimeZone(
+                    maintenanceWindow?.concurrencyConfigUpdatedAt
+                  )} by ${maintenanceWindow?.concurrencyConfigUpdatedBy}.`}
             </span>
-            {maintenanceWindow?.inheritParentConcurrencyConfig === true ? (
-              <button className='link btn btn-link text-decoration-none'>Change Policy</button>
-            ) : (
-              <button className='link btn btn-link text-decoration-none'>
-                Revert To Default Inherited Settings
-              </button>
-            )}
           </div>
         </div>
       </div>
+
       <div className='card mb-4'>
         <div className='card-body p-0 m-0 px-5 py-2'>
-          <h5 className='card-title'>Maximum Concurrent Downloads</h5>
-          <div className='form-group d-flex'>
+          <div className='d-flex align-items-center'>
+            <h5 className='card-title me-5'>Maximum Concurrent Downloads</h5>
+            <div className='form-check'>
+              <input
+                type='checkbox'
+                className='form-check-input'
+                id='inheritDefaultSettings'
+                checked={concurrencyConfig === true}
+                onChange={(e) => handleInheritSettingsChange(e.target.checked)}
+              />
+              <label className='form-check-label' htmlFor='inheritDefaultSettings'>
+                Default Inherited Settings
+              </label>
+            </div>
+          </div>
+          <div className='form-group d-flex mt-3'>
             <div className='me-5 mt-2'>Maximum Concurrent Downloads for this Scope</div>
             <div>
               <input
@@ -193,7 +255,8 @@ const MaintenanceWindow = () => {
                 id='maxConcurrentDownloads'
                 className='form-control'
                 value={maintenanceWindow?.maxConcurrent}
-                disabled={!maintenanceWindow?.inheritParentConcurrencyConfig}
+                disabled={concurrencyConfig === true}
+                onChange={handleMaxConcurrentChange}
               />
             </div>
           </div>
@@ -205,22 +268,41 @@ const MaintenanceWindow = () => {
         <div className='card-body p-0 m-0 px-5'>
           <div className='d-flex justify-content-between align-items-center'>
             <span className='text-muted'>
-              Last modified: {getCurrentTimeZone(maintenanceWindow?.maintenanceConfigUpdatedAt)} by{' '}
-              {maintenanceWindow?.maintenanceConfigUpdatedBy}.
+              {maintenanceConfig === true
+                ? groupId && siteId && accountId
+                  ? 'Inherited from the site level'
+                  : siteId && accountId
+                  ? 'Inherited from the account level'
+                  : accountId
+                  ? 'Inherited from the global level'
+                  : `Last modified: ${getCurrentTimeZone(
+                      maintenanceWindow?.maintenanceConfigUpdatedAt
+                    )} by ${maintenanceWindow?.maintenanceConfigUpdatedBy}.`
+                : `Last modified: ${getCurrentTimeZone(
+                    maintenanceWindow?.maintenanceConfigUpdatedAt
+                  )} by ${maintenanceWindow?.maintenanceConfigUpdatedBy}.`}
             </span>
-            {maintenanceWindow?.inheritParentMaintenanceConfig === true ? (
-              <button className='link btn btn-link text-decoration-none'>Change Policy</button>
-            ) : (
-              <button className='link btn btn-link text-decoration-none'>
-                Revert To Default Inherited Settings
-              </button>
-            )}
           </div>
         </div>
       </div>
+
       <div className='card'>
         <div className='card-body p-0 m-0 px-5 pt-3'>
-          <h5 className='card-title'>Maintenance Windows Settings</h5>
+          <div className='d-flex align-items-center'>
+            <h5 className='card-title me-5'>Maintenance Windows Settings</h5>
+            <div className='form-check'>
+              <input
+                type='checkbox'
+                className='form-check-input'
+                id='inheritDefaultSettings'
+                checked={maintenanceConfig === true}
+                onChange={(e) => handleInheritSettingsChangeMaintenance(e.target.checked)}
+              />
+              <label className='form-check-label' htmlFor='inheritDefaultSettings'>
+                Default Inherited Settings
+              </label>
+            </div>
+          </div>
           <div className='form-group d-flex'>
             <div className='me-5 mt-2'>
               The selected time zone applies to all days in the Scope maintenance window.
@@ -234,7 +316,7 @@ const MaintenanceWindow = () => {
                 onChange={(e) =>
                   setMaintenanceSettings({...maintenanceSettings, timezone: e.target.value})
                 }
-                disabled={maintenanceWindow?.inheritParentMaintenanceConfig}
+                disabled={maintenanceConfig === true}
               >
                 {timezones.map((tz) => (
                   <option key={tz.value} value={tz.value}>
@@ -245,96 +327,108 @@ const MaintenanceWindow = () => {
             </div>
           </div>
           <div>
-            {Object.entries(maintenanceSettings.days).map(([day, settings]) => (
-              <div key={day} className='form-check mb-3'>
-                <input
-                  type='checkbox'
-                  className='form-check-input'
-                  id={day}
-                  checked={settings.enabled}
-                  onChange={() => toggleDay(day)}
-                  disabled={maintenanceWindow?.inheritParentMaintenanceConfig}
-                />
-                <label htmlFor={day} className='form-check-label'>
-                  {day}
-                </label>
+            {/* Hardcode each day and bind it with backend data */}
+            {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(
+              (day) => (
+                <div key={day} className='form-check mb-3'>
+                  <input
+                    type='checkbox'
+                    className='form-check-input'
+                    id={day}
+                    checked={maintenanceSettings.days[day]?.enabled}
+                    onChange={() => toggleDay(day)}
+                    disabled={maintenanceConfig == true}
+                  />
+                  <label htmlFor={day} className='form-check-label'>
+                    {day}
+                  </label>
 
-                {settings.enabled && (
-                  <div className='d-flex align-items-center mt-2'>
-                    <select
-                      className='form-control mr-2 p-0 ps-2'
-                      style={{width: '120px'}}
-                      value={settings.type}
-                      onChange={(e) =>
-                        setMaintenanceSettings((prev) => ({
-                          ...prev,
-                          days: {
-                            ...prev.days,
-                            [day]: {
-                              ...prev.days[day],
-                              type: e.target.value,
+                  {maintenanceSettings.days[day]?.enabled && (
+                    <div className='d-flex align-items-center mt-2'>
+                      <select
+                        className='form-control mr-2 p-0 ps-2'
+                        style={{width: '120px'}}
+                        value={maintenanceSettings.days[day]?.type}
+                        onChange={(e) =>
+                          setMaintenanceSettings((prev) => ({
+                            ...prev,
+                            days: {
+                              ...prev.days,
+                              [day]: {
+                                ...prev.days[day],
+                                type: e.target.value,
+                              },
                             },
-                          },
-                        }))
-                      }
-                      disabled={maintenanceWindow?.inheritParentMaintenanceConfig}
-                    >
-                      <option>All Day</option>
-                      <option>Custom</option>
-                    </select>
+                          }))
+                        }
+                        disabled={maintenanceConfig == true}
+                      >
+                        <option>All Day</option>
+                        <option>Custom</option>
+                      </select>
 
-                    {settings.type === 'Custom' && (
-                      <>
-                        <input
-                          type='time'
-                          className='form-control mr-2'
-                          style={{width: '120px'}}
-                          value={convertTo24HourFormat(settings?.customTime?.start || '00:00')}
-                          onChange={(e) =>
-                            setMaintenanceSettings((prev) => ({
-                              ...prev,
-                              days: {
-                                ...prev.days,
-                                [day]: {
-                                  ...prev.days[day],
-                                  customTime: {
-                                    ...prev.days[day].customTime,
-                                    start: convertTo12HourFormat(e.target.value),
+                      {maintenanceSettings.days[day]?.type === 'Custom' && (
+                        <>
+                          <input
+                            type='time'
+                            className='form-control mr-2'
+                            style={{width: '120px'}}
+                            value={convertTo24HourFormat(
+                              maintenanceSettings.days[day]?.customTime?.start || '00:00'
+                            )}
+                            onChange={(e) =>
+                              setMaintenanceSettings((prev) => ({
+                                ...prev,
+                                days: {
+                                  ...prev.days,
+                                  [day]: {
+                                    ...prev.days[day],
+                                    customTime: {
+                                      ...prev.days[day].customTime,
+                                      start: convertTo12HourFormat(e.target.value),
+                                    },
                                   },
                                 },
-                              },
-                            }))
-                          }
-                        />
-                        <span>to</span>
-                        <input
-                          type='time'
-                          className='form-control ml-2'
-                          style={{width: '120px'}}
-                          value={convertTo24HourFormat(settings?.customTime?.end || '00:00')}
-                          onChange={(e) =>
-                            setMaintenanceSettings((prev) => ({
-                              ...prev,
-                              days: {
-                                ...prev.days,
-                                [day]: {
-                                  ...prev.days[day],
-                                  customTime: {
-                                    ...prev.days[day].customTime,
-                                    end: convertTo12HourFormat(e.target.value),
+                              }))
+                            }
+                          />
+                          <span>to</span>
+                          <input
+                            type='time'
+                            className='form-control ml-2'
+                            style={{width: '120px'}}
+                            value={convertTo24HourFormat(
+                              maintenanceSettings.days[day]?.customTime?.end || '00:00'
+                            )}
+                            onChange={(e) =>
+                              setMaintenanceSettings((prev) => ({
+                                ...prev,
+                                days: {
+                                  ...prev.days,
+                                  [day]: {
+                                    ...prev.days[day],
+                                    customTime: {
+                                      ...prev.days[day].customTime,
+                                      end: convertTo12HourFormat(e.target.value),
+                                    },
                                   },
                                 },
-                              },
-                            }))
-                          }
-                          disabled={maintenanceWindow?.inheritParentMaintenanceConfig}
-                        />
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
+                              }))
+                            }
+                            disabled={maintenanceConfig == true}
+                          />
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            )}
+          </div>
+          <div className='d-flex justify-content-end mb-2 me-3'>
+            <button className='btn btn-sm btn-primary' onClick={handleSave} disabled={loading}>
+              Save Changes
+            </button>
           </div>
         </div>
       </div>

@@ -78,7 +78,7 @@ const RiskEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
               {points === "endpoints" && (
                 <Endpoints id={id} shouldRender={true} />
               )}
-              {points === "cves" && <Cves id={id} />}
+              {points === "cves" && <Cves selectedItems={selectedItem} />}
             </div>
           </div>
         )}

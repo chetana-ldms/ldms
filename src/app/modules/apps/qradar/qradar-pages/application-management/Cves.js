@@ -1,29 +1,63 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { fetchApplicationCVSUrl } from "../../../../../api/ApplicationSectionApi";
-import { UsersListLoading } from "../components/loading/UsersListLoading";
-import { getCurrentTimeZone } from "../../../../../../utils/helper";
-import {
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
-import Pagination from "../../../../../../utils/Pagination";
-import { fetchExportDataAddUrl } from "../../../../../api/Api";
+import React, {useEffect, useState} from 'react'
+import {fetchApplicationCVSUrl} from '../../../../../api/ApplicationSectionApi'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
+import {getCurrentTimeZone} from '../../../../../../utils/helper'
+import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
+import Pagination from '../../../../../../utils/Pagination'
+import {fetchExportDataAddUrl} from '../../../../../api/Api'
+import useFeatureActions from '../configuration/useFeatureActions'
+import BlockListPopUp from '../Setinels/BlockListPopUp'
+import {notify, notifyFail} from '../components/notification/Notification'
+import MarkasFalsePositivePopUp from './MarkasFalsePositivePopUp'
+import {ToastContainer} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import AddMissingCVE from './AddMissingCVE'
 
-function Cves({ id }) {
+function Cves({selectedItems}) {
+  const id = selectedItems?.applicationId
   const [currentPage, setCurrentPage] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(5)
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [endpoints, setEndpoints] = useState([]);
-  console.log(endpoints, "endpoints1111111111");
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [endpoints, setEndpoints] = useState([])
+  const [showPopup, setShowPopup] = useState(false)
+  const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
+  const [checkboxStates, setCheckboxStates] = useState({})
+  const [selectedAlert, setselectedAlert] = useState([])
+  console.log(selectedAlert, 'selectedAlert')
+  const [showPopupFalsePositive, setShowPopupFalsePositive] = useState(false)
+  const [selectedItem, setSelectedItem] = useState(null)
+  console.log(selectedItem, 'selectedItem')
   const indexOfLastItem = (currentPage + 1) * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = endpoints
-    ? endpoints.slice(indexOfFirstItem, indexOfLastItem)
-    : null;
+  const currentItems = endpoints ? endpoints.slice(indexOfFirstItem, indexOfLastItem) : null
+  const toolId = Number(sessionStorage.getItem('toolID'))
+  const roleId = Number(sessionStorage.getItem('roleID'))
+  const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const isSingleFalsePositiveSelected =
+    selectedAlert.length === 1 && selectedItem?.severity === 'FALSE_POSITIVE'
+
+  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+
+  const isActionAuthorized = (actionName) => {
+    return featureActions?.some(
+      (action) => action.actionName === actionName && action.is_authorized === true
+    )
+  }
+  const openPopup = () => {
+    setShowPopup(true)
+  }
+  const closePopup = () => {
+    setShowPopup(false)
+  }
+  const openPopupFalsePositiv = () => {
+    setShowPopupFalsePositive(true)
+  }
+
+  const closePopupFalsePositiv = () => {
+    setShowPopupFalsePositive(false)
+  }
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
@@ -39,107 +73,160 @@ function Cves({ id }) {
   // Function to extract table data
   const extractTableData = (items) => {
     return items.map((item) => ({
-      "CVE ID": item.cveId,
+      'CVE ID': item.cveId,
       Severity: item.severity,
-      "NDV Base Score": item.nvdBaseScore,
-      "Published Date": getCurrentTimeZone(item.publishedDate),
+      'NDV Base Score': item.nvdBaseScore,
+      'Published Date': getCurrentTimeZone(item.publishedDate),
       Description: item.description,
       Links: item.mitreUr,
-    }));
-  };
+    }))
+  }
   // Function to convert data to CSV format
   const convertToCSV = (data) => {
-    const header = Object.keys(data[0]).join(",") + "\n";
-    const body = data.map((item) => Object.values(item).join(",")).join("\n");
-    return header + body;
-  };
+    const header = Object.keys(data[0]).join(',') + '\n'
+    const body = data.map((item) => Object.values(item).join(',')).join('\n')
+    return header + body
+  }
 
   const exportToCSV = (data) => {
-    const csvData = convertToCSV(data);
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    const fileName = "risk_data.csv";
+    const csvData = convertToCSV(data)
+    const blob = new Blob([csvData], {type: 'text/csv;charset=utf-8;'})
+    const fileName = 'risk_data.csv'
     if (navigator.msSaveBlob) {
       // IE 10+
-      navigator.msSaveBlob(blob, fileName);
+      navigator.msSaveBlob(blob, fileName)
     } else {
-      const link = document.createElement("a");
+      const link = document.createElement('a')
       if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const url = URL.createObjectURL(blob)
+        link.setAttribute('href', url)
+        link.setAttribute('download', fileName)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       }
     }
-  };
+  }
 
   const exportTableToCSV = async () => {
-    const tableData = extractTableData(endpoints);
-    exportToCSV(tableData);
+    const tableData = extractTableData(endpoints)
+    exportToCSV(tableData)
     const data = {
       createdDate: new Date().toISOString(),
-      createdUserId: Number(sessionStorage.getItem("userId")),
+      createdUserId: Number(sessionStorage.getItem('userId')),
       orgId: Number(sessionStorage.getItem('orgId')),
-      exportDataType: "Cves"
-    };
-    try {
-      const response = await fetchExportDataAddUrl(data);
-    } catch (error) {
-      console.error(error);
+      exportDataType: 'Cves',
     }
-  };
-
-  // let { id } = useParams();
-  const orgId = Number(sessionStorage.getItem("orgId"));
-
+    try {
+      const response = await fetchExportDataAddUrl(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
   const fetchData = async () => {
     const data = {
       orgID: orgId,
       applicationId: id,
-    };
-    try {
-      setLoading(true);
-      const response = await fetchApplicationCVSUrl(data);
-      setEndpoints(response);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
     }
-  };
+    try {
+      setLoading(true)
+      const response = await fetchApplicationCVSUrl(data)
+      setEndpoints(response)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
+  const handleselectedAlert = (item, e) => {
+    const {value, checked} = e.target
+    setCheckboxStates((prev) => ({...prev, [value]: checked}))
+
+    if (checked) {
+      setselectedAlert((prev) => [...prev, value])
+      setSelectedItem(item)
+      setIsCheckboxSelected(true)
+    } else {
+      const updatedAlert = selectedAlert.filter((e) => e !== value)
+      setselectedAlert(updatedAlert)
+      setSelectedItem(updatedAlert.length > 0 ? updatedAlert[0] : null)
+      setIsCheckboxSelected(updatedAlert.length > 0)
+    }
+  }
+
+  const refreshData = () => {
+    fetchData()
+    setselectedAlert([])
+    setCheckboxStates({})
+    setIsCheckboxSelected(false)
+  }
+
+  const handleMarkasFalsePositive = async () => {
+    setShowPopupFalsePositive(true)
+  }
 
   return (
     <div>
-      <div className="header-filter">
-        <div className="border-0 float-right d-flex mb-5">
-        <div className="fs-15 mt-2 me-5"> Total({currentItems.length}/{endpoints.length})</div>
-
-          <Dropdown
-            isOpen={dropdownOpen}
-            toggle={() => setDropdownOpen(!dropdownOpen)}
+      <ToastContainer />
+      <div className='header-filter'>
+        <button className={`btn btn-green btn-small ms-3`} onClick={openPopup}>
+          {' '}
+          Add New
+        </button>
+        {showPopup && (
+          <AddMissingCVE show={openPopup} onClose={closePopup} refreshData={refreshData} id={id} />
+        )}
+        <div className='float-left mg-left-10'>
+          <button
+            className={`btn btn-green btn-small float-left ${
+              !isCheckboxSelected || isSingleFalsePositiveSelected ? 'disabled' : ''
+            }`}
+            onClick={handleMarkasFalsePositive}
+            disabled={!isCheckboxSelected || isSingleFalsePositiveSelected}
           >
-            <DropdownToggle className="no-pad">
-              <div className="btn btn-border btn-small">
-                Export <i className="fa fa-file-export link mg-left-5" />
+            Mark as False Positive
+          </button>
+        </div>
+        {showPopupFalsePositive && (
+          <MarkasFalsePositivePopUp
+            show={openPopupFalsePositiv}
+            onClose={closePopupFalsePositiv}
+            refreshData={refreshData}
+            selectedItem={selectedItem}
+            selectedAlert={selectedAlert}
+            id={id}
+            selectedItems={selectedItems}
+          />
+        )}
+
+        <div className='border-0 float-right d-flex mb-5'>
+          <div className='fs-15 mt-2 me-5'>
+            {' '}
+            Total({currentItems.length}/{endpoints.length})
+          </div>
+
+          <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
+            <DropdownToggle className='no-pad'>
+              <div className='btn btn-border btn-small'>
+                Export <i className='fa fa-file-export link mg-left-5' />
               </div>
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem onClick={exportTableToCSV}>
-                Export Report{" "}
-                <i className="fa fa-file-excel link float-right report-icon" />
+                Export Report <i className='fa fa-file-excel link float-right report-icon' />
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </div>
       </div>
-      <table className="table alert-table scroll-x mg-top-20">
+      <table className='table alert-table scroll-x mg-top-20'>
         <thead>
           <tr>
+            <th></th>
             <th>CVE ID</th>
             <th>Severity</th>
             <th>NDV Base Score</th>
@@ -153,51 +240,55 @@ function Cves({ id }) {
           {currentItems !== undefined ? (
             currentItems?.map((item) => (
               <tr key={item.cveId}>
+                <td>
+                  <div className='form-check form-check-sm form-check-custom form-check-solid px-3'>
+                    <input
+                      className='form-check-input widget-13-check'
+                      type='checkbox'
+                      value={item.cveId}
+                      name={item.cveId}
+                      checked={checkboxStates[item.cveId] || false}
+                      onChange={(e) => handleselectedAlert(item, e)}
+                      autoComplete='off'
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                </td>
                 <td>{item.cveId}</td>
                 <td>{item.severity}</td>
                 <td>{item.nvdBaseScore}</td>
                 <td>{getCurrentTimeZone(item.publishedDate)}</td>
                 <td title={item.description}>{item.description}</td>
                 <td title={`${item.mitreUrl} ${item.nvdUrl}`}>
-                  <a
-                    href={item.mitreUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a href={item.mitreUrl} target='_blank' rel='noopener noreferrer'>
                     {item.mitreUrl.length > 20
                       ? `${item.mitreUrl.substring(0, 25)}...`
                       : item.mitreUrl}
-                  </a>{" "}
+                  </a>{' '}
                   &nbsp;&nbsp;&nbsp;
-                  <a
-                    href={item.nvdUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {item.nvdUrl.length > 25
-                      ? `${item.nvdUrl.substring(0, 25)}...`
-                      : item.nvdUrl}
+                  <a href={item.nvdUrl} target='_blank' rel='noopener noreferrer'>
+                    {item.nvdUrl.length > 25 ? `${item.nvdUrl.substring(0, 25)}...` : item.nvdUrl}
                   </a>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="12">No data found</td>
+              <td colSpan='12'>No data found</td>
             </tr>
           )}
         </tbody>
       </table>
       {currentItems && (
-            <Pagination
-              pageCount={Math.ceil(endpoints.length / itemsPerPage)}
-              handlePageClick={handlePageClick}
-              itemsPerPage={itemsPerPage}
-              handlePageSelect={handlePageSelect}
-            />
-          )}
+        <Pagination
+          pageCount={Math.ceil(endpoints.length / itemsPerPage)}
+          handlePageClick={handlePageClick}
+          itemsPerPage={itemsPerPage}
+          handlePageSelect={handlePageSelect}
+        />
+      )}
     </div>
-  );
+  )
 }
 
-export default Cves;
+export default Cves

@@ -14,11 +14,11 @@ function RisksComponent() {
 
   const [loading, setLoading] = useState(false);
   const [risk, setRisk] = useState([]);
+  console.log(risk, "risk")
   const [filterValue, setFilterValue] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  console.log(currentPage, "currentPage")
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [activePage, setActivePage] = useState(0); 
   const [sortConfig, setSortConfig] = useState({

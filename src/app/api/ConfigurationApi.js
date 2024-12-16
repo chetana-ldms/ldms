@@ -42,9 +42,9 @@ const RuleActionUpdateUrl= process.env.REACT_APP_RULE_ACTION_UPDATE_URL
 const AllMasterDataUrl= process.env.REACT_APP_ALLMASTERDATA_URL
 const AllMasterDataManageUrl= process.env.REACT_APP_MASTERDATA_MANAGE_URL
 const AllMasterDataDeleteUrl= process.env.REACT_APP_MASTERDATA_DELETE_URL
-const ConfigurationDataUrl="http://10.41.3.232:501/api/PlattformMasterData/v1/ConfigurationData"
-const ConfigurationDataDeleteUrl="http://10.41.3.232:501/api/PlattformMasterData/v1/ConfigurationData/Delete"
-const ConfigurationDataManageUrl="http://10.41.3.232:501/api/PlattformMasterData/v1/ConfigurationData/Manage"
+const ConfigurationDataUrl=process.env.REACT_APP_CONFIGURATION_DATA_URL
+const ConfigurationDataDeleteUrl=process.env.REACT_APP_CONFIGURATION_DATA_DELETE_URL
+const ConfigurationDataManageUrl=process.env.REACT_APP_CONFIGURATION_DATA_MANAGE_URL
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {
