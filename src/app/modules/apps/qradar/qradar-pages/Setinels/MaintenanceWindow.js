@@ -129,7 +129,6 @@ const MaintenanceWindow = () => {
     }))
   }
   const handleSave = async () => {
-    // Filter out only the days that are enabled
     const enabledDays = Object.keys(maintenanceSettings.days).reduce((acc, day) => {
       const daySettings = maintenanceSettings.days[day];
       if (daySettings.enabled) {
@@ -139,8 +138,8 @@ const MaintenanceWindow = () => {
             daySettings.type === 'Custom'
               ? [
                   {
-                    fromTime: convertTo24HourFormat(daySettings.customTime.start),
-                    toTime: convertTo24HourFormat(daySettings.customTime.end),
+                    fromTime: daySettings.customTime.start, // Already in 12-hour format
+                    toTime: daySettings.customTime.end,   // Already in 12-hour format
                   },
                 ]
               : [],
@@ -148,6 +147,7 @@ const MaintenanceWindow = () => {
       }
       return acc;
     }, {});
+  
     const payload = {
       data: {
         inheritParentConcurrencyConfig: concurrencyConfig,
@@ -182,6 +182,7 @@ const MaintenanceWindow = () => {
       setLoading(false);
     }
   };
+  
   
 
   return (
@@ -421,6 +422,7 @@ const MaintenanceWindow = () => {
                       )}
                     </div>
                   )}
+               
                 </div>
               )
             )}

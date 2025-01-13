@@ -46,7 +46,7 @@ export const fetchMasterData = async (data) => {
 
 export const fetchAuthenticate = async (userName, password, orgName) => {
   try {
-    const response = await FetchWithToken(`${authenticateUrl}`, {
+    const response = await fetch(`${authenticateUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -365,7 +365,7 @@ export const fetchRoles = async (orgId) => {
 }
 export const fetchForgatePassword = async (userName, orgName, createdDate) => {
   try {
-    const response = await FetchWithToken(`${forgatePasswordUrl}`, {
+    const response = await fetch(`${forgatePasswordUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

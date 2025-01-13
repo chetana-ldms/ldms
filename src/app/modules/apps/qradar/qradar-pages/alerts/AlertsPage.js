@@ -75,6 +75,7 @@ const AlertsPage = () => {
     observableTagDropDown: [],
     analystVerdictDropDown: [],
   })
+  const [note, setNote] = useState('')
   const [selectedDays, setSelectedDays] = useState([])
   const [searchValue, setSearchValue] = useState('')
   const [selectedFilterValue, setSelectedFilterValue] = useState(1)
@@ -112,6 +113,9 @@ const AlertsPage = () => {
     dropdownData
   const handleFormSubmit = () => {
     setShowPopup(false)
+  }
+  const handleNoteChange = (event) => {
+    setNote(event.target.value)
   }
   const openEditPopUp = (item) => {
     setSelectedRow(item)
@@ -347,16 +351,14 @@ const AlertsPage = () => {
   }
   const handleIgnoreSubmit = async () => {
     try {
-      const {ownerUserID, modifiedDate} = selectCheckBox
       const modifiedUserId = Number(sessionStorage.getItem('userId'))
       const orgId = Number(sessionStorage.getItem('orgId'))
       const data = {
         orgId,
         alertIDs: selectedAlert,
-        // ownerID: ownerUserID,
         modifiedUserId,
-        modifiedDate,
-        notes: '',
+        modifiedDate: new Date().toISOString(),
+        notes: note,
       }
       const response = await fetchUpdatSetAlertIrrelavantStatuseAlert(data)
       if (response.isSuccess) {
@@ -366,6 +368,10 @@ const AlertsPage = () => {
         qradaralerts(currentPage)
         reloadHistory()
         reloadNotes()
+        setNote('')
+        setActionValue('')
+        setShowForm(false)
+        resetForm()
       } else {
         notifyFail(response.message)
       }
@@ -447,16 +453,6 @@ const AlertsPage = () => {
       console.log('No data available')
     }
   }
-  //   const handlePageClick = async (data) => {
-  //     let selectedPage  = data?.selected + 1 || 1;
-  //     setLoading(true);
-  //     const setOfAlertsData = await fetchSetOfAlerts(selectedPage , orgId, userID, limit, accountId, siteId, groupId);
-  //     slaCal(setOfAlertsData);
-  //     setFilteredAlertDate(setOfAlertsData);
-  //     setCurrentPage(selectedPage );
-  //     setActivePage(1)
-  //     setLoading(false);
-  // }
   const handleReset = () => {
     setSearchValue('')
     if (status.current) {
@@ -904,6 +900,7 @@ const AlertsPage = () => {
         orgID: orgId,
         alertIds: selectedAlert,
         analystVerdictId: selectedVerdict,
+        notes: note,
         modifiedDate,
         modifiedUserId,
       }
@@ -946,6 +943,7 @@ const AlertsPage = () => {
         orgID: orgId,
         alertIds: selectedAlert,
         statusId: selectedStatus,
+        notes: note,
         modifiedDate,
         modifiedUserId,
       }
@@ -1096,7 +1094,49 @@ const AlertsPage = () => {
         return '' // or a default icon class
     }
   }
-
+  const handleCopy = () => {
+    const details = `
+      THREAT FILE NAME: ${threatInfo?.name || "N/A"}
+      Path: ${threatInfo?.path || "N/A"}
+      Process User: ${threatInfo?.processUser || "N/A"}
+      Original Process: ${threatInfo?.originatingProcess || "N/A"}
+      SHA1: ${threatInfo?.shA1 || "N/A"}
+      Initiated By: ${threatInfo?.initiatedBy || "N/A"}
+      Detection Type: ${threatInfo?.detectionType || "N/A"}
+      Classification: ${threatInfo?.classification || "N/A"}
+      File Size: ${threatInfo?.fileSize || "N/A"}
+      Storyline: ${threatInfo?.storyline || "N/A"}
+      Threat ID: ${threatInfo?.threatId || "N/A"}
+  
+      ENDPOINT INFO:
+      Computer Name: ${endpointInfo?.computerName || "N/A"}
+      Scope: ${endpointInfo?.scope || "N/A"}
+      OS Type: ${endpointInfo?.agentOSType || "N/A"}
+      Console Connectivity: ${endpointInfo?.consoleConnectivity || "Offline"}
+      Full Disk Scan Status: ${endpointInfo?.fullDiskScanStatus || "N/A"} at ${getCurrentTimeZone(endpointInfo?.fullDiskScanDate) || "N/A"}
+      Pending Reboot: ${endpointInfo?.pendinRreboot || "N/A"}
+      Network Status: ${endpointInfo?.networkStatus || "N/A"}
+      OS Version: ${endpointInfo?.osVersion || "N/A"}
+      Agent Version: ${endpointInfo?.agentVersion || "N/A"}
+      Policy: ${endpointInfo?.policy || "N/A"}
+      Logged In User: ${endpointInfo?.loggedInUser || "N/A"}
+      UUID: ${endpointInfo?.uuid || "N/A"}
+      IP v4 Address: ${endpointInfo?.ipV4Address || "N/A"}
+      IP v6 Address: ${endpointInfo?.ipV6Address || "N/A"}
+      Console Visible Address: ${endpointInfo?.consoleVisibleIPAddress || "N/A"}
+      Subscription Time: ${getCurrentTimeZone(endpointInfo?.subscriptionTime) || "N/A"}
+    `;
+  
+    // Copy the details to clipboard
+    navigator.clipboard.writeText(details.trim())
+      .then(() => {
+        alert("Details copied to clipboard!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy text: ", err);
+      });
+  };
+  
   return (
     <KTCardBody className='alert-page'>
       <ToastContainer />
@@ -1178,6 +1218,14 @@ const AlertsPage = () => {
                                       ))}
                                   </select>
                                 </div>
+                                <div className='mb-5'>
+                                  <textarea
+                                    className='form-control'
+                                    rows='1'
+                                    placeholder='Write your note here...'
+                                    onChange={handleNoteChange}
+                                  ></textarea>
+                                </div>
                                 <div className='text-right'>
                                   <button
                                     className='btn btn-new btn-small'
@@ -1249,13 +1297,21 @@ const AlertsPage = () => {
                                       ))}
                                   </select>
                                 </div>
+                                <div className='mb-5'>
+                                  <textarea
+                                    className='form-control'
+                                    rows='1'
+                                    placeholder='Write your note here...'
+                                    onChange={handleNoteChange}
+                                  ></textarea>
+                                </div>
+
                                 <div className='text-right'>
                                   <button
                                     className='btn btn-new btn-small'
                                     onClick={handleSubmitStatus}
                                   >
-                                    {' '}
-                                    Submit{' '}
+                                    Submit
                                   </button>
                                 </div>
                               </div>
@@ -1264,6 +1320,7 @@ const AlertsPage = () => {
                         </>
                       )}
                     </div>
+
                     {isActionAuthorized('MitigateAction') && (
                       <>
                         <div className='m-0'>
@@ -1470,7 +1527,7 @@ const AlertsPage = () => {
                                       value='1'
                                       disabled={
                                         selectCheckBox.alertIncidentMappingId > 0 ||
-                                        selectCheckBox.positiveAnalysis == 'False Positive'
+                                        selectCheckBox.positiveAnalysis === 'False Positive'
                                       }
                                     >
                                       Create Incident
@@ -1482,12 +1539,13 @@ const AlertsPage = () => {
                                   {isActionAuthorized('IrrelevantIgnore') && (
                                     <option value='3'>Irrelevant / Ignore</option>
                                   )}
-                                  {/* <option value="4">Generate Report</option> */}
                                 </select>
                               </div>
                             </div>
+
                             {actionsValue === '2' && escalate && (
                               <div>
+                                {/* Escalation Form */}
                                 <form onSubmit={handleSubmit} className='header-filter'>
                                   <div className='mb-5'>
                                     <label className='form-label fw-bolder' htmlFor='ownerName'>
@@ -1523,7 +1581,6 @@ const AlertsPage = () => {
                                     >
                                       Comments <sup className='red'>*</sup>:
                                     </label>
-                                    <br />
                                     <textarea
                                       placeholder='Leave a comment here'
                                       value={values.comments}
@@ -1535,7 +1592,6 @@ const AlertsPage = () => {
                                       required
                                     />
                                   </div>
-
                                   <div className='d-flex justify-content-end'>
                                     <button
                                       type='submit'
@@ -1554,15 +1610,32 @@ const AlertsPage = () => {
                                 </form>
                               </div>
                             )}
+
                             {actionsValue === '3' && ignorVisible && (
-                              <div className='d-flex justify-content-end'>
-                                <button
-                                  type='button'
-                                  className='btn btn-small btn-new'
-                                  onClick={handleIgnoreSubmit}
-                                >
-                                  Submit
-                                </button>
+                              <div>
+                                <div className='mb-5'>
+                                  <label className='form-label fw-bolder' htmlFor='noteField'>
+                                    Note <sup className='red'>*</sup>:
+                                  </label>
+                                  <textarea
+                                    id='noteField'
+                                    className='form-control'
+                                    rows='1'
+                                    placeholder='Write your note here...'
+                                    value={note}
+                                    onChange={handleNoteChange}
+                                    required
+                                  ></textarea>
+                                </div>
+                                <div className='d-flex justify-content-end'>
+                                  <button
+                                    type='button'
+                                    className='btn btn-small btn-new'
+                                    onClick={handleIgnoreSubmit}
+                                  >
+                                    Submit
+                                  </button>
+                                </div>
                               </div>
                             )}
                           </div>
@@ -2529,15 +2602,26 @@ const AlertsPage = () => {
                                               </div>
                                               <div class='col-md-4 mb-2 text-center'>
                                                 <div>
-                                                  <span>37 times</span>
-                                                  <span>on 10 endpoints</span>
+                                                  <span>
+                                                    {networkHistory?.scopeOccurances} times
+                                                  </span>{' '}
+                                                  <span>
+                                                    on {networkHistory?.endPointOccurances}{' '}
+                                                    endpoints
+                                                  </span>
                                                 </div>
-                                                <p>1 Account / 2 Sites / 2 Groups</p>
+                                                <p>
+                                                  {networkHistory?.accountsCount} Account /{' '}
+                                                  {networkHistory?.groupCount} Sites /{' '}
+                                                  {networkHistory?.siteCount} Groups
+                                                </p>
                                               </div>
-                                              <div class='col-md-4'>
+                                              {/* <div class='col-md-4'>
                                                 <p>Find this hash on Deep Visibility</p>
-                                                <button className='btn btn-primary btn-sm'>Hunt Now</button>
-                                              </div>
+                                                <button className='btn btn-primary btn-sm'>
+                                                  Hunt Now
+                                                </button>
+                                              </div> */}
                                             </div>
                                           </div>
                                         </div>
@@ -2548,7 +2632,15 @@ const AlertsPage = () => {
                                             <span className='semi-bold'>THREAT FILE NAME :</span>{' '}
                                             {threatInfo?.name}
                                           </div>
-                                          <div className='fs-14 mt-5 text-primary col-md-6 text-end'></div>
+                                          <div className='fs-14 text-primary col-md-6'>
+                                            <button
+                                              onClick={handleCopy}
+                                              className='btn btn-link p-0 text-primary'
+                                            >
+                                              <i className='fa fa-copy me-2'></i>
+                                              Copy Details
+                                            </button>
+                                          </div>
                                         </div>
                                         <hr />
                                         <div className='row'>
@@ -2630,20 +2722,20 @@ const AlertsPage = () => {
                                                 </div>
                                               </div>
                                               <div className='col-md-4 mt-2 '>
-                                                {/* <p className='mb-2 semi-bold'>
+                                                <p className='mb-2 semi-bold'>
                                                   Console connectivity
-                                                </p> */}
+                                                </p>
                                                 <p className='mb-2 semi-bold'>Full Disc scan:</p>
                                                 <p className='semi-bold'>Pending Reboot:</p>
                                                 {/* <p>Number of not Mitigated Threats</p> */}
                                                 <p className='semi-bold'> Network status:</p>
                                               </div>
                                               <div className='col-md-8 mt-2'>
-                                                {/* <p>
+                                                <p>
                                                   {endpointInfo?.consoleConnectivity
                                                     ? endpointInfo?.consoleConnectivity
                                                     : 'Offline'}
-                                                </p> */}
+                                                </p>
                                                 <p>
                                                   {endpointInfo?.fullDiskScanStatus} at{' '}
                                                   {getCurrentTimeZone(
@@ -2726,6 +2818,7 @@ const AlertsPage = () => {
                                               <th className='custom-th'>User</th>
                                               <th className='custom-th'>Date</th>
                                               <th className='custom-th'>Note</th>
+                                              <th className='custom-th'>Action</th>
                                             </tr>
                                           </thead>
                                           <tbody>
@@ -2734,6 +2827,7 @@ const AlertsPage = () => {
                                                 <td>{note?.createdUser}</td>
                                                 <td>{getCurrentTimeZone(note?.notesDate)}</td>
                                                 <td>{note?.notes}</td>
+                                                <td>{note?.actionName}</td>
                                               </tr>
                                             ))}
                                           </tbody>

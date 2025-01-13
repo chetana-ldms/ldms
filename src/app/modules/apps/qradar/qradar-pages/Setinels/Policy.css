@@ -1,0 +1,24 @@
+.disabled-page {
+    pointer-events: none; /* Disable all interactions */
+    opacity: 0.7; /* Dim the page */
+  }
+  
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  
+  .overlay-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
