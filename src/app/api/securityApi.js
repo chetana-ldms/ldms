@@ -16,6 +16,8 @@ const ActionsAddUrl = process.env.REACT_APP_ACTIONS_ADD_URL
 const ActionsDeleteUrl = process.env.REACT_APP_ACTIONS_DELETE_URL
 const ActionsUpdateUrl = process.env.REACT_APP_ACTIONS_UPDATE_URL
 const ActionTypesUrl = process.env.REACT_APP_ACTIONSTYPES_URL
+const AuthUserlockedUrl="http://10.41.3.232:501/api/Auth/User/locked"
+const AuthUserUnlockUrl = "http://10.41.3.232:501/api/Auth/User/Unlock"
 
 export const fetchFeaturesUrl = async (data) => {
   try {
@@ -277,22 +279,36 @@ export const fetchActionTypesUrl = async (OrgId) => {
     console.log(error)
   }
 }
-// export const fetchFeaturesUrl = async (data) => {
-//   try {
-//     const response = await FetchWithToken(`${FeaturesUrl}`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({
-//         ...data,
-//       }),
-//     });
+export const fetchAuthUserlockedUrl = async (OrgId) => {
+  try {
+    const response = await FetchWithToken(`${AuthUserlockedUrl}?OrgId=${OrgId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const responseData = await response.json()
+    const tools = responseData.usersList
+    return tools
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchAuthUserUnlockUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${AuthUserUnlockUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
 
-//     const responseData = await response.json();
-//     const features = responseData.features;
-//     return features;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}

@@ -13,6 +13,7 @@ import {
 import ChangePasswordPopUp from './ChangePasswordPopUp'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import MFAModal from './MFAModal'
 
 const loginSchema = Yup.object().shape({
   username: Yup.string().min(3, 'Minimum 3 symbols').required('Username is required'),
@@ -36,7 +37,10 @@ export function Login() {
   console.log(features, 'features')
   const [message, setMessage] = useState('')
   const [showChangePwdModal, setShowChangePwdModal] = useState(false)
+  const [showMFAModal, setShowMFAModal] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const handleOpen = () => setShowMFAModal(true);
+  const handleClose = () => setShowMFAModal(false);
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -70,9 +74,10 @@ export function Login() {
           sessionStorage.setItem('globalAdminRole', authData.globalAdminRole.toString())
           sessionStorage.setItem('clientAdminRole', authData.clientAdminRole.toString())
           sessionStorage.setItem('accessToken', authData.accessToken.toString())
-          sessionStorage.setItem('refreshToken', authData.refreshToken.toString())
+          sessionStorage.setItem('refreshToken', authData.refreshToken)
           sessionStorage.setItem('openTaskCount', authData.openTaskCount.toString())
-          sessionStorage.setItem('defaultPassword', authData.defaultPassword.toString())
+          sessionStorage.setItem('defaultPassword', authData.defaultPassword.toString() || "")
+          sessionStorage.setItem('isMFAEnabled', authData.isMFAEnabled.toString() || "")
           if (authData.orgToolsData && authData.orgToolsData.length > 0) {
             const toolData = authData.orgToolsData[0]
             sessionStorage.setItem('toolID', toolData.toolId.toString())
@@ -107,8 +112,9 @@ export function Login() {
           sessionStorage.setItem('sentinalTesting', 'false')
           sessionStorage.setItem('selectedFeatureId', '1')
 
-          const defaultPassword = authData.defaultPassword
-          if (defaultPassword) {
+          if (authData.isMFAEnabled) {
+            setShowMFAModal(true)
+          } else if (authData.defaultPassword) {
             setShowChangePwdModal(true)
           } else {
             const orgId = sessionStorage.getItem('orgId')
@@ -160,17 +166,6 @@ export function Login() {
       }
       const response = await fetchFeaturesAuthorizedUrl(data)
       setFeatures(response.features)
-
-      // const subFeatureIds = response.features
-      //   .filter(feature => feature.subfeatureExists === 1)
-      //   .map(feature => feature.featureId);
-
-      // setSubFeatureId(subFeatureIds);
-
-      // const mainFeatures = response.features
-      //   .filter(feature => feature.parentFeatureId === 0);
-
-      // setMainFeatures(mainFeatures);
     } catch (error) {
       console.log(error)
     }
@@ -305,6 +300,7 @@ export function Login() {
         showChangePwdModal={showChangePwdModal}
         setShowChangePwdModal={setShowChangePwdModal}
       />
+      <MFAModal show={showMFAModal} onClose={handleClose}/>
     </div>
   )
 }

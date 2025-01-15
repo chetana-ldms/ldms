@@ -103,6 +103,7 @@ import Tags from './qradar-pages/Setinels/Tags'
 import { ConfigurationData } from './qradar-pages/configuration/ConfigurationData'
 import { AddConfigurationData } from './qradar-pages/configuration/AddConfigurationData'
 import { UpdateConfigurationData } from './qradar-pages/configuration/UpdateConfigurationData'
+import UsersLocked from './qradar-pages/security/UsersLocked'
 
 
 const QradarPages = () => {
@@ -204,6 +205,7 @@ const QradarPages = () => {
       <Route path='features/update/:id' element={<UpdateFeatures />} />
       <Route path='features/add' element={<AddFeatures />} />
       <Route path='featureaction/:status' element={<FeatureAction />} />
+      <Route path='UsersLocked/:status' element={<UsersLocked />} />
       <Route path='featureaction/update/:id' element={<UpdateFeatureAction />} />
       <Route path='featureaction/add' element={<AddFeatureAction />} />
       <Route path='rolebasedaccess/:status' element={<RoleBasedAccess />} />

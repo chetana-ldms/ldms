@@ -26,6 +26,8 @@ const ExportDataAddUrl = process.env.REACT_APP_EXPORT_DATA_ADD_URL
 const FeaturesAuthorizedUrl = process.env.REACT_APP_FEATURES_AUTHORIZED_URL
 const FeaturesActionsAuthorizedUrl = process.env.REACT_APP_FEATURES_ACTION_AUTHORIZED_URL
 const AgentActionUrl = process.env.REACT_APP_AGENT_ACTION_URL
+const AuthUserVerifyOTPUrl = "http://10.41.3.232:501/api/Auth/User/VerifyOTP"
+const AuthUserResendOTPUrl = "http://10.41.3.232:501/api/Auth/User/ResendOTP"
 
 export const fetchMasterData = async (data) => {
   try {
@@ -498,6 +500,42 @@ export const fetchFeaturesActionsAuthorizedUrl = async (data) => {
 export const fetchAgentActionUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${AgentActionUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchAuthUserVerifyOTPUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${AuthUserVerifyOTPUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchAuthUserResendOTPUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${AuthUserResendOTPUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
