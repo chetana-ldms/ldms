@@ -27,6 +27,7 @@ import {
   fetchThreatsActionUrl,
   fetchAlertsStatusUpdateUrl,
   fetchMitigateActionValidationUrl,
+  fetchThreatFileDownloadUrl,
 } from '../../../../../api/AlertsApi'
 import MitigationModal from './MitigationModal'
 import ReactPaginate from 'react-paginate'
@@ -1096,47 +1097,80 @@ const AlertsPage = () => {
   }
   const handleCopy = () => {
     const details = `
-      THREAT FILE NAME: ${threatInfo?.name || "N/A"}
-      Path: ${threatInfo?.path || "N/A"}
-      Process User: ${threatInfo?.processUser || "N/A"}
-      Original Process: ${threatInfo?.originatingProcess || "N/A"}
-      SHA1: ${threatInfo?.shA1 || "N/A"}
-      Initiated By: ${threatInfo?.initiatedBy || "N/A"}
-      Detection Type: ${threatInfo?.detectionType || "N/A"}
-      Classification: ${threatInfo?.classification || "N/A"}
-      File Size: ${threatInfo?.fileSize || "N/A"}
-      Storyline: ${threatInfo?.storyline || "N/A"}
-      Threat ID: ${threatInfo?.threatId || "N/A"}
+      THREAT FILE NAME: ${threatInfo?.name || 'N/A'}
+      Path: ${threatInfo?.path || 'N/A'}
+      Process User: ${threatInfo?.processUser || 'N/A'}
+      Original Process: ${threatInfo?.originatingProcess || 'N/A'}
+      SHA1: ${threatInfo?.shA1 || 'N/A'}
+      Initiated By: ${threatInfo?.initiatedBy || 'N/A'}
+      Detection Type: ${threatInfo?.detectionType || 'N/A'}
+      Classification: ${threatInfo?.classification || 'N/A'}
+      File Size: ${threatInfo?.fileSize || 'N/A'}
+      Storyline: ${threatInfo?.storyline || 'N/A'}
+      Threat ID: ${threatInfo?.threatId || 'N/A'}
   
       ENDPOINT INFO:
-      Computer Name: ${endpointInfo?.computerName || "N/A"}
-      Scope: ${endpointInfo?.scope || "N/A"}
-      OS Type: ${endpointInfo?.agentOSType || "N/A"}
-      Console Connectivity: ${endpointInfo?.consoleConnectivity || "Offline"}
-      Full Disk Scan Status: ${endpointInfo?.fullDiskScanStatus || "N/A"} at ${getCurrentTimeZone(endpointInfo?.fullDiskScanDate) || "N/A"}
-      Pending Reboot: ${endpointInfo?.pendinRreboot || "N/A"}
-      Network Status: ${endpointInfo?.networkStatus || "N/A"}
-      OS Version: ${endpointInfo?.osVersion || "N/A"}
-      Agent Version: ${endpointInfo?.agentVersion || "N/A"}
-      Policy: ${endpointInfo?.policy || "N/A"}
-      Logged In User: ${endpointInfo?.loggedInUser || "N/A"}
-      UUID: ${endpointInfo?.uuid || "N/A"}
-      IP v4 Address: ${endpointInfo?.ipV4Address || "N/A"}
-      IP v6 Address: ${endpointInfo?.ipV6Address || "N/A"}
-      Console Visible Address: ${endpointInfo?.consoleVisibleIPAddress || "N/A"}
-      Subscription Time: ${getCurrentTimeZone(endpointInfo?.subscriptionTime) || "N/A"}
-    `;
-  
+      Computer Name: ${endpointInfo?.computerName || 'N/A'}
+      Scope: ${endpointInfo?.scope || 'N/A'}
+      OS Type: ${endpointInfo?.agentOSType || 'N/A'}
+      Console Connectivity: ${endpointInfo?.consoleConnectivity || 'Offline'}
+      Full Disk Scan Status: ${endpointInfo?.fullDiskScanStatus || 'N/A'} at ${
+      getCurrentTimeZone(endpointInfo?.fullDiskScanDate) || 'N/A'
+    }
+      Pending Reboot: ${endpointInfo?.pendinRreboot || 'N/A'}
+      Network Status: ${endpointInfo?.networkStatus || 'N/A'}
+      OS Version: ${endpointInfo?.osVersion || 'N/A'}
+      Agent Version: ${endpointInfo?.agentVersion || 'N/A'}
+      Policy: ${endpointInfo?.policy || 'N/A'}
+      Logged In User: ${endpointInfo?.loggedInUser || 'N/A'}
+      UUID: ${endpointInfo?.uuid || 'N/A'}
+      IP v4 Address: ${endpointInfo?.ipV4Address || 'N/A'}
+      IP v6 Address: ${endpointInfo?.ipV6Address || 'N/A'}
+      Console Visible Address: ${endpointInfo?.consoleVisibleIPAddress || 'N/A'}
+      Subscription Time: ${getCurrentTimeZone(endpointInfo?.subscriptionTime) || 'N/A'}
+    `
+
     // Copy the details to clipboard
-    navigator.clipboard.writeText(details.trim())
+    navigator.clipboard
+      .writeText(details.trim())
       .then(() => {
-        alert("Details copied to clipboard!");
+        alert('Details copied to clipboard!')
       })
       .catch((err) => {
-        console.error("Failed to copy text: ", err);
-      });
+        console.error('Failed to copy text: ', err)
+      })
+  }
+  const handleDownload = async () => {
+    try {
+      const data = {
+        orgId: orgId,
+        toolId: toolId,
+        alertId: selectedAlertId,
+        threatId: '',
+      };
+  
+      const response = await fetchThreatFileDownloadUrl(data);
+  
+      if (response?.ok) {
+        const blob = await response.blob();
+        const fileName =
+          response.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/"/g, '') ||
+          'downloaded_file';
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        throw new Error('Failed to download file');
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   
+
   return (
     <KTCardBody className='alert-page'>
       <ToastContainer />
@@ -2633,6 +2667,13 @@ const AlertsPage = () => {
                                             {threatInfo?.name}
                                           </div>
                                           <div className='fs-14 text-primary col-md-6'>
+                                            <button
+                                              onClick={handleDownload}
+                                              className='btn btn-link p-0 me-5 text-primary'
+                                            >
+                                              <i className='fa fa-download me-2'></i>
+                                              Download File
+                                            </button>
                                             <button
                                               onClick={handleCopy}
                                               className='btn btn-link p-0 text-primary'

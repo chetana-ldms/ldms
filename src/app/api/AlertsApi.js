@@ -16,6 +16,7 @@ const DisConnectFromNetworkUrl = process.env.REACT_APP_DISCONNECTFROMNETWORK_URL
 const ThreatsActionUrl = process.env.REACT_APP_ACTION_URL
 const AlertsStatusUpdateUrl = process.env.REACT_APP_ALERTS_STATUS_UPDATE_URL
 const MitigateActionValidationUrl = process.env.REACT_APP_MITIGATE_ACTION_VALIDATION_URL
+const ThreatFileDownloadUrl="http://10.41.3.232:501/api/Alerts/v1/Threat/FileDownload"
 
 export const fetchAlertData = async (data) => {
   try {
@@ -330,3 +331,19 @@ export const fetchMitigateActionValidationUrl = async (data) => {
     console.log(error)
   }
 }
+export const fetchThreatFileDownloadUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${ThreatFileDownloadUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    return response;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
