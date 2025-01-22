@@ -104,6 +104,7 @@ import { ConfigurationData } from './qradar-pages/configuration/ConfigurationDat
 import { AddConfigurationData } from './qradar-pages/configuration/AddConfigurationData'
 import { UpdateConfigurationData } from './qradar-pages/configuration/UpdateConfigurationData'
 import UsersLocked from './qradar-pages/security/UsersLocked'
+import ApplicationLogs from './qradar-pages/application-logs/ApplicationLogs'
 
 
 const QradarPages = () => {
@@ -201,6 +202,7 @@ const QradarPages = () => {
       <Route path='accounts/:status' element={<Accounts />} />
       <Route path='sites/:status' element={<Sites />} />
       <Route path='activity/:status' element={<Activity />} />
+      <Route path='application-logs/:status' element={<ApplicationLogs />} />
       <Route path='features/:status' element={<Features />} />
       <Route path='features/update/:id' element={<UpdateFeatures />} />
       <Route path='features/add' element={<AddFeatures />} />
