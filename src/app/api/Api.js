@@ -26,8 +26,8 @@ const ExportDataAddUrl = process.env.REACT_APP_EXPORT_DATA_ADD_URL
 const FeaturesAuthorizedUrl = process.env.REACT_APP_FEATURES_AUTHORIZED_URL
 const FeaturesActionsAuthorizedUrl = process.env.REACT_APP_FEATURES_ACTION_AUTHORIZED_URL
 const AgentActionUrl = process.env.REACT_APP_AGENT_ACTION_URL
-const AuthUserVerifyOTPUrl = "http://10.41.3.232:501/api/Auth/User/VerifyOTP"
-const AuthUserResendOTPUrl = "http://10.41.3.232:501/api/Auth/User/ResendOTP"
+const AuthUserVerifyOTPUrl = process.env.REACT_APP_USER_VERIFY_OTP_URL
+const AuthUserResendOTPUrl = process.env.REACT_APP_USER_RESEND_OTP_URL
 
 export const fetchMasterData = async (data) => {
   try {

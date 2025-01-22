@@ -1,4 +1,4 @@
-import FetchWithToken from "../modules/auth/FetchWithToken"
+import FetchWithToken from '../modules/auth/FetchWithToken'
 
 const FeaturesUrl = process.env.REACT_APP_FEATURES_URL
 const OrganizationToolsUrl = process.env.REACT_APP_ORGANIZATION_TOOLS_SECURITY_URL
@@ -16,8 +16,8 @@ const ActionsAddUrl = process.env.REACT_APP_ACTIONS_ADD_URL
 const ActionsDeleteUrl = process.env.REACT_APP_ACTIONS_DELETE_URL
 const ActionsUpdateUrl = process.env.REACT_APP_ACTIONS_UPDATE_URL
 const ActionTypesUrl = process.env.REACT_APP_ACTIONSTYPES_URL
-const AuthUserlockedUrl="http://10.41.3.232:501/api/Auth/User/locked"
-const AuthUserUnlockUrl = "http://10.41.3.232:501/api/Auth/User/Unlock"
+const AuthUserlockedUrl = process.env.REACT_APP_AUTH_USER_LOCKED_URL
+const AuthUserUnlockUrl = process.env.REACT_APP_AUTH_USER_UNLOCK_URL
 
 export const fetchFeaturesUrl = async (data) => {
   try {

@@ -16,7 +16,7 @@ const DisConnectFromNetworkUrl = process.env.REACT_APP_DISCONNECTFROMNETWORK_URL
 const ThreatsActionUrl = process.env.REACT_APP_ACTION_URL
 const AlertsStatusUpdateUrl = process.env.REACT_APP_ALERTS_STATUS_UPDATE_URL
 const MitigateActionValidationUrl = process.env.REACT_APP_MITIGATE_ACTION_VALIDATION_URL
-const ThreatFileDownloadUrl="http://10.41.3.232:501/api/Alerts/v1/Threat/FileDownload"
+const ThreatFileDownloadUrl=process.env.REACT_APP_THREAT_FILEDOWNLOAD_URL
 
 export const fetchAlertData = async (data) => {
   try {

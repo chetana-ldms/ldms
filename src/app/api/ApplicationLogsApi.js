@@ -1,6 +1,6 @@
 import FetchWithToken from "../modules/auth/FetchWithToken";
 
-const ApplicationLogsUrl ="http://10.41.3.232:501/api/ApplicationLog/v1/ApplicationLogs"
+const ApplicationLogsUrl =process.env.REACT_APP_APPLICATION_LOGS_URL
 
 
 export const fetchApplicationLogsUrl = async (data) => {

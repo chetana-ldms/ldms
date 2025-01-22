@@ -34,8 +34,8 @@ const TagsActionsUrl = process.env.REACT_APP_SENTINEL_ENDPOINT_TAGS_ACTIONS_URL
 const UpgradeMaintenanceDetailsUrl = process.env.REACT_APP_UPGRADE_MAINTENANCE_DETAILS_URL
 const UpgradeMaintenanceDetailsUpdateUrl =
   process.env.REACT_APP_UPGRADE_MAINTENANCE_DETAILS_UPDATE_URL
-const SentinalOnePolicyUpdateUrl = 'http://10.41.3.232:501/api/SentinalOne/v1/Policy/Update'
-const PolicyDeepVisiblityConfigurtionRefreshUrl="http://10.41.3.232:501/api/SentinalOne/v1/Policy/DeepVisiblityConfigurtion/Refresh"
+const SentinalOnePolicyUpdateUrl = process.env.REACT_APP_POLICY_UPDATE_URL
+const PolicyDeepVisiblityConfigurtionRefreshUrl=process.env.REACT_APP_POLICY_DEEPVISIBLITY_CONFIGURATION_REFRESH_URL
 
 export const fetchExclusionListUrl = async (data) => {
   try {
