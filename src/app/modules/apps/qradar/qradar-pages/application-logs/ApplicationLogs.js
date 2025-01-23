@@ -8,7 +8,6 @@ import {notifyFail} from '../components/notification/Notification'
 import {fetchApplicationLogsUrl} from '../../../../../api/ApplicationLogsApi'
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import {truncateText} from '../../../../../../utils/TruncateText'
-import EndpointPopupSentinal from '../Setinels/EndpointPopupSentinal'
 import ApplicationLogsModel from './ApplicationLogsModel'
 
 function ApplicationLogs() {
@@ -16,8 +15,6 @@ function ApplicationLogs() {
   const [loading, setLoading] = useState(false)
   const [users, setUsers] = useState([])
   const [selectedUsers, setSelectedUsers] = useState({label: 'Select', value: 0})
-  const [selectedActivityTypes, setSelectedActivityTypes] = useState([])
-  const [activityType, setActivityType] = useState([])
   const [selectedEndpoint, setSelectedEndpoint] = useState(null)
   const [showPopup, setShowPopup] = useState(false)
   const [ipAddress, setIpAddress] = useState('')
@@ -25,6 +22,7 @@ function ApplicationLogs() {
   const [severity, setSeverity] = useState('')
   const [searchText, setSearchText] = useState('')
   const [selectedFromDate, setSelectedFromDate] = useState(null)
+  console.log(selectedFromDate, 'selectedFromDate')
   const [selectedToDate, setSelectedToDate] = useState(null)
   console.log(selectedToDate, 'selectedToDate')
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -32,7 +30,6 @@ function ApplicationLogs() {
   const [limit, setLimit] = useState(20)
   const [pageCount, setPageCount] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
-  console.log(currentPage, 'currentPage')
   const [activePage, setActivePage] = useState(1)
   const [filters, setFilters] = useState({
     userId: Number(sessionStorage.getItem('userId')),
@@ -43,6 +40,21 @@ function ApplicationLogs() {
     traceId: '',
     searchText: '',
   })
+  useEffect(() => {
+    const today = new Date()
+    const yesterday = new Date(today)
+    yesterday.setDate(today.getDate() - 1)
+
+    setSelectedToDate(today)
+    setSelectedFromDate(yesterday)
+
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      fromDate: yesterday,
+      toDate: today,
+    }))
+  }, [])
+
   useEffect(() => {
     const reload = async () => {
       try {
@@ -61,11 +73,9 @@ function ApplicationLogs() {
     }
     reload()
   }, [orgId, userID])
-
-  const fetchActivityData = async (page, userID, fromDate, toDate, limit) => {
+  const fetchActivityData = async (page, userID, selectedFromDate, selectedToDate, limit) => {
     const rangeStart = (page - 1) * limit + 1
     const rangeEnd = page * limit
-
     const data = {
       orgId: orgId,
       userId: userID,
@@ -73,14 +83,13 @@ function ApplicationLogs() {
       ipAddress: filters.ipAddress || '',
       traceId: filters.traceId || '',
       searchText: filters.searchText || '',
-      appLogsFromDate: fromDate ? fromDate.toISOString() : null,
-      appLogsToDate: toDate ? toDate.toISOString() : null,
+      appLogsFromDate: selectedFromDate ? selectedFromDate.toISOString() : null,
+      appLogsToDate: selectedToDate ? selectedToDate.toISOString() : null,
       paging: {
         rangeStart: rangeStart,
         rangeEnd: rangeEnd,
       },
     }
-
     try {
       setLoading(true)
       const response = await fetchApplicationLogsUrl(data)
@@ -94,15 +103,16 @@ function ApplicationLogs() {
     }
   }
   useEffect(() => {
-    fetchActivityData(1, filters.userId, filters.fromDate, filters.toDate, limit)
-  }, [limit, filters])
+    if (filters.traceId || (filters.fromDate && filters.toDate)) {
+      fetchActivityData(1, filters.userId, filters.fromDate, filters.toDate, limit)
+    }
+  }, [filters, limit])
 
   const handlePageSelect = (event) => {
     const selectedPerPage = event.target.value
     setLimit(selectedPerPage)
     setActivePage(1)
   }
-
   const handlePageClick = async (data) => {
     let currentPage = data?.selected + 1 || 1
     const {userId, fromDate, toDate} = filters
@@ -110,7 +120,6 @@ function ApplicationLogs() {
     setCurrentPage(currentPage)
     setActivePage(currentPage)
   }
-
   const handleFromDateChange = (e) => {
     const date = e.target.value ? new Date(e.target.value) : null
     setSelectedFromDate(date)
@@ -126,22 +135,18 @@ function ApplicationLogs() {
     }
     setSelectedToDate(date)
   }
-
   const handleUserChange = (selectedOptions) => {
     setSelectedUsers(selectedOptions)
   }
   const handleSubmit = (e) => {
     e.preventDefault()
-
     if (selectedToDate < selectedFromDate) {
       notifyFail('From date should be less than To date')
       return
     }
-
     const selectedUserIDs = selectedUsers?.value?.userID
       ? selectedUsers.value.userID
       : Number(sessionStorage.getItem('userId'))
-
     setFilters({
       userId: selectedUserIDs,
       fromDate: selectedFromDate,
@@ -151,31 +156,32 @@ function ApplicationLogs() {
       traceId: traceId,
       searchText: searchText,
     })
-
     setCurrentPage(1)
     setActivePage(1)
   }
-
   const handleReset = () => {
-    setSelectedFromDate(null)
-    setSelectedToDate(null)
-    setCurrentPage(1)
-    setActivePage(1)
-    setSeverity('')
-    setIpAddress('')
-    setTraceId('')
-    setSearchText('')
+    const defaultUserId = Number(sessionStorage.getItem('userId'));
+    setSelectedFromDate(null);
+    setSelectedToDate(null);
+    setCurrentPage(1);
+    setActivePage(1);
+    setSeverity('');
+    setIpAddress('');
+    setTraceId('');
+    setSearchText('');
     setFilters({
-      userId: Number(sessionStorage.getItem('userId')),
+      userId: defaultUserId,
       fromDate: null,
       toDate: null,
       severity: '',
       ipAddress: '',
       traceId: '',
       searchText: '',
-    })
-  }
-
+    });
+  
+    fetchActivityData(1, defaultUserId, null, null, limit);
+  };
+  
   const userOptions = users?.map((user) => ({label: user.name, value: user}))
   const customStyle = {
     control: (base, state) => ({
@@ -205,6 +211,19 @@ function ApplicationLogs() {
   const handleEndpointClick = (item) => {
     setSelectedEndpoint(item)
     setShowPopup(true)
+  }
+  const handleTraceIdChange = (e) => {
+    const value = e.target.value
+    setTraceId(value)
+    if (value) {
+      setSelectedFromDate(null)
+      setSelectedToDate(null)
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        fromDate: null,
+        toDate: null,
+      }))
+    }
   }
 
   return (
@@ -258,7 +277,7 @@ function ApplicationLogs() {
               type='text'
               placeholder='Enter Trace ID'
               value={traceId}
-              onChange={(e) => setTraceId(e.target.value)}
+              onChange={handleTraceIdChange}
             />
           </div>
           <div className='mr-1'>
@@ -272,7 +291,6 @@ function ApplicationLogs() {
               onChange={(e) => setSearchText(e.target.value)}
             />
           </div>
-
           <div className='mr-1' style={{width: 125}}>
             <label className='no-margin semi-bold'>From Date : </label>
             <input
@@ -291,7 +309,6 @@ function ApplicationLogs() {
               onChange={handleToDateChange}
             />
           </div>
-
           <button
             className='btn btn-primary btn-small'
             style={{height: 40, marginTop: 15}}
@@ -322,6 +339,7 @@ function ApplicationLogs() {
                 <th>Ip Address</th>
                 <th>Log Source</th>
                 <th>TraceId</th>
+                <th>More</th>
               </tr>
             </thead>
             <tbody>
@@ -329,11 +347,7 @@ function ApplicationLogs() {
 
               {activity !== null ? (
                 activity.map((item, index) => (
-                  <tr
-                    key={index}
-                    className='fs-12 table-row'
-                    onClick={() => handleEndpointClick(item)}
-                  >
+                  <tr key={index} className='fs-12 table-row'>
                     <td
                       style={{
                         color: item.severity === 'Error' ? 'red' : 'inherit',
@@ -341,13 +355,17 @@ function ApplicationLogs() {
                     >
                       {item.severity}
                     </td>
-
                     <td title={item.message}>{truncateText(item.message, 20)}</td>
                     <td>{item.username}</td>
                     <td>{getCurrentTimeZone(item.timestamp)}</td>
                     <td>{item.ipAddress}</td>
                     <td title={item.logSource}>{truncateText(item.logSource, 20)}</td>
                     <td>{item.traceId}</td>
+                    <td>
+                      <span className='me-8' title='View'>
+                        <i className='fa fa-eye cursor' onClick={() => handleEndpointClick(item)} />
+                      </span>
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -366,7 +384,6 @@ function ApplicationLogs() {
           />
         </div>
       )}
-
       <div className='card mt-2'>
         <div className='d-flex justify-content-end align-items-center pagination-bar pt-3 pb-3'>
           <ReactPaginate

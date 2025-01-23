@@ -53,66 +53,85 @@ function ApplicationLogsModel({selectedEndpoint, showModal, setShowModal}) {
         {loading ? (
           <UsersListLoading />
         ) : (
-          <div className='row'>
-            <div className='col-md-2'>
-              <div className='mb-3'>
-                <strong>Severity : </strong>
+          <div>
+            <div className='row'>
+              <div className='col-md-2'>
+                <div className='mb-2'>
+                  <strong>Severity : </strong>
+                </div>
+                <div className='mb-2'>
+                  <strong>User Name : </strong>
+                </div>
+                <div className='mb-2'>
+                  <strong>Time Stamp : </strong>
+                </div>
+                <div className='mb-2'>
+                  <strong>IP Address</strong>
+                </div>
+                <div className='mb-2'>
+                  <strong>Log Source : </strong>
+                </div>
+                <div className='mb-2'>
+                  <strong>Trace ID : </strong>
+                </div>
               </div>
-              <div className='mb-3'>
-                <strong>Message : </strong>
-              </div>
-              <div className='mb-3'>
-                <strong>User Name : </strong>
-              </div>
-              <div className='mb-3'>
-                <strong>Time Stamp : </strong>
-              </div>
-              <div className='mb-3'>
-                <strong>IP Address</strong>
-              </div>
-              <div className='mb-3'>
-                <strong>Log Source : </strong>
-              </div>
-              <div className='mb-3'>
-                <strong>Trace ID : </strong>
-              </div>
-              <div className='mb-3'>
-                <strong>Stack Trace : </strong>
-              </div>
-              <div className='mb-3'>
-                <strong>Request Data : </strong>
-              </div>
-              <div className='mb-3'>
-                <strong>Response Data : </strong>
-              </div>
-              <div className='mb-3'>
-                <strong>Additional Info : </strong>
+              <div className='col-md-10'>
+                <div className='mb-2'>{activity.severity || 'N/A'}</div>
+                <div className='mb-2'>{activity.username || 'N/A'}</div>
+                <div className='mb-2'>{activity.timestamp || 'N/A'}</div>
+                <div className='mb-2'>{activity.ipAddress || 'N/A'}</div>
+                <div className='mb-2'>{activity.logSource || 'N/A'}</div>
+                <div className='mb-2'>{activity.traceId || 'N/A'}</div>
               </div>
             </div>
-            <div className='col-md-10'>
-              <div className='mb-3'>{activity.severity || 'N/A'}</div>
-              <div className='mb-3' title={activity.message}>
-                {truncateText(activity.message, 90) || 'N/A'}
+            <div className='row'>
+              <div className='col-md-2'>
+                <div className='mb-2'>
+                  <strong>Message : </strong>
+                </div>
               </div>
-              <div className='mb-3'>{activity.username || 'N/A'}</div>
-              <div className='mb-3'>{activity.timestamp || 'N/A'}</div>
-              <div className='mb-3'>{activity.ipAddress || 'N/A'}</div>
-              <div className='mb-3'>{activity.logSource || 'N/A'}</div>
-              <div className='mb-3'>{activity.traceId || 'N/A'}</div>
-              <div className='mb-3' title={activity.stackTrace}>
-                {truncateText(activity.stackTrace, 90) || 'N/A'}
+              <div className='col-md-10'>
+                <div className='mb-2'>{activity.message || 'N/A'}</div>
               </div>
-
-              <div className='mb-3' title={activity.requestData}>
-                {truncateText(activity.requestData, 90) || 'N/A'}
+            </div>
+            <div className='row'>
+              <div className='col-md-2'>
+              <div className='mb-2'>
+                  <strong>Stack Trace : </strong>
+                </div>
               </div>
-
-              <div className='mb-3' title={activity.responseData}>
-                {truncateText(activity.responseData, 90) || 'N/A'}
+              <div className='col-md-10'>
+                <div className='mb-2 text-wrap text-break'>{activity.stackTrace || 'N/A'}</div>
               </div>
-
-              <div className='mb-3' title={activity.additionalInfo}>
-                {truncateText(activity.additionalInfo, 90) || 'N/A'}
+            </div>
+            <div className='row'>
+              <div className='col-md-2'>
+              <div className='mb-2'>
+                  <strong>Request Data : </strong>
+                </div>
+              </div>
+              <div className='col-md-10'>
+                <div className='mb-2'>{activity.requestData || 'N/A'}</div>
+              </div>
+            </div>
+            <div className='row'>
+              <div className='col-md-2'>
+              <div className='mb-2'>
+                  <strong>Response Data : </strong>
+                </div>
+              </div>
+              <div className='col-md-10'>
+                <div className='mb-2'>{activity.responseData || 'N/A'}</div>
+              </div>
+            </div>
+            <div className='row'>
+              <div className='col-md-2'>
+              <div className='mb-2'>
+                  <strong>Additional Info : </strong>
+                </div>
+              </div>
+              <div className='col-md-10'>
+                <div className='mb-2'>{activity.additionalInfo || 'N/A'}</div>
               </div>
             </div>
           </div>
