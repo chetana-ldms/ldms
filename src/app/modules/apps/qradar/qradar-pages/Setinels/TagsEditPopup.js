@@ -33,8 +33,8 @@ const TagsEditPopup = ({ show, onClose, refreshParent, selectedItem }) => {
 
   const handleSubmit = async () => {
     try {
-      if (!osType || !tagValue) {
-        notifyFail('Please fill out all mandatory fields.');
+      if (!osType) {
+        notifyFail('Please enter Tag key');
         return;
       }
 
@@ -42,7 +42,7 @@ const TagsEditPopup = ({ show, onClose, refreshParent, selectedItem }) => {
         orgId: orgId,
         toolId: toolId,
         tagKey: osType,
-        tagValue: tagValue,
+        tagValue: tagValue || "",
         tagKeyDescription: description,
         tagId: selectedItem.id,
       };
@@ -67,15 +67,12 @@ const TagsEditPopup = ({ show, onClose, refreshParent, selectedItem }) => {
   return (
     <Modal show={show} onHide={onClose} className="application-modal">
       <Modal.Header closeButton>
-        <Modal.Title>Edit tag</Modal.Title>
+        <Modal.Title>Edit Tag</Modal.Title>
         <button type='button' class='application-modal-close' aria-label='Close'>
           <i className='fa fa-close' />
         </button>
       </Modal.Header>
       <Modal.Body>
-        <div className="mb-5">
-          <b>Blocklist Type:</b> Hash
-        </div>
         <div className="row">
           <div className="col-md-6">
             <label htmlFor="osInput" className="form-label">
@@ -92,7 +89,7 @@ const TagsEditPopup = ({ show, onClose, refreshParent, selectedItem }) => {
         <div className="row mt-5">
           <div className="col-md-6">
             <label className="form-label" htmlFor="sha1Input">
-              Tag Value*
+              Tag Value
             </label>
             <input
               type="text"

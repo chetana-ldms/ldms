@@ -105,6 +105,7 @@ import { AddConfigurationData } from './qradar-pages/configuration/AddConfigurat
 import { UpdateConfigurationData } from './qradar-pages/configuration/UpdateConfigurationData'
 import UsersLocked from './qradar-pages/security/UsersLocked'
 import ApplicationLogs from './qradar-pages/application-logs/ApplicationLogs'
+import CustomAlerts from './qradar-pages/alerts/CustomAlerts'
 
 
 const QradarPages = () => {
@@ -112,6 +113,7 @@ const QradarPages = () => {
     <Routes>
       <Route element={<Outlet />}>
         <Route path='alerts' element={<AlertsPage />} />
+        <Route path='custom-alerts' element={<CustomAlerts />} />
         <Route path='incidents' element={<IncidentsPage />} />
         <Route path='incidentsv1' element={<IncidentsPagev1 />} />
         <Route path='incidentscollaboration' element={<IncidentsPageCollaboration />} />

@@ -15,8 +15,8 @@ const TagsListPopUp = ({show, onClose, refreshParent}) => {
 
   const handleSubmit = async () => {
     try {
-      if (!TagKeyRef.current.value || !TagValueRef.current.value) {
-        notifyFail('Please fill out all mandatory fields.')
+      if (!TagKeyRef.current.value) {
+        notifyFail('Please enter Tag key')
         return
       }
       const data = {
@@ -38,7 +38,7 @@ const TagsListPopUp = ({show, onClose, refreshParent}) => {
           ],
         tagKey: TagKeyRef.current.value,
         tagValue: TagValueRef.current.value,
-        tagKeyDescription: descriptionTextareaRef.current.value,
+        tagKeyDescription: descriptionTextareaRef.current.value || "",
         type: "agents"
       }
 
@@ -86,7 +86,7 @@ const TagsListPopUp = ({show, onClose, refreshParent}) => {
           <div className='col-md-6'>
             <div>
               <label className='form-label' htmlFor='sha1Input'>
-              Tag Value*
+              Tag Value
               </label>
               <input type='text' className='form-control' ref={TagValueRef} required />
             </div>

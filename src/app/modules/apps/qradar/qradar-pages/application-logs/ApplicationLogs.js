@@ -14,7 +14,7 @@ function ApplicationLogs() {
   const [activity, setActivity] = useState([])
   const [loading, setLoading] = useState(false)
   const [users, setUsers] = useState([])
-  const [selectedUsers, setSelectedUsers] = useState({label: 'Select', value: 0})
+  const [selectedUsers, setSelectedUsers] = useState(0)
   const [selectedEndpoint, setSelectedEndpoint] = useState(null)
   const [showPopup, setShowPopup] = useState(false)
   const [ipAddress, setIpAddress] = useState('')
@@ -61,24 +61,27 @@ function ApplicationLogs() {
         setLoading(true)
         const data = await fetchUsersUrl(orgId, userID)
         setUsers(data)
-        const loggedInUser = data.find((user) => user.userID === userID)
-        if (loggedInUser) {
-          setSelectedUsers({value: loggedInUser.userID, label: loggedInUser.name})
+        const storedUserID = Number(sessionStorage.getItem('userId'))
+        if (storedUserID) {
+          setSelectedUsers(storedUserID)
         }
+  
         setLoading(false)
       } catch (error) {
-        console.log(error)
+        console.error(error)
         setLoading(false)
       }
     }
     reload()
   }, [orgId, userID])
+  
+
   const fetchActivityData = async (page, userID, selectedFromDate, selectedToDate, limit) => {
     const rangeStart = (page - 1) * limit + 1
     const rangeEnd = page * limit
     const data = {
       orgId: orgId,
-      userId: userID,
+      userId: selectedUsers ? selectedUsers : userID,
       severity: filters.severity || '',
       ipAddress: filters.ipAddress || '',
       traceId: filters.traceId || '',
@@ -103,7 +106,7 @@ function ApplicationLogs() {
     }
   }
   useEffect(() => {
-    if (filters.traceId || (filters.fromDate && filters.toDate)) {
+    if (selectedUsers ||filters.traceId || (filters.fromDate && filters.toDate)) {
       fetchActivityData(1, filters.userId, filters.fromDate, filters.toDate, limit)
     }
   }, [filters, limit])
@@ -135,20 +138,14 @@ function ApplicationLogs() {
     }
     setSelectedToDate(date)
   }
-  const handleUserChange = (selectedOptions) => {
-    setSelectedUsers(selectedOptions)
-  }
   const handleSubmit = (e) => {
     e.preventDefault()
     if (selectedToDate < selectedFromDate) {
       notifyFail('From date should be less than To date')
       return
     }
-    const selectedUserIDs = selectedUsers?.value?.userID
-      ? selectedUsers.value.userID
-      : Number(sessionStorage.getItem('userId'))
     setFilters({
-      userId: selectedUserIDs,
+      userId: selectedUsers ? selectedUsers : 0,
       fromDate: selectedFromDate,
       toDate: selectedToDate,
       severity: severity,
@@ -160,15 +157,16 @@ function ApplicationLogs() {
     setActivePage(1)
   }
   const handleReset = () => {
-    const defaultUserId = Number(sessionStorage.getItem('userId'));
-    setSelectedFromDate(null);
-    setSelectedToDate(null);
-    setCurrentPage(1);
-    setActivePage(1);
-    setSeverity('');
-    setIpAddress('');
-    setTraceId('');
-    setSearchText('');
+    const defaultUserId = Number(sessionStorage.getItem('userId'))
+    setSelectedFromDate(null)
+    setSelectedToDate(null)
+    setCurrentPage(1)
+    setActivePage(1)
+    setSeverity('')
+    setIpAddress('')
+    setTraceId('')
+    setSearchText('')
+    setSelectedUsers(0)
     setFilters({
       userId: defaultUserId,
       fromDate: null,
@@ -177,37 +175,11 @@ function ApplicationLogs() {
       ipAddress: '',
       traceId: '',
       searchText: '',
-    });
-  
-    fetchActivityData(1, defaultUserId, null, null, limit);
-  };
-  
-  const userOptions = users?.map((user) => ({label: user.name, value: user}))
-  const customStyle = {
-    control: (base, state) => ({
-      ...base,
-      minHeight: '40px',
-      width: '120px',
-    }),
-    valueContainer: (base) => ({
-      ...base,
-      height: '40px',
-      overflow: 'hidden',
-    }),
-    input: (base) => ({
-      ...base,
-      margin: 0,
-      padding: 0,
-    }),
-    multiValue: (base) => ({
-      ...base,
-      backgroundColor: 'lightgray',
-    }),
-    multiValueLabel: (base) => ({
-      ...base,
-      color: 'black',
-    }),
+    })
+
+    fetchActivityData(1, defaultUserId, null, null, limit)
   }
+
   const handleEndpointClick = (item) => {
     setSelectedEndpoint(item)
     setShowPopup(true)
@@ -233,15 +205,22 @@ function ApplicationLogs() {
       <div className='card header-filter mb-2 pad-10'>
         <div className='d-flex'>
           <div className='mr-1'>
-            <label className='no-margin semi-bold'>Users :</label>
-            <Select
-              options={userOptions}
-              isMulti={false}
-              value={selectedUsers}
-              onChange={handleUserChange}
-              placeholder='Users'
-              styles={customStyle}
-            />
+            <label className='no-margin semi-bold' htmlFor='user-select'>
+              Users:
+            </label>
+            <select
+              className='form-control p-0 px-5'
+              value={selectedUsers || ''}
+              onChange={(e) => setSelectedUsers(e.target.value)}
+              style={{height: 40}}
+            >
+              <option value=''>Select user</option>
+              {users.map((user) => (
+                <option key={user.userID} value={user.userID}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div className='mr-1'>
             <label className='no-margin semi-bold'>Severity :</label>
@@ -362,7 +341,7 @@ function ApplicationLogs() {
                     <td title={item.logSource}>{truncateText(item.logSource, 20)}</td>
                     <td>{item.traceId}</td>
                     <td>
-                      <span className='me-8' title='View'>
+                      <span className='' title='View'>
                         <i className='fa fa-eye cursor' onClick={() => handleEndpointClick(item)} />
                       </span>
                     </td>
