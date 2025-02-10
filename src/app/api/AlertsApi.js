@@ -18,6 +18,8 @@ const AlertsStatusUpdateUrl = process.env.REACT_APP_ALERTS_STATUS_UPDATE_URL
 const MitigateActionValidationUrl = process.env.REACT_APP_MITIGATE_ACTION_VALIDATION_URL
 const ThreatFileDownloadUrl=process.env.REACT_APP_THREAT_FILEDOWNLOAD_URL
 const CustomAlertsUrl = "http://10.41.3.232:501/api/Alerts/v1/CustomAlerts"
+const CustomAlertsAnalystVerdictUpdateUrl="http://10.41.3.232:501/api/Alerts/v1/CustomAlerts/AnalystVerdict/Update"
+const CustomAlertsIncidentStatusUpdateUrl="http://10.41.3.232:501/api/Alerts/v1/CustomAlerts/IncidentStatus/Update"
 
 export const fetchAlertData = async (data) => {
   try {
@@ -350,6 +352,38 @@ export const fetchThreatFileDownloadUrl = async (data) => {
 export const fetchCustomAlertsUrl= async (data) => {
   try {
     const response = await FetchWithToken(`${CustomAlertsUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchCustomAlertsAnalystVerdictUpdateUrl= async (data) => {
+  try {
+    const response = await FetchWithToken(`${CustomAlertsAnalystVerdictUpdateUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchCustomAlertsIncidentStatusUpdateUrl= async (data) => {
+  try {
+    const response = await FetchWithToken(`${CustomAlertsIncidentStatusUpdateUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

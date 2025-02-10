@@ -2615,12 +2615,12 @@ const AlertsPage = () => {
                                           </div>
                                         </div>
                                         <hr />
-                                        <div class='container'>
-                                          <div class='network-history'>
+                                        <div className='container'>
+                                          <div className='network-history'>
                                             <div>NETWORK HISTORY</div>
                                             <hr />
-                                            <div class='row align-items-center'>
-                                              <div class='col-md-4'>
+                                            <div className='row align-items-center'>
+                                              <div className='col-md-4'>
                                                 <div>
                                                   <span className='fs-15'>First seen : </span>
                                                   <span>
@@ -2634,7 +2634,7 @@ const AlertsPage = () => {
                                                   </span>
                                                 </div>
                                               </div>
-                                              <div class='col-md-4 mb-2 text-center'>
+                                              <div className='col-md-4 mb-2 text-center'>
                                                 <div>
                                                   <span>
                                                     {networkHistory?.scopeOccurances} times
@@ -2650,7 +2650,7 @@ const AlertsPage = () => {
                                                   {networkHistory?.siteCount} Groups
                                                 </p>
                                               </div>
-                                              {/* <div class='col-md-4'>
+                                              {/* <div className='col-md-4'>
                                                 <p>Find this hash on Deep Visibility</p>
                                                 <button className='btn btn-primary btn-sm'>
                                                   Hunt Now

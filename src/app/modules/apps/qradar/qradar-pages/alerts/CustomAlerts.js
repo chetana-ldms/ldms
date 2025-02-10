@@ -14,21 +14,16 @@ import {
   fetchUpdatSetAlertIrrelavantStatuseAlert,
 } from '../../../../../api/Api'
 import {
-  fetchAlertData,
   fetchGetAlertNotesByAlertID,
   fetchSetAlertEscalationStatus,
-  fetchSetOfAlerts,
   fetchUsers,
-  fetchGetalertHistory,
-  fetchSentinelOneAlert,
-  fetchAnalystVerdictUpdateUrl,
   fetchConnectToNetworkUrl,
   fetchDisConnectFromNetworkUrl,
   fetchThreatsActionUrl,
-  fetchAlertsStatusUpdateUrl,
   fetchMitigateActionValidationUrl,
-  fetchThreatFileDownloadUrl,
   fetchCustomAlertsUrl,
+  fetchCustomAlertsAnalystVerdictUpdateUrl,
+  fetchCustomAlertsIncidentStatusUpdateUrl,
 } from '../../../../../api/AlertsApi'
 import MitigationModal from './MitigationModal'
 import ReactPaginate from 'react-paginate'
@@ -53,7 +48,6 @@ const CustomAlerts = () => {
   const toolId = Number(sessionStorage.getItem('toolID'))
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
-
   const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
 
   const isActionAuthorized = (actionName) => {
@@ -61,8 +55,6 @@ const CustomAlerts = () => {
       (action) => action.actionName === actionName && action.is_authorized === true
     )
   }
-  const location = useLocation()
-  const [inputValue, setInputValue] = useState('')
   const [selectedAlert, setselectedAlert] = useState([])
   const [validations, setValidations] = useState('')
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
@@ -77,6 +69,7 @@ const CustomAlerts = () => {
     observableTagDropDown: [],
     analystVerdictDropDown: [],
   })
+  console.log(dropdownData, 'dropdownData')
   const [note, setNote] = useState('')
   const [selectedDays, setSelectedDays] = useState([])
   const [searchValue, setSearchValue] = useState('')
@@ -88,8 +81,6 @@ const CustomAlerts = () => {
   const [showPopup, setShowPopup] = useState(false)
   const [selectCheckBox, setSelectCheckBox] = useState(null)
   const [checkboxStates, setCheckboxStates] = useState({})
-  const [statusFromDashBoard, setStatusFromDashBoard] = useState(location.state?.status || '')
-  const [daysFromDashBoard, setDaysFromDashBoard] = useState(location.state?.days || '')
   useEffect(() => {
     const fetchNumberOfDays = async () => {
       try {
@@ -107,10 +98,6 @@ const CustomAlerts = () => {
     }
     fetchNumberOfDays()
   }, [])
-  useEffect(() => {
-    setStatusFromDashBoard(location.state?.status || '')
-    setDaysFromDashBoard(location.state?.days || '')
-  }, [location.state])
   const {severityNameDropDownData, statusDropDown, observableTagDropDown, analystVerdictDropDown} =
     dropdownData
   const handleFormSubmit = () => {
@@ -129,9 +116,17 @@ const CustomAlerts = () => {
   useEffect(() => {
     const fetchAllMasterData = async () => {
       const severityDataRequest = {maserDataType: 'alert_Sevirity', orgId: orgId, toolId: toolId}
-      const statusDataRequest = {maserDataType: 'Custom_Rule_Alert_Status', orgId: orgId, toolId: toolId}
+      const statusDataRequest = {
+        maserDataType: 'Custom_Rule_Alert_Status',
+        orgId: orgId,
+        toolId: toolId,
+      }
       const tagsDataRequest = {maserDataType: 'alert_Tags', orgId: orgId, toolId: toolId}
-      const verdictDataRequest = {maserDataType: 'Custom_Rule_Analyst_Verdict', orgId: orgId, toolId: toolId}
+      const verdictDataRequest = {
+        maserDataType: 'Custom_Rule_Analyst_Verdict',
+        orgId: orgId,
+        toolId: toolId,
+      }
 
       try {
         const [severityData, statusData, tagsData, verdictData] = await Promise.all([
@@ -176,21 +171,16 @@ const CustomAlerts = () => {
   }
   const navigate = useNavigate()
   const [selectValue, setSelectValue] = useState()
-  const onChange = (event) => {
-    const value = event.target.value
-    setSelectValue(value)
-  }
   const userID = Number(sessionStorage.getItem('userId'))
   const modifiedDate = new Date().toISOString()
   const [alertData, setAlertDate] = useState([])
   const [filteredAlertData, setFilteredAlertDate] = useState([])
-  console.log(filteredAlertData, "filteredAlertData")
+  console.log(filteredAlertData, 'filteredAlertData')
   const [ldp_security_user, setldp_security_user] = useState([])
   const [alertNotesList, setAlertNotesList] = useState([])
   const [escalate, setEscalate] = useState(true)
   const [activePage, setActivePage] = useState(1)
   const [currentPage, setCurrentPage] = useState(1)
-  console.log(currentPage, 'currentPage')
   const [showForm, setShowForm] = useState(false)
   const [ignorVisible, setIgnorVisible] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
@@ -213,13 +203,12 @@ const CustomAlerts = () => {
   const [selectedVerdict, setSelectedVerdict] = useState('')
   const [StatusDropDown, setStatusDropDown] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState('')
-  const [endpointInfo, setEndpointInfo] = useState([])
-  console.log(endpointInfo, 'endpointInfo')
-  const [networkHistory, setNetworkHistory] = useState([])
-  console.log(networkHistory, 'networkHistory')
-  const [threatHeaderDtls, setThreatHeaderDtls] = useState([])
-  const [threatInfo, setThreatInfo] = useState([])
+  const [sourceProcessParentdetails, setSourceProcessParentdetails] = useState([])
+  const [sourceProcessdetails, setSourceProcessdetails] = useState([])
+  const [logindetails, setLogindetails] = useState([])
+  const [endpointdetails, setEndpointdetails] = useState([])
   const [alertHistory, setAlertHistory] = useState([])
+  const [ruleInfo, setRuleInfo] = useState([])
   const dropdownRef = useRef(null)
   const dropdownRefSatus = useRef(null)
   const [refreshFlag, setRefreshFlag] = useState(false)
@@ -239,17 +228,36 @@ const CustomAlerts = () => {
     }, 2000)
   }
   const fetchAlertDetails = async () => {
+    const data = {
+      orgId: orgId,
+      toolId: toolId,
+      paging: {
+        rangeStart: 1,
+        rangeEnd: 2,
+      },
+      customAlertId: selectedAlertId,
+    }
     try {
-      const sentinalOneDetails = await fetchSentinelOneAlert(selectedAlertId)
-      setSentinalOne(sentinalOneDetails)
-      const endpoint_Info = sentinalOneDetails.endpoint_Info
-      setEndpointInfo(endpoint_Info)
-      const networkHistory = sentinalOneDetails.networkHistory
-      setNetworkHistory(networkHistory)
-      const threatHeaderDtls = sentinalOneDetails.threatHeaderDtls
-      setThreatHeaderDtls(threatHeaderDtls)
-      const threatInfo = sentinalOneDetails.threatInfo
-      setThreatInfo(threatInfo)
+      const responseDetails = await fetchCustomAlertsUrl(data)
+      const alert = responseDetails?.alertsList[0]
+
+      if (alert?.alertData) {
+        const parsedAlertData = JSON.parse(alert?.alertData)
+        setSentinalOne(parsedAlertData)
+        console.log(sentinalOne, 'dataaaa')
+        const endpoint_Info = parsedAlertData?.sourceParentProcessInfo
+        setSourceProcessParentdetails(endpoint_Info)
+        const networkHistory = parsedAlertData?.sourceProcessInfo
+        setSourceProcessdetails(networkHistory)
+        const threatHeaderDtls = parsedAlertData.alertInfo
+        setLogindetails(threatHeaderDtls)
+        const threatInfo = parsedAlertData.agentDetectionInfo
+        setEndpointdetails(threatInfo)
+        const ruleInfo = parsedAlertData.ruleInfo
+        setRuleInfo(ruleInfo)
+      } else {
+        console.error('alertData is missing or invalid')
+      }
     } catch (error) {
       handleError(error)
     }
@@ -309,21 +317,9 @@ const CustomAlerts = () => {
   useEffect(() => {
     reloadNotes()
   }, [selectedAlertId])
-  const css_classes = [
-    'text-primary',
-    'text-secondary',
-    'text-success',
-    'text-danger',
-    'text-warning',
-    'text-info',
-    'text-dark',
-    'text-muted',
-  ]
-
-  const getRandomClass = () => {
-    const randomIndex = Math.floor(Math.random() * css_classes.length)
-    return css_classes[randomIndex]
-  }
+  useEffect(() => {
+    qradaralerts(currentPage)
+  }, [limit])
   const handleCloseForm = () => {
     setActionValue('')
     setShowForm(false)
@@ -436,10 +432,10 @@ const CustomAlerts = () => {
   const handleReset = () => {
     setSearchValue('')
     if (status.current) {
-      status.current.value = 0
+      status.current.value = ''
     }
     if (analystVerdict.current) {
-      analystVerdict.current.value = 0
+      analystVerdict.current.value = ''
     }
     setFilteredAlertDate([])
     setSelectedFilterValue(1)
@@ -448,8 +444,6 @@ const CustomAlerts = () => {
   }
   const handleSearchAlert = async () => {
     setActivePage(1)
-    setStatusFromDashBoard('')
-    setDaysFromDashBoard('')
     const data2 = {
       orgId: orgId,
       toolId: toolId,
@@ -457,9 +451,9 @@ const CustomAlerts = () => {
         rangeStart: 1,
         rangeEnd: limit,
       },
-      status: status.current?.value || 0,
+      status: status.current?.value || '',
       customAlertId: 0,
-      analystVerdict: analystVerdict.current?.value || 0,
+      analystVerdict: analystVerdict.current?.value || '',
       name: searchValue || '',
       searchDurationInDays: selectedFilterValue || 0,
       orgAccountStructureLevel: [
@@ -501,7 +495,6 @@ const CustomAlerts = () => {
   }
   const handleFilterChange = async (e) => {
     const value = e.target.value
-    setDaysFromDashBoard('')
     setSelectedFilterValue(value)
     setActivePage(1)
     const data2 = {
@@ -511,11 +504,11 @@ const CustomAlerts = () => {
         rangeStart: 1,
         rangeEnd: limit,
       },
-      status: status.current?.value || 0,
+      status: status.current?.value || '',
       name: searchValue || '',
       customAlertId: 0,
       searchDurationInDays: value || 0,
-      analystVerdict: analystVerdict.current?.value || 0,
+      analystVerdict: analystVerdict.current?.value || '',
       orgAccountStructureLevel: [
         {
           levelName: 'AccountId',
@@ -558,38 +551,7 @@ const CustomAlerts = () => {
         rangeStart: rangeStart,
         rangeEnd: rangeEnd,
       },
-    //   analystVerdict: analystVerdict.current?.value || 0,
-    //   orgAccountStructureLevel: [
-    //     {
-    //       levelName: 'AccountId',
-    //       levelValue: accountId || '',
-    //     },
-    //     {
-    //       levelName: 'SiteId',
-    //       levelValue: siteId || '',
-    //     },
-    //     {
-    //       levelName: 'GroupId',
-    //       levelValue: groupId || '',
-    //     },
-    //   ],
     }
-    // if (statusFromDashBoard && daysFromDashBoard) {
-    //   const statusItem = statusDropDown.find((item) => item.dataValue === statusFromDashBoard)
-    //   if (statusItem) {
-    //     data2.status = statusItem.dataID
-    //     data2.searchDurationInDays = daysFromDashBoard
-    //   }
-    // } else if (!statusFromDashBoard && daysFromDashBoard) {
-    //   data2.searchDurationInDays = daysFromDashBoard
-    //   data2.falsePositive = '1'
-    // } else if (!statusFromDashBoard && !daysFromDashBoard) {
-    //   if (searchValue || status.current || selectedFilterValue) {
-    //     data2.status = status.current?.value || 0
-    //     data2.name = searchValue || ''
-    //     data2.searchDurationInDays = selectedFilterValue || 0
-    //   }
-    // }
     setLoading(true)
     const response = await fetchCustomAlertsUrl(data2)
     setAlertsCount(response.totalAlerts)
@@ -600,21 +562,6 @@ const CustomAlerts = () => {
     setFilteredAlertDate(response?.alertsList)
     setLoading(false)
   }
-  useEffect(() => {
-    if (statusDropDown.length > 0) {
-      qradaralerts(currentPage)
-    }
-    if (statusFromDashBoard) {
-      const statusItem = statusDropDown.find((item) => item.dataValue === statusFromDashBoard)
-      if (statusItem) {
-        status.current.value = statusItem.dataID
-      }
-    }
-
-    if (daysFromDashBoard) {
-      setSelectedFilterValue(daysFromDashBoard)
-    }
-  }, [statusDropDown, limit, currentPage])
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchUsers(orgId, userID)
@@ -656,30 +603,6 @@ const CustomAlerts = () => {
     setShowForm(true)
     setEscalate(true)
     setIgnorVisible(true)
-  }
-  const handleSort = (e, field) => {
-    let temp = [...alertData]
-    let data =
-      e.target.value === 'Dec'
-        ? temp.sort((a, b) => Number(b[field]) - Number(a[field]))
-        : temp.sort((a, b) => Number(a[field]) - Number(b[field]))
-    setFilteredAlertDate(data)
-  }
-  const handleSortDates = (e, field) => {
-    let temp = [...alertData]
-    let data =
-      e.target.value === 'New'
-        ? temp.sort((a, b) => new Date(b[field]) - new Date(a[field]))
-        : temp.sort((a, b) => new Date(a[field]) - new Date(b[field]))
-    setFilteredAlertDate(data)
-  }
-  const handleSearch = (e) => {
-    setInputValue(e.target.value)
-    if (!e.target.value) return setFilteredAlertDate(alertData)
-    let data = alertData.filter((it) =>
-      it.name.toLowerCase().includes(e.target.value.toLowerCase())
-    )
-    setFilteredAlertDate(data)
   }
   const handleRefresh = (event) => {
     event.preventDefault()
@@ -878,14 +801,14 @@ const CustomAlerts = () => {
     try {
       const modifiedUserId = Number(sessionStorage.getItem('userId'))
       const data = {
-        orgID: orgId,
+        orgId: orgId,
+        toolId: toolId,
         alertIds: selectedAlert,
-        analystVerdictId: selectedVerdict,
-        notes: note,
+        analysisVerdict: selectedVerdict,
         modifiedDate,
         modifiedUserId,
       }
-      const responseData = await fetchAnalystVerdictUpdateUrl(data)
+      const responseData = await fetchCustomAlertsAnalystVerdictUpdateUrl(data)
       const {isSuccess, message} = responseData
       if (isSuccess) {
         notify(message)
@@ -921,14 +844,14 @@ const CustomAlerts = () => {
     try {
       const modifiedUserId = Number(sessionStorage.getItem('userId'))
       const data = {
-        orgID: orgId,
+        orgId: orgId,
+        toolId: toolId,
         alertIds: selectedAlert,
-        statusId: selectedStatus,
-        notes: note,
+        status: selectedStatus,
         modifiedDate,
         modifiedUserId,
       }
-      const responseData = await fetchAlertsStatusUpdateUrl(data)
+      const responseData = await fetchCustomAlertsIncidentStatusUpdateUrl(data)
       const {isSuccess, message} = responseData
       if (isSuccess) {
         notify(message)
@@ -947,23 +870,17 @@ const CustomAlerts = () => {
       console.error(error)
     }
   }
-
-  // Function to export data to CSV
   const exportToExcel = async () => {
     // Add the heading
     let csvContent = 'Alerts Report\n'
 
     // Convert alertData to CSV format
     csvContent +=
-      'Severity,SLA,Score,Status,Detected time,Name,Observables tags,Owner,Source\n' +
+      'Severity,SLA,Status,Detected time,Name,Observables tags,Owner,Source\n' +
       alertData
         .map(
           (item) =>
-            `${item.severityName},${item.sla},${item.score === null ? '0' : item.score},${
-              item.status
-            },${item.detectedtime},${item.name},${item.observableTag},${item.ownerusername},${
-              item.source
-            }`
+            `${item.severityName},${item.sla},${item.status},${item.detectedtime},${item.name},${item.source}`
         )
         .join('\n')
 
@@ -1009,7 +926,6 @@ const CustomAlerts = () => {
         [
           'Severity',
           'SLA',
-          'Score',
           'Status',
           'Detected time',
           'Name',
@@ -1021,12 +937,9 @@ const CustomAlerts = () => {
       body: alertData.map((item) => [
         item.severityName,
         item.sla,
-        item.score === null ? '0' : item.score,
         item.status,
         item.detectedtime,
         item.name,
-        item.observableTag,
-        item.ownerusername,
         item.source,
       ]),
     })
@@ -1075,85 +988,10 @@ const CustomAlerts = () => {
         return '' // or a default icon class
     }
   }
-  const handleCopy = () => {
-    const details = `
-      THREAT FILE NAME: ${threatInfo?.name || 'N/A'}
-      Path: ${threatInfo?.path || 'N/A'}
-      Process User: ${threatInfo?.processUser || 'N/A'}
-      Original Process: ${threatInfo?.originatingProcess || 'N/A'}
-      SHA1: ${threatInfo?.shA1 || 'N/A'}
-      Initiated By: ${threatInfo?.initiatedBy || 'N/A'}
-      Detection Type: ${threatInfo?.detectionType || 'N/A'}
-      Classification: ${threatInfo?.classification || 'N/A'}
-      File Size: ${threatInfo?.fileSize || 'N/A'}
-      Storyline: ${threatInfo?.storyline || 'N/A'}
-      Threat ID: ${threatInfo?.threatId || 'N/A'}
-  
-      ENDPOINT INFO:
-      Computer Name: ${endpointInfo?.computerName || 'N/A'}
-      Scope: ${endpointInfo?.scope || 'N/A'}
-      OS Type: ${endpointInfo?.agentOSType || 'N/A'}
-      Console Connectivity: ${endpointInfo?.consoleConnectivity || 'Offline'}
-      Full Disk Scan Status: ${endpointInfo?.fullDiskScanStatus || 'N/A'} at ${
-      getCurrentTimeZone(endpointInfo?.fullDiskScanDate) || 'N/A'
-    }
-      Pending Reboot: ${endpointInfo?.pendinRreboot || 'N/A'}
-      Network Status: ${endpointInfo?.networkStatus || 'N/A'}
-      OS Version: ${endpointInfo?.osVersion || 'N/A'}
-      Agent Version: ${endpointInfo?.agentVersion || 'N/A'}
-      Policy: ${endpointInfo?.policy || 'N/A'}
-      Logged In User: ${endpointInfo?.loggedInUser || 'N/A'}
-      UUID: ${endpointInfo?.uuid || 'N/A'}
-      IP v4 Address: ${endpointInfo?.ipV4Address || 'N/A'}
-      IP v6 Address: ${endpointInfo?.ipV6Address || 'N/A'}
-      Console Visible Address: ${endpointInfo?.consoleVisibleIPAddress || 'N/A'}
-      Subscription Time: ${getCurrentTimeZone(endpointInfo?.subscriptionTime) || 'N/A'}
-    `
-
-    // Copy the details to clipboard
-    navigator.clipboard
-      .writeText(details.trim())
-      .then(() => {
-        alert('Details copied to clipboard!')
-      })
-      .catch((err) => {
-        console.error('Failed to copy text: ', err)
-      })
-  }
-  const handleDownload = async () => {
-    try {
-      const data = {
-        orgId: orgId,
-        toolId: toolId,
-        alertId: selectedAlertId,
-        threatId: '',
-      }
-
-      const response = await fetchThreatFileDownloadUrl(data)
-
-      if (response?.ok) {
-        const blob = await response.blob()
-        const fileName =
-          response.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/"/g, '') ||
-          'downloaded_file'
-        const link = document.createElement('a')
-        link.href = window.URL.createObjectURL(blob)
-        link.download = fileName
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-      } else {
-        throw new Error('Failed to download file')
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   return (
     <KTCardBody className='alert-page'>
       <ToastContainer />
-
       <div className='mb-5'>
         <div className='d-flex justify-content-between border-0'>
           <h3 className='align-items-start flex-column'>
@@ -1225,19 +1063,11 @@ const CustomAlerts = () => {
                                     <option>Select</option>
                                     {analystVerdictDropDown.length > 0 &&
                                       analystVerdictDropDown.map((item) => (
-                                        <option key={item.dataID} value={item.dataID}>
+                                        <option key={item.dataID} value={item.dataValue}>
                                           {item.dataValue}
                                         </option>
                                       ))}
                                   </select>
-                                </div>
-                                <div className='mb-5'>
-                                  <textarea
-                                    className='form-control'
-                                    rows='1'
-                                    placeholder='Write your note here...'
-                                    onChange={handleNoteChange}
-                                  ></textarea>
                                 </div>
                                 <div className='text-right'>
                                   <button
@@ -1304,19 +1134,11 @@ const CustomAlerts = () => {
                                     <option value=''>Select</option>
                                     {statusDropDown.length > 0 &&
                                       statusDropDown.map((item) => (
-                                        <option key={item.dataID} value={item.dataID}>
+                                        <option key={item.dataID} value={item.dataValue}>
                                           {item.dataValue}
                                         </option>
                                       ))}
                                   </select>
-                                </div>
-                                <div className='mb-5'>
-                                  <textarea
-                                    className='form-control'
-                                    rows='1'
-                                    placeholder='Write your note here...'
-                                    onChange={handleNoteChange}
-                                  ></textarea>
                                 </div>
 
                                 <div className='text-right'>
@@ -1738,7 +1560,7 @@ const CustomAlerts = () => {
                           <option value=''>Select</option>
                           {statusDropDown.length > 0 &&
                             statusDropDown.map((item) => (
-                              <option key={item.dataID} value={item.dataID}>
+                              <option key={item.dataID} value={item.dataValue}>
                                 {item.dataValue}
                               </option>
                             ))}
@@ -1759,7 +1581,7 @@ const CustomAlerts = () => {
                         <option value=''>Select</option>
                         {analystVerdictDropDown.length > 0 &&
                           analystVerdictDropDown.map((item) => (
-                            <option key={item.dataID} value={item.dataID}>
+                            <option key={item.dataID} value={item.dataValue}>
                               {item.dataValue}
                             </option>
                           ))}
@@ -1792,480 +1614,15 @@ const CustomAlerts = () => {
               <thead>
                 <tr className='fw-bold bg-light'>
                   <th className='w-25px'></th>
-                  <th>
-                    Severity
-                    <span className='m-0 table-filter'>
-                      <a
-                        href='#'
-                        className=''
-                        data-kt-menu-trigger='click'
-                        data-kt-menu-placement='bottom-end'
-                      >
-                        <span className='svg-icon svg-icon-6 svg-icon-muted me-1'>
-                          <svg
-                            width='24'
-                            height='24'
-                            viewBox='0 0 24 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                          >
-                            <path
-                              d='M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z'
-                              fill='currentColor'
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className='menu menu-sub menu-sub-dropdown w-250px w-md-250px'
-                        data-kt-menu='true'
-                        id='kt_menu_637dc885a14bb'
-                      >
-                        <div className='px-2 py-5'>
-                          <div>
-                            <div>
-                              <select
-                                className='form-select form-select-solid'
-                                data-kt-select2='true'
-                                data-placeholder='Select option'
-                                data-dropdown-parent='#kt_menu_637dc885a14bb'
-                                data-allow-clear='true'
-                                onChange={(e) => handleChange(e, 'severityName')}
-                              >
-                                <option value=''>Select</option>
-                                {severityNameDropDownData.length > 0 &&
-                                  severityNameDropDownData.map((item) => (
-                                    <option key={item.dataID} value={item.dataValue}>
-                                      {item.dataValue}
-                                    </option>
-                                  ))}
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th>
-                    SLA
-                    <span className='m-0 table-filter'>
-                      <a
-                        href='#'
-                        className=''
-                        data-kt-menu-trigger='click'
-                        data-kt-menu-placement='bottom-end'
-                      >
-                        <span className='svg-icon svg-icon-6 svg-icon-muted me-1'>
-                          <svg
-                            width='24'
-                            height='24'
-                            viewBox='0 0 24 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                          >
-                            <path
-                              d='M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z'
-                              fill='currentColor'
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className='menu menu-sub menu-sub-dropdown w-250px w-md-250px'
-                        data-kt-menu='true'
-                        id='kt_menu_637dc885a14bb'
-                      >
-                        <div className='px-2 py-5'>
-                          <div>
-                            <div>
-                              <select
-                                className='form-select form-select-solid'
-                                data-kt-select2='true'
-                                data-placeholder='Select option'
-                                data-dropdown-parent='#kt_menu_637dc885a14bb'
-                                data-allow-clear='true'
-                                onChange={(e) => handleSortDates(e, 'detectedtime')}
-                              >
-                                <option>Select</option>
-                                <option value='New'>Desc</option>
-                                <option value='Old'>Asc</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th>
-                    Score
-                    <span className='m-0 table-filter'>
-                      <a
-                        href='#'
-                        className=''
-                        data-kt-menu-trigger='click'
-                        data-kt-menu-placement='bottom-end'
-                      >
-                        <span className='svg-icon svg-icon-6 svg-icon-muted me-1'>
-                          <svg
-                            width='24'
-                            height='24'
-                            viewBox='0 0 24 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                          >
-                            <path
-                              d='M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z'
-                              fill='currentColor'
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className='menu menu-sub menu-sub-dropdown w-250px w-md-250px'
-                        data-kt-menu='true'
-                        id='kt_menu_637dc885a14bb'
-                      >
-                        <div className='px-2 py-5'>
-                          <div>
-                            <div>
-                              <select
-                                className='form-select form-select-solid'
-                                data-kt-select2='true'
-                                data-placeholder='Select option'
-                                data-dropdown-parent='#kt_menu_637dc885a14bb'
-                                data-allow-clear='true'
-                                onChange={(e) => handleSort(e, 'severity')}
-                              >
-                                <option>Select</option>
-                                <option value='Dec'>Desc</option>
-                                <option value='Asc'>Asc</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th>
-                    Status
-                    <span className='m-0 table-filter'>
-                      <a
-                        href='#'
-                        className=''
-                        data-kt-menu-trigger='click'
-                        data-kt-menu-placement='bottom-end'
-                      >
-                        <span className='svg-icon svg-icon-6 svg-icon-muted me-1'>
-                          <svg
-                            width='24'
-                            height='24'
-                            viewBox='0 0 24 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                          >
-                            <path
-                              d='M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z'
-                              fill='currentColor'
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className='menu menu-sub menu-sub-dropdown w-250px w-md-250px'
-                        data-kt-menu='true'
-                        id='kt_menu_637dc885a14bb'
-                      >
-                        <div className='px-2 py-5'>
-                          <div>
-                            <div>
-                              <select
-                                className='form-select form-select-solid'
-                                data-kt-select2='true'
-                                data-placeholder='Select option'
-                                data-dropdown-parent='#kt_menu_637dc885a14bb'
-                                data-allow-clear='true'
-                                onChange={(e) => handleChange(e, 'status')}
-                              >
-                                <option value=''>Select</option>
-                                {statusDropDown.length > 0 &&
-                                  statusDropDown.map((item) => (
-                                    <option key={item.dataID} value={item.dataValue}>
-                                      {item.dataValue}
-                                    </option>
-                                  ))}
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th style={{width: 140}}>
-                    Detected Time
-                    <span className='m-0 table-filter'>
-                      <a
-                        href='#'
-                        className=''
-                        data-kt-menu-trigger='click'
-                        data-kt-menu-placement='bottom-end'
-                      >
-                        <span className='svg-icon svg-icon-6 svg-icon-muted me-1'>
-                          <svg
-                            width='24'
-                            height='24'
-                            viewBox='0 0 24 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                          >
-                            <path
-                              d='M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z'
-                              fill='currentColor'
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className='menu menu-sub menu-sub-dropdown w-250px w-md-250px'
-                        data-kt-menu='true'
-                        id='kt_menu_637dc885a14bb'
-                      >
-                        <div className='px-2 py-5'>
-                          <div>
-                            <div>
-                              <select
-                                className='form-select form-select-solid'
-                                data-kt-select2='true'
-                                data-placeholder='Select option'
-                                data-dropdown-parent='#kt_menu_637dc885a14bb'
-                                data-allow-clear='true'
-                                onChange={(e) => handleSortDates(e, 'detectedtime')}
-                              >
-                                <option>Select</option>
-                                <option value='New'>Desc</option>
-                                <option value='Old'>Asc</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th>
-                    Name
-                    <span className='m-0 table-filter'>
-                      <a
-                        href='#'
-                        className=''
-                        data-kt-menu-trigger='click'
-                        data-kt-menu-placement='bottom-end'
-                      >
-                        <span className='svg-icon svg-icon-6 svg-icon-muted me-1'>
-                          <svg
-                            width='24'
-                            height='24'
-                            viewBox='0 0 24 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                          >
-                            <path
-                              d='M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z'
-                              fill='currentColor'
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className='menu menu-sub menu-sub-dropdown w-250px w-md-250px'
-                        data-kt-menu='true'
-                        id='kt_menu_637dc885a14bb'
-                      >
-                        <div className='px-2 py-5'>
-                          <div>
-                            <div>
-                              <input value={inputValue} onChange={(e) => handleSearch(e)} />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th>
-                    Observables Tags
-                    <span className='m-0 table-filter'>
-                      <a
-                        href='#'
-                        className=''
-                        data-kt-menu-trigger='click'
-                        data-kt-menu-placement='bottom-end'
-                      >
-                        <span className='svg-icon svg-icon-6 svg-icon-muted me-1'>
-                          <svg
-                            width='24'
-                            height='24'
-                            viewBox='0 0 24 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                          >
-                            <path
-                              d='M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z'
-                              fill='currentColor'
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className='menu menu-sub menu-sub-dropdown w-250px w-md-250px'
-                        data-kt-menu='true'
-                        id='kt_menu_637dc885a14bb'
-                      >
-                        <div className='px-2 py-5'>
-                          <div>
-                            <div>
-                              <select
-                                className='form-select form-select-solid'
-                                data-kt-select2='true'
-                                data-placeholder='Select option'
-                                data-dropdown-parent='#kt_menu_637dc885a14bb'
-                                data-allow-clear='true'
-                                onChange={(e) => handleChange(e, 'observableTag')}
-                              >
-                                <option>Select</option>
-                                {observableTagDropDown.length > 0 &&
-                                  observableTagDropDown.map((item) => (
-                                    <option key={item.dataID} value={item.dataValue}>
-                                      {item.dataValue}
-                                    </option>
-                                  ))}
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th>
-                    Owner
-                    <span className='m-0 table-filter'>
-                      <a
-                        href='#'
-                        className=''
-                        data-kt-menu-trigger='click'
-                        data-kt-menu-placement='bottom-end'
-                      >
-                        <span className='svg-icon svg-icon-6 svg-icon-muted me-1'>
-                          <svg
-                            width='24'
-                            height='24'
-                            viewBox='0 0 24 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                          >
-                            <path
-                              d='M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z'
-                              fill='currentColor'
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className='menu menu-sub menu-sub-dropdown w-250px w-md-250px'
-                        data-kt-menu='true'
-                        id='kt_menu_637dc885a14bb'
-                      >
-                        <div className='px-2 py-5'>
-                          <div>
-                            <div>
-                              <select
-                                className='form-select form-select-solid'
-                                data-kt-select2='true'
-                                data-placeholder='Select option'
-                                data-dropdown-parent='#kt_menu_637dc885a14bb'
-                                data-allow-clear='true'
-                                onChange={(e) => handleChange(e, 'ownerusername')}
-                              >
-                                <option>Select</option>
-                                {ldp_security_user.length > 0 &&
-                                  ldp_security_user.map((item, index) => {
-                                    return (
-                                      <option key={index} value={item?.name}>
-                                        {item?.name}
-                                      </option>
-                                    )
-                                  })}
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
-                  <th>
-                    Source{' '}
-                    <span className='m-0 table-filter'>
-                      <a
-                        href='#'
-                        className=''
-                        data-kt-menu-trigger='click'
-                        data-kt-menu-placement='bottom-end'
-                      >
-                        <span className='svg-icon svg-icon-6 svg-icon-muted me-1'>
-                          <svg
-                            width='24'
-                            height='24'
-                            viewBox='0 0 24 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                          >
-                            <path
-                              d='M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z'
-                              fill='currentColor'
-                            />
-                          </svg>
-                        </span>
-                      </a>
-                      <div
-                        className='menu menu-sub menu-sub-dropdown w-250px w-md-250px'
-                        data-kt-menu='true'
-                        id='kt_menu_637dc885a14bb'
-                      >
-                        <div className='px-2 py-5'>
-                          <div>
-                            <div>
-                              {source == null ? (
-                                <select
-                                  className='form-select form-select-solid'
-                                  data-kt-select2='true'
-                                  data-placeholder='Select option'
-                                  data-dropdown-parent='#kt_menu_637dc885a14bb'
-                                  data-allow-clear='true'
-                                  onChange={(e) => handleChange(e, 'source')}
-                                >
-                                  <option>Select</option>
-                                </select>
-                              ) : (
-                                <select
-                                  className='form-select form-select-solid'
-                                  data-kt-select2='true'
-                                  data-placeholder='Select option'
-                                  data-dropdown-parent='#kt_menu_637dc885a14bb'
-                                  data-allow-clear='true'
-                                  onChange={(e) => handleChange(e, 'source')}
-                                >
-                                  <option>Select</option>
-                                  {source.length > 0 &&
-                                    source.map((item, index) => (
-                                      <option key={index} value={item}>
-                                        {item}
-                                      </option>
-                                    ))}
-                                </select>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </span>
-                  </th>
+                  <th>Severity</th>
+                  <th>AnalystVerdict</th>
+                  <th>SLA</th>
+                  <th>Status</th>
+                  <th style={{width: 140}}>Detected Time</th>
+                  <th>Name</th>
+                  <th>Source</th>
+                  <th>Endpoint Name</th>
+                  <th>Event Type</th>
                 </tr>
               </thead>
               <tbody id='kt_accordion_1'>
@@ -2310,12 +1667,10 @@ const CustomAlerts = () => {
                           <span className='text-dark d-block'>{item.severity}</span>
                         </td>
                         <td>
-                          <span className='text-dark d-block'>{item.sla}</span>
+                          <span className=''>{item.analystVerdict}</span>
                         </td>
                         <td>
-                          <span className='text-dark text-center d-block'>
-                            {item.score === null || item.score === '' ? '0' : item.score}
-                          </span>
+                          <span className='text-dark d-block'>{item.sla}</span>
                         </td>
                         <td>{item.incidentStatus}</td>
                         <td>
@@ -2338,9 +1693,11 @@ const CustomAlerts = () => {
                             {truncateText(item.ruleName, 20)}
                           </span>
                         </td>
-                        <td className='text-dark fs-8'>{item.observableTag}</td>
-                        <td className='text-dark fs-8'> {item.ownerusername}</td>
-                        <td className='text-dark fw-bold fs-8'>{item.source}</td>
+                        <td className='text-dark fw-bold fs-8' title={item.sourceProcessName}>
+                          {truncateText(item.sourceProcessName, 12)}
+                        </td>
+                        <td className='text-dark fw-bold fs-8'>{item.endpointName}</td>
+                        <td className='fs-8'>{item.eventType}</td>
                       </tr>
                       <tr
                         id={'kt_accordion_1_body_' + index}
@@ -2354,7 +1711,6 @@ const CustomAlerts = () => {
                           <div className='row'>
                             <div className='col-md-12'>
                               <div className='card pad-10'>
-                                {/* Tab Navigation */}
                                 <ul
                                   className='nav nav-tabs'
                                   id={`alertTabs_${index}`}
@@ -2370,24 +1726,23 @@ const CustomAlerts = () => {
                                       aria-controls={`details_${index}`}
                                       aria-selected='true'
                                     >
-                                      Details
+                                      Source Process Parent details
                                     </a>
                                   </li>
-                                  {orgId == 2 && (
-                                    <li className='nav-item' role='presentation'>
-                                      <a
-                                        className='nav-link'
-                                        id={`moreDetailsTab_${index}`}
-                                        data-bs-toggle='tab'
-                                        href={`#moreDetails_${index}`}
-                                        role='tab'
-                                        aria-controls={`moreDetails_${index}`}
-                                        aria-selected='false'
-                                      >
-                                        More Details
-                                      </a>
-                                    </li>
-                                  )}
+                                  <li className='nav-item' role='presentation'>
+                                    <a
+                                      className='nav-link'
+                                      id={`sourceProcessDetailsTab_${index}`}
+                                      data-bs-toggle='tab'
+                                      href={`#sourceProcessDetails_${index}`}
+                                      role='tab'
+                                      aria-controls={`sourceProcessDetails_${index}`}
+                                      aria-selected='false'
+                                    >
+                                      Source Process Details
+                                    </a>
+                                  </li>
+
                                   <li className='nav-item' role='presentation'>
                                     <a
                                       className='nav-link'
@@ -2398,7 +1753,7 @@ const CustomAlerts = () => {
                                       aria-controls={`notes_${index}`}
                                       aria-selected='false'
                                     >
-                                      Notes
+                                      Login details
                                     </a>
                                   </li>
                                   <li className='nav-item' role='presentation'>
@@ -2411,7 +1766,20 @@ const CustomAlerts = () => {
                                       aria-controls={`timeline_${index}`}
                                       aria-selected='false'
                                     >
-                                      Timeline
+                                      Endpoint details
+                                    </a>
+                                  </li>
+                                  <li className='nav-item' role='presentation'>
+                                    <a
+                                      className='nav-link'
+                                      id={`customRuleTab_${index}`}
+                                      data-bs-toggle='tab'
+                                      href={`#customRule_${index}`}
+                                      role='tab'
+                                      aria-controls={`customRule_${index}`}
+                                      aria-selected='false'
+                                    >
+                                      Custom Rule
                                     </a>
                                   </li>
                                 </ul>
@@ -2423,433 +1791,203 @@ const CustomAlerts = () => {
                                     aria-labelledby={`detailsTab_${index}`}
                                   >
                                     <div className='row alert-accordion'>
-                                      <div className='col-md-10'>
-                                        <div className='alert-details'>
-                                          <b>Alert Name: </b>
-                                          <span>{item.ruleName}</span>
-                                        </div>
-                                        <div className='alert-details'>
-                                          <b>Score:</b>
-                                          <span>
-                                            {item.score === null || item.score === ''
-                                              ? '0'
-                                              : item.score}
-                                          </span>
-                                        </div>
-                                        <div className='alert-details'>
-                                          <b>SLA: </b>
-                                          <span>{item.sla}</span>
-                                        </div>
-                                        <div className='alert-details'>
-                                          <b>Severity: </b>
-                                          <span>{item.severity}</span>
-                                        </div>
-                                        <div className='alert-details'>
-                                          <b>Status: </b>
-                                          <span>{item.incidentStatus}</span>
-                                        </div>
-                                        <div className='alert-details'>
-                                          <b>Detected Date/Time: </b>
-                                          <span>
-                                            {item.detectedTime &&
-                                              getCurrentTimeZone(item.detectedTime)}
-                                          </span>
-                                        </div>
-                                        <div className='alert-details'>
-                                          <b>Observable Tag: </b>
-                                          <span>{item.observableTag} </span>
-                                        </div>
-                                        <div className='alert-details'>
-                                          <b>Owner Name </b>
-                                          <span>{item.ownerusername}</span>
-                                        </div>
-                                        <div className='alert-details'>
-                                          <b>Analysts Verdict: </b>
-                                          <span>{item.analystVerdict} </span>
-                                        </div>
-                                        <div className='alert-details'>
-                                          <b>Source Name: </b>
-                                          <span>{item.source}</span>{' '}
-                                        </div>
-                                      </div>
-                                      <div className='col-md-2'>
-                                        {isActionAuthorized('Update') && (
-                                          <div
-                                            className='btn btn-primary btn-new btn-small'
-                                            onClick={() => openEditPopUp(item)}
-                                          >
-                                            Edit
+                                      <div className='row'>
+                                        <div className='col-md-2'>
+                                          <div className='left-labels'>
+                                            <p>
+                                              <b>Name</b>
+                                            </p>
+                                            <p>
+                                              <b>Image Path</b>
+                                            </p>
+                                            <p>
+                                              <b>User</b>
+                                            </p>
+                                            <p>
+                                              <b>Start Time</b>
+                                            </p>
+                                            <p>
+                                              <b>Command Line</b>
+                                            </p>
+                                            <p>
+                                              <b>Integrity Level</b>
+                                            </p>
+                                            <p>
+                                              <b>Publisher</b>
+                                            </p>
+                                            <p>
+                                              <b>Subsystem</b>
+                                            </p>
+                                            <p>
+                                              <b>PID</b>
+                                            </p>
+                                            <p>
+                                              <b>Storyline</b>
+                                            </p>
+                                            <p>
+                                              <b>Unique ID</b>
+                                            </p>
+                                            <p>
+                                              <b>Image SHA1</b>
+                                            </p>
+                                            <p>
+                                              <b>Image SHA256</b>
+                                            </p>
+                                            <p>
+                                              <b>Image MD5</b>
+                                            </p>
                                           </div>
-                                        )}
+                                        </div>
+                                        <div className='col-md-10'>
+                                          <div className='right-values'>
+                                            <p>{sourceProcessParentdetails?.name}</p>
+                                            <p>{sourceProcessParentdetails?.filePath}</p>
+                                            <p>{sourceProcessParentdetails?.user}</p>
+                                            <p>{sourceProcessParentdetails?.pidStarttime}</p>
+                                            <p>{sourceProcessParentdetails?.commandline}</p>
+                                            <p>{sourceProcessParentdetails?.integrityLevel}</p>
+                                            <p>{sourceProcessParentdetails?.fileSignerIdentity}</p>
+                                            <p>{sourceProcessParentdetails?.subsystem}</p>
+                                            <p>{sourceProcessParentdetails?.pid}</p>
+                                            <p>{sourceProcessParentdetails?.storyline}</p>
+                                            <p>{sourceProcessParentdetails?.uniqueId}</p>
+                                            <p>{sourceProcessParentdetails?.fileHashSha1}</p>
+                                            <p>{sourceProcessParentdetails?.fileHashSha256}</p>
+                                            <p>{sourceProcessParentdetails?.fileHashMd5}</p>
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
+
                                   <div
                                     className='tab-pane fade'
-                                    id={`moreDetails_${index}`}
+                                    id={`sourceProcessDetails_${index}`}
                                     role='tabpanel'
-                                    aria-labelledby={`moreDetailsTab_${index}`}
+                                    aria-labelledby={`sourceProcessDetailsTab_${index}`}
                                   >
-                                    {orgId == 2 ? (
-                                      <div className='h-300px scroll-y'>
-                                        <div className='float-right fs-13 fc-gray text-right ds-reload'>
-                                          <a href='#' onClick={handleRefreshMoreDetails}>
-                                            <i
-                                              className={`fa fa-refresh link ${
-                                                isRefreshingMoreDetails ? 'rotate' : ''
-                                              }`}
-                                              // title='Auto refresh every 2 minutes'
-                                            />
-                                          </a>
-                                        </div>
-                                        <div className='row'>
-                                          <div className='col-md-8'>
-                                            <div className='d-flex '>
-                                              <div className='border-right pe-2'>
-                                                {' '}
-                                                <span className='semi-bold'>
-                                                  Threat status :
-                                                </span>{' '}
-                                                {threatHeaderDtls?.threatStatus}
-                                              </div>
-                                              <div className='border-right px-1'>
-                                                <span className='semi-bold'>
-                                                  AI Confidence level :{' '}
-                                                </span>
-                                                {threatHeaderDtls?.aiConfidenceLevel}
-                                              </div>
-                                              <div className='border-right px-1 pe-2 d-flex align-items-center'>
-                                                <span className='semi-bold'>
-                                                  Analyst Verdict :{' '}
-                                                </span>
-                                                {threatHeaderDtls?.ldC_AnalysisVerdict}
-                                              </div>
-                                              <div className='px-1 d-flex align-items-center'>
-                                                <span className='semi-bold'>
-                                                  Incident Status :{' '}
-                                                </span>
-                                                {threatHeaderDtls?.ldC_IncidentStatus}
-                                              </div>
-                                            </div>
-                                            {/* <hr /> */}
-                                            <div className='mt-3'>
-                                              <span className='semi-bold'>
-                                                Mitigation Actions Taken:
-                                              </span>
-                                              {threatHeaderDtls?.mitigationActionWithStatus ? (
-                                                threatHeaderDtls?.mitigationActionWithStatus
-                                                  ?.reverse()
-                                                  .map((item, index) => (
-                                                    <span key={index} className='m-2'>
-                                                      {transformAction(item.actionName)}{' '}
-                                                      {item.status === 'pending' &&
-                                                        ` ${item.status}`}
-                                                      {item.status !== 'pending' && (
-                                                        <i className='bi bi-check green fs-20 v-middle'></i>
-                                                      )}
-                                                    </span>
-                                                  ))
-                                              ) : threatHeaderDtls?.miticationActions ? (
-                                                threatHeaderDtls?.miticationActions
-                                                  ?.reverse()
-                                                  .map((item, index) => (
-                                                    <span key={index} className='m-2'>
-                                                      {transformAction(item)}
-                                                      <i className='bi bi-check green fs-20 v-middle'></i>
-                                                    </span>
-                                                  ))
-                                              ) : (
-                                                <span>No mitigation actions</span>
-                                              )}
-                                            </div>
-                                          </div>
-                                          <div className='col-md-4'>
-                                            <div className='row  d-flex justify-content-end'>
-                                              <div className='col-md-1 text-center py-3'>
-                                                <i className='bi bi-stopwatch fs-18'></i>
-                                              </div>
-                                              <div className='col-md-10'>
-                                                <p className='mb-2'>
-                                                  <span className='semi-bold'>
-                                                    Identified Time :{' '}
-                                                  </span>
-                                                  <span>
-                                                    {getCurrentTimeZone(
-                                                      threatHeaderDtls?.identifiedTime
-                                                    )}
-                                                  </span>
-                                                </p>
-                                                <p className='mb-2'>
-                                                  <span className='semi-bold'>
-                                                    Reporting Time :{' '}
-                                                  </span>
-                                                  <span>
-                                                    {getCurrentTimeZone(
-                                                      threatHeaderDtls?.reportingTime
-                                                    )}
-                                                  </span>
-                                                </p>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <hr />
-                                        <div class='container'>
-                                          <div class='network-history'>
-                                            <div>NETWORK HISTORY</div>
-                                            <hr />
-                                            <div class='row align-items-center'>
-                                              <div class='col-md-4'>
-                                                <div>
-                                                  <span className='fs-15'>First seen : </span>
-                                                  <span>
-                                                    {getCurrentTimeZone(networkHistory?.firstSeen)}
-                                                  </span>
-                                                </div>
-                                                <div>
-                                                  <span className='fs-15'>Last seen : </span>
-                                                  <span>
-                                                    {getCurrentTimeZone(networkHistory?.lastSeen)}
-                                                  </span>
-                                                </div>
-                                              </div>
-                                              <div class='col-md-4 mb-2 text-center'>
-                                                <div>
-                                                  <span>
-                                                    {networkHistory?.scopeOccurances} times
-                                                  </span>{' '}
-                                                  <span>
-                                                    on {networkHistory?.endPointOccurances}{' '}
-                                                    endpoints
-                                                  </span>
-                                                </div>
-                                                <p>
-                                                  {networkHistory?.accountsCount} Account /{' '}
-                                                  {networkHistory?.groupCount} Sites /{' '}
-                                                  {networkHistory?.siteCount} Groups
-                                                </p>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-
-                                        <hr />
-                                        <div className='row'>
-                                          <div className='fs-12 col-md-6'>
-                                            <span className='semi-bold'>THREAT FILE NAME :</span>{' '}
-                                            {threatInfo?.name}
-                                          </div>
-                                          <div className='fs-14 text-primary col-md-6'>
-                                            <button
-                                              onClick={handleDownload}
-                                              className='btn btn-link p-0 me-5 text-primary'
-                                            >
-                                              <i className='fa fa-download me-2'></i>
-                                              Download File
-                                            </button>
-                                            <button
-                                              onClick={handleCopy}
-                                              className='btn btn-link p-0 text-primary'
-                                            >
-                                              <i className='fa fa-copy me-2'></i>
-                                              Copy Details
-                                            </button>
-                                          </div>
-                                        </div>
-                                        <hr />
-                                        <div className='row'>
-                                          <div className='col-md-7'>
-                                            <div className='row'>
-                                              <div className='col-md-3 '>
-                                                <p className='semi-bold'>Path: </p>
-                                                <p className='semi-bold'>Process User:</p>
-                                                <p className='semi-bold'>Original Process:</p>
-                                                <p className='semi-bold'>SHA1:</p>
-                                                <p className='semi-bold'>Initiated By:</p>
-                                              </div>
-                                              <div className='col-md-9'>
-                                                <p
-                                                  style={{
-                                                    display: 'block',
-                                                    whiteSpace: 'nowrap',
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis',
-                                                    maxWidth: '100ch',
-                                                  }}
-                                                  title={threatInfo?.path}
-                                                >
-                                                  {threatInfo?.path}
-                                                </p>
-
-                                                <p>{threatInfo?.processUser}</p>
-                                                <p>{threatInfo?.originatingProcess}</p>
-                                                <p>{threatInfo?.shA1}</p>
-                                                <p>{threatInfo?.initiatedBy}</p>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <div className='col-md-5'>
-                                            <div className='row'>
-                                              <div className='col-md-4 '>
-                                                <p className='semi-bold'>Detection Type:</p>
-                                                <p className='semi-bold'>Classification:</p>
-                                                <p className='semi-bold'> File Size:</p>
-                                                <p className='semi-bold'>Storyline</p>
-                                                <p className='semi-bold'>Threat id:</p>
-                                              </div>
-                                              <div className='col-md-6'>
-                                                <p>{threatInfo?.detectionType}</p>
-                                                <p>{threatInfo?.classification}</p>
-                                                <p>{threatInfo?.fileSize}</p>
-                                                <p>{threatInfo?.storyline}</p>
-                                                <p>{threatInfo?.threatId}</p>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <hr />
-                                        <h4>END POINT</h4>
-                                        {/* <hr className="my-2" /> */}
-
-                                        <div className='row'>
-                                          <div className='col-md-5'>
-                                            <div className='row'>
-                                              <p className='semi-bold'>
-                                                Real Time Data about the end point:
-                                              </p>
-                                              <div className='row border-bottom'>
-                                                <div className='col-md-2'>
-                                                  <span>
-                                                    <i
-                                                      className={getIconClass(
-                                                        endpointInfo?.agentOSType
-                                                      )}
-                                                    ></i>
-                                                  </span>
-                                                </div>
-                                                <div className='col-md-9'>
-                                                  <h6>{endpointInfo?.computerName}</h6>
-                                                  <p className='fs-12'>{endpointInfo?.scope}</p>
-                                                  <p className='fs-10'>
-                                                    {endpointInfo?.agentOSType}
-                                                  </p>
-                                                </div>
-                                              </div>
-                                              <div className='col-md-4 mt-2 '>
-                                                <p className='mb-2 semi-bold'>
-                                                  Console connectivity
-                                                </p>
-                                                <p className='mb-2 semi-bold'>Full Disc scan:</p>
-                                                <p className='semi-bold'>Pending Reboot:</p>
-                                                {/* <p>Number of not Mitigated Threats</p> */}
-                                                <p className='semi-bold'> Network status:</p>
-                                              </div>
-                                              <div className='col-md-8 mt-2'>
-                                                <p>
-                                                  {endpointInfo?.consoleConnectivity
-                                                    ? endpointInfo?.consoleConnectivity
-                                                    : 'Offline'}
-                                                </p>
-                                                <p>
-                                                  {endpointInfo?.fullDiskScanStatus} at{' '}
-                                                  {getCurrentTimeZone(
-                                                    endpointInfo?.fullDiskScanDate
-                                                  )}
-                                                </p>
-
-                                                <p>{endpointInfo?.pendinRreboot}</p>
-                                                {/* <p>0</p> */}
-                                                <p>{endpointInfo?.networkStatus}</p>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <div className='col-md-7'>
-                                            <div className='row'>
-                                              <div className='col-md-3 '>
-                                                {/* <p>At Detection time :</p> */}
-                                                <p className='semi-bold'>Scope:</p>
-                                                <p className='semi-bold'>OS Version:</p>
-                                                <p className='semi-bold'>Agent Version:</p>
-                                                <p className='semi-bold'> Policy:</p>
-                                                <p className='semi-bold'>Logged in user:</p>
-                                                <p className='semi-bold'>UUID:</p>
-                                                {/* <p className='semi-bold'>Domain:</p> */}
-                                                <p className='semi-bold'>IP v4 Address:</p>
-                                                <p className='semi-bold'>IP v6 Address:</p>
-                                                <p className='semi-bold'>Console Visible adress:</p>
-                                                <p className='semi-bold'>Subscription Time:</p>
-                                              </div>
-                                              <div className='col-md-9'>
-                                                {/* <p>.</p> */}
-                                                <p>{endpointInfo?.scope}</p>
-                                                <p>{endpointInfo?.osVersion}</p>
-                                                <p>{endpointInfo?.agentVersion}</p>
-                                                <p>{endpointInfo?.policy}</p>
-                                                <p>{endpointInfo?.loggedInUser}</p>
-                                                <p>{endpointInfo?.uuid}</p>
-                                                {/* <p>{endpointInfo?.domain?? null}</p> */}
-                                                <p>{endpointInfo?.ipV4Address}</p>
-                                                <p title={endpointInfo?.ipV6Address}>
-                                                  {truncateText(endpointInfo?.ipV6Address, 50)}
-                                                </p>
-                                                <p>
-                                                  {endpointInfo?.consoleVisibleIPAddress ?? null}
-                                                </p>
-                                                <p>
-                                                  {getCurrentTimeZone(
-                                                    endpointInfo?.subscriptionTime
-                                                  )}
-                                                </p>
-                                              </div>
-                                            </div>
-                                          </div>
+                                    <div className='row'>
+                                      <div className='col-md-2'>
+                                        <div className='left-labels'>
+                                          <p>
+                                            <b>Name</b>
+                                          </p>
+                                          <p>
+                                            <b>Image Path</b>
+                                          </p>
+                                          <p>
+                                            <b>User</b>
+                                          </p>
+                                          <p>
+                                            <b>Start Time</b>
+                                          </p>
+                                          <p>
+                                            <b>Command Line</b>
+                                          </p>
+                                          <p>
+                                            <b>Integrity Level</b>
+                                          </p>
+                                          <p>
+                                            <b>Publisher</b>
+                                          </p>
+                                          <p>
+                                            <b>Subsystem</b>
+                                          </p>
+                                          <p>
+                                            <b>PID</b>
+                                          </p>
+                                          <p>
+                                            <b>Storyline</b>
+                                          </p>
+                                          <p>
+                                            <b>Unique ID</b>
+                                          </p>
+                                          <p>
+                                            <b>Image SHA1</b>
+                                          </p>
+                                          <p>
+                                            <b>Image SHA256</b>
+                                          </p>
+                                          <p>
+                                            <b>Image MD5</b>
+                                          </p>
                                         </div>
                                       </div>
-                                    ) : (
-                                      <span>No Data found</span>
-                                    )}
+
+                                      <div className='col-md-10'>
+                                        <div className='right-values'>
+                                          <p>{sourceProcessdetails?.name}</p>
+                                          <p>{sourceProcessdetails?.filePath}</p>
+                                          <p>{sourceProcessdetails?.user}</p>
+                                          <p>{sourceProcessdetails?.pidStarttime}</p>
+                                          <p>{sourceProcessdetails?.commandline}</p>
+                                          <p>{sourceProcessdetails?.integrityLevel}</p>
+                                          <p>{sourceProcessdetails?.fileSignerIdentity}</p>
+                                          <p>{sourceProcessdetails?.subsystem}</p>
+                                          <p>{sourceProcessdetails?.pid}</p>
+                                          <p>{sourceProcessdetails?.storyline}</p>
+                                          <p>{sourceProcessdetails?.uniqueId}</p>
+                                          <p>{sourceProcessdetails?.fileHashSha1}</p>
+                                          <p>{sourceProcessdetails?.fileHashSha256}</p>
+                                          <p>{sourceProcessdetails?.fileHashMd5}</p>
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
+
                                   <div
                                     className='tab-pane fade'
                                     id={`notes_${index}`}
                                     role='tabpanel'
                                     aria-labelledby={`notesTab_${index}`}
                                   >
-                                    {alertNotesList !== null ? (
-                                      <div className='notes-container alert-table'>
-                                        <div className='float-right fs-13 fc-gray text-right ds-reload'>
-                                          <a href='#' onClick={handleRefreshNotes}>
-                                            <i
-                                              className={`fa fa-refresh link ${
-                                                isRefreshingNotes ? 'rotate' : ''
-                                              }`}
-                                            />
-                                          </a>
+                                    <div className='row'>
+                                      <div className='col-md-2'>
+                                        <div className='left-labels'>
+                                          <p>
+                                            <b>User Name</b>
+                                          </p>
+                                          <p>
+                                            <b>Source Machine IP</b>
+                                          </p>
+                                          <p>
+                                            <b>Login is Successful</b>
+                                          </p>
+                                          <p>
+                                            <b>Type</b>
+                                          </p>
+                                          <p>
+                                            <b>Is Administrator Equivalent</b>
+                                          </p>
+                                          <p>
+                                            <b>Account SID</b>
+                                          </p>
+                                          <p>
+                                            <b>Account Domain</b>
+                                          </p>
                                         </div>
-                                        <table className='table'>
-                                          <thead>
-                                            <tr>
-                                              <th className='custom-th'>User</th>
-                                              <th className='custom-th'>Date</th>
-                                              <th className='custom-th'>Note</th>
-                                              <th className='custom-th'>Action</th>
-                                            </tr>
-                                          </thead>
-                                          <tbody>
-                                            {alertNotesList?.slice().map((note) => (
-                                              <tr key={note?.alertsNotesId}>
-                                                <td>{note?.createdUser}</td>
-                                                <td>{getCurrentTimeZone(note?.notesDate)}</td>
-                                                <td>{note?.notes}</td>
-                                                <td>{note?.actionName}</td>
-                                              </tr>
-                                            ))}
-                                          </tbody>
-                                        </table>
                                       </div>
-                                    ) : (
-                                      <div>No notes available.</div>
-                                    )}
+
+                                      <div className='col-md-10'>
+                                        <div className='right-values'>
+                                          <p>{logindetails?.loginsUserName}</p>
+                                          <p>{logindetails?.srcMachineIp}</p>
+                                          <p>
+                                            {logindetails?.loginIsSuccessful
+                                              ? logindetails?.loginIsSuccessful
+                                              : 'false'}
+                                          </p>
+                                          <p>{logindetails?.loginType}</p>
+                                          <p>
+                                            {logindetails?.loginIsAdministratorEquivalent
+                                              ? logindetails?.loginIsAdministratorEquivalent
+                                              : 'false'}
+                                          </p>
+                                          <p>{logindetails?.loginAccountSid}</p>
+                                          <p>{logindetails?.loginAccountDomain}</p>
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
                                   <div
                                     className='tab-pane fade'
@@ -2858,65 +1996,103 @@ const CustomAlerts = () => {
                                     aria-labelledby={`timelineTab_${index}`}
                                   >
                                     <div className='row'>
-                                      <div className='row'>
-                                        <div className='col-md-1'></div>
-                                        <div className='col-md-11'>
-                                          <div className='timeline-section h-300px scroll-y'>
-                                            <div
-                                              className='pt-6 h-600px'
-                                              style={{width: '95%', textWrap: 'wrap'}}
-                                            >
-                                              <div className='timeline-label'>
-                                                <div className='float-right fs-13 fc-gray text-right ds-reload ms-5'>
-                                                  <a href='#' onClick={handleRefreshTimeLine}>
-                                                    <i
-                                                      className={`fa fa-refresh link ${
-                                                        isRefreshingTimeLine ? 'rotate' : ''
-                                                      }`}
-                                                    />
-                                                  </a>
-                                                </div>
-                                                {alertHistory && alertHistory.length > 0 ? (
-                                                  alertHistory
-                                                    .sort((a, b) => b.activityId - a.activityId)
-                                                    .map((item) => {
-                                                      const formattedDateTime = getCurrentTimeZone(
-                                                        item.activityDate
-                                                      )
+                                      <div className='col-md-2'>
+                                        <div className='left-labels'>
+                                          <p>
+                                            <b>Endpoint Name</b>
+                                          </p>
+                                          <p>
+                                            <b>Endpoint OS Type</b>
+                                          </p>
+                                          <p>
+                                            <b>Endpoint OS Name</b>
+                                          </p>
+                                          <p>
+                                            <b>Endpoint OS Revision</b>
+                                          </p>
+                                          <p>
+                                            <b>Agent UUID</b>
+                                          </p>
+                                          <p>
+                                            <b>Agent Version</b>
+                                          </p>
+                                          <p>
+                                            <b>Agent Machine Type</b>
+                                          </p>
+                                          <p>
+                                            <b>Site ID</b>
+                                          </p>
+                                        </div>
+                                      </div>
 
-                                                      return (
-                                                        <div
-                                                          className='timeline-item'
-                                                          key={item.activityId}
-                                                        >
-                                                          <div className='timeline-label fw-bold text-gray-800 fs-6'>
-                                                            <p className='semi-bold'>
-                                                              {formattedDateTime}
-                                                            </p>
-                                                            <p className='text-muted normal'>
-                                                              {item.createedUser}
-                                                            </p>
-                                                          </div>
+                                      <div className='col-md-10'>
+                                        <div className='right-values'>
+                                          <p>{endpointdetails?.name}</p>
+                                          <p>{endpointdetails?.osName}</p>
+                                          <p>{endpointdetails?.osRevision}</p>
+                                          <p>{endpointdetails?.uuid}</p>
+                                          <p>{endpointdetails?.version}</p>
+                                          <p>{endpointdetails?.machineType}</p>
+                                          <p>
+                                            {endpointdetails?.siteId
+                                              ? endpointdetails?.siteId
+                                              : 'N/A'}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div
+                                    className='tab-pane fade'
+                                    id={`customRule_${index}`}
+                                    role='tabpanel'
+                                    aria-labelledby={`customRuleTab_${index}`}
+                                  >
+                                    <div className='row'>
+                                      <div className='col-md-2'>
+                                        <div className='left-labels'>
+                                          <p>
+                                            <b>Name</b>
+                                          </p>
+                                          <p>
+                                            <b>Login Failures</b>
+                                          </p>
+                                          <p>
+                                            <b>Description</b>
+                                          </p>
+                                          <p>
+                                            <b>Scope</b>
+                                          </p>
+                                          <p>
+                                            <b>Query Language</b>
+                                          </p>
+                                          <p>
+                                            <b>Query</b>
+                                          </p>
+                                          <p>
+                                            <b>Severity</b>
+                                          </p>
+                                          <p>
+                                            <b>ID</b>
+                                          </p>
+                                          <p>
+                                            <b>Auto Response</b>
+                                          </p>
+                                        </div>
+                                      </div>
 
-                                                          <div className='timeline-badge'>
-                                                            <i
-                                                              className={`fa fa-genderless ${getRandomClass()} fs-1`}
-                                                            ></i>
-                                                          </div>
-                                                          <div className='fw-semibold text-gray-700 ps-3 fs-7'>
-                                                            {item.primaryDescription}
-                                                          </div>
-                                                        </div>
-                                                      )
-                                                    })
-                                                ) : (
-                                                  <div className='text-gray-500 text-center'>
-                                                    No data found
-                                                  </div>
-                                                )}
-                                              </div>
-                                            </div>
-                                          </div>
+                                      <div className='col-md-10'>
+                                        <div className='right-values'>
+                                          <p>{ruleInfo?.name}</p>
+                                          <p>
+                                            {ruleInfo?.description ? ruleInfo?.description : 'N/A'}
+                                          </p>
+                                          <p>{ruleInfo?.scopeLevel}</p>
+                                          <p>{ruleInfo?.queryLang}</p>
+                                          <p>{ruleInfo?.s1ql}</p>
+                                          <p>{ruleInfo?.severity}</p>
+                                          <p>{ruleInfo?.id}</p>
+                                          <p>{ruleInfo?.treatAsThreat}</p>
                                         </div>
                                       </div>
                                     </div>
