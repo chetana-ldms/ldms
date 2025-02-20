@@ -81,7 +81,7 @@ export function Login() {
           if (authData.orgToolsData && authData.orgToolsData.length > 0) {
             const toolData = authData.orgToolsData[0]
             sessionStorage.setItem('toolID', toolData.toolId.toString())
-
+            sessionStorage.setItem('login_toolID', toolData.toolId.toString())
             toolData.toolOrgStructure.forEach((level) => {
               switch (level.levelName) {
                 case 'AccountName':

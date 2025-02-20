@@ -9,12 +9,12 @@ const SidebarMenuMain = () => {
   const intl = useIntl();
   const orgId = Number(sessionStorage.getItem('orgId'));
   const toolId = Number(sessionStorage.getItem('toolID'));
+  const login_toolID = Number(sessionStorage.getItem('login_toolID'));
   const roleId = Number(sessionStorage.getItem('roleID'));
-  const globalAdminRole = Number(sessionStorage.getItem("globalAdminRole"));
-  const clientAdminRole = Number(sessionStorage.getItem("clientAdminRole"));
   const isQA = process.env.REACT_APP_ENV === 'demo';
   const [features, setFeatures] = useState([]);
   const [mainFeatures, setMainFeatures] = useState([]);
+  console.log(mainFeatures, "mainFeatures")
   const [subFeatureId, setSubFeatureId] = useState([]);
   const [selectedFeatureId, setSelectedFeatureId] = useState(null); 
   console.log(selectedFeatureId, "selectedFeatureId")
@@ -48,10 +48,18 @@ const SidebarMenuMain = () => {
   useEffect(() => {
     reload();
   }, []);
-  const handleItemClick = (featureId) => {
-    setSelectedFeatureId(featureId);
-    sessionStorage.setItem('selectedFeatureId', featureId); 
+  const handleItemClick = (feature) => { 
+    sessionStorage.setItem('selectedFeatureId', feature.featureId);
+    setSelectedFeatureId(feature.featureId);
+    if(feature.toolId == 0){
+      sessionStorage.setItem('toolID',login_toolID)
+      console.log(login_toolID, "toolID")
+    }else{
+      sessionStorage.setItem('toolID', feature.toolId.toString())
+      console.log(feature.toolId, 'toolID')
+    }
   };
+
 
   const renderMenuItems = (features) => {
     return mainFeatures.map((feature) => {
@@ -63,7 +71,7 @@ const SidebarMenuMain = () => {
             to='#'
             icon={feature.featureImageUrl}
             title={feature.featureDisplayName}
-            onClick={() => handleItemClick(feature.featureId)} // Attach click handler
+            onClick={() => handleItemClick(feature)} 
           >
             {subFeatures.map(subFeature => (
               <SidebarMenuItem
@@ -71,7 +79,7 @@ const SidebarMenuMain = () => {
                 hasBullet={true}
                 to={subFeature.featureUrl}
                 title={subFeature.featureDisplayName}
-                onClick={() => handleItemClick(subFeature.featureId)} // Attach click handler
+                onClick={() => handleItemClick(subFeature)}
               />
             ))}
           </SidebarMenuItemWithSub>
@@ -84,7 +92,8 @@ const SidebarMenuMain = () => {
           icon={feature.featureImageUrl}
           title={feature.featureDisplayName}
           onClick={() => {
-            handleItemClick(feature.featureId); 
+            // handleItemClick(feature.featureId); 
+            handleItemClick(feature); 
           }}
         />
       );
