@@ -107,6 +107,7 @@ import UsersLocked from './qradar-pages/security/UsersLocked'
 import ApplicationLogs from './qradar-pages/application-logs/ApplicationLogs'
 import CustomAlerts from './qradar-pages/alerts/CustomAlerts'
 import EmailLogs from './qradar-pages/email-logs/EmailLogs'
+import ChatBot from './qradar-pages/chat-bot/ChatBot'
 
 
 const QradarPages = () => {
@@ -116,6 +117,7 @@ const QradarPages = () => {
         <Route path='alerts' element={<AlertsPage />} />
         <Route path='custom-alerts' element={<CustomAlerts />} />
         <Route path='email-logs' element={<EmailLogs />} />
+        <Route path='chat-bot' element={<ChatBot />} />
         <Route path='incidents' element={<IncidentsPage />} />
         <Route path='incidentsv1' element={<IncidentsPagev1 />} />
         <Route path='incidentscollaboration' element={<IncidentsPageCollaboration />} />
