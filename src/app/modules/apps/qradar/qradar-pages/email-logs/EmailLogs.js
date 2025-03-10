@@ -12,6 +12,7 @@ import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import EmailLogsDetailsPopUp from './EmailLogsDetailsPopUp'
 import {fetchMasterData} from '../../../../../api/Api'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
+import useFeatureActions from '../configuration/useFeatureActions'
 
 const EmailLogs = () => {
   const [limit, setLimit] = useState(20)
@@ -34,6 +35,15 @@ const EmailLogs = () => {
   const [dropdownData, setDropdownData] = useState({
     observableTagDropDown: [],
   })
+  const roleId = Number(sessionStorage.getItem('roleID'))
+  const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
+  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+
+  const isActionAuthorized = (actionName) => {
+    return featureActions?.some(
+      (action) => action.actionName === actionName && action.is_authorized === true
+    )
+  }
   const {observableTagDropDown} = dropdownData
   useEffect(() => {
     const fetchAllMasterData = async () => {

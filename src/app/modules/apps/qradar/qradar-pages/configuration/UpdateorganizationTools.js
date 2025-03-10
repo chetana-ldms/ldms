@@ -15,6 +15,7 @@ import {useErrorBoundary} from 'react-error-boundary'
 import {ToastContainer} from 'react-toastify'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
 import Pagination from '../../../../../../utils/Pagination'
+import ApiAuthConfig from './ApiAuthConfig '
 
 const UpdateOrganizationTools = () => {
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -23,7 +24,6 @@ const UpdateOrganizationTools = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [toolTypes, setToolTypes] = useState([])
-  console.log(toolTypes, 'toolTypes111111111')
   const [toolName, setToolName] = useState([])
   const [organizationList, setOrganizationList] = useState([])
   const [toolTypeAction, setToolTypeAction] = useState({
@@ -33,32 +33,29 @@ const UpdateOrganizationTools = () => {
     toolTypeName: '',
     toolID: '',
     toolName: '',
-    authKey: '',
     apiUrl: '',
   })
-  console.log(toolTypeAction, 'toolTypeAction11111')
   const [selectedToolAction, setSelectedToolAction] = useState('')
   const [toolActionTypes, setToolActionTypes] = useState([])
-  console.log(toolActionTypes, 'toolActionTypescheck')
   const [enteredApiUrl, setEnteredApiUrl] = useState('')
   const [tableData, setTableData] = useState([])
   const [filterValue, setFilterValue] = useState('')
   const [selectedToolType, setSelectedToolType] = useState(null)
   const [selectedToolId, setSelectedToolId] = useState(null)
-  console.log(selectedToolId, 'selectedToolId')
   const [initialToolActions, setInitialToolActions] = useState([])
-  console.log(initialToolActions, 'initialToolActions')
   const [isEditing, setIsEditing] = useState(false)
   const [editingIndex, setEditingIndex] = useState(null)
+  const [orgToolID, setOrgToolID] = useState('')
+  const [orgToolActionId, setOrgToolActionId] = useState('')
+  const [selectedOrgToolActionId, setSelectedOrgToolActionId] = useState('')
   const {id} = useParams()
   const toolID = useRef()
   const orgID = useRef()
-  const authKey = useRef()
   const apiUrl = useRef()
-  const errors = {}
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [itemToDelete, setItemToDelete] = useState(null)
   const location = useLocation()
+  const [showModal, setShowModal] = useState(false)
   const [save, setSave] = useState(location.state?.save || '')
   useEffect(() => {
     setSave(location.state?.save || '')
@@ -76,9 +73,9 @@ const UpdateOrganizationTools = () => {
           toolTypeName: data.toolTypeName,
           toolID: data.toolID,
           toolName: data.toolName,
-          authKey: data.authKey,
           // apiUrl: data.apiUrl
         })
+        setOrgToolID(data.orgToolID)
         handleChange(data, 'toolTypeName')
         setInitialToolActions(data.toolActions || [])
         toolData(data.toolID)
@@ -122,40 +119,18 @@ const UpdateOrganizationTools = () => {
   const filteredList = filterValue
     ? tableData.filter((item) => item.toolAction.toLowerCase().includes(filterValue.toLowerCase()))
     : tableData
-
   const handleFilterChange = (event) => {
     setFilterValue(event.target.value)
   }
 
   const handleSubmit = async (event, toolTypeAction) => {
     setLoading(true)
-    if (!toolID.current.value) {
-      errors.toolID = 'Enter Tool'
-      setLoading(false)
-      return errors
-    }
-    if (!orgID.current.value) {
-      errors.orgID = 'Enter Organization'
-      setLoading(false)
-      return errors
-    }
-    if (!authKey.current.value) {
-      errors.authKey = 'Enter Auth Key'
-      setLoading(false)
-      return errors
-    }
-    if (!tableData.length > 0) {
-      errors.tableData = 'Enter Table Data'
-      setLoading(false)
-      return errors
-    }
     event.preventDefault()
     const modifiedUserId = Number(sessionStorage.getItem('userId'))
     const modifiedDate = new Date().toISOString()
     var data = {
       toolID: toolTypeAction.toolID,
       orgID: toolTypeAction.orgID,
-      authKey: toolTypeAction.authKey,
       orgToolID: Number(id),
       modifiedDate,
       modifiedUserId,
@@ -219,7 +194,7 @@ const UpdateOrganizationTools = () => {
   const handleChange = (event, field) => {
     const selectedValue = event?.target?.value
 
-    if (field === 'authKey' || field === 'apiUrl') {
+    if (field === 'apiUrl') {
       setToolTypeAction((prevState) => ({
         ...prevState,
         [field]: selectedValue,
@@ -322,15 +297,13 @@ const UpdateOrganizationTools = () => {
   }
 
   const handleEdit = (index) => {
-    const actualIndex = tableData.findIndex(
-      (item) => item === filteredList[index]
-    );
-    setEditingIndex(actualIndex);
-    const editedItem = tableData[actualIndex];
-    setSelectedToolAction(editedItem.toolAction);
-    setEnteredApiUrl(editedItem.apiUrl);
-    setIsEditing(true);
-  };
+    const actualIndex = tableData.findIndex((item) => item === filteredList[index])
+    setEditingIndex(actualIndex)
+    const editedItem = tableData[actualIndex]
+    setSelectedToolAction(editedItem.toolAction)
+    setEnteredApiUrl(editedItem.apiUrl)
+    setIsEditing(true)
+  }
 
   return (
     <div className='config card'>
@@ -345,6 +318,22 @@ const UpdateOrganizationTools = () => {
         </h3>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
+            <div className=''>
+              <button
+                type='button'
+                className='btn btn-primary btn-sm'
+                onClick={() => setShowModal(true)}
+              >
+                API Auth Configuration
+              </button>
+            </div>
+
+            <ApiAuthConfig
+              show={showModal}
+              onClose={() => setShowModal(false)}
+              orgToolID={orgToolID}
+              selectedOrgToolActionId={selectedOrgToolActionId}
+            />
             <div className='d-flex justify-content-end me-5'>
               <button
                 type='submit'
@@ -447,24 +436,7 @@ const UpdateOrganizationTools = () => {
                 </select>
               </div>
             </div>
-            <div className='col-lg-12 mb-4 mt-5 mb-lg-0'>
-              <div className='fv-row mb-0'>
-                <label htmlFor='authKey' className='form-label fs-6 fw-bolder mb-3'>
-                  Authentication Key
-                </label>
-                <input
-                  type='text'
-                  required
-                  className='form-control form-control-lg form-control-solid'
-                  id='authKey'
-                  ref={authKey}
-                  maxLength={4000}
-                  onChange={(e) => handleChange(e, 'authKey')}
-                  value={toolTypeAction.authKey}
-                  placeholder='Ex: xxxxxxxxxxxxxxxxx'
-                />
-              </div>
-            </div>
+
             <div className='card-body pad-10 mt-5'>
               <div className='row mb-6'>
                 <div className='col-lg-4 mb-4 mb-lg-0'>
@@ -548,24 +520,36 @@ const UpdateOrganizationTools = () => {
                         <td className='wrap-txt' title={item.apiUrl}>
                           {item.apiUrl}
                         </td>
-                        <td>
+                        <td className='d-flex align-items-center'>
                           <span
                             title='Edit'
                             onClick={() => handleEdit(index)}
-                            style={{borderRadius: '50%', marginRight: '10px'}}
+                            style={{borderRadius: '50%', marginRight: '10px', cursor: 'pointer'}}
                             type='button'
                           >
                             <i className='fa fa-pencil link' />
                           </span>
+
                           <span
-                            className='ms-8'
+                            className='ms-3'
                             title='Remove'
                             onClick={() => handleDelete(index)}
-                            style={{borderRadius: '50%'}}
+                            style={{borderRadius: '50%', cursor: 'pointer'}}
                             type='button'
                           >
                             <i className='fa fa-trash red' />
                           </span>
+                          <button
+                            type='button'
+                            className='btn btn-primary btn-sm ms-3'
+                            title='API Auth Configuration'
+                            onClick={() => {
+                              setSelectedOrgToolActionId(item.orgToolActionId)
+                              setShowModal(true)
+                            }}
+                          >
+                            Api Auth
+                          </button>
                         </td>
                       </tr>
                     ))}

@@ -32,7 +32,6 @@ const AddOrganizationTools = () => {
 
   const toolID = useRef();
   const orgID = useRef();
-  const authKey = useRef();
   const apiUrl = useRef();
   const apiUrlInTable = useRef();
   const errors = {};
@@ -47,21 +46,11 @@ const AddOrganizationTools = () => {
       setLoading(false);
       return errors;
     }
-    if (!authKey.current.value) {
-      errors.authKey = "Enter Auth key";
-      setLoading(false);
-      return errors;
-    }
     if (!tableData.length > 0) {
       errors.tableData = "Enter Table Data";
       setLoading(false);
       return errors;
     }
-    // if (!apiUrl.current.value) {
-    //   errors.apiUrl = 'Enter API Url'
-    //   setLoading(false)
-    //   return errors
-    // }
     setLoading(true);
     event.preventDefault();
     const createdUserId = Number(sessionStorage.getItem("userId"));
@@ -69,7 +58,6 @@ const AddOrganizationTools = () => {
     var data = {
       toolID: toolID.current.value,
       orgID: orgID.current.value,
-      authKey: authKey.current.value,
       createdDate,
       createdUserId,
       lastReadPKID: 0,
@@ -350,25 +338,6 @@ const AddOrganizationTools = () => {
                     </select>
                   )}
                 </div>
-              </div>
-            </div>
-            <div className="col-lg-12 mb-4 mb-lg-0">
-              <div className="fv-row mb-0">
-                <label
-                  htmlFor="authKey"
-                  className="form-label fs-6 fw-bolder mb-3"
-                >
-                  Authentication Key
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-lg form-control-solid"
-                  id="authKey"
-                  maxLength={4000}
-                  ref={authKey}
-                  placeholder="Ex: xxxxxxxxxxxxxxxxx"
-                  required
-                />
               </div>
             </div>
 

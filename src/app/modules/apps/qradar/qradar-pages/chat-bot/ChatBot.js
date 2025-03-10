@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { fetchADUserBOTAskUrl } from "../../../../../api/ChatBotApi";
 import { Container, Form, Button, Spinner, InputGroup } from "react-bootstrap";
+import useFeatureActions from "../configuration/useFeatureActions";
 
 function ChatBot() {
   const [query, setQuery] = useState("");
@@ -9,6 +10,15 @@ function ChatBot() {
   const chatBoxRef = useRef(null); // Ref for scrolling chat box
   const orgId = Number(sessionStorage.getItem("orgId"));
   const toolId = Number(sessionStorage.getItem("toolID"));
+  const roleId = Number(sessionStorage.getItem('roleID'))
+  const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
+  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+
+  const isActionAuthorized = (actionName) => {
+    return featureActions?.some(
+      (action) => action.actionName === actionName && action.is_authorized === true
+    )
+  }
 
   useEffect(() => {
     if (chatBoxRef.current) {

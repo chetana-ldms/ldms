@@ -45,6 +45,10 @@ const AllMasterDataDeleteUrl= process.env.REACT_APP_MASTERDATA_DELETE_URL
 const ConfigurationDataUrl=process.env.REACT_APP_CONFIGURATION_DATA_URL
 const ConfigurationDataDeleteUrl=process.env.REACT_APP_CONFIGURATION_DATA_DELETE_URL
 const ConfigurationDataManageUrl=process.env.REACT_APP_CONFIGURATION_DATA_MANAGE_URL
+const APIAuthDataDetailsUrl="http://10.41.3.232:501/api/LDPlattform/v1/APIAuthData/Details"
+const APIAuthDataAddUrl ="http://10.41.3.232:501/api/LDPlattform/v1/APIAuthData/Add"
+const APIAuthDataDeleteUrl="http://10.41.3.232:501/api/LDPlattform/v1/APIAuthData/Delete"
+const APIAuthDataUpdateUrl="http://10.41.3.232:501/api/LDPlattform/v1/APIAuthData/Update"
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {
@@ -838,6 +842,74 @@ export const fetchConfigurationDataDeleteUrl = async (data) => {
 export const fetchConfigurationDataManageUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${ConfigurationDataManageUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchAPIAuthDataDetailsUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${APIAuthDataDetailsUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchAPIAuthDataAddUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${APIAuthDataAddUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchAPIAuthDataDeleteUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${APIAuthDataDeleteUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchAPIAuthDataUpdateUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${APIAuthDataUpdateUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
