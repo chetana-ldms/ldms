@@ -1,7 +1,8 @@
 import FetchWithToken from "../modules/auth/FetchWithToken"
 
-const EmaillogsOutboundUrl ="http://10.41.3.232:501/api/Microsoft/v1/Emaillogs/Outbound"
-const EmaillogsOutboundStreamUrl="http://10.41.3.232:501/api/Microsoft/v1/Emaillogs/Outbound/Stream"
+const EmaillogsOutboundUrl =process.env.REACT_APP_EMAIL_LOGS_OUTBOUND_URL
+const EmaillogsOutboundStreamUrl=process.env.REACT_APP_EMAIL_LOGS_OUTBOUND_STRAM_URL
+
 export const fetchEmaillogsOutboundUrl = async (data) => {
     try {
       const response = await FetchWithToken(`${EmaillogsOutboundUrl}`, {

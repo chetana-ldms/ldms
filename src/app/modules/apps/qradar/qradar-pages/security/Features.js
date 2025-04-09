@@ -12,6 +12,7 @@ import {
 import { notify, notifyFail } from '../components/notification/Notification'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
 import { fetchLDPToolsUrl } from '../../../../../api/ConfigurationApi'
+import { truncateText } from '../../../../../../utils/TruncateText'
 
 function Features() {
   const navigate = useNavigate()
@@ -245,7 +246,7 @@ function Features() {
                   <tr key={index} className='fs-12 table-row'>
                     <td>{item.featureName}</td>
                     <td>{item.featureDisplayName}</td>
-                    <td>{item.featureUrl}</td>
+                    <td title={item.featureUrl}>{truncateText(item.featureUrl, 30)}</td>
                     <td>{item.featureImageUrl}</td>
                     <td>
                       {isActionAuthorized('View') ? (

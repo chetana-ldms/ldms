@@ -22,7 +22,7 @@ const HeaderUserMenu: FC = () => {
 
       if (isSuccess) {
         sessionStorage.clear();
-        navigate('/auth'); // Redirect to the login page
+        navigate('/auth');
       }
     } catch (error) {
       console.log(error);

@@ -17,9 +17,9 @@ const ThreatsActionUrl = process.env.REACT_APP_ACTION_URL
 const AlertsStatusUpdateUrl = process.env.REACT_APP_ALERTS_STATUS_UPDATE_URL
 const MitigateActionValidationUrl = process.env.REACT_APP_MITIGATE_ACTION_VALIDATION_URL
 const ThreatFileDownloadUrl=process.env.REACT_APP_THREAT_FILEDOWNLOAD_URL
-const CustomAlertsUrl = "http://10.41.3.232:501/api/Alerts/v1/CustomAlerts"
-const CustomAlertsAnalystVerdictUpdateUrl="http://10.41.3.232:501/api/Alerts/v1/CustomAlerts/AnalystVerdict/Update"
-const CustomAlertsIncidentStatusUpdateUrl="http://10.41.3.232:501/api/Alerts/v1/CustomAlerts/IncidentStatus/Update"
+const CustomAlertsUrl = process.env.REACT_APP_CUSTOM_ALERTS_URL
+const CustomAlertsAnalystVerdictUpdateUrl=process.env.REACT_APP_CUSTOM_ALERTS_ANALYSTVERDICT_UPDATE_URL
+const CustomAlertsIncidentStatusUpdateUrl=process.env.REACT_APP_CUSTOM_ALERTS_INCIDENT_STATUS_UPDATE_URL
 
 export const fetchAlertData = async (data) => {
   try {

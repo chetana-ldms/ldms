@@ -453,9 +453,9 @@ const DashboardWrapper = () => {
                         Mean Time to Resolve
                       </h4>
                       <span className='fw-bold fs-18 mt-10 mb-10'>
-                        {parseInt(alertsResolvedMeanTime.alertsResolvedMeanTime) === 0
+                        {alertsResolvedMeanTime?.alertsResolvedMeanTime === "0"
                           ? '03:10:10'
-                          : alertsResolvedMeanTime.alertsResolvedMeanTime}
+                          : alertsResolvedMeanTime?.alertsResolvedMeanTime}
                       </span>
 
                       {/* <span className="span-red">

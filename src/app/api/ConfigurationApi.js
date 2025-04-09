@@ -45,10 +45,10 @@ const AllMasterDataDeleteUrl= process.env.REACT_APP_MASTERDATA_DELETE_URL
 const ConfigurationDataUrl=process.env.REACT_APP_CONFIGURATION_DATA_URL
 const ConfigurationDataDeleteUrl=process.env.REACT_APP_CONFIGURATION_DATA_DELETE_URL
 const ConfigurationDataManageUrl=process.env.REACT_APP_CONFIGURATION_DATA_MANAGE_URL
-const APIAuthDataDetailsUrl="http://10.41.3.232:501/api/LDPlattform/v1/APIAuthData/Details"
-const APIAuthDataAddUrl ="http://10.41.3.232:501/api/LDPlattform/v1/APIAuthData/Add"
-const APIAuthDataDeleteUrl="http://10.41.3.232:501/api/LDPlattform/v1/APIAuthData/Delete"
-const APIAuthDataUpdateUrl="http://10.41.3.232:501/api/LDPlattform/v1/APIAuthData/Update"
+const APIAuthDataDetailsUrl=process.env.REACT_APP_APIAUTHDATA_DETAILS_URL
+const APIAuthDataAddUrl =process.env.REACT_APP_APIAUTHDATA_ADD_URL
+const APIAuthDataDeleteUrl=process.env.REACT_APP_APIAUTHDATA_DELETE_URL
+const APIAuthDataUpdateUrl=process.env.REACT_APP_APIAUTHDATA_UPDATE_URL
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {

@@ -1,6 +1,6 @@
 
 import FetchWithToken from "../modules/auth/FetchWithToken";
-const ADUserBOTAskUrl ="http://10.41.3.232:501/api/BOT/v1/ADUserBOT/Ask"
+const ADUserBOTAskUrl =process.env.REACT_APP_ADUSER_BOT_ASK_URL
 
 
 export const fetchADUserBOTAskUrl = async (data) => {

@@ -82,6 +82,7 @@ export function Login() {
             const toolData = authData.orgToolsData[0]
             sessionStorage.setItem('toolID', toolData.toolId.toString())
             sessionStorage.setItem('login_toolID', toolData.toolId.toString())
+            if(toolData.toolOrgStructure !==null)
             toolData.toolOrgStructure.forEach((level) => {
               switch (level.levelName) {
                 case 'AccountName':
@@ -123,12 +124,15 @@ export function Login() {
             try {
               const data = {
                 orgId: orgId,
-                toolId: toolId,
+                toolId: toolId ? toolId : 0,
                 roleId: roleId,
                 parentFeatureId: 0,
               }
               const response = await fetchFeaturesAuthorizedUrl(data)
               const features = response.features
+              if(response.isSuccess == false){
+                setMessage('Please contact administrator')
+              }
               if (features.length > 0) {
                 const featureUrl = features[0]?.featureUrl
                 navigate(featureUrl)

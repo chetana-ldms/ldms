@@ -4,6 +4,7 @@ import { useIntl } from 'react-intl';
 import { SidebarMenuItemWithSub } from './SidebarMenuItemWithSub';
 import { SidebarMenuItem } from './SidebarMenuItem';
 import { fetchFeaturesAuthorizedUrl } from '../../../../../app/api/Api';
+import { toAbsoluteUrl } from '../../../../helpers';
 
 const SidebarMenuMain = () => {
   const intl = useIntl();
@@ -59,19 +60,35 @@ const SidebarMenuMain = () => {
       console.log(feature.toolId, 'toolID')
     }
   };
-
-
   const renderMenuItems = (features) => {
     return mainFeatures.map((feature) => {
-      if (feature.subfeatureExists === 1) {
+      if (feature.featureUrl.startsWith("http")) {
+        return (
+          <div key={feature.featureId} className="d-flex align-items-center honeypot mt-1">
+            <a
+              href={feature.featureUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="white"
+            >
+              <img
+                alt={feature.featureDisplayName}
+                src={toAbsoluteUrl(feature.featureImageUrl)}
+                className="h-25px me-2 w-30px"
+              />
+              {feature.featureDisplayName}
+            </a>
+          </div>
+        );
+      } else if (feature.subfeatureExists === 1) {
         const subFeatures = features.filter(sub => sub.parentFeatureId === feature.featureId);
         return (
           <SidebarMenuItemWithSub
             key={feature.featureId}
-            to='#'
+            to="#"
             icon={feature.featureImageUrl}
             title={feature.featureDisplayName}
-            onClick={() => handleItemClick(feature)} 
+            onClick={() => handleItemClick(feature)}
           >
             {subFeatures.map(subFeature => (
               <SidebarMenuItem
@@ -91,27 +108,16 @@ const SidebarMenuMain = () => {
           to={feature.featureUrl}
           icon={feature.featureImageUrl}
           title={feature.featureDisplayName}
-          onClick={() => {
-            // handleItemClick(feature.featureId); 
-            handleItemClick(feature); 
-          }}
+          onClick={() => handleItemClick(feature)}
         />
       );
     });
   };
-
+  
+  
   return (
     <>
       {renderMenuItems(features)}
-
-      {/* {isQA && (
-        <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/general/gen003.svg' title='Playbook'>
-          <SidebarMenuItem hasBullet={true} to='/qradar/demo/v1' title='Alert Types' onClick={() => handleItemClick('playbook-alert-types')} />
-          <SidebarMenuItem hasBullet={true} to='/qradar/demoalert/updated' title='Playbook Alert' onClick={() => handleItemClick('playbook-alert')} />
-          <SidebarMenuItem hasBullet={true} to='/qradar/incidentsDemo' title='Incidents' onClick={() => handleItemClick('playbook-incidents')} />
-          <SidebarMenuItem hasBullet={true} to='/qradar/demoplaybooks' title='Alert Playbooks' onClick={() => handleItemClick('playbook-alert-playbooks')} />
-        </SidebarMenuItemWithSub>
-      )} */}
       {/* <SidebarMenuItemWithSub to='#' icon='/media/icons/duotune/communication/com008.svg' title='Applications'>
   <SidebarMenuItem hasBullet={true} to='/qradar/application/risk' title='Risk' />
   <SidebarMenuItem hasBullet={true} to='/qradar/application/inventory' title='Inventory' />
@@ -139,6 +145,69 @@ const SidebarMenuMain = () => {
         fontIcon='bi-sticky'
         icon='/media/icons/duotune/abstract/abs013.svg'
       ></SidebarMenuItem> */}
+  
+      {/* <div className="d-flex align-items-center honeypot mt-1">
+      <a
+        href="https://trial-7466868.okta.com/app/trial-7466868_sentinelone_1/exkpr18hyrpWmBuIi697/sso/saml"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="white"
+      >
+        <img
+            alt='Logo'
+            src={toAbsoluteUrl('/media/SentinelOne.png')}
+            className='h-25px me-2 w-30px'
+          />
+        SentinelOne
+      </a>
+    </div> */}
+   
+    {/* <div className="d-flex align-items-center honeypot mt-1">
+      <a
+        href="https://login.microsoftonline.com/e525ecf1-01af-442d-8f79-3574ddee69f7/saml2?SAMLRequest=jZJPj9owEMXvfAqUe3Bs7GSxAIku%2FYNEF7TQHnpBJhnvWkrs1OOw7bevE9puV2pX9XE87zdvnmaOqqlbuerCo72Hrx1gGI3H35raohy%2BFknnrXQKDUqrGkAZSnlYfdxKNslk611wpauTF6LXNQoRfDDO9qLNepHs7t5ud%2B83d6eKiaLgZ32jCsbLs9KZUHoKNBdFTjNeFAxEXmW6F34Gj5GxSCJyACF2sLEYlA2xmDGRZtOUzo6US55Lzr%2F0Xeu4n7EqDMrHEFqUhNTuwdhJY0rv0OngbG0sTErXEBBMQKlpmlGlU85Zld7oYpZORcGrCiCf6YL0G7Mevv8ZxhtjK2MfXk%2FhfG1C%2BeF43Kf73eHYI1a%2Fsrl1FrsG%2FAH8xZTw6X777Fe1CDRlWUYnCDbuA7WLhi0E8gTn%2BG3IJY4gXWThdTuC6NLBKKF5LljBBI%2BJTnORiSlPlnH0eDzvG%2BQQpF%2F%2Bx7DIPOHV3ykewsVU4P%2BGn5M%2Fwc%2BjWnkXY9ms96425feh3r93zjcq%2FDs9OqFDxVSpHlplZ7GF0mgDVfIbs6pr93TrQQVYJMF3kIzJcjS6mnl58csf
+&RelayState=https%3a%2f%2fapse1-2001.sentinelone.net%2fdashboard"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="white"
+      >
+        <img
+            alt='Logo'
+            src={toAbsoluteUrl('/media/SentinelOne.png')}
+            className='h-25px me-2 w-30px'
+          />
+        SentinelOne Azure
+      </a>
+    </div> */}
+      {/* <div className="d-flex align-items-center honeypot mt-1">
+      <a
+        href="https://trial-7466868.okta.com/app/trial-7466868_freshdesk_1/exkq1zlt80XDkZhxN697/sso/saml"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="white"
+      >
+        <img
+            alt='Logo'
+            src={toAbsoluteUrl('/media/FreshDesk.png')}
+            className='h-25px me-2 w-30px'
+          />
+        Freshdesk
+      </a>
+    </div>
+    <div className="d-flex align-items-center honeypot mt-1">
+      <a
+        href="https://trial-7466868.okta.com/app/huntress/exkq22lzcue3n4ohQ697/sso/saml "
+        target="_blank"
+        rel="noopener noreferrer"
+        className="white"
+      >
+        <img
+            alt='Logo'
+            src={toAbsoluteUrl('/media/Huntress.png')}
+            className='h-25px me-2 w-30px'
+          />
+        Huntress
+      </a>
+    </div> */}
 
     </>
   );
