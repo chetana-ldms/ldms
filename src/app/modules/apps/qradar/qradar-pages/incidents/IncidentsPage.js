@@ -20,6 +20,7 @@ import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import './IncidentPagination.css'
 import {useErrorBoundary} from 'react-error-boundary'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
+import {fetchOrganizationToolsSecurityUrl} from '../../../../../api/securityApi'
 
 const IncidentsPage = () => {
   const handleError = useErrorBoundary()
@@ -41,6 +42,7 @@ const IncidentsPage = () => {
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
   const [selectedIncident, setSelectedIncident] = useState({})
+  console.log(selectedIncident, "selectedIncident")
   const [refreshParent, setRefreshParent] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [activePage, setActivePage] = useState(1)
@@ -51,7 +53,27 @@ const IncidentsPage = () => {
   const [daysFromDashBoard, setDaysFromDashBoard] = useState(location.state?.days || '')
   const [selectedDays, setSelectedDays] = useState([])
   const [selectedFilterValue, setSelectedFilterValue] = useState(1)
-
+  const [selectedToolId, setSelectedToolId] = useState('')
+  const [tools, setTools] = useState([])
+  const toolRef = useRef()
+useEffect(() => {
+    const reload = async () => {
+      try {
+        setLoading(true)
+        const data = await fetchOrganizationToolsSecurityUrl(orgId)
+        const modifiedTools = [
+          {toolId: -1, toolName: 'Local Incident'},
+          ...data,
+        ]
+        setTools(modifiedTools)
+        setLoading(false)
+      } catch (error) {
+        console.log(error)
+        setLoading(false)
+      }
+    }
+    reload()
+  }, [orgId])
   useEffect(() => {
     const fetchIncidentStatusAndSortOptions = async () => {
       const statusDataRequest = {maserDataType: 'incident_status', orgId: orgId, toolId: toolId}
@@ -130,6 +152,9 @@ const IncidentsPage = () => {
           levelValue: groupId || '',
         },
       ],
+      if (toolId) {
+        data.toolId = toolId
+      }
     }
     if (statusFromDashBoard) {
       const statusItem = statusDropDown.find((item) => item.dataValue === statusFromDashBoard)
@@ -137,7 +162,7 @@ const IncidentsPage = () => {
         data.statusId = statusItem.dataID
         data.searchDurationInDays = daysFromDashBoard
       }
-    } else if(!statusFromDashBoard){
+    } else if (!statusFromDashBoard) {
       data.searchDurationInDays = selectedFilterValue || 0
     }
     try {
@@ -165,9 +190,9 @@ const IncidentsPage = () => {
   }
 
   const handleSearch = async () => {
-    setSelectedIncident({});
-    setActivePage(1);
-    setStatusFromDashBoard('');
+    setSelectedIncident({})
+    setActivePage(1)
+    setStatusFromDashBoard('')
     const data = {
       orgID: orgId,
       paging: {
@@ -193,26 +218,28 @@ const IncidentsPage = () => {
           levelValue: groupId || '',
         },
       ],
-    };
-    try {
-      setLoading(true);
-      const response = await fetchGetIncidentSearchResult(data);
-      setIncident(response.incidentList);
-      setTotalIncidentsCount(response.totalIncidentsCount);
-      const total = response.totalIncidentsCount;
-      setpageCount(Math.ceil(total / limit));
-      setLoading(false);
-    } catch (error) {
-      handleError(error);
-      setLoading(false);
+      if (toolId) {
+        data.toolId = toolId
+      }
     }
-  };
-  const handleFilterChange = async (e) => {
-    setSelectedIncident({});
-    const value = e.target.value
+    try {
+      setLoading(true)
+      const response = await fetchGetIncidentSearchResult(data)
+      setIncident(response.incidentList)
+      setTotalIncidentsCount(response.totalIncidentsCount)
+      const total = response.totalIncidentsCount
+      setpageCount(Math.ceil(total / limit))
+      setLoading(false)
+    } catch (error) {
+      handleError(error)
+      setLoading(false)
+    }
+  }
+  const fetchFilteredIncidents = async (toolId, filterValue) => {
+    setSelectedIncident({})
     setDaysFromDashBoard('')
-    setSelectedFilterValue(value)
     setActivePage(1)
+  
     const data = {
       orgID: orgId,
       paging: {
@@ -223,7 +250,7 @@ const IncidentsPage = () => {
       statusId: status.current?.value || 0,
       searchText: searchValue || '',
       sortOptionId: sortOption.current?.value || 0,
-      searchDurationInDays: value || 0,
+      searchDurationInDays: filterValue || 0,
       orgAccountStructureLevel: [
         {
           levelName: 'AccountId',
@@ -238,20 +265,36 @@ const IncidentsPage = () => {
           levelValue: groupId || '',
         },
       ],
-    };
+    }
+    if (toolId) {
+      data.toolId = toolId
+    }
+  
     try {
-      setLoading(true);
-      const response = await fetchGetIncidentSearchResult(data);
-      setIncident(response.incidentList);
-      setTotalIncidentsCount(response.totalIncidentsCount);
-      const total = response.totalIncidentsCount;
-      setpageCount(Math.ceil(total / limit));
-      setLoading(false);
+      setLoading(true)
+      const response = await fetchGetIncidentSearchResult(data)
+      setIncident(response.incidentList)
+      setTotalIncidentsCount(response.totalIncidentsCount)
+      setpageCount(Math.ceil(response.totalIncidentsCount / limit))
     } catch (error) {
-      handleError(error);
-      setLoading(false);
+      handleError(error)
+    } finally {
+      setLoading(false)
     }
   }
+  
+  const handleToolChange = (e) => {
+    const toolId = e.target.value
+    setSelectedToolId(toolId)
+    const filterValue = selectedFilterValue || ''
+    fetchFilteredIncidents(toolId, filterValue)
+  }
+  const handleFilterChange = (e) => {
+    const filterValue = e.target.value
+    setSelectedFilterValue(filterValue)
+    fetchFilteredIncidents(selectedToolId, filterValue)
+  }
+    
 
   const handleIncidentClick = (item) => {
     setSelectedIncident(item)
@@ -283,10 +326,10 @@ const IncidentsPage = () => {
   }, [refreshParent])
 
   const handlePageClick = async (datas) => {
-    const selectedPage = datas.selected + 1;
-    setCurrentPage(selectedPage);
-    setActivePage(selectedPage);
-  
+    const selectedPage = datas.selected + 1
+    setCurrentPage(selectedPage)
+    setActivePage(selectedPage)
+
     const data = {
       orgID: orgId,
       paging: {
@@ -308,39 +351,36 @@ const IncidentsPage = () => {
           levelValue: groupId || '',
         },
       ],
-    };
-  
+    }
+
     if (statusFromDashBoard) {
-      const statusItem = statusDropDown.find(
-        (item) => item.dataValue === statusFromDashBoard
-      );
+      const statusItem = statusDropDown.find((item) => item.dataValue === statusFromDashBoard)
       if (statusItem) {
-        data.statusId = statusItem.dataID;
-        data.searchDurationInDays = daysFromDashBoard;
+        data.statusId = statusItem.dataID
+        data.searchDurationInDays = daysFromDashBoard
       }
     }
     if (!statusFromDashBoard) {
-    if (searchValue || status || sortOption || selectedFilterValue) {
-      data.statusId= status.current?.value || 0;
-      data.searchText= searchValue || '';
-      data.sortOptionId= sortOption.current?.value || 0;
-      data.searchDurationInDays = selectedFilterValue || 0;
+      if (searchValue || status || sortOption || selectedFilterValue) {
+        data.statusId = status.current?.value || 0
+        data.searchText = searchValue || ''
+        data.sortOptionId = sortOption.current?.value || 0
+        data.searchDurationInDays = selectedFilterValue || 0
+      }
+    }
+
+    try {
+      setLoading(true)
+      const response = await fetchGetIncidentSearchResult(data)
+      setIncident(response.incidentList)
+      setTotalIncidentsCount(response.totalIncidentsCount)
+      setpageCount(Math.ceil(response.totalIncidentsCount / limit))
+      setLoading(false)
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
     }
   }
-  
-    try {
-      setLoading(true);
-      const response = await fetchGetIncidentSearchResult(data);
-      setIncident(response.incidentList);
-      setTotalIncidentsCount(response.totalIncidentsCount);
-      setpageCount(Math.ceil(response.totalIncidentsCount / limit));
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  };
-  
 
   const handlePageSelect = (event) => {
     const selectedPerPage = event.target.value
@@ -367,24 +407,35 @@ const IncidentsPage = () => {
                       Incidents <span className='white'>({totalIncidentsCount})</span>
                     </span>
                   </h4>
-                  <div className='w-100px mt-1'>
-                        <select
-                          className='form-select form-select-sm'
-                          data-kt-select2='true'
-                          data-placeholder='Select option'
-                          data-dropdown-parent='#kt_menu_637dc885a14bb'
-                          data-allow-clear='true'
-                          value={selectedFilterValue}
-                          onChange={handleFilterChange}
-                        >
-                          <option value=''>Select</option>
-                          {selectedDays?.map((day, index) => (
-                            <option key={index} value={day.dataValue}>
-                              {day.dataName}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                  <div className='w-115px mt-1'>
+                    <select
+                      className='form-select form-select-sm ps-1 pe-0'
+                      value={selectedToolId}
+                      onChange={handleToolChange}
+                    >
+                      <option value=''>Select Tools</option>
+                      {tools?.map((item, index) => (
+                        <option key={index} value={item.toolId}>
+                          {item.toolName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className='w-86px mt-1'>
+                    <select
+                      className='form-select form-select-sm ps-1 pe-0'
+                      value={selectedFilterValue}
+                      onChange={handleFilterChange}
+                    >
+                      <option value=''>Select</option>
+                      {selectedDays?.map((day, index) => (
+                        <option key={index} value={day.dataValue}>
+                          {day.dataName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
                 <div className='p-1 bd-highlight'></div>
 
@@ -466,8 +517,8 @@ const IncidentsPage = () => {
                               <div className='row'>
                                 <div className='text-dark'>
                                   <a href='#' className='text-dark'>
-                                    <span className='incident-name' title={item.description}>
-                                      {item.description}
+                                    <span className='incident-name' title={item.subject}>
+                                      {item.subject}
                                     </span>
                                   </a>
                                 </div>

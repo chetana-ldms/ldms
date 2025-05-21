@@ -10,7 +10,24 @@ const alertsByAlertIdsUrl = process.env.REACT_APP_ALERTS_BY_ALERT_IDS_URL
 const getChatHistoryUrl = process.env.REACT_APP_GET_CHAT_HISTORY_URL
 const addChatMessageUrl = process.env.REACT_APP_SEND_CHAT_MESSAGE_URL
 const DownloadAttachmentUrl = process.env.REACT_APP_DOWNLOAD_ATTACHMENT_URL
+const masterDataUrl="http://10.41.3.232:501/api/PlattformMasterData/v1/MasterDataByTool"
 
+export const fetchMasterData = async (data) => {
+  try {
+    const response = await FetchWithToken(`${masterDataUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+
+    const responseData = await response.json()
+    return responseData.masterData.map((obj) => obj)
+  } catch (error) {
+    console.log(error)
+  }
+}
 export const fetchCreateIncident = async (data) => {
   try {
     const response = await FetchWithToken(`${createIncidentUrl}`, {

@@ -5,7 +5,7 @@ import {
   fetchAllMasterDataManageUrl,
   fetchLDPToolsUrl,
   fetchOrganizationsUrl,
-  fetchAllMasterDataUrl
+  fetchAllMasterDataUrl,
 } from '../../../../../api/ConfigurationApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
@@ -29,6 +29,8 @@ const UpdateMasterData = () => {
   const [selectedDataValue, setSelectedDataValue] = useState('')
   const [toolType, setToolType] = useState('')
   const [organizationName, setOrganizationName] = useState('')
+  const [mapDataValue, setMapDataValue] = useState('')
+  const [mapDataId, setMapDataId] = useState('')
 
   const reloadOrg = async () => {
     try {
@@ -59,7 +61,7 @@ const UpdateMasterData = () => {
 
       // Filter Data Name and Data Value options based on selected Data Type
       if (selectedDataType) {
-        const filteredData = data.filter(item => item.dataType === selectedDataType)
+        const filteredData = data.filter((item) => item.dataType === selectedDataType)
 
         const dataNames = [...new Set(filteredData.map((item) => item.dataName))]
         setDataNameOptions(dataNames.map((name) => ({label: name, value: name})))
@@ -82,7 +84,7 @@ const UpdateMasterData = () => {
 
   useEffect(() => {
     reloadMasterData()
-  }, [selectedDataType])  // Reload options when selectedDataType changes
+  }, [selectedDataType]) // Reload options when selectedDataType changes
 
   // Fetch master data details
   const reload = async () => {
@@ -98,6 +100,8 @@ const UpdateMasterData = () => {
       setSelectedDataValue(masterDataDetails.dataValue || '')
       setToolType(masterDataDetails.toolId || '')
       setOrganizationName(masterDataDetails.orgId || '')
+      setMapDataValue(masterDataDetails.mapDataValue || '')
+      setMapDataId(masterDataDetails.mapDataId || '')
     } catch (error) {
       console.error('Failed to fetch master data details:', error)
     } finally {
@@ -133,6 +137,8 @@ const UpdateMasterData = () => {
       orgId: Number(organizationName),
       userId: Number(sessionStorage.getItem('userId')),
       transactionDate: new Date().toISOString(),
+      mapDataValue:mapDataValue,
+      mapDataId: Number(mapDataId),
     }
 
     try {
@@ -155,15 +161,15 @@ const UpdateMasterData = () => {
   }
   useEffect(() => {
     if (toolType) {
-      setOrganizationName('');
+      setOrganizationName('')
     }
-  }, [toolType]);
-  
+  }, [toolType])
+
   useEffect(() => {
     if (organizationName) {
-      setToolType(''); 
+      setToolType('')
     }
-  }, [organizationName]);
+  }, [organizationName])
 
   return (
     <div className='config card'>
@@ -261,6 +267,35 @@ const UpdateMasterData = () => {
                   </option>
                 ))}
               </select>
+            </div>
+            <div className='col-lg-4'>
+              <label>Map Data Value</label>
+              <input
+                type='text'
+                className='form-control form-control-lg'
+                required
+                aria-required='true'
+                id='mapDataValue'
+                value={mapDataValue}
+                onChange={(e) => setMapDataValue(e.target.value)}
+                placeholder='Ex: Map Data Value'
+                maxLength={200}
+              />
+            </div>
+
+            <div className='col-lg-4 mt-3'>
+              <label>Map DataID</label>
+              <input
+                type='number'
+                className='form-control form-control-lg'
+                required
+                aria-required='true'
+                id='mapDataId'
+                value={mapDataId}
+                onChange={(e) => setMapDataId(e.target.value)}
+                placeholder='Ex: Map DataId'
+                maxLength={200}
+              />
             </div>
           </div>
         </div>

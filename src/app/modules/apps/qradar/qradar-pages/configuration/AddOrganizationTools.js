@@ -13,6 +13,7 @@ import {
 import {fetchOrganizations} from '../../../../../api/dashBoardApi'
 import {fetchMasterData} from '../../../../../api/Api'
 import {useErrorBoundary} from 'react-error-boundary'
+import {fetchOrganizationToolsSecurityUrl} from '../../../../../api/securityApi'
 
 const AddOrganizationTools = () => {
   const handleError = useErrorBoundary()
@@ -24,33 +25,59 @@ const AddOrganizationTools = () => {
   const [organizationList, setOrganizationList] = useState([])
   const [toolName, setToolName] = useState([])
   console.log(toolName, 'toolName111')
+  const [tools, setTools] = useState([])
   const [selectedToolAction, setSelectedToolAction] = useState('')
   const [enteredApiUrl, setEnteredApiUrl] = useState('')
   const [tableData, setTableData] = useState([])
   const [toolActionTypes, setToolActionTypes] = useState([])
   console.log(toolActionTypes, 'toolActionTypes111')
-
   const toolID = useRef()
   const orgID = useRef()
   const apiUrl = useRef()
+  const toolRef = useRef()
   const apiUrlInTable = useRef()
   const errors = {}
+
+  const fetchToolsByOrg = async (selectedOrgID) => {
+  try {
+    setLoading(true);
+    const data = await fetchOrganizationToolsSecurityUrl(selectedOrgID); // assumes API accepts orgID
+    setTools(data);
+  } catch (error) {
+    handleError(error);
+  } finally {
+    setLoading(false);
+  }
+};
+const handleOrgChange = (e) => {
+  const selectedOrgID = e.target.value;
+  if (selectedOrgID) {
+    fetchToolsByOrg(selectedOrgID);
+  } else {
+    setTools([]); 
+  }
+};
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!toolID.current.value) {
       notifyFail('Enter Tool ID')
       setLoading(false)
-      return 
+      return
     }
     if (!orgID.current.value) {
       notifyFail('Enter Org ID')
       setLoading(false)
-      return 
+      return
+    }
+    if (!toolRef.current.value) {
+      notifyFail('EnterIncident Tool')
+      setLoading(false)
+      return
     }
     // if (!tableData.length > 0) {
     //   errors.tableData = 'Enter Table Data'
     //   setLoading(false)
-    //   return 
+    //   return
     // }
     setLoading(true)
     const createdUserId = Number(sessionStorage.getItem('userId'))
@@ -58,6 +85,7 @@ const AddOrganizationTools = () => {
     var data = {
       toolID: toolID.current.value,
       orgID: orgID.current.value,
+      incidentsToolId:toolRef.current.value,
       createdDate,
       createdUserId,
       lastReadPKID: 0,
@@ -200,7 +228,7 @@ const AddOrganizationTools = () => {
         </div>
       </div>
       <form>
-        <div className='card-body pad-10 mt-5'>
+        <div className='card-body pad-10 mt-1'>
           <div className='row mb-6 table-filter'>
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
@@ -209,12 +237,10 @@ const AddOrganizationTools = () => {
                 </label>
                 <select
                   className='form-select form-select-solid'
-                  data-kt-select2='true'
-                  data-placeholder='Select option'
-                  data-allow-clear='true'
                   id='orgID'
                   ref={orgID}
                   required
+                  onChange={handleOrgChange}
                 >
                   <option value='' disabled selected>
                     Select
@@ -228,7 +254,7 @@ const AddOrganizationTools = () => {
               </div>
             </div>
             <div className='col-lg-4 mb-4 mb-lg-0'>
-              <div className='fv-row mb-10'>
+              <div className='fv-row mb-5'>
                 <label className='form-label fs-6 fw-bolder mb-3'>Tool Type</label>
                 <div>
                   {toolTypes === null && (
@@ -266,7 +292,7 @@ const AddOrganizationTools = () => {
               </div>
             </div>
             <div className='col-lg-4 mb-4 mb-lg-0'>
-              <div className='fv-row mb-10'>
+              <div className='fv-row mb-5'>
                 <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
                   Tool
                 </label>
@@ -308,6 +334,31 @@ const AddOrganizationTools = () => {
                       ))}
                     </select>
                   )}
+                </div>
+              </div>
+            </div>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='fv-row mb-5'>
+                <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
+                 Alert-Incident Map Tool
+                </label>
+                <div>
+                  <select
+                    className='form-select form-select-solid bg-blue-light'
+                    data-kt-select2='true'
+                    data-placeholder='Select option'
+                    data-allow-clear='true'
+                    ref={toolRef}
+                    // onChange={handleToolChange}
+                  >
+                    <option value=''>Select</option>
+                    {tools !== null &&
+                      tools?.map((item, index) => (
+                        <option key={index} value={item.toolId}>
+                          {item.toolName}
+                        </option>
+                      ))}
+                  </select>
                 </div>
               </div>
             </div>

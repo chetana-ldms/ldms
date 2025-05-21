@@ -1,7 +1,12 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Link, useLocation, useNavigate, useParams} from 'react-router-dom'
 import {fetchOrganizations, fetchRoles} from '../../../../../api/Api'
-import {fetchRolesUrl, fetchUserDetails, fetchUserUpdateUrl} from '../../../../../api/ConfigurationApi'
+import {
+  fetchLDPToolsUrl,
+  fetchRolesUrl,
+  fetchUserDetails,
+  fetchUserUpdateUrl,
+} from '../../../../../api/ConfigurationApi'
 import axios from 'axios'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {useErrorBoundary} from 'react-error-boundary'
@@ -11,7 +16,7 @@ const UpdateUserData = () => {
   const handleError = useErrorBoundary()
   const orgId = Number(sessionStorage.getItem('orgId'))
   const roleID = Number(sessionStorage.getItem('roleID'))
-  const userID = Number(sessionStorage.getItem("userId"));
+  const userID = Number(sessionStorage.getItem('userId'))
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [roleTypes, setRoleTypes] = useState([])
@@ -19,28 +24,50 @@ const UpdateUserData = () => {
   const [toolTypeAction, setToolTypeAction] = useState({
     toolTypeName: '',
     toolTypeID: '',
+    toolId: '',
   })
+
+  const [tools, setTools] = useState([])
+  const [selectedTool, setSelectedTool] = useState('')
   console.log(toolTypeAction, 'toolTypeAction1111')
   const {id} = useParams()
   const userName = useRef()
   const userEmail = useRef()
   const orgID = useRef()
   const roleType = useRef()
+  const toolType = useRef()
+  const mapUserName = useRef()
+  const mapuserId = useRef()
   const errors = {}
   const location = useLocation()
   const [save, setSave] = useState(location.state?.save || '')
   useEffect(() => {
     setSave(location.state?.save || '')
   }, [location.state])
-
+  const handleToolChange = (e) => {
+    setSelectedTool(e.target.value)
+  }
+    const reloadTools = async () => {
+      try {
+        const response = await fetchLDPToolsUrl()
+        setTools(response)
+      } catch (error) {
+        console.error('Failed to fetch tools:', error)
+      }
+    }
+  
+    useEffect(() => {
+      reloadTools()
+    }, [])
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchUserDetails(id, userName, userEmail)
+        const data = await fetchUserDetails(id, userName, userEmail, mapUserName, mapuserId)
         setToolTypeAction({
           ...toolTypeAction,
           roleID: data.roleID,
           orgId: data.orgId,
+          toolId: data.toolId,
         })
       } catch (error) {
         handleError(error)
@@ -48,7 +75,7 @@ const UpdateUserData = () => {
     }
 
     fetchData()
-  }, [id, userName, userEmail])
+  }, [id, userName, userEmail, mapUserName, mapuserId])
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -95,12 +122,12 @@ const UpdateUserData = () => {
       emailId: userEmail.current.value,
       roleID: roleType.current.value,
       orgId: Number(orgID.current.value),
-      // password: passWord.current.value,
-      createdByUserName: 'admin',
       modifiedDate,
       userID: id,
-      // orgId,
       modifiedUserId,
+      mapUserName: mapUserName.current.value,
+      mapUserId: mapuserId.current.value,
+      toolId: Number(toolType.current.value),
     }
     try {
       const responseData = await fetchUserUpdateUrl(data)
@@ -122,7 +149,7 @@ const UpdateUserData = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchRolesUrl(orgId, userID )
+        const data = await fetchRolesUrl(orgId, userID)
         setRoleTypes(data)
       } catch (error) {
         handleError(error)
@@ -137,7 +164,7 @@ const UpdateUserData = () => {
       <ToastContainer />
       <div className='card-header bg-heading'>
         <h3 className='card-title align-items-start flex-column'>
-        {save ? (
+          {save ? (
             <span className='white'>View User</span>
           ) : (
             <span className='white'>Update User</span>
@@ -155,7 +182,7 @@ const UpdateUserData = () => {
       <form>
         <div className='card-body pad-10'>
           <div className='row mb-6'>
-            <div className='col-lg-4 mb-4 mb-lg-0'>
+            <div className='col-lg-3 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
                   Enter User Name
@@ -171,7 +198,7 @@ const UpdateUserData = () => {
                 />
               </div>
             </div>
-            <div className='col-lg-4 mb-4 mb-lg-0'>
+            <div className='col-lg-3 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
                   User Email
@@ -190,7 +217,7 @@ const UpdateUserData = () => {
               </div>
             </div>
 
-            <div className='col-lg-4 mb-4 mb-lg-0'>
+            <div className='col-lg-3 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='orgID' className='form-label fs-6 fw-bolder mb-3'>
                   Organization
@@ -210,7 +237,7 @@ const UpdateUserData = () => {
                   }
                   required
                 >
-                <option value=''>Select organization</option>
+                  <option value=''>Select organization</option>
                   {roleID === 1 &&
                     organizationList?.length > 0 &&
                     organizationList.map((item, index) => (
@@ -230,7 +257,7 @@ const UpdateUserData = () => {
                 </select>
               </div>
             </div>
-            <div className='col-lg-4 mb-4 mb-lg-0'>
+            <div className='col-lg-3 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='toolType' className='form-label fs-6 fw-bolder mb-3'>
                   Select Role Type
@@ -261,9 +288,83 @@ const UpdateUserData = () => {
               </div>
             </div>
           </div>
+          <div className='row mb-6'>
+            <div className='col-lg-3 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='toolType' className='form-label fs-6 fw-bolder mb-3'>
+                  Select Tool
+                </label>
+                {/* <select className='form-control' value={selectedTool} onChange={handleToolChange}>
+                  <option value=''>Select Tool Name</option>
+                  {tools.map((tool, idx) => (
+                    <option key={idx} value={tool.toolId}>
+                      {tool.toolName}
+                    </option>
+                  ))}
+                </select> */}
+                <select
+                  className='form-select form-select-solid'
+                  data-kt-select2='true'
+                  data-placeholder='Select option'
+                  data-allow-clear='true'
+                  id='tools'
+                  ref={toolType}
+                  value={toolTypeAction.toolId}
+                  onChange={(e) =>
+                    setToolTypeAction({
+                      // toolTypeName: e.target.value,
+                      toolId: e.target.options[e.target.selectedIndex].getAttribute('data-id'),
+                    })
+                  }
+                  required
+                >
+                  <option value=''>Select Tool Name</option>
+                  {tools.map((item, index) => (
+                    <option value={item.toolId} key={index} data-id={item.toolId}>
+                      {item.toolName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className='col-lg-3 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
+                  Map User Name
+                </label>
+                <input
+                  type='text'
+                  className='form-control form-control-lg form-control-solid'
+                  required
+                  aria-required='true'
+                  id='userName'
+                  ref={mapUserName}
+                  placeholder='Ex: username'
+                  maxLength={200}
+                />
+              </div>
+            </div>
+            <div className='col-lg-3 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
+                  Map UserID
+                </label>
+                <input
+                  type='text'
+                  className='form-control form-control-lg form-control-solid'
+                  required
+                  aria-required='true'
+                  id='userName'
+                  ref={mapuserId}
+                  placeholder='Ex: username'
+                  maxLength={200}
+                />
+              </div>
+            </div>
+          </div>
         </div>
         <div className='card-footer d-flex justify-content-end pad-10'>
-        <button
+          <button
             type='submit'
             onClick={handleSubmit}
             className='btn btn-new btn-small'

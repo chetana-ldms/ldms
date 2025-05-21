@@ -16,6 +16,7 @@ import {ToastContainer} from 'react-toastify'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
 import Pagination from '../../../../../../utils/Pagination'
 import ApiAuthConfig from './ApiAuthConfig '
+import {fetchOrganizationToolsSecurityUrl} from '../../../../../api/securityApi'
 
 const UpdateOrganizationTools = () => {
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -32,6 +33,8 @@ const UpdateOrganizationTools = () => {
     toolTypeId: '',
     toolTypeName: '',
     toolID: '',
+    incidentsToolId: '',
+    incidentToolName: '',
     toolName: '',
     apiUrl: '',
   })
@@ -48,10 +51,12 @@ const UpdateOrganizationTools = () => {
   const [orgToolID, setOrgToolID] = useState('')
   const [orgToolActionId, setOrgToolActionId] = useState('')
   const [selectedOrgToolActionId, setSelectedOrgToolActionId] = useState('')
+  const [tools, setTools] = useState([])
   const {id} = useParams()
   const toolID = useRef()
   const orgID = useRef()
   const apiUrl = useRef()
+  const toolRef = useRef()
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [itemToDelete, setItemToDelete] = useState(null)
   const location = useLocation()
@@ -60,7 +65,24 @@ const UpdateOrganizationTools = () => {
   useEffect(() => {
     setSave(location.state?.save || '')
   }, [location.state])
+  useEffect(() => {
+    const reload = async () => {
+      try {
+        setLoading(true)
+        const data = await fetchOrganizationToolsSecurityUrl(toolTypeAction.orgID)
+        setTools(data)
+        setLoading(false)
+      } catch (error) {
+        handleError(error)
+        setLoading(false)
+      }
+    }
 
+    const timer = setTimeout(() => {
+      reload()
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [toolTypeAction.orgID])
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -72,6 +94,8 @@ const UpdateOrganizationTools = () => {
           toolTypeId: data.toolTypeId,
           toolTypeName: data.toolTypeName,
           toolID: data.toolID,
+          incidentsToolId: data.incidentsToolId,
+          incidentToolName: data.incidentToolName,
           toolName: data.toolName,
           // apiUrl: data.apiUrl
         })
@@ -131,6 +155,7 @@ const UpdateOrganizationTools = () => {
     var data = {
       toolID: toolTypeAction.toolID,
       orgID: toolTypeAction.orgID,
+      incidentsToolId: toolTypeAction.incidentsToolId ? Number(toolTypeAction.incidentsToolId) : 0,
       orgToolID: Number(id),
       modifiedDate,
       modifiedUserId,
@@ -235,6 +260,16 @@ const UpdateOrganizationTools = () => {
         toolTypeId: selectedId,
         toolTypeName: selectedValue || event.toolTypeName,
       }))
+    }
+    if (field === 'IncidentToolName') {
+      const selectedId = event.target.options[event.target.selectedIndex].getAttribute('data-id');
+      const selectedValue = event.target.value;
+  
+      setToolTypeAction((prevState) => ({
+        ...prevState,
+        incidentsToolId: selectedId,
+        incidentToolName: selectedValue,
+      }));
     }
   }
   const handleAction = (event) => {
@@ -434,6 +469,32 @@ const UpdateOrganizationTools = () => {
                     </option>
                   ))}
                 </select>
+              </div>
+            </div>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='fv-row mt-4'>
+                <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
+                  Alert-Incident Map Tool
+                </label>
+                <div>
+                  <select
+                    className='form-select form-select-solid bg-blue-light'
+                    data-kt-select2='true'
+                    data-placeholder='Select option'
+                    data-allow-clear='true'
+                    ref={toolRef}
+                    value={toolTypeAction?.incidentToolName}
+                    onChange={(e) => handleChange(e, 'IncidentToolName')}
+                  >
+                    <option value=''>Select</option>
+                    {tools !== null &&
+                      tools?.map((item, index) => (
+                        <option value={item.toolName} key={index} data-id={item.toolId}>
+                          {item.toolName}
+                        </option>
+                      ))}
+                  </select>
+                </div>
               </div>
             </div>
 

@@ -88,7 +88,7 @@ export const fetchToolTypeActionDetails = async (id, toolNameRef) => {
   }
 };
 
-export const fetchUserDetails = async (id, userName, emailId ) => {
+export const fetchUserDetails = async (id, userName, emailId, mapUserName, mapuserId ) => {
   try {
     const response = await FetchWithToken(`${userDetailsUrl}?id=${id}`, {
       method: "GET",
@@ -101,6 +101,8 @@ export const fetchUserDetails = async (id, userName, emailId ) => {
     console.log(userdata, "userdata");
     userName.current.value = userdata.name;
     emailId.current.value = userdata.emailId;
+    mapUserName.current.value = userdata.mapUserName;
+    mapuserId.current.value = userdata.mapUserId;
     return userdata;
   } catch (error) {
     console.log(error);

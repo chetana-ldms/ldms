@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react'
 import {toAbsoluteUrl} from '../../../../../../_metronic/helpers'
-import {fetchMasterData} from '../../../../../api/Api'
 import {fetchUsers} from '../../../../../api/AlertsApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {
@@ -8,6 +7,7 @@ import {
   fetchGetIncidentHistory,
   fetchIncidentDetails,
   fetchIncidents,
+  fetchMasterData,
   fetchUpdateIncident,
 } from '../../../../../api/IncidentsApi'
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
@@ -15,6 +15,7 @@ import {useErrorBoundary} from 'react-error-boundary'
 import {fetchActivitiesUrl} from '../../../../../api/ActivityApi'
 import IncidentAlertPopUp from './IncidentAlertPopUp'
 import useFeatureActions from '../configuration/useFeatureActions'
+import AddIncidentModal from './AddIncidentModal'
 
 const IncidentDetails = ({incident, onRefreshIncidents}) => {
   console.log('incident11111', incident)
@@ -28,17 +29,19 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     destinationUser,
     sourceIP,
     vendor,
+    toolId,
+    subject,
   } = incident
   const id = incidentID
   console.log(id, 'id')
   const [activeTab, setActiveTab] = useState('general')
   const userID = Number(sessionStorage.getItem('userId'))
   const orgId = Number(sessionStorage.getItem('orgId'))
-  const toolId = Number(sessionStorage.getItem('toolID'))
+  const toolID = Number(sessionStorage.getItem('toolID'))
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
 
-  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+  const {featureActions} = useFeatureActions(orgId, toolID, roleId, featureId)
 
   const isActionAuthorized = (actionName) => {
     return featureActions?.some(
@@ -71,13 +74,17 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     ownerName: '',
     alertId: [],
     significantIncident: 0,
+    subject: '',
+    description: '',
   })
   const [selectedAlertId, setSelectedAlertId] = useState(null)
-  console.log(selectedAlertId, 'selectedAlertId')
   const [selectedAlertPopUp, setSelectedAlertPopUp] = useState(false)
   const handleShowModal = () => setSelectedAlertPopUp(true)
   const handleCloseModal = () => setSelectedAlertPopUp(false)
-
+  const [showModal, setShowModal] = useState(false)
+  const handleAddClick = () => {
+    setShowModal(true)
+  }
   const alertId = incidentData.alertId
   console.log(alertId, 'alertId')
   useEffect(() => {
@@ -116,7 +123,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     }
 
     fetchAllIncidentMasterData()
-  }, [])
+  }, [toolId])
 
   const fetchData = async () => {
     try {
@@ -141,6 +148,8 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
           ownerName: data?.ownerName,
           alertId: alertIds,
           significantIncident: data?.significantIncident,
+          subject: data?.subject,
+          description: data?.description,
         }))
       }
     } catch (error) {
@@ -193,6 +202,16 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
         ...incidentData,
         significantIncident: event.target.checked ? 1 : 0,
       })
+    } else if (field === 'subject') {
+      setIncidentData({
+        ...incidentData,
+        subject: event.target.value,
+      })
+    } else if (field === 'description') {
+      setIncidentData({
+        ...incidentData,
+        description: event.target.value,
+      })
     }
   }
 
@@ -203,12 +222,15 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
       statusId: incidentData.incidentStatus,
       priorityId: incidentData.priority,
       severityId: incidentData.severity,
-      // "score": "string",
       typeId: incidentData.typeId,
       ownerUserId: incidentData.owner,
       significantIncident: incidentData.significantIncident,
       modifiedUserId: userID,
       modifiedDate: date,
+      subject: incidentData.subject,
+      description: incidentData.description,
+      orgId: orgId,
+      toolId: toolId,
     }
     try {
       const response = await fetchUpdateIncident(data)
@@ -223,16 +245,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     } catch (error) {
       console.log(error)
     }
-
-    // try {
-    //   await fetchUpdateIncident(data)
-    //   notify('Incident updated')
-    //   onRefreshIncidents()
-    //   reloadHistory()
-    // } catch (error) {
-    //   notifyFail('Failed to update Incident')
-    //   handleError(error)
-    // }
   }
   const reloadHistory = () => {
     if (id !== null && id !== undefined) {
@@ -299,6 +311,22 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
             <h4 className=''>
               <span className='white fw-bold block pt-3 pb-3'>Incidents Details</span>
             </h4>
+            <div>
+              <div className='mt-2'>
+                <button
+                  type='button'
+                  onClick={handleAddClick}
+                  className='btn btn-primary btn-new btn-small'
+                >
+                  Add
+                </button>
+              </div>
+              <AddIncidentModal
+                show={showModal}
+                onHide={() => setShowModal(false)}
+                onRefreshIncidents={onRefreshIncidents}
+              />
+            </div>
             {activeTab === 'general' && isActionAuthorized('Update') && (
               <div className='mt-2'>
                 <button
@@ -373,7 +401,23 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 id='kt_tab_pane_1'
                 role='tabpanel'
               >
-                <div className='row bd-highlight mb-3'>
+                <div className='row bd-highlight mb-1'>
+                  <div className='col-md-3 bd-highlight mt-2'>Subject</div>
+                  <div className='col-md-9 bd-highlight'>
+                    <div className='w-100'>
+                      <input
+                        type='text'
+                        name='subject'
+                        className='form-control form-control-sm'
+                        placeholder='Enter Subject'
+                        value={incidentData?.subject}
+                        onChange={(event) => handleChange(event, 'subject')}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className='row bd-highlight mb-1'>
                   <div className='col-md-3 bd-highlight mt-2'>Status</div>
                   <div className='col-md-9 bd-highlight'>
                     <div className='w-120px'>
@@ -400,7 +444,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   </div>
                 </div>
                 {/* Priority */}
-                <div className='row bd-highlight mb-3'>
+                <div className='row bd-highlight mb-1'>
                   <div className='col-md-3 bd-highlight mt-2'>Priority</div>
                   <div className='col-md-9 bd-highlight'>
                     <div className='w-120px'>
@@ -427,7 +471,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   </div>
                 </div>
                 {/* Severity */}
-                <div className='row bd-highlight mb-3'>
+                <div className='row bd-highlight mb-1'>
                   <div className='col-md-3 bd-highlight mt-2'>Severity</div>
                   <div className='col-md-9 bd-highlight'>
                     <div className='w-120px'>
@@ -455,7 +499,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 </div>
 
                 {/* Type */}
-                <div className='row bd-highlight mb-3'>
+                <div className='row bd-highlight mb-1'>
                   <div className='col-md-3 bd-highlight mt-2'>Type</div>
                   <div className='col-md-9 bd-highlight'>
                     <div className='w-120px'>
@@ -505,6 +549,21 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     </div>
                   </div>
                 </div>
+                <div className='row bd-highlight mb-1'>
+                  <div className='col-md-3 bd-highlight mt-2'>Description</div>
+                  <div className='col-md-9 bd-highlight'>
+                    <div className='w-100'>
+                      <textarea
+                        name='description'
+                        className='form-control form-control-sm'
+                        placeholder='Enter Description'
+                        rows={3}
+                        value={incidentData.description}
+                        onChange={(event) => handleChange(event, 'description')}
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
 
                 <div className='checkbox-wrapper'>
                   <input
@@ -522,7 +581,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 <div className='bd-highlight mb-3 bdr-top pt-5 mt-2'>
                   <div className='bd-highlight mb-3'>
                     <div className='d-flex align-items-top gap-2'>
-                      <span className='fw-bold m-width'>Incident Name </span> <b>:</b> {description}
+                      <span className='fw-bold m-width'>Incident Name </span> <b>:</b> {subject}
                     </div>
                   </div>
                   <div className='bd-highlight mb-3'>
