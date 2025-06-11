@@ -1,14 +1,15 @@
 import React, {useState, useEffect, useRef} from 'react'
 import {toAbsoluteUrl} from '../../../../../../_metronic/helpers'
-import {fetchUsers} from '../../../../../api/AlertsApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {
   fetchAlertsByAlertIds,
   fetchGetIncidentHistory,
   fetchIncidentDetails,
+  fetchIncidentNotesListUrl,
   fetchIncidents,
   fetchMasterData,
   fetchUpdateIncident,
+  fetchUsersByOrgTool,
 } from '../../../../../api/IncidentsApi'
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import {useErrorBoundary} from 'react-error-boundary'
@@ -16,6 +17,7 @@ import {fetchActivitiesUrl} from '../../../../../api/ActivityApi'
 import IncidentAlertPopUp from './IncidentAlertPopUp'
 import useFeatureActions from '../configuration/useFeatureActions'
 import AddIncidentModal from './AddIncidentModal'
+import NotesModalComponent from './NotesModalComponent'
 
 const IncidentDetails = ({incident, onRefreshIncidents}) => {
   console.log('incident11111', incident)
@@ -57,10 +59,13 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   })
   const checkboxRef = useRef(null)
   const [incidentHistory, setIncidentHistory] = useState([])
-  console.log(incidentHistory, 'incidentHistory')
   const [alertsList, setAlertsList] = useState({})
-  console.log(alertsList, 'alertsList')
   const [ldp_security_user, setldp_security_user] = useState([])
+  const [notes, setNotes] = useState([])
+  const [modalVisible, setModalVisible] = useState(false)
+  const [modalMode, setModalMode] = useState('add')
+  const [selectedNote, setSelectedNote] = useState(null)
+
   const [incidentData, setIncidentData] = useState({
     incidentStatus: '',
     incidentStatusName: '',
@@ -77,6 +82,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     subject: '',
     description: '',
   })
+  console.log(incidentData, "incidentData")
   const [selectedAlertId, setSelectedAlertId] = useState(null)
   const [selectedAlertPopUp, setSelectedAlertPopUp] = useState(false)
   const handleShowModal = () => setSelectedAlertPopUp(true)
@@ -86,15 +92,14 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     setShowModal(true)
   }
   const alertId = incidentData.alertId
-  console.log(alertId, 'alertId')
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetchUsers(orgId, userID)
+      const response = await fetchUsersByOrgTool(orgId, toolId, userID)
       setldp_security_user(response?.usersList != undefined ? response?.usersList : [])
     }
 
     fetchData()
-  }, [])
+  }, [toolId])
   useEffect(() => {
     const fetchAllIncidentMasterData = async () => {
       const severityDataRequest = {maserDataType: 'incident_severity', orgId: orgId, toolId: toolId}
@@ -125,40 +130,72 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     fetchAllIncidentMasterData()
   }, [toolId])
 
-  const fetchData = async () => {
+  const fetchData = async (resolvedId) => {
     try {
-      const data = await fetchIncidentDetails(id)
-      if (data !== undefined) {
-        const {alertIncidentMapping} = data
-        const alertIds = alertIncidentMapping?.alertIncidentMappingDtl?.map(
-          (mapping) => mapping.alertid
-        )
-
-        setIncidentData((prevIncidentData) => ({
-          ...prevIncidentData,
-          incidentStatus: data?.incidentStatus,
-          incidentStatusName: data?.incidentStatusName,
-          priority: data?.priority,
-          priorityName: data?.priorityName,
-          severity: data?.severity,
-          severityName: data?.severityName,
-          typeId: data?.typeId,
-          type: data?.type,
-          owner: data?.owner,
-          ownerName: data?.ownerName,
-          alertId: alertIds,
-          significantIncident: data?.significantIncident,
-          subject: data?.subject,
-          description: data?.description,
-        }))
+      const data = await fetchIncidentDetails(resolvedId)
+      if (data == null) {
+        setIncidentData({
+          incidentStatus: '',
+          incidentStatusName: '',
+          priority: '',
+          priorityName: '',
+          severity: '',
+          severityName: '',
+          typeId: '',
+          type: '',
+          owner: '',
+          ownerName: '',
+          alertId: [],
+          significantIncident: 0,
+          subject: '',
+          description: '',
+        })
+        return // Exit the function early
       }
+
+      const {alertIncidentMapping} = data
+      const alertIds = alertIncidentMapping?.alertIncidentMappingDtl?.map(
+        (mapping) => mapping.alertid
+      )
+
+      setIncidentData({
+        incidentStatus: data?.incidentStatus,
+        incidentStatusName: data?.incidentStatusName,
+        priority: data?.priority,
+        priorityName: data?.priorityName,
+        severity: data?.severity,
+        severityName: data?.severityName,
+        typeId: data?.typeId,
+        type: data?.type,
+        owner: data?.owner,
+        ownerName: data?.ownerName,
+        alertId: alertIds,
+        significantIncident: data?.significantIncident,
+        subject: data?.subject,
+        description: data?.description,
+      })
     } catch (error) {
       handleError(error)
     }
   }
+
   useEffect(() => {
-    if (id !== null && id !== undefined) {
-      fetchData()
+    const resolvedId = id !== undefined && id !== null ? id : 0
+    fetchData(resolvedId)
+  }, [id])
+  const fetchNotes = async (id) => {
+    if (!id) return // Don't fetch if id is not present
+    try {
+      const result = await fetchIncidentNotesListUrl(id)
+      setNotes(result)
+    } catch (error) {
+      handleError(error)
+    }
+  }
+
+  useEffect(() => {
+    if (id) {
+      fetchNotes(id)
     }
   }, [id])
 
@@ -302,6 +339,23 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     setSelectedAlertId(alertId)
     setSelectedAlertPopUp(true)
   }
+  const handleAddNotesClick = () => {
+    setModalMode('add')
+    setSelectedNote(null)
+    setModalVisible(true)
+  }
+
+  const handleViewClick = (note) => {
+    setModalMode('view')
+    setSelectedNote(note)
+    setModalVisible(true)
+  }
+
+  const handleEditClick = (note) => {
+    setModalMode('edit')
+    setSelectedNote(note)
+    setModalVisible(true)
+  }
 
   return (
     <div className='col-md-4 border-1 border-gray-600 incident-details'>
@@ -363,26 +417,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   Alerts
                 </a>
               </li>
-              {/* <li className='nav-item'>
-                <a
-                  className={`nav-link ${activeTab === 'playbooks' ? 'active' : ''}`}
-                  data-bs-toggle='tab'
-                  href='#kt_tab_pane_3'
-                  onClick={() => setActiveTab('playbooks')}
-                >
-                  Playbooks
-                </a>
-              </li>
-              <li className='nav-item'>
-                <a
-                  className={`nav-link ${activeTab === 'observables' ? 'active' : ''}`}
-                  data-bs-toggle='tab'
-                  href='#kt_tab_pane_4'
-                  onClick={() => setActiveTab('observables')}
-                >
-                  Observables
-                </a>
-              </li> */}
               <li className='nav-item'>
                 <a
                   className={`nav-link ${activeTab === 'timeline' ? 'active' : ''}`}
@@ -391,6 +425,16 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   onClick={() => setActiveTab('timeline')}
                 >
                   Timeline
+                </a>
+              </li>
+              <li className='nav-item'>
+                <a
+                  className={`nav-link ${activeTab === 'notes' ? 'active' : ''}`}
+                  data-bs-toggle='tab'
+                  href='#kt_tab_pane_6'
+                  onClick={() => setActiveTab('notes')}
+                >
+                  Notes
                 </a>
               </li>
             </ul>
@@ -759,6 +803,66 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     )}
                   </div>
                 </div>
+              </div>
+              <div className='tab-pane fade' id='kt_tab_pane_6' role='tabpanel'>
+                <div className='d-flex justify-content-end mb-1'>
+                  <button
+                    className='btn btn-primary btn-sm'
+                    title='Add Note'
+                    onClick={handleAddNotesClick}
+                  >
+                    <i className='fa fa-plus ms-0' /> Add Note
+                  </button>
+                </div>
+
+                <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
+                  <thead>
+                    <tr className='fw-bold text-muted bg-blue'>
+                      <th className='min-w-50px'>User</th>
+                      <th className='min-w-50px'>Date</th>
+                      <th className='min-w-50px'>Notes</th>
+                      <th className='min-w-50px'>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.isArray(notes) && notes.length > 0 ? (
+                      notes.map((note) => (
+                        <tr key={note.incidentId} className='table-row'>
+                          <td>{note.createdUser || 'N/A'}</td>
+                          <td>{getCurrentTimeZone(note.createdDate) || 'N/A'}</td>
+                          <td>{note.notes || 'N/A'}</td>
+                          <td>
+                            <div className='d-flex'>
+                              <span>
+                                <i
+                                  className='fa fa-eye cursor me-2'
+                                  onClick={() => handleViewClick(note)}
+                                />
+                              </span>
+                              <span>
+                                <i className='fa fa-pencil' onClick={() => handleEditClick(note)} />
+                              </span>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan='4' className='text-center text-muted'>
+                          No data found
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                <NotesModalComponent
+                  show={modalVisible}
+                  mode={modalMode}
+                  noteData={selectedNote}
+                  onClose={() => setModalVisible(false)}
+                  fetchNotes={fetchNotes}
+                  id={id}
+                />
               </div>
             </div>
           </div>

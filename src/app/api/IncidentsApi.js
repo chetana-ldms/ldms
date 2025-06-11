@@ -11,7 +11,30 @@ const getChatHistoryUrl = process.env.REACT_APP_GET_CHAT_HISTORY_URL
 const addChatMessageUrl = process.env.REACT_APP_SEND_CHAT_MESSAGE_URL
 const DownloadAttachmentUrl = process.env.REACT_APP_DOWNLOAD_ATTACHMENT_URL
 const masterDataUrl="http://10.41.3.232:501/api/PlattformMasterData/v1/MasterDataByTool"
+const UsersByOrgToolUrl="http://10.41.3.232:501/api/LDPSecurity/v1/UsersByOrgTool"
+const IncidentNotesListUrl="http://10.41.3.232:501/api/IncidentManagement/v1/Notes/List"
+const IncidentNotesAddUrl="http://10.41.3.232:501/api/IncidentManagement/v1/Notes/Add"
+const IncidentNotesUpdateUrl="http://10.41.3.232:501/api/IncidentManagement/v1/Notes/Update"
 
+export const fetchUsersByOrgTool = async (id, toolId, userID) => {
+  try {
+    const response = await FetchWithToken(`${UsersByOrgToolUrl}?OrgId=${id}&ToolId=${toolId}&userid=${userID}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: id,
+        userID:userID,
+      }),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
 export const fetchMasterData = async (data) => {
   try {
     const response = await FetchWithToken(`${masterDataUrl}`, {
@@ -222,5 +245,56 @@ export const fetchDownloadAttachmentUrl = async (data) => {
     }
   } catch (error) {
     console.error('Error downloading attachment:', error)
+  }
+}
+export const fetchIncidentNotesListUrl = async (incidentID) => {
+  try {
+    const response = await FetchWithToken(`${IncidentNotesListUrl}?incidentid=${incidentID}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const responseData = await response.json()
+    const incidentNotes = responseData.incidentNotes
+    return incidentNotes
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchIncidentNotesAddUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${IncidentNotesAddUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchIncidentNotesUpdateUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${IncidentNotesUpdateUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
   }
 }

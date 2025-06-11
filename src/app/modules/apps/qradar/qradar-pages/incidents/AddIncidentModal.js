@@ -1,8 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Modal, Button} from 'react-bootstrap'
-import {fetchUsers} from '../../../../../api/AlertsApi'
-import {fetchMasterData} from '../../../../../api/Api'
-import {fetchCreateIncident} from '../../../../../api/IncidentsApi'
+import {fetchCreateIncident, fetchMasterData, fetchUsersByOrgTool} from '../../../../../api/IncidentsApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {fetchOrganizationToolsSecurityUrl} from '../../../../../api/securityApi'
 
@@ -53,12 +51,13 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetchUsers(orgId, userID)
+      const selectedToolId = Number(incidentData.toolId)
+      const response = await fetchUsersByOrgTool(orgId, selectedToolId, userID)
       setldp_security_user(response?.usersList != undefined ? response?.usersList : [])
     }
 
     fetchData()
-  }, [])
+  }, [incidentData.toolId])
   useEffect(() => {
     const fetchAllIncidentMasterData = async () => {
       if (!incidentData.toolId) return
@@ -107,6 +106,26 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
     }))
   }
   const handleSave = async () => {
+    if (!incidentData.toolId) {
+          notifyFail('Please select a tool')
+          return
+        }
+        if (!incidentData.subject) {
+          notifyFail('Please enter subject')
+          return
+        }
+        if (!incidentData.incidentStatusName) {
+          notifyFail('Please select a incident')
+          return
+        }
+        if (!incidentData.priorityName) {
+          notifyFail('Please select a priority')
+          return
+        }
+        if (!incidentData.description) {
+          notifyFail('Please enter a description')
+          return
+        }
     const getIdByValue = (array, value) => {
       const match = array.find((item) => item.dataValue === value)
       return match ? match.dataID : 0

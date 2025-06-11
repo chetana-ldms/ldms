@@ -7,10 +7,10 @@ import {
   fetchUserDetails,
   fetchUserUpdateUrl,
 } from '../../../../../api/ConfigurationApi'
-import axios from 'axios'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {useErrorBoundary} from 'react-error-boundary'
 import {ToastContainer} from 'react-toastify'
+import MapUserPopup from './MapUserPopup'
 
 const UpdateUserData = () => {
   const handleError = useErrorBoundary()
@@ -26,10 +26,9 @@ const UpdateUserData = () => {
     toolTypeID: '',
     toolId: '',
   })
-
   const [tools, setTools] = useState([])
   const [selectedTool, setSelectedTool] = useState('')
-  console.log(toolTypeAction, 'toolTypeAction1111')
+  const [showPopup, setShowPopup] = useState(false)
   const {id} = useParams()
   const userName = useRef()
   const userEmail = useRef()
@@ -47,18 +46,17 @@ const UpdateUserData = () => {
   const handleToolChange = (e) => {
     setSelectedTool(e.target.value)
   }
-    const reloadTools = async () => {
-      try {
-        const response = await fetchLDPToolsUrl()
-        setTools(response)
-      } catch (error) {
-        console.error('Failed to fetch tools:', error)
-      }
+  const reloadTools = async () => {
+    try {
+      const response = await fetchLDPToolsUrl()
+      setTools(response)
+    } catch (error) {
+      console.error('Failed to fetch tools:', error)
     }
-  
-    useEffect(() => {
-      reloadTools()
-    }, [])
+  }
+  useEffect(() => {
+    reloadTools()
+  }, [])
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -89,6 +87,7 @@ const UpdateUserData = () => {
     fetchData()
   }, [])
   const handleSubmit = async (event) => {
+    event.preventDefault()
     setLoading(true)
     if (!userName.current.value) {
       errors.userName = 'Enter username'
@@ -113,7 +112,6 @@ const UpdateUserData = () => {
       setLoading(false)
       return errors
     }
-    event.preventDefault()
     const modifiedUserId = Number(sessionStorage.getItem('userId'))
     const modifiedDate = new Date().toISOString()
     const orgId = sessionStorage.getItem('orgId')
@@ -155,10 +153,15 @@ const UpdateUserData = () => {
         handleError(error)
       }
     }
-
     fetchData()
   }, [])
-
+  const handleMapUserClick = () => {
+    if (!toolTypeAction.toolId) {
+      notifyFail('Select the tool first')
+      return
+    }
+    setShowPopup(true)
+  }
   return (
     <div className='config card'>
       <ToastContainer />
@@ -216,7 +219,6 @@ const UpdateUserData = () => {
                 />
               </div>
             </div>
-
             <div className='col-lg-3 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='orgID' className='form-label fs-6 fw-bolder mb-3'>
@@ -361,6 +363,26 @@ const UpdateUserData = () => {
                 />
               </div>
             </div>
+            <div className='col-lg-3 mb-4 mb-lg-0'>
+              <div className='fv-row mt-10'>
+                <button
+                  type='button'
+                  className='btn btn-primary btn-sm'
+                  onClick={handleMapUserClick}
+                >
+                  Map User Details
+                </button>
+              </div>
+              <MapUserPopup
+                show={showPopup}
+                selectedTool={toolTypeAction?.toolId}
+                onClose={() => setShowPopup(false)}
+                onImport={(item) => {
+                  mapUserName.current.value = item.dataValue
+                  mapuserId.current.value = item.dataId
+                }}
+              />
+            </div>
           </div>
         </div>
         <div className='card-footer d-flex justify-content-end pad-10'>
@@ -370,13 +392,7 @@ const UpdateUserData = () => {
             className='btn btn-new btn-small'
             style={{display: loading || save ? 'none' : 'inline-block'}}
           >
-            {!loading && 'Update Changes'}
-            {loading && (
-              <span className='indicator-progress' style={{display: 'block'}}>
-                Please wait...{' '}
-                <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
-              </span>
-            )}
+            Update Changes
           </button>
         </div>
       </form>

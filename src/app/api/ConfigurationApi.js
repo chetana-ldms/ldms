@@ -49,6 +49,7 @@ const APIAuthDataDetailsUrl=process.env.REACT_APP_APIAUTHDATA_DETAILS_URL
 const APIAuthDataAddUrl =process.env.REACT_APP_APIAUTHDATA_ADD_URL
 const APIAuthDataDeleteUrl=process.env.REACT_APP_APIAUTHDATA_DELETE_URL
 const APIAuthDataUpdateUrl=process.env.REACT_APP_APIAUTHDATA_UPDATE_URL
+const ToolMasterDataUrl= "http://10.41.3.232:501/api/IncidentManagement/v1/ToolMasterData"
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {
@@ -912,6 +913,23 @@ export const fetchAPIAuthDataDeleteUrl = async (data) => {
 export const fetchAPIAuthDataUpdateUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${APIAuthDataUpdateUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    });
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchToolMasterDataUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${ToolMasterDataUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

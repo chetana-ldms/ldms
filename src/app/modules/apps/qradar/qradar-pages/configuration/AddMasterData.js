@@ -10,6 +10,7 @@ import {
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import CreatableSelect from 'react-select/creatable'
+import MapUserPopup from './MapUserPopup'
 
 const AddMasterData = () => {
   const userID = Number(sessionStorage.getItem('userId'))
@@ -26,6 +27,7 @@ const AddMasterData = () => {
   const [loading, setLoading] = useState(false)
   const [organizations, setOrganizations] = useState([])
   const [tools, setTools] = useState([])
+  const [showPopup, setShowPopup] = useState(false)
   const mapDataValue = useRef()
   const mapDataId = useRef()
 
@@ -128,15 +130,26 @@ const AddMasterData = () => {
   const handleToolChange = (e) => {
     setSelectedTool(e.target.value)
     if (e.target.value) {
-      setSelectedOrganization('') // Clear organization selection if a tool is selected
+      setSelectedOrganization('')
     }
   }
 
   const handleOrganizationChange = (e) => {
     setSelectedOrganization(e.target.value)
     if (e.target.value) {
-      setSelectedTool('') // Clear tool selection if an organization is selected
+      setSelectedTool('')
     }
+  }
+  const handleMapUserClick = () => {
+    if (!selectedDataType) {
+      notifyFail('Please select Data Type')
+      return
+    }
+    if (!selectedTool) {
+      notifyFail('Please select the Tool Name')
+      return
+    }
+    setShowPopup(true)
   }
 
   return (
@@ -207,17 +220,6 @@ const AddMasterData = () => {
 
           <div className='row mb-4'>
             <div className='col-lg-4'>
-              <label>Tool Name</label>
-              <select className='form-control' value={selectedTool} onChange={handleToolChange}>
-                <option value=''>Select Tool Name</option>
-                {tools.map((tool, idx) => (
-                  <option key={idx} value={tool.toolId}>
-                    {tool.toolName}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className='col-lg-4'>
               <label>Organization</label>
               <select
                 className='form-control'
@@ -232,6 +234,19 @@ const AddMasterData = () => {
                 ))}
               </select>
             </div>
+            <div className='col-lg-4'>
+              <label>Tool Name</label>
+              <select className='form-control' value={selectedTool} onChange={handleToolChange}>
+                <option value=''>Select Tool Name</option>
+                {tools.map((tool, idx) => (
+                  <option key={idx} value={tool.toolId}>
+                    {tool.toolName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className='row mb-4'>
             <div className='col-lg-4'>
               <label> Map Data Value</label>
               <input
@@ -256,6 +271,27 @@ const AddMasterData = () => {
                 ref={mapDataId}
                 placeholder='Ex: Map DataId'
                 maxLength={200}
+              />
+            </div>
+            <div className='col-lg-4 mt-3'>
+              <div className='fv-row mt-10'>
+                <button
+                  type='button'
+                  className='btn btn-primary btn-sm'
+                  onClick={handleMapUserClick}
+                >
+                  Map User Details
+                </button>
+              </div>
+              <MapUserPopup
+                show={showPopup}
+                selectedTool={selectedTool}
+                selectedDataType ={selectedDataType}
+                onClose={() => setShowPopup(false)}
+                onImport={(item) => {
+                  mapDataValue.current.value = item.dataValue
+                  mapDataId.current.value = item.dataId
+                }}
               />
             </div>
           </div>

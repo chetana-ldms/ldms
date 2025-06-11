@@ -2,11 +2,17 @@ import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {fetchMasterData, fetchOrganizations, fetchRoles} from '../../../../../api/Api'
 import axios from 'axios'
-import {fetchLDPToolsUrl, fetchRolesUrl, fetchUserAddUrl} from '../../../../../api/ConfigurationApi'
+import {
+  fetchLDPToolsUrl,
+  fetchRolesUrl,
+  fetchToolMasterDataUrl,
+  fetchUserAddUrl,
+} from '../../../../../api/ConfigurationApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {useErrorBoundary} from 'react-error-boundary'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {ToastContainer} from 'react-toastify'
+import MapUserPopup from './MapUserPopup'
 
 const AddUserData = () => {
   const handleError = useErrorBoundary()
@@ -19,6 +25,8 @@ const AddUserData = () => {
   const [roleTypes, setRoleTypes] = useState([])
   const [organizationList, setOrganizationList] = useState([])
   const [tools, setTools] = useState([])
+  const [toolMasterData, setToolMasterData] = useState([])
+  console.log(toolMasterData, 'toolMasterData')
   const [selectedTool, setSelectedTool] = useState('')
   const userName = useRef()
   const userEmail = useRef()
@@ -27,6 +35,7 @@ const AddUserData = () => {
   const mapUserName = useRef()
   const mapuserId = useRef()
   const errors = {}
+  const [showPopup, setShowPopup] = useState(false)
 
   const reloadTools = async () => {
     try {
@@ -55,18 +64,37 @@ const AddUserData = () => {
 
     fetchData()
   }, [])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      var data = {
+        orgId: orgId,
+        toolId: selectedTool,
+        masterDataType: 'user',
+      }
+      try {
+        const toolMasterData = await fetchToolMasterDataUrl(data)
+        setToolMasterData(toolMasterData)
+      } catch (error) {
+        handleError(error)
+      }
+    }
+
+    fetchData()
+  }, [])
   const handleSubmit = async (event) => {
+    event.preventDefault()
     setLoading(true)
 
     if (!userName.current.value) {
-      errors.userName = 'Enter username'
+      notifyFail('Enter username')
       setLoading(false)
-      return errors
+      return
     }
     if (!userEmail.current.value) {
-      errors.passWord = 'Enter Email'
+      notifyFail('Enter Email')
       setLoading(false)
-      return errors
+      return
     }
     const emailValue = userEmail.current.value
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -77,18 +105,16 @@ const AddUserData = () => {
       return
     }
     if (!orgID.current.value) {
-      errors.passWord = 'Enter Organization'
+      notifyFail('Enter Organization')
       setLoading(false)
-      return errors
+      return
     }
 
     if (!roleType.current.value) {
-      errors.roleType = 'Select Role Type'
+      notifyFail('Select Role Type')
       setLoading(false)
-      return errors
+      return
     }
-
-    event.preventDefault()
     const createdUserId = Number(sessionStorage.getItem('userId'))
     const createdDate = new Date().toISOString()
     // const orgId = sessionStorage.getItem('orgId')
@@ -134,6 +160,13 @@ const AddUserData = () => {
 
     fetchData()
   }, [])
+  const handleMapUserClick = () => {
+    if (!selectedTool) {
+      notifyFail('Select the tool first')
+      return
+    }
+    setShowPopup(true)
+  }
 
   return (
     <div className='config card'>
@@ -163,8 +196,6 @@ const AddUserData = () => {
                 <input
                   type='text'
                   className='form-control form-control-lg form-control-solid'
-                  required
-                  aria-required='true'
                   id='userName'
                   ref={userName}
                   placeholder='Ex: username'
@@ -184,8 +215,6 @@ const AddUserData = () => {
                   ref={userEmail}
                   maxLength={100}
                   placeholder='email@user.com'
-                  required
-                  pattern='^[^\s@]+@[^\s@]+\.[^\s@]+$'
                   title='Please enter a valid email address'
                 />
               </div>
@@ -203,7 +232,6 @@ const AddUserData = () => {
                   data-allow-clear='true'
                   id='orgID'
                   ref={orgID}
-                  required
                 >
                   <option value=''>Select</option>
                   {roleID === 1 &&
@@ -238,7 +266,6 @@ const AddUserData = () => {
                   data-allow-clear='true'
                   id='roleType'
                   ref={roleType}
-                  required
                 >
                   <option value=''>Select Role Type</option>
                   {roleTypes.map((item, index) => (
@@ -274,8 +301,6 @@ const AddUserData = () => {
                 <input
                   type='text'
                   className='form-control form-control-lg form-control-solid'
-                  required
-                  aria-required='true'
                   id='userName'
                   ref={mapUserName}
                   placeholder='Ex: username'
@@ -291,14 +316,32 @@ const AddUserData = () => {
                 <input
                   type='text'
                   className='form-control form-control-lg form-control-solid'
-                  required
-                  aria-required='true'
-                  id='userName'
+                  id='mapUserName'
                   ref={mapuserId}
                   placeholder='Ex: username'
                   maxLength={200}
                 />
               </div>
+            </div>
+            <div className='col-lg-3 mb-4 mb-lg-0'>
+              <div className='fv-row mt-10'>
+                <button
+                  type='button'
+                  className='btn btn-primary btn-sm'
+                  onClick={handleMapUserClick}
+                >
+                  Map User Details
+                </button>
+              </div>
+              <MapUserPopup
+                show={showPopup}
+                selectedTool={selectedTool}
+                onClose={() => setShowPopup(false)}
+                onImport={(item) => {
+                  mapUserName.current.value = item.dataValue
+                  mapuserId.current.value = item.dataId
+                }}
+              />
             </div>
           </div>
         </div>
