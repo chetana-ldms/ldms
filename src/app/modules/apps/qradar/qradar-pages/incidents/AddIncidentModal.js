@@ -36,7 +36,7 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
         setLoading(true)
         const data = await fetchOrganizationToolsSecurityUrl(orgId)
         const modifiedTools = [
-          {toolId: -1, toolName: 'Local Incident'},
+          {toolId: -1, toolName: 'Internal Incident'},
           ...data,
         ]
         setTools(modifiedTools)
