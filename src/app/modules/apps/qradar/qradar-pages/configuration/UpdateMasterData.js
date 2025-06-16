@@ -10,6 +10,7 @@ import {
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import CreatableSelect from 'react-select/creatable'
+import MapUserPopup from './MapUserPopup'
 
 const UpdateMasterData = () => {
   const location = useLocation()
@@ -27,10 +28,12 @@ const UpdateMasterData = () => {
   const [selectedDataType, setSelectedDataType] = useState('')
   const [selectedDataName, setSelectedDataName] = useState('')
   const [selectedDataValue, setSelectedDataValue] = useState('')
-  const [toolType, setToolType] = useState('')
+  const [selectedTool, setSelectedTool] = useState('')
+  // const [selectedTool, setSelectedTool] = useState('')
   const [organizationName, setOrganizationName] = useState('')
   const [mapDataValue, setMapDataValue] = useState('')
   const [mapDataId, setMapDataId] = useState('')
+  const [showPopup, setShowPopup] = useState(false)
 
   const reloadOrg = async () => {
     try {
@@ -54,12 +57,8 @@ const UpdateMasterData = () => {
     try {
       const response = await fetchAllMasterDataUrl()
       const data = response?.masterDataList || []
-
-      // Set Data Type Options
       const dataTypes = [...new Set(data.map((item) => item.dataType))]
       setDataTypeOptions(dataTypes.map((type) => ({label: type, value: type})))
-
-      // Filter Data Name and Data Value options based on selected Data Type
       if (selectedDataType) {
         const filteredData = data.filter((item) => item.dataType === selectedDataType)
 
@@ -84,21 +83,17 @@ const UpdateMasterData = () => {
 
   useEffect(() => {
     reloadMasterData()
-  }, [selectedDataType]) // Reload options when selectedDataType changes
-
-  // Fetch master data details
+  }, [selectedDataType])
   const reload = async () => {
     try {
       setLoading(true)
       const response = await fetchAllMasterDataDetailUrl(id)
       const masterDataDetails = response?.masterDataList[0] || {}
-
-      // Set form values
       setMasterData(masterDataDetails)
       setSelectedDataType(masterDataDetails.dataType || '')
       setSelectedDataName(masterDataDetails.dataName || '')
       setSelectedDataValue(masterDataDetails.dataValue || '')
-      setToolType(masterDataDetails.toolId || '')
+      setSelectedTool(masterDataDetails.toolId || '')
       setOrganizationName(masterDataDetails.orgId || '')
       setMapDataValue(masterDataDetails.mapDataValue || '')
       setMapDataId(masterDataDetails.mapDataId || '')
@@ -112,8 +107,6 @@ const UpdateMasterData = () => {
   useEffect(() => {
     reload()
   }, [id])
-
-  // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault()
 
@@ -133,11 +126,11 @@ const UpdateMasterData = () => {
       dataType: selectedDataType,
       dataName: selectedDataName,
       dataValue: selectedDataValue,
-      toolId: Number(toolType),
+      toolId: Number(selectedTool),
       orgId: Number(organizationName),
       userId: Number(sessionStorage.getItem('userId')),
       transactionDate: new Date().toISOString(),
-      mapDataValue:mapDataValue,
+      mapDataValue: mapDataValue,
       mapDataId: Number(mapDataId),
     }
 
@@ -160,16 +153,27 @@ const UpdateMasterData = () => {
     }
   }
   useEffect(() => {
-    if (toolType) {
+    if (selectedTool) {
       setOrganizationName('')
     }
-  }, [toolType])
+  }, [selectedTool])
 
   useEffect(() => {
     if (organizationName) {
-      setToolType('')
+      setSelectedTool('')
     }
   }, [organizationName])
+  const handleMapUserClick = () => {
+    if (!selectedDataType) {
+      notifyFail('Please select Data Type')
+      return
+    }
+    if (!selectedTool) {
+      notifyFail('Please select the Tool Name')
+      return
+    }
+    setShowPopup(true)
+  }
 
   return (
     <div className='config card'>
@@ -239,21 +243,6 @@ const UpdateMasterData = () => {
           </div>
           <div className='row mb-4'>
             <div className='col-lg-4'>
-              <label>Tool Name</label>
-              <select
-                className='form-control'
-                value={toolType}
-                onChange={(e) => setToolType(e.target.value)}
-              >
-                <option value=''>Select Tool Type</option>
-                {tools.map((tool, idx) => (
-                  <option key={idx} value={tool.toolId}>
-                    {tool.toolName}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className='col-lg-4'>
               <label>Organization</label>
               <select
                 className='form-control'
@@ -269,6 +258,23 @@ const UpdateMasterData = () => {
               </select>
             </div>
             <div className='col-lg-4'>
+              <label>Tool Name</label>
+              <select
+                className='form-control'
+                value={selectedTool}
+                onChange={(e) => setSelectedTool(e.target.value)}
+              >
+                <option value=''>Select Tool Type</option>
+                {tools.map((tool, idx) => (
+                  <option key={idx} value={tool.toolId}>
+                    {tool.toolName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className='row mb-4'>
+            <div className='col-lg-4'>
               <label>Map Data Value</label>
               <input
                 type='text'
@@ -282,7 +288,6 @@ const UpdateMasterData = () => {
                 maxLength={200}
               />
             </div>
-
             <div className='col-lg-4 mt-3'>
               <label>Map DataID</label>
               <input
@@ -295,6 +300,27 @@ const UpdateMasterData = () => {
                 onChange={(e) => setMapDataId(e.target.value)}
                 placeholder='Ex: Map DataId'
                 maxLength={200}
+              />
+            </div>
+            <div className='col-lg-4 mt-3'>
+              <div className='fv-row mt-10'>
+                <button
+                  type='button'
+                  className='btn btn-primary btn-sm'
+                  onClick={handleMapUserClick}
+                >
+                  Map User Details
+                </button>
+              </div>
+              <MapUserPopup
+                show={showPopup}
+                selectedTool={selectedTool}
+                selectedDataType={selectedDataType}
+                onClose={() => setShowPopup(false)}
+                onImport={(item) => {
+                  setMapDataValue(item.dataValue)
+                  setMapDataId(item.dataId)
+                }}
               />
             </div>
           </div>

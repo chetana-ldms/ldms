@@ -286,7 +286,7 @@ const AddMasterData = () => {
               <MapUserPopup
                 show={showPopup}
                 selectedTool={selectedTool}
-                selectedDataType ={selectedDataType}
+                selectedDataType ={selectedDataType?.value}
                 onClose={() => setShowPopup(false)}
                 onImport={(item) => {
                   mapDataValue.current.value = item.dataValue

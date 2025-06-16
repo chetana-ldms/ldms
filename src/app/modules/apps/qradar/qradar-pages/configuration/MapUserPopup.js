@@ -4,33 +4,34 @@ import {fetchToolMasterDataUrl} from '../../../../../api/ConfigurationApi'
 import {useErrorBoundary} from 'react-error-boundary'
 
 const MapUserPopup = ({show, onClose, selectedTool, selectedDataType, onImport}) => {
-    console.log(selectedDataType?.value, "selectedDataType")
+  console.log(selectedDataType, 'selectedDataType')
   const [toolMasterData, setToolMasterData] = useState([])
+  console.log(toolMasterData, 'toolMasterData')
   const [selectedItem, setSelectedItem] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
   const {showBoundary} = useErrorBoundary()
   const orgId = Number(sessionStorage.getItem('orgId'))
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!selectedTool || !show) return;
-  
+      if (!selectedTool || !show) return
+
       const data = {
         orgId,
         toolId: selectedTool,
-        masterDataType: selectedDataType?.value || 'user',
-      };
-  
-      try {
-        const res = await fetchToolMasterDataUrl(data);
-        setToolMasterData(res?.data);
-      } catch (error) {
-        showBoundary(error);
+        masterDataType: selectedDataType || 'user',
       }
-    };
-  
-    fetchData();
-  }, [selectedTool, show, orgId, selectedDataType?.value]);
-  
+
+      try {
+        const res = await fetchToolMasterDataUrl(data)
+        setToolMasterData(res?.data)
+      } catch (error) {
+        showBoundary(error)
+      }
+    }
+
+    fetchData()
+  }, [selectedTool, show, orgId, selectedDataType])
 
   const handleImport = () => {
     if (selectedItem) {
@@ -38,19 +39,32 @@ const MapUserPopup = ({show, onClose, selectedTool, selectedDataType, onImport})
       onClose()
     }
   }
+const filteredData = (toolMasterData || []).filter((item) =>
+  item?.dataValue?.toLowerCase().includes(searchTerm.toLowerCase())
+)
 
   return (
     <Modal show={show} onHide={onClose} className='addANoteModal application-modal'>
       <Modal.Header closeButton>
-        <Modal.Title>Map User Details</Modal.Title>
+        <Modal.Title>{selectedDataType ? 'Map Data Value' : 'Map User Details'}</Modal.Title>
         <button type='button' class='application-modal-close' aria-label='Close'>
           <i className='fa fa-close' />
         </button>
       </Modal.Header>
       <Modal.Body>
-        {toolMasterData !==null ? (
+        <div className='mb-3'>
+          <input
+            type='text'
+            className='form-control'
+            placeholder='Search by Data Value...'
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        {filteredData.length > 0 ? (
           <ul className='list-unstyled'>
-            {toolMasterData.map((item, index) => (
+            {filteredData.map((item, index) => (
               <li key={index} className='mb-3'>
                 <div className='card p-3 shadow-sm'>
                   <div className='form-check'>
@@ -66,10 +80,12 @@ const MapUserPopup = ({show, onClose, selectedTool, selectedDataType, onImport})
                     <label className='form-check-label w-100' htmlFor={`radio-${item.dataId}`}>
                       <div className='d-flex flex-column'>
                         <span>
-                          <strong>Map User Name :</strong> {item.dataValue}
+                          <strong>{selectedDataType ? 'Map Data Value' : 'Map User Name'} :</strong>{' '}
+                          {item.dataValue}
                         </span>
                         <span>
-                          <strong>Map User ID :</strong> <span className='text-muted'>{item.dataId}</span>
+                          <strong>{selectedDataType ? 'Map Data ID' : 'Map User ID'} :</strong>{' '}
+                          <span className='text-muted'>{item.dataId}</span>
                         </span>
                       </div>
                     </label>
@@ -79,7 +95,7 @@ const MapUserPopup = ({show, onClose, selectedTool, selectedDataType, onImport})
             ))}
           </ul>
         ) : (
-          <p>No users found for this tool.</p>
+          <p>No Data Found.</p>
         )}
       </Modal.Body>
 

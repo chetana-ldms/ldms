@@ -296,14 +296,6 @@ const UpdateUserData = () => {
                 <label htmlFor='toolType' className='form-label fs-6 fw-bolder mb-3'>
                   Select Tool
                 </label>
-                {/* <select className='form-control' value={selectedTool} onChange={handleToolChange}>
-                  <option value=''>Select Tool Name</option>
-                  {tools.map((tool, idx) => (
-                    <option key={idx} value={tool.toolId}>
-                      {tool.toolName}
-                    </option>
-                  ))}
-                </select> */}
                 <select
                   className='form-select form-select-solid'
                   data-kt-select2='true'
@@ -314,7 +306,6 @@ const UpdateUserData = () => {
                   value={toolTypeAction.toolId}
                   onChange={(e) =>
                     setToolTypeAction({
-                      // toolTypeName: e.target.value,
                       toolId: e.target.options[e.target.selectedIndex].getAttribute('data-id'),
                     })
                   }

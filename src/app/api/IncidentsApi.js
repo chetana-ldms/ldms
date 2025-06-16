@@ -15,6 +15,7 @@ const UsersByOrgToolUrl="http://10.41.3.232:501/api/LDPSecurity/v1/UsersByOrgToo
 const IncidentNotesListUrl="http://10.41.3.232:501/api/IncidentManagement/v1/Notes/List"
 const IncidentNotesAddUrl="http://10.41.3.232:501/api/IncidentManagement/v1/Notes/Add"
 const IncidentNotesUpdateUrl="http://10.41.3.232:501/api/IncidentManagement/v1/Notes/Update"
+const OrganizationToolsDetailsUrl="http://10.41.3.232:501/api/LDPlattform/v1/Organization/Tools/Details"
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -294,6 +295,21 @@ export const fetchIncidentNotesUpdateUrl = async (data) => {
 
     const responseData = await response.json()
     return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchOrganizationToolsDetailsUrl = async (orgid) => {
+  try {
+    const response = await FetchWithToken(`${OrganizationToolsDetailsUrl}?orgid=${orgid}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const responseData = await response.json()
+    const incidentData = responseData.organizationToolList
+    return incidentData
   } catch (error) {
     console.log(error)
   }

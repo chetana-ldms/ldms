@@ -82,7 +82,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     subject: '',
     description: '',
   })
-  console.log(incidentData, "incidentData")
+  console.log(incidentData, 'incidentData')
   const [selectedAlertId, setSelectedAlertId] = useState(null)
   const [selectedAlertPopUp, setSelectedAlertPopUp] = useState(false)
   const handleShowModal = () => setSelectedAlertPopUp(true)
@@ -805,15 +805,17 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 </div>
               </div>
               <div className='tab-pane fade' id='kt_tab_pane_6' role='tabpanel'>
-                <div className='d-flex justify-content-end mb-1'>
-                  <button
-                    className='btn btn-primary btn-sm'
-                    title='Add Note'
-                    onClick={handleAddNotesClick}
-                  >
-                    <i className='fa fa-plus ms-0' /> Add Note
-                  </button>
-                </div>
+                {id && (
+                  <div className='d-flex justify-content-end mb-1'>
+                    <button
+                      className='btn btn-primary btn-sm'
+                      title='Add Note'
+                      onClick={handleAddNotesClick}
+                    >
+                      <i className='fa fa-plus ms-0' /> Add Note
+                    </button>
+                  </div>
+                )}
 
                 <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
                   <thead>

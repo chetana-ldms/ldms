@@ -1,16 +1,22 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Modal, Button} from 'react-bootstrap'
-import {fetchCreateIncident, fetchMasterData, fetchUsersByOrgTool} from '../../../../../api/IncidentsApi'
+import {
+  fetchCreateIncident,
+  fetchMasterData,
+  fetchOrganizationToolsDetailsUrl,
+  fetchUsersByOrgTool,
+} from '../../../../../api/IncidentsApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {fetchOrganizationToolsSecurityUrl} from '../../../../../api/securityApi'
 
 const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
   const userID = Number(sessionStorage.getItem('userId'))
   const orgId = Number(sessionStorage.getItem('orgId'))
-  const toolID = Number(sessionStorage.getItem('toolID'))
+  const ToolId = Number(sessionStorage.getItem('toolID'))
   const date = new Date().toISOString()
   const [loading, setLoading] = useState(false)
   const [tools, setTools] = useState([])
+  console.log(tools, 'tools')
   const checkboxRef = useRef()
   const toolRef = useRef()
   const [ldp_security_user, setldp_security_user] = useState([])
@@ -29,16 +35,14 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
     ownerName: '',
     description: '',
     significantIncident: false,
+    toolID: '',
   })
   useEffect(() => {
     const reload = async () => {
       try {
         setLoading(true)
-        const data = await fetchOrganizationToolsSecurityUrl(orgId)
-        const modifiedTools = [
-          {toolId: -1, toolName: 'Internal Incident'},
-          ...data,
-        ]
+        const data = await fetchOrganizationToolsDetailsUrl(orgId)
+        const modifiedTools = [{toolID: -1, toolName: 'Internal Incident'}, ...data]
         setTools(modifiedTools)
         setLoading(false)
       } catch (error) {
@@ -48,55 +52,73 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
     }
     reload()
   }, [orgId])
+useEffect(() => {
+  const fetchData = async () => {
+    const selectedTool = tools.find((tool) => tool.toolID === Number(incidentData.toolID))
+    const resolvedToolId =
+      selectedTool?.incidentsToolId > 0 ? selectedTool.incidentsToolId : selectedTool?.toolID
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const selectedToolId = Number(incidentData.toolId)
-      const response = await fetchUsersByOrgTool(orgId, selectedToolId, userID)
-      setldp_security_user(response?.usersList != undefined ? response?.usersList : [])
+    if (!resolvedToolId) return
+
+    try {
+      const response = await fetchUsersByOrgTool(orgId, resolvedToolId, userID)
+      setldp_security_user(response?.usersList ?? [])
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  fetchData()
+}, [incidentData.toolID, tools])
+useEffect(() => {
+  const fetchAllIncidentMasterData = async () => {
+    const selectedTool = tools.find((tool) => tool.toolID === Number(incidentData.toolID))
+    const resolvedToolId =
+      selectedTool?.incidentsToolId > 0 ? selectedTool.incidentsToolId : selectedTool?.toolID
+
+    if (!resolvedToolId) return
+
+    const severityDataRequest = {
+      maserDataType: 'incident_severity',
+      orgId,
+      toolId: resolvedToolId,
+    }
+    const statusDataRequest = {
+      maserDataType: 'incident_status',
+      orgId,
+      toolId: resolvedToolId,
+    }
+    const priorityDataRequest = {
+      maserDataType: 'incident_priority',
+      orgId,
+      toolId: resolvedToolId,
+    }
+    const typeDataRequest = {
+      maserDataType: 'Incident_Type',
+      orgId,
+      toolId: resolvedToolId,
     }
 
-    fetchData()
-  }, [incidentData.toolId])
-  useEffect(() => {
-    const fetchAllIncidentMasterData = async () => {
-      if (!incidentData.toolId) return
-
-      const selectedToolId = Number(incidentData.toolId)
-      const severityDataRequest = {
-        maserDataType: 'incident_severity',
-        orgId,
-        toolId: selectedToolId,
-      }
-      const statusDataRequest = {maserDataType: 'incident_status', orgId, toolId: selectedToolId}
-      const priorityDataRequest = {
-        maserDataType: 'incident_priority',
-        orgId,
-        toolId: selectedToolId,
-      }
-      const typeDataRequest = {maserDataType: 'Incident_Type', orgId, toolId: selectedToolId}
-
-      try {
-        const [severityData, statusData, priorityData, typeData] = await Promise.all([
-          fetchMasterData(severityDataRequest),
-          fetchMasterData(statusDataRequest),
-          fetchMasterData(priorityDataRequest),
-          fetchMasterData(typeDataRequest),
-        ])
-
-        setDropdownData({
-          severityNameDropDownData: severityData,
-          statusDropDown: statusData,
-          priorityDropDown: priorityData,
-          typeDropDown: typeData,
-        })
-      } catch (error) {
-        console.log(error)
-      }
+    try {
+      const [severityData, statusData, priorityData, typeData] = await Promise.all([
+        fetchMasterData(severityDataRequest),
+        fetchMasterData(statusDataRequest),
+        fetchMasterData(priorityDataRequest),
+        fetchMasterData(typeDataRequest),
+      ])
+      setDropdownData({
+        severityNameDropDownData: severityData,
+        statusDropDown: statusData,
+        priorityDropDown: priorityData,
+        typeDropDown: typeData,
+      })
+    } catch (error) {
+      console.log(error)
     }
+  }
 
-    fetchAllIncidentMasterData()
-  }, [incidentData.toolId])
+  fetchAllIncidentMasterData()
+}, [incidentData.toolID, tools])
 
   const handleChange = (event, field) => {
     const {value, checked, type} = event.target
@@ -106,34 +128,32 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
     }))
   }
   const handleSave = async () => {
-    if (!incidentData.toolId) {
-          notifyFail('Please select a tool')
-          return
-        }
-        if (!incidentData.subject) {
-          notifyFail('Please enter subject')
-          return
-        }
-        if (!incidentData.incidentStatusName) {
-          notifyFail('Please select a incident')
-          return
-        }
-        if (!incidentData.priorityName) {
-          notifyFail('Please select a priority')
-          return
-        }
-        if (!incidentData.description) {
-          notifyFail('Please enter a description')
-          return
-        }
+    if (!incidentData.toolID) {
+      notifyFail('Please select a tool')
+      return
+    }
+    if (!incidentData.subject) {
+      notifyFail('Please enter subject')
+      return
+    }
+    if (!incidentData.incidentStatusName) {
+      notifyFail('Please select a incident')
+      return
+    }
+    if (!incidentData.priorityName) {
+      notifyFail('Please select a priority')
+      return
+    }
+    if (!incidentData.description) {
+      notifyFail('Please enter a description')
+      return
+    }
     const getIdByValue = (array, value) => {
       const match = array.find((item) => item.dataValue === value)
       return match ? match.dataID : 0
     }
-
     const ownerId =
       ldp_security_user.find((user) => user.name === incidentData.ownerName)?.userID || 0
-
     const payload = {
       description: incidentData.description,
       subject: incidentData.subject,
@@ -142,18 +162,16 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
       owner: ownerId,
       typeId: getIdByValue(dropdownData.typeDropDown, incidentData.type),
       orgId: orgId,
-      toolId: Number(incidentData.toolId),
+      toolId: Number(incidentData.toolID),
       incidentStatus: getIdByValue(dropdownData.statusDropDown, incidentData.incidentStatusName),
       score: '0',
       significantIncident: incidentData.significantIncident ? 1 : 0,
       createDate: date,
       createUserId: userID,
     }
-
     try {
       const response = await fetchCreateIncident(payload)
       const {isSuccess, message} = response
-
       if (isSuccess) {
         notify(message)
         onRefreshIncidents()
@@ -180,7 +198,6 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
     })
     if (checkboxRef.current) checkboxRef.current.checked = false
   }
-
   return (
     <Modal
       show={show}
@@ -207,20 +224,19 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
           <div className='col-md-9'>
             <select
               className='form-select form-select-sm'
-              value={incidentData.toolId}
-              onChange={(e) => handleChange(e, 'toolId')}
+              value={incidentData.toolID}
+              onChange={(e) => handleChange(e, 'toolID')}
             >
               <option value=''>Select</option>
               {tools !== null &&
                 tools?.map((item, index) => (
-                  <option key={index} value={item.toolId}>
+                  <option key={index} value={item.toolID}>
                     {item.toolName}
                   </option>
                 ))}
             </select>
           </div>
         </div>
-        {/* Subject */}
         <div className='row mb-2'>
           <div className='col-md-3 mt-2'>Subject</div>
           <div className='col-md-9'>
@@ -233,8 +249,6 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
             />
           </div>
         </div>
-
-        {/* Status */}
         <div className='row mb-2'>
           <div className='col-md-3 mt-2'>Status</div>
           <div className='col-md-9'>
@@ -252,8 +266,6 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
             </select>
           </div>
         </div>
-
-        {/* Priority */}
         <div className='row mb-2'>
           <div className='col-md-3 mt-2'>Priority</div>
           <div className='col-md-9'>
@@ -271,8 +283,6 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
             </select>
           </div>
         </div>
-
-        {/* Severity */}
         <div className='row mb-2'>
           <div className='col-md-3 mt-2'>Severity</div>
           <div className='col-md-9'>
@@ -290,8 +300,6 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
             </select>
           </div>
         </div>
-
-        {/* Type */}
         <div className='row mb-2'>
           <div className='col-md-3 mt-2'>Type</div>
           <div className='col-md-9'>
@@ -309,8 +317,6 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
             </select>
           </div>
         </div>
-
-        {/* Owner */}
         <div className='row mb-2'>
           <div className='col-md-3 mt-2'>Owner</div>
           <div className='col-md-9'>
@@ -328,8 +334,6 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
             </select>
           </div>
         </div>
-
-        {/* Description */}
         <div className='row mb-2'>
           <div className='col-md-3 mt-2'>Description</div>
           <div className='col-md-9'>
@@ -342,8 +346,6 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
             />
           </div>
         </div>
-
-        {/* Significant Incident */}
         <div className='form-check'>
           <input
             className='form-check-input'
@@ -355,7 +357,6 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
           <label className='form-check-label ms-2'>Significant Incident</label>
         </div>
       </Modal.Body>
-
       <Modal.Footer>
         <Button
           variant='secondary'
@@ -366,7 +367,6 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
         >
           Close
         </Button>
-
         <Button variant='primary' onClick={handleSave}>
           Save
         </Button>

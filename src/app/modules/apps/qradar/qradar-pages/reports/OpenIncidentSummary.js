@@ -10,6 +10,7 @@ import {
   DropdownItem,
 } from "reactstrap";
 import { fetchExportDataAddUrl } from "../../../../../api/Api";
+import { fetchOrganizationToolsDetailsUrl } from "../../../../../api/IncidentsApi";
 
 function OpenIncidentSummary() {
   const handleError = useErrorBoundary();
@@ -18,12 +19,36 @@ function OpenIncidentSummary() {
   const [alertData, setAlertData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [tools, setTools] = useState([])
   const [dropdownOpen, setDropdownOpen] = useState(false); 
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
-
+  const [incidentData, setIncidentData] = useState({
+    toolID: toolId || '',
+  })
+  const handleChange = (event, field) => {
+    const {value, checked, type} = event.target
+    setIncidentData((prev) => ({
+      ...prev,
+      [field]: type === 'checkbox' ? checked : value,
+    }))
+  }
+  useEffect(() => {
+    const reload = async () => {
+      try {
+        setLoading(true)
+        const data = await fetchOrganizationToolsDetailsUrl(orgId)
+        const modifiedTools = [{toolID: -1, toolName: 'Internal Incident'}, ...data]
+        setTools(modifiedTools)
+        setLoading(false)
+      } catch (error) {
+        console.log(error)
+        setLoading(false)
+      }
+    }
+    reload()
+  }, [orgId])
   const CanvasJS = CanvasJSReact.CanvasJS;
   const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
@@ -86,7 +111,7 @@ function OpenIncidentSummary() {
 
       const requestData = {
         orgId,
-        toolId:toolId,
+         toolId: incidentData.toolID ? Number(incidentData.toolID) : toolId,
         incidentFromDate: fromDateISO,
         incidentToDate: toDate,
         orgAccountStructureLevel: [
@@ -125,7 +150,7 @@ function OpenIncidentSummary() {
     };
 
     fetchData();
-  }, []);
+  }, [incidentData.toolID]);
   //Date range
   const today = new Date();
   const lastYear = new Date();
@@ -197,15 +222,32 @@ function OpenIncidentSummary() {
 
   return (
     <div>
+       <div className='row bg-heading m-0'>
+        <div className='col-md-9 fs-15 pt-1'>
+         Open Incident Status for the last year ({startDate} to {endDate})
+        </div>
+        <div className='col-md-3'>
+          <select
+            className='form-select form-select-sm'
+            value={incidentData.toolID}
+            onChange={(e) => handleChange(e, 'toolID')}
+          >
+            <option value=''>Select</option>
+            {tools !== null &&
+              tools?.map((item, index) => (
+                <option key={index} value={item.toolID}>
+                  {item.toolName}
+                </option>
+              ))}
+          </select>
+        </div>
+      </div>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
         <p>Error: {error}</p>
       ) : alertData !== null ? (
         <>
-          <h4 className="bg-heading">
-            Open Incident Status for the last year ({startDate} to {endDate})
-          </h4>
           <div className="export-report mt-5 me-5">
             <Dropdown
               isOpen={dropdownOpen}
