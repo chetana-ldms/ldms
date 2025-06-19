@@ -88,11 +88,11 @@ const LdpTools = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = tools
     ? tools
-        .filter((item) => item.toolName.toLowerCase().includes(filterValue.toLowerCase()))
+        .filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
         .slice(indexOfFirstItem, indexOfLastItem)
     : null
     const filteredList = filterValue
-    ? tools.filter((item) => item.toolName.toLowerCase().includes(filterValue.toLowerCase()))
+    ? tools.filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
     : tools;
 
   const handlePageSelect = (event) => {

@@ -98,12 +98,12 @@ const ToolTypeActions = () => {
   const currentItems = toolTypeActions
     ? toolTypeActions
         .filter((item) =>
-          item.toolAction.toLowerCase().includes(filterValue.toLowerCase())
+          item.searchText.toLowerCase().includes(filterValue.toLowerCase())
         )
         .slice(indexOfFirstItem, indexOfLastItem)
     : null;
     const filteredList = filterValue
-    ? toolTypeActions.filter((item) => item.toolAction.toLowerCase().includes(filterValue.toLowerCase()))
+    ? toolTypeActions.filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
     : toolTypeActions;
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value));

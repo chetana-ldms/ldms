@@ -95,11 +95,11 @@ const ToolActions = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = toolActions
     ? toolActions
-        .filter((item) => item.toolTypeActionName.toLowerCase().includes(filterValue.toLowerCase()))
+        .filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
         .slice(indexOfFirstItem, indexOfLastItem)
     : null
     const filteredList = filterValue
-    ? toolActions.filter((item) => item.toolTypeActionName.toLowerCase().includes(filterValue.toLowerCase()))
+    ? toolActions.filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
     : toolActions;
 
   const handlePageSelect = (event) => {

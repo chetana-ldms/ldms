@@ -23,6 +23,7 @@ const AddMasterData = () => {
   const [selectedDataValue, setSelectedDataValue] = useState(null)
   const [selectedTool, setSelectedTool] = useState('')
   const [selectedOrganization, setSelectedOrganization] = useState('')
+  const [isDefaultData, setIsDefaultData] = useState(false)
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [organizations, setOrganizations] = useState([])
@@ -105,7 +106,8 @@ const AddMasterData = () => {
       userId: userID,
       transactionDate: new Date().toISOString(),
       mapDataValue: mapDataValue.current.value,
-      mapDataId: mapDataId.current.value,
+      mapDataId: mapDataId.current.value?mapDataId.current.value:  0 ,
+      defaultData:isDefaultData
     }
 
     try {
@@ -234,6 +236,7 @@ const AddMasterData = () => {
                 ))}
               </select>
             </div>
+
             <div className='col-lg-4'>
               <label>Tool Name</label>
               <select className='form-control' value={selectedTool} onChange={handleToolChange}>
@@ -245,15 +248,29 @@ const AddMasterData = () => {
                 ))}
               </select>
             </div>
+
+            <div className='col-lg-4 d-flex align-items-end'>
+              <div className='form-check mt-3'>
+                <input
+                  type='checkbox'
+                  className='form-check-input'
+                  id='defaultDataCheckbox'
+                  checked={isDefaultData}
+                  onChange={(e) => setIsDefaultData(e.target.checked)}
+                />
+                <label className='form-check-label' htmlFor='defaultDataCheckbox'>
+                  Default Data
+                </label>
+              </div>
+            </div>
           </div>
+
           <div className='row mb-4'>
             <div className='col-lg-4'>
               <label> Map Data Value</label>
               <input
                 type='text'
                 className='form-control form-control-lg'
-                required
-                aria-required='true'
                 id='userName'
                 ref={mapDataValue}
                 placeholder='Ex: Map Data Value'
@@ -265,8 +282,6 @@ const AddMasterData = () => {
               <input
                 type='number'
                 className='form-control form-control-lg'
-                required
-                aria-required='true'
                 id='userName'
                 ref={mapDataId}
                 placeholder='Ex: Map DataId'
@@ -286,7 +301,7 @@ const AddMasterData = () => {
               <MapUserPopup
                 show={showPopup}
                 selectedTool={selectedTool}
-                selectedDataType ={selectedDataType?.value}
+                selectedDataType={selectedDataType?.value}
                 onClose={() => setShowPopup(false)}
                 onImport={(item) => {
                   mapDataValue.current.value = item.dataValue

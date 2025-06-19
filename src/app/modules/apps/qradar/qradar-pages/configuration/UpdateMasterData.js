@@ -29,7 +29,7 @@ const UpdateMasterData = () => {
   const [selectedDataName, setSelectedDataName] = useState('')
   const [selectedDataValue, setSelectedDataValue] = useState('')
   const [selectedTool, setSelectedTool] = useState('')
-  // const [selectedTool, setSelectedTool] = useState('')
+  const [isDefaultData, setIsDefaultData] = useState(false)
   const [organizationName, setOrganizationName] = useState('')
   const [mapDataValue, setMapDataValue] = useState('')
   const [mapDataId, setMapDataId] = useState('')
@@ -97,6 +97,7 @@ const UpdateMasterData = () => {
       setOrganizationName(masterDataDetails.orgId || '')
       setMapDataValue(masterDataDetails.mapDataValue || '')
       setMapDataId(masterDataDetails.mapDataId || '')
+      setIsDefaultData(masterDataDetails.defaultData || false)
     } catch (error) {
       console.error('Failed to fetch master data details:', error)
     } finally {
@@ -132,6 +133,7 @@ const UpdateMasterData = () => {
       transactionDate: new Date().toISOString(),
       mapDataValue: mapDataValue,
       mapDataId: Number(mapDataId),
+      defaultData:isDefaultData,
     }
 
     try {
@@ -272,6 +274,20 @@ const UpdateMasterData = () => {
                 ))}
               </select>
             </div>
+            <div className='col-lg-4 d-flex align-items-end'>
+              <div className='form-check mt-3'>
+                <input
+                  type='checkbox'
+                  className='form-check-input'
+                  id='defaultDataCheckbox'
+                  checked={isDefaultData}
+                  onChange={(e) => setIsDefaultData(e.target.checked)}
+                />
+                <label className='form-check-label' htmlFor='defaultDataCheckbox'>
+                  Default Data
+                </label>
+              </div>
+            </div>
           </div>
           <div className='row mb-4'>
             <div className='col-lg-4'>
@@ -279,8 +295,6 @@ const UpdateMasterData = () => {
               <input
                 type='text'
                 className='form-control form-control-lg'
-                required
-                aria-required='true'
                 id='mapDataValue'
                 value={mapDataValue}
                 onChange={(e) => setMapDataValue(e.target.value)}
@@ -293,8 +307,6 @@ const UpdateMasterData = () => {
               <input
                 type='number'
                 className='form-control form-control-lg'
-                required
-                aria-required='true'
                 id='mapDataId'
                 value={mapDataId}
                 onChange={(e) => setMapDataId(e.target.value)}

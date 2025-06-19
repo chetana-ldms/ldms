@@ -21,6 +21,7 @@ const UpdateUserData = () => {
   const [loading, setLoading] = useState(false)
   const [roleTypes, setRoleTypes] = useState([])
   const [organizationList, setOrganizationList] = useState([])
+  const [isDefaultData, setIsDefaultData] = useState(false)
   const [toolTypeAction, setToolTypeAction] = useState({
     toolTypeName: '',
     toolTypeID: '',
@@ -67,6 +68,7 @@ const UpdateUserData = () => {
           orgId: data.orgId,
           toolId: data.toolId,
         })
+        setIsDefaultData(data.defaultUser || false)
       } catch (error) {
         handleError(error)
       }
@@ -126,6 +128,7 @@ const UpdateUserData = () => {
       mapUserName: mapUserName.current.value,
       mapUserId: mapuserId.current.value,
       toolId: Number(toolType.current.value),
+      defaultUser:isDefaultData,
     }
     try {
       const responseData = await fetchUserUpdateUrl(data)
@@ -185,7 +188,7 @@ const UpdateUserData = () => {
       <form>
         <div className='card-body pad-10'>
           <div className='row mb-6'>
-            <div className='col-lg-3 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
                   Enter User Name
@@ -201,7 +204,7 @@ const UpdateUserData = () => {
                 />
               </div>
             </div>
-            <div className='col-lg-3 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
                   User Email
@@ -219,7 +222,7 @@ const UpdateUserData = () => {
                 />
               </div>
             </div>
-            <div className='col-lg-3 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='orgID' className='form-label fs-6 fw-bolder mb-3'>
                   Organization
@@ -259,7 +262,9 @@ const UpdateUserData = () => {
                 </select>
               </div>
             </div>
-            <div className='col-lg-3 mb-4 mb-lg-0'>
+          </div>
+          <div className='row mb-6'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='toolType' className='form-label fs-6 fw-bolder mb-3'>
                   Select Role Type
@@ -289,9 +294,7 @@ const UpdateUserData = () => {
                 </select>
               </div>
             </div>
-          </div>
-          <div className='row mb-6'>
-            <div className='col-lg-3 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='toolType' className='form-label fs-6 fw-bolder mb-3'>
                   Select Tool
@@ -320,7 +323,24 @@ const UpdateUserData = () => {
                 </select>
               </div>
             </div>
-            <div className='col-lg-3 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='form-check mt-10 d-flex'>
+                <input
+                  type='checkbox'
+                   className='form-check-input'
+                  id='defaultDataCheckbox'
+                  checked={isDefaultData}
+                  onChange={(e) => setIsDefaultData(e.target.checked)}
+                />
+
+                <label className='form-check-label' htmlFor='defaultDataCheckbox'>
+                  Default Data
+                </label>
+              </div>
+            </div>
+          </div>
+          <div className='row mb-6'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
                   Map User Name
@@ -337,7 +357,7 @@ const UpdateUserData = () => {
                 />
               </div>
             </div>
-            <div className='col-lg-3 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
                   Map UserID
@@ -354,7 +374,7 @@ const UpdateUserData = () => {
                 />
               </div>
             </div>
-            <div className='col-lg-3 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mt-10'>
                 <button
                   type='button'

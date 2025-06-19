@@ -35,28 +35,29 @@ const AddOrganizationTools = () => {
   const orgID = useRef()
   const apiUrl = useRef()
   const toolRef = useRef()
+  const emailRef = useRef()
   const apiUrlInTable = useRef()
   const errors = {}
 
   const fetchToolsByOrg = async (selectedOrgID) => {
-  try {
-    setLoading(true);
-    const data = await fetchOrganizationToolsSecurityUrl(selectedOrgID); // assumes API accepts orgID
-    setTools(data);
-  } catch (error) {
-    handleError(error);
-  } finally {
-    setLoading(false);
+    try {
+      setLoading(true)
+      const data = await fetchOrganizationToolsSecurityUrl(selectedOrgID) // assumes API accepts orgID
+      setTools(data)
+    } catch (error) {
+      handleError(error)
+    } finally {
+      setLoading(false)
+    }
   }
-};
-const handleOrgChange = (e) => {
-  const selectedOrgID = e.target.value;
-  if (selectedOrgID) {
-    fetchToolsByOrg(selectedOrgID);
-  } else {
-    setTools([]); 
+  const handleOrgChange = (e) => {
+    const selectedOrgID = e.target.value
+    if (selectedOrgID) {
+      fetchToolsByOrg(selectedOrgID)
+    } else {
+      setTools([])
+    }
   }
-};
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!toolID.current.value) {
@@ -74,6 +75,11 @@ const handleOrgChange = (e) => {
       setLoading(false)
       return
     }
+     if (!emailRef.current.value) {
+      notifyFail('Enter Incident Email')
+      setLoading(false)
+      return
+    }
     // if (!tableData.length > 0) {
     //   errors.tableData = 'Enter Table Data'
     //   setLoading(false)
@@ -85,9 +91,10 @@ const handleOrgChange = (e) => {
     var data = {
       toolID: toolID.current.value,
       orgID: orgID.current.value,
-      incidentsToolId:toolRef.current.value,
+      incidentsToolId: toolRef.current.value,
       createdDate,
       createdUserId,
+      incidentEmail:emailRef.current.value,
       lastReadPKID: 0,
       toolActions: tableData.map((item) => ({
         toolActionId: item.toolTypeActionID,
@@ -340,7 +347,7 @@ const handleOrgChange = (e) => {
             <div className='col-lg-4 mb-4 mb-lg-0'>
               <div className='fv-row mb-5'>
                 <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
-                 Alert-Incident Map Tool
+                  Alert-Incident Map Tool
                 </label>
                 <div>
                   <select
@@ -359,6 +366,21 @@ const handleOrgChange = (e) => {
                         </option>
                       ))}
                   </select>
+                </div>
+              </div>
+            </div>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='fv-row mb-5'>
+                <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
+                  Incident Email
+                </label>
+                <div>
+                  <input
+                    type='email'
+                    className='form-control form-control-sm'
+                    placeholder='Enter Email'
+                    ref={emailRef}
+                  />
                 </div>
               </div>
             </div>

@@ -76,6 +76,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     typeId: '',
     type: '',
     owner: '',
+    incidentEmail: '',
     ownerName: '',
     alertId: [],
     significantIncident: 0,
@@ -144,6 +145,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
           typeId: '',
           type: '',
           owner: '',
+          incidentEmail: '',
           ownerName: '',
           alertId: [],
           significantIncident: 0,
@@ -167,6 +169,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
         severityName: data?.severityName,
         typeId: data?.typeId,
         type: data?.type,
+        incidentEmail: data.incidentEmail,
         owner: data?.owner,
         ownerName: data?.ownerName,
         alertId: alertIds,
@@ -234,6 +237,11 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
         owner: selectedId,
         ownerName: event.target.value,
       })
+    } else if (field === 'incidentEmail') {
+      setIncidentData((prevState) => ({
+        ...prevState,
+        incidentEmail: event.target.value,
+      }))
     } else if (field === 'significantIncident') {
       setIncidentData({
         ...incidentData,
@@ -261,6 +269,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
       severityId: incidentData.severity,
       typeId: incidentData.typeId,
       ownerUserId: incidentData.owner,
+      incidentEmail: incidentData.incidentEmail,
       significantIncident: incidentData.significantIncident,
       modifiedUserId: userID,
       modifiedDate: date,
@@ -593,6 +602,19 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     </div>
                   </div>
                 </div>
+                <div className='row bd-highlight mb-3'>
+                  <div className='col-md-3 bd-highlight mt-2'>Email</div>
+                  <div className='col-md-9 bd-highlight'>
+                    <input
+                      type='incidentEmail'
+                      className='form-control form-control-sm'
+                      placeholder='Enter Email'
+                      value={incidentData.incidentEmail}
+                      onChange={(e) => handleChange(e, 'incidentEmail')}
+                    />
+                  </div>
+                </div>
+
                 <div className='row bd-highlight mb-1'>
                   <div className='col-md-3 bd-highlight mt-2'>Description</div>
                   <div className='col-md-9 bd-highlight'>

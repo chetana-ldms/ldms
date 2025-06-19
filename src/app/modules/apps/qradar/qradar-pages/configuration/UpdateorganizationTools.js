@@ -97,7 +97,7 @@ const UpdateOrganizationTools = () => {
           incidentsToolId: data.incidentsToolId,
           incidentToolName: data.incidentToolName,
           toolName: data.toolName,
-          // apiUrl: data.apiUrl
+          IncidentEmail: data.incidentEmail,
         })
         setOrgToolID(data.orgToolID)
         handleChange(data, 'toolTypeName')
@@ -160,6 +160,7 @@ const UpdateOrganizationTools = () => {
       modifiedDate,
       modifiedUserId,
       lastReadPKID: 0,
+      IncidentEmail: toolTypeAction.IncidentEmail || '',
       toolActions: tableData.map((item) => ({
         toolActionId: item.toolActionID,
         orgToolActionId: item.orgToolActionId,
@@ -225,6 +226,12 @@ const UpdateOrganizationTools = () => {
         [field]: selectedValue,
       }))
     }
+    if (field === 'IncidentEmail') {
+      setToolTypeAction((prevState) => ({
+        ...prevState,
+        IncidentEmail: selectedValue,
+      }))
+    }
 
     if (field === 'toolName' || field === 'orgName') {
       const selectedId = event.target.options[event.target.selectedIndex].getAttribute('data-id')
@@ -262,14 +269,14 @@ const UpdateOrganizationTools = () => {
       }))
     }
     if (field === 'IncidentToolName') {
-      const selectedId = event.target.options[event.target.selectedIndex].getAttribute('data-id');
-      const selectedValue = event.target.value;
-  
+      const selectedId = event.target.options[event.target.selectedIndex].getAttribute('data-id')
+      const selectedValue = event.target.value
+
       setToolTypeAction((prevState) => ({
         ...prevState,
         incidentsToolId: selectedId,
         incidentToolName: selectedValue,
-      }));
+      }))
     }
   }
   const handleAction = (event) => {
@@ -494,6 +501,22 @@ const UpdateOrganizationTools = () => {
                         </option>
                       ))}
                   </select>
+                </div>
+              </div>
+            </div>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='fv-row mt-4'>
+                <label htmlFor='toolID' className='form-label fs-6 fw-bolder mb-3'>
+                  Incident Email
+                </label>
+                <div>
+                  <input
+                    type='IncidentEmail'
+                    className='form-control form-control-sm'
+                    placeholder='Enter Email'
+                    value={toolTypeAction?.IncidentEmail}
+                    onChange={(e) => handleChange(e, 'IncidentEmail')}
+                  />
                 </div>
               </div>
             </div>

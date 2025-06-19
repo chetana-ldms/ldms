@@ -16,10 +16,11 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
   const date = new Date().toISOString()
   const [loading, setLoading] = useState(false)
   const [tools, setTools] = useState([])
-  console.log(tools, 'tools')
+  const [isOwnerEmailChecked, setIsOwnerEmailChecked] = useState(false)
   const checkboxRef = useRef()
   const toolRef = useRef()
   const [ldp_security_user, setldp_security_user] = useState([])
+  console.log(ldp_security_user, 'ldp_security_user')
   const [dropdownData, setDropdownData] = useState({
     severityNameDropDownData: [],
     statusDropDown: [],
@@ -32,11 +33,24 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
     priorityName: '',
     severityName: '',
     type: '',
+    incidentEmail: '',
     ownerName: '',
     description: '',
     significantIncident: false,
     toolID: '',
   })
+  useEffect(() => {
+    if (isOwnerEmailChecked) {
+      const selectedOwner = ldp_security_user.find((user) => user.name === incidentData.ownerName)
+      if (selectedOwner) {
+        setIncidentData((prev) => ({
+          ...prev,
+          incidentEmail: selectedOwner.emailId || '',
+        }))
+      }
+    }
+  }, [incidentData.ownerName, isOwnerEmailChecked, ldp_security_user])
+
   useEffect(() => {
     const reload = async () => {
       try {
@@ -52,73 +66,85 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
     }
     reload()
   }, [orgId])
-useEffect(() => {
-  const fetchData = async () => {
-    const selectedTool = tools.find((tool) => tool.toolID === Number(incidentData.toolID))
-    const resolvedToolId =
-      selectedTool?.incidentsToolId > 0 ? selectedTool.incidentsToolId : selectedTool?.toolID
+  useEffect(() => {
+    const fetchData = async () => {
+      const selectedTool = tools.find((tool) => tool.toolID === Number(incidentData.toolID))
+      if (selectedTool?.incidentEmail != null) {
+        setIncidentData((prev) => ({
+          ...prev,
+          incidentEmail: selectedTool.incidentEmail,
+        }))
+      } else {
+        setIncidentData((prev) => ({
+          ...prev,
+          incidentEmail: '',
+        }))
+      }
 
-    if (!resolvedToolId) return
+      const resolvedToolId =
+        selectedTool?.incidentsToolId > 0 ? selectedTool.incidentsToolId : selectedTool?.toolID
 
-    try {
-      const response = await fetchUsersByOrgTool(orgId, resolvedToolId, userID)
-      setldp_security_user(response?.usersList ?? [])
-    } catch (error) {
-      console.log(error)
-    }
-  }
+      if (!resolvedToolId) return
 
-  fetchData()
-}, [incidentData.toolID, tools])
-useEffect(() => {
-  const fetchAllIncidentMasterData = async () => {
-    const selectedTool = tools.find((tool) => tool.toolID === Number(incidentData.toolID))
-    const resolvedToolId =
-      selectedTool?.incidentsToolId > 0 ? selectedTool.incidentsToolId : selectedTool?.toolID
-
-    if (!resolvedToolId) return
-
-    const severityDataRequest = {
-      maserDataType: 'incident_severity',
-      orgId,
-      toolId: resolvedToolId,
-    }
-    const statusDataRequest = {
-      maserDataType: 'incident_status',
-      orgId,
-      toolId: resolvedToolId,
-    }
-    const priorityDataRequest = {
-      maserDataType: 'incident_priority',
-      orgId,
-      toolId: resolvedToolId,
-    }
-    const typeDataRequest = {
-      maserDataType: 'Incident_Type',
-      orgId,
-      toolId: resolvedToolId,
+      try {
+        const response = await fetchUsersByOrgTool(orgId, resolvedToolId, userID)
+        setldp_security_user(response?.usersList ?? [])
+      } catch (error) {
+        console.log(error)
+      }
     }
 
-    try {
-      const [severityData, statusData, priorityData, typeData] = await Promise.all([
-        fetchMasterData(severityDataRequest),
-        fetchMasterData(statusDataRequest),
-        fetchMasterData(priorityDataRequest),
-        fetchMasterData(typeDataRequest),
-      ])
-      setDropdownData({
-        severityNameDropDownData: severityData,
-        statusDropDown: statusData,
-        priorityDropDown: priorityData,
-        typeDropDown: typeData,
-      })
-    } catch (error) {
-      console.log(error)
-    }
-  }
+    fetchData()
+  }, [incidentData.toolID, tools])
+  useEffect(() => {
+    const fetchAllIncidentMasterData = async () => {
+      const selectedTool = tools.find((tool) => tool.toolID === Number(incidentData.toolID))
+      const resolvedToolId =
+        selectedTool?.incidentsToolId > 0 ? selectedTool.incidentsToolId : selectedTool?.toolID
 
-  fetchAllIncidentMasterData()
-}, [incidentData.toolID, tools])
+      if (!resolvedToolId) return
+
+      const severityDataRequest = {
+        maserDataType: 'incident_severity',
+        orgId,
+        toolId: resolvedToolId,
+      }
+      const statusDataRequest = {
+        maserDataType: 'incident_status',
+        orgId,
+        toolId: resolvedToolId,
+      }
+      const priorityDataRequest = {
+        maserDataType: 'incident_priority',
+        orgId,
+        toolId: resolvedToolId,
+      }
+      const typeDataRequest = {
+        maserDataType: 'Incident_Type',
+        orgId,
+        toolId: resolvedToolId,
+      }
+
+      try {
+        const [severityData, statusData, priorityData, typeData] = await Promise.all([
+          fetchMasterData(severityDataRequest),
+          fetchMasterData(statusDataRequest),
+          fetchMasterData(priorityDataRequest),
+          fetchMasterData(typeDataRequest),
+        ])
+        setDropdownData({
+          severityNameDropDownData: severityData,
+          statusDropDown: statusData,
+          priorityDropDown: priorityData,
+          typeDropDown: typeData,
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchAllIncidentMasterData()
+  }, [incidentData.toolID, tools])
 
   const handleChange = (event, field) => {
     const {value, checked, type} = event.target
@@ -142,6 +168,10 @@ useEffect(() => {
     }
     if (!incidentData.priorityName) {
       notifyFail('Please select a priority')
+      return
+    }
+    if (!incidentData.incidentEmail) {
+      notifyFail('Please enter the incidentEmail')
       return
     }
     if (!incidentData.description) {
@@ -168,6 +198,7 @@ useEffect(() => {
       significantIncident: incidentData.significantIncident ? 1 : 0,
       createDate: date,
       createUserId: userID,
+      incidentEmail: incidentData.incidentEmail,
     }
     try {
       const response = await fetchCreateIncident(payload)
@@ -334,6 +365,50 @@ useEffect(() => {
             </select>
           </div>
         </div>
+        <div className='row mb-2'>
+          <div className='col-md-3 mt-2'>Email</div>
+          <div className='col-md-5'>
+            <input
+              type='email'
+              className='form-control form-control-sm'
+              placeholder='Enter Email'
+              value={incidentData?.incidentEmail || ''}
+              onChange={(e) => handleChange(e, 'incidentEmail')}
+              disabled={isOwnerEmailChecked}
+            />
+          </div>
+          <div className='col-md-4 d-flex align-items-center'>
+            <div className='form-check ms-2'>
+              <input
+                className='form-check-input'
+                type='checkbox'
+                id='ownerBasedEmail'
+                checked={isOwnerEmailChecked}
+                onChange={(e) => {
+                  const isChecked = e.target.checked
+                  setIsOwnerEmailChecked(isChecked)
+
+                  if (isChecked) {
+                    const selectedOwner = ldp_security_user.find(
+                      (user) => user.name === incidentData.ownerName
+                    )
+                    if (selectedOwner) {
+                      setIncidentData((prev) => ({
+                        ...prev,
+                        incidentEmail: selectedOwner.emailId || '',
+                      }))
+                    }
+                  }
+                }}
+              />
+
+              <label className='form-check-label ms-1' htmlFor='ownerBasedEmail'>
+                Owner-based email
+              </label>
+            </div>
+          </div>
+        </div>
+
         <div className='row mb-2'>
           <div className='col-md-3 mt-2'>Description</div>
           <div className='col-md-9'>

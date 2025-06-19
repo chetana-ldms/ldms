@@ -118,11 +118,11 @@ const UserData = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = users
     ? users
-        .filter((item) => item.name.toLowerCase().includes(filterValue.toLowerCase()))
+        .filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
         .slice(indexOfFirstItem, indexOfLastItem)
     : null
   const filteredList = filterValue
-    ? users.filter((item) => item.name.toLowerCase().includes(filterValue.toLowerCase()))
+    ? users.filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
     : users
 
   const handlePageSelect = (event) => {
