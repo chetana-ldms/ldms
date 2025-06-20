@@ -109,7 +109,7 @@ function SignificantIncident() {
 
       const requestData = {
         orgId,
-        toolId: incidentData.toolID ? Number(incidentData.toolID) : toolId,
+        toolId: incidentData.toolID ? Number(incidentData.toolID) : 0,
         incidentFromDate: fromDateISO,
         incidentToDate: toDate,
         orgAccountStructureLevel: [
