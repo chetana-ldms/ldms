@@ -2,42 +2,49 @@ import React, { useState, useEffect, useRef } from "react";
 import { fetchADUserBOTAskUrl } from "../../../../../api/ChatBotApi";
 import { Container, Form, Button, Spinner, InputGroup } from "react-bootstrap";
 import useFeatureActions from "../configuration/useFeatureActions";
+import VoiceInput from './VoiceInput';
+import { speak } from './VoiceOutput';
 
 function ChatBot() {
   const [query, setQuery] = useState("");
-  const [chatHistory, setChatHistory] = useState([]); // Stores chat messages
+  const [chatHistory, setChatHistory] = useState([]);
   const [loading, setLoading] = useState(false);
-  const chatBoxRef = useRef(null); // Ref for scrolling chat box
+  const chatBoxRef = useRef(null);
   const orgId = Number(sessionStorage.getItem("orgId"));
   const toolId = Number(sessionStorage.getItem("toolID"));
-  const roleId = Number(sessionStorage.getItem('roleID'))
-  const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
-  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+  const roleId = Number(sessionStorage.getItem('roleID'));
+  const featureId = Number(sessionStorage.getItem('selectedFeatureId'));
+  const { featureActions } = useFeatureActions(orgId, toolId, roleId, featureId);
 
   const isActionAuthorized = (actionName) => {
     return featureActions?.some(
       (action) => action.actionName === actionName && action.is_authorized === true
-    )
-  }
+    );
+  };
 
   useEffect(() => {
     if (chatBoxRef.current) {
-      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight; // Auto-scroll to the bottom
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
-  }, [chatHistory]); // Runs whenever chatHistory updates
+  }, [chatHistory]);
 
-  const handleSearch = async (event) => {
-    if (event) event.preventDefault(); // Prevents default form submission
+  const handleVoiceSearch = (voiceText) => {
+    setQuery(voiceText);
+    handleSearch(null, voiceText);
+  };
 
-    if (!query.trim()) return;
+  const handleSearch = async (event, customQuery) => {
+    if (event) event.preventDefault();
+    const searchQuery = customQuery !== undefined ? customQuery : query;
+    if (!searchQuery.trim()) return;
 
-    setChatHistory((prev) => [...prev, { type: "question", text: query }]);
+    setChatHistory((prev) => [...prev, { type: "question", text: searchQuery }]);
     setLoading(true);
 
     const data = {
       orgId: orgId,
       toolId: toolId,
-      userQuery: query,
+      userQuery: searchQuery,
     };
 
     try {
@@ -46,14 +53,11 @@ function ChatBot() {
 
       let answerText = "No user found.";
       if (userDetails) {
-        answerText = `Name: ${userDetails.displayName || "N/A"}\nEmail: ${
-          userDetails.mail || "N/A"
-        }\nJob Title: ${userDetails.jobTitle || "N/A"}\nOffice Location: ${
-          userDetails.officeLocation || "N/A"
-        }`;
+        answerText = `Name: ${userDetails.displayName || "N/A"}\nEmail: ${userDetails.mail || "N/A"}\nJob Title: ${userDetails.jobTitle || "N/A"}\nOffice Location: ${userDetails.officeLocation || "N/A"}`;
       }
 
       setChatHistory((prev) => [...prev, { type: "answer", text: answerText }]);
+      speak(answerText); // Convert response to voice
     } catch (error) {
       console.error("Error fetching user details:", error);
       setChatHistory((prev) => [...prev, { type: "answer", text: "Invalid user." }]);
@@ -64,8 +68,8 @@ function ChatBot() {
   };
 
   const handleClear = () => {
-    setChatHistory([]); // Clears the chat history
-    setQuery(""); // Clears the input field
+    setChatHistory([]);
+    setQuery("");
   };
 
   const handleKeyDown = (event) => {
@@ -76,9 +80,8 @@ function ChatBot() {
 
   return (
     <Container className="mt-4 position-relative">
-      {/* Chat Box */}
       <div
-        ref={chatBoxRef} // Attach ref to chat box
+        ref={chatBoxRef}
         className="chat-box border p-3 mb-5 rounded"
         style={{
           height: "370px",
@@ -117,20 +120,17 @@ function ChatBot() {
         )}
       </div>
 
-      {/* Input Field Fixed at Bottom */}
       <Form className="d-flex justify-content-center w-100 p-3 bg-white" style={{ zIndex: 99, background: "transparent" }}>
         <InputGroup className="w-50">
           <Form.Control
             type="text"
-            placeholder="Enter your query..."
+            placeholder="Type your question..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown} // Calls API on Enter key press
-            style={{
-              backgroundColor: "rgba(255, 255, 255, 0.5)",
-              backdropFilter: "blur(10px)",
-            }}
+            onKeyDown={handleKeyDown}
+            disabled={loading}
           />
+          <VoiceInput setQuery={setQuery} onVoiceComplete={handleVoiceSearch} />
           <Button variant="primary" size="sm" onClick={handleSearch} disabled={loading}>
             {loading ? "Loading..." : "Ask"}
           </Button>

@@ -90,11 +90,11 @@ const ConfigurationData = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = masterData
     ? masterData
-        .filter((item) => item.dataType.toLowerCase().includes(filterValue.toLowerCase()))
+        .filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
         .slice(indexOfFirstItem, indexOfLastItem)
     : null
   const filteredList = filterValue
-    ? masterData.filter((item) => item.dataType.toLowerCase().includes(filterValue.toLowerCase()))
+    ? masterData.filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
     : masterData
 
   const handlePageSelect = (event) => {
