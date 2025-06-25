@@ -221,7 +221,6 @@ function CreatedIncidentStatusReport() {
             value={incidentData.toolID}
             onChange={(e) => handleChange(e, 'toolID')}
           >
-            <option value=''>Select</option>
             {tools !== null &&
               tools?.map((item, index) => (
                 <option key={index} value={item.toolID}>

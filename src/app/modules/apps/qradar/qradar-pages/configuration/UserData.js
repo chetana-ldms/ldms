@@ -1,15 +1,16 @@
-import React, {useState, useEffect} from 'react'
-import {Link, useNavigate, useParams} from 'react-router-dom'
-import {UsersListLoading} from '../components/loading/UsersListLoading'
-import {ToastContainer, toast} from 'react-toastify'
-import {notify, notifyFail} from '../components/notification/Notification'
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { UsersListLoading } from '../components/loading/UsersListLoading'
+import { ToastContainer } from 'react-toastify'
+import { notify, notifyFail } from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
-import {fetchOrganizations, fetchUserDelete} from '../../../../../api/Api'
-import {fetchUsersUrl} from '../../../../../api/ConfigurationApi'
-import {useErrorBoundary} from 'react-error-boundary'
+import { fetchOrganizations, fetchUserDelete } from '../../../../../api/Api'
+import { fetchAllUsersUrl } from '../../../../../api/ConfigurationApi'
+import { useErrorBoundary } from 'react-error-boundary'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
 import Pagination from '../../../../../../utils/Pagination'
 import useFeatureActions from './useFeatureActions'
+import { fetchOrganizationToolsSecurityUrl } from '../../../../../api/securityApi'
 
 const UserData = () => {
   const handleError = useErrorBoundary()
@@ -27,13 +28,16 @@ const UserData = () => {
   const [activePage, setActivePage] = useState(0)
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [itemToDelete, setItemToDelete] = useState(null)
+  const [tools, setTools] = useState([])
+  console.log('tools', tools)
+  const [selectedToolId, setSelectedToolId] = useState('')
   const navigate = useNavigate()
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
 
-  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+  const { featureActions } = useFeatureActions(orgId, toolId, roleId, featureId)
 
   const isActionAuthorized = (actionName) => {
     return featureActions?.some(
@@ -41,20 +45,49 @@ const UserData = () => {
     )
   }
   const handleNavigateToUpdate = (id) => {
-    navigate(`/qradar/users-data/update/${id}`, {state: {save: true}})
+    navigate(`/qradar/users-data/update/${id}`, { state: { save: true } })
   }
 
+  // Fetch organizations and tools for default org on mount
   useEffect(() => {
     const fetchData = async () => {
       try {
         const organizationsResponse = await fetchOrganizations()
         setOrganizations(organizationsResponse)
+        // Fetch tools for default org
+        if (orgIdFromSession) {
+          const toolsList = await fetchOrganizationToolsSecurityUrl(orgIdFromSession)
+          setTools(toolsList || [])
+        }
       } catch (error) {
         handleError(error)
       }
     }
     fetchData()
-  }, [])
+  }, [orgIdFromSession, handleError])
+
+  // Fetch users when org or tool changes
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setLoading(true)
+      try {
+        const data = await fetchAllUsersUrl(
+          selectedOrganization,
+          selectedToolId ? Number(selectedToolId) : 0,
+          userID
+        )
+        setUsers(data)
+      } catch (error) {
+        handleError(error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    if (selectedOrganization && userID) {
+      fetchUsers()
+    }
+  }, [selectedOrganization, selectedToolId, userID, handleError])
+
   const handleDelete = (item) => {
     setItemToDelete(item)
     setShowConfirmation(true)
@@ -69,10 +102,16 @@ const UserData = () => {
 
       try {
         const response = await fetchUserDelete(data)
-        const {isSuccess, message} = response
+        const { isSuccess, message } = response
         if (isSuccess) {
           notify(message)
-          await reload()
+          // reload users
+          const usersData = await fetchAllUsersUrl(
+            selectedOrganization,
+            selectedToolId ? Number(selectedToolId) : 0,
+            userID
+          )
+          setUsers(usersData)
         } else {
           notifyFail(message)
         }
@@ -89,40 +128,29 @@ const UserData = () => {
     setItemToDelete(null)
   }
 
-  const reload = async () => {
+  // When organization changes, fetch tools for that org and reset tool selection
+  const handleOrganizationChange = async (e) => {
+    const newOrganizationId = Number(e.target.value)
+    setSelectedOrganization(newOrganizationId)
+    setSelectedToolId('') // Reset tool selection
+    setTools([]) // Clear tools while loading
     try {
-      setLoading(true)
-      // const orgId = Number(sessionStorage.getItem('orgId'));
-      const data = await fetchUsersUrl(selectedOrganization, userID)
-      console.log(data, 'data111')
-      setUsers(data)
-      setLoading(false)
+      const toolsList = await fetchOrganizationToolsSecurityUrl(newOrganizationId)
+      setTools(toolsList || [])
     } catch (error) {
       handleError(error)
-      setLoading(false)
     }
   }
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      reload()
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [selectedOrganization, itemsPerPage])
-  const handleOrganizationChange = (e) => {
-    const newOrganizationId = Number(e.target.value)
-    setSelectedOrganization(newOrganizationId)
-    reload()
-  }
   const indexOfLastItem = (currentPage + 1) * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = users
     ? users
-        .filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
+        .filter((item) => item.searchText?.toLowerCase().includes(filterValue.toLowerCase()))
         .slice(indexOfFirstItem, indexOfLastItem)
     : null
   const filteredList = filterValue
-    ? users.filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
+    ? users.filter((item) => item.searchText?.toLowerCase().includes(filterValue.toLowerCase()))
     : users
 
   const handlePageSelect = (event) => {
@@ -147,15 +175,16 @@ const UserData = () => {
       <div className='header-filter row'>
         <div className='col-lg-4'>
           <h3 className='lh-40'>
-            Users ({currentItems?currentItems.length:0} / {filteredList?filteredList.length:0})
+            Users ({currentItems ? currentItems.length : 0} / {filteredList ? filteredList.length : 0})
           </h3>
         </div>
 
-        <div className='col-lg-6'>
+        <div className='col-lg-6 d-flex align-items-center'>
+          {/* Organization Dropdown */}
           <label className='form-label fw-normal fc-gray fs-14 lh-40 float-left'>
             <span>Organization: </span>
           </label>
-          <span className='float-left'>
+          <span className='float-left' style={{ minWidth: 180 }}>
             <select
               className='form-select form-select-solid bg-blue-light mg-left-10'
               data-kt-select2='true'
@@ -181,6 +210,25 @@ const UserData = () => {
                       {item.orgName}
                     </option>
                   ))}
+            </select>
+          </span>
+          {/* Tools Dropdown */}
+          <label className='form-label fw-normal fc-gray fs-14 lh-40 float-left ms-5'>
+            <span>Tool: </span>
+          </label>
+          <span className='float-left' style={{ minWidth: 180 }}>
+            <select
+              className='form-select form-select-solid bg-blue-light mg-left-10'
+              value={selectedToolId || ''}
+              onChange={(e) => setSelectedToolId(e.target.value)}
+              disabled={!tools.length}
+            >
+              <option value=''>Select Tool</option>
+              {tools.map((tool) => (
+                <option key={tool.toolId} value={tool.toolId}>
+                  {tool.toolName}
+                </option>
+              ))}
             </select>
           </span>
         </div>
@@ -269,6 +317,7 @@ const UserData = () => {
                     </tr>
                   )
                 }
+                return null
               })
             ) : (
               <tr>
@@ -300,4 +349,4 @@ const UserData = () => {
   )
 }
 
-export {UserData}
+export { UserData }

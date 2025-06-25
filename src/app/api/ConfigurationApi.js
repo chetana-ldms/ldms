@@ -1,946 +1,969 @@
-import FetchWithToken from "../modules/auth/FetchWithToken";
+import FetchWithToken from '../modules/auth/FetchWithToken'
 
-const ldptoolsByToolTypeUrl = process.env.REACT_APP_LDPTOOLS_BY_TOOLTYPE_URL;
-const toolTypeActionDetailsUrl = process.env.REACT_APP_TOOLTYPEACTION_DETAILS_URL;
-const userDetailsUrl = process.env.REACT_APP_USER_DETAILS_URL;
-const toolActionDetailsUrl = process.env.REACT_APP_TOOL_ACTION_DETAILS_URL;
-const organizationToolDetailsUrl = process.env.REACT_APP_ORGANIZATION_TOOL_DETAILS_URL;
-const rulesUrl = process.env.REACT_APP_RULES_URL;
-const ruleDetailsUrl = process.env.REACT_APP_RULE_DETAILS_URL;
-const ruleActionsUrl = process.env.REACT_APP_RULE_ACTIONS_URL;
-const toolActionsUrl = process.env.REACT_APP_TOOL_ACTIONS_URL;
-const ruleActionDetailsUrl = process.env.REACT_APP_RULE_ACTION_DETAILS_URL;
-const ToolTypeActionsUrl = process.env.REACT_APP_TOOL_TYPE_ACTIONS_URL;
-const GetToolActionsByToolURL = process.env.REACT_APP_GET_TOOL_ACTIONS_BY_TOOL_URL;
-const ToolTypeActionUpdateUrl = process.env.REACT_APP_TOOL_TYPE_ACTION_UPDATE_URL;
-const ToolTypeActionAddUrl= process.env.REACT_APP_TOOL_TYPE_ACTION_ADD_URL
-const OrganizationsUrl= process.env.REACT_APP_ORGANIZATIONS_URL
-const OrganizationAddUrl=  process.env.REACT_APP_ORGANIZATIONS_ADD_URL
-const OrganizationUpdateUrl=  process.env.REACT_APP_ORGANIZATIONS_UPDATE_URL
-const UsersUrl= process.env.REACT_APP_USERS_URL
-const RolesUrl= process.env.REACT_APP_ROLES_URL
+const ldptoolsByToolTypeUrl = process.env.REACT_APP_LDPTOOLS_BY_TOOLTYPE_URL
+const toolTypeActionDetailsUrl = process.env.REACT_APP_TOOLTYPEACTION_DETAILS_URL
+const userDetailsUrl = process.env.REACT_APP_USER_DETAILS_URL
+const toolActionDetailsUrl = process.env.REACT_APP_TOOL_ACTION_DETAILS_URL
+const organizationToolDetailsUrl = process.env.REACT_APP_ORGANIZATION_TOOL_DETAILS_URL
+const rulesUrl = process.env.REACT_APP_RULES_URL
+const ruleDetailsUrl = process.env.REACT_APP_RULE_DETAILS_URL
+const ruleActionsUrl = process.env.REACT_APP_RULE_ACTIONS_URL
+const toolActionsUrl = process.env.REACT_APP_TOOL_ACTIONS_URL
+const ruleActionDetailsUrl = process.env.REACT_APP_RULE_ACTION_DETAILS_URL
+const ToolTypeActionsUrl = process.env.REACT_APP_TOOL_TYPE_ACTIONS_URL
+const GetToolActionsByToolURL = process.env.REACT_APP_GET_TOOL_ACTIONS_BY_TOOL_URL
+const ToolTypeActionUpdateUrl = process.env.REACT_APP_TOOL_TYPE_ACTION_UPDATE_URL
+const ToolTypeActionAddUrl = process.env.REACT_APP_TOOL_TYPE_ACTION_ADD_URL
+const OrganizationsUrl = process.env.REACT_APP_ORGANIZATIONS_URL
+const OrganizationAddUrl = process.env.REACT_APP_ORGANIZATIONS_ADD_URL
+const OrganizationUpdateUrl = process.env.REACT_APP_ORGANIZATIONS_UPDATE_URL
+const UsersUrl = process.env.REACT_APP_USERS_URL
+const RolesUrl = process.env.REACT_APP_ROLES_URL
 const RolesAddUrl = process.env.REACT_APP_ROLES_ADD_URL
 const RolesUpdateUrl = process.env.REACT_APP_ROLES_UPDATE_URL
 const RolesDeleteUrl = process.env.REACT_APP_ROLES_DELETE_URL
-const RolesDetailUrl =process.env.REACT_APP_ROLE_DETAILS_URL
-const UserAddUrl= process.env.REACT_APP_USER_ADD_URL
-const UserUpdateUrl= process.env.REACT_APP_USER_UPDATE_URL
-const LDPToolsUrl= process.env.REACT_APP_LDPTOOLS_URL
-const LDPToolsAddUrl= process.env.REACT_APP_LDPTOOLS_ADD_URL
-const LDPToolsUpdateUrl= process.env.REACT_APP_LDPTOOLS_UPDATE_URL
-const ToolActionsUrl= process.env.REACT_APP_TOOLACTIONS_URL
-const ToolActionAddUrl= process.env.REACT_APP_TOOLACTIONS_ADD_URL
-const ToolActionUpdateUrl= process.env.REACT_APP_TOOLACTIONS_UPDATE_URL
-const OrganizationToolsUrl= process.env.REACT_APP_ORGANIZATION_TOOLS_URL
-const OrganizationToolsAddUrl= process.env.REACT_APP_ORGANIZATION_TOOLS_ADD_URL
-const OrganizationToolsUpdateUrl= process.env.REACT_APP_ORGANIZATION_TOOLS_UPDATE_URL
-const RuleCatagoriesUrl= process.env.REACT_APP_RULE_RULEENGINE_MASTERDATA_URL
+const RolesDetailUrl = process.env.REACT_APP_ROLE_DETAILS_URL
+const UserAddUrl = process.env.REACT_APP_USER_ADD_URL
+const UserUpdateUrl = process.env.REACT_APP_USER_UPDATE_URL
+const LDPToolsUrl = process.env.REACT_APP_LDPTOOLS_URL
+const LDPToolsAddUrl = process.env.REACT_APP_LDPTOOLS_ADD_URL
+const LDPToolsUpdateUrl = process.env.REACT_APP_LDPTOOLS_UPDATE_URL
+const ToolActionsUrl = process.env.REACT_APP_TOOLACTIONS_URL
+const ToolActionAddUrl = process.env.REACT_APP_TOOLACTIONS_ADD_URL
+const ToolActionUpdateUrl = process.env.REACT_APP_TOOLACTIONS_UPDATE_URL
+const OrganizationToolsUrl = process.env.REACT_APP_ORGANIZATION_TOOLS_URL
+const OrganizationToolsAddUrl = process.env.REACT_APP_ORGANIZATION_TOOLS_ADD_URL
+const OrganizationToolsUpdateUrl = process.env.REACT_APP_ORGANIZATION_TOOLS_UPDATE_URL
+const RuleCatagoriesUrl = process.env.REACT_APP_RULE_RULEENGINE_MASTERDATA_URL
 const RulesAddUrl = process.env.REACT_APP_RULE_RULE_ADD_URL
-const RulesUpdateUrl= process.env.REACT_APP_RULE_RULES_UPDATE_URL
-const RuleActionUrl= process.env.REACT_APP_RULE_ACTION_ADD_URL
-const RuleActionUpdateUrl= process.env.REACT_APP_RULE_ACTION_UPDATE_URL
-const AllMasterDataUrl= process.env.REACT_APP_ALLMASTERDATA_URL
-const AllMasterDataManageUrl= process.env.REACT_APP_MASTERDATA_MANAGE_URL
-const AllMasterDataDeleteUrl= process.env.REACT_APP_MASTERDATA_DELETE_URL
-const ConfigurationDataUrl=process.env.REACT_APP_CONFIGURATION_DATA_URL
-const ConfigurationDataDeleteUrl=process.env.REACT_APP_CONFIGURATION_DATA_DELETE_URL
-const ConfigurationDataManageUrl=process.env.REACT_APP_CONFIGURATION_DATA_MANAGE_URL
-const APIAuthDataDetailsUrl=process.env.REACT_APP_APIAUTHDATA_DETAILS_URL
-const APIAuthDataAddUrl =process.env.REACT_APP_APIAUTHDATA_ADD_URL
-const APIAuthDataDeleteUrl=process.env.REACT_APP_APIAUTHDATA_DELETE_URL
-const APIAuthDataUpdateUrl=process.env.REACT_APP_APIAUTHDATA_UPDATE_URL
-const ToolMasterDataUrl= "http://10.41.3.232:501/api/IncidentManagement/v1/ToolMasterData"
+const RulesUpdateUrl = process.env.REACT_APP_RULE_RULES_UPDATE_URL
+const RuleActionUrl = process.env.REACT_APP_RULE_ACTION_ADD_URL
+const RuleActionUpdateUrl = process.env.REACT_APP_RULE_ACTION_UPDATE_URL
+const AllMasterDataUrl = process.env.REACT_APP_ALLMASTERDATA_URL
+const AllMasterDataManageUrl = process.env.REACT_APP_MASTERDATA_MANAGE_URL
+const AllMasterDataDeleteUrl = process.env.REACT_APP_MASTERDATA_DELETE_URL
+const ConfigurationDataUrl = process.env.REACT_APP_CONFIGURATION_DATA_URL
+const ConfigurationDataDeleteUrl = process.env.REACT_APP_CONFIGURATION_DATA_DELETE_URL
+const ConfigurationDataManageUrl = process.env.REACT_APP_CONFIGURATION_DATA_MANAGE_URL
+const APIAuthDataDetailsUrl = process.env.REACT_APP_APIAUTHDATA_DETAILS_URL
+const APIAuthDataAddUrl = process.env.REACT_APP_APIAUTHDATA_ADD_URL
+const APIAuthDataDeleteUrl = process.env.REACT_APP_APIAUTHDATA_DELETE_URL
+const APIAuthDataUpdateUrl = process.env.REACT_APP_APIAUTHDATA_UPDATE_URL
+const ToolMasterDataUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/ToolMasterData'
+const AllUsersUrl = 'http://10.41.3.232:501/api/LDPSecurity/v1/AllUsers'
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {
     const response = await FetchWithToken(`${ldptoolsByToolTypeUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchToolTypeActionDetails = async (id, toolNameRef) => {
   try {
     const response = await FetchWithToken(`${toolTypeActionDetailsUrl}?id=${id}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const toolTypeAction = responseData.toolTypeAction;
-    console.log(toolTypeAction, "toolTypeAction");
+    })
+    const responseData = await response.json()
+    const toolTypeAction = responseData.toolTypeAction
+    console.log(toolTypeAction, 'toolTypeAction')
     // Populate the form fields with the retrieved data
-    toolNameRef.current.value = toolTypeAction.toolAction;
+    toolNameRef.current.value = toolTypeAction.toolAction
     // toolTypeRef.current.value = ldpTool.toolType;
-    return toolTypeAction;
+    return toolTypeAction
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 
-export const fetchUserDetails = async (id, userName, emailId, mapUserName, mapuserId ) => {
+export const fetchUserDetails = async (id, userName, emailId, mapUserName, mapuserId) => {
   try {
     const response = await FetchWithToken(`${userDetailsUrl}?id=${id}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const userdata = responseData.userdata;
-    console.log(userdata, "userdata");
-    userName.current.value = userdata.name;
-    emailId.current.value = userdata.emailId;
-    mapUserName.current.value = userdata.mapUserName;
-    mapuserId.current.value = userdata.mapUserId;
-    return userdata;
+    })
+    const responseData = await response.json()
+    const userdata = responseData.userdata
+    console.log(userdata, 'userdata')
+    userName.current.value = userdata.name
+    emailId.current.value = userdata.emailId
+    mapUserName.current.value = userdata.mapUserName
+    mapuserId.current.value = userdata.mapUserId
+    return userdata
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchToolActionDetails = async (id) => {
   try {
     const response = await FetchWithToken(`${toolActionDetailsUrl}?id=${id}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const toolAcation = responseData.toolAcation;
-    return toolAcation;
+    })
+    const responseData = await response.json()
+    const toolAcation = responseData.toolAcation
+    return toolAcation
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 
 export const fetchOrganizationToolDetails = async (id) => {
   try {
     const response = await FetchWithToken(`${organizationToolDetailsUrl}?id=${id}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const organizationToolData = responseData.organizationToolData;
-    return organizationToolData;
+    })
+    const responseData = await response.json()
+    const organizationToolData = responseData.organizationToolData
+    return organizationToolData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchRules = async (orgId) => {
   try {
     const response = await FetchWithToken(`${rulesUrl}?orgId=${orgId}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const rulesList = responseData.rulesList;
-    console.log(rulesList, "rulesList");
-    return rulesList;
+    })
+    const responseData = await response.json()
+    const rulesList = responseData.rulesList
+    console.log(rulesList, 'rulesList')
+    return rulesList
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchRuleDetails = async (id, toolNameRef) => {
   try {
     const response = await FetchWithToken(`${ruleDetailsUrl}?ruleID=${id}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const ruleData = responseData.ruleData;
-    console.log(ruleData, "ruleData");
+    })
+    const responseData = await response.json()
+    const ruleData = responseData.ruleData
+    console.log(ruleData, 'ruleData')
     // Populate the form fields with the retrieved data
-    toolNameRef.current.value = ruleData.ruleName;
+    toolNameRef.current.value = ruleData.ruleName
     //   passwordRef.current.value = userdata.password;
-    return ruleData;
+    return ruleData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchRuleActions = async (orgId) => {
   try {
     const response = await FetchWithToken(`${ruleActionsUrl}?orgId=${orgId}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const ruleActionList = responseData.ruleActionList;
-    console.log(ruleActionList, "ruleActionList");
-    return ruleActionList;
+    })
+    const responseData = await response.json()
+    const ruleActionList = responseData.ruleActionList
+    console.log(ruleActionList, 'ruleActionList')
+    return ruleActionList
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchToolActions = async () => {
   try {
     const response = await FetchWithToken(`${toolActionsUrl}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const toolAcationsList = responseData.toolAcationsList;
-    return toolAcationsList;
+    })
+    const responseData = await response.json()
+    const toolAcationsList = responseData.toolAcationsList
+    return toolAcationsList
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchRuleActionDetails = async (id) => {
   try {
     const response = await FetchWithToken(`${ruleActionDetailsUrl}?id=${id}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const ruleActionData = responseData.ruleActionData;
+    })
+    const responseData = await response.json()
+    const ruleActionData = responseData.ruleActionData
     // Populate the form fields with the retrieved data
     //   toolNameRef.current.value = toolTypeAction.toolAction;
     // toolTypeRef.current.value = ldpTool.toolType;
-    return ruleActionData;
+    return ruleActionData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchGetToolActionsByToolURL = async (data) => {
   try {
     const response = await FetchWithToken(`${GetToolActionsByToolURL}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 
 export const fetchToolTypeActions = async () => {
   try {
     const response = await FetchWithToken(`${ToolTypeActionsUrl}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const toolTypeActionsList = responseData.toolTypeActionsList;
-    return toolTypeActionsList;
+    })
+    const responseData = await response.json()
+    const toolTypeActionsList = responseData.toolTypeActionsList
+    return toolTypeActionsList
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchToolTypeActionUpdate = async (data) => {
   try {
     const response = await FetchWithToken(`${ToolTypeActionUpdateUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchToolTypeActionAddUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${ToolTypeActionAddUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchOrganizationsUrl = async () => {
   try {
     const response = await FetchWithToken(`${OrganizationsUrl}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const organizationList = responseData.organizationList;
-    return organizationList;
+    })
+    const responseData = await response.json()
+    const organizationList = responseData.organizationList
+    return organizationList
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchOrganizationAddUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${OrganizationAddUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchOrganizationUpdateUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${OrganizationUpdateUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchUsersUrl = async (orgId, userID) => {
   try {
     const response = await FetchWithToken(`${UsersUrl}?orgId=${orgId}&userid=${userID}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         orgId,
         userID,
       }),
-    });
-    const responseData = await response.json();
-    const usersList = responseData?.usersList;
-    return usersList;
+    })
+    const responseData = await response.json()
+    const usersList = responseData?.usersList
+    return usersList
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 
 export const fetchRolesUrl = async (orgId, userID) => {
   try {
     const response = await FetchWithToken(`${RolesUrl}?orgId=${orgId}&userid=${userID}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         orgId,
         userID,
       }),
-    });
-    const responseData = await response.json();
-    const rolesList = responseData.rolesList;
-    return rolesList;
+    })
+    const responseData = await response.json()
+    const rolesList = responseData.rolesList
+    return rolesList
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchRolesAddUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${RolesAddUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchRolesUpdateUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${RolesUpdateUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchRolesDeleteUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${RolesDeleteUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
-
+}
 
 export const fetchUserAddUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${UserAddUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchUserUpdateUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${UserUpdateUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchLDPToolsUrl = async () => {
   try {
     const response = await FetchWithToken(`${LDPToolsUrl}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const ldpToolsList = responseData.ldpToolsList;
-    return ldpToolsList;
+    })
+    const responseData = await response.json()
+    const ldpToolsList = responseData.ldpToolsList
+    return ldpToolsList
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchLDPToolsAddUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${LDPToolsAddUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchLDPToolsUpdateUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${LDPToolsUpdateUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchToolActionsUrl = async () => {
   try {
     const response = await FetchWithToken(`${ToolActionsUrl}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const toolAcationsList = responseData.toolAcationsList;
-    return toolAcationsList;
+    })
+    const responseData = await response.json()
+    const toolAcationsList = responseData.toolAcationsList
+    return toolAcationsList
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchToolActionAddUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${ToolActionAddUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchToolActionUpdateUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${ToolActionUpdateUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchOrganizationToolsUrl = async () => {
   try {
     const response = await FetchWithToken(`${OrganizationToolsUrl}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const organizationToolList = responseData.organizationToolList;
-    return organizationToolList;
+    })
+    const responseData = await response.json()
+    const organizationToolList = responseData.organizationToolList
+    return organizationToolList
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchOrganizationToolsAddUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${OrganizationToolsAddUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchOrganizationToolsUpdateUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${OrganizationToolsUpdateUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchRuleCatagoriesUrl = async (MasterDataType) => {
   try {
-    const url = `${RuleCatagoriesUrl}?MasterDataType=${encodeURIComponent(MasterDataType)}`;
+    const url = `${RuleCatagoriesUrl}?MasterDataType=${encodeURIComponent(MasterDataType)}`
     const response = await FetchWithToken(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const masterDataList = responseData.masterDataList;
-    return masterDataList;
+    })
+    const responseData = await response.json()
+    const masterDataList = responseData.masterDataList
+    return masterDataList
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchRulesAddUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${RulesAddUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchRulesUpdateUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${RulesUpdateUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchRuleActionUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${RuleActionUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchRuleActionUpdateUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${RuleActionUpdateUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    return responseData;
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchRolesDetailUrl = async (id) => {
   try {
     const response = await FetchWithToken(`${RolesDetailUrl}?id=${id}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         id,
       }),
-    });
-    const responseData = await response.json();
-    const roleData = responseData.roleData;
-    return roleData;
+    })
+    const responseData = await response.json()
+    const roleData = responseData.roleData
+    return roleData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchAllMasterDataUrl = async () => {
   try {
     const response = await FetchWithToken(`${AllMasterDataUrl}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    return responseData;
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchAllMasterDataDetailUrl = async (masterdataid) => {
   try {
     const response = await FetchWithToken(`${AllMasterDataUrl}?masterdataid=${masterdataid}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    return responseData;
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchAllMasterDataManageUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${AllMasterDataManageUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
-    const responseData = await response.json();
-    return responseData;
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchAAllMasterDataDeleteUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${AllMasterDataDeleteUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
-    const responseData = await response.json();
-    return responseData;
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchConfigurationDataUrl = async () => {
   try {
     const response = await FetchWithToken(`${ConfigurationDataUrl}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    return responseData;
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchAllConfigurationDataDetailUrl = async (configurationId) => {
   try {
-    const response = await FetchWithToken(`${ConfigurationDataUrl}?configurationId=${configurationId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const responseData = await response.json();
-    return responseData;
+    const response = await FetchWithToken(
+      `${ConfigurationDataUrl}?configurationId=${configurationId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchConfigurationDataDeleteUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${ConfigurationDataDeleteUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
-    const responseData = await response.json();
-    return responseData;
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchConfigurationDataManageUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${ConfigurationDataManageUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
-    const responseData = await response.json();
-    return responseData;
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchAPIAuthDataDetailsUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${APIAuthDataDetailsUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
-    const responseData = await response.json();
-    return responseData;
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchAPIAuthDataAddUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${APIAuthDataAddUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
-    const responseData = await response.json();
-    return responseData;
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchAPIAuthDataDeleteUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${APIAuthDataDeleteUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
-    const responseData = await response.json();
-    return responseData;
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchAPIAuthDataUpdateUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${APIAuthDataUpdateUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
-    const responseData = await response.json();
-    return responseData;
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 export const fetchToolMasterDataUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${ToolMasterDataUrl}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
-    const responseData = await response.json();
-    return responseData;
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
+export const fetchAllUsersUrl = async (orgId, ToolId, userID) => {
+  try {
+    const response = await FetchWithToken(`${AllUsersUrl}?orgId=${orgId}&ToolId=${ToolId}&userid=${userID}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        orgId,
+        ToolId,
+        userID,
+      }),
+    })
+    const responseData = await response.json()
+    const usersList = responseData?.usersList
+    return usersList
+  } catch (error) {
+    console.log(error)
+  }
+}
