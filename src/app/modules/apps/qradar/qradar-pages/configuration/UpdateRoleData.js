@@ -6,29 +6,30 @@ import {
   fetchRolesDetailUrl,
   fetchRolesUpdateUrl,
 } from "../../../../../api/ConfigurationApi";
+import { fetchOrganizations } from "../../../../../api/Api"; // Make sure this import is present
 import { ToastContainer } from "react-toastify";
 
 const UpdateRoleData = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [role, setRole] = useState([
-    {
-      roleName: "",
-    },
-  ]);
+  const [role, setRole] = useState({
+    roleName: "",
+    orgId: "", // Add orgId here
+  });
+  const [organizations, setOrganizations] = useState([]); // <-- Add this line
   const { id } = useParams();
   const roleName = useRef();
   const errors = {};
-  const location = useLocation()
-  const [save, setSave] = useState(location.state?.save || '')
+  const location = useLocation();
+  const [save, setSave] = useState(location.state?.save || "");
   useEffect(() => {
-    setSave(location.state?.save || '')
-  }, [location.state])
+    setSave(location.state?.save || "");
+  }, [location.state]);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const Response = await fetchRolesDetailUrl(id);
-        setRole(Response);
+        setRole(Response); // Response should be an object with roleName and orgId
       } catch (error) {
         console.log(error);
       }
@@ -36,6 +37,17 @@ const UpdateRoleData = () => {
 
     fetchData();
   }, [id]);
+  useEffect(() => {
+    const getOrganizations = async () => {
+      try {
+        const orgs = await fetchOrganizations();
+        setOrganizations(orgs);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getOrganizations();
+  }, []);
   const handleChange = (e) => {
     setRole({
       ...role,
@@ -51,7 +63,7 @@ const UpdateRoleData = () => {
     var data = {
       roleName: roleName.current.value,
       sysrole: 0,
-      orgId,
+      orgId: role.orgId, // Use orgId from role object
       globalAdminRole: 0,
       clientAdminRole: 0,
       modifieddate,
@@ -65,9 +77,9 @@ const UpdateRoleData = () => {
 
       if (isSuccess) {
         notify("Role Updated");
-        setTimeout(()=>{
+        setTimeout(() => {
           navigate("/qradar/roles-data/list");
-        }, 2000)
+        }, 2000);
       } else {
         notifyFail("Role Update Failed");
       }
@@ -84,9 +96,9 @@ const UpdateRoleData = () => {
       <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">
           {save ? (
-            <span className='white'>View User Role</span>
+            <span className="white">View User Role</span>
           ) : (
-            <span className='white'>Update User Role</span>
+            <span className="white">Update User Role</span>
           )}
         </h3>
         <div className="card-toolbar">
@@ -123,6 +135,28 @@ const UpdateRoleData = () => {
                 />
               </div>
             </div>
+            <div className="col-lg-4 mb-4 mb-lg-0">
+              <div className="fv-row mb-0">
+                <label className="form-label fs-6 fw-bolder mb-3">
+                  Select Organization
+                </label>
+                <select
+                  className="form-select form-select-lg form-select-solid"
+                  value={role.orgId || ""}
+                  onChange={(e) =>
+                    setRole({ ...role, orgId: Number(e.target.value) })
+                  }
+                  disabled={!!save}
+                >
+                  <option value="">Select Organization</option>
+                  {organizations.map((org) => (
+                    <option key={org.orgID} value={org.orgID}>
+                      {org.orgName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
         </div>
         <div className="card-footer d-flex justify-content-end pad-10">
@@ -130,7 +164,7 @@ const UpdateRoleData = () => {
             type="submit"
             onClick={handleSubmit}
             className="btn btn-new btn-small"
-            style={{display: loading || save ? 'none' : 'inline-block'}}
+            style={{ display: loading || save ? "none" : "inline-block" }}
           >
             {!loading && "Update Changes"}
             {loading && (

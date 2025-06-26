@@ -4,10 +4,13 @@ import axios from "axios";
 import { notify, notifyFail } from "../components/notification/Notification";
 import { fetchRolesAddUrl } from "../../../../../api/ConfigurationApi";
 import { ToastContainer } from "react-toastify";
+import { fetchOrganizations } from "../../../../../api/Api";
 
 const AddRoleData = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [organizations, setOrganizations] = useState([]);
+  const [selectedOrganization, setSelectedOrganization] = useState(Number(sessionStorage.getItem("orgId")) || '');
   const userName = useRef();
   const roleName = useRef();
   const handleSubmit = async (event) => {
@@ -18,13 +21,17 @@ const AddRoleData = () => {
       setLoading(false)
       return
     }
+    if (!selectedOrganization) {
+      notifyFail('Select Organization')
+      setLoading(false)
+      return
+    }
     const createdUserId = Number(sessionStorage.getItem("userId"));
     const createdDate = new Date().toISOString();
-    const orgId = Number(sessionStorage.getItem("orgId"));
     var data = {
       roleName: roleName.current.value,
       sysrole: 0,
-      orgId,
+      orgId: selectedOrganization, // Use selected org
       globalAdminRole: 0,
       clientAdminRole: 0,
       createdDate,
@@ -49,6 +56,18 @@ const AddRoleData = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const getOrganizations = async () => {
+      try {
+        const orgs = await fetchOrganizations();
+        setOrganizations(orgs);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getOrganizations();
+  }, []);
 
   return (
     <div className="config card">
@@ -101,6 +120,25 @@ const AddRoleData = () => {
                 maxLength={200}
                 placeholder="Ex: Client Admin"
               />
+            </div>
+          </div>
+          <div className="col-lg-4 mb-4 mb-lg-0">
+            <div className="fv-row mb-0">
+              <label className="form-label fs-6 fw-bolder mb-3">
+                Select Organization
+              </label>
+              <select
+                className="form-select form-select-lg form-select-solid"
+                value={selectedOrganization}
+                onChange={e => setSelectedOrganization(Number(e.target.value))}
+              >
+                <option value="">Select Organization</option>
+                {organizations.map(org => (
+                  <option key={org.orgID} value={org.orgID}>
+                    {org.orgName}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>

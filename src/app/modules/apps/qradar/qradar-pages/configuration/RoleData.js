@@ -63,11 +63,11 @@ const RoleData = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = roles
     ? roles
-        .filter((item) => item.roleName.toLowerCase().includes(filterValue.toLowerCase()))
+        .filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
         .slice(indexOfFirstItem, indexOfLastItem)
     : null
   const filteredList = filterValue
-    ? roles.filter((item) => item.roleName.toLowerCase().includes(filterValue.toLowerCase()))
+    ? roles.filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
     : roles
 
   const handlePageSelect = (event) => {
@@ -155,6 +155,7 @@ const RoleData = () => {
             <tr className='fw-bold text-muted bg-blue'>
               <th>Role ID</th>
               <th>Role Name</th>
+              <th>Organization</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -165,6 +166,7 @@ const RoleData = () => {
                 <tr key={index} className='fs-12'>
                   <td>{item.roleID}</td>
                   <td>{item.roleName}</td>
+                  <td>{item.orgName}</td>
                   <td>
                     {isActionAuthorized('View') ? (
                       <span className='me-8' title='View'>
