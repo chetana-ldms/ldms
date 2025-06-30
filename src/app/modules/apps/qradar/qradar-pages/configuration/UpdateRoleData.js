@@ -149,11 +149,19 @@ const UpdateRoleData = () => {
                   disabled={!!save}
                 >
                   <option value="">Select Organization</option>
-                  {organizations.map((org) => (
-                    <option key={org.orgID} value={org.orgID}>
-                      {org.orgName}
-                    </option>
-                  ))}
+                  {Number(sessionStorage.getItem('globalAdminRole')) === 1 && organizations.length > 0
+                    ? organizations.map(org => (
+                        <option key={org.orgID} value={org.orgID}>
+                          {org.orgName}
+                        </option>
+                      ))
+                    : organizations
+                        .filter(org => org.orgID === Number(sessionStorage.getItem('orgId')))
+                        .map(org => (
+                          <option key={org.orgID} value={org.orgID}>
+                            {org.orgName}
+                          </option>
+                        ))}
                 </select>
               </div>
             </div>
