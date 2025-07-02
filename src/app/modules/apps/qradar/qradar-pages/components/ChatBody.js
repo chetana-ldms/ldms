@@ -68,7 +68,7 @@ const ChatBody = ({
   return (
     <>
       <header className='chat__mainHeader'>
-        <span>{loggedInUserName}</span>
+        <span>Chat History</span>
         <span className='pointer' onClick={exportChatHistory}>
           <i className='fa fa-download white' title='Download Chat History' />
         </span>

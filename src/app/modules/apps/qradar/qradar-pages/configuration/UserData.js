@@ -260,6 +260,7 @@ const UserData = () => {
               <th className='min-w-50px'>User Name</th>
               <th className='min-w-50px'>User Email</th>
               <th className='min-w-50px'>User Role</th>
+              <th className='min-w-50px'>Tool Name</th>
               <th className='min-w-50px'>Action</th>
             </tr>
           </thead>
@@ -274,6 +275,7 @@ const UserData = () => {
                       <td>{item?.name}</td>
                       <td>{item?.emailId}</td>
                       <td>{item?.roleName}</td>
+                      <td>{item?.toolName}</td>
                       <td>
                         {isActionAuthorized('View') ? (
                           <span className='me-8' title='View'>

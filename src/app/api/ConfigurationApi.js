@@ -49,8 +49,8 @@ const APIAuthDataDetailsUrl = process.env.REACT_APP_APIAUTHDATA_DETAILS_URL
 const APIAuthDataAddUrl = process.env.REACT_APP_APIAUTHDATA_ADD_URL
 const APIAuthDataDeleteUrl = process.env.REACT_APP_APIAUTHDATA_DELETE_URL
 const APIAuthDataUpdateUrl = process.env.REACT_APP_APIAUTHDATA_UPDATE_URL
-const ToolMasterDataUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/ToolMasterData'
-const AllUsersUrl = 'http://10.41.3.232:501/api/LDPSecurity/v1/AllUsers'
+const ToolMasterDataUrl = process.env.REACT_APP_TOOL_MASTER_DATA_URL;
+const AllUsersUrl = process.env.REACT_APP_ALL_USERS_URL;
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {

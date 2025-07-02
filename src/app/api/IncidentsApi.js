@@ -10,12 +10,12 @@ const alertsByAlertIdsUrl = process.env.REACT_APP_ALERTS_BY_ALERT_IDS_URL
 const getChatHistoryUrl = process.env.REACT_APP_GET_CHAT_HISTORY_URL
 const addChatMessageUrl = process.env.REACT_APP_SEND_CHAT_MESSAGE_URL
 const DownloadAttachmentUrl = process.env.REACT_APP_DOWNLOAD_ATTACHMENT_URL
-const masterDataUrl="http://10.41.3.232:501/api/PlattformMasterData/v1/MasterDataByTool"
-const UsersByOrgToolUrl="http://10.41.3.232:501/api/LDPSecurity/v1/UsersByOrgTool"
-const IncidentNotesListUrl="http://10.41.3.232:501/api/IncidentManagement/v1/Notes/List"
-const IncidentNotesAddUrl="http://10.41.3.232:501/api/IncidentManagement/v1/Notes/Add"
-const IncidentNotesUpdateUrl="http://10.41.3.232:501/api/IncidentManagement/v1/Notes/Update"
-const OrganizationToolsDetailsUrl="http://10.41.3.232:501/api/LDPlattform/v1/Organization/Tools/Details"
+const masterDataUrl = process.env.REACT_APP_MASTER_DATA_URL;
+const UsersByOrgToolUrl = process.env.REACT_APP_USERS_BY_ORG_TOOL_URL;
+const IncidentNotesListUrl = process.env.REACT_APP_INCIDENT_NOTES_LIST_URL;
+const IncidentNotesAddUrl = process.env.REACT_APP_INCIDENT_NOTES_ADD_URL;
+const IncidentNotesUpdateUrl = process.env.REACT_APP_INCIDENT_NOTES_UPDATE_URL;
+const OrganizationToolsDetailsUrl = process.env.REACT_APP_ORG_TOOLS_DETAILS_URL;
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {

@@ -55,6 +55,7 @@ const IncidentsPage = () => {
   const [selectedFilterValue, setSelectedFilterValue] = useState(1)
   const [selectedToolId, setSelectedToolId] = useState('')
   const [tools, setTools] = useState([])
+  const [autoRefresh, setAutoRefresh] = useState(false);
   const toolRef = useRef()
 useEffect(() => {
     const reload = async () => {
@@ -130,41 +131,35 @@ useEffect(() => {
     }
   }, [statusDropDown, limit])
 
-  const fetchIncident = async () => {
+  const fetchIncident = async (page = currentPage) => {
     const data = {
       orgID: orgId,
       paging: {
-        rangeStart: (currentPage - 1) * limit + 1,
-        rangeEnd: currentPage * limit,
+        rangeStart: (page - 1) * limit + 1,
+        rangeEnd: page * limit,
       },
       loggedInUserId: userID,
       orgAccountStructureLevel: [
-        {
-          levelName: 'AccountId',
-          levelValue: accountId || '',
-        },
-        {
-          levelName: 'SiteId',
-          levelValue: siteId || '',
-        },
-        {
-          levelName: 'GroupId',
-          levelValue: groupId || '',
-        },
+        { levelName: 'AccountId', levelValue: accountId || '' },
+        { levelName: 'SiteId', levelValue: siteId || '' },
+        { levelName: 'GroupId', levelValue: groupId || '' },
       ],
-      if (toolId) {
-        data.toolId = toolId
-      }
+    };
+
+    if (selectedToolId) {
+      data.toolId = selectedToolId;
     }
+
     if (statusFromDashBoard) {
       const statusItem = statusDropDown.find((item) => item.dataValue === statusFromDashBoard)
       if (statusItem) {
         data.statusId = statusItem.dataID
         data.searchDurationInDays = daysFromDashBoard
       }
-    } else if (!statusFromDashBoard) {
+    } else {
       data.searchDurationInDays = selectedFilterValue || 0
     }
+
     try {
       setLoading(true)
       const response = await fetchGetIncidentSearchResult(data)
@@ -218,9 +213,10 @@ useEffect(() => {
           levelValue: groupId || '',
         },
       ],
-      if (toolId) {
-        data.toolId = toolId
-      }
+    }
+    // Add selectedToolId if present
+    if (selectedToolId) {
+      data.toolId = selectedToolId;
     }
     try {
       setLoading(true)
@@ -353,6 +349,12 @@ useEffect(() => {
       ],
     }
 
+    // Add selectedToolId if present
+    if (selectedToolId) {
+      data.toolId = selectedToolId
+    }
+
+    // Add searchDurationInDays
     if (statusFromDashBoard) {
       const statusItem = statusDropDown.find((item) => item.dataValue === statusFromDashBoard)
       if (statusItem) {
@@ -392,6 +394,24 @@ useEffect(() => {
       incident !== null && incident !== undefined && incident.length > 0 ? incident[0] : {}
     )
   }, [incident])
+
+  useEffect(() => {
+    let intervalId;
+    if (autoRefresh && currentPage === 1) {
+      intervalId = setInterval(() => {
+        fetchIncident();
+      }, 2 * 60 * 1000); // 2 minutes
+    }
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [autoRefresh, currentPage]);
+
+  const handleManualRefresh = () => {
+    setCurrentPage(1);
+    setActivePage(1);
+    fetchIncident(1);
+  };
 
   return (
     <>
@@ -440,6 +460,27 @@ useEffect(() => {
                 <div className='p-1 bd-highlight'></div>
 
                 <div className='card-title header-filter'>
+                  {/* Auto Refresh and Manual Refresh Buttons */}
+                  <div className='d-flex align-items-center mb-2 gap-2'>
+                    <button
+                      className={`btn btn-sm ${autoRefresh && currentPage === 1 ? 'btn-success' : 'btn-outline-secondary'}`}
+                      onClick={() => setAutoRefresh((prev) => !prev)}
+                      type="button"
+                      disabled={currentPage !== 1}
+                      title={currentPage !== 1 ? "Auto refresh only works on page 1" : ""}
+                    >
+                      {autoRefresh && currentPage === 1 ? 'Auto Refresh ON (2 min)' : 'Enable Auto Refresh (2 min)'}
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-primary"
+                      type="button"
+                      onClick={handleManualRefresh}
+                      title="Manual Refresh"
+                    >
+                      <i className="fa fa-refresh" /> Refresh
+                    </button>
+                  </div>
+
                   {/* begin::Search */}
                   <div className='input-group'>
                     <input

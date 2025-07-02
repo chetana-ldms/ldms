@@ -70,16 +70,16 @@ const AddOrganizationTools = () => {
       setLoading(false)
       return
     }
-    if (!toolRef.current.value) {
-      notifyFail('EnterIncident Tool')
-      setLoading(false)
-      return
-    }
-     if (!emailRef.current.value) {
-      notifyFail('Enter Incident Email')
-      setLoading(false)
-      return
-    }
+    // if (!toolRef.current.value) {
+    //   notifyFail('EnterIncident Tool')
+    //   setLoading(false)
+    //   return
+    // }
+    //  if (!emailRef.current.value) {
+    //   notifyFail('Enter Incident Email')
+    //   setLoading(false)
+    //   return
+    // }
     // if (!tableData.length > 0) {
     //   errors.tableData = 'Enter Table Data'
     //   setLoading(false)
@@ -91,7 +91,7 @@ const AddOrganizationTools = () => {
     var data = {
       toolID: toolID.current.value,
       orgID: orgID.current.value,
-      incidentsToolId: toolRef.current.value,
+      incidentsToolId: toolRef.current.value ? toolRef.current.value : 0,
       createdDate,
       createdUserId,
       incidentEmail:emailRef.current.value,

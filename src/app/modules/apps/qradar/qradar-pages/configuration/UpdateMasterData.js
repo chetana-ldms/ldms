@@ -133,7 +133,7 @@ const UpdateMasterData = () => {
       transactionDate: new Date().toISOString(),
       mapDataValue: mapDataValue,
       mapDataId: Number(mapDataId),
-      defaultData:isDefaultData,
+      defaultData: isDefaultData,
     }
 
     try {
@@ -321,7 +321,7 @@ const UpdateMasterData = () => {
                   className='btn btn-primary btn-sm'
                   onClick={handleMapUserClick}
                 >
-                  Map User Details
+                  Map Master Data Details
                 </button>
               </div>
               <MapUserPopup
