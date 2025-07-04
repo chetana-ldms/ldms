@@ -12,7 +12,6 @@ const NotesModalComponent = ({show, mode, noteData, onClose, fetchNotes, id}) =>
   const toolID = Number(sessionStorage.getItem('toolID'))
   const date = new Date().toISOString()
   const [noteText, setNoteText] = useState('')
-  console.log(noteData, 'noteData')
   useEffect(() => {
     if ((mode === 'edit' || mode === 'view') && noteData) {
       setNoteText(noteData.notes || '')

@@ -417,16 +417,18 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   General
                 </a>
               </li>
-              <li className='nav-item'>
-                <a
-                  className={`nav-link ${activeTab === 'alerts' ? 'active' : ''}`}
-                  data-bs-toggle='tab'
-                  href='#kt_tab_pane_2'
-                  onClick={() => setActiveTab('alerts')}
-                >
-                  Alerts
-                </a>
-              </li>
+              {Array.isArray(incidentData?.alertId) && incidentData.alertId.length > 0 && (
+                <li className='nav-item'>
+                  <a
+                    className={`nav-link ${activeTab === 'alerts' ? 'active' : ''}`}
+                    data-bs-toggle='tab'
+                    href='#kt_tab_pane_2'
+                    onClick={() => setActiveTab('alerts')}
+                  >
+                    Alerts
+                  </a>
+                </li>
+              )}
               <li className='nav-item'>
                 <a
                   className={`nav-link ${activeTab === 'timeline' ? 'active' : ''}`}
@@ -445,6 +447,16 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   onClick={() => setActiveTab('notes')}
                 >
                   Notes
+                </a>
+              </li>
+              <li className='nav-item'>
+                <a
+                  className={`nav-link ${activeTab === 'sla' ? 'active' : ''}`}
+                  data-bs-toggle='tab'
+                  href='#kt_tab_pane_sla'
+                  onClick={() => setActiveTab('sla')}
+                >
+                  SLA Details
                 </a>
               </li>
             </ul>
@@ -825,6 +837,12 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                       <div className='text-gray-500'>No data found</div>
                     )}
                   </div>
+                </div>
+              </div>
+              <div className='tab-pane fade' id='kt_tab_pane_sla' role='tabpanel'>
+                {/* SLA Details content goes here */}
+                <div className="p-3">
+                  SLA Details
                 </div>
               </div>
               <div className='tab-pane fade' id='kt_tab_pane_6' role='tabpanel'>
