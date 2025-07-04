@@ -27,6 +27,7 @@ import {
   fetchGetMyInternalIncidents,
   fetchGetUnAttendedAletsCount,
   fetchGetUnAttendedIncidentsCount,
+  fetchMasterDataByOrganization,
   fetchNumberofDaysUrl,
   fetchOrganizations,
   fetchUserActionsByUser,
@@ -62,6 +63,7 @@ const DashboardWrapper = () => {
   console.log(users, 'users')
   const [selectedFilter, setSelectedFilter] = useState(1)
   const [selectedDays, setSelectedDays] = useState('')
+  console.log(selectedDays, "selectedDays")
   const [isRefreshing, setIsRefreshing] = useState(false)
   const orgIdFromSession = Number(sessionStorage.getItem('orgId'))
   const [selectedOrganization, setSelectedOrganization] = useState(orgIdFromSession || 1)
@@ -116,9 +118,9 @@ const DashboardWrapper = () => {
           orgId: selectedOrganization,
           toolId:toolId,
         }
-      const masterDataResponse = await fetchMasterData(data)
+      const masterDataResponse = await fetchMasterDataByOrganization(data)
       const response = masterDataResponse
-      setSelectedDays(response)
+      setSelectedDays(response?.masterData)
       } catch (error) {
         handleError(error)
       }

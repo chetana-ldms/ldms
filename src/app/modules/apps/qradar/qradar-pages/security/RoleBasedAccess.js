@@ -103,11 +103,11 @@ function RoleBasedAccess() {
     event.preventDefault()
 
     setLoading(true)
-    if (!selectedOrganization) {
-      notifyFail('Select organization')
-      setLoading(false)
-      return
-    }
+    // if (!selectedOrganization) {
+    //   notifyFail('Select organization')
+    //   setLoading(false)
+    //   return
+    // }
     const data = {
       orgId: selectedOrganization,
       toolId: toolRef.current.value || 0,
@@ -148,6 +148,7 @@ function RoleBasedAccess() {
                 value={selectedOrganization}
                 onChange={handleOrganizationChange}
               >
+                <option value={0}>Select</option>
                 {globalAdminRole === 1 &&
                   organizations?.length > 0 &&
                   organizations.map((item, index) => (

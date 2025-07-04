@@ -9,6 +9,7 @@ const GetUnAttendedAletsCountUrl =process.env.REACT_APP_DASHBOARD_GETUNATTENDEDA
 const GetFalsePositiveAlertsCountUrl =process.env.REACT_APP_DASHBOARD_GETFALSEPOSITIVEALERTSCOUNT_URL
 const GetAlertsResolvedMeanTimeUrl =process.env.REACT_APP_DASHBOARD_GETALERTSRESOLVEDMEANTIME_URL
 const masterDataUrl = process.env.REACT_APP_MASTER_DATA_URL
+const masterDataByOrganization = process.env.REACT_APP_MASTER_DATABY_ORGANIZATION_URL
 // const MasterDataUrl = process.env.REACT_APP_DASHBOARD_MASTERDATA_URL
 const AllIncidentsSummeryUrl =process.env.REACT_APP_DASHBOARD_ALLINCIDENTSSUMMERY_URL
 const GetAlertsTrendDataUrl =process.env.REACT_APP_DASHBOARD_GETALERTSTRENDDATA_URL
@@ -218,6 +219,21 @@ export const fetchOrganizations = async () => {
       console.log(error);
     }
   };
-
+ export const fetchMasterDataByOrganization = async (data) => {
+    try {
+      const response = await FetchWithToken(`${masterDataByOrganization}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'text/plain',
+        },
+        body: JSON.stringify(data),
+      });
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.log(error);
+    }
+  };
   
   

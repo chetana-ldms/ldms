@@ -396,6 +396,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   type='submit'
                   onClick={(event) => handleSubmit(event, incidentData)}
                   className='btn btn-primary btn-new btn-small'
+                  disabled={!id}
                 >
                   Save Changes
                 </button>

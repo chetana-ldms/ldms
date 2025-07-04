@@ -8,9 +8,9 @@ import {
   fetchGetIncidentSearchResult,
   fetchIncidents,
   fetchSetOfIncidents,
-  fetchIncidentDetails, // Updated import
+  fetchIncidentDetails,
+  fetchMasterData, // Updated import
 } from '../../../../../api/IncidentsApi'
-import {fetchMasterData} from '../../../../../api/Api'
 import {ToastContainer} from 'react-toastify'
 import {notify, notifyFail} from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
@@ -42,7 +42,7 @@ const IncidentsPage = () => {
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
   const [selectedIncident, setSelectedIncident] = useState({})
-  console.log(selectedIncident, "selectedIncident")
+  console.log(selectedIncident, 'selectedIncident')
   const [refreshParent, setRefreshParent] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [activePage, setActivePage] = useState(1)
@@ -53,19 +53,16 @@ const IncidentsPage = () => {
   const [daysFromDashBoard, setDaysFromDashBoard] = useState(location.state?.days || '')
   const [selectedDays, setSelectedDays] = useState([])
   const [selectedFilterValue, setSelectedFilterValue] = useState(1)
-  const [selectedToolId, setSelectedToolId] = useState('')
+  const [selectedToolId, setSelectedToolId] = useState(sessionStorage.getItem('toolID') || '')
   const [tools, setTools] = useState([])
-  const [autoRefresh, setAutoRefresh] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(true)
   const toolRef = useRef()
-useEffect(() => {
+  useEffect(() => {
     const reload = async () => {
       try {
         setLoading(true)
         const data = await fetchOrganizationToolsSecurityUrl(orgId)
-        const modifiedTools = [
-          {toolId: -1, toolName: 'Internal Incident'},
-          ...data,
-        ]
+        const modifiedTools = [{toolId: -1, toolName: 'Internal Incident'}, ...data]
         setTools(modifiedTools)
         setLoading(false)
       } catch (error) {
@@ -77,11 +74,15 @@ useEffect(() => {
   }, [orgId])
   useEffect(() => {
     const fetchIncidentStatusAndSortOptions = async () => {
-      const statusDataRequest = {maserDataType: 'incident_status', orgId: orgId, toolId: toolId}
+      const statusDataRequest = {
+        maserDataType: 'incident_status',
+        orgId: orgId,
+        toolId: selectedToolId ? selectedToolId : 0,
+      }
       const sortOptionsDataRequest = {
         maserDataType: 'IncidentSortOptions',
         orgId: orgId,
-        toolId: toolId,
+        toolId: selectedToolId ? selectedToolId : 0,
       }
 
       try {
@@ -98,7 +99,7 @@ useEffect(() => {
     }
 
     fetchIncidentStatusAndSortOptions()
-  }, [])
+  }, [selectedToolId])
 
   useEffect(() => {
     setStatusFromDashBoard(location.state?.status || '')
@@ -140,14 +141,14 @@ useEffect(() => {
       },
       loggedInUserId: userID,
       orgAccountStructureLevel: [
-        { levelName: 'AccountId', levelValue: accountId || '' },
-        { levelName: 'SiteId', levelValue: siteId || '' },
-        { levelName: 'GroupId', levelValue: groupId || '' },
+        {levelName: 'AccountId', levelValue: accountId || ''},
+        {levelName: 'SiteId', levelValue: siteId || ''},
+        {levelName: 'GroupId', levelValue: groupId || ''},
       ],
-    };
+    }
 
     if (selectedToolId) {
-      data.toolId = selectedToolId;
+      data.toolId = selectedToolId
     }
 
     if (statusFromDashBoard) {
@@ -216,7 +217,7 @@ useEffect(() => {
     }
     // Add selectedToolId if present
     if (selectedToolId) {
-      data.toolId = selectedToolId;
+      data.toolId = selectedToolId
     }
     try {
       setLoading(true)
@@ -235,7 +236,7 @@ useEffect(() => {
     setSelectedIncident({})
     setDaysFromDashBoard('')
     setActivePage(1)
-  
+
     const data = {
       orgID: orgId,
       paging: {
@@ -265,7 +266,7 @@ useEffect(() => {
     if (toolId) {
       data.toolId = toolId
     }
-  
+
     try {
       setLoading(true)
       const response = await fetchGetIncidentSearchResult(data)
@@ -278,7 +279,7 @@ useEffect(() => {
       setLoading(false)
     }
   }
-  
+
   const handleToolChange = (e) => {
     const toolId = e.target.value
     setSelectedToolId(toolId)
@@ -290,7 +291,6 @@ useEffect(() => {
     setSelectedFilterValue(filterValue)
     fetchFilteredIncidents(selectedToolId, filterValue)
   }
-    
 
   const handleIncidentClick = (item) => {
     setSelectedIncident(item)
@@ -396,22 +396,22 @@ useEffect(() => {
   }, [incident])
 
   useEffect(() => {
-    let intervalId;
-    if (autoRefresh && currentPage === 1) {
+    let intervalId
+    if (currentPage == 1) {
       intervalId = setInterval(() => {
-        fetchIncident();
-      }, 2 * 60 * 1000); // 2 minutes
+        fetchIncident(1)
+      }, 1 * 60 * 1000) // 1 minute (change to 2 for 2 minutes)
     }
     return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [autoRefresh, currentPage]);
+      if (intervalId) clearInterval(intervalId)
+    }
+  }, [currentPage, selectedToolId])
 
   const handleManualRefresh = () => {
-    setCurrentPage(1);
-    setActivePage(1);
-    fetchIncident(1);
-  };
+    setCurrentPage(1)
+    setActivePage(1)
+    fetchIncident(1)
+  }
 
   return (
     <>
@@ -457,28 +457,23 @@ useEffect(() => {
                     </select>
                   </div>
                 </div>
-                <div className='p-1 bd-highlight'></div>
+                <div className='bd-highlight'></div>
 
                 <div className='card-title header-filter'>
                   {/* Auto Refresh and Manual Refresh Buttons */}
-                  <div className='d-flex align-items-center mb-2 gap-2'>
-                    <button
-                      className={`btn btn-sm ${autoRefresh && currentPage === 1 ? 'btn-success' : 'btn-outline-secondary'}`}
-                      onClick={() => setAutoRefresh((prev) => !prev)}
-                      type="button"
-                      disabled={currentPage !== 1}
-                      title={currentPage !== 1 ? "Auto refresh only works on page 1" : ""}
-                    >
-                      {autoRefresh && currentPage === 1 ? 'Auto Refresh ON (2 min)' : 'Enable Auto Refresh (2 min)'}
-                    </button>
-                    <button
-                      className="btn btn-sm btn-outline-primary"
-                      type="button"
-                      onClick={handleManualRefresh}
-                      title="Manual Refresh"
-                    >
-                      <i className="fa fa-refresh" /> Refresh
-                    </button>
+
+                  <div className='row'>
+                    <div className='col-md-4'></div>
+                    <div className='col-md-8'>
+                      <button
+                        className='btn btn-sm btn-outline-primary'
+                        type='button'
+                        onClick={handleManualRefresh}
+                        title='Manual Refresh'
+                      >
+                        Auto Refresh every 2 min <i className='fa fa-refresh' />
+                      </button>
+                    </div>
                   </div>
 
                   {/* begin::Search */}
