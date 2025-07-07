@@ -7,7 +7,7 @@ import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
 import {fetchExportDataAddUrl} from '../../../../../api/Api'
 import {fetchOrganizationToolsDetailsUrl} from '../../../../../api/IncidentsApi'
 
-function ClosedIncidentReport() {
+function ClosedIncidentReport({fromDate, toDate, toolID: parentToolID}) {
   const handleError = useErrorBoundary()
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
@@ -19,9 +19,24 @@ function ClosedIncidentReport() {
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
+  const today = new Date()
+  const lastYear = new Date()
+  lastYear.setFullYear(lastYear.getFullYear() - 1)
+
+  // Local state for tool and date selection
   const [incidentData, setIncidentData] = useState({
-    toolID: toolId || '',
+    toolID: parentToolID || toolId || '',
   })
+  const [startDate, setStartDate] = useState(fromDate || lastYear.toISOString().slice(0, 10))
+  const [endDate, setEndDate] = useState(toDate || today.toISOString().slice(0, 10))
+
+  // Sync with parent props if they change
+  useEffect(() => {
+    if (fromDate) setStartDate(fromDate)
+    if (toDate) setEndDate(toDate)
+    if (parentToolID !== undefined) setIncidentData((prev) => ({...prev, toolID: parentToolID}))
+  }, [fromDate, toDate, parentToolID])
+
   const handleChange = (event, field) => {
     const {value, checked, type} = event.target
     setIncidentData((prev) => ({
@@ -29,13 +44,13 @@ function ClosedIncidentReport() {
       [field]: type === 'checkbox' ? checked : value,
     }))
   }
+
   useEffect(() => {
     const reload = async () => {
       try {
         setLoading(true)
         const data = await fetchOrganizationToolsDetailsUrl(orgId)
-        const modifiedTools = [{toolID: -1, toolName: 'Internal Incident'}, ...data]
-        setTools(modifiedTools)
+        setTools(data)
         setLoading(false)
       } catch (error) {
         console.log(error)
@@ -44,6 +59,7 @@ function ClosedIncidentReport() {
     }
     reload()
   }, [orgId])
+
   const CanvasJS = CanvasJSReact.CanvasJS
   const CanvasJSChart = CanvasJSReact.CanvasJSChart
 
@@ -95,18 +111,19 @@ function ClosedIncidentReport() {
       },
     ],
   }
+
+  // Fetch data whenever tool, startDate, or endDate changes
   useEffect(() => {
     const fetchData = async () => {
-      const toDate = new Date().toISOString() // Get the current date and time
-      const fromDate = new Date()
-      fromDate.setFullYear(fromDate.getFullYear() - 1) // Subtract 1 year from the current year
-      const fromDateISO = fromDate.toISOString() // Convert the fromDate to ISO string format
+      setLoading(true)
+      const fromDateISO = new Date(startDate).toISOString()
+      const toDateISO = new Date(endDate).toISOString()
 
       const requestData = {
         orgId,
         toolId: incidentData.toolID ? Number(incidentData.toolID) : 0,
         incidentFromDate: fromDateISO,
-        incidentToDate: toDate,
+        incidentToDate: toDateISO,
         orgAccountStructureLevel: [
           {
             levelName: 'AccountId',
@@ -130,7 +147,7 @@ function ClosedIncidentReport() {
           throw new Error(`Network response was not ok: ${response.status} - ${errorData.message}`)
         }
 
-        const {data} = await response.json() // destructure the 'data' property from the response object
+        const {data} = await response.json()
         setAlertData(data)
         setLoading(false)
       } catch (error) {
@@ -141,17 +158,12 @@ function ClosedIncidentReport() {
     }
 
     fetchData()
-  }, [incidentData.toolID])
-  //Date range
-  const today = new Date()
-  const lastYear = new Date()
-  lastYear.setFullYear(lastYear.getFullYear() - 1)
-  const startDate = lastYear.toLocaleDateString('en-GB')
-  const endDate = today.toLocaleDateString('en-GB')
+    // eslint-disable-next-line
+  }, [incidentData.toolID, startDate, endDate])
 
   // Function to export data to Excel
   const exportToExcel = async () => {
-    // Convert alertData to CSV format
+    if (!alertData || alertData.length === 0) return
     const csvContent =
       'data:text/csv;charset=utf-8,' +
       [
@@ -159,17 +171,12 @@ function ClosedIncidentReport() {
         ...alertData.map((row) => Object.values(row).join(',')),
       ].join('\n')
 
-    // Create a temporary anchor element
     const encodedUri = encodeURI(csvContent)
     const link = document.createElement('a')
     link.setAttribute('href', encodedUri)
     link.setAttribute('download', 'closed_incident_report.csv')
     document.body.appendChild(link)
-
-    // Trigger the click event to initiate download
     link.click()
-
-    // Clean up
     document.body.removeChild(link)
     const data = {
       createdDate: new Date().toISOString(),
@@ -178,7 +185,7 @@ function ClosedIncidentReport() {
       exportDataType: 'Closed incident Report',
     }
     try {
-      const response = await fetchExportDataAddUrl(data)
+      await fetchExportDataAddUrl(data)
     } catch (error) {
       console.error(error)
     }
@@ -186,14 +193,12 @@ function ClosedIncidentReport() {
 
   // Function to export data to PDF
   const exportToPDF = async () => {
-    // Create a new jsPDF instance
+    if (!alertData || alertData.length === 0) return
     const doc = new jsPDF()
     doc.autoTable({
       head: [Object.keys(alertData[0])],
       body: alertData.map((row) => Object.values(row)),
     })
-
-    // Save the PDF
     doc.save('closed_incident_report.pdf')
     const data = {
       createdDate: new Date().toISOString(),
@@ -202,7 +207,7 @@ function ClosedIncidentReport() {
       exportDataType: 'Closed incident Report',
     }
     try {
-      const response = await fetchExportDataAddUrl(data)
+      await fetchExportDataAddUrl(data)
     } catch (error) {
       console.error(error)
     }
@@ -210,13 +215,34 @@ function ClosedIncidentReport() {
 
   return (
     <div>
-      <div className='row bg-heading m-0'>
-        <div className='col-md-9 fs-15 pt-1'>
-          Closed Incident for the last year ({startDate} to {endDate})
+      <div className='row bg-heading m-0 align-items-center'>
+        <div className='col-md-6 fs-15 pt-1'>Closed Incidents</div>
+        <div className='col-md-2 d-flex align-items-center'>
+          <label className='me-2 mb-0'>From:</label>
+          <input
+            type='date'
+            className='form-control form-control-sm'
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            max={endDate}
+          />
         </div>
-        <div className='col-md-3'>
+        <div className='col-md-2 d-flex align-items-center'>
+          <label className='me-2 mb-0'>To:</label>
+          <input
+            type='date'
+            className='form-control form-control-sm'
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            min={startDate}
+            max={today.toISOString().slice(0, 10)}
+          />
+        </div>
+        <div className='col-md-2 d-flex align-items-center'>
+          <label className='me-2 mb-0'>Tool:</label>
           <select
             className='form-select form-select-sm'
+            style={{width: 'auto', display: 'inline-block'}}
             value={incidentData.toolID}
             onChange={(e) => handleChange(e, 'toolID')}
           >
@@ -229,6 +255,7 @@ function ClosedIncidentReport() {
           </select>
         </div>
       </div>
+
       {loading ? (
         <p>Loading...</p>
       ) : error ? (

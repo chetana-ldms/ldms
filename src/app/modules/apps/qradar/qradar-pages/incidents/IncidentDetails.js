@@ -82,6 +82,16 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     significantIncident: 0,
     subject: '',
     description: '',
+    // SLA fields
+    resolvedDatetime: null,
+    closedDatetime: null,
+    resolutionTime: '',
+    slaMet: null,
+    isEscalated: null,
+    sentimentScore: null,
+    initialSentimentScore: null,
+    resolutionDueDatetime: null,
+    createdDate: null,
   })
   console.log(incidentData, 'incidentData')
   const [selectedAlertId, setSelectedAlertId] = useState(null)
@@ -176,6 +186,16 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
         significantIncident: data?.significantIncident,
         subject: data?.subject,
         description: data?.description,
+        // SLA fields
+        resolvedDatetime: data?.resolvedDatetime,
+        closedDatetime: data?.closedDatetime,
+        resolutionTime: data?.resolutionTime,
+        slaMet: data?.slaMet,
+        isEscalated: data?.isEscalated,
+        sentimentScore: data?.sentimentScore,
+        initialSentimentScore: data?.initialSentimentScore,
+        resolutionDueDatetime: data?.resolutionDueDatetime,
+        createdDate: data?.createdDate,
       })
     } catch (error) {
       handleError(error)
@@ -187,16 +207,21 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     fetchData(resolvedId)
   }, [id])
   const fetchNotes = async (id) => {
-    if (!id) return // Don't fetch if id is not present
+    if (!id) {
+      setNotes([]) // Clear notes if no id
+      return
+    }
     try {
       const result = await fetchIncidentNotesListUrl(id)
-      setNotes(result)
+      setNotes(Array.isArray(result) ? result : []) // Always set notes, even if empty
     } catch (error) {
+      setNotes([]) // Clear notes on error
       handleError(error)
     }
   }
 
   useEffect(() => {
+    setNotes([]) // Clear notes when incident changes
     if (id) {
       fetchNotes(id)
     }
@@ -234,7 +259,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     } else if (field === 'owner') {
       setIncidentData({
         ...incidentData,
-        owner: selectedId,
+        owner: selectedId, // This is the userID from data-id attribute
         ownerName: event.target.value,
       })
     } else if (field === 'incidentEmail') {
@@ -268,7 +293,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
       priorityId: incidentData.priority,
       severityId: incidentData.severity,
       typeId: incidentData.typeId,
-      ownerUserId: incidentData.owner,
+      ownerUserId: incidentData?.owner,
       incidentEmail: incidentData.incidentEmail,
       significantIncident: incidentData.significantIncident,
       modifiedUserId: userID,
@@ -407,6 +432,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
         <div className='mb-3 incident-tabs'>
           <div className='p-2 bd-highlight'>
             <ul className='nav nav-tabs nav-line-tabs mb-5 fs-8 no-pad'>
+              {/* 1. General */}
               <li className='nav-item'>
                 <a
                   className={`nav-link ${activeTab === 'general' ? 'active' : ''}`}
@@ -417,6 +443,40 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   General
                 </a>
               </li>
+              {/* 2. SLA Details */}
+              <li className='nav-item'>
+                <a
+                  className={`nav-link ${activeTab === 'sla' ? 'active' : ''}`}
+                  data-bs-toggle='tab'
+                  href='#kt_tab_pane_sla'
+                  onClick={() => setActiveTab('sla')}
+                >
+                  SLA Details
+                </a>
+              </li>
+              {/* 3. Notes */}
+              <li className='nav-item'>
+                <a
+                  className={`nav-link ${activeTab === 'notes' ? 'active' : ''}`}
+                  data-bs-toggle='tab'
+                  href='#kt_tab_pane_6'
+                  onClick={() => setActiveTab('notes')}
+                >
+                  Notes
+                </a>
+              </li>
+              {/* 4. Timeline */}
+              <li className='nav-item'>
+                <a
+                  className={`nav-link ${activeTab === 'timeline' ? 'active' : ''}`}
+                  data-bs-toggle='tab'
+                  href='#kt_tab_pane_5'
+                  onClick={() => setActiveTab('timeline')}
+                >
+                  Timeline
+                </a>
+              </li>
+              {/* 5. Alerts (if present) */}
               {Array.isArray(incidentData?.alertId) && incidentData.alertId.length > 0 && (
                 <li className='nav-item'>
                   <a
@@ -429,36 +489,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   </a>
                 </li>
               )}
-              <li className='nav-item'>
-                <a
-                  className={`nav-link ${activeTab === 'timeline' ? 'active' : ''}`}
-                  data-bs-toggle='tab'
-                  href='#kt_tab_pane_5'
-                  onClick={() => setActiveTab('timeline')}
-                >
-                  Timeline
-                </a>
-              </li>
-              <li className='nav-item'>
-                <a
-                  className={`nav-link ${activeTab === 'notes' ? 'active' : ''}`}
-                  data-bs-toggle='tab'
-                  href='#kt_tab_pane_6'
-                  onClick={() => setActiveTab('notes')}
-                >
-                  Notes
-                </a>
-              </li>
-              <li className='nav-item'>
-                <a
-                  className={`nav-link ${activeTab === 'sla' ? 'active' : ''}`}
-                  data-bs-toggle='tab'
-                  href='#kt_tab_pane_sla'
-                  onClick={() => setActiveTab('sla')}
-                >
-                  SLA Details
-                </a>
-              </li>
             </ul>
 
             <div className='tab-content scroll-y' id='myTabContent'>
@@ -840,9 +870,79 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 </div>
               </div>
               <div className='tab-pane fade' id='kt_tab_pane_sla' role='tabpanel'>
-                {/* SLA Details content goes here */}
-                <div className="p-3">
-                  SLA Details
+                <div className='p-3'>
+                  <table className='table table-bordered table-sm w-auto'>
+                    <tbody>
+                      <tr>
+                        <th>Resolution Due</th>
+                        <td>
+                          {incidentData.resolutionDueDatetime
+                            ? getCurrentTimeZone(incidentData.resolutionDueDatetime)
+                            : 'N/A'}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Resolved Date Time</th>
+                        <td>
+                          {incidentData.resolvedDatetime
+                            ? getCurrentTimeZone(incidentData.resolvedDatetime)
+                            : 'N/A'}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Closed Date Time</th>
+                        <td>
+                          {incidentData.closedDatetime
+                            ? getCurrentTimeZone(incidentData.closedDatetime)
+                            : 'N/A'}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Resolution Time</th>
+                        <td>{incidentData.resolutionTime || 0}</td>
+                      </tr>
+                      <tr>
+                        <th>SLA Met</th>
+                        <td>
+                          {incidentData.slaMet !== null && incidentData.slaMet !== undefined
+                            ? incidentData.slaMet
+                              ? 'Yes'
+                              : 'No'
+                            : 'N/A'}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Escalated</th>
+                        <td>{incidentData.isEscalated ? 'Yes' : 'No'}</td>
+                      </tr>
+                      <tr>
+                        <th>Sentiment Score</th>
+                        <td>
+                          {incidentData.sentimentScore !== null &&
+                          incidentData.sentimentScore !== undefined
+                            ? incidentData.sentimentScore
+                            : 0}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Initial Sentiment Score</th>
+                        <td>
+                          {incidentData.initialSentimentScore !== null &&
+                          incidentData.initialSentimentScore !== undefined
+                            ? incidentData.initialSentimentScore
+                            : 0}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Created Date Time</th>
+                        <td>
+                          {incidentData.createdDate
+                            ? getCurrentTimeZone(incidentData.createdDate)
+                            : 'N/A'}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
               <div className='tab-pane fade' id='kt_tab_pane_6' role='tabpanel'>

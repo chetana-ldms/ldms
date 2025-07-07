@@ -109,6 +109,7 @@ import CustomAlerts from './qradar-pages/alerts/CustomAlerts'
 import EmailLogs from './qradar-pages/email-logs/EmailLogs'
 import ChatBot from './qradar-pages/chat-bot/ChatBot'
 import IncidentReport from './qradar-pages/reports/IncidentReport'
+import IncidentReportSummery from './qradar-pages/reports/IncidentReportSummery'
 
 
 const QradarPages = () => {
@@ -124,6 +125,7 @@ const QradarPages = () => {
         <Route path='incidentscollaboration' element={<IncidentsPageCollaboration />} />
         <Route path='channels' element={<ChannelsPage />} />
         <Route path='reports' element={<Reports />} />
+        <Route path='incident-report-summery' element={<IncidentReportSummery />} />
         <Route path='incident-report' element={<IncidentReport />} />
     <Route path='quickstart' element={<QuickStart />} />
     <Route path='tasks' element={<Tasks />} />

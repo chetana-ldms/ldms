@@ -98,10 +98,11 @@ const OrganizationTools = () => {
         .filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
         .slice(indexOfFirstItem, indexOfLastItem)
     : null
-  const filteredList = filterValue
-    ? tools.filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
-    : tools
-
+  const filteredList = tools
+    ? tools
+        .filter((item) => globalAdminRole === 1 || item.orgID === orgId)
+        .filter((item) => item.searchText.toLowerCase().includes(filterValue.toLowerCase()))
+    : []
   const handlePageSelect = (event) => {
     setItemsPerPage(Number(event.target.value))
     setCurrentPage(0)
@@ -117,13 +118,18 @@ const OrganizationTools = () => {
     setActivePage(0)
   }
 
+  const displayItems = currentItems
+    ? currentItems.filter((item) => globalAdminRole === 1 || item.orgID === orgId)
+    : []
+
   return (
     <div className='config card pad-10'>
       <ToastContainer />
       <div className='card-header no-pad'>
         <h3 className='card-title align-items-start flex-column'>
           <span className='card-label fw-bold fs-3 mb-1'>
-            Organizations Tools ({currentItems?currentItems.length:0} / {filteredList?filteredList.length:0})
+            Organizations Tools ({displayItems ? displayItems.length : 0} /{' '}
+            {filteredList ? filteredList.length : 0})
           </span>
         </h3>
         <div className='card-toolbar'>

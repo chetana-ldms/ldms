@@ -1,4 +1,4 @@
-import FetchWithToken from "../modules/auth/FetchWithToken"
+import FetchWithToken from '../modules/auth/FetchWithToken'
 
 const createIncidentUrl = process.env.REACT_APP_CREATE_INCIDENT_URL
 const incidentsUrl = process.env.REACT_APP_INCIDENTS_URL
@@ -10,25 +10,30 @@ const alertsByAlertIdsUrl = process.env.REACT_APP_ALERTS_BY_ALERT_IDS_URL
 const getChatHistoryUrl = process.env.REACT_APP_GET_CHAT_HISTORY_URL
 const addChatMessageUrl = process.env.REACT_APP_SEND_CHAT_MESSAGE_URL
 const DownloadAttachmentUrl = process.env.REACT_APP_DOWNLOAD_ATTACHMENT_URL
-const masterDataUrl = process.env.REACT_APP_MASTER_DATA_URL;
-const UsersByOrgToolUrl = process.env.REACT_APP_USERS_BY_ORG_TOOL_URL;
-const IncidentNotesListUrl = process.env.REACT_APP_INCIDENT_NOTES_LIST_URL;
-const IncidentNotesAddUrl = process.env.REACT_APP_INCIDENT_NOTES_ADD_URL;
-const IncidentNotesUpdateUrl = process.env.REACT_APP_INCIDENT_NOTES_UPDATE_URL;
-const OrganizationToolsDetailsUrl = process.env.REACT_APP_ORG_TOOLS_DETAILS_URL;
+const masterDataUrl = process.env.REACT_APP_MASTER_DATA_URL
+const UsersByOrgToolUrl = process.env.REACT_APP_USERS_BY_ORG_TOOL_URL
+const IncidentNotesListUrl = process.env.REACT_APP_INCIDENT_NOTES_LIST_URL
+const IncidentNotesAddUrl = process.env.REACT_APP_INCIDENT_NOTES_ADD_URL
+const IncidentNotesUpdateUrl = process.env.REACT_APP_INCIDENT_NOTES_UPDATE_URL
+const OrganizationToolsDetailsUrl = process.env.REACT_APP_ORG_TOOLS_DETAILS_URL
+const IncidentReportTypesUrl = 'http://10.41.3.232:501/api/Reports/v1/IncidentReportTypes'
+const IncidentReportDataUrl = 'http://10.41.3.232:501/api/Reports/v1/IncidentReportData'
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
-    const response = await FetchWithToken(`${UsersByOrgToolUrl}?OrgId=${id}&ToolId=${toolId}&userid=${userID}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: id,
-        userID:userID,
-      }),
-    })
+    const response = await FetchWithToken(
+      `${UsersByOrgToolUrl}?OrgId=${id}&ToolId=${toolId}&userid=${userID}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: id,
+          userID: userID,
+        }),
+      }
+    )
 
     const responseData = await response.json()
     return responseData
@@ -310,6 +315,41 @@ export const fetchOrganizationToolsDetailsUrl = async (orgid) => {
     const responseData = await response.json()
     const incidentData = responseData.organizationToolList
     return incidentData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchIncidentReportTypesUrl = async () => {
+  try {
+    const response = await FetchWithToken(`${IncidentReportTypesUrl}?reporttypeid=0`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    const responseData = await response.json()
+    const data = responseData.data
+    return data
+  } catch (error) {
+    console.log('Error fetching incident report types:', error)
+    return null
+  }
+}
+export const fetchIncidentReportDataUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${IncidentReportDataUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
     console.log(error)
   }

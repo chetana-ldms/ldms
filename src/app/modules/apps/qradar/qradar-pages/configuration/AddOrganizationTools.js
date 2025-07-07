@@ -94,7 +94,7 @@ const AddOrganizationTools = () => {
       incidentsToolId: toolRef.current.value ? toolRef.current.value : 0,
       createdDate,
       createdUserId,
-      incidentEmail:emailRef.current.value,
+      incidentEmail: emailRef.current.value,
       lastReadPKID: 0,
       toolActions: tableData.map((item) => ({
         toolActionId: item.toolTypeActionID,
@@ -105,15 +105,15 @@ const AddOrganizationTools = () => {
     }
     try {
       const responseData = await fetchOrganizationToolsAddUrl(data)
-      const {isSuccess} = responseData
+      const {isSuccess, message} = responseData
 
       if (isSuccess) {
-        notify('Organizations Tools Saved')
+        notify(message)
         setTimeout(() => {
           navigate('/qradar/organization-tools/updated')
         }, 2000)
       } else {
-        notifyFail('Failed to save Organizations Tools')
+        notifyFail(message)
       }
     } catch (error) {
       handleError(error)

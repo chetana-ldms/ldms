@@ -62,8 +62,7 @@ const IncidentsPage = () => {
       try {
         setLoading(true)
         const data = await fetchOrganizationToolsSecurityUrl(orgId)
-        const modifiedTools = [{toolId: -1, toolName: 'Internal Incident'}, ...data]
-        setTools(modifiedTools)
+        setTools(data)
         setLoading(false)
       } catch (error) {
         console.log(error)
@@ -150,6 +149,9 @@ const IncidentsPage = () => {
     if (selectedToolId) {
       data.toolId = selectedToolId
     }
+    if (selectedFilterValue) {
+      data.searchDurationInDays = selectedFilterValue || 0
+    }
 
     if (statusFromDashBoard) {
       const statusItem = statusDropDown.find((item) => item.dataValue === statusFromDashBoard)
@@ -157,8 +159,6 @@ const IncidentsPage = () => {
         data.statusId = statusItem.dataID
         data.searchDurationInDays = daysFromDashBoard
       }
-    } else {
-      data.searchDurationInDays = selectedFilterValue || 0
     }
 
     try {
