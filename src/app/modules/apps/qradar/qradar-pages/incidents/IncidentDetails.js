@@ -899,7 +899,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                       </tr>
                       <tr>
                         <th>Resolution Time</th>
-                        <td>{incidentData.resolutionTime || 0}</td>
+                        <td>{incidentData.resolutionTime || 0} min</td>
                       </tr>
                       <tr>
                         <th>SLA Met</th>

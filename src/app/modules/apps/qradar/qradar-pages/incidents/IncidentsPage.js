@@ -47,7 +47,7 @@ const IncidentsPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [activePage, setActivePage] = useState(1)
   const [pageCount, setpageCount] = useState(0)
-  const [limit, setLimit] = useState(20)
+  const [limit, setLimit] = useState(5)
   const [loading, setLoading] = useState(false)
   const [statusFromDashBoard, setStatusFromDashBoard] = useState(location.state?.status || '')
   const [daysFromDashBoard, setDaysFromDashBoard] = useState(location.state?.days || '')
@@ -397,20 +397,21 @@ const IncidentsPage = () => {
 
   useEffect(() => {
     let intervalId
-    if (currentPage == 1) {
+    if (currentPage === 1) {
       intervalId = setInterval(() => {
-        fetchIncident(1)
-      }, 1 * 60 * 1000) // 1 minute (change to 2 for 2 minutes)
+        fetchFilteredIncidents(selectedToolId, selectedFilterValue)
+      }, 2 * 60 * 1000)
     }
+
     return () => {
       if (intervalId) clearInterval(intervalId)
     }
-  }, [currentPage, selectedToolId])
+  }, [currentPage, selectedToolId, selectedFilterValue])
 
   const handleManualRefresh = () => {
     setCurrentPage(1)
     setActivePage(1)
-    fetchIncident(1)
+    fetchFilteredIncidents(selectedToolId, selectedFilterValue)
   }
 
   return (

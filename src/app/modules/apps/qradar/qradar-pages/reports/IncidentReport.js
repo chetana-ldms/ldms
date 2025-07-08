@@ -6,8 +6,20 @@ import {
   fetchIncidentReportTypesUrl,
   fetchIncidentReportDataUrl,
 } from '../../../../../api/IncidentsApi'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
+import {getCurrentTimeZone} from '../../../../../../utils/helper'
+import {truncateText} from '../../../../../../utils/TruncateText'
+import Pagination from '../../../../../../utils/Pagination'
+import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
+import {fetchExportDataAddUrl} from '../../../../../api/Api'
+import jsPDF from 'jspdf'
 
 export default function IncidentReport() {
+  const [filterValue, setFilterValue] = useState('')
+  const [currentPage, setCurrentPage] = useState(0)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [activePage, setActivePage] = useState(0)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const today = new Date()
   const lastYear = new Date()
   lastYear.setFullYear(lastYear.getFullYear() - 1)
@@ -24,12 +36,11 @@ export default function IncidentReport() {
   const [reportTypes, setReportTypes] = useState([])
   const [reportType, setReportType] = useState('')
   const [tableData, setTableData] = useState([])
-  console.log('tableData', tableData)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     fetchOrganizationToolsDetailsUrl(Number(sessionStorage.getItem('orgId')))
-      .then((data) => setTools([{toolID: -1, toolName: 'Internal Incident'}, ...data]))
+      .then((data) => setTools(data))
       .catch(() => setTools([]))
   }, [])
 
@@ -60,11 +71,20 @@ export default function IncidentReport() {
       .then((res) => setOwnerList(res?.usersList || []))
       .catch(() => setOwnerList([]))
   }, [toolID])
-  useEffect(() => {
+  const handleToolChange = (e) => {
+    const newToolID = e.target.value
+    setToolID(newToolID)
+    setStatus('')
+    setPriority('')
+    setOwner('')
+  }
+
+  const fetchTableData = async () => {
     if (!reportType) {
       setTableData([])
       return
     }
+
     const payload = {
       fromDate: new Date(startDate).toISOString(),
       toDate: new Date(endDate).toISOString(),
@@ -75,12 +95,33 @@ export default function IncidentReport() {
       ownerUserId: Number(owner) || 0,
       priorityId: Number(priority) || 0,
     }
+
     setLoading(true)
-    fetchIncidentReportDataUrl(payload)
-      .then((data) => setTableData(data?.data || []))
-      .catch(() => setTableData([]))
-      .finally(() => setLoading(false))
-  }, [startDate, endDate, toolID, status, priority, owner, reportType])
+    try {
+      const data = await fetchIncidentReportDataUrl(payload)
+      setTableData(data?.data || [])
+      setCurrentPage(0)
+      setActivePage(0)
+    } catch (error) {
+      setTableData([])
+    } finally {
+      setLoading(false)
+    }
+  }
+  useEffect(() => {
+    fetchTableData()
+  }, [startDate, endDate, toolID, status, priority, owner, reportType, itemsPerPage])
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = tableData
+    ? tableData
+        .filter((item) => item.subject.toLowerCase().includes(filterValue.toLowerCase()))
+        .slice(indexOfFirstItem, indexOfLastItem)
+    : null
+  const filteredList = filterValue
+    ? tableData.filter((item) => item.subject.toLowerCase().includes(filterValue.toLowerCase()))
+    : tableData
+
   useEffect(() => {
     fetchIncidentReportTypesUrl()
       .then((data) => {
@@ -92,12 +133,77 @@ export default function IncidentReport() {
       })
       .catch(() => setReportTypes([]))
   }, [])
+  const handlePageClick = (selected) => {
+    setCurrentPage(selected.selected)
+    setActivePage(selected.selected)
+  }
+
+  const handleFilterChange = (event) => {
+    setFilterValue(event.target.value)
+    setCurrentPage(0)
+    setActivePage(0)
+  }
+  const handlePageSelect = (event) => {
+    setItemsPerPage(Number(event.target.value))
+    setCurrentPage(0)
+    setActivePage(0)
+  }
+  const exportToExcel = async () => {
+    if (!tableData || tableData.length === 0) return
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      [
+        Object.keys(tableData[0]).join(','),
+        ...tableData.map((row) => Object.values(row).join(',')),
+      ].join('\n')
+
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement('a')
+    link.setAttribute('href', encodedUri)
+    link.setAttribute('download', 'report.csv')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem('userId')),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: 'Report',
+    }
+    try {
+      await fetchExportDataAddUrl(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  // Function to export data to PDF
+  const exportToPDF = async () => {
+    if (!tableData || tableData.length === 0) return
+    const doc = new jsPDF()
+    doc.autoTable({
+      head: [Object.keys(tableData[0])],
+      body: tableData.map((row) => Object.values(row)),
+    })
+    doc.save('report.pdf')
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem('userId')),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: 'Report',
+    }
+    try {
+      await fetchExportDataAddUrl(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return (
-    <div className='card p-4'>
-      <h4 className='mb-4'>Incident Report Filters</h4>
+    <div className='card p-2'>
       <div className='row g-3 align-items-center'>
         <div className='col-md-2'>
-          <label className='form-label'>From</label>
+          <label className='form-label'>From Date</label>
           <input
             type='date'
             className='form-control form-control-sm'
@@ -107,7 +213,7 @@ export default function IncidentReport() {
           />
         </div>
         <div className='col-md-2'>
-          <label className='form-label'>To</label>
+          <label className='form-label'>To Date</label>
           <input
             type='date'
             className='form-control form-control-sm'
@@ -119,11 +225,7 @@ export default function IncidentReport() {
         </div>
         <div className='col-md-2'>
           <label className='form-label'>Tool</label>
-          <select
-            className='form-select form-select-sm'
-            value={toolID}
-            onChange={(e) => setToolID(e.target.value)}
-          >
+          <select className='form-select form-select-sm' value={toolID} onChange={handleToolChange}>
             <option value=''>Select</option>
             {tools.map((tool) => (
               <option key={tool.toolID} value={tool.toolID}>
@@ -142,7 +244,7 @@ export default function IncidentReport() {
           >
             <option value=''>Select</option>
             {statusList.map((item) => (
-              <option key={item.dataID} value={item.dataValue}>
+              <option key={item.dataID} value={item.dataID}>
                 {item.dataValue}
               </option>
             ))}
@@ -158,7 +260,7 @@ export default function IncidentReport() {
           >
             <option value=''>Select</option>
             {priorityList.map((item) => (
-              <option key={item.dataID} value={item.dataValue}>
+              <option key={item.dataID} value={item.dataID}>
                 {item.dataValue}
               </option>
             ))}
@@ -194,17 +296,42 @@ export default function IncidentReport() {
             ))}
           </select>
         </div>
+        <div className='col-md-5'>
+          <label className='form-label'>Search Text</label>
+          <input
+            type='text'
+            placeholder='Search...'
+            className='form-control'
+            value={filterValue}
+            onChange={handleFilterChange}
+          />
+        </div>
+        <div className='col-md-4 export-report mt-10 w-auto m-auto'>
+          <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
+            <DropdownToggle caret>
+              Export <i className='fa fa-file-export link mg-left-10' />
+            </DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={exportToExcel}>
+                Export to CSV <i className='fa fa-file-excel link float-right' />
+              </DropdownItem>
+              <DropdownItem onClick={exportToPDF}>
+                Export to PDF <i className='fa fa-file-pdf red float-right' />
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </div>
       </div>
-      <div className='mt-4'>
+      <div className='card pad-10 config'>
         {loading ? (
-          <div>Loading...</div>
-        ) : tableData && tableData.length > 0 ? (
-          <div className='table-responsive'>
-            <table className='table table-bordered table-sm'>
+          <UsersListLoading />
+        ) : (
+          <div className='card-body no-pad'>
+            <table className='table alert-table fixed-table scroll-x'>
               <thead>
-                <tr>
+                <tr className='fw-bold text-muted bg-blue'>
                   <th>Incident ID</th>
-                  <th>Title / Subject</th>
+                  <th>Subject</th>
                   <th>Status</th>
                   <th>Priority</th>
                   <th>Owner</th>
@@ -216,25 +343,46 @@ export default function IncidentReport() {
                 </tr>
               </thead>
               <tbody>
-                {tableData.map((row, idx) => (
-                  <tr key={idx}>
-                    <td>{row.incidentID}</td>
-                    <td>{row.title || row.subject}</td>
-                    <td>{row.incidentStatusName}</td>
-                    <td>{row.priorityName}</td>
-                    <td>{row.ownerName}</td>
-                    <td>{row.createdDate}</td>
-                    <td>{row.resolutionDueDatetime?row.resolutionDueDatetime:"N/A"}</td>
-                    <td>{row.resolvedDatetime?row.resolvedDatetime:"N/A"}</td>
-                    <td>{row.closedDatetime?row.closedDatetime:"N/A"}</td>
-                    <td>{row.createdUser}</td>
+                {currentItems && currentItems.length > 0 ? (
+                  currentItems.map((row, idx) => (
+                    <tr key={idx} className='table-row'>
+                      <td>{row.incidentID}</td>
+                      <td title={row.subject}>{truncateText(row.subject, 40)}</td>
+                      <td>{row.incidentStatusName}</td>
+                      <td>{row.priorityName}</td>
+                      <td>{row.ownerName}</td>
+                      <td>{getCurrentTimeZone(row.createdDate)}</td>
+                      <td>
+                        {row.resolutionDueDatetime
+                          ? getCurrentTimeZone(row.resolutionDueDatetime)
+                          : 'N/A'}
+                      </td>
+                      <td>
+                        {row.resolvedDatetime ? getCurrentTimeZone(row.resolvedDatetime) : 'N/A'}
+                      </td>
+                      <td>{row.closedDatetime ? getCurrentTimeZone(row.closedDatetime) : 'N/A'}</td>
+                      <td>{row.createdUser}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan='10' className='text-center text-muted'>
+                      No data found
+                    </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
+            {currentItems && currentItems.length > 0 && (
+              <Pagination
+                pageCount={Math.ceil(filteredList.length / itemsPerPage)}
+                handlePageClick={handlePageClick}
+                itemsPerPage={itemsPerPage}
+                handlePageSelect={handlePageSelect}
+                forcePage={activePage}
+              />
+            )}
           </div>
-        ) : (
-          <div>No data found</div>
         )}
       </div>
     </div>
