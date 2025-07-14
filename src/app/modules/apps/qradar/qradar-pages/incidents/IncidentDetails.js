@@ -652,7 +652,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                       type='incidentEmail'
                       className='form-control form-control-sm'
                       placeholder='Enter Email'
-                      value={incidentData.incidentEmail}
+                      value={incidentData?.incidentEmail || ''}
                       onChange={(e) => handleChange(e, 'incidentEmail')}
                     />
                   </div>

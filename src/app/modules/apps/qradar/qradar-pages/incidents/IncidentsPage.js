@@ -9,7 +9,8 @@ import {
   fetchIncidents,
   fetchSetOfIncidents,
   fetchIncidentDetails,
-  fetchMasterData, // Updated import
+  fetchMasterData,
+  fetchIncidentsHasChangesUrl, // Updated import
 } from '../../../../../api/IncidentsApi'
 import {ToastContainer} from 'react-toastify'
 import {notify, notifyFail} from '../components/notification/Notification'
@@ -21,6 +22,7 @@ import './IncidentPagination.css'
 import {useErrorBoundary} from 'react-error-boundary'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {fetchOrganizationToolsSecurityUrl} from '../../../../../api/securityApi'
+import TicketUpdateBadge from './TicketUpdateBadge'
 
 const IncidentsPage = () => {
   const handleError = useErrorBoundary()
@@ -28,6 +30,10 @@ const IncidentsPage = () => {
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
   const location = useLocation()
+  const [lastPulledDate, setLastPulledDate] = useState(null)
+  console.log(lastPulledDate, 'lastPulledDate')
+  const [incidentChangesCount, setIncidentChangesCount] = useState(0)
+  const [showBadge, setShowBadge] = useState(false)
   const alertData = JSON.parse(localStorage.getItem('alertData'))
   const [selectedAlert, setSelectedAlert] = useState(null)
   const [showChat, setShowChat] = useState(false)
@@ -139,6 +145,7 @@ const IncidentsPage = () => {
         rangeEnd: page * limit,
       },
       loggedInUserId: userID,
+      lastDataPulledDate: new Date().toISOString(),
       orgAccountStructureLevel: [
         {levelName: 'AccountId', levelValue: accountId || ''},
         {levelName: 'SiteId', levelValue: siteId || ''},
@@ -167,6 +174,7 @@ const IncidentsPage = () => {
       setIncident(response.incidentList)
       setTotalIncidentsCount(response.totalIncidentsCount)
       setpageCount(Math.ceil(response.totalIncidentsCount / limit))
+      setLastPulledDate(new Date().toISOString())
       setLoading(false)
     } catch (error) {
       console.log(error)
@@ -200,6 +208,7 @@ const IncidentsPage = () => {
       searchText: searchValue || '',
       sortOptionId: sortOption.current?.value || 0,
       searchDurationInDays: selectedFilterValue || 0,
+      lastDataPulledDate: new Date().toISOString(),
       orgAccountStructureLevel: [
         {
           levelName: 'AccountId',
@@ -226,6 +235,7 @@ const IncidentsPage = () => {
       setTotalIncidentsCount(response.totalIncidentsCount)
       const total = response.totalIncidentsCount
       setpageCount(Math.ceil(total / limit))
+      setLastPulledDate(new Date().toISOString())
       setLoading(false)
     } catch (error) {
       handleError(error)
@@ -248,6 +258,7 @@ const IncidentsPage = () => {
       searchText: searchValue || '',
       sortOptionId: sortOption.current?.value || 0,
       searchDurationInDays: filterValue || 0,
+      lastDataPulledDate: new Date().toISOString(),
       orgAccountStructureLevel: [
         {
           levelName: 'AccountId',
@@ -273,6 +284,7 @@ const IncidentsPage = () => {
       setIncident(response.incidentList)
       setTotalIncidentsCount(response.totalIncidentsCount)
       setpageCount(Math.ceil(response.totalIncidentsCount / limit))
+      setLastPulledDate(new Date().toISOString())
     } catch (error) {
       handleError(error)
     } finally {
@@ -311,6 +323,8 @@ const IncidentsPage = () => {
     if (status.current) {
       status.current.value = 0
     }
+    setShowBadge(false)
+    setIncidentChangesCount(0)
     fetchIncident()
   }
 
@@ -333,6 +347,7 @@ const IncidentsPage = () => {
         rangeEnd: selectedPage * limit,
       },
       loggedInUserId: userID,
+      lastDataPulledDate: lastPulledDate,
       orgAccountStructureLevel: [
         {
           levelName: 'AccountId',
@@ -396,22 +411,39 @@ const IncidentsPage = () => {
   }, [incident])
 
   useEffect(() => {
-    let intervalId
-    if (currentPage === 1) {
-      intervalId = setInterval(() => {
-        fetchFilteredIncidents(selectedToolId, selectedFilterValue)
-      }, 2 * 60 * 1000)
+    const data = {
+      orgId: Number(sessionStorage.getItem('orgId')),
+      toolId: selectedToolId,
+      lastPulledDate: lastPulledDate,
     }
 
-    return () => {
-      if (intervalId) clearInterval(intervalId)
-    }
-  }, [currentPage, selectedToolId, selectedFilterValue])
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await fetchIncidentsHasChangesUrl(data)
+
+        if (response?.incidentChangesCount > 0) {
+          setIncidentChangesCount(response.incidentChangesCount)
+          setShowBadge(true)
+        }
+      } catch (error) {
+        console.error('Failed to fetch incident changes:', error)
+      }
+    }, 0.5 * 60 * 1000)
+
+    return () => clearInterval(intervalId)
+  }, [selectedToolId, lastPulledDate])
 
   const handleManualRefresh = () => {
     setCurrentPage(1)
     setActivePage(1)
     fetchFilteredIncidents(selectedToolId, selectedFilterValue)
+  }
+  const handleTicketUpdateClick = () => {
+    setCurrentPage(1)
+    setActivePage(1)
+    fetchFilteredIncidents(selectedToolId, selectedFilterValue)
+    setShowBadge(false)
+    setIncidentChangesCount(0)
   }
 
   return (
@@ -465,14 +497,15 @@ const IncidentsPage = () => {
 
                   <div className='row'>
                     <div className='col-md-4'></div>
-                    <div className='col-md-8'>
+                    <div className='col-md-4'></div>
+                    <div className='col-md-4 d-flex justify-content-end'>
                       <button
                         className='btn btn-sm btn-outline-primary'
                         type='button'
                         onClick={handleManualRefresh}
                         title='Manual Refresh'
                       >
-                        Auto Refresh every 2 min <i className='fa fa-refresh' />
+                        <i className='fa fa-refresh' />
                       </button>
                     </div>
                   </div>
@@ -597,6 +630,13 @@ const IncidentsPage = () => {
                         )}
                       </>
                     </div>
+                    <TicketUpdateBadge
+                      count={incidentChangesCount}
+                      onClick={() => {
+                        handleTicketUpdateClick()
+                        setShowBadge(false)
+                      }}
+                    />
                   </div>
                   <div className='d-flex flex-column align-items-start pagination-bar pagination-incident pt-5 border-top'>
                     {/* Pagination Controls */}

@@ -4,7 +4,7 @@ import { fetchGetAlertsTrendData } from "../../api/dashBoardApi";
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 function AlertsTrends(props) {
-  const { days, orgId } = props;
+  const { days, orgId, toolID } = props;
   const toolId = Number(sessionStorage.getItem('toolID'))
   const [alertData, setAlertData] = useState([]);
   console.log(alertData, "alertData");
@@ -41,7 +41,7 @@ function AlertsTrends(props) {
       title: "Trend Hours",
     },
     axisY: {
-      title: "Alert Count",
+      title: "Count",
       prefix: "",
       scaleBreaks: {
         customBreaks: [
@@ -72,7 +72,7 @@ function AlertsTrends(props) {
       try {
         const GetAlertsTrendDataResponse = await fetchGetAlertsTrendData({
           orgID: orgId,
-          toolID:toolId,
+          toolID:toolID,
           orgAccountStructureLevel: [
             {
               levelName: "AccountId",
@@ -89,13 +89,6 @@ function AlertsTrends(props) {
           ]
         });
         const { alertsTrendDatas } = await GetAlertsTrendDataResponse;
-
-        // if (!response.ok) {
-        //   const errorData = await response.json()
-        //   throw new Error(`Network response was not ok: ${response.status} - ${errorData.message}`)
-        // }
-
-        // const {alertsTrendDatas} = await response.json() // destructure the 'alertsTrendDatas' property from the response object
         setAlertData(alertsTrendDatas);
         setLoading(false);
       } catch (error) {
@@ -105,13 +98,11 @@ function AlertsTrends(props) {
     };
 
     fetchData();
-  }, [orgId]);
-
-  console.log(alertData); // Log the alertData to the console
+  }, [orgId, toolID]);
 
   return (
     <div>
-      <h6 className="text-center uppercase">Alerts Trendline</h6>
+      <h6 className="text-center uppercase">Trendline</h6>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (

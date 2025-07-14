@@ -1,10 +1,10 @@
 import React from 'react'
 import {Tabs, Tab, TabList, TabPanel} from 'react-tabs'
-import SlaMeasurement from './SlaMeasurement'
 import ClosedIncidentReport from './ClosedIncidentReport'
 import OpenIncidentSummary from './OpenIncidentSummary'
 import SignificantIncident from './SignificantIncident'
 import CreatedIncidentStatusReport from './CreatedIncidentStatusReport'
+import IncidentSlaMeasurement from './IncidentSlaMeasurement'
 
 const IncidentReportSummery = () => {
   return (
@@ -29,7 +29,7 @@ const IncidentReportSummery = () => {
                     <SignificantIncident />
                   </TabPanel>
                   <TabPanel className='main-tab'>
-                    <SlaMeasurement />
+                    <IncidentSlaMeasurement />
                   </TabPanel>
                 </div>
               </div>

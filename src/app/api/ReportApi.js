@@ -7,6 +7,7 @@ const AllIncidentsSummeryUrl = process.env.REACT_APP_ALL_INCIDENTS_SUMMERY_URL
 const ClosedIncidentsSummeryUrl=process.env.REACT_APP_CLOSED_INCIDENTS_SUMMERY_URL
 const OpenIncidentsSummeryUrl=process.env.REACT_APP_OPEN_INCIDENTS_SUMMERY_URL
 const SignificantsIncidentsSummeryUrl= process.env.REACT_APP_SIGNIFICANTS_INCIDENTS_SUMMERY_URL
+const IncidentsSLAMeasurementSummeryUrl ="http://10.41.3.232:501/api/Reports/v1/IncidentsSLAReportData"
 
 
 export const fetchAlertsSummeryUrl = async (data) => {
@@ -144,6 +145,28 @@ export const fetchOpenIncidentsSummeryUrl = async (data) => {
 export const fetchSignificantsIncidentsSummeryUrl = async (data) => {
   try {
     const response = await FetchWithToken(SignificantsIncidentsSummeryUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        `Network response was not ok: ${response.status} - ${errorData.message}`
+      );
+    }
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchIncidentsSLAMeasurementSummeryUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(IncidentsSLAMeasurementSummeryUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -13,6 +13,7 @@ import Pagination from '../../../../../../utils/Pagination'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
 import {fetchExportDataAddUrl} from '../../../../../api/Api'
 import jsPDF from 'jspdf'
+import formatDateWithCurrentUtcTime from '../../../../../../utils/formatDateWithCurrentUtcTime'
 
 export default function IncidentReport() {
   const [filterValue, setFilterValue] = useState('')
@@ -87,7 +88,7 @@ export default function IncidentReport() {
 
     const payload = {
       fromDate: new Date(startDate).toISOString(),
-      toDate: new Date(endDate).toISOString(),
+      toDate: formatDateWithCurrentUtcTime(endDate),
       orgId: Number(sessionStorage.getItem('orgId')),
       toolId: Number(toolID) || 0,
       reportTypeId: Number(reportType),
@@ -148,30 +149,56 @@ export default function IncidentReport() {
     setCurrentPage(0)
     setActivePage(0)
   }
-  const exportToExcel = async () => {
-    if (!tableData || tableData.length === 0) return
-    const csvContent =
-      'data:text/csv;charset=utf-8,' +
-      [
-        Object.keys(tableData[0]).join(','),
-        ...tableData.map((row) => Object.values(row).join(',')),
-      ].join('\n')
+  const exportHeaders = [
+    {label: 'Incident ID', key: 'incidentID'},
+    {label: 'Subject', key: 'subject'},
+    {label: 'Status', key: 'incidentStatusName'},
+    {label: 'Priority', key: 'priorityName'},
+    {label: 'Owner', key: 'ownerName'},
+    {label: 'Created Date', key: 'createdDate'},
+    {label: 'Resolution Due', key: 'resolutionDueDatetime'},
+    {label: 'Resolved Date', key: 'resolvedDatetime'},
+    {label: 'Closed Date', key: 'closedDatetime'},
+    {label: 'Created By', key: 'createdUser'},
+  ]
 
+  const exportToExcel = async () => {
+    if (!currentItems || currentItems.length === 0) return
+
+    const csvRows = []
+
+    // Add headers
+    csvRows.push(exportHeaders.map((header) => header.label).join(','))
+
+    // Add data rows
+    currentItems.forEach((row) => {
+      const rowData = exportHeaders.map((header) => {
+        const value = row[header.key]
+        if (!value) return 'N/A'
+        if (header.key.toLowerCase().includes('date')) {
+          return getCurrentTimeZone(value)
+        }
+        return typeof value === 'string' ? `"${value.replace(/"/g, '""')}"` : value
+      })
+      csvRows.push(rowData.join(','))
+    })
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + csvRows.join('\n')
     const encodedUri = encodeURI(csvContent)
     const link = document.createElement('a')
     link.setAttribute('href', encodedUri)
-    link.setAttribute('download', 'report.csv')
+    link.setAttribute('download', 'incident_report.csv')
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    const data = {
-      createdDate: new Date().toISOString(),
-      createdUserId: Number(sessionStorage.getItem('userId')),
-      orgId: Number(sessionStorage.getItem('orgId')),
-      exportDataType: 'Report',
-    }
+
     try {
-      await fetchExportDataAddUrl(data)
+      await fetchExportDataAddUrl({
+        createdDate: new Date().toISOString(),
+        createdUserId: Number(sessionStorage.getItem('userId')),
+        orgId: Number(sessionStorage.getItem('orgId')),
+        exportDataType: 'Report',
+      })
     } catch (error) {
       console.error(error)
     }
@@ -179,21 +206,38 @@ export default function IncidentReport() {
 
   // Function to export data to PDF
   const exportToPDF = async () => {
-    if (!tableData || tableData.length === 0) return
+    if (!currentItems || currentItems.length === 0) return
+
     const doc = new jsPDF()
+
+    const head = [exportHeaders.map((header) => header.label)]
+    const body = currentItems.map((row) =>
+      exportHeaders.map((header) => {
+        const value = row[header.key]
+        if (!value) return 'N/A'
+        if (header.key.toLowerCase().includes('date')) {
+          return getCurrentTimeZone(value)
+        }
+        return value
+      })
+    )
+
     doc.autoTable({
-      head: [Object.keys(tableData[0])],
-      body: tableData.map((row) => Object.values(row)),
+      head,
+      body,
+      styles: {fontSize: 8},
+      theme: 'grid',
     })
-    doc.save('report.pdf')
-    const data = {
-      createdDate: new Date().toISOString(),
-      createdUserId: Number(sessionStorage.getItem('userId')),
-      orgId: Number(sessionStorage.getItem('orgId')),
-      exportDataType: 'Report',
-    }
+
+    doc.save('incident_report.pdf')
+
     try {
-      await fetchExportDataAddUrl(data)
+      await fetchExportDataAddUrl({
+        createdDate: new Date().toISOString(),
+        createdUserId: Number(sessionStorage.getItem('userId')),
+        orgId: Number(sessionStorage.getItem('orgId')),
+        exportDataType: 'Report',
+      })
     } catch (error) {
       console.error(error)
     }
@@ -306,20 +350,28 @@ export default function IncidentReport() {
             onChange={handleFilterChange}
           />
         </div>
-        <div className='col-md-4 export-report mt-10 w-auto m-auto'>
-          <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
-            <DropdownToggle caret>
-              Export <i className='fa fa-file-export link mg-left-10' />
-            </DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem onClick={exportToExcel}>
-                Export to CSV <i className='fa fa-file-excel link float-right' />
-              </DropdownItem>
-              <DropdownItem onClick={exportToPDF}>
-                Export to PDF <i className='fa fa-file-pdf red float-right' />
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
+      </div>
+      <div className='row'>
+        <div className='col-md-4 mt-5 fw-bold fs-3'>
+          Reports ({currentItems ? currentItems.length : 0} /{' '}
+          {filteredList ? filteredList.length : 0})
+        </div>
+        <div className='col-md-8'>
+          <div className=' d-flex justify-content-end align-items-center'>
+            <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
+              <DropdownToggle caret>
+                Export <i className='fa fa-file-export link mg-left-10' />
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem onClick={exportToExcel}>
+                  Export to CSV <i className='fa fa-file-excel link float-right' />
+                </DropdownItem>
+                <DropdownItem onClick={exportToPDF}>
+                  Export to PDF <i className='fa fa-file-pdf red float-right' />
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
         </div>
       </div>
       <div className='card pad-10 config'>

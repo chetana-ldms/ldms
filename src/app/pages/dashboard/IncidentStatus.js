@@ -4,8 +4,9 @@ import { fetchMasterData } from "../../api/Api";
 import { fetchGetIncidentCountByPriorityAndStatusUrl } from "../../api/dashBoardApi";
 
 function IncidentStatus(props) {
-  const toolId = Number(sessionStorage.getItem('toolID'))
-  const { days, orgId } = props;
+  // const toolId = Number(sessionStorage.getItem('toolID'))
+  const { days, orgId, toolID } = props;
+  console.log('IncidentStatus props:', props);
   const [incidentCount, setIncidentCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,10 +24,10 @@ function IncidentStatus(props) {
 
   useEffect(() => {
     const fetchAllIncidentMasterData = async () => {
-      const severityDataRequest = { maserDataType: 'incident_severity', orgId: orgId, toolId: toolId };
-      const statusDataRequest = { maserDataType: 'incident_status', orgId: orgId, toolId: toolId };
-      const priorityDataRequest = { maserDataType: 'incident_priority', orgId: orgId, toolId: toolId };
-      const typeDataRequest = { maserDataType: 'Incident_Type', orgId: orgId, toolId: toolId };
+      const severityDataRequest = { maserDataType: 'incident_severity', orgId: orgId, toolId: toolID };
+      const statusDataRequest = { maserDataType: 'incident_status', orgId: orgId, toolId: toolID };
+      const priorityDataRequest = { maserDataType: 'incident_priority', orgId: orgId, toolId: toolID };
+      const typeDataRequest = { maserDataType: 'Incident_Type', orgId: orgId, toolId: toolID };
   
       try {
         const [severityData, statusData, priorityData, typeData] = await Promise.all([
@@ -64,7 +65,7 @@ function IncidentStatus(props) {
     if (selectedStatus && selectedPriority) {
       fetchAlertCount();
     }
-  }, [selectedStatus, selectedPriority]);
+  }, [selectedStatus, selectedPriority, toolID, orgId]);
 
   const handleSelectStatusChange = (event) => {
     setSelectedStatus(event.target.value);
@@ -82,6 +83,7 @@ function IncidentStatus(props) {
         priorityID: selectedPriority,
         orgId: orgId,
         numberofDays: days,
+        toolID: toolID,
         orgAccountStructureLevel: [
           {
             levelName: "AccountId",

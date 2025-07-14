@@ -6,6 +6,7 @@ import jsPDF from 'jspdf'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
 import {fetchExportDataAddUrl} from '../../../../../api/Api'
 import {fetchOrganizationToolsDetailsUrl} from '../../../../../api/IncidentsApi'
+import formatDateWithCurrentUtcTime from '../../../../../../utils/formatDateWithCurrentUtcTime'
 
 function OpenIncidentSummary({fromDate, toDate, toolID: parentToolID}) {
   const handleError = useErrorBoundary()
@@ -118,7 +119,7 @@ function OpenIncidentSummary({fromDate, toDate, toolID: parentToolID}) {
         orgId,
         toolId: incidentData.toolID ? Number(incidentData.toolID) : 0,
         incidentFromDate: fromDateISO,
-        incidentToDate: toDateISO,
+        incidentToDate: formatDateWithCurrentUtcTime(toDateISO),
         orgAccountStructureLevel: [
           {
             levelName: 'AccountId',

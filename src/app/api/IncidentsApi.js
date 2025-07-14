@@ -18,6 +18,7 @@ const IncidentNotesUpdateUrl = process.env.REACT_APP_INCIDENT_NOTES_UPDATE_URL
 const OrganizationToolsDetailsUrl = process.env.REACT_APP_ORG_TOOLS_DETAILS_URL
 const IncidentReportTypesUrl = 'http://10.41.3.232:501/api/Reports/v1/IncidentReportTypes'
 const IncidentReportDataUrl = 'http://10.41.3.232:501/api/Reports/v1/IncidentReportData'
+const IncidentsHasChangesUrl ="http://10.41.3.232:501/api/IncidentManagement/v1/Incidents/HasChanges"
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -339,6 +340,24 @@ export const fetchIncidentReportTypesUrl = async () => {
 export const fetchIncidentReportDataUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${IncidentReportDataUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchIncidentsHasChangesUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${IncidentsHasChangesUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

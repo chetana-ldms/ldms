@@ -1,23 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
-import axios, {AxiosRequestConfig, AxiosResponse} from 'axios'
-
-import {ChartsWidget9} from '../../../_metronic/partials/widgets'
-import {
-  ListsWidget2,
-  ListsWidget3,
-  ListsWidget4,
-  ListsWidget6,
-  TablesWidget5,
-  TablesWidget10,
-  MixedWidget8,
-  CardsWidget7,
-  CardsWidget17,
-  CardsWidget20,
-  ListsWidget26,
-  EngageWidget10,
-  StatisticsWidget5,
-} from '../../../_metronic/partials/widgets'
 import AlertsTrends from './AlertsTrend'
 import IncidentStatus from './IncidentStatus'
 import {
@@ -37,8 +19,8 @@ import moment from 'moment-timezone'
 import {useErrorBoundary} from 'react-error-boundary'
 import {UsersListLoading} from '../../modules/apps/qradar/qradar-pages/components/loading/UsersListLoading'
 import TasksPopUp from '../../modules/auth/components/TasksPopUp'
-import { fetchMasterData } from '../../api/Api'
 import useFeatureActions from '../../modules/apps/qradar/qradar-pages/configuration/useFeatureActions'
+import {fetchOrganizationToolsSecurityUrl} from '../../api/securityApi'
 
 const DashboardWrapper = () => {
   const handleError = useErrorBoundary()
@@ -48,22 +30,28 @@ const DashboardWrapper = () => {
   const toolId = Number(sessionStorage.getItem('toolID'))
   const openTaskCount = Number(sessionStorage.getItem('openTaskCount'))
   const [unattendedIcount, setUnattendedIncidentcount] = useState({})
-  const [unattendedAcount, setUnattendedAlertcount] = useState({})
-  const [falsePAcount, setFalsePAcount] = useState({}) //GetFalsePositiveAlertsCount
-  const [alertsResolvedMeanTime, setAlertsResolvedMeanTime] = useState({}) //GetFalsePositiveAlertsCount
+  const [unattendedAcount, setUnattendedAlertcount] = useState({
+    message: 'Unhandled Alerts',
+    unattendedAlertsCount: 0,
+  })
+  const [falsePAcount, setFalsePAcount] = useState({
+    message: 'False Positive Alerts',
+    alertsCount: 0,
+  })
+  console.log('falsePAcount', falsePAcount)
+  const [alertsResolvedMeanTime, setAlertsResolvedMeanTime] = useState('')
   const [organizations, setOrganizations] = useState([])
   const [alertstatus, setAlertstatus] = useState([])
   const [UserActions, setUseractions] = useState([])
-  console.log(UserActions, 'UserActions')
   const [error, setError] = useState(null)
   const [recentIncidents, setrecentIncidents] = useState([])
-  console.log(recentIncidents, 'recentIncidents')
   const [isLoaded, setIsLoaded] = useState(false)
   const [users, setUsers] = useState([])
-  console.log(users, 'users')
   const [selectedFilter, setSelectedFilter] = useState(1)
   const [selectedDays, setSelectedDays] = useState('')
-  console.log(selectedDays, "selectedDays")
+  const [tools, setTools] = useState([])
+  const [selectedToolId, setSelectedToolId] = useState(sessionStorage.getItem('toolID'))
+  console.log('selectedToolId', selectedToolId)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const orgIdFromSession = Number(sessionStorage.getItem('orgId'))
   const [selectedOrganization, setSelectedOrganization] = useState(orgIdFromSession || 1)
@@ -75,14 +63,14 @@ const DashboardWrapper = () => {
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
 
-  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+  const {featureActions} = useFeatureActions(orgId, selectedToolId, roleId, featureId)
 
   const isActionAuthorized = (actionName) => {
     return featureActions?.some(
       (action) => action.actionName === actionName && action.is_authorized === true
     )
-  } 
-  const navigate = useNavigate();
+  }
+  const navigate = useNavigate()
   const getCurrentTimeZoneDiff = (UTCDate) => {
     const inputTime = moment.tz(UTCDate, 'UTC')
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -111,22 +99,36 @@ const DashboardWrapper = () => {
     fetchData()
   }, [])
   useEffect(() => {
+    const reload = async () => {
+      try {
+        setLoading(true)
+        const data = await fetchOrganizationToolsSecurityUrl(selectedOrganization)
+        setTools(data)
+        setLoading(false)
+      } catch (error) {
+        console.log(error)
+        setLoading(false)
+      }
+    }
+    reload()
+  }, [selectedOrganization])
+  useEffect(() => {
     const fetchNumberOfDays = async () => {
       try {
         const data = {
           maserDataType: 'Dashboard_showdata_duration',
           orgId: selectedOrganization,
-          toolId:toolId,
+          toolId: selectedToolId || toolId,
         }
-      const masterDataResponse = await fetchMasterDataByOrganization(data)
-      const response = masterDataResponse
-      setSelectedDays(response?.masterData)
+        const masterDataResponse = await fetchMasterDataByOrganization(data)
+        const response = masterDataResponse
+        setSelectedDays(response?.masterData)
       } catch (error) {
         handleError(error)
       }
     }
     fetchNumberOfDays()
-  }, [selectedOrganization])
+  }, [selectedOrganization, selectedToolId])
 
   const fetchData = async () => {
     try {
@@ -134,7 +136,7 @@ const DashboardWrapper = () => {
       setLoading(true)
       const mostUsedTagsResponse = await fetchGetAlertsMostUsedTags({
         orgID: selectedOrganization,
-        toolID: toolId,
+        toolID: selectedToolId || toolId,
         userID: userID,
         numberofDays: selectedFilter,
         orgAccountStructureLevel: [
@@ -169,6 +171,21 @@ const DashboardWrapper = () => {
         userID: userID,
         orgID: selectedOrganization,
         numberofDays: selectedFilter,
+        toolID: selectedToolId || toolId,
+        orgAccountStructureLevel: [
+          {
+            levelName: 'AccountId',
+            levelValue: accountId || '',
+          },
+          {
+            levelName: 'SiteId',
+            levelValue: siteId || '',
+          },
+          {
+            levelName: 'GroupId',
+            levelValue: groupId || '',
+          },
+        ],
       })
       const myInternalIncidentsData = myInternalIncidentsResponse
       setrecentIncidents(myInternalIncidentsData)
@@ -176,7 +193,7 @@ const DashboardWrapper = () => {
       // GetUnAttendedIncidentsCount
       const unattendedIncidentsCountResponse = await fetchGetUnAttendedIncidentsCount({
         orgID: selectedOrganization,
-        toolId: toolId,
+        toolID: selectedToolId || toolId,
         userID: userID,
         numberofDays: selectedFilter,
         orgAccountStructureLevel: [
@@ -200,7 +217,7 @@ const DashboardWrapper = () => {
       // GetUnAttendedAletsCount
       const unattendedAlertsCountResponse = await fetchGetUnAttendedAletsCount({
         orgID: selectedOrganization,
-        toolId: toolId,
+        toolID: selectedToolId || toolId,
         userID: userID,
         numberofDays: selectedFilter,
         orgAccountStructureLevel: [
@@ -224,7 +241,7 @@ const DashboardWrapper = () => {
       // GetFalsePositiveAlertsCount
       const falsePositiveAlertsCountResponse = await fetchGetFalsePositiveAlertsCount({
         orgID: selectedOrganization,
-        toolId: toolId,
+        toolID: selectedToolId || toolId,
         userID: userID,
         numberofDays: selectedFilter,
         positiveAnalysisID: 1,
@@ -249,7 +266,7 @@ const DashboardWrapper = () => {
       // GetAlertsResolvedMeanTime
       const alertsResolvedMeanTimeResponse = await fetchGetAlertsResolvedMeanTime({
         orgID: selectedOrganization,
-        toolId: toolId,
+        toolID: selectedToolId || toolId,
         userID: userID,
         numberofDays: selectedFilter,
         orgAccountStructureLevel: [
@@ -269,16 +286,6 @@ const DashboardWrapper = () => {
       })
       const alertsResolvedMeanTimeData = alertsResolvedMeanTimeResponse
       setAlertsResolvedMeanTime(alertsResolvedMeanTimeData)
-
-      // MasterData
-      // const data = {
-      //   maserDataType: 'alert_status',
-      //   orgId: selectedOrganization,
-      //   toolId:toolId,
-      // }
-      // const masterDataResponse = await fetchMasterData(data)
-      // const masterData = masterDataResponse.masterData
-      // setAlertstatus(masterData)
     } catch (error) {
       handleError(error)
     } finally {
@@ -296,7 +303,7 @@ const DashboardWrapper = () => {
     return () => {
       clearInterval(interval)
     }
-  }, [selectedFilter, selectedOrganization])
+  }, [selectedFilter, selectedOrganization, selectedToolId])
 
   const handleRefreshData = (e) => {
     e.preventDefault()
@@ -314,19 +321,19 @@ const DashboardWrapper = () => {
   }, [])
   const handleUnhandaledIncident = () => {
     if (unattendedIcount.unattendedIncidentCount > 0 && isActionAuthorized('AlertAccess')) {
-      navigate('/qradar/incidents', { state: { status: "New", days: selectedFilter } });
+      navigate('/qradar/incidents', {state: {status: 'New', days: selectedFilter}})
     }
-  };  
+  }
   const handleUnhandaledAlert = () => {
     if (unattendedAcount.unattendedAlertsCount > 0 && isActionAuthorized('IncidentAccess')) {
-      navigate('/qradar/alerts', { state: { status: "New", days: selectedFilter } });
+      navigate('/qradar/alerts', {state: {status: 'New', days: selectedFilter}})
     }
-  };  
+  }
   const handleFalsePositiveAlerts = () => {
     if (falsePAcount.alertsCount > 0 && isActionAuthorized('AlertAccess')) {
-      navigate('/qradar/alerts', { state: { days: selectedFilter } });
+      navigate('/qradar/alerts', {state: {days: selectedFilter}})
     }
-  };  
+  }
   return (
     <div className='dashboard-wrapper'>
       {loading ? (
@@ -336,12 +343,12 @@ const DashboardWrapper = () => {
           <div className='header-filter'>
             <div className='card pad-10'>
               <div className='row'>
-                <div className='col-lg-4'>
+                <div className='col-md-3'>
                   <div className='row'>
-                    <label className='form-label fw-normal col-lg-5 fs-12 lh-40 fs-14'>
+                    <label className='form-label fw-normal col-md-6 fs-12 lh-40 fs-14'>
                       <span>Show info for last </span>
                     </label>
-                    <div className='col-md-7'>
+                    <div className='col-md-6'>
                       <select
                         className='form-select form-select-solid bg-blue-light'
                         data-kt-select2='true'
@@ -350,21 +357,22 @@ const DashboardWrapper = () => {
                         value={selectedFilter}
                         onChange={(e) => setSelectedFilter(Number(e.target.value))}
                       >
-                        {selectedDays?.map((day, index) => (
-                          <option key={index} value={day.dataValue}>
-                            {day.dataName}
-                          </option>
-                        ))}
+                        {Array.isArray(selectedDays) &&
+                          selectedDays.map((day, index) => (
+                            <option key={index} value={day.dataValue}>
+                              {day.dataName}
+                            </option>
+                          ))}
                       </select>
                     </div>
                   </div>
                 </div>
-                <div className='col-lg-4'>
+                <div className='col-md-3 m-0 p-0'>
                   <div className='row'>
-                    <label className='form-label fw-normal fs-12 col-lg-4 lh-40 fs-14'>
+                    <label className='form-label fw-normal fs-12 col-md-5 lh-40 fs-14'>
                       <span>Organization:</span>
                     </label>
-                    <div className='col-lg-7'>
+                    <div className='col-md-7 m-0 p-0'>
                       <select
                         className='form-select form-select-solid bg-blue-light'
                         data-kt-select2='true'
@@ -394,7 +402,29 @@ const DashboardWrapper = () => {
                     </div>
                   </div>
                 </div>
-                <div className='col-lg-4 fs-11 lh-40 fc-gray text-right ds-reload'>
+                <div className='col-md-3'>
+                  <div className='row ms-3'>
+                    <label className='form-label fw-normal fs-12 col-md-4 lh-40 fs-14'>
+                      <span>Tool:</span>
+                    </label>
+                    <div className='col-md-8'>
+                      <select
+                        className='form-select form-select-solid bg-blue-light'
+                        value={selectedToolId || ''}
+                        onChange={(e) => setSelectedToolId(e.target.value)}
+                        disabled={!tools.length}
+                      >
+                        <option value=''>Select Tools</option>
+                        {tools.map((tool) => (
+                          <option key={tool.toolId} value={tool.toolId}>
+                            {tool.toolName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className='col-md-3 fs-11 lh-40 fc-gray text-right ds-reload'>
                   Auto refresh every 5 minutes{' '}
                   <a href='' onClick={handleRefreshData}>
                     <i className={`fa fa-refresh link ${isRefreshing ? 'rotate' : ''}`} />
@@ -410,7 +440,10 @@ const DashboardWrapper = () => {
               <div className='card alert-boxes pad-10'>
                 <div className='row'>
                   <div className='col-xl-3'>
-                    <div className='card bg-default py-5 text-center bg-secondary link-txt' onClick={handleUnhandaledIncident}>
+                    <div
+                      className='card bg-default py-5 text-center bg-secondary link-txt'
+                      onClick={handleUnhandaledIncident}
+                    >
                       <h4 className='text-gray-800 text-hover-primary mb-1 fs-16'>
                         Unhandled Incidents
                       </h4>
@@ -423,28 +456,29 @@ const DashboardWrapper = () => {
                   </div>
 
                   <div className='col-xl-3'>
-                    <div className='card bg-default py-5 text-center bg-light-warning link-txt' onClick={handleUnhandaledAlert}>
+                    <div
+                      className='card bg-default py-5 text-center bg-light-warning link-txt'
+                      onClick={handleUnhandaledAlert}
+                    >
                       <h4 className='text-gray-800 text-hover-primary mb-1 fs-16'>
-                        Unhandled Alerts
+                        {unattendedAcount?.message || 'Unhandled Alerts'}
                       </h4>
                       <span className='fw-bold fs-40 mt-5 mb-5'>
-                        {unattendedAcount.unattendedAlertsCount
-                          ? unattendedAcount.unattendedAlertsCount
-                          : '0'}
+                        {unattendedAcount?.unattendedAlertsCount ?? '0'}
                       </span>
-                      {/* <span className="span-red">
-                        <i className="fa fa-arrow-down"></i> 100%
-                      </span> */}
                     </div>
                   </div>
 
                   <div className='col-xl-3'>
-                    <div className='card bg-default py-5 text-center bg-light-success link-txt' onClick={handleFalsePositiveAlerts}>
+                    <div
+                      className='card bg-default py-5 text-center bg-light-success link-txt'
+                      onClick={handleFalsePositiveAlerts}
+                    >
                       <h4 className='text-gray-800 text-hover-primary mb-1 fs-16'>
-                        False Positive Alerts
+                        {falsePAcount?.message || 'Unhandled Alerts'}
                       </h4>
                       <span className='fw-bold fs-40 mt-5 mb-5'>
-                        {falsePAcount.alertsCount ? falsePAcount.alertsCount : '0'}
+                        {falsePAcount?.alertsCount ?? '0'}
                       </span>
                     </div>
                   </div>
@@ -454,15 +488,17 @@ const DashboardWrapper = () => {
                       <h4 className='text-gray-800 text-hover-primary mb-1 fs-16'>
                         Mean Time to Resolve
                       </h4>
-                      <span className='fw-bold fs-18 mt-10 mb-10'>
-                        {alertsResolvedMeanTime?.alertsResolvedMeanTime === "0"
-                          ? '03:10:10'
-                          : alertsResolvedMeanTime?.alertsResolvedMeanTime}
+                      <span
+                        className={
+                          alertsResolvedMeanTime?.resolvedMeanTime !== '0'
+                            ? 'fw-bold fs-18 mt-10 mb-10 text-gray-800 text-hover-primary'
+                            : 'fw-bold fs-40 mt-5 mb-5 text-gray-800 text-hover-primary'
+                        }
+                      >
+                        {alertsResolvedMeanTime?.resolvedMeanTime === '0'
+                          ? '0'
+                          : alertsResolvedMeanTime?.resolvedMeanTime}
                       </span>
-
-                      {/* <span className="span-red">
-                        <i className="fa fa-arrow-down"></i> 100%
-                      </span> */}
                     </div>
                   </div>
                 </div>
@@ -470,7 +506,11 @@ const DashboardWrapper = () => {
             </div>
             <div className='col-lg-6'>
               <div className='card bg-default alert-chart'>
-                <AlertsTrends days={selectedFilter} orgId={selectedOrganization} />
+                <AlertsTrends
+                  days={selectedFilter}
+                  toolID={selectedToolId}
+                  orgId={selectedOrganization}
+                />
               </div>
             </div>
           </div>
@@ -480,7 +520,11 @@ const DashboardWrapper = () => {
           <div className='row incident-box mb-5 mt-5'>
             <div className='col-lg-6'>
               <div className='card bg-default'>
-                <IncidentStatus days={selectedFilter} orgId={selectedOrganization} />
+                <IncidentStatus
+                  days={selectedFilter}
+                  toolID={selectedToolId}
+                  orgId={selectedOrganization}
+                />
               </div>
             </div>
             <div className='col-lg-6'>
@@ -522,6 +566,7 @@ const DashboardWrapper = () => {
                     <table className='table align-middle gs-0 gy-5 ds-table mt-2'>
                       <thead>
                         <tr className='fw-bold text bg-light'>
+                          <th>Action</th>
                           <th>Severity</th>
                           <th>SLA</th>
                           <th>Score</th>
@@ -533,6 +578,9 @@ const DashboardWrapper = () => {
                           UserActions.map((item, index) => {
                             return (
                               <tr key={index}>
+                                <td>
+                                  {item?.actionType} : {item?.actionId}
+                                </td>
                                 <td>{item?.severity}</td>
                                 <td>
                                   <span className='fw-normal'>
@@ -568,6 +616,7 @@ const DashboardWrapper = () => {
                     <table className='table align-middle gs-0 gy-5 ds-table mt-2'>
                       <thead>
                         <tr className='fw-bold text bg-light'>
+                          <th>ID</th>
                           <th>Severity</th>
                           <th>SLA</th>
                           <th>Score</th>
@@ -579,6 +628,7 @@ const DashboardWrapper = () => {
                           recentIncidents.map((item, index) => {
                             return (
                               <tr key={index}>
+                                <td>{item?.incidentID}</td>
                                 <td>{item?.severityName}</td>
                                 <td>
                                   <span className='fw-normal'>
