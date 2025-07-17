@@ -2,7 +2,7 @@ import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import axios from 'axios'
 import {notify, notifyFail} from '../components/notification/Notification'
-import {fetchRolesAddUrl} from '../../../../../api/ConfigurationApi'
+import {fetchRolesAddUrl, fetchRolesUrl} from '../../../../../api/ConfigurationApi'
 import {ToastContainer} from 'react-toastify'
 import {fetchOrganizations} from '../../../../../api/Api'
 
@@ -10,9 +10,12 @@ const AddRoleData = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [organizations, setOrganizations] = useState([])
+  const [roles, setRoles] = useState([])
+  const [parentRoleId, setParentRoleId] = useState('')
   const [selectedOrganization, setSelectedOrganization] = useState(
     Number(sessionStorage.getItem('orgId')) || ''
   )
+  const createdUserId = Number(sessionStorage.getItem('userId'))
   const userName = useRef()
   const roleName = useRef()
   const handleSubmit = async (event) => {
@@ -28,12 +31,18 @@ const AddRoleData = () => {
       setLoading(false)
       return
     }
+     if (!parentRoleId) {
+      notifyFail('Select Parent Role')
+      setLoading(false)
+      return
+    }
     const createdUserId = Number(sessionStorage.getItem('userId'))
     const createdDate = new Date().toISOString()
     var data = {
       roleName: roleName.current.value,
       sysrole: 0,
-      orgId: selectedOrganization, // Use selected org
+      orgId: selectedOrganization,
+      parentRoleId: parentRoleId || null,
       globalAdminRole: 0,
       clientAdminRole: 0,
       createdDate,
@@ -70,6 +79,21 @@ const AddRoleData = () => {
     }
     getOrganizations()
   }, [])
+  const reload = async () => {
+    try {
+      setLoading(true)
+      const data = await fetchRolesUrl(selectedOrganization, createdUserId)
+      setRoles(data)
+      setLoading(false)
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    reload()
+  }, [selectedOrganization, createdUserId])
 
   return (
     <div className='config card'>
@@ -89,35 +113,6 @@ const AddRoleData = () => {
       </div>
       <div className='card-body pad-10'>
         <div className='row mb-6 table-filter'>
-          {/* <div className='col-lg-4 mb-4 mb-lg-0'>
-            <div className='fv-row mb-0'>
-              <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
-              Enter User Name
-              </label>
-              <input
-                type='text'
-                className='form-control form-control-lg form-control-solid'
-                id='userName'
-                ref={userName}
-                placeholder='Ex: username'
-              />
-            </div>
-          </div> */}
-          <div className='col-lg-4 mb-4 mb-lg-0'>
-            <div className='fv-row mb-0'>
-              <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
-                Enter Role
-              </label>
-              <input
-                type='text'
-                className='form-control form-control-lg form-control-solid'
-                id='role'
-                ref={roleName}
-                maxLength={200}
-                placeholder='Ex: Client Admin'
-              />
-            </div>
-          </div>
           <div className='col-lg-4 mb-4 mb-lg-0'>
             <div className='fv-row mb-0'>
               <label className='form-label fs-6 fw-bolder mb-3'>Select Organization</label>
@@ -139,6 +134,39 @@ const AddRoleData = () => {
                           {org.orgName}
                         </option>
                       ))}
+              </select>
+            </div>
+          </div>
+          <div className='col-lg-4 mb-4 mb-lg-0'>
+            <div className='fv-row mb-0'>
+              <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
+                Enter Role
+              </label>
+              <input
+                type='text'
+                className='form-control form-control-lg form-control-solid'
+                id='role'
+                ref={roleName}
+                maxLength={200}
+                placeholder='Ex: Client Admin'
+              />
+            </div>
+          </div>
+          <div className='col-lg-4 mb-4 mb-lg-0'>
+            <div className='fv-row mb-0'>
+              <label className='form-label fs-6 fw-bolder mb-3'>Parent Role</label>
+              <select
+                className='form-select form-select-lg form-select-solid'
+                value={parentRoleId}
+                onChange={(e) => setParentRoleId(Number(e.target.value))}
+              >
+                <option value=''>Select Parent Role</option>
+                {roles.length > 0 &&
+                  roles.map((role) => (
+                    <option key={role.roleID} value={role.roleID}>
+                      {role.roleName}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>

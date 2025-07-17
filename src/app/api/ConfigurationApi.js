@@ -49,8 +49,9 @@ const APIAuthDataDetailsUrl = process.env.REACT_APP_APIAUTHDATA_DETAILS_URL
 const APIAuthDataAddUrl = process.env.REACT_APP_APIAUTHDATA_ADD_URL
 const APIAuthDataDeleteUrl = process.env.REACT_APP_APIAUTHDATA_DELETE_URL
 const APIAuthDataUpdateUrl = process.env.REACT_APP_APIAUTHDATA_UPDATE_URL
-const ToolMasterDataUrl = process.env.REACT_APP_TOOL_MASTER_DATA_URL;
-const AllUsersUrl = process.env.REACT_APP_ALL_USERS_URL;
+const ToolMasterDataUrl = process.env.REACT_APP_TOOL_MASTER_DATA_URL
+const AllUsersUrl = process.env.REACT_APP_ALL_USERS_URL
+const IncidentClientsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentClients'
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {
@@ -90,7 +91,16 @@ export const fetchToolTypeActionDetails = async (id, toolNameRef) => {
   }
 }
 
-export const fetchUserDetails = async (id, userName, emailId, mapUserName, mapuserId) => {
+export const fetchUserDetails = async (
+  id,
+  userName,
+  emailId,
+  mapUserName,
+  mapuserId,
+  empId,
+  jobTitle,
+  mobileNumber
+) => {
   try {
     const response = await FetchWithToken(`${userDetailsUrl}?id=${id}`, {
       method: 'GET',
@@ -105,6 +115,9 @@ export const fetchUserDetails = async (id, userName, emailId, mapUserName, mapus
     emailId.current.value = userdata.emailId
     mapUserName.current.value = userdata.mapUserName
     mapuserId.current.value = userdata.mapUserId
+    empId.current.value = userdata.empId
+    jobTitle.current.value = userdata.jobTitle
+    mobileNumber.current.value = userdata.mobileNumber
     return userdata
   } catch (error) {
     console.log(error)
@@ -949,17 +962,20 @@ export const fetchToolMasterDataUrl = async (data) => {
 }
 export const fetchAllUsersUrl = async (orgId, ToolId, userID) => {
   try {
-    const response = await FetchWithToken(`${AllUsersUrl}?orgId=${orgId}&ToolId=${ToolId}&userid=${userID}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        orgId,
-        ToolId,
-        userID,
-      }),
-    })
+    const response = await FetchWithToken(
+      `${AllUsersUrl}?orgId=${orgId}&ToolId=${ToolId}&userid=${userID}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orgId,
+          ToolId,
+          userID,
+        }),
+      }
+    )
     const responseData = await response.json()
     const usersList = responseData?.usersList
     return usersList
@@ -967,3 +983,22 @@ export const fetchAllUsersUrl = async (orgId, ToolId, userID) => {
     console.log(error)
   }
 }
+export const fetchIncidentClientsUrl = async (orgId, ToolId, clientid) => {
+  try {
+    const response = await FetchWithToken(
+      `${IncidentClientsUrl}?orgId=${orgId}&ToolId=${ToolId}&clientid=${clientid}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    const responseData = await response.json();
+    const data = responseData?.data;
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+

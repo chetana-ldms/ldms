@@ -13,6 +13,12 @@ import {ToastContainer} from 'react-toastify'
 import MapUserPopup from './MapUserPopup'
 
 const UpdateUserData = () => {
+  const empId = useRef()
+  const jobTitle = useRef()
+  const mobileNumber = useRef()
+  const [isInternalStaff, setIsInternalStaff] = useState(false)
+  const [clientList, setClientList] = useState([])
+  const clientIdRef = useRef()
   const handleError = useErrorBoundary()
   const orgId = Number(sessionStorage.getItem('orgId'))
   const roleID = Number(sessionStorage.getItem('roleID'))
@@ -61,7 +67,16 @@ const UpdateUserData = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchUserDetails(id, userName, userEmail, mapUserName, mapuserId)
+        const data = await fetchUserDetails(
+          id,
+          userName,
+          userEmail,
+          mapUserName,
+          mapuserId,
+          empId,
+          jobTitle,
+          mobileNumber
+        )
         setToolTypeAction({
           ...toolTypeAction,
           roleID: data.roleID,
@@ -69,13 +84,14 @@ const UpdateUserData = () => {
           toolId: data.toolId,
         })
         setIsDefaultData(data.defaultUser || false)
+        setIsInternalStaff(data.isInternalStaff || false)
       } catch (error) {
         handleError(error)
       }
     }
 
     fetchData()
-  }, [id, userName, userEmail, mapUserName, mapuserId])
+  }, [id, userName, userEmail, mapUserName, mapuserId, empId, jobTitle, mobileNumber])
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -128,7 +144,12 @@ const UpdateUserData = () => {
       mapUserName: mapUserName.current.value,
       mapUserId: mapuserId.current.value,
       toolId: Number(toolType.current.value),
-      defaultUser:isDefaultData,
+      defaultUser: isDefaultData,
+      empId: empId.current.value || '',
+      isInternalStaff: isInternalStaff ? 1 : 0,
+      clientId: clientIdRef.current.value || 0,
+      jobTitle: jobTitle.current.value || '', 
+      mobileNumber: mobileNumber.current.value || '',
     }
     try {
       const responseData = await fetchUserUpdateUrl(data)
@@ -327,7 +348,7 @@ const UpdateUserData = () => {
               <div className='form-check mt-10 d-flex'>
                 <input
                   type='checkbox'
-                   className='form-check-input'
+                  className='form-check-input'
                   id='defaultDataCheckbox'
                   checked={isDefaultData}
                   onChange={(e) => setIsDefaultData(e.target.checked)}
@@ -393,6 +414,67 @@ const UpdateUserData = () => {
                   mapuserId.current.value = item.dataId
                 }}
               />
+            </div>
+          </div>
+          <div className='row mb-2 mt-2'>
+            <div className='col-lg-4 mb-2 mb-lg-0'>
+              <label className='form-label fs-6 fw-bolder mb-3'>Employee ID</label>
+              <input
+                type='text'
+                className='form-control form-control-lg form-control-solid'
+                ref={empId}
+                placeholder='Enter Employee ID'
+              />
+            </div>
+            <div className='col-lg-4 mb-2 mb-lg-0'>
+              <label className='form-label fs-6 fw-bolder mb-3'>Job Title</label>
+              <input
+                type='text'
+                className='form-control form-control-lg form-control-solid'
+                ref={jobTitle}
+                placeholder='Enter Job Title'
+              />
+            </div>
+            <div className='col-lg-4 mb-2 mb-lg-0'>
+              <label className='form-label fs-6 fw-bolder mb-3'>Mobile Number</label>
+              <input
+                type='number'
+                className='form-control form-control-lg form-control-solid'
+                ref={mobileNumber}
+                placeholder='Enter Mobile Number'
+              />
+            </div>
+          </div>
+
+          <div className='row mb-6'>
+            <div className='col-lg-4 mb-lg-0'>
+              <label className='form-label fs-6 fw-bolder mb-3'>Client</label>
+              <select className='form-select form-select-solid' ref={clientIdRef}>
+                <option value=''>Select Client</option>
+                {clientList.map((client, index) => (
+                  <option key={index} value={client.clientId}>
+                    {client.clientName}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className='col-lg-4 mb-4 mb-lg-0'>
+              <div className='form-check mt-10 d-flex'>
+                <input
+                  type='checkbox'
+                  id='isInternalStaffCheckbox'
+                  className='form-check-input'
+                  checked={isInternalStaff}
+                  onChange={(e) => setIsInternalStaff(e.target.checked)}
+                />
+
+                <label
+                  htmlFor='isInternalStaffCheckbox'
+                  className='form-check-label fs-6 fw-bolder'
+                >
+                  Is Internal Staff
+                </label>
+              </div>
             </div>
           </div>
         </div>

@@ -122,7 +122,7 @@ function IncidentStatus(props) {
 
   return (
     <div className="card-body">
-      <div className="row">
+      <div className="row p-1">
         <label className="form-label fw-bold fs-12 col-lg-5 lh-40">
           <span>Incident by Status & Priority :</span>
         </label>
@@ -136,7 +136,6 @@ function IncidentStatus(props) {
               value={selectedStatus}
               onChange={handleSelectStatusChange}
             >
-              <option value="">Select</option>
               {dropdownData?.statusDropDown.map((status) => (
                 <option
                   key={status.dataID}
@@ -171,7 +170,6 @@ function IncidentStatus(props) {
               value={selectedPriority}
               onChange={handleSelectPriorityChange}
             >
-              <option value="">Select</option>
               {dropdownData?.priorityDropDown.map((priority) => (
                 <option
                   key={priority.dataID}

@@ -43,6 +43,7 @@ const DashboardWrapper = () => {
   const [organizations, setOrganizations] = useState([])
   const [alertstatus, setAlertstatus] = useState([])
   const [UserActions, setUseractions] = useState([])
+  console.log('UserActions', UserActions)
   const [error, setError] = useState(null)
   const [recentIncidents, setrecentIncidents] = useState([])
   const [isLoaded, setIsLoaded] = useState(false)
@@ -320,12 +321,12 @@ const DashboardWrapper = () => {
     }
   }, [])
   const handleUnhandaledIncident = () => {
-    if (unattendedIcount.unattendedIncidentCount > 0 && isActionAuthorized('AlertAccess')) {
+    if (unattendedIcount?.unattendedIncidentCount > 0 && isActionAuthorized('IncidentAccess')) {
       navigate('/qradar/incidents', {state: {status: 'New', days: selectedFilter}})
     }
   }
   const handleUnhandaledAlert = () => {
-    if (unattendedAcount.unattendedAlertsCount > 0 && isActionAuthorized('IncidentAccess')) {
+    if (unattendedAcount.unattendedAlertsCount > 0 && isActionAuthorized('AlertAccess')) {
       navigate('/qradar/alerts', {state: {status: 'New', days: selectedFilter}})
     }
   }
@@ -517,7 +518,7 @@ const DashboardWrapper = () => {
           {/* end::Row */}
 
           {/* begin::Row */}
-          <div className='row incident-box mb-5 mt-5'>
+          <div className='row incident-box mb-1 mt-1'>
             <div className='col-lg-6'>
               <div className='card bg-default'>
                 <IncidentStatus
@@ -561,7 +562,10 @@ const DashboardWrapper = () => {
               <div className='card bg-default'>
                 <div className='card-body no-pad'>
                   <h6 className='uppercase text-center'>Actions assigned to me</h6>
-                  <div className='table-responsive alert-table1'>
+                  <div
+                    className='table-responsive alert-table1'
+                    style={{maxHeight: '150px', overflowY: 'auto'}}
+                  >
                     {/* begin::Table */}
                     <table className='table align-middle gs-0 gy-5 ds-table mt-2'>
                       <thead>
@@ -579,7 +583,7 @@ const DashboardWrapper = () => {
                             return (
                               <tr key={index}>
                                 <td>
-                                  {item?.actionType} : {item?.actionId}
+                                  {item?.actionType} : {item?.actionTypeRefid}
                                 </td>
                                 <td>{item?.severity}</td>
                                 <td>
@@ -611,7 +615,10 @@ const DashboardWrapper = () => {
               <div className='card bg-default'>
                 <div className='card-body no-pad'>
                   <h6 className='uppercase text-center'>My recent Incidents</h6>
-                  <div className='table-responsive alert-table1'>
+                  <div
+                    className='table-responsive alert-table1'
+                    style={{maxHeight: '150px', overflowY: 'auto'}}
+                  >
                     {/* begin::Table */}
                     <table className='table align-middle gs-0 gy-5 ds-table mt-2'>
                       <thead>

@@ -1,8 +1,8 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {fetchMasterData, fetchOrganizations, fetchRoles} from '../../../../../api/Api'
-import axios from 'axios'
 import {
+  fetchIncidentClientsUrl,
   fetchLDPToolsUrl,
   fetchRolesUrl,
   fetchToolMasterDataUrl,
@@ -13,8 +13,17 @@ import {useErrorBoundary} from 'react-error-boundary'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {ToastContainer} from 'react-toastify'
 import MapUserPopup from './MapUserPopup'
+import './Configuration.css'
 
 const AddUserData = () => {
+  const empId = useRef()
+  const jobTitle = useRef()
+  const mobileNumber = useRef()
+  const [isInternalStaff, setIsInternalStaff] = useState(false)
+  const [clientList, setClientList] = useState([])
+  console.log(clientList, 'clientList')
+  const clientIdRef = useRef()
+  const [selectedOrgId, setSelectedOrgId] = useState('')
   const handleError = useErrorBoundary()
   const orgId = Number(sessionStorage.getItem('orgId'))
   const roleID = Number(sessionStorage.getItem('roleID'))
@@ -38,6 +47,20 @@ const AddUserData = () => {
   const [showPopup, setShowPopup] = useState(false)
   const [isDefaultData, setIsDefaultData] = useState(false)
   const checkboxRef = useRef(null)
+  const fetchClients = async () => {
+    try {
+      if (!selectedOrgId) return
+      const toolIdToSend = selectedTool || 0
+
+      const response = await fetchIncidentClientsUrl(selectedOrgId, toolIdToSend, 0)
+      setClientList(response)
+    } catch (error) {
+      handleError(error)
+    }
+  }
+  useEffect(() => {
+    fetchClients()
+  }, [selectedOrgId, selectedTool])
 
   const reloadTools = async () => {
     try {
@@ -47,7 +70,6 @@ const AddUserData = () => {
       console.error('Failed to fetch tools:', error)
     }
   }
-
   useEffect(() => {
     reloadTools()
   }, [])
@@ -87,7 +109,6 @@ const AddUserData = () => {
   const handleSubmit = async (event) => {
     event.preventDefault()
     setLoading(true)
-
     if (!userName.current.value) {
       notifyFail('Enter username')
       setLoading(false)
@@ -100,7 +121,6 @@ const AddUserData = () => {
     }
     const emailValue = userEmail.current.value
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
     if (!emailRegex.test(emailValue)) {
       notifyFail('Enter a valid Email')
       setLoading(false)
@@ -111,7 +131,6 @@ const AddUserData = () => {
       setLoading(false)
       return
     }
-
     if (!roleType.current.value) {
       notifyFail('Select Role Type')
       setLoading(false)
@@ -119,7 +138,6 @@ const AddUserData = () => {
     }
     const createdUserId = Number(sessionStorage.getItem('userId'))
     const createdDate = new Date().toISOString()
-    // const orgId = sessionStorage.getItem('orgId')
     var data = {
       name: userName.current.value,
       emailId: userEmail.current.value,
@@ -131,7 +149,12 @@ const AddUserData = () => {
       sysUser: 0,
       createdUserId,
       createdDate,
-      defaultUser:isDefaultData,
+      defaultUser: isDefaultData,
+      empId: empId.current?.value || '',
+      jobTitle: jobTitle.current?.value || '',
+      mobileNumber: mobileNumber.current?.value || '',
+      clientId: Number(clientIdRef.current?.value || 0),
+      isInternalStaff: isInternalStaff ? 1 : 0,
     }
     try {
       const responseData = await fetchUserAddUrl(data)
@@ -160,7 +183,6 @@ const AddUserData = () => {
         handleError(error)
       }
     }
-
     fetchData()
   }, [])
   const handleMapUserClick = () => {
@@ -175,12 +197,11 @@ const AddUserData = () => {
       checkboxRef.current.style.setProperty('width', '70px', 'important')
     }
   }, [])
-
   return (
     <div className='config card'>
       <ToastContainer />
       {loading && <UsersListLoading />}
-      <div className='card-header bg-heading mb-5'>
+      <div className='card-header bg-heading mb-2'>
         <h3 className='card-title'>
           <span className='card-label white'>Add New User</span>
         </h3>
@@ -195,8 +216,8 @@ const AddUserData = () => {
       </div>
       <form className='table-filter' action='' method='post'>
         <div className='card-body pad-10'>
-          <div className='row mb-6'>
-            <div className='col-lg-4 mb-4 mb-lg-0'>
+          <div className='row mb-2'>
+            <div className='col-lg-4 mb-2 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
                   User Name
@@ -211,7 +232,7 @@ const AddUserData = () => {
                 />
               </div>
             </div>
-            <div className='col-lg-4 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-2 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
                   User Email
@@ -227,8 +248,7 @@ const AddUserData = () => {
                 />
               </div>
             </div>
-
-            <div className='col-lg-4 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-2 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='orgID' className='form-label fs-6 fw-bolder mb-3'>
                   Organization
@@ -239,7 +259,8 @@ const AddUserData = () => {
                   data-placeholder='Select option'
                   data-allow-clear='true'
                   id='orgID'
-                  ref={orgID}
+                  value={selectedOrgId}
+                  onChange={(e) => setSelectedOrgId(e.target.value)}
                 >
                   <option value=''>Select</option>
                   {roleID === 1 &&
@@ -249,7 +270,6 @@ const AddUserData = () => {
                         {item.orgName}
                       </option>
                     ))}
-
                   {roleID !== 1 &&
                     organizationList?.length > 0 &&
                     organizationList
@@ -263,8 +283,8 @@ const AddUserData = () => {
               </div>
             </div>
           </div>
-          <div className='row mb-6'>
-            <div className='col-lg-4 mb-4 mb-lg-0'>
+          <div className='row mb-2'>
+            <div className='col-lg-4 mb-2 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='roleType' className='form-label fs-6 fw-bolder mb-3'>
                   Select Role Type
@@ -286,7 +306,7 @@ const AddUserData = () => {
                 </select>
               </div>
             </div>
-             <div className='col-lg-4 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-2 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='toolType' className='form-label fs-6 fw-bolder mb-3'>
                   Select Tool
@@ -301,7 +321,7 @@ const AddUserData = () => {
                 </select>
               </div>
             </div>
-            <div className='col-lg-4 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-2 mb-lg-0'>
               <div className='form-check mt-10 d-flex'>
                 <input
                   type='checkbox'
@@ -317,9 +337,8 @@ const AddUserData = () => {
               </div>
             </div>
           </div>
-          <div className='row mb-6'>
-           
-            <div className='col-lg-4 mb-4 mb-lg-0'>
+          <div className='row mb-2'>
+            <div className='col-lg-4 mb-2 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
                   Map User Name
@@ -334,7 +353,7 @@ const AddUserData = () => {
                 />
               </div>
             </div>
-            <div className='col-lg-4 mb-4 mb-lg-0'>
+            <div className='col-lg-4 mb-2 mb-lg-0'>
               <div className='fv-row mb-0'>
                 <label htmlFor='userName' className='form-label fs-6 fw-bolder mb-3'>
                   Map UserID
@@ -349,7 +368,8 @@ const AddUserData = () => {
                 />
               </div>
             </div>
-            <div className='col-lg-4 mb-4 mb-lg-0'>
+
+            <div className='col-lg-4 mb-2 mb-lg-0'>
               <div className='fv-row mt-10'>
                 <button
                   type='button'
@@ -369,28 +389,75 @@ const AddUserData = () => {
                 }}
               />
             </div>
+            <div className='row mb-2 mt-2'>
+              <div className='col-lg-4 mb-2 mb-lg-0'>
+                <label className='form-label fs-6 fw-bolder mb-3'>Employee ID</label>
+                <input
+                  type='text'
+                  className='form-control form-control-lg form-control-solid'
+                  ref={empId}
+                  placeholder='Enter Employee ID'
+                />
+              </div>
+              <div className='col-lg-4 mb-2 mb-lg-0'>
+                <label className='form-label fs-6 fw-bolder mb-3'>Job Title</label>
+                <input
+                  type='text'
+                  className='form-control form-control-lg form-control-solid'
+                  ref={jobTitle}
+                  placeholder='Enter Job Title'
+                />
+              </div>
+              <div className='col-lg-4 mb-2 mb-lg-0'>
+                <label className='form-label fs-6 fw-bolder mb-3'>Mobile Number</label>
+                <input
+                  type='number'
+                  className='form-control form-control-lg form-control-solid'
+                  ref={mobileNumber}
+                  placeholder='Enter Mobile Number'
+                />
+              </div>
+            </div>
+
+            <div className='row mb-6'>
+              <div className='col-lg-4 mb-lg-0'>
+                <label className='form-label fs-6 fw-bolder mb-3'>Client</label>
+                <select className='form-select form-select-solid' ref={clientIdRef}>
+                  <option value=''>Select Client</option>
+                  {clientList?.map((client, index) => (
+                    <option key={index} value={client.clientId}>
+                      {client.clientName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className='col-lg-4 mb-2 mb-lg-0 d-flex align-items-center justify-content-start mt-7'>
+                <input
+                  type='checkbox'
+                  id='isInternalStaffCheckbox'
+                  className='me-2 small-checkbox'
+                  checked={isInternalStaff}
+                  onChange={(e) => setIsInternalStaff(e.target.checked)}
+                />
+
+                <label
+                  htmlFor='isInternalStaffCheckbox'
+                  className='form-label fs-6 fw-bolder'
+                  style={{width: '800px'}}
+                >
+                  Is Internal Staff
+                </label>
+              </div>
+            </div>
           </div>
         </div>
-
         <div className='card-footer text-right pad-10'>
-          <button
-            type='submit'
-            onClick={handleSubmit}
-            className='btn btn-new btn-small'
-            disabled={loading}
-          >
-            {!loading && 'Save Changes'}
-            {loading && (
-              <span className='indicator-progress' style={{display: 'block'}}>
-                Please wait...{' '}
-                <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
-              </span>
-            )}
+          <button type='submit' onClick={handleSubmit} className='btn btn-new btn-small'>
+            Save Changes
           </button>
         </div>
       </form>
     </div>
   )
 }
-
 export {AddUserData}

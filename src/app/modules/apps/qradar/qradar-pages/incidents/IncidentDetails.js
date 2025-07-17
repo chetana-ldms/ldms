@@ -10,6 +10,8 @@ import {
   fetchMasterData,
   fetchUpdateIncident,
   fetchUsersByOrgTool,
+  fetchUsersForIncidentCreatorRoleUrl,
+  fetchUsersForIncidentOwnerRoleUrl,
 } from '../../../../../api/IncidentsApi'
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import {useErrorBoundary} from 'react-error-boundary'
@@ -18,6 +20,9 @@ import IncidentAlertPopUp from './IncidentAlertPopUp'
 import useFeatureActions from '../configuration/useFeatureActions'
 import AddIncidentModal from './AddIncidentModal'
 import NotesModalComponent from './NotesModalComponent'
+import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
+import './Incident.css'
+import ReplyModal from './ReplyModal'
 
 const IncidentDetails = ({incident, onRefreshIncidents}) => {
   console.log('incident11111', incident)
@@ -36,6 +41,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   } = incident
   const id = incidentID
   console.log(id, 'id')
+  const [showReplyModal, setShowReplyModal] = useState(false)
   const [activeTab, setActiveTab] = useState('general')
   const userID = Number(sessionStorage.getItem('userId'))
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -61,11 +67,12 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const [incidentHistory, setIncidentHistory] = useState([])
   const [alertsList, setAlertsList] = useState({})
   const [ldp_security_user, setldp_security_user] = useState([])
+  const [incidentCreatorRole, setIncidentCreatorRole] = useState([])
   const [notes, setNotes] = useState([])
   const [modalVisible, setModalVisible] = useState(false)
   const [modalMode, setModalMode] = useState('add')
   const [selectedNote, setSelectedNote] = useState(null)
-
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const [incidentData, setIncidentData] = useState({
     incidentStatus: '',
     incidentStatusName: '',
@@ -82,6 +89,9 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     significantIncident: 0,
     subject: '',
     description: '',
+    orgId: '',
+    toolId: '',
+    incidentID: '',
     // SLA fields
     resolvedDatetime: null,
     closedDatetime: null,
@@ -103,14 +113,30 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     setShowModal(true)
   }
   const alertId = incidentData.alertId
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const response = await fetchUsersByOrgTool(orgId, toolId, userID)
+  //     setldp_security_user(response?.usersList != undefined ? response?.usersList : [])
+  //   }
+
+  //   fetchData()
+  // }, [toolId])
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetchUsersByOrgTool(orgId, toolId, userID)
+      const response = await fetchUsersForIncidentOwnerRoleUrl(orgId, toolId)
       setldp_security_user(response?.usersList != undefined ? response?.usersList : [])
     }
 
     fetchData()
-  }, [toolId])
+  }, [orgId, toolId])
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetchUsersForIncidentCreatorRoleUrl(orgId, toolId)
+      setIncidentCreatorRole(response?.usersList != undefined ? response?.usersList : [])
+    }
+
+    fetchData()
+  }, [orgId, toolId])
   useEffect(() => {
     const fetchAllIncidentMasterData = async () => {
       const severityDataRequest = {maserDataType: 'incident_severity', orgId: orgId, toolId: toolId}
@@ -161,6 +187,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
           significantIncident: 0,
           subject: '',
           description: '',
+          requestorUserName: '',
         })
         return // Exit the function early
       }
@@ -186,6 +213,9 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
         significantIncident: data?.significantIncident,
         subject: data?.subject,
         description: data?.description,
+        orgId: data?.orgId,
+        toolId: data?.toolId,
+        incidentID: data?.incidentID,
         // SLA fields
         resolvedDatetime: data?.resolvedDatetime,
         closedDatetime: data?.closedDatetime,
@@ -196,6 +226,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
         initialSentimentScore: data?.initialSentimentScore,
         resolutionDueDatetime: data?.resolutionDueDatetime,
         createdDate: data?.createdDate,
+        requestorUserName: data?.requestorUserName,
       })
     } catch (error) {
       handleError(error)
@@ -390,6 +421,17 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     setSelectedNote(note)
     setModalVisible(true)
   }
+  const handleReply = () => {
+    setShowReplyModal(true)
+  }
+
+  const handleSendReply = () => {
+    const resolvedId = id !== undefined && id !== null ? id : 0
+    fetchData(resolvedId)
+    setShowReplyModal(false)
+  }
+
+  const handleForward = () => {}
 
   return (
     <div className='col-md-4 border-1 border-gray-600 incident-details'>
@@ -401,18 +443,35 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
             </h4>
             <div>
               <div className='mt-2'>
-                <button
-                  type='button'
-                  onClick={handleAddClick}
-                  className='btn btn-primary btn-new btn-small'
-                >
-                  Add
-                </button>
+                <Dropdown isOpen={dropdownOpen} disabled={!id} toggle={() => setDropdownOpen(!dropdownOpen)}>
+                  <DropdownToggle className='no-pad'>
+                    <div className='btn btn-border btn-small no-horizontal-padding' >
+                      Action <i className='fa fa-angle-down' />
+                    </div>
+                  </DropdownToggle>
+                  <DropdownMenu className='w-auto'>
+                    <DropdownItem onClick={handleAddClick} disabled={!isActionAuthorized('Create')}>
+                      Add
+                    </DropdownItem>
+                    <DropdownItem onClick={handleReply} disabled={!isActionAuthorized('Reply')}>
+                      Reply
+                    </DropdownItem>
+                    <DropdownItem onClick={handleForward} disabled={!isActionAuthorized('Forward')}>
+                      Forward
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
               </div>
               <AddIncidentModal
                 show={showModal}
                 onHide={() => setShowModal(false)}
                 onRefreshIncidents={onRefreshIncidents}
+              />
+              <ReplyModal
+                show={showReplyModal}
+                onHide={() => setShowReplyModal(false)}
+                onSend={handleSendReply}
+                incidentData={incidentData || ''}
               />
             </div>
             {activeTab === 'general' && isActionAuthorized('Update') && (
@@ -420,7 +479,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 <button
                   type='submit'
                   onClick={(event) => handleSubmit(event, incidentData)}
-                  className='btn btn-primary btn-new btn-small'
+                  className='btn btn-primary btn-new btn-small no-horizontal-padding'
                   disabled={!id}
                 >
                   Save Changes
@@ -497,6 +556,45 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 id='kt_tab_pane_1'
                 role='tabpanel'
               >
+                <div className='row bd-highlight mb-3'>
+                  <div className='col-md-3 bd-highlight mt-2'>Requester</div>
+                  <div className='col-md-9 bd-highlight'>
+                    <div className='w-120px'>
+                      <select
+                        name='ownerName'
+                        className='form-select form-select-solid'
+                        data-kt-select2='true'
+                        data-placeholder='Select option'
+                        data-dropdown-parent='#kt_menu_637dc885a14bb'
+                        data-allow-clear='true'
+                        value={incidentData?.requestorUserName || ''}
+                        onChange={(event) => handleChange(event, 'requestorUserName')}
+                      >
+                        <option>Select</option>
+                        {incidentCreatorRole?.length > 0 &&
+                          incidentCreatorRole?.map((item, index) => {
+                            return (
+                              <option key={index} value={item?.name} data-id={item.userID}>
+                                {item?.name}
+                              </option>
+                            )
+                          })}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className='row bd-highlight mb-3'>
+                  <div className='col-md-3 bd-highlight mt-2'>Email</div>
+                  <div className='col-md-9 bd-highlight'>
+                    <input
+                      type='incidentEmail'
+                      className='form-control form-control-sm'
+                      placeholder='Enter Email'
+                      value={incidentData?.incidentEmail || ''}
+                      onChange={(e) => handleChange(e, 'incidentEmail')}
+                    />
+                  </div>
+                </div>
                 <div className='row bd-highlight mb-1'>
                   <div className='col-md-3 bd-highlight mt-2'>Subject</div>
                   <div className='col-md-9 bd-highlight'>
@@ -617,7 +715,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     </div>
                   </div>
                 </div>
-                {/* Owner */}
                 <div className='row bd-highlight mb-3'>
                   <div className='col-md-3 bd-highlight mt-2'>Owner</div>
                   <div className='col-md-9 bd-highlight'>
@@ -645,19 +742,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     </div>
                   </div>
                 </div>
-                <div className='row bd-highlight mb-3'>
-                  <div className='col-md-3 bd-highlight mt-2'>Email</div>
-                  <div className='col-md-9 bd-highlight'>
-                    <input
-                      type='incidentEmail'
-                      className='form-control form-control-sm'
-                      placeholder='Enter Email'
-                      value={incidentData?.incidentEmail || ''}
-                      onChange={(e) => handleChange(e, 'incidentEmail')}
-                    />
-                  </div>
-                </div>
-
                 <div className='row bd-highlight mb-1'>
                   <div className='col-md-3 bd-highlight mt-2'>Description</div>
                   <div className='col-md-9 bd-highlight'>
