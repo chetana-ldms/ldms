@@ -126,7 +126,7 @@ const AddUserData = () => {
       setLoading(false)
       return
     }
-    if (!orgID.current.value) {
+    if (!selectedOrgId) {
       notifyFail('Enter Organization')
       setLoading(false)
       return
@@ -142,7 +142,7 @@ const AddUserData = () => {
       name: userName.current.value,
       emailId: userEmail.current.value,
       roleID: Number(roleType.current.value),
-      orgId: Number(orgID.current.value),
+      orgId: Number(selectedOrgId),
       mapUserName: mapUserName.current.value,
       mapUserId: mapuserId.current.value,
       toolId: selectedTool ? Number(selectedTool) : 0,

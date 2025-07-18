@@ -7,10 +7,12 @@ import 'react-toastify/dist/ReactToastify.css'
 import axios from 'axios'
 import {useErrorBoundary} from 'react-error-boundary'
 import {fetchRolesDeleteUrl, fetchRolesUrl} from '../../../../../api/ConfigurationApi'
-import {fetchLDPToolsDelete} from '../../../../../api/Api'
+import {fetchExportDataAddUrl, fetchLDPToolsDelete} from '../../../../../api/Api'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
 import Pagination from '../../../../../../utils/Pagination'
 import useFeatureActions from './useFeatureActions'
+import jsPDF from 'jspdf'
+import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
 
 const RoleData = () => {
   const handleError = useErrorBoundary()
@@ -28,6 +30,7 @@ const RoleData = () => {
   const [activePage, setActivePage] = useState(0)
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [itemToDelete, setItemToDelete] = useState(null)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const navigate = useNavigate()
   const toolId = Number(sessionStorage.getItem('toolID'))
   const roleId = Number(sessionStorage.getItem('roleID'))
@@ -118,13 +121,64 @@ const RoleData = () => {
     setShowConfirmation(false)
     setItemToDelete(null)
   }
+  const exportToExcel = async () => {
+    if (!currentItems || currentItems.length === 0) return
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      [
+        Object.keys(currentItems[0]).join(','),
+        ...currentItems.map((row) => Object.values(row).join(',')),
+      ].join('\n')
+
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement('a')
+    link.setAttribute('href', encodedUri)
+    link.setAttribute('download', 'role.csv')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem('userId')),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: 'role',
+    }
+    try {
+      await fetchExportDataAddUrl(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  // Function to export data to PDF
+  const exportToPDF = async () => {
+    if (!currentItems || currentItems.length === 0) return
+    const doc = new jsPDF()
+    doc.autoTable({
+      head: [Object.keys(currentItems[0])],
+      body: currentItems.map((row) => Object.values(row)),
+    })
+    doc.save('role.pdf')
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem('userId')),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: 'role',
+    }
+    try {
+      await fetchExportDataAddUrl(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
   return (
     <div className='config card pad-10'>
       <ToastContainer />
       <div className='card-header no-pad'>
         <h3 className='card-title align-items-start flex-column'>
           <span className='card-label fw-bold fs-3 mb-1'>
-            Roles ({currentItems?currentItems.length:0} / {filteredList?filteredList.length:0})
+            Roles ({currentItems ? currentItems.length : 0} /{' '}
+            {filteredList ? filteredList.length : 0})
           </span>
         </h3>
         <div className='card-toolbar'>
@@ -138,8 +192,8 @@ const RoleData = () => {
           </div>
         </div>
       </div>
-      <div className='row mb-5 mt-2'>
-        <div className='col-lg-12 header-filter'>
+      <div className='row mt-2'>
+        <div className='col-lg-9 mb-2 mt-2 header-filter'>
           <input
             type='text'
             placeholder='Search...'
@@ -147,6 +201,23 @@ const RoleData = () => {
             value={filterValue}
             onChange={handleFilterChange}
           />
+        </div>
+        <div className='col-lg-3 header-filter mb-2'>
+          <div className=' d-flex justify-content-end align-items-center'>
+            <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
+              <DropdownToggle caret>
+                Export <i className='fa fa-file-export link mg-left-10' />
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem onClick={exportToExcel}>
+                  Export to CSV <i className='fa fa-file-excel link float-right' />
+                </DropdownItem>
+                <DropdownItem onClick={exportToPDF}>
+                  Export to PDF <i className='fa fa-file-pdf red float-right' />
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
         </div>
       </div>
       <div className='card-body no-pad'>

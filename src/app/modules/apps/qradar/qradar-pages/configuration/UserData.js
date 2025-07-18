@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { UsersListLoading } from '../components/loading/UsersListLoading'
-import { ToastContainer } from 'react-toastify'
-import { notify, notifyFail } from '../components/notification/Notification'
+import React, {useState, useEffect} from 'react'
+import {Link, useNavigate} from 'react-router-dom'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
+import {ToastContainer} from 'react-toastify'
+import {notify, notifyFail} from '../components/notification/Notification'
 import 'react-toastify/dist/ReactToastify.css'
-import { fetchOrganizations, fetchUserDelete } from '../../../../../api/Api'
-import { fetchAllUsersUrl } from '../../../../../api/ConfigurationApi'
-import { useErrorBoundary } from 'react-error-boundary'
+import {fetchExportDataAddUrl, fetchOrganizations, fetchUserDelete} from '../../../../../api/Api'
+import {fetchAllUsersUrl} from '../../../../../api/ConfigurationApi'
+import {useErrorBoundary} from 'react-error-boundary'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
 import Pagination from '../../../../../../utils/Pagination'
 import useFeatureActions from './useFeatureActions'
-import { fetchOrganizationToolsSecurityUrl } from '../../../../../api/securityApi'
+import {fetchOrganizationToolsSecurityUrl} from '../../../../../api/securityApi'
+import jsPDF from 'jspdf'
+import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
 
 const UserData = () => {
   const handleError = useErrorBoundary()
@@ -19,6 +21,7 @@ const UserData = () => {
   const clientAdminRole = Number(sessionStorage.getItem('clientAdminRole'))
   const orgIdFromSession = Number(sessionStorage.getItem('orgId'))
   const [selectedOrganization, setSelectedOrganization] = useState(orgIdFromSession)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [users, setUsers] = useState([])
   const [organizations, setOrganizations] = useState([])
@@ -37,7 +40,7 @@ const UserData = () => {
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
 
-  const { featureActions } = useFeatureActions(orgId, toolId, roleId, featureId)
+  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
 
   const isActionAuthorized = (actionName) => {
     return featureActions?.some(
@@ -45,7 +48,7 @@ const UserData = () => {
     )
   }
   const handleNavigateToUpdate = (id) => {
-    navigate(`/qradar/users-data/update/${id}`, { state: { save: true } })
+    navigate(`/qradar/users-data/update/${id}`, {state: {save: true}})
   }
 
   // Fetch organizations and tools for default org on mount
@@ -102,7 +105,7 @@ const UserData = () => {
 
       try {
         const response = await fetchUserDelete(data)
-        const { isSuccess, message } = response
+        const {isSuccess, message} = response
         if (isSuccess) {
           notify(message)
           // reload users
@@ -167,6 +170,56 @@ const UserData = () => {
     setCurrentPage(0)
     setActivePage(0)
   }
+  const exportToExcel = async () => {
+    if (!currentItems || currentItems.length === 0) return
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      [
+        Object.keys(currentItems[0]).join(','),
+        ...currentItems.map((row) => Object.values(row).join(',')),
+      ].join('\n')
+
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement('a')
+    link.setAttribute('href', encodedUri)
+    link.setAttribute('download', 'user.csv')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem('userId')),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: 'user',
+    }
+    try {
+      await fetchExportDataAddUrl(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  // Function to export data to PDF
+  const exportToPDF = async () => {
+    if (!currentItems || currentItems.length === 0) return
+    const doc = new jsPDF()
+    doc.autoTable({
+      head: [Object.keys(currentItems[0])],
+      body: currentItems.map((row) => Object.values(row)),
+    })
+    doc.save('user.pdf')
+    const data = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem('userId')),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: 'user',
+    }
+    try {
+      await fetchExportDataAddUrl(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return (
     <div className='config card pad-10'>
@@ -175,7 +228,8 @@ const UserData = () => {
       <div className='header-filter row'>
         <div className='col-lg-4'>
           <h3 className='lh-40'>
-            Users ({currentItems ? currentItems.length : 0} / {filteredList ? filteredList.length : 0})
+            Users ({currentItems ? currentItems.length : 0} /{' '}
+            {filteredList ? filteredList.length : 0})
           </h3>
         </div>
 
@@ -184,7 +238,7 @@ const UserData = () => {
           <label className='form-label fw-normal fc-gray fs-14 lh-40 float-left'>
             <span>Organization: </span>
           </label>
-          <span className='float-left' style={{ minWidth: 180 }}>
+          <span className='float-left' style={{minWidth: 180}}>
             <select
               className='form-select form-select-solid bg-blue-light mg-left-10'
               data-kt-select2='true'
@@ -216,7 +270,7 @@ const UserData = () => {
           <label className='form-label fw-normal fc-gray fs-14 lh-40 float-left ms-5'>
             <span>Tool: </span>
           </label>
-          <span className='float-left' style={{ minWidth: 180 }}>
+          <span className='float-left' style={{minWidth: 180}}>
             <select
               className='form-select form-select-solid bg-blue-light mg-left-10'
               value={selectedToolId || ''}
@@ -241,8 +295,8 @@ const UserData = () => {
           </Link>
         </div>
       </div>
-      <div className='row mb-5 mt-2'>
-        <div className='col-lg-12 header-filter'>
+      <div className='row mt-2'>
+        <div className='col-lg-9 mb-2 mt-2 header-filter'>
           <input
             type='text'
             placeholder='Search...'
@@ -251,15 +305,36 @@ const UserData = () => {
             onChange={handleFilterChange}
           />
         </div>
+        <div className='col-lg-3 header-filter mb-2'>
+          <div className=' d-flex justify-content-end align-items-center'>
+            <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
+              <DropdownToggle caret>
+                Export <i className='fa fa-file-export link mg-left-10' />
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem onClick={exportToExcel}>
+                  Export to CSV <i className='fa fa-file-excel link float-right' />
+                </DropdownItem>
+                <DropdownItem onClick={exportToPDF}>
+                  Export to PDF <i className='fa fa-file-pdf red float-right' />
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        </div>
       </div>
       <div className='card-body no-pad'>
-        <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
+        <table className='table alert-table fixed-table scroll-x'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
               <th className='min-w-50px'>User ID</th>
               <th className='min-w-50px'>User Name</th>
               <th className='min-w-50px'>User Email</th>
               <th className='min-w-50px'>User Role</th>
+              <th className='min-w-50px'>EmpId</th>
+              <th className='min-w-50px'>Job Title</th>
+              <th className='min-w-50px'>Mobile Number</th>
+              <th className='min-w-50px'>Internal Staff</th>
               <th className='min-w-50px'>Tool Name</th>
               <th className='min-w-50px'>Action</th>
             </tr>
@@ -270,12 +345,16 @@ const UserData = () => {
               currentItems?.map((item, index) => {
                 if (globalAdminRole === 1 || clientAdminRole === 1 || userID === item.userID) {
                   return (
-                    <tr key={index} className='fs-12'>
+                    <tr key={index} className='fs-12 table-row'>
                       <td>{item?.userID}</td>
                       <td>{item?.name}</td>
                       <td>{item?.emailId}</td>
                       <td>{item?.roleName}</td>
-                      <td>{item?.toolName}</td>
+                      <td>{item?.empId ? item?.empId : 'N/A'}</td>
+                      <td>{item?.jobTitle ? item?.jobTitle : 'N/A'}</td>
+                      <td>{item?.mobileNumber ? item?.mobileNumber : 'N/A'}</td>
+                      <td>{item?.isInternalStaff ? 'Yes' : 'No'}</td>
+                      <td>{item?.toolName ? item?.toolName : 'N/A'}</td>
                       <td>
                         {isActionAuthorized('View') ? (
                           <span className='me-8' title='View'>
@@ -307,11 +386,15 @@ const UserData = () => {
                         )}
 
                         {isActionAuthorized('Delete') ? (
-                          <span className='ms-8' onClick={() => handleDelete(item)} title='Delete'>
+                          <span
+                            className='ms-8 me-2'
+                            onClick={() => handleDelete(item)}
+                            title='Delete'
+                          >
                             <i className='fa fa-trash cursor red' />
                           </span>
                         ) : (
-                          <span className='ms-8' title='Delete'>
+                          <span className='ms-8 me-2' title='Delete'>
                             <i className='fa fa-trash disabled' />
                           </span>
                         )}
@@ -351,4 +434,4 @@ const UserData = () => {
   )
 }
 
-export { UserData }
+export {UserData}

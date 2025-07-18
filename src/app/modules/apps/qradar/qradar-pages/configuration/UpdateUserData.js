@@ -2,6 +2,7 @@ import React, {useState, useRef, useEffect} from 'react'
 import {Link, useLocation, useNavigate, useParams} from 'react-router-dom'
 import {fetchOrganizations, fetchRoles} from '../../../../../api/Api'
 import {
+  fetchIncidentClientsUrl,
   fetchLDPToolsUrl,
   fetchRolesUrl,
   fetchUserDetails,
@@ -53,6 +54,20 @@ const UpdateUserData = () => {
   const handleToolChange = (e) => {
     setSelectedTool(e.target.value)
   }
+  const fetchClients = async () => {
+    try {
+      if (!toolTypeAction.orgId) return
+      const toolIdToSend = toolTypeAction.toolId || 0
+
+      const response = await fetchIncidentClientsUrl(toolTypeAction.orgId, toolIdToSend, 0)
+      setClientList(response)
+    } catch (error) {
+      handleError(error)
+    }
+  }
+  useEffect(() => {
+    fetchClients()
+  }, [toolTypeAction.orgId, toolTypeAction.toolId])
   const reloadTools = async () => {
     try {
       const response = await fetchLDPToolsUrl()
@@ -82,6 +97,7 @@ const UpdateUserData = () => {
           roleID: data.roleID,
           orgId: data.orgId,
           toolId: data.toolId,
+          clientId: data.clientId,
         })
         setIsDefaultData(data.defaultUser || false)
         setIsInternalStaff(data.isInternalStaff || false)
@@ -148,7 +164,7 @@ const UpdateUserData = () => {
       empId: empId.current.value || '',
       isInternalStaff: isInternalStaff ? 1 : 0,
       clientId: clientIdRef.current.value || 0,
-      jobTitle: jobTitle.current.value || '', 
+      jobTitle: jobTitle.current.value || '',
       mobileNumber: mobileNumber.current.value || '',
     }
     try {
@@ -449,10 +465,19 @@ const UpdateUserData = () => {
           <div className='row mb-6'>
             <div className='col-lg-4 mb-lg-0'>
               <label className='form-label fs-6 fw-bolder mb-3'>Client</label>
-              <select className='form-select form-select-solid' ref={clientIdRef}>
+              <select
+                className='form-select form-select-solid'
+                ref={clientIdRef}
+                value={toolTypeAction.clientId}
+                onChange={(e) =>
+                  setToolTypeAction({
+                    clientId: e.target.options[e.target.selectedIndex].getAttribute('data-id'),
+                  })
+                }
+              >
                 <option value=''>Select Client</option>
                 {clientList.map((client, index) => (
-                  <option key={index} value={client.clientId}>
+                  <option value={client.clientId} key={index} data-id={client.clientId}>
                     {client.clientName}
                   </option>
                 ))}
