@@ -26,7 +26,9 @@ const UsersForIncidentOwnerRoleUrl =
   'http://10.41.3.232:501/api/LDPSecurity/v1/UsersForIncidentOwnerRole'
 const UsersForIncidentCreatorRoleUrl =
   'http://10.41.3.232:501/api/LDPSecurity/v1/UsersForIncidentCreatorRole'
-  const ReplyIncidentUrl="http://10.41.3.232:501/api/IncidentManagement/v1/ReplyIncident"
+const ReplyIncidentUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/ReplyIncident'
+const IncidentGroupsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentGroups'
+const IncidentProductsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentProducts'
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -462,6 +464,42 @@ export const fetchReplyIncidentUrl = async (data) => {
     })
     const responseData = await response.json()
     return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchIncidentGroupsUrl = async (orgId, ToolId, groupId) => {
+  try {
+    const response = await FetchWithToken(
+      `${IncidentGroupsUrl}?orgId=${orgId}&ToolId=${ToolId}&groupId=${groupId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    const responseData = await response.json()
+    const data = responseData?.data
+    return data
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchIncidentProductsUrl = async (orgId, ToolId, productid) => {
+  try {
+    const response = await FetchWithToken(
+      `${IncidentProductsUrl}?orgId=${orgId}&ToolId=${ToolId}&productid=${productid}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    const responseData = await response.json()
+    const data = responseData?.data
+    return data
   } catch (error) {
     console.log(error)
   }

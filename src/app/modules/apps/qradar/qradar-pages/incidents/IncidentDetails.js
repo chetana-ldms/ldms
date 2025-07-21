@@ -5,7 +5,9 @@ import {
   fetchAlertsByAlertIds,
   fetchGetIncidentHistory,
   fetchIncidentDetails,
+  fetchIncidentGroupsUrl,
   fetchIncidentNotesListUrl,
+  fetchIncidentProductsUrl,
   fetchIncidents,
   fetchMasterData,
   fetchUpdateIncident,
@@ -68,6 +70,11 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const [alertsList, setAlertsList] = useState({})
   const [ldp_security_user, setldp_security_user] = useState([])
   const [incidentCreatorRole, setIncidentCreatorRole] = useState([])
+  console.log(incidentCreatorRole, 'incidentCreatorRole')
+  const [incidentGroup, setIncidentGroup] = useState([])
+  console.log(incidentGroup, 'incidentGroup')
+  const [incidentProducts, setIncidentProducts] = useState([])
+  console.log(incidentProducts, 'incidentProducts')
   const [notes, setNotes] = useState([])
   const [modalVisible, setModalVisible] = useState(false)
   const [modalMode, setModalMode] = useState('add')
@@ -102,6 +109,10 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     initialSentimentScore: null,
     resolutionDueDatetime: null,
     createdDate: null,
+    frDueDatetime: '',
+    nrDueDatetime: '',
+    resolutionDueDatetime: '',
+    requestorUserName: '',
   })
   console.log(incidentData, 'incidentData')
   const [selectedAlertId, setSelectedAlertId] = useState(null)
@@ -135,6 +146,20 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
       setIncidentCreatorRole(response?.usersList != undefined ? response?.usersList : [])
     }
 
+    fetchData()
+  }, [orgId, toolId])
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetchIncidentGroupsUrl(orgId, toolId, 0)
+      setIncidentGroup(response != undefined ? response : [])
+    }
+    fetchData()
+  }, [orgId, toolId])
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetchIncidentProductsUrl(orgId, toolId, 0)
+      setIncidentProducts(response != undefined ? response : [])
+    }
     fetchData()
   }, [orgId, toolId])
   useEffect(() => {
@@ -227,6 +252,9 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
         resolutionDueDatetime: data?.resolutionDueDatetime,
         createdDate: data?.createdDate,
         requestorUserName: data?.requestorUserName,
+        frDueDatetime: data?.frDueDatetime,
+        nrDueDatetime: data?.nrDueDatetime,
+        resolutionDueDatetime: data?.resolutionDueDatetime,
       })
     } catch (error) {
       handleError(error)
@@ -290,7 +318,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     } else if (field === 'owner') {
       setIncidentData({
         ...incidentData,
-        owner: selectedId, // This is the userID from data-id attribute
+        owner: selectedId,
         ownerName: event.target.value,
       })
     } else if (field === 'incidentEmail') {
@@ -443,9 +471,13 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
             </h4>
             <div>
               <div className='mt-2'>
-                <Dropdown isOpen={dropdownOpen} disabled={!id} toggle={() => setDropdownOpen(!dropdownOpen)}>
+                <Dropdown
+                  isOpen={dropdownOpen}
+                  disabled={!id}
+                  toggle={() => setDropdownOpen(!dropdownOpen)}
+                >
                   <DropdownToggle className='no-pad'>
-                    <div className='btn btn-border btn-small no-horizontal-padding' >
+                    <div className='btn btn-border btn-small no-horizontal-padding'>
                       Action <i className='fa fa-angle-down' />
                     </div>
                   </DropdownToggle>
@@ -550,9 +582,9 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
               )}
             </ul>
 
-            <div className='tab-content scroll-y' id='myTabContent'>
+            <div className='tab-content scroll-y h-600px' id='myTabContent'>
               <div
-                className='tab-pane fade show active me-n5 pe-5 h-600px header-filter'
+                className='tab-pane fade show active me-n5 pe-5 header-filter'
                 id='kt_tab_pane_1'
                 role='tabpanel'
               >
@@ -584,7 +616,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   </div>
                 </div>
                 <div className='row bd-highlight mb-3'>
-                  <div className='col-md-3 bd-highlight mt-2'>Email</div>
+                  <div className='col-md-3 bd-highlight mt-2'>Contact</div>
                   <div className='col-md-9 bd-highlight'>
                     <input
                       type='incidentEmail'
@@ -694,7 +726,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
 
                 {/* Type */}
                 <div className='row bd-highlight mb-1'>
-                  <div className='col-md-3 bd-highlight mt-2'>Type</div>
+                  <div className='col-md-3 bd-highlight mt-2'>Tag</div>
                   <div className='col-md-9 bd-highlight'>
                     <div className='w-120px'>
                       <select
@@ -711,6 +743,33 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                             {type.dataValue}
                           </option>
                         ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className='row bd-highlight mb-3'>
+                  <div className='col-md-3 bd-highlight mt-2'>Group</div>
+                  <div className='col-md-9 bd-highlight'>
+                    <div className='w-120px'>
+                      <select
+                        name='ownerName'
+                        className='form-select form-select-solid'
+                        data-kt-select2='true'
+                        data-placeholder='Select option'
+                        data-dropdown-parent='#kt_menu_637dc885a14bb'
+                        data-allow-clear='true'
+                        value={incidentData?.ownerName || ''}
+                        onChange={(event) => handleChange(event, 'owner')}
+                      >
+                        <option>Select</option>
+                        {incidentGroup?.length > 0 &&
+                          incidentGroup?.map((item, index) => {
+                            return (
+                              <option key={index} value={item?.groupName} data-id={item.groupId}>
+                                {item?.groupName}
+                              </option>
+                            )
+                          })}
                       </select>
                     </div>
                   </div>
@@ -735,6 +794,33 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                             return (
                               <option key={index} value={item?.name} data-id={item.userID}>
                                 {item?.name}
+                              </option>
+                            )
+                          })}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                 <div className='row bd-highlight mb-3'>
+                  <div className='col-md-3 bd-highlight mt-2'>Product</div>
+                  <div className='col-md-9 bd-highlight'>
+                    <div className='w-120px'>
+                      <select
+                        name='ownerName'
+                        className='form-select form-select-solid'
+                        data-kt-select2='true'
+                        data-placeholder='Select option'
+                        data-dropdown-parent='#kt_menu_637dc885a14bb'
+                        data-allow-clear='true'
+                        value={incidentData?.ownerName || ''}
+                        onChange={(event) => handleChange(event, 'owner')}
+                      >
+                        <option>Select</option>
+                        {incidentProducts?.length > 0 &&
+                          incidentProducts?.map((item, index) => {
+                            return (
+                              <option key={index} value={item?.productName} data-id={item.productId}>
+                                {item?.productName}
                               </option>
                             )
                           })}
@@ -775,6 +861,30 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   <div className='bd-highlight mb-3'>
                     <div className='d-flex align-items-top gap-2'>
                       <span className='fw-bold m-width'>Incident Name </span> <b>:</b> {subject}
+                    </div>
+                  </div>
+                  <div className='bd-highlight mb-3'>
+                    <div className='d-flex align-items-top gap-2'>
+                      <span className='fw-bold m-width'>First Response Due </span> <b>:</b>{' '}
+                      {incidentData.frDueDatetime
+                        ? getCurrentTimeZone(incidentData.frDueDatetime)
+                        : 'N/A'}
+                    </div>
+                  </div>
+                  <div className='bd-highlight mb-3'>
+                    <div className='d-flex align-items-top gap-2'>
+                      <span className='fw-bold m-width'>Next Response Due </span> <b>:</b>{' '}
+                      {incidentData.nrDueDatetime
+                        ? getCurrentTimeZone(incidentData.nrDueDatetime)
+                        : 'N/A'}
+                    </div>
+                  </div>
+                  <div className='bd-highlight mb-3'>
+                    <div className='d-flex align-items-top gap-2'>
+                      <span className='fw-bold m-width'>Resolution Due </span> <b>:</b>{' '}
+                      {incidentData.resolutionDueDatetime
+                        ? getCurrentTimeZone(incidentData.resolutionDueDatetime)
+                        : 'N/A'}
                     </div>
                   </div>
                   <div className='bd-highlight mb-3'>
@@ -846,28 +956,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                                   </div>
                                 </div>
                               </div>
-                              {/* <div className='p-1 bd-highlight'>
-                                <a
-                                  href='#'
-                                  className='btn btn-sm btn-icon btn-light btn-secondary mx-1'
-                                >
-                                  <i className='fa-solid fa-trash'></i>
-                                </a>
-                                <a
-                                  href='#'
-                                  className='btn btn-sm btn-icon btn-light btn-secondary mx-1'
-                                >
-                                  <i className='fa-solid fa-arrow-up'></i>
-                                </a>
-                              </div> */}
                             </div>
-
-                            {/* <div className='d-flex justify-content-between align-text-left bd-highlight'>
-                              <div className='p-1 bd-highlight fw-bold fs-12'>Suspicious Rate</div>
-                              <div className='p-1 bd-highlight fw-bold fs-12'>
-                                <i className='fa-solid fa-circle-check text-success'></i> 1
-                              </div>
-                            </div> */}
                             <div className='d-flex justify-content-between align-text-left bd-highlight'>
                               <div className='p-1 bd-highlight fs-12'>Detected date</div>
                               <div className='p-1 fs-12'>
@@ -898,29 +987,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   />
                 )}
               </div>
-              <div className='tab-pane fade' id='kt_tab_pane_3' role='tabpanel'>
-                <table className='table align-middle gs-0 gy-4 dash-table'>
-                  <thead>
-                    <tr className='fw-bold text-muted bg-blue'>
-                      <th className='min-w-50px'>PlayBook Name</th>
-                      <th className='min-w-50px'>Description</th>
-                      <th className='min-w-50px'>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className='fs-12'>
-                      <td>Login Failure</td>
-                      <td>Failed Login</td>
-                      <td>
-                        <span className='badge badge-success'>Active</span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div className='tab-pane fade' id='kt_tab_pane_4' role='tabpanel'>
-                Observables data
-              </div>
               <div className='tab-pane fade timeline-section' id='kt_tab_pane_5' role='tabpanel'>
                 <div className='pt-6 h-600px scroll-y'>
                   <div className='timeline-label'>
@@ -934,7 +1000,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                             <div className='timeline-item mb-5' key={item.activityId}>
                               <div className='timeline-label fw-bold text-gray-800 fs-6'>
                                 <p>{formattedDateTime}</p>
-                                {/* <p className="time">{formattedDateTime}</p> */}
                                 <p className='text-muted'>{item.createedUser}</p>
                               </div>
 

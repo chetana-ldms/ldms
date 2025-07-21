@@ -476,7 +476,7 @@ const UpdateUserData = () => {
                 }
               >
                 <option value=''>Select Client</option>
-                {clientList.map((client, index) => (
+                {clientList?.map((client, index) => (
                   <option value={client.clientId} key={index} data-id={client.clientId}>
                     {client.clientName}
                   </option>
