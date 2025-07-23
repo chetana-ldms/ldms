@@ -33,7 +33,11 @@ const UpdateUserData = () => {
     toolTypeName: '',
     toolTypeID: '',
     toolId: '',
+    orgId: '',
+    roleID: '',
+    clientId: '',
   })
+
   const [tools, setTools] = useState([])
   const [selectedTool, setSelectedTool] = useState('')
   const [showPopup, setShowPopup] = useState(false)
@@ -56,16 +60,17 @@ const UpdateUserData = () => {
   }
   const fetchClients = async () => {
     try {
-      if (!toolTypeAction.orgId) return
+      if (!toolTypeAction?.orgId) return
       const toolIdToSend = toolTypeAction.toolId || 0
 
-      const response = await fetchIncidentClientsUrl(toolTypeAction.orgId, toolIdToSend, 0)
+      const response = await fetchIncidentClientsUrl(toolTypeAction?.orgId, toolIdToSend, 0)
       setClientList(response)
     } catch (error) {
       handleError(error)
     }
   }
   useEffect(() => {
+    console.log('useEffect triggered with:', toolTypeAction.orgId, toolTypeAction.toolId)
     fetchClients()
   }, [toolTypeAction.orgId, toolTypeAction.toolId])
   const reloadTools = async () => {
@@ -120,6 +125,14 @@ const UpdateUserData = () => {
 
     fetchData()
   }, [])
+  const handleSelectChange = (e, field) => {
+    const selectedId = e.target.options[e.target.selectedIndex].getAttribute('data-id')
+    setToolTypeAction((prev) => ({
+      ...prev,
+      [field]: selectedId,
+    }))
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault()
     setLoading(true)
@@ -266,17 +279,10 @@ const UpdateUserData = () => {
                 </label>
                 <select
                   className='form-select form-select-solid bg-blue-light'
-                  data-kt-select2='true'
-                  data-placeholder='Select option'
-                  data-allow-clear='true'
                   id='orgID'
                   ref={orgID}
                   value={toolTypeAction.orgId}
-                  onChange={(e) =>
-                    setToolTypeAction({
-                      toolTypeID: e.target.options[e.target.selectedIndex].getAttribute('data-id'),
-                    })
-                  }
+                  onChange={(e) => handleSelectChange(e, 'orgId')}
                   required
                 >
                   <option value=''>Select organization</option>
@@ -308,18 +314,10 @@ const UpdateUserData = () => {
                 </label>
                 <select
                   className='form-select form-select-solid'
-                  data-kt-select2='true'
-                  data-placeholder='Select option'
-                  data-allow-clear='true'
                   id='roleType'
                   ref={roleType}
                   value={toolTypeAction.roleID}
-                  onChange={(e) =>
-                    setToolTypeAction({
-                      // toolTypeName: e.target.value,
-                      toolTypeID: e.target.options[e.target.selectedIndex].getAttribute('data-id'),
-                    })
-                  }
+                  onChange={(e) => handleSelectChange(e, 'roleID')}
                   required
                 >
                   <option value=''>Select Role Type</option>
@@ -338,17 +336,10 @@ const UpdateUserData = () => {
                 </label>
                 <select
                   className='form-select form-select-solid'
-                  data-kt-select2='true'
-                  data-placeholder='Select option'
-                  data-allow-clear='true'
                   id='tools'
                   ref={toolType}
                   value={toolTypeAction.toolId}
-                  onChange={(e) =>
-                    setToolTypeAction({
-                      toolId: e.target.options[e.target.selectedIndex].getAttribute('data-id'),
-                    })
-                  }
+                  onChange={(e) => handleSelectChange(e, 'toolId')}
                   required
                 >
                   <option value=''>Select Tool Name</option>
@@ -469,11 +460,7 @@ const UpdateUserData = () => {
                 className='form-select form-select-solid'
                 ref={clientIdRef}
                 value={toolTypeAction.clientId}
-                onChange={(e) =>
-                  setToolTypeAction({
-                    clientId: e.target.options[e.target.selectedIndex].getAttribute('data-id'),
-                  })
-                }
+                onChange={(e) => handleSelectChange(e, 'clientId')}
               >
                 <option value=''>Select Client</option>
                 {clientList?.map((client, index) => (

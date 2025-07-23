@@ -1,15 +1,17 @@
 import React, {useState, useEffect, useRef} from 'react'
-import {toAbsoluteUrl} from '../../../../../../_metronic/helpers'
+import Select from 'react-select'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {
   fetchAlertsByAlertIds,
   fetchGetIncidentHistory,
+  fetchGroupUsersUrl,
   fetchIncidentDetails,
   fetchIncidentGroupsUrl,
   fetchIncidentNotesListUrl,
   fetchIncidentProductsUrl,
   fetchIncidents,
   fetchMasterData,
+  fetchSearchIncidentTagsUrl,
   fetchUpdateIncident,
   fetchUsersByOrgTool,
   fetchUsersForIncidentCreatorRoleUrl,
@@ -25,6 +27,7 @@ import NotesModalComponent from './NotesModalComponent'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
 import './Incident.css'
 import ReplyModal from './ReplyModal'
+import CreatableSelect from 'react-select/creatable'
 
 const IncidentDetails = ({incident, onRefreshIncidents}) => {
   console.log('incident11111', incident)
@@ -69,12 +72,11 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const [incidentHistory, setIncidentHistory] = useState([])
   const [alertsList, setAlertsList] = useState({})
   const [ldp_security_user, setldp_security_user] = useState([])
+  const [tagOptions, setTagOptions] = useState([])
+  const [selectedTags, setSelectedTags] = useState([])
   const [incidentCreatorRole, setIncidentCreatorRole] = useState([])
-  console.log(incidentCreatorRole, 'incidentCreatorRole')
   const [incidentGroup, setIncidentGroup] = useState([])
-  console.log(incidentGroup, 'incidentGroup')
   const [incidentProducts, setIncidentProducts] = useState([])
-  console.log(incidentProducts, 'incidentProducts')
   const [notes, setNotes] = useState([])
   const [modalVisible, setModalVisible] = useState(false)
   const [modalMode, setModalMode] = useState('add')
@@ -113,8 +115,14 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     nrDueDatetime: '',
     resolutionDueDatetime: '',
     requestorUserName: '',
+    requestorUserId: '',
+    groupName: '',
+    groupId: '',
+    productName: '',
+    productId: '',
+    incidentTags: [],
   })
-  console.log(incidentData, 'incidentData')
+  console.log(incidentData, 'incidentDataTest')
   const [selectedAlertId, setSelectedAlertId] = useState(null)
   const [selectedAlertPopUp, setSelectedAlertPopUp] = useState(false)
   const handleShowModal = () => setSelectedAlertPopUp(true)
@@ -124,22 +132,25 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     setShowModal(true)
   }
   const alertId = incidentData.alertId
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const response = await fetchUsersByOrgTool(orgId, toolId, userID)
-  //     setldp_security_user(response?.usersList != undefined ? response?.usersList : [])
-  //   }
-
-  //   fetchData()
-  // }, [toolId])
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetchUsersForIncidentOwnerRoleUrl(orgId, toolId)
-      setldp_security_user(response?.usersList != undefined ? response?.usersList : [])
+      const response = await fetchSearchIncidentTagsUrl(orgId, toolId, '')
+      const tags = response || []
+      const formatted = tags.map((tag) => ({value: tag, label: tag}))
+      setTagOptions(formatted)
+    }
+    fetchData()
+  }, [orgId, toolId])
+  useEffect(() => {
+    const fetchData = async () => {
+      const groupIdToSend = incidentData?.groupId ? incidentData.groupId : 0
+      const response = await fetchGroupUsersUrl(orgId, toolId, groupIdToSend)
+      setldp_security_user(response?.usersList !== undefined ? response.usersList : [])
     }
 
     fetchData()
-  }, [orgId, toolId])
+  }, [orgId, toolId, incidentData?.groupId])
+
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchUsersForIncidentCreatorRoleUrl(orgId, toolId)
@@ -213,6 +224,12 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
           subject: '',
           description: '',
           requestorUserName: '',
+          requestorUserId: '',
+          groupName: '',
+          groupId: '',
+          productName: '',
+          productId: '',
+          incidentTags: [],
         })
         return // Exit the function early
       }
@@ -252,9 +269,32 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
         resolutionDueDatetime: data?.resolutionDueDatetime,
         createdDate: data?.createdDate,
         requestorUserName: data?.requestorUserName,
+        requestorUserId: data?.requestorUserId,
         frDueDatetime: data?.frDueDatetime,
         nrDueDatetime: data?.nrDueDatetime,
         resolutionDueDatetime: data?.resolutionDueDatetime,
+        groupName: data?.groupName,
+        groupId: data?.groupId,
+        productName: data?.productName,
+        productId: data?.productId,
+        groupName: alertIncidentMapping?.groupName,
+        groupId: alertIncidentMapping?.groupId,
+        productName: alertIncidentMapping?.productName,
+        productId: alertIncidentMapping?.productId,
+        incidentTags: data?.incidentTags || [],
+      })
+      const tagsFromIncident = data?.incidentTags || []
+
+      const formattedTags = tagsFromIncident.map((tag) => ({
+        label: tag,
+        value: tag,
+      }))
+
+      setSelectedTags(formattedTags)
+      setTagOptions((prev) => {
+        const existing = new Set(prev.map((opt) => opt.value))
+        const newOptions = formattedTags.filter((opt) => !existing.has(opt.value))
+        return [...prev, ...newOptions]
       })
     } catch (error) {
       handleError(error)
@@ -321,6 +361,27 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
         owner: selectedId,
         ownerName: event.target.value,
       })
+    } else if (field === 'groupId') {
+      setIncidentData({
+        ...incidentData,
+        groupId: selectedId,
+        groupName: event.target.value,
+      })
+    } else if (field === 'productId') {
+      setIncidentData({
+        ...incidentData,
+        productId: selectedId,
+        productName: event.target.value,
+      })
+    } else if (field === 'requestorUserId') {
+      const selectedUser = incidentCreatorRole.find((user) => user.userID == selectedId)
+
+      setIncidentData((prev) => ({
+        ...prev,
+        requestorUserId: selectedId,
+        requestorUserName: event.target.value,
+        incidentEmail: selectedUser?.emailId || '',
+      }))
     } else if (field === 'incidentEmail') {
       setIncidentData((prevState) => ({
         ...prevState,
@@ -346,6 +407,31 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
 
   const handleSubmit = async (event, incidentData) => {
     event.preventDefault()
+    if (!incidentData.requestorUserId) {
+      notifyFail('select the Requestor')
+      return
+    }
+    if (!incidentData.incidentEmail) {
+      notifyFail('Enter the Email')
+      return
+    }
+    if (!incidentData.subject) {
+      notifyFail('Enter the Subject')
+      return
+    }
+    if (!incidentData.incidentStatus) {
+      notifyFail('select the Status')
+      return
+    }
+    if (!incidentData.priority) {
+      notifyFail('select the Priority')
+      return
+    }
+
+    if (!incidentData.description) {
+      notifyFail('Enter the Description')
+      return
+    }
     const data = {
       incidentId: Number(id),
       statusId: incidentData.incidentStatus,
@@ -359,6 +445,10 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
       modifiedDate: date,
       subject: incidentData.subject,
       description: incidentData.description,
+      requestorUserId: incidentData.requestorUserId,
+      groupId: incidentData.groupId,
+      productId: incidentData.productId,
+      tags: incidentData.incidentTags || [],
       orgId: orgId,
       toolId: toolId,
     }
@@ -460,6 +550,46 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   }
 
   const handleForward = () => {}
+  const requesterOptions = incidentCreatorRole?.map((item) => ({
+    value: item.name,
+    label: item.name,
+    userID: item.userID,
+  }))
+  const selectRef = useRef(null)
+  const handleRequesterReactSelectChange = (selected) => {
+    if (!selected) {
+      // Clear values in state when "×" is clicked
+      handleChange(
+        {
+          target: {
+            value: '',
+            selectedIndex: 0,
+            options: [{getAttribute: () => null}],
+          },
+        },
+        'requestorUserId'
+      )
+      return
+    }
+
+    const fakeEvent = {
+      target: {
+        value: selected.value,
+        selectedIndex: 0,
+        options: [{getAttribute: () => selected.userID}],
+      },
+    }
+
+    handleChange(fakeEvent, 'requestorUserId')
+  }
+ const handleTagChange = (selected) => {
+  setSelectedTags(selected || []);
+  setIncidentData(prev => ({
+    ...prev,
+    incidentTags: (selected || []).map(tag => tag.value)
+  }));
+};
+
 
   return (
     <div className='col-md-4 border-1 border-gray-600 incident-details'>
@@ -589,34 +719,29 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 role='tabpanel'
               >
                 <div className='row bd-highlight mb-3'>
-                  <div className='col-md-3 bd-highlight mt-2'>Requester</div>
+                  <div className='col-md-3 bd-highlight mt-2'>
+                    Requester<sup className='red'>*</sup>
+                  </div>
                   <div className='col-md-9 bd-highlight'>
-                    <div className='w-120px'>
-                      <select
-                        name='ownerName'
-                        className='form-select form-select-solid'
-                        data-kt-select2='true'
-                        data-placeholder='Select option'
-                        data-dropdown-parent='#kt_menu_637dc885a14bb'
-                        data-allow-clear='true'
-                        value={incidentData?.requestorUserName || ''}
-                        onChange={(event) => handleChange(event, 'requestorUserName')}
-                      >
-                        <option>Select</option>
-                        {incidentCreatorRole?.length > 0 &&
-                          incidentCreatorRole?.map((item, index) => {
-                            return (
-                              <option key={index} value={item?.name} data-id={item.userID}>
-                                {item?.name}
-                              </option>
-                            )
-                          })}
-                      </select>
+                    <div className='w-100'>
+                      <Select
+                        ref={selectRef}
+                        options={requesterOptions}
+                        placeholder='Select Requester'
+                        isClearable
+                        value={requesterOptions.find(
+                          (opt) => opt.value === incidentData?.requestorUserName
+                        )}
+                        onChange={handleRequesterReactSelectChange}
+                      />
                     </div>
                   </div>
                 </div>
+
                 <div className='row bd-highlight mb-3'>
-                  <div className='col-md-3 bd-highlight mt-2'>Contact</div>
+                  <div className='col-md-3 bd-highlight mt-2'>
+                    Contact<sup className='red'>*</sup>
+                  </div>
                   <div className='col-md-9 bd-highlight'>
                     <input
                       type='incidentEmail'
@@ -624,27 +749,32 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                       placeholder='Enter Email'
                       value={incidentData?.incidentEmail || ''}
                       onChange={(e) => handleChange(e, 'incidentEmail')}
+                      disabled={incidentData?.incidentEmail}
                     />
                   </div>
                 </div>
                 <div className='row bd-highlight mb-1'>
-                  <div className='col-md-3 bd-highlight mt-2'>Subject</div>
+                  <div className='col-md-3 bd-highlight mt-2'>
+                    Subject<sup className='red'>*</sup>
+                  </div>
                   <div className='col-md-9 bd-highlight'>
                     <div className='w-100'>
-                      <input
-                        type='text'
+                      <textarea
                         name='subject'
                         className='form-control form-control-sm'
-                        placeholder='Enter Subject'
-                        value={incidentData?.subject}
+                        placeholder='Enter subject'
+                        rows={2}
+                        value={incidentData.subject}
                         onChange={(event) => handleChange(event, 'subject')}
-                      />
+                      ></textarea>
                     </div>
                   </div>
                 </div>
 
                 <div className='row bd-highlight mb-1'>
-                  <div className='col-md-3 bd-highlight mt-2'>Status</div>
+                  <div className='col-md-3 bd-highlight mt-2'>
+                    Status<sup className='red'>*</sup>
+                  </div>
                   <div className='col-md-9 bd-highlight'>
                     <div className='w-120px'>
                       <select
@@ -671,7 +801,9 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 </div>
                 {/* Priority */}
                 <div className='row bd-highlight mb-1'>
-                  <div className='col-md-3 bd-highlight mt-2'>Priority</div>
+                  <div className='col-md-3 bd-highlight mt-2'>
+                    Priority<sup className='red'>*</sup>
+                  </div>
                   <div className='col-md-9 bd-highlight'>
                     <div className='w-120px'>
                       <select
@@ -723,10 +855,27 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     </div>
                   </div>
                 </div>
+                <div className='row bd-highlight mb-1'>
+                  <label className='col-md-3 bd-highlight mt-2'>Tags</label>
+                  <div className='col-md-9 bd-highlight'>
+                    <div className='w-120px'>
+                      <CreatableSelect
+                        isMulti
+                        value={selectedTags}
+                        onChange={handleTagChange}
+                        options={tagOptions}
+                        placeholder='Select or type tags...'
+                        classNamePrefix='react-select'
+                        isClearable
+                        components={{DropdownIndicator: () => null, IndicatorSeparator: () => null}}
+                      />
+                    </div>
+                  </div>
+                </div>
 
                 {/* Type */}
                 <div className='row bd-highlight mb-1'>
-                  <div className='col-md-3 bd-highlight mt-2'>Tag</div>
+                  <div className='col-md-3 bd-highlight mt-2'>Type</div>
                   <div className='col-md-9 bd-highlight'>
                     <div className='w-120px'>
                       <select
@@ -758,8 +907,8 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                         data-placeholder='Select option'
                         data-dropdown-parent='#kt_menu_637dc885a14bb'
                         data-allow-clear='true'
-                        value={incidentData?.ownerName || ''}
-                        onChange={(event) => handleChange(event, 'owner')}
+                        value={incidentData?.groupName || ''}
+                        onChange={(event) => handleChange(event, 'groupId')}
                       >
                         <option>Select</option>
                         {incidentGroup?.length > 0 &&
@@ -801,7 +950,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     </div>
                   </div>
                 </div>
-                 <div className='row bd-highlight mb-3'>
+                <div className='row bd-highlight mb-3'>
                   <div className='col-md-3 bd-highlight mt-2'>Product</div>
                   <div className='col-md-9 bd-highlight'>
                     <div className='w-120px'>
@@ -812,14 +961,17 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                         data-placeholder='Select option'
                         data-dropdown-parent='#kt_menu_637dc885a14bb'
                         data-allow-clear='true'
-                        value={incidentData?.ownerName || ''}
-                        onChange={(event) => handleChange(event, 'owner')}
+                        value={incidentData?.productName || ''}
+                        onChange={(event) => handleChange(event, 'productId')}
                       >
-                        <option>Select</option>
                         {incidentProducts?.length > 0 &&
                           incidentProducts?.map((item, index) => {
                             return (
-                              <option key={index} value={item?.productName} data-id={item.productId}>
+                              <option
+                                key={index}
+                                value={item?.productName}
+                                data-id={item.productId}
+                              >
                                 {item?.productName}
                               </option>
                             )
@@ -829,7 +981,9 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   </div>
                 </div>
                 <div className='row bd-highlight mb-1'>
-                  <div className='col-md-3 bd-highlight mt-2'>Description</div>
+                  <div className='col-md-3 bd-highlight mt-2'>
+                    Description<sup className='red'>*</sup>
+                  </div>
                   <div className='col-md-9 bd-highlight'>
                     <div className='w-100'>
                       <textarea
@@ -861,30 +1015,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   <div className='bd-highlight mb-3'>
                     <div className='d-flex align-items-top gap-2'>
                       <span className='fw-bold m-width'>Incident Name </span> <b>:</b> {subject}
-                    </div>
-                  </div>
-                  <div className='bd-highlight mb-3'>
-                    <div className='d-flex align-items-top gap-2'>
-                      <span className='fw-bold m-width'>First Response Due </span> <b>:</b>{' '}
-                      {incidentData.frDueDatetime
-                        ? getCurrentTimeZone(incidentData.frDueDatetime)
-                        : 'N/A'}
-                    </div>
-                  </div>
-                  <div className='bd-highlight mb-3'>
-                    <div className='d-flex align-items-top gap-2'>
-                      <span className='fw-bold m-width'>Next Response Due </span> <b>:</b>{' '}
-                      {incidentData.nrDueDatetime
-                        ? getCurrentTimeZone(incidentData.nrDueDatetime)
-                        : 'N/A'}
-                    </div>
-                  </div>
-                  <div className='bd-highlight mb-3'>
-                    <div className='d-flex align-items-top gap-2'>
-                      <span className='fw-bold m-width'>Resolution Due </span> <b>:</b>{' '}
-                      {incidentData.resolutionDueDatetime
-                        ? getCurrentTimeZone(incidentData.resolutionDueDatetime)
-                        : 'N/A'}
                     </div>
                   </div>
                   <div className='bd-highlight mb-3'>
@@ -1022,6 +1152,22 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 <div className='p-3'>
                   <table className='table table-bordered table-sm w-auto'>
                     <tbody>
+                      <tr>
+                        <th>First Response Due</th>
+                        <td>
+                          {incidentData?.frDueDatetime
+                            ? getCurrentTimeZone(incidentData?.frDueDatetime)
+                            : 'N/A'}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Next Response Due</th>
+                        <td>
+                          {incidentData.nrDueDatetime
+                            ? getCurrentTimeZone(incidentData.nrDueDatetime)
+                            : 'N/A'}
+                        </td>
+                      </tr>
                       <tr>
                         <th>Resolution Due</th>
                         <td>

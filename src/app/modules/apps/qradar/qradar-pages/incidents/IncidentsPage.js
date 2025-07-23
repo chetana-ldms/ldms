@@ -47,6 +47,7 @@ const IncidentsPage = () => {
   const [selectedAlert, setselectedAlert] = useState([])
   const [showChat, setShowChat] = useState(false)
   const [incident, setIncident] = useState([])
+  console.log(incident, 'incident')
   const [totalIncidentsCount, setTotalIncidentsCount] = useState(null)
   const [statusDropDown, setStatusDropDown] = useState([])
   const [incidentSortOptions, setIncidentSortOptions] = useState([])
@@ -703,11 +704,15 @@ const IncidentsPage = () => {
                               <div className='row align-items-center'>
                                 <div className='col-md-10'>
                                   <a href='#' className='text-dark'>
-                                    <span className='incident-name' title={item.subject}>
-                                      {item.subject}
+                                    <span
+                                      className='incident-name'
+                                      title={`#${item.incidentID} - ${item.subject}`}
+                                    >
+                                      <strong>#{item.incidentID}</strong> {item.subject}
                                     </span>
                                   </a>
                                 </div>
+
                                 <div className='col-md-2 d-flex justify-content-center'>
                                   <div className='form-check form-check-sm form-check-custom form-check-solid'>
                                     <input
@@ -715,6 +720,7 @@ const IncidentsPage = () => {
                                       type='checkbox'
                                       value={item.incidentID}
                                       name={item.incidentID}
+                                      checked={selectedIncidentIDs.includes(item.incidentID)}
                                       onChange={(e) => handleselectedAlert(item, e)}
                                       autoComplete='off'
                                       onClick={(e) => e.stopPropagation()}
@@ -722,19 +728,36 @@ const IncidentsPage = () => {
                                   </div>
                                 </div>
                               </div>
-
-                              {/* Status & Date */}
                               <div className='row'>
                                 <div className='d-flex justify-content-between'>
-                                  <div className='pt-2 bd-highlight'>
-                                    <div className='fw-bold'>{item.incidentStatusName}</div>
-                                  </div>
-                                  <div className='pt-3 bd-highlight'>
-                                    <div className='badge gray fw-normal'>
-                                      {item.modifiedDate
-                                        ? getCurrentTimeZone(item.modifiedDate)
-                                        : getCurrentTimeZone(item.createdDate)}
+                                  {item.requestorUserName && (
+                                    <div className='pt-2 bd-highlight'>
+                                      <div
+                                        className='badge bg-light text-dark me-2'
+                                        title='Requestor'
+                                      >
+                                        <i className='bi bi-person-circle me-1 text-primary'></i>
+                                        {item.requestorUserName}
+                                      </div>
                                     </div>
+                                  )}
+                                  <div className='pt-2 bd-highlight'>
+                                    {item.ownerName && (
+                                      <div className='badge bg-light text-dark me-2' title='Owner'>
+                                        <i className='bi bi-person-check me-1 text-success'></i>
+                                        {item.ownerName}
+                                      </div>
+                                    )}
+
+                                    {!item.ownerName && item.createdUser && (
+                                      <div
+                                        className='badge bg-light text-dark me-2'
+                                        title='Created By'
+                                      >
+                                        <i className='bi bi-person-plus me-1 text-muted'></i>
+                                        {item.createdUser}
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -743,16 +766,32 @@ const IncidentsPage = () => {
 
                               {/* Owner & Priority */}
                               <div className='d-flex justify-content-between bd-highlight mt-2'>
-                                <div className='p-1 bd-highlight fs-12'>
-                                  {item.ownerName || item.createdUser}
-                                </div>
-                                <div className='p-1 bd-highlight'>
-                                  <div className='badge badge-light-primary mx-1'>
-                                    {item.priorityName}
+                                {item.incidentStatusName && (
+                                  <div
+                                    className='badge badge-light-primary fs-12'
+                                    title='Status'
+                                  >
+                                    <i className='bi bi-patch-check me-1 text-primary'></i>
+                                    {item.incidentStatusName}
                                   </div>
-                                  <div className='badge badge-light-danger'>
-                                    {item.severityName}
-                                  </div>
+                                )}
+
+                                <div className='bd-highlight d-flex'>
+                                  {item.priorityName && (
+                                    <div
+                                      className='badge badge-light-primary mx-1'
+                                      title='Priority'
+                                    >
+                                      <i className='bi bi-arrow-up-circle me-1'></i>
+                                      {item.priorityName}
+                                    </div>
+                                  )}
+                                  {item.severityName && (
+                                    <div className='badge badge-light-danger' title='Severity'>
+                                      <i className='bi bi-exclamation-triangle me-1'></i>
+                                      {item.severityName}
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             </div>

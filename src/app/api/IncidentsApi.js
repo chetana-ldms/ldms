@@ -22,13 +22,13 @@ const IncidentsHasChangesUrl =
   'http://10.41.3.232:501/api/IncidentManagement/v1/Incidents/HasChanges'
 const DeleteIncidentsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/DeleteIncidents'
 const MergeIncidentsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/MergeIncidents'
-const UsersForIncidentOwnerRoleUrl =
-  'http://10.41.3.232:501/api/LDPSecurity/v1/UsersForIncidentOwnerRole'
+const GroupUsersUrl = 'http://10.41.3.232:501/api/LDPSecurity/v1/GroupUsers'
 const UsersForIncidentCreatorRoleUrl =
   'http://10.41.3.232:501/api/LDPSecurity/v1/UsersForIncidentCreatorRole'
 const ReplyIncidentUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/ReplyIncident'
 const IncidentGroupsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentGroups'
 const IncidentProductsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentProducts'
+const SearchIncidentTagsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/SearchIncidentTags'
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -417,10 +417,10 @@ export const fetchMergeIncidentsUrl = async (data) => {
     console.log(error)
   }
 }
-export const fetchUsersForIncidentOwnerRoleUrl = async (orgId, toolId) => {
+export const fetchGroupUsersUrl = async (orgId, toolId, groupid) => {
   try {
     const response = await FetchWithToken(
-      `${UsersForIncidentOwnerRoleUrl}?orgId=${orgId}&toolId=${toolId}`,
+      `${GroupUsersUrl}?orgId=${orgId}&toolId=${toolId}&groupid=${groupid}`,
       {
         method: 'GET',
         headers: {
@@ -490,6 +490,24 @@ export const fetchIncidentProductsUrl = async (orgId, ToolId, productid) => {
   try {
     const response = await FetchWithToken(
       `${IncidentProductsUrl}?orgId=${orgId}&ToolId=${ToolId}&productid=${productid}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    const responseData = await response.json()
+    const data = responseData?.data
+    return data
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchSearchIncidentTagsUrl = async (orgId, ToolId, keyword) => {
+  try {
+    const response = await FetchWithToken(
+      `${SearchIncidentTagsUrl}?orgId=${orgId}&ToolId=${ToolId}&keyword=${keyword}`,
       {
         method: 'GET',
         headers: {
