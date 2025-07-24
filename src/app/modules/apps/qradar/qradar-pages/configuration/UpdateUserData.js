@@ -125,13 +125,20 @@ const UpdateUserData = () => {
 
     fetchData()
   }, [])
-  const handleSelectChange = (e, field) => {
-    const selectedId = e.target.options[e.target.selectedIndex].getAttribute('data-id')
-    setToolTypeAction((prev) => ({
-      ...prev,
-      [field]: selectedId,
-    }))
+ const handleSelectChange = (e, field) => {
+  const selectedId = e.target.options[e.target.selectedIndex].getAttribute('data-id')
+
+  if (field === 'toolId') {
+    if (mapUserName.current) mapUserName.current.value = ''
+    if (mapuserId.current) mapuserId.current.value = ''
   }
+
+  setToolTypeAction((prev) => ({
+    ...prev,
+    [field]: selectedId,
+  }))
+}
+
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -376,12 +383,12 @@ const UpdateUserData = () => {
                 <input
                   type='text'
                   className='form-control form-control-lg form-control-solid'
-                  required
                   aria-required='true'
                   id='userName'
                   ref={mapUserName}
                   placeholder='Ex: username'
                   maxLength={200}
+                  disabled
                 />
               </div>
             </div>
@@ -393,12 +400,12 @@ const UpdateUserData = () => {
                 <input
                   type='text'
                   className='form-control form-control-lg form-control-solid'
-                  required
                   aria-required='true'
                   id='userName'
                   ref={mapuserId}
                   placeholder='Ex: username'
                   maxLength={200}
+                  disabled
                 />
               </div>
             </div>

@@ -11,6 +11,13 @@ const MapUserPopup = ({show, onClose, selectedTool, selectedDataType, onImport})
   const [searchTerm, setSearchTerm] = useState('')
   const {showBoundary} = useErrorBoundary()
   const orgId = Number(sessionStorage.getItem('orgId'))
+  useEffect(() => {
+    if (!show) {
+      setToolMasterData([])
+      setSelectedItem(null)
+      setSearchTerm('')
+    }
+  }, [show])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,9 +46,9 @@ const MapUserPopup = ({show, onClose, selectedTool, selectedDataType, onImport})
       onClose()
     }
   }
-const filteredData = (toolMasterData || []).filter((item) =>
-  item?.dataValue?.toLowerCase().includes(searchTerm.toLowerCase())
-)
+  const filteredData = (toolMasterData || []).filter((item) =>
+    item?.dataValue?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
     <Modal show={show} onHide={onClose} className='addANoteModal application-modal'>

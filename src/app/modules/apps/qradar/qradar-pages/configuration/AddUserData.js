@@ -74,8 +74,12 @@ const AddUserData = () => {
     reloadTools()
   }, [])
   const handleToolChange = (e) => {
-    setSelectedTool(e.target.value)
+    const selectedValue = e.target.value
+    setSelectedTool(selectedValue)
+    if (mapUserName.current) mapUserName.current.value = ''
+    if (mapuserId.current) mapuserId.current.value = ''
   }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -350,6 +354,7 @@ const AddUserData = () => {
                   ref={mapUserName}
                   placeholder='Ex: username'
                   maxLength={200}
+                  disabled
                 />
               </div>
             </div>
@@ -365,6 +370,7 @@ const AddUserData = () => {
                   ref={mapuserId}
                   placeholder='Ex: username'
                   maxLength={200}
+                  disabled
                 />
               </div>
             </div>
