@@ -28,6 +28,7 @@ import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
 import useFeatureActions from '../configuration/useFeatureActions'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
 import MergeModal from './MergeModal'
+import {truncateText} from '../../../../../../utils/TruncateText'
 
 const IncidentsPage = () => {
   const handleError = useErrorBoundary()
@@ -534,7 +535,7 @@ const IncidentsPage = () => {
 
   return (
     <>
-      <div className='mb-5 mb-xl-8 bg-red incident-page'>
+      <div className='mb-1 mb-xl-1 bg-red incident-page'>
         <ToastContainer />
         <div className='card-body1'>
           <div className='row'>
@@ -729,23 +730,34 @@ const IncidentsPage = () => {
                                 </div>
                               </div>
                               <div className='row'>
-                                <div className='d-flex justify-content-between'>
+                                <div className='col-md-6'>
                                   {item.requestorUserName && (
                                     <div className='pt-2 bd-highlight'>
                                       <div
                                         className='badge bg-light text-dark me-2'
-                                        title='Requestor'
+                                        title={`${item.requestorUserName} ${
+                                          item?.alertIncidentMapping?.clientName || ''
+                                        }`}
                                       >
                                         <i className='bi bi-person-circle me-1 text-primary'></i>
-                                        {item.requestorUserName}
+                                        {truncateText(item.requestorUserName, 12)}{' '}
+                                        {truncateText(item.alertIncidentMapping?.clientName, 5)}
                                       </div>
                                     </div>
                                   )}
+                                </div>
+                                <div className='col-md-6'>
                                   <div className='pt-2 bd-highlight'>
                                     {item.ownerName && (
-                                      <div className='badge bg-light text-dark me-2' title='Owner'>
+                                      <div
+                                        className='badge bg-light text-dark me-2'
+                                        title={`${item?.alertIncidentMapping?.groupName || ''} ${
+                                          item.ownerName || ''
+                                        } `}
+                                      >
                                         <i className='bi bi-person-check me-1 text-success'></i>
-                                        {item.ownerName}
+                                        {truncateText(item.alertIncidentMapping?.groupName, 5)}{' '}
+                                        {truncateText(item.ownerName, 12)}
                                       </div>
                                     )}
 
@@ -767,10 +779,7 @@ const IncidentsPage = () => {
                               {/* Owner & Priority */}
                               <div className='d-flex justify-content-between bd-highlight mt-2'>
                                 {item.incidentStatusName && (
-                                  <div
-                                    className='badge badge-light-primary fs-12'
-                                    title='Status'
-                                  >
+                                  <div className='badge badge-light-primary fs-12' title='Status'>
                                     <i className='bi bi-patch-check me-1 text-primary'></i>
                                     {item.incidentStatusName}
                                   </div>

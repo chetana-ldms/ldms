@@ -28,6 +28,9 @@ import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
 import './Incident.css'
 import ReplyModal from './ReplyModal'
 import CreatableSelect from 'react-select/creatable'
+import ForwardModal from './ForwardModal'
+import SendMailModal from './SendMailModal'
+import Conversation from './Conversation'
 
 const IncidentDetails = ({incident, onRefreshIncidents}) => {
   console.log('incident11111', incident)
@@ -121,6 +124,8 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     productName: '',
     productId: '',
     incidentTags: [],
+    replyCCEmails: [],
+    toEmails: [],
   })
   console.log(incidentData, 'incidentDataTest')
   const [selectedAlertId, setSelectedAlertId] = useState(null)
@@ -128,6 +133,9 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const handleShowModal = () => setSelectedAlertPopUp(true)
   const handleCloseModal = () => setSelectedAlertPopUp(false)
   const [showModal, setShowModal] = useState(false)
+  const [showForwardModal, setShowForwardModal] = useState(false)
+  const [showSendMailModal, setShowSendMailModal] = useState(false)
+
   const handleAddClick = () => {
     setShowModal(true)
   }
@@ -230,6 +238,8 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
           productName: '',
           productId: '',
           incidentTags: [],
+          replyCCEmails: [],
+          toEmails: [],
         })
         return // Exit the function early
       }
@@ -282,6 +292,8 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
         productName: alertIncidentMapping?.productName,
         productId: alertIncidentMapping?.productId,
         incidentTags: data?.incidentTags || [],
+        replyCCEmails: data?.replyCCEmails || [],
+        toEmails: data?.toEmails || [],
       })
       const tagsFromIncident = data?.incidentTags || []
 
@@ -548,8 +560,8 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     fetchData(resolvedId)
     setShowReplyModal(false)
   }
-
-  const handleForward = () => {}
+  const handleForward = () => setShowForwardModal(true)
+  const handleSendMail = () => setShowSendMailModal(true)
   const requesterOptions = incidentCreatorRole?.map((item) => ({
     value: item.name,
     label: item.name,
@@ -582,14 +594,13 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
 
     handleChange(fakeEvent, 'requestorUserId')
   }
- const handleTagChange = (selected) => {
-  setSelectedTags(selected || []);
-  setIncidentData(prev => ({
-    ...prev,
-    incidentTags: (selected || []).map(tag => tag.value)
-  }));
-};
-
+  const handleTagChange = (selected) => {
+    setSelectedTags(selected || [])
+    setIncidentData((prev) => ({
+      ...prev,
+      incidentTags: (selected || []).map((tag) => tag.value),
+    }))
+  }
 
   return (
     <div className='col-md-4 border-1 border-gray-600 incident-details'>
@@ -621,6 +632,12 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     <DropdownItem onClick={handleForward} disabled={!isActionAuthorized('Forward')}>
                       Forward
                     </DropdownItem>
+                    <DropdownItem
+                      onClick={handleSendMail}
+                      disabled={!isActionAuthorized('SendMail')}
+                    >
+                      Send Mail
+                    </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </div>
@@ -634,6 +651,19 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 onHide={() => setShowReplyModal(false)}
                 onSend={handleSendReply}
                 incidentData={incidentData || ''}
+              />
+              <ForwardModal
+                show={showForwardModal}
+                onHide={() => setShowForwardModal(false)}
+                incidentData={incidentData || ''}
+                onForward={onRefreshIncidents}
+              />
+
+              <SendMailModal
+                show={showSendMailModal}
+                onHide={() => setShowSendMailModal(false)}
+                incidentData={incidentData || ''}
+                onSendMail={onRefreshIncidents}
               />
             </div>
             {activeTab === 'general' && isActionAuthorized('Update') && (
@@ -664,29 +694,20 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   General
                 </a>
               </li>
-              {/* 2. SLA Details */}
+
+              {/* 2. Conversation */}
               <li className='nav-item'>
                 <a
-                  className={`nav-link ${activeTab === 'sla' ? 'active' : ''}`}
+                  className={`nav-link ${activeTab === 'conversation' ? 'active' : ''}`}
                   data-bs-toggle='tab'
-                  href='#kt_tab_pane_sla'
-                  onClick={() => setActiveTab('sla')}
+                  href='#kt_tab_pane_conversation'
+                  onClick={() => setActiveTab('conversation')}
                 >
-                  SLA Details
+                  Conversation
                 </a>
               </li>
-              {/* 3. Notes */}
-              <li className='nav-item'>
-                <a
-                  className={`nav-link ${activeTab === 'notes' ? 'active' : ''}`}
-                  data-bs-toggle='tab'
-                  href='#kt_tab_pane_6'
-                  onClick={() => setActiveTab('notes')}
-                >
-                  Notes
-                </a>
-              </li>
-              {/* 4. Timeline */}
+
+              {/* 3. Timeline */}
               <li className='nav-item'>
                 <a
                   className={`nav-link ${activeTab === 'timeline' ? 'active' : ''}`}
@@ -697,7 +718,32 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   Timeline
                 </a>
               </li>
-              {/* 5. Alerts (if present) */}
+
+              {/* 4. Notes */}
+              <li className='nav-item'>
+                <a
+                  className={`nav-link ${activeTab === 'notes' ? 'active' : ''}`}
+                  data-bs-toggle='tab'
+                  href='#kt_tab_pane_6'
+                  onClick={() => setActiveTab('notes')}
+                >
+                  Notes
+                </a>
+              </li>
+
+              {/* 5. SLA Details */}
+              <li className='nav-item'>
+                <a
+                  className={`nav-link ${activeTab === 'sla' ? 'active' : ''}`}
+                  data-bs-toggle='tab'
+                  href='#kt_tab_pane_sla'
+                  onClick={() => setActiveTab('sla')}
+                >
+                  SLA Details
+                </a>
+              </li>
+
+              {/* 6. Alerts (if present) */}
               {Array.isArray(incidentData?.alertId) && incidentData.alertId.length > 0 && (
                 <li className='nav-item'>
                   <a
@@ -1058,6 +1104,13 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     {modifiedDate && getCurrentTimeZone(modifiedDate)}
                   </div>
                 </div>
+              </div>
+              <div
+                className={`tab-pane fade ${activeTab === 'conversation' ? 'show active' : ''}`}
+                id='kt_tab_pane_conversation'
+                role='tabpanel'
+              >
+                {activeTab === 'conversation' && <Conversation incidentData={incidentData} />}
               </div>
 
               <div className='tab-pane fade' id='kt_tab_pane_2' role='tabpanel'>

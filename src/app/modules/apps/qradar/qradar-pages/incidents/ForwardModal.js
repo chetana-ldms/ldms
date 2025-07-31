@@ -1,59 +1,73 @@
 import React, {useEffect, useState} from 'react'
 import {Modal, Button, Form} from 'react-bootstrap'
-import {fetchEmailSearchUrl, fetchReplyIncidentUrl} from '../../../../../api/IncidentsApi'
-import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css' // Rich editor styles
 import RichTextEditor from '../../../../../../utils/RichTextEditor'
 import AsyncCreatableSelect from 'react-select/async-creatable'
 import makeAnimated from 'react-select/animated'
+import {fetchEmailSearchUrl, fetchForwardIncidentUrl} from '../../../../../api/IncidentsApi'
+import {notify, notifyFail} from '../components/notification/Notification'
 
 const animatedComponents = makeAnimated()
 
-const ReplyModal = ({show, onHide, incidentData, onSend}) => {
-  console.log('ReplyModal incidentData:', incidentData)
-  const [message, setMessage] = useState('')
-  const [loading, setLoading] = useState(false)
+const ForwardModal = ({show, onHide, incidentData, onForward}) => {
+  console.log('ForwardModal incidentData:', incidentData)
+  const [subject, setSubject] = useState(`Fwd: ${incidentData?.subject || 'Incident update'}`)
+  const [to, setTo] = useState([])
   const [cc, setCc] = useState([])
   const [bcc, setBcc] = useState([])
-  const [subject, setSubject] = useState(`${incidentData?.subject || 'Incident update'}`)
+  const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [emailSearch, setEmailSearch] = useState([])
 
-  const handleSend = async () => {
-    if (!message || message === '<p><br></p>') {
-      notifyFail('Please enter the message')
+  const handleForward = async () => {
+    if (!to.length || !subject || !message || message === '<p><br></p>') {
+      notifyFail('All required fields must be filled')
       return
     }
-
     const data = {
-      replyDateTime: new Date().toISOString(),
-      orgId: incidentData?.orgId,
-      toolId: incidentData?.toolId,
-      incidentId: incidentData?.incidentID,
-      notes: message,
+      forwardDateTime: new Date().toISOString(),
+      orgId: incidentData?.orgId || 0,
+      toolId: incidentData?.toolId || 0,
+      incidentId: incidentData?.incidentID || 0,
+      body: message,
+      email: to.map((e) => e.value),
       ccEmails: cc.map((e) => e.value),
       bccEmails: bcc.map((e) => e.value),
-      userId: Number(sessionStorage.getItem('userId')),
+      userId: Number(sessionStorage.getItem('userId')) || 0,
     }
 
     try {
       setLoading(true)
-      const responseData = await fetchReplyIncidentUrl(data)
-      const {isSuccess, message: responseMessage} = responseData
+      const response = await fetchForwardIncidentUrl(data)
+      const {isSuccess, message} = response
       if (isSuccess) {
-        notify(responseMessage)
-        setMessage('')
-        onHide()
-        onSend()
+        notify(message)
+        handleClose()
+        onForward()
       } else {
-        notifyFail(responseMessage)
+        notifyFail(message)
       }
-    } catch (error) {
-      console.error(error)
+    } catch (err) {
+      notifyFail(message)
     } finally {
       setLoading(false)
     }
+  }
+  useEffect(() => {
+    if (incidentData) {
+      setSubject(`Fwd: ${incidentData.subject || 'Incident update'}`)
+      setCc([])
+      setBcc([])
+    }
+  }, [incidentData.incidentID])
+
+  const handleClose = () => {
+    setSubject(`Fwd: ${incidentData?.subject || 'Incident update'}`)
+    setTo([])
+    setCc([])
+    setBcc([])
+    setMessage('')
+    onHide()
   }
   const loadEmailOptions = async (inputValue) => {
     if (!inputValue || inputValue.length < 1) return []
@@ -66,39 +80,22 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
     return response.map((email) => ({label: email, value: email}))
   }
 
-  const handleClose = () => {
-    setMessage('')
-    onHide()
-  }
   const customStyles = {
     control: (base) => ({...base, minHeight: '40px'}),
     menu: (base) => ({...base, zIndex: 9999}),
   }
-  useEffect(() => {
-    if (incidentData) {
-      setSubject(`${incidentData.subject || 'Incident update'}`)
-      const ccList = Array.isArray(incidentData.replyCCEmails)
-        ? incidentData.replyCCEmails
-        : incidentData.replyCCEmails
-        ? [incidentData.replyCCEmails]
-        : []
-
-      setCc(ccList.map((email) => ({label: email, value: email})))
-      setBcc([])
-    }
-  }, [incidentData.incidentID])
 
   return (
-    <Modal show={show} onHide={handleClose} className='replyModal application-modal' size='lg'>
+    <Modal show={show} onHide={handleClose} size='lg' className='forwardModal application-modal'>
       <ToastContainer />
       <Modal.Header closeButton>
-        <Modal.Title>Reply</Modal.Title>
+        <Modal.Title>Forward</Modal.Title>
         <button type='button' className='application-modal-close' aria-label='Close'>
           <i className='fa fa-close' />
         </button>
       </Modal.Header>
 
-      <Modal.Body>
+      <Modal.Body className='py-2'>
         <Form>
           <Form.Group className='mb-1 row align-items-center'>
             <Form.Label className='col-md-2 col-form-label'>From</Form.Label>
@@ -112,7 +109,6 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
               />
             </div>
           </Form.Group>
-
           <Form.Group className='mb-1 row align-items-center'>
             <Form.Label className='col-md-2 col-form-label'>
               Subject <sup className='red'>*</sup>
@@ -126,12 +122,26 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
               />
             </div>
           </Form.Group>
+
           <Form.Group className='mb-1 row align-items-center'>
-            <Form.Label className='col-md-2 col-form-label'>To</Form.Label>
+            <Form.Label className='col-md-2 col-form-label'>
+              To <sup className='red'>*</sup>
+            </Form.Label>
             <div className='col-md-10'>
-              <Form.Control type='email' value={incidentData?.incidentEmail || ''} disabled />
+              <AsyncCreatableSelect
+                isMulti
+                cacheOptions
+                defaultOptions
+                loadOptions={loadEmailOptions}
+                components={{...animatedComponents, DropdownIndicator: () => null}}
+                styles={customStyles}
+                value={to}
+                onChange={setTo}
+                placeholder='Type or search email'
+              />
             </div>
           </Form.Group>
+
           <Form.Group className='mb-1 row align-items-center'>
             <Form.Label className='col-md-2 col-form-label'>Cc</Form.Label>
             <div className='col-md-10'>
@@ -166,25 +176,22 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
             </div>
           </Form.Group>
 
-          <Form.Group controlId='formBody' className='mt-3'>
-            <Form.Label>
-              Message <sup className='red'>*</sup>
-            </Form.Label>
+          <Form.Group className='mb-1'>
             <RichTextEditor value={message} onChange={setMessage} />
           </Form.Group>
 
-          <Form.Group className='d-flex justify-content-end gap-2 mt-3'>
+          <div className='d-flex justify-content-end gap-2 mt-3'>
             <Button variant='secondary' onClick={handleClose} disabled={loading}>
-              Close
+              Cancel
             </Button>
-            <Button variant='primary' onClick={handleSend} disabled={loading}>
-              {loading ? 'Sending...' : 'Send'}
+            <Button variant='primary' onClick={handleForward} disabled={loading}>
+              {loading ? 'Forwarding...' : 'Forward'}
             </Button>
-          </Form.Group>
+          </div>
         </Form>
       </Modal.Body>
     </Modal>
   )
 }
 
-export default ReplyModal
+export default ForwardModal

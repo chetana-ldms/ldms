@@ -140,6 +140,12 @@ const AddUserData = () => {
       setLoading(false)
       return
     }
+      if (selectedTool && (!mapuserId.current?.value || mapuserId.current.value.trim() === '')) {
+      notifyFail('Please selecte the Map UserID')
+      setLoading(false)
+      return
+    }
+
     const createdUserId = Number(sessionStorage.getItem('userId'))
     const createdDate = new Date().toISOString()
     var data = {

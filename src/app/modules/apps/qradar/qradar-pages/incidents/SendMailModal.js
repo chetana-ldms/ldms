@@ -1,6 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import {Modal, Button, Form} from 'react-bootstrap'
-import {fetchEmailSearchUrl, fetchReplyIncidentUrl} from '../../../../../api/IncidentsApi'
+import {
+  fetchEmailSearchUrl,
+  fetchReplyIncidentUrl,
+  fetchSendMailUrl,
+} from '../../../../../api/IncidentsApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -9,90 +13,111 @@ import 'react-quill/dist/quill.snow.css' // Rich editor styles
 import RichTextEditor from '../../../../../../utils/RichTextEditor'
 import AsyncCreatableSelect from 'react-select/async-creatable'
 import makeAnimated from 'react-select/animated'
+import {fetchMasterData} from '../../../../../api/Api'
+import Select from 'react-select'
 
 const animatedComponents = makeAnimated()
 
-const ReplyModal = ({show, onHide, incidentData, onSend}) => {
-  console.log('ReplyModal incidentData:', incidentData)
-  const [message, setMessage] = useState('')
-  const [loading, setLoading] = useState(false)
+const SendMailModal = ({show, onHide, onSend}) => {
+  const userID = Number(sessionStorage.getItem('userId'))
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const toolId = Number(sessionStorage.getItem('toolID'))
+  const [from, setFrom] = useState('')
+  const [to, setTo] = useState('')
+  const [subject, setSubject] = useState('')
   const [cc, setCc] = useState([])
   const [bcc, setBcc] = useState([])
-  const [subject, setSubject] = useState(`${incidentData?.subject || 'Incident update'}`)
+  const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [dropdownData, setDropdownData] = useState({
+    FreshDesk_Support_Mails: [],
+  })
+  const {FreshDesk_Support_Mails} = dropdownData
+  console.log('FreshDesk_Support_Mails:', FreshDesk_Support_Mails)
 
   const handleSend = async () => {
-    if (!message || message === '<p><br></p>') {
-      notifyFail('Please enter the message')
+    if (!to || !subject || !message || message === '<p><br></p>') {
+      notifyFail('Please fill all required fields')
       return
     }
-
     const data = {
-      replyDateTime: new Date().toISOString(),
-      orgId: incidentData?.orgId,
-      toolId: incidentData?.toolId,
-      incidentId: incidentData?.incidentID,
-      notes: message,
+      sendMailDateTime: new Date().toISOString(),
+      orgId,
+      toolId,
+      body: message,
+      email: to?.value || '',
+      subject,
+      //   fromEmail: from?.value?.match(/\(([^)]+)\)/)?.[1] || from?.value || '',
       ccEmails: cc.map((e) => e.value),
       bccEmails: bcc.map((e) => e.value),
-      userId: Number(sessionStorage.getItem('userId')),
+      userId: userID,
     }
-
     try {
       setLoading(true)
-      const responseData = await fetchReplyIncidentUrl(data)
-      const {isSuccess, message: responseMessage} = responseData
+      const response = await fetchSendMailUrl(data)
+      const {isSuccess, message: responseMessage} = response
       if (isSuccess) {
         notify(responseMessage)
-        setMessage('')
-        onHide()
+        handleClose()
         onSend()
       } else {
         notifyFail(responseMessage)
       }
-    } catch (error) {
-      console.error(error)
+    } catch (err) {
+      console.error(err)
     } finally {
       setLoading(false)
     }
   }
+
+  const handleClose = () => {
+    setFrom('')
+    setTo('')
+    setSubject('')
+    setCc([])
+    setBcc([])
+    setMessage('')
+    onHide()
+  }
+
   const loadEmailOptions = async (inputValue) => {
     if (!inputValue || inputValue.length < 1) return []
-    const response = await fetchEmailSearchUrl(
-      incidentData?.orgId,
-      incidentData?.toolId,
-      inputValue
-    )
+    const response = await fetchEmailSearchUrl(orgId, toolId, inputValue)
     if (!response || !Array.isArray(response)) return []
     return response.map((email) => ({label: email, value: email}))
   }
 
-  const handleClose = () => {
-    setMessage('')
-    onHide()
-  }
   const customStyles = {
     control: (base) => ({...base, minHeight: '40px'}),
     menu: (base) => ({...base, zIndex: 9999}),
   }
   useEffect(() => {
-    if (incidentData) {
-      setSubject(`${incidentData.subject || 'Incident update'}`)
-      const ccList = Array.isArray(incidentData.replyCCEmails)
-        ? incidentData.replyCCEmails
-        : incidentData.replyCCEmails
-        ? [incidentData.replyCCEmails]
-        : []
+    const fetchAllMasterData = async () => {
+      const supportEmailRequestData = {
+        maserDataType: 'FreshDesk_Support_Mails',
+        orgId: orgId,
+        toolId: toolId,
+      }
+      try {
+        const [supportEmail] = await Promise.all([fetchMasterData(supportEmailRequestData)])
 
-      setCc(ccList.map((email) => ({label: email, value: email})))
-      setBcc([])
+        setDropdownData((prevDropdownData) => ({
+          ...prevDropdownData,
+          FreshDesk_Support_Mails: supportEmail,
+        }))
+      } catch (error) {
+        console.log(error)
+      }
     }
-  }, [incidentData.incidentID])
+
+    fetchAllMasterData()
+  }, [])
 
   return (
-    <Modal show={show} onHide={handleClose} className='replyModal application-modal' size='lg'>
+    <Modal show={show} onHide={handleClose} className='sendMailModal application-modal' size='lg'>
       <ToastContainer />
       <Modal.Header closeButton>
-        <Modal.Title>Reply</Modal.Title>
+        <Modal.Title>Send Mail</Modal.Title>
         <button type='button' className='application-modal-close' aria-label='Close'>
           <i className='fa fa-close' />
         </button>
@@ -103,12 +128,36 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
           <Form.Group className='mb-1 row align-items-center'>
             <Form.Label className='col-md-2 col-form-label'>From</Form.Label>
             <div className='col-md-10'>
-              <Form.Control
-                type='text'
-                value={
-                  Array.isArray(incidentData?.toEmails) ? incidentData.toEmails.join(', ') : ''
+              <Select
+                options={
+                  FreshDesk_Support_Mails?.map((item) => ({
+                    label: item.dataValue,
+                    value: item.dataValue,
+                  })) || []
                 }
-                disabled
+                value={from}
+                onChange={(selected) => setFrom(selected)}
+                placeholder='Select sender email'
+                components={{DropdownIndicator: () => null}}
+                styles={customStyles}
+              />
+            </div>
+          </Form.Group>
+
+          <Form.Group className='mb-1 row align-items-center'>
+            <Form.Label className='col-md-2 col-form-label'>
+              To <sup className='red'>*</sup>
+            </Form.Label>
+            <div className='col-md-10'>
+              <AsyncCreatableSelect
+                cacheOptions
+                defaultOptions
+                loadOptions={loadEmailOptions}
+                components={{...animatedComponents, DropdownIndicator: () => null}}
+                styles={customStyles}
+                value={to}
+                onChange={(selected) => setTo(selected)}
+                placeholder='Search or type recipient email'
               />
             </div>
           </Form.Group>
@@ -126,12 +175,7 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
               />
             </div>
           </Form.Group>
-          <Form.Group className='mb-1 row align-items-center'>
-            <Form.Label className='col-md-2 col-form-label'>To</Form.Label>
-            <div className='col-md-10'>
-              <Form.Control type='email' value={incidentData?.incidentEmail || ''} disabled />
-            </div>
-          </Form.Group>
+
           <Form.Group className='mb-1 row align-items-center'>
             <Form.Label className='col-md-2 col-form-label'>Cc</Form.Label>
             <div className='col-md-10'>
@@ -187,4 +231,4 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
   )
 }
 
-export default ReplyModal
+export default SendMailModal

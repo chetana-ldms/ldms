@@ -29,6 +29,9 @@ const ReplyIncidentUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/Reply
 const IncidentGroupsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentGroups'
 const IncidentProductsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentProducts'
 const SearchIncidentTagsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/SearchIncidentTags'
+const ForwardIncidentUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/ForwardIncident'
+const EmailSearchUrl = 'http://10.41.3.232:501/api/LDPSecurity/v1/EmailSearch'
+const SendMailUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/SendMail'
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -518,6 +521,61 @@ export const fetchSearchIncidentTagsUrl = async (orgId, ToolId, keyword) => {
     const responseData = await response.json()
     const data = responseData?.data
     return data
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchForwardIncidentUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${ForwardIncidentUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const fetchEmailSearchUrl = async (orgid, toolid, emailpartialstring) => {
+  try {
+    const response = await FetchWithToken(
+      `${EmailSearchUrl}?orgid=${orgid}&emailpartialstring=${encodeURIComponent(
+        emailpartialstring
+      )}&toolid=${toolid}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+
+    const responseData = await response.json()
+    return responseData?.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchSendMailUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${SendMailUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
     console.log(error)
   }

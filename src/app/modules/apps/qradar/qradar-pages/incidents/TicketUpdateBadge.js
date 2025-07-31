@@ -1,7 +1,7 @@
-import React from 'react';
+import React from 'react'
 
-const TicketUpdateBadge = ({ count, onClick }) => {
-  if (count <= 0) return null;
+const TicketUpdateBadge = ({count, onClick}) => {
+  if (count <= 0) return null
 
   return (
     <div
@@ -34,13 +34,13 @@ const TicketUpdateBadge = ({ count, onClick }) => {
           color: '#fff',
         }}
       >
-        <i className="bi bi-arrow-clockwise" style={{ fontSize: '16px' }}></i>
+        <i className='bi bi-arrow-clockwise' style={{fontSize: '16px'}}></i>
       </div>
-      <span style={{ fontSize: '14px', color: '#1a1a1a' }}>
-        {count} new ticket{count > 1 ? 's' : ''}
+      <span style={{fontSize: '14px', color: '#1a1a1a'}}>
+        {count} New or updated incident{count > 1 ? 's' : ''}
       </span>
     </div>
-  );
-};
+  )
+}
 
-export default TicketUpdateBadge;
+export default TicketUpdateBadge

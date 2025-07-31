@@ -125,20 +125,19 @@ const UpdateUserData = () => {
 
     fetchData()
   }, [])
- const handleSelectChange = (e, field) => {
-  const selectedId = e.target.options[e.target.selectedIndex].getAttribute('data-id')
+  const handleSelectChange = (e, field) => {
+    const selectedId = e.target.options[e.target.selectedIndex].getAttribute('data-id')
 
-  if (field === 'toolId') {
-    if (mapUserName.current) mapUserName.current.value = ''
-    if (mapuserId.current) mapuserId.current.value = ''
+    if (field === 'toolId') {
+      if (mapUserName.current) mapUserName.current.value = ''
+      if (mapuserId.current) mapuserId.current.value = ''
+    }
+
+    setToolTypeAction((prev) => ({
+      ...prev,
+      [field]: selectedId,
+    }))
   }
-
-  setToolTypeAction((prev) => ({
-    ...prev,
-    [field]: selectedId,
-  }))
-}
-
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -165,6 +164,11 @@ const UpdateUserData = () => {
       errors.roleType = 'Select Role Type'
       setLoading(false)
       return errors
+    }
+    if (toolType.current.value && (!mapuserId.current?.value || mapuserId.current.value.trim() === '')) {
+      notifyFail('Please selecte the Map UserID')
+      setLoading(false)
+      return
     }
     const modifiedUserId = Number(sessionStorage.getItem('userId'))
     const modifiedDate = new Date().toISOString()
