@@ -13,7 +13,6 @@ import makeAnimated from 'react-select/animated'
 const animatedComponents = makeAnimated()
 
 const ReplyModal = ({show, onHide, incidentData, onSend}) => {
-  console.log('ReplyModal incidentData:', incidentData)
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [cc, setCc] = useState([])

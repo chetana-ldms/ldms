@@ -869,7 +869,9 @@ const IncidentsPage = () => {
                 selectedIncident={selectedIncident}
               />
             </div>
+            <div className='col-md-4 border-1 border-gray-600 incident-details'>
             <IncidentDetails incident={selectedIncident} onRefreshIncidents={refreshIncidents} />
+            </div>
           </div>
           {showConfirmation && (
             <DeleteConfirmation

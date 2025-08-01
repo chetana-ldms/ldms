@@ -33,7 +33,6 @@ const SendMailModal = ({show, onHide, onSend}) => {
     FreshDesk_Support_Mails: [],
   })
   const {FreshDesk_Support_Mails} = dropdownData
-  console.log('FreshDesk_Support_Mails:', FreshDesk_Support_Mails)
 
   const handleSend = async () => {
     if (!to || !subject || !message || message === '<p><br></p>') {

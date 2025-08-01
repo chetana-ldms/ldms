@@ -32,6 +32,8 @@ const SearchIncidentTagsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/
 const ForwardIncidentUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/ForwardIncident'
 const EmailSearchUrl = 'http://10.41.3.232:501/api/LDPSecurity/v1/EmailSearch'
 const SendMailUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/SendMail'
+const IncidentConversationUrl =
+  'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentConversation'
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -576,6 +578,24 @@ export const fetchSendMailUrl = async (data) => {
     })
     const responseData = await response.json()
     return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchIncidentConversationUrl = async (orgId, ToolId, incidentid) => {
+  try {
+    const response = await FetchWithToken(
+      `${IncidentConversationUrl}?orgid=${orgId}&toolid=${ToolId}&incidentid=${incidentid}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    const responseData = await response.json()
+    const conversations = responseData?.conversations
+    return conversations
   } catch (error) {
     console.log(error)
   }

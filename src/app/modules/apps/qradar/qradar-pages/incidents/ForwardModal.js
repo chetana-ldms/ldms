@@ -10,7 +10,6 @@ import {notify, notifyFail} from '../components/notification/Notification'
 const animatedComponents = makeAnimated()
 
 const ForwardModal = ({show, onHide, incidentData, onForward}) => {
-  console.log('ForwardModal incidentData:', incidentData)
   const [subject, setSubject] = useState(`Fwd: ${incidentData?.subject || 'Incident update'}`)
   const [to, setTo] = useState([])
   const [cc, setCc] = useState([])

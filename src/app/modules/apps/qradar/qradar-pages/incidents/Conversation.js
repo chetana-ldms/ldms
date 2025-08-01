@@ -1,12 +1,109 @@
-// Conversation.js
-import React from 'react'
+import React, {useEffect, useState} from 'react'
+import {fetchIncidentConversationUrl} from '../../../../../api/IncidentsApi'
+import {Accordion} from 'react-bootstrap' // Assuming Bootstrap is being used
 
-const Conversation = ({ incidentData }) => {
+const Conversation = ({incidentData}) => {
+  const {orgId, toolId, incidentID} = incidentData || {}
+  const [conversation, setConversation] = useState([])
+  console.log('Conversation incidentData:', conversation)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetchIncidentConversationUrl(orgId, toolId, incidentID)
+      setConversation(response !== undefined ? response : [])
+    }
+    fetchData()
+  }, [orgId, toolId, incidentID])
+
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diff = Math.floor((now - date) / 1000) // in seconds
+
+    if (diff < 60) return `${diff} sec${diff !== 1 ? 's' : ''} ago`
+    if (diff < 3600)
+      return `${Math.floor(diff / 60)} min${Math.floor(diff / 60) !== 1 ? 's' : ''} ago`
+    if (diff < 86400)
+      return `${Math.floor(diff / 3600)} hour${Math.floor(diff / 3600) !== 1 ? 's' : ''} ago`
+    if (diff < 604800)
+      return `${Math.floor(diff / 86400)} day${Math.floor(diff / 86400) !== 1 ? 's' : ''} ago`
+    return date.toLocaleString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    })
+  }
+
   return (
-    <div>
-      {/* Replace below with your actual conversation logic */}
-      <h6>Conversation for Incident ID: {incidentData?.incidentID}</h6>
-      {/* Example: render emails/messages here */}
+    <div className='conversation-tab'>
+      {conversation.map((mail, index) => (
+        <div key={mail.id || index} className='mb-4'>
+          <div className='d-flex align-items-center mb-2'>
+            <div className='symbol symbol-circle symbol-35px bg-light-primary text-primary fw-bold me-3 p-4'>
+              {mail.author?.[0]?.toUpperCase() || '?'}
+            </div>
+            <div>
+              <strong>{mail.originalMailHeader}</strong>{' '}
+              <div className='text-muted small'>{formatDateTime(mail.createdAt)}</div>
+            </div>
+          </div>
+
+          <div className='ps-5'>
+            {(mail.toEmails || mail.ccEmails || mail.bccEmails) && (
+              <div className='text-muted small mt-2'>
+                {mail.toEmails && (
+                  <div>
+                    <strong>To:</strong> {mail.toEmails}
+                  </div>
+                )}
+                {mail.ccEmails && (
+                  <div>
+                    <strong>Cc:</strong> {mail.ccEmails}
+                  </div>
+                )}
+                {mail.bccEmails && (
+                  <div>
+                    <strong>Bcc:</strong> {mail.bccEmails}
+                  </div>
+                )}
+              </div>
+            )}
+            <div dangerouslySetInnerHTML={{__html: mail.htmlCurrent}} />
+
+            {/* Accordion for trail messages */}
+            {Array.isArray(mail.conversationMailTrailData) &&
+              mail.conversationMailTrailData.length > 0 && (
+                <Accordion className='mt-3'>
+                  {mail.conversationMailTrailData.map((trail, tIndex) => (
+                    <Accordion.Item eventKey={String(tIndex)} key={tIndex}>
+                      <Accordion.Header>
+                        {trail.author} - {trail.originalMailHeader}
+                      </Accordion.Header>
+                      <Accordion.Body>
+                        <div dangerouslySetInnerHTML={{__html: trail.htmlCurrent}} />
+                        <div className='text-muted small mt-2'>
+                          {trail.toEmails && (
+                            <div>
+                              <strong>To:</strong> {trail.toEmails}
+                            </div>
+                          )}
+                          {trail.ccEmails && (
+                            <div>
+                              <strong>Cc:</strong> {trail.ccEmails}
+                            </div>
+                          )}
+                        </div>
+                      </Accordion.Body>
+                    </Accordion.Item>
+                  ))}
+                </Accordion>
+              )}
+          </div>
+        </div>
+      ))}
     </div>
   )
 }

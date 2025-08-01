@@ -31,6 +31,7 @@ import CreatableSelect from 'react-select/creatable'
 import ForwardModal from './ForwardModal'
 import SendMailModal from './SendMailModal'
 import Conversation from './Conversation'
+import ConversationModal from './ConversationModal'
 
 const IncidentDetails = ({incident, onRefreshIncidents}) => {
   console.log('incident11111', incident)
@@ -50,6 +51,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const id = incidentID
   console.log(id, 'id')
   const [showReplyModal, setShowReplyModal] = useState(false)
+  const [showConversationModal, setShowConversationModal] = useState(false)
   const [activeTab, setActiveTab] = useState('general')
   const userID = Number(sessionStorage.getItem('userId'))
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -603,7 +605,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   }
 
   return (
-    <div className='col-md-4 border-1 border-gray-600 incident-details'>
+    <div className=''>
       <div className='card'>
         <div className='bg-heading'>
           <div className='d-flex justify-content-between '>
@@ -698,10 +700,12 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
               {/* 2. Conversation */}
               <li className='nav-item'>
                 <a
-                  className={`nav-link ${activeTab === 'conversation' ? 'active' : ''}`}
-                  data-bs-toggle='tab'
-                  href='#kt_tab_pane_conversation'
-                  onClick={() => setActiveTab('conversation')}
+                  className='nav-link'
+                  href='#'
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setShowConversationModal(true)
+                  }}
                 >
                   Conversation
                 </a>
@@ -757,7 +761,11 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 </li>
               )}
             </ul>
-
+            <ConversationModal
+              show={showConversationModal}
+              onClose={() => setShowConversationModal(false)}
+              incidentData={incidentData}
+            />
             <div className='tab-content scroll-y h-600px' id='myTabContent'>
               <div
                 className='tab-pane fade show active me-n5 pe-5 header-filter'
@@ -1105,13 +1113,13 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   </div>
                 </div>
               </div>
-              <div
+              {/* <div
                 className={`tab-pane fade ${activeTab === 'conversation' ? 'show active' : ''}`}
                 id='kt_tab_pane_conversation'
                 role='tabpanel'
               >
                 {activeTab === 'conversation' && <Conversation incidentData={incidentData} />}
-              </div>
+              </div> */}
 
               <div className='tab-pane fade' id='kt_tab_pane_2' role='tabpanel'>
                 <table
