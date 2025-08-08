@@ -25,9 +25,12 @@ function OpenIncidentSummary({fromDate, toDate, toolID: parentToolID}) {
   lastYear.setFullYear(lastYear.getFullYear() - 1)
 
   // Local state for tool and date selection
-  const [incidentData, setIncidentData] = useState({
-    toolID: parentToolID || toolId || '',
-  })
+  // const [incidentData, setIncidentData] = useState({
+  //   toolID: parentToolID || toolId || '',
+  // })
+    const [incidentData, setIncidentData] = useState({
+      toolID: 2,
+    })
   const [startDate, setStartDate] = useState(fromDate || lastYear.toISOString().slice(0, 10))
   const [endDate, setEndDate] = useState(toDate || today.toISOString().slice(0, 10))
 

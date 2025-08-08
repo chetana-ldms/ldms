@@ -1,0 +1,209 @@
+{
+  "Disk failure event detected": [
+    {
+      "user": "System",
+      "action": "Detected disk failure alert on Host05",
+      "result": "Alert triggered and forwarded to platform",
+      "datetime": "2025-08-06 16:45"
+    },
+    {
+      "user": "Global Admin",
+      "action": "Confirmed alert and created an incident ticket",
+      "result": "Incident INC0012345 created and assigned to automation",
+      "datetime": "2025-08-06 16:46"
+    },
+    {
+      "user": "Pluto",
+      "action": "Shall I initiate health check script `agent_health_check.sh`?",
+      "result": "Awaiting confirmation...",
+      "datetime": "2025-08-06 16:46"
+    },
+    {
+      "user": "Global Admin",
+      "action": "Confirmed. Proceed with health check.",
+      "result": "Approved",
+      "datetime": "2025-08-06 16:47"
+    },
+    {
+      "user": "Pluto",
+      "action": "Health check executed",
+      "result": "SMART overall-health self-assessment test result: FAILED",
+      "datetime": "2025-08-06 16:47"
+    },
+    {
+      "user": "Pluto",
+      "action": "Fetching syslog entries related to disk events",
+      "result": "kernel: sd 0:0:0:0: [sda] Unhandled sense code",
+      "datetime": "2025-08-06 16:48"
+    },
+    {
+      "user": "Pluto",
+      "action": "Shall I verify mount status and disk usage using `df`, `mount`, `lsblk`?",
+      "result": "Awaiting confirmation...",
+      "datetime": "2025-08-06 16:48"
+    },
+    {
+      "user": "Global Admin",
+      "action": "Proceed with mount and usage checks",
+      "result": "Approved",
+      "datetime": "2025-08-06 16:49"
+    },
+    {
+      "user": "Pluto",
+      "action": "Disk check executed",
+      "result": "/dev/sda1 not mounted. Disk space N/A",
+      "datetime": "2025-08-06 16:49"
+    },
+    {
+      "user": "Pluto",
+      "action": "Running backup validation script",
+      "result": "Last backup: 2025-08-06 00:00 UTC \u2705 (Checksum Verified)",
+      "datetime": "2025-08-06 16:50"
+    },
+    {
+      "user": "Pluto",
+      "action": "Attempting disk remount... Shall I proceed?",
+      "result": "Awaiting confirmation...",
+      "datetime": "2025-08-06 16:50"
+    },
+    {
+      "user": "Global Admin",
+      "action": "Yes. Proceed with remount attempt.",
+      "result": "Approved",
+      "datetime": "2025-08-06 16:51"
+    },
+    {
+      "user": "Pluto",
+      "action": "Remount operation executed",
+      "result": "Remount Success... ",
+      "datetime": "2025-08-06 16:51"
+    }
+  ],
+  "Memory spike detected": [
+    {
+      "step": "4\ufe0f\u20e3",
+      "datetime": "2025-08-06 17:03",
+      "performed_by": "Pluto (Bot)",
+      "action": "\ud83d\udd0d Checked memory with `free -m` \u2013 Memory used: 91%",
+      "result": "High memory usage confirmed"
+    },
+    {
+      "step": "5\ufe0f\u20e3",
+      "datetime": "2025-08-06 17:04",
+      "performed_by": "Pluto (Bot)",
+      "action": "\ud83d\udcca Listed top processes \u2013 Java process (PID 12345) using 4GB RAM",
+      "result": "Java process identified as culprit"
+    },
+    {
+      "step": "6\ufe0f\u20e3",
+      "datetime": "2025-08-06 17:05",
+      "performed_by": "Pluto (Bot)",
+      "action": "\ud83d\uded1 Terminated process with `kill -9 12345` \u2013 \u2705 Success",
+      "result": "Process terminated"
+    },
+    {
+      "step": "7\ufe0f\u20e3",
+      "datetime": "2025-08-06 17:06",
+      "performed_by": "Pluto (Bot)",
+      "action": "\ud83d\udd01 Verified swap status with `swapon -s` \u2013 Swap usage: 5%",
+      "result": "Swap status normal"
+    },
+    {
+      "step": "8\ufe0f\u20e3",
+      "datetime": "2025-08-06 17:07",
+      "performed_by": "Pluto (Bot)",
+      "action": "\ud83d\udcc8 Monitored memory post-action \u2013 Usage reduced to 55%",
+      "result": "Memory usage reduced"
+    },
+    {
+      "step": "9\ufe0f\u20e3",
+      "datetime": "2025-08-06 17:08",
+      "performed_by": "Pluto (Bot)",
+      "action": "\u2705 Resolution Complete \u2013 System memory normalized",
+      "result": "System stable"
+    },
+    {
+      "step": "\ud83d\udd1f",
+      "datetime": "2025-08-06 17:09",
+      "performed_by": "Pluto (Bot)",
+      "action": "\ud83e\uddfe Report generated and available for download",
+      "result": "Report generated"
+    }
+  ],
+  "Network outage detected": [
+    {
+      "user": "System",
+      "action": "Detected network outage on Host07",
+      "result": "Alert triggered and forwarded to platform",
+      "datetime": "2025-08-06 18:00"
+    },
+    {
+      "user": "Global Admin",
+      "action": "Manually created incident in response to alert",
+      "result": "Incident INC0012360 created",
+      "datetime": "2025-08-06 18:01"
+    },
+    {
+      "user": "Global Admin",
+      "action": "Executed `ping 8.8.8.8` and `ping <gateway>` to test connectivity",
+      "result": "Ping to gateway failed. DNS unreachable.",
+      "datetime": "2025-08-06 18:02"
+    },
+    {
+      "user": "Global Admin",
+      "action": "Ran `ip a` to check interface status",
+      "result": "Interface `eth0` is down",
+      "datetime": "2025-08-06 18:03"
+    },
+    {
+      "user": "Global Admin",
+      "action": "Tried restarting interface using `ifdown eth0 && ifup eth0`",
+      "result": "Interface failed to come up",
+      "datetime": "2025-08-06 18:04"
+    },
+    {
+      "user": "Global Admin",
+      "action": "Manually inspected logs with `journalctl -xe` and `dmesg | grep eth0`",
+      "result": "NIC driver issue suspected",
+      "datetime": "2025-08-06 18:05"
+    },
+    {
+      "user": "Global Admin",
+      "action": "Escalated to network team and updated incident with findings",
+      "result": "Incident escalated. Report attached.",
+      "datetime": "2025-08-06 18:06"
+    }
+  ],
+  "Failed Login Alert": [
+    {
+      "user": "System",
+      "action": "Detected multiple failed login attempts on Server-AD01",
+      "result": "Alert triggered and forwarded to platform",
+      "datetime": "2025-08-06 19:00"
+    },
+    {
+      "user": "Pluto",
+      "action": "Parsed alert details to identify impacted user",
+      "result": "User `jsmith` identified from failed login logs",
+      "datetime": "2025-08-06 19:01"
+    },
+    {
+      "user": "Pluto",
+      "action": "Queried Active Directory for user `jsmith` details",
+      "result": "User `jsmith` - John Smith - Department: IT - Status: Enabled",
+      "datetime": "2025-08-06 19:02"
+    },
+    {
+      "user": "Pluto",
+      "action": "Checked AD logs for suspicious activity",
+      "result": "No brute-force pattern. Possible incorrect password by user.",
+      "datetime": "2025-08-06 19:03"
+    },
+    {
+      "user": "Pluto",
+      "action": "Tagged incident as low severity and marked for closure",
+      "result": "\u2705 Incident resolved and auto-closed",
+      "datetime": "2025-08-06 19:04"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+[
+  {
+    "step": 1,
+    "isResolved": 0,
+    "command": "ping 8.8.8.8",
+    "description": "Check internet connectivity by pinging Google DNS",
+    "result": "Request timed out – Internet is not reachable",
+    "isAfterResolved": 0
+  },
+  {
+    "step": "2",
+    "isResolved": 0,
+    "command": "ping 192.168.1.1",
+    "description": "Check if the local network gateway is reachable",
+    "result": "Destination host unreachable – Gateway not responding",
+    "isAfterResolved": 0
+  },
+  {
+    "step": "3",
+    "isResolved": 0,
+    "command": "ipconfig",
+    "description": "View current IP address and interface status",
+    "result": "Ethernet adapter is disconnected or no IP assigned",
+    "isAfterResolved": 0
+  },
+  {
+    "step": "4",
+    "isResolved": 0,
+    "command": "ipconfig /release",
+    "description": "Release the current IP address",
+    "result": "Successfully released the IP address",
+    "isAfterResolved": 1
+  },
+  {
+    "step": "5",
+    "isResolved": 0,
+    "command": "ipconfig /renew",
+    "description": "Request a new IP address from DHCP",
+    "result": "An error occurred while renewing interface – No DHCP server reachable",
+    "isAfterResolved": 0
+  },
+  {
+    "step": "6",
+    "isResolved": 0,
+    "command": "netsh interface show interface",
+    "description": "Check the status of all network interfaces",
+    "result": "Ethernet interface is 'Disconnected'",
+    "isAfterResolved": 0
+  },
+  {
+    "step": "7",
+    "isResolved": 0,
+    "command": "netsh interface set interface \"Ethernet\" admin=enabled",
+    "description": "Enable the Ethernet network interface",
+    "result": "Interface 'Ethernet' is enabled",
+    "isAfterResolved": 1
+  },
+  {
+    "step": "8",
+    "isResolved": 0,
+    "command": "powershell Get-NetAdapter -Name \"Ethernet\"",
+    "description": "Get the current status of the network adapter",
+    "result": "Status: Disconnected – Cable unplugged or interface disabled",
+    "isAfterResolved": 0
+  },
+  {
+    "step": "9",
+    "command": "powershell Restart-NetAdapter -Name \"Ethernet\" -Confirm:$false",
+    "isResolved": 0,
+    "description": "Restart the network adapter",
+    "result": "Adapter restarted successfully – Status: Connected",
+    "isAfterResolved": 1
+  },
+  {
+    "step": "10",
+    "isResolved": 1,
+    "command": "ping 8.8.8.8",
+    "description": "Re-check internet connectivity",
+    "result": "Reply from 8.8.8.8: bytes=32 time=18ms – Network restored",
+    "isAfterResolved": 1
+  },
+  {
+    "step": "11",
+    "isResolved": 1,
+    "command": "echo Network outage resolved manually on %DATE% %TIME% >> C:\\Logs\\network_outage.log",
+    "description": "Log the resolution to a local file",
+    "result": "✅ Resolution logged to C:\\Logs\\network_outage.log",
+    "isAfterResolved": 1
+  }
+]

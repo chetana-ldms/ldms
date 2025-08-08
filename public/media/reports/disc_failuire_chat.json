@@ -1,0 +1,68 @@
+[
+  {
+    "step": "Step 3",
+    "type": "question",
+    "message": "🤖 Would you like me to initiate a health check using `agent_health_check.sh`?"
+  },
+  {
+    "step": "Step 4",
+    "type": "response",
+    "message": "🔄 Proceeding with the health check."
+  },
+  {
+    "step": "Step 5",
+    "type": "action",
+    "message": "📟 Health check executed.\n🧪 SMART overall-health self-assessment test result: ❌ FAILED"
+  },
+  {
+    "step": "Step 6",
+    "type": "action",
+    "message": "📜 Fetching syslog for recent disk-related errors..."
+  },
+  {
+    "step": "Step 7",
+    "type": "log",
+    "message": "🧾 Log found: `kernel: sd 0:0:0:0: [sda] Unhandled sense code`"
+  },
+  {
+    "step": "Step 8",
+    "type": "question",
+    "message": "📊 Shall I verify disk mount status using `df`, `mount`, and `lsblk`?"
+  },
+  {
+    "step": "Step 9",
+    "type": "response",
+    "message": "✅ Verifying disk mount status..."
+  },
+  {
+    "step": "Step 10",
+    "type": "action",
+    "message": "💽 Disk status: `/dev/sda1` not mounted. Disk space: ❌ Unavailable"
+  },
+  {
+    "step": "Step 11",
+    "type": "action",
+    "message": "💾 Validating backup integrity..."
+  },
+  {
+    "step": "Step 12",
+    "type": "status",
+    "message": "✅ Last backup: 2025-08-04 00:00 UTC (Checksum Verified)"
+  },
+  {
+    "step": "Step 13",
+    "type": "question",
+    "message": "⚙️ Attempting to remount the disk. Shall I proceed?"
+  },
+  {
+    "step": "Step 14",
+    "type": "response",
+    "message": "✅ Remounting disk..."
+  },
+  {
+    "step": "Step 15",
+    "type": "action",
+    "message": "✅ Remount Success. Task completed successfully..."
+
+  }
+]
