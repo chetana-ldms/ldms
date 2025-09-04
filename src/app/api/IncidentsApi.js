@@ -18,20 +18,22 @@ const IncidentNotesUpdateUrl = process.env.REACT_APP_INCIDENT_NOTES_UPDATE_URL
 const OrganizationToolsDetailsUrl = process.env.REACT_APP_ORG_TOOLS_DETAILS_URL
 
 const IncidentReportTypesUrl = process.env.REACT_APP_INCIDENT_REPORT_TYPES_URL
-const IncidentReportDataUrl =  process.env.REACT_APP_INCIDENT_REPORT_DATA_URL
+const IncidentReportDataUrl = process.env.REACT_APP_INCIDENT_REPORT_DATA_URL
 const IncidentsHasChangesUrl = process.env.REACT_APP_HAS_CHANGES_URL
-const DeleteIncidentsUrl =  process.env.REACT_APP_DELETE_INCIDENTS_URL
-const MergeIncidentsUrl =  process.env.REACT_APP_MERGE_INCIDENTS_URL
-const GroupUsersUrl =  process.env.REACT_APP_GROUP_USERS_URL
+const DeleteIncidentsUrl = process.env.REACT_APP_DELETE_INCIDENTS_URL
+const MergeIncidentsUrl = process.env.REACT_APP_MERGE_INCIDENTS_URL
+const GroupUsersUrl = process.env.REACT_APP_GROUP_USERS_URL
 const UsersForIncidentCreatorRoleUrl = process.env.REACT_APP_USERS_FOR_INCIDENT_CREATER_ROLE_URL
-const ReplyIncidentUrl =  process.env.REACT_APP_REPLY_INCIDENT_URL
-const IncidentGroupsUrl =  process.env.REACT_APP_INCIDENT_GROUPS_URL
-const IncidentProductsUrl =  process.env.REACT_APP_INCIDENT_PRODUCTS_URL
-const SearchIncidentTagsUrl =  process.env.REACT_APP_SEARCH_INCIDENT_TAGS_UR
-const ForwardIncidentUrl =  process.env.REACT_APP_FORWARD_INCIDENT_URL
-const EmailSearchUrl =  process.env.REACT_APP_EMAIL_SEARCH_URL
-const SendMailUrl =  process.env.REACT_APP_SEND_MAIL_URL
+const ReplyIncidentUrl = process.env.REACT_APP_REPLY_INCIDENT_URL
+const IncidentGroupsUrl = process.env.REACT_APP_INCIDENT_GROUPS_URL
+const IncidentProductsUrl = process.env.REACT_APP_INCIDENT_PRODUCTS_URL
+const SearchIncidentTagsUrl = process.env.REACT_APP_SEARCH_INCIDENT_TAGS_UR
+const ForwardIncidentUrl = process.env.REACT_APP_FORWARD_INCIDENT_URL
+const EmailSearchUrl = process.env.REACT_APP_EMAIL_SEARCH_URL
+const SendMailUrl = process.env.REACT_APP_SEND_MAIL_URL
 const IncidentConversationUrl = process.env.REACT_APP_INCIDENT_CONVERSATION_URL
+const ReplyIncidentWithHtmlContentUrl =
+  'http://10.41.3.232:501/api/IncidentManagement/v1/ReplyIncidentWithHtmlContent'
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -597,4 +599,66 @@ export const fetchIncidentConversationUrl = async (orgId, ToolId, incidentid) =>
   } catch (error) {
     console.log(error)
   }
+}
+export const fetchReplyIncidentWithHtmlContentUrl = async (data) => {
+  try {
+    const formData = new FormData()
+    formData.append('Notes', data.notes || '')
+    formData.append('ReplyDateTime', data.replyDateTime)
+    formData.append('UserId', data.userId)
+    formData.append('BodyHtml', data.notes)
+    formData.append('IncidentId', data.incidentId)
+    formData.append('ToolId', data.toolId)
+    formData.append('OrgId', data.orgId)
+
+    // CC
+    if (data.ccEmails?.length) {
+      data.ccEmails.forEach((email) => formData.append('CcEmails', email))
+    }
+    // BCC
+    if (data.bccEmails?.length) {
+      data.bccEmails.forEach((email) => formData.append('BccEmails', email))
+    }
+
+    if (data.attachments?.length) {
+      data.attachments.forEach((file) => {
+        formData.append('Attachments', file)
+      })
+    }
+
+    // 2. Inline pasted images
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(data.notes, 'text/html')
+    const imgTags = doc.querySelectorAll('img')
+
+    let index = 0
+    for (let img of imgTags) {
+      if (img.src.startsWith('data:image')) {
+        const file = dataURLtoFile(img.src, `inline_${index}.png`)
+        formData.append('Attachments', file)
+        index++
+      }
+    }
+
+    const response = await fetch(ReplyIncidentWithHtmlContentUrl, {
+      method: 'POST',
+      body: formData,
+    })
+
+    return await response.json()
+  } catch (error) {
+    console.error('API call failed:', error)
+  }
+}
+
+function dataURLtoFile(dataUrl, filename) {
+  const arr = dataUrl.split(',')
+  const mime = arr[0].match(/:(.*?);/)[1]
+  const bstr = atob(arr[1])
+  let n = bstr.length
+  const u8arr = new Uint8Array(n)
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n)
+  }
+  return new File([u8arr], filename, {type: mime})
 }

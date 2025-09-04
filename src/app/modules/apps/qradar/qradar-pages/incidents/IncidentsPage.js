@@ -29,6 +29,7 @@ import useFeatureActions from '../configuration/useFeatureActions'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
 import MergeModal from './MergeModal'
 import {truncateText} from '../../../../../../utils/TruncateText'
+import { fetchMasterDataByOrganization } from '../../../../../api/dashBoardApi'
 
 const IncidentsPage = () => {
   const handleError = useErrorBoundary()
@@ -71,7 +72,7 @@ const IncidentsPage = () => {
   const [daysFromDashBoard, setDaysFromDashBoard] = useState(location.state?.days || '')
   const [selectedDays, setSelectedDays] = useState([])
   const [selectedFilterValue, setSelectedFilterValue] = useState(1)
-  const [selectedToolId, setSelectedToolId] = useState(sessionStorage.getItem('toolID') || '')
+  const [selectedToolId, setSelectedToolId] = useState(sessionStorage.getItem('incidentToolId') || '')
   const [tools, setTools] = useState([])
   const [showConfirmation, setShowConfirmation] = useState(false)
   const toolRef = useRef()
@@ -137,11 +138,11 @@ const IncidentsPage = () => {
         const data = {
           maserDataType: 'Incident_Searchdata_duration',
           orgId: orgId,
-          toolId: toolId,
+          toolId: selectedToolId || toolId,
         }
-        const masterDataResponse = await fetchMasterData(data)
+        const masterDataResponse = await fetchMasterDataByOrganization(data)
         const response = masterDataResponse
-        setSelectedDays(response)
+        setSelectedDays(response?.masterData)
       } catch (error) {
         handleError(error)
       }

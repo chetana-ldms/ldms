@@ -9,6 +9,7 @@ import {
   fetchFeaturesActionsAuthorizedUrl,
   fetchFeaturesAuthorizedUrl,
   fetchOrganizations,
+  fetchTicketManagementToolUrl,
 } from '../../../api/Api'
 import ChangePasswordPopUp from './ChangePasswordPopUp'
 import {ToastContainer} from 'react-toastify'
@@ -112,6 +113,20 @@ export function Login() {
           sessionStorage.setItem('toolExpire', 'true')
           sessionStorage.setItem('sentinalTesting', 'false')
           sessionStorage.setItem('selectedFeatureId', '1')
+try {
+          const orgId = sessionStorage.getItem('orgId')
+          if (orgId) {
+            const organizationToolList = await fetchTicketManagementToolUrl(orgId)
+            if (organizationToolList && organizationToolList.length > 0) {
+              const incidentToolId = organizationToolList[0]?.toolID
+              if (incidentToolId) {
+                sessionStorage.setItem('incidentToolId', incidentToolId.toString())
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching TicketManagement tool:", error)
+        }
 
           if (authData.isMFAEnabled) {
             setShowMFAModal(true)

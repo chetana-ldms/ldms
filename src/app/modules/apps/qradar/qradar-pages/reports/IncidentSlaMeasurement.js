@@ -16,7 +16,7 @@ function IncidentSlaMeasurement() {
   //   toolID: toolId || '',
   // })
   const [incidentData, setIncidentData] = useState({
-    toolID: 2,
+    toolID: sessionStorage.getItem('incidentToolId'),
   })
   const [tools, setTools] = useState([])
   const [alertData, setAlertData] = useState([])

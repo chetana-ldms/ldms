@@ -1,4 +1,69 @@
-/* RichTextEditor.css */
+/* Add attachment icon in toolbar (so Quill shows the paperclip) */
+.ql-attachment::before {
+  content: "📎";
+  font-size: 16px;
+}
+
+/* Editor baseline */
 .ql-container {
-  height: 200px !important;
+  border-radius: 6px;
+}
+
+/* make the editor area reasonably tall and allow attachments to wrap */
+.ql-editor {
+  min-height: 120px;
+  display: block;      /* keep normal editing behaviour */
+  padding: 12px;
+}
+
+/* Attachment chip (inline) */
+.ql-attachments {
+  display: inline-block;
+  margin: 6px 8px 6px 0;
+  vertical-align: middle;
+}
+
+/* Chip contents (small, compact) */
+.ql-attachment-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  background: #f5f6f7;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  min-height: 28px;    /* reduced height */
+  box-sizing: border-box;
+}
+
+/* filename and size styling */
+.ql-attachment-name {
+  font-size: 13px;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px; /* adjust as needed */
+}
+
+.ql-attachment-size {
+  font-size: 12px;
+  color: #777;
+}
+
+/* close button inside each chip */
+.ql-attachment-remove {
+  margin-left: 6px;
+  background: transparent;
+  border: none;
+  color: #d9534f; /* red */
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 4px;
+}
+
+/* ensure the remove button is clickable and not focusable in editing flow */
+.ql-attachment-remove:focus {
+  outline: none;
 }

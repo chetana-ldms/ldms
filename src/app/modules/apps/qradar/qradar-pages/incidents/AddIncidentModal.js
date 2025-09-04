@@ -37,8 +37,9 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
     ownerName: '',
     description: '',
     significantIncident: false,
-    toolID: '',
+    toolID: sessionStorage.getItem('incidentToolId'),
   })
+  console.log(incidentData, 'incidentData')
   useEffect(() => {
     if (isOwnerEmailChecked) {
       const selectedOwner = ldp_security_user.find((user) => user.name === incidentData.ownerName)
@@ -80,13 +81,13 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
         }))
       }
 
-      const resolvedToolId =
-        selectedTool?.incidentsToolId > 0 ? selectedTool.incidentsToolId : selectedTool?.toolID
+      // const resolvedToolId =
+      //   selectedTool?.incidentsToolId > 0 ? selectedTool.incidentsToolId : selectedTool?.toolID
 
-      if (!resolvedToolId) return
+      // if (!resolvedToolId) return
 
       try {
-        const response = await fetchUsersByOrgTool(orgId, resolvedToolId, userID)
+        const response = await fetchUsersByOrgTool(orgId, incidentData.toolID, userID)
         setldp_security_user(response?.usersList ?? [])
       } catch (error) {
         console.log(error)
@@ -97,31 +98,31 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
   }, [incidentData.toolID, tools])
   useEffect(() => {
     const fetchAllIncidentMasterData = async () => {
-      const selectedTool = tools.find((tool) => tool.toolID === Number(incidentData.toolID))
-      const resolvedToolId =
-        selectedTool?.incidentsToolId > 0 ? selectedTool.incidentsToolId : selectedTool?.toolID
+      // const selectedTool = tools.find((tool) => tool.toolID === Number(incidentData.toolID))
+      // const resolvedToolId =
+      //   selectedTool?.incidentsToolId > 0 ? selectedTool.incidentsToolId : selectedTool?.toolID
 
-      if (!resolvedToolId) return
+      // if (!resolvedToolId) return
 
       const severityDataRequest = {
         maserDataType: 'incident_severity',
         orgId,
-        toolId: resolvedToolId,
+        toolId: incidentData.toolID,
       }
       const statusDataRequest = {
         maserDataType: 'incident_status',
         orgId,
-        toolId: resolvedToolId,
+        toolId: incidentData.toolID,
       }
       const priorityDataRequest = {
         maserDataType: 'incident_priority',
         orgId,
-        toolId: resolvedToolId,
+        toolId: incidentData.toolID,
       }
       const typeDataRequest = {
         maserDataType: 'Incident_Type',
         orgId,
-        toolId: resolvedToolId,
+        toolId: incidentData.toolID,
       }
 
       try {

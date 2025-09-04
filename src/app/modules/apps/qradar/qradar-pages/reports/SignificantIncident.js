@@ -29,7 +29,7 @@ function SignificantIncident({ fromDate, toDate, toolID: parentToolID }) {
   //   toolID: parentToolID || toolId || '',
   // })
     const [incidentData, setIncidentData] = useState({
-      toolID: 2,
+      toolID: sessionStorage.getItem('incidentToolId'),
     })
   const [startDate, setStartDate] = useState(fromDate || lastYear.toISOString().slice(0, 10))
   const [endDate, setEndDate] = useState(toDate || today.toISOString().slice(0, 10))

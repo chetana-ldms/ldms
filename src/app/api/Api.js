@@ -28,6 +28,8 @@ const FeaturesActionsAuthorizedUrl = process.env.REACT_APP_FEATURES_ACTION_AUTHO
 const AgentActionUrl = process.env.REACT_APP_AGENT_ACTION_URL
 const AuthUserVerifyOTPUrl = process.env.REACT_APP_USER_VERIFY_OTP_URL
 const AuthUserResendOTPUrl = process.env.REACT_APP_USER_RESEND_OTP_URL
+const TicketManagementToolUrl =
+  'http://10.41.3.232:501/api/LDPlattform/v1/Organization/ToolsByToolType'
 
 export const fetchMasterData = async (data) => {
   try {
@@ -70,16 +72,19 @@ export const fetchAuthenticate = async (userName, password, orgName) => {
 
 export const fetchrefreshToken = async (refreshtoken, userName) => {
   try {
-    const response = await FetchWithToken(`${refreshToken}?refreshtoken=${refreshtoken}&username=${userName}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        refreshtoken,
-        userName,
-      }),
-    })
+    const response = await FetchWithToken(
+      `${refreshToken}?refreshtoken=${refreshtoken}&username=${userName}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          refreshtoken,
+          userName,
+        }),
+      }
+    )
     const responseData = await response.json()
     return responseData
   } catch (error) {
@@ -547,6 +552,24 @@ export const fetchAuthUserResendOTPUrl = async (data) => {
 
     const responseData = await response.json()
     return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchTicketManagementToolUrl = async (orgId) => {
+  try {
+    const response = await FetchWithToken(
+      `${TicketManagementToolUrl}?orgId=${orgId}&toolType=TicketManagement`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    const responseData = await response.json()
+    const organizationToolList = responseData?.organizationToolList
+    return organizationToolList
   } catch (error) {
     console.log(error)
   }
