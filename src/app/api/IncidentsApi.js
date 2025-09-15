@@ -34,6 +34,10 @@ const SendMailUrl = process.env.REACT_APP_SEND_MAIL_URL
 const IncidentConversationUrl = process.env.REACT_APP_INCIDENT_CONVERSATION_URL
 const ReplyIncidentWithHtmlContentUrl =
   'http://10.41.3.232:501/api/IncidentManagement/v1/ReplyIncidentWithHtmlContent'
+const IncidentConversationDeleteUrl =
+  'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentConversation/Delete'
+const ForwardIncidentWithHtmlContentUrl =
+  'http://10.41.3.232:501/api/IncidentManagement/v1/ForwardIncidentWithHtmlContent'
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -594,8 +598,7 @@ export const fetchIncidentConversationUrl = async (orgId, ToolId, incidentid) =>
       }
     )
     const responseData = await response.json()
-    const conversations = responseData?.conversations
-    return conversations
+    return responseData
   } catch (error) {
     console.log(error)
   }
@@ -603,42 +606,32 @@ export const fetchIncidentConversationUrl = async (orgId, ToolId, incidentid) =>
 export const fetchReplyIncidentWithHtmlContentUrl = async (data) => {
   try {
     const formData = new FormData()
-    formData.append('Notes', data.notes || '')
     formData.append('ReplyDateTime', data.replyDateTime)
     formData.append('UserId', data.userId)
-    formData.append('BodyHtml', data.notes)
     formData.append('IncidentId', data.incidentId)
     formData.append('ToolId', data.toolId)
     formData.append('OrgId', data.orgId)
 
     // CC
-    if (data.ccEmails?.length) {
-      data.ccEmails.forEach((email) => formData.append('CcEmails', email))
-    }
-    // BCC
-    if (data.bccEmails?.length) {
-      data.bccEmails.forEach((email) => formData.append('BccEmails', email))
-    }
+    data.ccEmails?.forEach((email) => formData.append('CcEmails', email))
 
+    // BCC
+    data.bccEmails?.forEach((email) => formData.append('BccEmails', email))
+
+    // Attachments (inline + normal)
     if (data.attachments?.length) {
-      data.attachments.forEach((file) => {
-        formData.append('Attachments', file)
+      data.attachments.forEach((att) => {
+        if (att.contentId) {
+          // inline image
+          formData.append('Attachments', att.file, att.file.name)
+          formData.append('ContentIds', att.contentId)
+        } else {
+          formData.append('Attachments', att.file || att)
+        }
       })
     }
 
-    // 2. Inline pasted images
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(data.notes, 'text/html')
-    const imgTags = doc.querySelectorAll('img')
-
-    let index = 0
-    for (let img of imgTags) {
-      if (img.src.startsWith('data:image')) {
-        const file = dataURLtoFile(img.src, `inline_${index}.png`)
-        formData.append('Attachments', file)
-        index++
-      }
-    }
+    formData.append('BodyHtml', data.notes)
 
     const response = await fetch(ReplyIncidentWithHtmlContentUrl, {
       method: 'POST',
@@ -646,19 +639,81 @@ export const fetchReplyIncidentWithHtmlContentUrl = async (data) => {
     })
 
     return await response.json()
+  } catch (err) {
+    console.error('API call failed:', err)
+  }
+}
+export const fetchIncidentConversationDeleteUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${IncidentConversationDeleteUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
-    console.error('API call failed:', error)
+    console.log(error)
   }
 }
+export const fetchForwardIncidentWithHtmlContentUrl = async (data) => {
+  try {
+    const formData = new FormData();
 
-function dataURLtoFile(dataUrl, filename) {
-  const arr = dataUrl.split(',')
-  const mime = arr[0].match(/:(.*?);/)[1]
-  const bstr = atob(arr[1])
-  let n = bstr.length
-  const u8arr = new Uint8Array(n)
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n)
+    formData.append('ForwardDateTime', data.forwardDateTime || '');
+    formData.append('OrgId', data.orgId ?? '');
+    formData.append('ToolId', data.toolId ?? '');
+    formData.append('IncidentId', data.incidentId ?? '');
+    formData.append('UserId', data.userId ?? '');
+
+    // Email (to)
+    if (data.email?.length) {
+      data.email.forEach((email) => formData.append('Email', email));
+    } else {
+      formData.append('Email', ''); // empty
+    }
+
+    // CC
+    if (data.ccEmails?.length) {
+      data.ccEmails.forEach((email) => formData.append('CcEmails', email));
+    } else {
+      formData.append('CcEmails', '');
+    }
+
+    // BCC
+    if (data.bccEmails?.length) {
+      data.bccEmails.forEach((email) => formData.append('BccEmails', email));
+    } else {
+      formData.append('BccEmails', '');
+    }
+
+    // Attachments
+    if (data.attachments?.length) {
+      data.attachments.forEach((att) => {
+        if (att.file) {
+          formData.append('Attachments', att.file, att.file.name);
+        } else {
+          formData.append('Attachments', att);
+        }
+      });
+    } else {
+      formData.append('Attachments', '');
+    }
+
+    formData.append('BodyHtml', data.body || '');
+
+    const response = await fetch(ForwardIncidentWithHtmlContentUrl, {
+      method: 'POST',
+      body: formData,
+    });
+
+    return await response.json();
+  } catch (err) {
+    console.error('API call failed:', err);
   }
-  return new File([u8arr], filename, {type: mime})
-}
+};
+

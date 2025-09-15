@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import {fetchIncidentConversationUrl} from '../../../../../api/IncidentsApi'
-import {Accordion} from 'react-bootstrap' // Assuming Bootstrap is being used
+import {Accordion} from 'react-bootstrap'
 
 const Conversation = ({incidentData}) => {
   const {orgId, toolId, incidentID} = incidentData || {}
   const [conversation, setConversation] = useState([])
-  console.log('Conversation incidentData:', conversation)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -18,15 +17,12 @@ const Conversation = ({incidentData}) => {
   const formatDateTime = (dateString) => {
     const date = new Date(dateString)
     const now = new Date()
-    const diff = Math.floor((now - date) / 1000) // in seconds
+    const diff = Math.floor((now - date) / 1000)
 
     if (diff < 60) return `${diff} sec${diff !== 1 ? 's' : ''} ago`
-    if (diff < 3600)
-      return `${Math.floor(diff / 60)} min${Math.floor(diff / 60) !== 1 ? 's' : ''} ago`
-    if (diff < 86400)
-      return `${Math.floor(diff / 3600)} hour${Math.floor(diff / 3600) !== 1 ? 's' : ''} ago`
-    if (diff < 604800)
-      return `${Math.floor(diff / 86400)} day${Math.floor(diff / 86400) !== 1 ? 's' : ''} ago`
+    if (diff < 3600) return `${Math.floor(diff / 60)} min${Math.floor(diff / 60) !== 1 ? 's' : ''} ago`
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hour${Math.floor(diff / 3600) !== 1 ? 's' : ''} ago`
+    if (diff < 604800) return `${Math.floor(diff / 86400)} day${Math.floor(diff / 86400) !== 1 ? 's' : ''} ago`
     return date.toLocaleString('en-IN', {
       hour: '2-digit',
       minute: '2-digit',
@@ -71,13 +67,32 @@ const Conversation = ({incidentData}) => {
                 )}
               </div>
             )}
+
+            {/* Mail body */}
             <div dangerouslySetInnerHTML={{__html: mail.htmlCurrent}} />
 
+            {/* ✅ Attachments */}
+            {Array.isArray(mail?.attachments) && mail?.attachments?.length > 0 && (
+              <div className='mt-2'>
+                <strong>Attachments:</strong>
+                <ul className='list-unstyled mt-1'>
+                  {mail?.attachments?.map((att, aIndex) => (
+                    <li key={aIndex}>
+                      <a href={att?.url} target='_blank' rel='noopener noreferrer'>
+                        {att?.name || att?.fileName || 'Attachment'}
+                      </a>
+                      <span className='text-muted small ms-2'>({att.contentType})</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Accordion for trail messages */}
-            {Array.isArray(mail.conversationMailTrailData) &&
+            {Array.isArray(mail?.conversationMailTrailData) &&
               mail.conversationMailTrailData.length > 0 && (
                 <Accordion className='mt-3'>
-                  {mail.conversationMailTrailData.map((trail, tIndex) => (
+                  {mail?.conversationMailTrailData?.map((trail, tIndex) => (
                     <Accordion.Item eventKey={String(tIndex)} key={tIndex}>
                       <Accordion.Header>
                         {trail.author} - {trail.originalMailHeader}
@@ -96,6 +111,22 @@ const Conversation = ({incidentData}) => {
                             </div>
                           )}
                         </div>
+                        {/* ✅ Attachments for trail messages */}
+                        {Array.isArray(trail?.attachments) && trail?.attachments.length > 0 && (
+                          <div className='mt-2'>
+                            <strong>Attachments:</strong>
+                            <ul className='list-unstyled mt-1'>
+                              {trail?.attachments?.map((att, aIndex) => (
+                                <li key={aIndex}>
+                                  <a href={att.url} target='_blank' rel='noopener noreferrer'>
+                                    {att?.name || att?.fileName || 'Attachment'}
+                                  </a>
+                                  <span className='text-muted small ms-2'>({att.contentType})</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                       </Accordion.Body>
                     </Accordion.Item>
                   ))}

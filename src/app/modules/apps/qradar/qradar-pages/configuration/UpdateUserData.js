@@ -12,6 +12,7 @@ import {notify, notifyFail} from '../components/notification/Notification'
 import {useErrorBoundary} from 'react-error-boundary'
 import {ToastContainer} from 'react-toastify'
 import MapUserPopup from './MapUserPopup'
+import ManageSignatureModal from './ManageSignatureModal'
 
 const UpdateUserData = () => {
   const empId = useRef()
@@ -39,6 +40,7 @@ const UpdateUserData = () => {
   })
 
   const [tools, setTools] = useState([])
+  const [showSignatureModal, setShowSignatureModal] = useState(false)
   const [selectedTool, setSelectedTool] = useState('')
   const [showPopup, setShowPopup] = useState(false)
   const {id} = useParams()
@@ -165,7 +167,10 @@ const UpdateUserData = () => {
       setLoading(false)
       return errors
     }
-    if (toolType.current.value && (!mapuserId.current?.value || mapuserId.current.value.trim() === '')) {
+    if (
+      toolType.current.value &&
+      (!mapuserId.current?.value || mapuserId.current.value.trim() === '')
+    ) {
       notifyFail('Please selecte the Map UserID')
       setLoading(false)
       return
@@ -237,8 +242,20 @@ const UpdateUserData = () => {
             <span className='white'>Update User</span>
           )}
         </h3>
+
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
+            {!save && (
+              <button
+                type='button'
+                className='btn btn-light btn-sm p-1 px-2'
+                onClick={() => setShowSignatureModal(true)}
+              >
+                <i className='fa fa-pencil-alt me-2'></i> Manage Signature
+              </button>
+            )}
+
+            {/* Back button always visible */}
             <Link to='/qradar/users-data/list' className='white fs-15 text-underline'>
               <i className='fa fa-chevron-left white mg-right-5' />
               Back
@@ -246,6 +263,12 @@ const UpdateUserData = () => {
           </div>
         </div>
       </div>
+      <ManageSignatureModal
+        show={showSignatureModal}
+        onClose={() => setShowSignatureModal(false)}
+        userId={id}
+      />
+
       <form>
         <div className='card-body pad-10'>
           <div className='row mb-6'>

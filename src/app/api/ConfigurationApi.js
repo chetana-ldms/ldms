@@ -52,6 +52,8 @@ const APIAuthDataUpdateUrl = process.env.REACT_APP_APIAUTHDATA_UPDATE_URL
 const ToolMasterDataUrl = process.env.REACT_APP_TOOL_MASTER_DATA_URL
 const AllUsersUrl = process.env.REACT_APP_ALL_USERS_URL
 const IncidentClientsUrl = process.env.REACT_APP_INCIDENT_CLIENTS_URL
+const ManageSignatureUrl="http://10.41.3.232:501/api/LDPSecurity/v1/User/ManageSignature"
+const SignatureUrl="http://10.41.3.232:501/api/LDPSecurity/v1/User/Signature"
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {
@@ -997,6 +999,38 @@ export const fetchIncidentClientsUrl = async (orgId, ToolId, clientid) => {
     const responseData = await response.json()
     const data = responseData?.data
     return data
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchManageSignatureUrl = async (data) => {
+  try {
+    const response = await fetch(`${ManageSignatureUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchSignatureUrl = async (id) => {
+  try {
+    const response = await FetchWithToken(`${SignatureUrl}?userId=${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
     console.log(error)
   }

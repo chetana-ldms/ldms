@@ -1,21 +1,73 @@
 import React, {useEffect, useState} from 'react'
 import {Modal, Button, Accordion} from 'react-bootstrap'
-import {fetchIncidentConversationUrl} from '../../../../../api/IncidentsApi'
+import {
+  fetchIncidentConversationDeleteUrl,
+  fetchIncidentConversationUrl,
+} from '../../../../../api/IncidentsApi'
+import './ConversationModal.css'
 
 const ConversationModal = ({show, onClose, incidentData}) => {
   const {orgId, toolId, incidentID} = incidentData || {}
   const [conversation, setConversation] = useState([])
   console.log('conversation', conversation)
 
+  // useEffect(() => {
+  //   if (show && orgId && toolId && incidentID) {
+  //     const fetchData = async () => {
+  //       const response = await fetchIncidentConversationUrl(orgId, toolId, incidentID)
+  //       setConversation(response !== undefined ? response : [])
+  //     }
+  //     fetchData()
+  //   }
+  // }, [show, orgId, toolId, incidentID])
+  const loadConversation = async () => {
+    try {
+      // Reset immediately so old data doesn’t persist
+      setConversation([])
+
+      const response = await fetchIncidentConversationUrl(orgId, toolId, incidentID)
+
+      if (response?.isSuccess) {
+        setConversation(response?.conversations || [])
+      } else {
+        console.error('API failed:', response?.message)
+        setConversation([]) // clear on failure
+      }
+    } catch (error) {
+      console.error('Error fetching conversation:', error)
+      setConversation([]) // clear on error
+    }
+  }
+
+  // 🔹 Load conversation when modal opens
   useEffect(() => {
     if (show && orgId && toolId && incidentID) {
-      const fetchData = async () => {
-        const response = await fetchIncidentConversationUrl(orgId, toolId, incidentID)
-        setConversation(response !== undefined ? response : [])
-      }
-      fetchData()
+      loadConversation()
     }
   }, [show, orgId, toolId, incidentID])
+
+  // 🔹 Handle delete of a mail trail
+  const handleDeleteTrail = async (conversationId) => {
+    if (!conversationId) return
+    try {
+      const payload = {
+        orgId: orgId,
+        toolId: toolId,
+        conversationId: conversationId,
+      }
+
+      const response = await fetchIncidentConversationDeleteUrl(payload)
+
+      if (response?.isSuccess) {
+        // Refresh after delete
+        await loadConversation()
+      } else {
+        console.error('Delete failed:', response?.message)
+      }
+    } catch (error) {
+      console.error('Error deleting conversation trail:', error)
+    }
+  }
 
   const formatDateTime = (dateString) => {
     const date = new Date(dateString)
@@ -44,13 +96,13 @@ const ConversationModal = ({show, onClose, incidentData}) => {
     <Modal show={show} onHide={onClose} size='xl' className='conversationModal application-modal'>
       <Modal.Header closeButton>
         <Modal.Title>Conversation</Modal.Title>
-        <button type='button' class='application-modal-close' aria-label='Close'>
+        <button type='button' className='application-modal-close' aria-label='Close'>
           <i className='fa fa-close' />
         </button>
       </Modal.Header>
       <Modal.Body>
         <div className='conversation-tab'>
-          {conversation.map((mail, index) => (
+          {conversation?.map((mail, index) => (
             <div key={mail.id || index} className='mb-4'>
               <div className='d-flex align-items-center mb-2'>
                 <div className='symbol symbol-circle symbol-35px bg-light-primary text-primary fw-bold me-3 p-4'>
@@ -82,15 +134,50 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                     )}
                   </div>
                 )}
-                <div dangerouslySetInnerHTML={{__html: mail.htmlCurrent}} />
 
+                {/* Mail body */}
+                <div className='mail-body' dangerouslySetInnerHTML={{__html: mail.htmlCurrent}} />
+
+                {/* ✅ Attachments */}
+                {Array.isArray(mail?.attachments) && mail?.attachments?.length > 0 && (
+                  <div className='mt-2'>
+                    <strong>Attachments:</strong>
+                    <ul className='list-unstyled mt-1'>
+                      {mail?.attachments?.map((att, aIndex) => (
+                        <li key={aIndex}>
+                          <a href={att?.url} target='_blank' rel='noopener noreferrer'>
+                            {att?.name || att?.fileName || 'Attachment'}
+                          </a>
+                          <span className='text-muted small ms-2'>({att.contentType})</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Accordion for trail messages */}
                 {Array.isArray(mail.conversationMailTrailData) &&
                   mail.conversationMailTrailData.length > 0 && (
                     <Accordion className='mt-3'>
                       {mail.conversationMailTrailData.map((trail, tIndex) => (
                         <Accordion.Item eventKey={String(tIndex)} key={tIndex}>
                           <Accordion.Header>
-                            {trail.author} - {trail.originalMailHeader}
+                            <div className='d-flex justify-content-between align-items-center w-100'>
+                              <span>
+                                {trail.author} - {trail.originalMailHeader}
+                              </span>
+                              {trail.type !== 'Initial Message' && (
+                                <i
+                                  className='fa fa-trash text-danger me-5'
+                                  title='Delete'
+                                  style={{cursor: 'pointer'}}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleDeleteTrail(trail.id)
+                                  }}
+                                />
+                              )}
+                            </div>
                           </Accordion.Header>
                           <Accordion.Body>
                             <div className='text-muted small mt-2'>
@@ -110,7 +197,29 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                                 </div>
                               )}
                             </div>
-                            <div dangerouslySetInnerHTML={{__html: trail.htmlCurrent}} />
+                            <div
+                              className='mail-body'
+                              dangerouslySetInnerHTML={{__html: trail.htmlCurrent}}
+                            />
+
+                            {/* ✅ Attachments for trail messages */}
+                            {Array.isArray(trail?.attachments) && trail?.attachments.length > 0 && (
+                              <div className='mt-2'>
+                                <strong>Attachments:</strong>
+                                <ul className='list-unstyled mt-1'>
+                                  {trail?.attachments?.map((att, aIndex) => (
+                                    <li key={aIndex}>
+                                      <a href={att.url} target='_blank' rel='noopener noreferrer'>
+                                        {att?.name || att?.fileName || 'Attachment'}
+                                      </a>
+                                      <span className='text-muted small ms-2'>
+                                        ({att.contentType})
+                                      </span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
                           </Accordion.Body>
                         </Accordion.Item>
                       ))}

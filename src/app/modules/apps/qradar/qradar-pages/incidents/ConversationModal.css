@@ -1,0 +1,17 @@
+.mail-body table {
+  width: 100% !important;   /* prevent overflow */
+  table-layout: auto;
+  border-collapse: collapse;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.mail-body table td,
+.mail-body table th {
+  word-break: break-word;
+  white-space: normal !important;
+}
+
+.mail-body {
+  overflow-x: auto; /* allow horizontal scroll if really needed */
+}

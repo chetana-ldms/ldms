@@ -4,11 +4,13 @@ import {
   fetchEmailSearchUrl,
   fetchReplyIncidentWithHtmlContentUrl,
 } from '../../../../../api/IncidentsApi'
+import {fetchSignatureUrl} from '../../../../../api/ConfigurationApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import RichTextEditor from '../../../../../../utils/RichTextEditor'
 import AsyncCreatableSelect from 'react-select/async-creatable'
+import {processHtmlWithInlineImages} from './processHtmlWithInlineImages'
 import makeAnimated from 'react-select/animated'
 
 const animatedComponents = makeAnimated()
@@ -20,6 +22,50 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
   const [cc, setCc] = useState([])
   const [bcc, setBcc] = useState([])
   const [subject, setSubject] = useState(`${incidentData?.subject || 'Incident update'}`)
+  const [signature, setSignature] = useState('')
+  const [hasSignatureInEditor, setHasSignatureInEditor] = useState(false)
+
+  useEffect(() => {
+    const userId = Number(sessionStorage.getItem("userId"));
+    if (show && userId) {
+      const loadSignature = async () => {
+        try {
+          const response = await fetchSignatureUrl(userId)
+          if (response?.isSuccess && response.data?.signatureHtml) {
+            const sigHtml = response.data.signatureHtml
+            setSignature(sigHtml)
+            setMessage(`<p><br/></p>${sigHtml}`) // load signature by default
+            setHasSignatureInEditor(true) // mark as added
+          } else {
+            setSignature('')
+            setMessage('<p><br/></p>')
+            setHasSignatureInEditor(false)
+          }
+        } catch (err) {
+          console.error(err)
+          notifyFail('Failed to load signature')
+          setSignature('')
+          setMessage('<p><br/></p>')
+          setHasSignatureInEditor(false)
+        }
+      }
+      loadSignature()
+    }
+  }, [show])
+
+  const handleAddSignature = () => {
+    if (signature && !hasSignatureInEditor) {
+      setMessage(signature)
+      setHasSignatureInEditor(true)
+    }
+  }
+
+  const handleClearSignature = () => {
+    if (hasSignatureInEditor) {
+      setMessage('')
+      setHasSignatureInEditor(false)
+    }
+  }
 
   const handleSend = async () => {
     if (!message || message === '<p><br></p>') {
@@ -27,23 +73,26 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
       return
     }
 
+    // Convert inline images to cid
+    const {cleanedHtml, attachments: inlineAttachments} = processHtmlWithInlineImages(message)
+
     const data = {
       replyDateTime: new Date().toISOString(),
       orgId: incidentData?.orgId,
       toolId: incidentData?.toolId,
       incidentId: incidentData?.incidentID,
-      notes: message,
+      notes: cleanedHtml,
       ccEmails: cc.map((e) => e.value),
       bccEmails: bcc.map((e) => e.value),
       userId: Number(sessionStorage.getItem('userId')),
-      attachments,
+      attachments: [...attachments.map((f) => ({file: f})), ...inlineAttachments],
     }
 
     try {
       setLoading(true)
       const responseData = await fetchReplyIncidentWithHtmlContentUrl(data)
-
       const {isSuccess, message: responseMessage} = responseData
+
       if (isSuccess) {
         notify(responseMessage)
         setMessage('')
@@ -53,8 +102,8 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
       } else {
         notifyFail(responseMessage)
       }
-    } catch (error) {
-      console.error(error)
+    } catch (err) {
+      console.error(err)
       notifyFail('Something went wrong while sending reply')
     } finally {
       setLoading(false)
@@ -217,12 +266,37 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
           </Form.Group>
 
           <Form.Group className='d-flex justify-content-end gap-2 mt-3'>
-            <Button variant='secondary' onClick={handleClose} disabled={loading}>
-              Close
-            </Button>
-            <Button variant='primary' onClick={handleSend} disabled={loading}>
-              {loading ? 'Sending...' : 'Send'}
-            </Button>
+            <div>
+              {' '}
+              {signature && (
+                <Form.Group className='d-flex justify-content-end gap-2 mt-3'>
+                  <Button
+                    variant='outline-primary'
+                    size='sm'
+                    onClick={handleAddSignature}
+                    disabled={hasSignatureInEditor}
+                  >
+                    Add Signature
+                  </Button>
+                  <Button
+                    variant='outline-danger'
+                    size='sm'
+                    onClick={handleClearSignature}
+                    disabled={!hasSignatureInEditor}
+                  >
+                    Clear Signature
+                  </Button>
+                </Form.Group>
+              )}
+            </div>
+            <div>
+              <Button variant='secondary me-2' onClick={handleClose} disabled={loading}>
+                Close
+              </Button>
+              <Button variant='primary' onClick={handleSend} disabled={loading}>
+                {loading ? 'Sending...' : 'Send'}
+              </Button>
+            </div>
           </Form.Group>
         </Form>
       </Modal.Body>
