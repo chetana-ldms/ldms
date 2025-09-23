@@ -3,6 +3,7 @@ import {Modal, Button, Form} from 'react-bootstrap'
 import {
   fetchEmailSearchUrl,
   fetchReplyIncidentUrl,
+  fetchSendIncidentMailWithHtmlContentUrl,
   fetchSendMailUrl,
 } from '../../../../../api/IncidentsApi'
 import {notify, notifyFail} from '../components/notification/Notification'
@@ -15,13 +16,15 @@ import AsyncCreatableSelect from 'react-select/async-creatable'
 import makeAnimated from 'react-select/animated'
 import {fetchMasterData} from '../../../../../api/Api'
 import Select from 'react-select'
+import {processHtmlWithInlineImages} from './processHtmlWithInlineImages'
 
 const animatedComponents = makeAnimated()
 
 const SendMailModal = ({show, onHide, onSend}) => {
   const userID = Number(sessionStorage.getItem('userId'))
   const orgId = Number(sessionStorage.getItem('orgId'))
-  const toolId = Number(sessionStorage.getItem('toolID'))
+  const toolId = Number(sessionStorage.getItem('incidentToolId'))
+  const [attachments, setAttachments] = useState([])
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
   const [subject, setSubject] = useState('')
@@ -39,24 +42,26 @@ const SendMailModal = ({show, onHide, onSend}) => {
       notifyFail('Please fill all required fields')
       return
     }
+    const {cleanedHtml, attachments: inlineAttachments} = processHtmlWithInlineImages(message)
     const data = {
       sendMailDateTime: new Date().toISOString(),
       orgId,
       toolId,
-      body: message,
+      body: cleanedHtml,
       email: to?.value || '',
       subject,
-      //   fromEmail: from?.value?.match(/\(([^)]+)\)/)?.[1] || from?.value || '',
       ccEmails: cc.map((e) => e.value),
       bccEmails: bcc.map((e) => e.value),
       userId: userID,
+      attachments: [...attachments.map((f) => ({file: f})), ...inlineAttachments],
     }
     try {
       setLoading(true)
-      const response = await fetchSendMailUrl(data)
+      const response = await fetchSendIncidentMailWithHtmlContentUrl(data)
       const {isSuccess, message: responseMessage} = response
       if (isSuccess) {
         notify(responseMessage)
+        setAttachments([])
         handleClose()
         onSend()
       } else {
@@ -73,6 +78,7 @@ const SendMailModal = ({show, onHide, onSend}) => {
     setFrom('')
     setTo('')
     setSubject('')
+    setAttachments([])
     setCc([])
     setBcc([])
     setMessage('')
@@ -213,7 +219,33 @@ const SendMailModal = ({show, onHide, onSend}) => {
             <Form.Label>
               Message <sup className='red'>*</sup>
             </Form.Label>
-            <RichTextEditor value={message} onChange={setMessage} />
+            {attachments.length > 0 && (
+              <div className='d-flex flex-wrap gap-2 mb-2'>
+                {attachments.map((file, idx) => (
+                  <div
+                    key={idx}
+                    className='d-flex align-items-center px-2 py-1 border rounded bg-light'
+                    style={{fontSize: '13px'}}
+                  >
+                    <span className='me-2'>
+                      {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                    </span>
+                    <button
+                      type='button'
+                      className='btn btn-sm btn-link text-danger p-0'
+                      onClick={() => setAttachments((prev) => prev.filter((_, i) => i !== idx))}
+                    >
+                      ✖
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <RichTextEditor
+              value={message}
+              onChange={setMessage}
+              onAttach={(file) => setAttachments((prev) => [...prev, file])}
+            />
           </Form.Group>
 
           <Form.Group className='d-flex justify-content-end gap-2 mt-3'>

@@ -16,7 +16,6 @@ const IncidentNotesListUrl = process.env.REACT_APP_INCIDENT_NOTES_LIST_URL
 const IncidentNotesAddUrl = process.env.REACT_APP_INCIDENT_NOTES_ADD_URL
 const IncidentNotesUpdateUrl = process.env.REACT_APP_INCIDENT_NOTES_UPDATE_URL
 const OrganizationToolsDetailsUrl = process.env.REACT_APP_ORG_TOOLS_DETAILS_URL
-
 const IncidentReportTypesUrl = process.env.REACT_APP_INCIDENT_REPORT_TYPES_URL
 const IncidentReportDataUrl = process.env.REACT_APP_INCIDENT_REPORT_DATA_URL
 const IncidentsHasChangesUrl = process.env.REACT_APP_HAS_CHANGES_URL
@@ -38,6 +37,11 @@ const IncidentConversationDeleteUrl =
   'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentConversation/Delete'
 const ForwardIncidentWithHtmlContentUrl =
   'http://10.41.3.232:501/api/IncidentManagement/v1/ForwardIncidentWithHtmlContent'
+const IncidentConversationForwardUrl =
+  'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentConversation/Forward'
+const ReplyToForwardUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/ReplyToForward'
+const SendIncidentMailWithHtmlContentUrl =
+  'http://10.41.3.232:501/api/IncidentManagement/v1/SendIncidentMailWithHtmlContent'
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -662,58 +666,143 @@ export const fetchIncidentConversationDeleteUrl = async (data) => {
 }
 export const fetchForwardIncidentWithHtmlContentUrl = async (data) => {
   try {
-    const formData = new FormData();
+    const formData = new FormData()
 
-    formData.append('ForwardDateTime', data.forwardDateTime || '');
-    formData.append('OrgId', data.orgId ?? '');
-    formData.append('ToolId', data.toolId ?? '');
-    formData.append('IncidentId', data.incidentId ?? '');
-    formData.append('UserId', data.userId ?? '');
+    formData.append('ForwardDateTime', data.forwardDateTime || '')
+    formData.append('OrgId', data.orgId ?? '')
+    formData.append('ToolId', data.toolId ?? '')
+    formData.append('IncidentId', data.incidentId ?? '')
+    formData.append('UserId', data.userId ?? '')
 
     // Email (to)
     if (data.email?.length) {
-      data.email.forEach((email) => formData.append('Email', email));
+      data.email.forEach((email) => formData.append('Email', email))
     } else {
-      formData.append('Email', ''); // empty
+      formData.append('Email', '') // empty
     }
 
     // CC
     if (data.ccEmails?.length) {
-      data.ccEmails.forEach((email) => formData.append('CcEmails', email));
+      data.ccEmails.forEach((email) => formData.append('CcEmails', email))
     } else {
-      formData.append('CcEmails', '');
+      formData.append('CcEmails', '')
     }
 
     // BCC
     if (data.bccEmails?.length) {
-      data.bccEmails.forEach((email) => formData.append('BccEmails', email));
+      data.bccEmails.forEach((email) => formData.append('BccEmails', email))
     } else {
-      formData.append('BccEmails', '');
+      formData.append('BccEmails', '')
     }
 
     // Attachments
     if (data.attachments?.length) {
       data.attachments.forEach((att) => {
         if (att.file) {
-          formData.append('Attachments', att.file, att.file.name);
+          formData.append('Attachments', att.file, att.file.name)
         } else {
-          formData.append('Attachments', att);
+          formData.append('Attachments', att)
         }
-      });
+      })
     } else {
-      formData.append('Attachments', '');
+      formData.append('Attachments', '')
     }
 
-    formData.append('BodyHtml', data.body || '');
+    formData.append('BodyHtml', data.body || '')
 
     const response = await fetch(ForwardIncidentWithHtmlContentUrl, {
       method: 'POST',
       body: formData,
-    });
+    })
 
-    return await response.json();
+    return await response.json()
   } catch (err) {
-    console.error('API call failed:', err);
+    console.error('API call failed:', err)
   }
-};
+}
+export const fetchIncidentConversationForwardUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${IncidentConversationForwardUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchReplyToForwardUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${ReplyToForwardUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchSendIncidentMailWithHtmlContentUrl = async (data) => {
+  try {
+    const formData = new FormData()
 
+    // 🔹 Always send all fields (with empty value if not provided)
+    formData.append('SendMailDateTime', data.sendMailDateTime || '')
+    formData.append('OrgId', data.orgId ?? '')
+    formData.append('ToolId', data.toolId ?? '')
+    formData.append('IncidentId', data.incidentId ?? 0)
+    formData.append('Email', data.email || '')
+    formData.append('BodyHtml', data.body || '')
+    formData.append('Subject', data.subject || '')
+    formData.append('UserId', data.userId ?? '')
+
+    // CC
+    if (data.ccEmails?.length) {
+      data.ccEmails.forEach((email) => formData.append('CcEmails', email))
+    } else {
+      formData.append('CcEmails', '') // send empty value
+    }
+
+    // BCC
+    if (data.bccEmails?.length) {
+      data.bccEmails.forEach((email) => formData.append('BccEmails', email))
+    } else {
+      formData.append('BccEmails', '')
+    }
+
+    // Attachments
+    if (data.attachments?.length) {
+      data.attachments.forEach((att) => {
+        if (att.contentId) {
+          formData.append('Attachments', att.file, att.file.name)
+          formData.append('ContentIds', att.contentId)
+        } else {
+          formData.append('Attachments', att.file || att)
+        }
+      })
+    } else {
+      formData.append('Attachments', '') // send empty value
+    }
+
+    const response = await fetch(SendIncidentMailWithHtmlContentUrl, {
+      method: 'POST',
+      body: formData,
+    })
+
+    return await response.json()
+  } catch (err) {
+    console.error('API call failed:', err)
+  }
+}

@@ -67,3 +67,9 @@
 .ql-attachment-remove:focus {
   outline: none;
 }
+.ql-editor img {
+  height: auto;
+  display: inline-block;
+  cursor: pointer; /* helps indicate selectable */
+}
+

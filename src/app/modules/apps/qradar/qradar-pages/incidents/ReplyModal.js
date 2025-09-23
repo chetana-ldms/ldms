@@ -3,6 +3,7 @@ import {Modal, Button, Form} from 'react-bootstrap'
 import {
   fetchEmailSearchUrl,
   fetchReplyIncidentWithHtmlContentUrl,
+  fetchReplyToForwardUrl,
 } from '../../../../../api/IncidentsApi'
 import {fetchSignatureUrl} from '../../../../../api/ConfigurationApi'
 import {notify, notifyFail} from '../components/notification/Notification'
@@ -66,49 +67,72 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
       setHasSignatureInEditor(false)
     }
   }
-
-  const handleSend = async () => {
-    if (!message || message === '<p><br></p>') {
-      notifyFail('Please enter the message')
-      return
-    }
-
-    // Convert inline images to cid
-    const {cleanedHtml, attachments: inlineAttachments} = processHtmlWithInlineImages(message)
-
-    const data = {
-      replyDateTime: new Date().toISOString(),
-      orgId: incidentData?.orgId,
-      toolId: incidentData?.toolId,
-      incidentId: incidentData?.incidentID,
-      notes: cleanedHtml,
-      ccEmails: cc.map((e) => e.value),
-      bccEmails: bcc.map((e) => e.value),
-      userId: Number(sessionStorage.getItem('userId')),
-      attachments: [...attachments.map((f) => ({file: f})), ...inlineAttachments],
-    }
-
-    try {
-      setLoading(true)
-      const responseData = await fetchReplyIncidentWithHtmlContentUrl(data)
-      const {isSuccess, message: responseMessage} = responseData
-
-      if (isSuccess) {
-        notify(responseMessage)
-        setMessage('')
-        setAttachments([])
-        onHide()
-        onSend()
-      } else {
-        notifyFail(responseMessage)
-      }
-    } catch (err) {
-      console.error(err)
-      notifyFail('Something went wrong while sending reply')
-    } finally {
-      setLoading(false)
-    }
+const handleSend = async () => {
+  if (!message || message === '<p><br></p>') {
+    notifyFail('Please enter the message')
+    return
   }
+
+  // Convert inline images to cid
+  const { cleanedHtml, attachments: inlineAttachments } = processHtmlWithInlineImages(message)
+
+  try {
+    setLoading(true)
+
+    let responseData
+    if (incidentData?.conversationId) {
+      // 🔹 Replying to Forward API
+      const data = {
+        forwardDateTime: new Date().toISOString(),
+        orgId: incidentData?.orgId,
+        toolId: incidentData?.toolId,
+        incidentId: incidentData?.incidentID,
+        email: [incidentData?.incidentEmail], // main "To" email
+        body: cleanedHtml,
+        ccEmails: cc.map((e) => e.value),
+        bccEmails: bcc.map((e) => e.value),
+        userId: Number(sessionStorage.getItem('userId')),
+        includeOriginalAttachments: true,
+        includePreviousConversations: true,
+        conversationId: incidentData.conversationId,
+      }
+      responseData = await fetchReplyToForwardUrl(data)
+    } else {
+      // 🔹 Normal Incident Reply API
+      const data = {
+        replyDateTime: new Date().toISOString(),
+        orgId: incidentData?.orgId,
+        toolId: incidentData?.toolId,
+        incidentId: incidentData?.incidentID,
+        notes: cleanedHtml,
+        ccEmails: cc.map((e) => e.value),
+        bccEmails: bcc.map((e) => e.value),
+        userId: Number(sessionStorage.getItem('userId')),
+        attachments: [
+          ...attachments.map((f) => ({ file: f })),
+          ...inlineAttachments,
+        ],
+      }
+      responseData = await fetchReplyIncidentWithHtmlContentUrl(data)
+    }
+
+    const { isSuccess, message: responseMessage } = responseData
+    if (isSuccess) {
+      notify(responseMessage)
+      setMessage('')
+      setAttachments([])
+      onHide()
+      onSend()
+    } else {
+      notifyFail(responseMessage)
+    }
+  } catch (err) {
+    console.error(err)
+    notifyFail('Something went wrong while sending reply')
+  } finally {
+    setLoading(false)
+  }
+}
 
   const loadEmailOptions = async (inputValue) => {
     if (!inputValue || inputValue.length < 1) return []
