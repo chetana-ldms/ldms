@@ -56,8 +56,9 @@ const ConversationModal = ({show, onClose, incidentData}) => {
       console.error('Error deleting conversation trail:', error)
     }
   }
+  const handleEditTrail = (mailId) => {
+};
 
-  // Forward trail
   const handleForwardTrail = (trailId) => {
     setSelectedConversationId(trailId)
     incidentData.replyForward = false
@@ -95,25 +96,76 @@ const ConversationModal = ({show, onClose, incidentData}) => {
     })
   }
 
+  const getMailBackgroundClass = (mail) => {
+    if (mail.incoming === true) return 'bg-white border'
+    if (mail.incoming === false && mail.private === false) return 'bg-primary bg-opacity-10'
+    if (mail.incoming === false && mail.private === true) return 'bg-warning bg-opacity-25'
+    return 'bg-info bg-opacity-25'
+  }
+
   return (
     <>
-      <Modal show={show} onHide={onClose} size='xl' className='conversationModal application-modal'>
+      <Modal
+        show={show}
+        onHide={onClose}
+        size='xl'
+        scrollable
+        className='conversationModal application-modal'
+      >
         <Modal.Header closeButton>
           <Modal.Title>Conversation</Modal.Title>
         </Modal.Header>
-
         <Modal.Body>
           <div className='conversation-tab'>
             {conversation?.map((mail, index) => (
-              <div key={mail.id || index} className='mb-4'>
-                {/* Header */}
-                <div className='d-flex align-items-center mb-2'>
-                  <div className='symbol symbol-circle symbol-35px bg-light-primary text-primary fw-bold me-3 p-4'>
-                    {mail.author?.[0]?.toUpperCase() || '?'}
+              <div
+                key={mail.id || index}
+                className={`mb-4 p-3 rounded ${getMailBackgroundClass(mail)}`}
+              >
+                {/* Main header with author + actions */}
+                <div className='d-flex justify-content-between align-items-center mb-2'>
+                  <div className='d-flex align-items-center'>
+                    <div className='symbol symbol-circle symbol-35px bg-light-primary text-primary fw-bold me-3 p-4'>
+                      {mail.author?.[0]?.toUpperCase() || '?'}
+                    </div>
+                    <div>
+                      <strong>{mail.originalMailHeader}</strong>
+                      <div className='text-muted small'>{formatDateTime(mail.createdAt)}</div>
+                    </div>
                   </div>
-                  <div>
-                    <strong>{mail.originalMailHeader}</strong>
-                    <div className='text-muted small'>{formatDateTime(mail.createdAt)}</div>
+                  <div className='d-flex align-items-center'>
+                    {mail.canEdit && (
+                      <i
+                        className='fa fa-edit text-warning me-3'
+                        title='Edit'
+                        style={{cursor: 'pointer'}}
+                        onClick={() => handleEditTrail(mail.id)}
+                      />
+                    )}
+                    {mail.canReply && (
+                      <i
+                        className='fa fa-reply text-success me-3'
+                        title='Reply'
+                        style={{cursor: 'pointer'}}
+                        onClick={() => handleReplyTrail(mail.id)}
+                      />
+                    )}
+                    {mail.canFowward && (
+                      <i
+                        className='fa fa-share text-primary me-3'
+                        title='Forward'
+                        style={{cursor: 'pointer'}}
+                        onClick={() => handleForwardTrail(mail.id)}
+                      />
+                    )}
+                    {mail.canDelete && (
+                      <i
+                        className='fa fa-trash text-danger'
+                        title='Delete'
+                        style={{cursor: 'pointer'}}
+                        onClick={() => handleDeleteTrail(mail.id)}
+                      />
+                    )}
                   </div>
                 </div>
 
@@ -138,10 +190,7 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                       )}
                     </div>
                   )}
-
                   <div className='mail-body' dangerouslySetInnerHTML={{__html: mail.htmlCurrent}} />
-
-                  {/* Attachments */}
                   {Array.isArray(mail?.attachments) && mail?.attachments?.length > 0 && (
                     <div className='mt-2'>
                       <strong>Attachments:</strong>
@@ -157,51 +206,23 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                     </div>
                   )}
 
-                  {/* Conversation trail */}
+                  {/* Trails */}
                   {Array.isArray(mail.conversationMailTrailData) &&
                     mail.conversationMailTrailData.length > 0 && (
                       <Accordion className='mt-3'>
                         {mail.conversationMailTrailData.map((trail, tIndex) => (
-                          <Accordion.Item eventKey={String(tIndex)} key={tIndex}>
+                          <Accordion.Item
+                            eventKey={String(tIndex)}
+                            key={tIndex}
+                            className={`rounded p-2 ${getMailBackgroundClass(trail)}`}
+                          >
                             <Accordion.Header>
                               <div className='d-flex justify-content-between align-items-center w-100'>
                                 <span>
                                   {trail.author} - {trail.originalMailHeader}
                                 </span>
-                                {trail.type !== 'Initial Message' && (
-                                  <div className='d-flex align-items-center ms-auto'>
-                                    <i
-                                      className='fa fa-reply text-success me-5'
-                                      title='Reply'
-                                      style={{cursor: 'pointer'}}
-                                      onClick={(e) => {
-                                        e.stopPropagation()
-                                        handleReplyTrail(trail.id)
-                                      }}
-                                    />
-                                    <i
-                                      className='fa fa-share text-primary me-5'
-                                      title='Forward'
-                                      style={{cursor: 'pointer'}}
-                                      onClick={(e) => {
-                                        e.stopPropagation()
-                                        handleForwardTrail(trail.id)
-                                      }}
-                                    />
-                                    <i
-                                      className='fa fa-trash text-danger me-5'
-                                      title='Delete'
-                                      style={{cursor: 'pointer'}}
-                                      onClick={(e) => {
-                                        e.stopPropagation()
-                                        handleDeleteTrail(trail.id)
-                                      }}
-                                    />
-                                  </div>
-                                )}
                               </div>
                             </Accordion.Header>
-
                             <Accordion.Body>
                               <div className='text-muted small mt-2'>
                                 {trail.toEmails && (
@@ -248,7 +269,6 @@ const ConversationModal = ({show, onClose, incidentData}) => {
             ))}
           </div>
         </Modal.Body>
-
         <Modal.Footer>
           <Button variant='secondary' onClick={onClose}>
             Close

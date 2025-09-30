@@ -11,7 +11,7 @@
 
 /* make the editor area reasonably tall and allow attachments to wrap */
 .ql-editor {
-  min-height: 120px;
+  min-height: 250px;
   display: block;      /* keep normal editing behaviour */
   padding: 12px;
 }
