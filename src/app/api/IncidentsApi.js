@@ -42,6 +42,7 @@ const IncidentConversationForwardUrl =
 const ReplyToForwardUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/ReplyToForward'
 const SendIncidentMailWithHtmlContentUrl =
   'http://10.41.3.232:501/api/IncidentManagement/v1/SendIncidentMailWithHtmlContent'
+  const MessageTemplatesUrl ="http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Templates"
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -757,8 +758,6 @@ export const fetchReplyToForwardUrl = async (data) => {
 export const fetchSendIncidentMailWithHtmlContentUrl = async (data) => {
   try {
     const formData = new FormData()
-
-    // 🔹 Always send all fields (with empty value if not provided)
     formData.append('SendMailDateTime', data.sendMailDateTime || '')
     formData.append('OrgId', data.orgId ?? '')
     formData.append('ToolId', data.toolId ?? '')
@@ -767,22 +766,16 @@ export const fetchSendIncidentMailWithHtmlContentUrl = async (data) => {
     formData.append('BodyHtml', data.body || '')
     formData.append('Subject', data.subject || '')
     formData.append('UserId', data.userId ?? '')
-
-    // CC
     if (data.ccEmails?.length) {
       data.ccEmails.forEach((email) => formData.append('CcEmails', email))
     } else {
       formData.append('CcEmails', '') // send empty value
     }
-
-    // BCC
     if (data.bccEmails?.length) {
       data.bccEmails.forEach((email) => formData.append('BccEmails', email))
     } else {
       formData.append('BccEmails', '')
     }
-
-    // Attachments
     if (data.attachments?.length) {
       data.attachments.forEach((att) => {
         if (att.contentId) {
@@ -795,14 +788,29 @@ export const fetchSendIncidentMailWithHtmlContentUrl = async (data) => {
     } else {
       formData.append('Attachments', '') // send empty value
     }
-
     const response = await fetch(SendIncidentMailWithHtmlContentUrl, {
       method: 'POST',
       body: formData,
     })
-
     return await response.json()
   } catch (err) {
     console.error('API call failed:', err)
+  }
+}
+export const fetchMessageTemplatesUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${MessageTemplatesUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
   }
 }

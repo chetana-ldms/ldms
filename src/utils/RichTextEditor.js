@@ -5,7 +5,6 @@ import 'react-quill/dist/quill.snow.css'
 import './RichTextEditor.css'
 import ImageResize from 'quill-image-resize-module-react'
 
-// Register it with Quill
 Quill.register('modules/imageResize', ImageResize)
 
 const RichTextEditor = ({value, onChange, onAttach}) => {
@@ -59,8 +58,6 @@ const RichTextEditor = ({value, onChange, onAttach}) => {
         modules={modules}
         placeholder='Type your reply here...'
       />
-
-      {/* Hidden file input */}
       <input
         ref={fileInputRef}
         type='file'

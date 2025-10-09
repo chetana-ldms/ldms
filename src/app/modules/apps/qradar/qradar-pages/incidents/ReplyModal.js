@@ -14,9 +14,7 @@ import RichTextEditor from '../../../../../../utils/RichTextEditor'
 import AsyncCreatableSelect from 'react-select/async-creatable'
 import {processHtmlWithInlineImages} from './processHtmlWithInlineImages'
 import makeAnimated from 'react-select/animated'
-
 const animatedComponents = makeAnimated()
-
 const ReplyModal = ({show, onHide, incidentData, onSend}) => {
   const {orgId, toolId, incidentID} = incidentData || {}
   const [message, setMessage] = useState('')
@@ -28,30 +26,83 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
   const [signature, setSignature] = useState('')
   const [hasSignatureInEditor, setHasSignatureInEditor] = useState(false)
   const [conversation, setConversation] = useState([])
-  console.log(conversation, 'conversation')
+  console.log('Conversation data:', conversation)
+  const [showConversation, setShowConversation] = useState(false)
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString)
+    return date.toLocaleString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    })
+  }
+const renderConversationHtml = (mail) => {
+  let html = `
+    <div style="margin-top:10px; padding-top:10px; border-top:1px solid #ddd;">
+      <p><strong>${mail.originalMailHeader || 'Mail'}</strong> - ${formatDateTime(mail.createdAt)}</p>
+      <div><strong>From:</strong> ${mail.author || ''}</div>
+      ${mail.toEmails ? `<div><strong>To:</strong> ${mail.toEmails}</div>` : ''}
+      ${mail.ccEmails ? `<div><strong>Cc:</strong> ${mail.ccEmails}</div>` : ''}
+      ${mail.bccEmails ? `<div><strong>Bcc:</strong> ${mail.bccEmails}</div>` : ''}
+      <div>${mail.htmlCurrent || ''}</div>
+    </div>
+  `;
 
-  const loadConversation = async () => {
-    try {
-      setConversation([])
-      const response = await fetchIncidentConversationUrl(orgId, toolId, incidentID)
-
-      if (response?.isSuccess) {
-        setConversation(response?.conversations || [])
-      } else {
-        console.error('API failed:', response?.message)
-        setConversation([])
-      }
-    } catch (error) {
-      console.error('Error fetching conversation:', error)
-      setConversation([])
-    }
+  // ✅ If there are nested trails, just append their content directly (no extra blockquotes)
+  if (Array.isArray(mail.conversationMailTrailData) && mail.conversationMailTrailData.length > 0) {
+    html += mail.conversationMailTrailData.map(trail => renderConversationHtml(trail)).join('');
   }
 
-  useEffect(() => {
-    if (show && orgId && toolId && incidentID) {
-      loadConversation()
+  return html;
+};
+
+const loadConversation = async () => {
+  try {
+    setConversation([]);
+
+    const response = await fetchIncidentConversationUrl(orgId, toolId, incidentID);
+    if (response?.isSuccess) {
+      const convos = response?.conversations || [];
+      const lastConvo = convos[convos.length - 1] ? [convos[convos.length - 1]] : [];
+      setConversation(lastConvo);
+
+      // Combine all conversation HTML
+      const innerHtml = lastConvo.map((mail) => renderConversationHtml(mail)).join('');
+
+      // ✅ Wrap everything in ONE <blockquote>
+      const conversationHtml = `
+        <blockquote style="margin-left:20px; border-left:2px solid #ccc; padding-left:10px;">
+          ${innerHtml}
+        </blockquote>
+      `;
+
+      return conversationHtml;
+    } else {
+      console.error('API failed:', response?.message);
+      setConversation([]);
+      return '';
     }
-  }, [show, orgId, toolId, incidentID])
+  } catch (error) {
+    console.error('Error fetching conversation:', error);
+    setConversation([]);
+    return '';
+  }
+};
+
+  const handleShowConversation = async () => {
+    const convoHtml = await loadConversation()
+    if (convoHtml) {
+      setMessage((prev) => `${prev}<br/>${convoHtml}`)
+      setShowConversation(true)
+    }
+  }
+  const handleHideConversation = () => {
+    setMessage((prev) => prev.replace(/<blockquote[\s\S]*<\/blockquote>/, ''))
+    setShowConversation(false)
+  }
   useEffect(() => {
     const userId = Number(sessionStorage.getItem('userId'))
     if (show && userId) {
@@ -61,35 +112,30 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
           if (response?.isSuccess && response.data?.signatureHtml) {
             const sigHtml = response.data.signatureHtml
             setSignature(sigHtml)
-            setMessage(`<p><br/></p>${sigHtml}`) // load signature by default
-            setHasSignatureInEditor(true) // mark as added
+            setHasSignatureInEditor(true)
           } else {
             setSignature('')
-            setMessage('<p><br/></p>')
             setHasSignatureInEditor(false)
           }
         } catch (err) {
           console.error(err)
           notifyFail('Failed to load signature')
           setSignature('')
-          setMessage('<p><br/></p>')
           setHasSignatureInEditor(false)
         }
       }
       loadSignature()
     }
   }, [show])
-
   const handleAddSignature = () => {
     if (signature && !hasSignatureInEditor) {
-      setMessage(signature)
+      setMessage((prev) => `${prev}<br/>${signature}`)
       setHasSignatureInEditor(true)
     }
   }
-
   const handleClearSignature = () => {
     if (hasSignatureInEditor) {
-      setMessage('')
+      setMessage((prev) => prev.replace(signature, ''))
       setHasSignatureInEditor(false)
     }
   }
@@ -98,22 +144,17 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
       notifyFail('Please enter the message')
       return
     }
-
-    // Convert inline images to cid
     const {cleanedHtml, attachments: inlineAttachments} = processHtmlWithInlineImages(message)
-
     try {
       setLoading(true)
-
       let responseData
       if (incidentData?.conversationId) {
-        // 🔹 Replying to Forward API
         const data = {
           forwardDateTime: new Date().toISOString(),
           orgId: incidentData?.orgId,
           toolId: incidentData?.toolId,
           incidentId: incidentData?.incidentID,
-          email: [incidentData?.incidentEmail], // main "To" email
+          email: [incidentData?.incidentEmail],
           body: cleanedHtml,
           ccEmails: cc.map((e) => e.value),
           bccEmails: bcc.map((e) => e.value),
@@ -124,7 +165,6 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
         }
         responseData = await fetchReplyToForwardUrl(data)
       } else {
-        // 🔹 Normal Incident Reply API
         const data = {
           replyDateTime: new Date().toISOString(),
           orgId: incidentData?.orgId,
@@ -138,7 +178,6 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
         }
         responseData = await fetchReplyIncidentWithHtmlContentUrl(data)
       }
-
       const {isSuccess, message: responseMessage} = responseData
       if (isSuccess) {
         notify(responseMessage)
@@ -156,7 +195,6 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
       setLoading(false)
     }
   }
-
   const loadEmailOptions = async (inputValue) => {
     if (!inputValue || inputValue.length < 1) return []
     const response = await fetchEmailSearchUrl(
@@ -167,18 +205,15 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
     if (!response || !Array.isArray(response)) return []
     return response.map((email) => ({label: email, value: email}))
   }
-
   const handleClose = () => {
     setMessage('')
     setAttachments([])
     onHide()
   }
-
   const customStyles = {
     control: (base) => ({...base, minHeight: '40px'}),
     menu: (base) => ({...base, zIndex: 9999}),
   }
-
   useEffect(() => {
     if (incidentData) {
       setSubject(`${incidentData.subject || 'Incident update'}`)
@@ -187,7 +222,6 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
         : incidentData.replyCCEmails
         ? [incidentData.replyCCEmails]
         : []
-
       setCc(ccList.map((email) => ({label: email, value: email})))
       setBcc([])
     }
@@ -198,9 +232,6 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
       <ToastContainer />
       <Modal.Header closeButton>
         <Modal.Title>Reply</Modal.Title>
-        <button type='button' className='application-modal-close' aria-label='Close'>
-          <i className='fa fa-close' />
-        </button>
       </Modal.Header>
 
       <Modal.Body className='pt-1 pb-2'>
@@ -217,7 +248,6 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
               />
             </div>
           </Form.Group>
-
           <Form.Group className='mb-1 row align-items-center'>
             <Form.Label className='col-md-2 col-form-label'>
               Subject <sup className='red'>*</sup>
@@ -231,14 +261,12 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
               />
             </div>
           </Form.Group>
-
           <Form.Group className='mb-1 row align-items-center'>
             <Form.Label className='col-md-2 col-form-label'>To</Form.Label>
             <div className='col-md-10'>
               <Form.Control type='email' value={incidentData?.incidentEmail || ''} disabled />
             </div>
           </Form.Group>
-
           <Form.Group className='mb-1 row align-items-center'>
             <Form.Label className='col-md-2 col-form-label'>Cc</Form.Label>
             <div className='col-md-10'>
@@ -258,7 +286,6 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
               />
             </div>
           </Form.Group>
-
           <Form.Group className='mb-1 row align-items-center'>
             <Form.Label className='col-md-2 col-form-label'>Bcc</Form.Label>
             <div className='col-md-10'>
@@ -278,8 +305,7 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
               />
             </div>
           </Form.Group>
-
-          <Form.Group controlId='formBody' className=''>
+          <Form.Group controlId='formBody'>
             <Form.Label>
               Message <sup className='red'>*</sup>
             </Form.Label>
@@ -305,50 +331,54 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
                 ))}
               </div>
             )}
+            <div className='d-flex justify-content-end mb-2'>
+              {!showConversation ? (
+                <Button variant='outline-secondary' size='sm' onClick={handleShowConversation}>
+                  Add Previous Conversation
+                </Button>
+              ) : (
+                <Button variant='outline-danger' size='sm' onClick={handleHideConversation}>
+                  Remove Previous Conversation
+                </Button>
+              )}
+            </div>
             <RichTextEditor
               value={message}
               onChange={setMessage}
               onAttach={(file) => setAttachments((prev) => [...prev, file])}
             />
           </Form.Group>
-
           <Form.Group className='d-flex justify-content-end gap-2 mt-3'>
-            <div>
-              {' '}
-              {signature && (
-                <Form.Group className='d-flex justify-content-end gap-2 mt-3'>
-                  <Button
-                    variant='outline-primary'
-                    size='sm'
-                    onClick={handleAddSignature}
-                    disabled={hasSignatureInEditor}
-                  >
-                    Add Signature
-                  </Button>
-                  <Button
-                    variant='outline-danger'
-                    size='sm'
-                    onClick={handleClearSignature}
-                    disabled={!hasSignatureInEditor}
-                  >
-                    Clear Signature
-                  </Button>
-                </Form.Group>
-              )}
-            </div>
-            <div>
-              <Button variant='secondary me-2' onClick={handleClose} disabled={loading}>
-                Close
-              </Button>
-              <Button variant='primary' onClick={handleSend} disabled={loading}>
-                {loading ? 'Sending...' : 'Send'}
-              </Button>
-            </div>
+            {signature && (
+              <>
+                <Button
+                  variant='outline-primary'
+                  size='sm'
+                  onClick={handleAddSignature}
+                  disabled={hasSignatureInEditor}
+                >
+                  Add Signature
+                </Button>
+                <Button
+                  variant='outline-danger'
+                  size='sm'
+                  onClick={handleClearSignature}
+                  disabled={!hasSignatureInEditor}
+                >
+                  Clear Signature
+                </Button>
+              </>
+            )}
+            <Button variant='secondary me-2' onClick={handleClose} disabled={loading}>
+              Close
+            </Button>
+            <Button variant='primary' onClick={handleSend} disabled={loading}>
+              {loading ? 'Sending...' : 'Send'}
+            </Button>
           </Form.Group>
         </Form>
       </Modal.Body>
     </Modal>
   )
 }
-
 export default ReplyModal
