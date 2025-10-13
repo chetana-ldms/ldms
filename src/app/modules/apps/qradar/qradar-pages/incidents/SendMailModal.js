@@ -17,6 +17,7 @@ import makeAnimated from 'react-select/animated'
 import {fetchMasterData} from '../../../../../api/Api'
 import Select from 'react-select'
 import {processHtmlWithInlineImages} from './processHtmlWithInlineImages'
+import MessageTemplatesModal from './MessageTemplatesModel'
 
 const animatedComponents = makeAnimated()
 
@@ -36,6 +37,17 @@ const SendMailModal = ({show, onHide, onSend}) => {
     FreshDesk_Support_Mails: [],
   })
   const {FreshDesk_Support_Mails} = dropdownData
+  const [showMessageTemplateModal, setShowMessageTemplateModal] = useState(false)
+  const handleMessageTemplateClick = () => {
+    setShowMessageTemplateModal(true)
+  }
+
+  const handleTemplateSelect = (templateHtml) => {
+    if (templateHtml) {
+      setMessage((prev) => `${prev}<br/>${templateHtml}`)
+    }
+    setShowMessageTemplateModal(false)
+  }
 
   const handleSend = async () => {
     if (!to || !subject || !message || message === '<p><br></p>') {
@@ -249,6 +261,21 @@ const SendMailModal = ({show, onHide, onSend}) => {
           </Form.Group>
 
           <Form.Group className='d-flex justify-content-end gap-2 mt-3'>
+            <Button
+              variant='outline-info'
+              size='sm'
+              onClick={() => setShowMessageTemplateModal(true)}
+              title='Insert Message Template'
+            >
+              <i className='fa fa-file-alt'></i> Templates
+            </Button>
+
+            <MessageTemplatesModal
+              show={showMessageTemplateModal}
+              onHide={() => setShowMessageTemplateModal(false)}
+              onSelectTemplate={handleTemplateSelect}
+              orgId={orgId}
+            />
             <Button variant='secondary' onClick={handleClose} disabled={loading}>
               Close
             </Button>

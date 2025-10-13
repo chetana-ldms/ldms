@@ -42,7 +42,12 @@ const IncidentConversationForwardUrl =
 const ReplyToForwardUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/ReplyToForward'
 const SendIncidentMailWithHtmlContentUrl =
   'http://10.41.3.232:501/api/IncidentManagement/v1/SendIncidentMailWithHtmlContent'
-  const MessageTemplatesUrl ="http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Templates"
+const MessageTemplatesUrl = 'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Templates'
+const TemplatesTemplateTypesUrl =
+  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Types'
+const TemplatesGroupsUrl = 'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Groups'
+const MessageTemplatesProcessUrl =
+  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Process'
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -808,6 +813,54 @@ export const fetchMessageTemplatesUrl = async (data) => {
         ...data,
       }),
     })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchTemplatesTemplateTypesUrl = async () => {
+  try {
+    const response = await FetchWithToken(`${TemplatesTemplateTypesUrl}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.error('Error fetching template types:', error)
+    return {isSuccess: false, data: []}
+  }
+}
+
+export const fetchTemplatesGroupsUrl = async () => {
+  try {
+    const response = await FetchWithToken(`${TemplatesGroupsUrl}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.error('Error fetching template groups:', error)
+    return {isSuccess: false, data: []}
+  }
+}
+export const fetchMessageTemplatesProcessUrl = async (templateId, transactionId) => {
+  try {
+    const response = await FetchWithToken(
+      `${MessageTemplatesProcessUrl}?templateId=${templateId}&transactionId=${transactionId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
     const responseData = await response.json()
     return responseData
   } catch (error) {

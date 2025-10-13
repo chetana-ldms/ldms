@@ -11,6 +11,7 @@ import {
   fetchReplyToForwardUrl,
 } from '../../../../../api/IncidentsApi'
 import {notify, notifyFail} from '../components/notification/Notification'
+import MessageTemplatesModal from './MessageTemplatesModel'
 
 const animatedComponents = makeAnimated()
 
@@ -25,6 +26,17 @@ const ForwardModal = ({show, onHide, incidentData, onForward}) => {
   const [loading, setLoading] = useState(false)
   const [includeOriginalAttachments, setIncludeOriginalAttachments] = useState(true)
   const [includePreviousConversations, setIncludePreviousConversations] = useState(true)
+  const [showMessageTemplateModal, setShowMessageTemplateModal] = useState(false)
+  const handleMessageTemplateClick = () => {
+    setShowMessageTemplateModal(true)
+  }
+
+  const handleTemplateSelect = (templateHtml) => {
+    if (templateHtml) {
+      setMessage((prev) => `${prev}<br/>${templateHtml}`)
+    }
+    setShowMessageTemplateModal(false)
+  }
   const handleForward = async () => {
     if (!to.length || !subject || !message || message === '<p><br></p>') {
       notifyFail('All required fields must be filled')
@@ -246,6 +258,21 @@ const ForwardModal = ({show, onHide, incidentData, onForward}) => {
           )}
 
           <div className='d-flex justify-content-end gap-2 mt-3'>
+            <Button
+              variant='outline-info'
+              size='sm'
+              onClick={() => setShowMessageTemplateModal(true)}
+              title='Insert Message Template'
+            >
+              <i className='fa fa-file-alt'></i> Templates
+            </Button>
+
+            <MessageTemplatesModal
+              show={showMessageTemplateModal}
+              onHide={() => setShowMessageTemplateModal(false)}
+              onSelectTemplate={handleTemplateSelect}
+              incidentData={incidentData}
+            />
             <Button variant='secondary' onClick={handleClose} disabled={loading}>
               Cancel
             </Button>

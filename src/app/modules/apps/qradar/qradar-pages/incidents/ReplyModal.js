@@ -14,6 +14,7 @@ import RichTextEditor from '../../../../../../utils/RichTextEditor'
 import AsyncCreatableSelect from 'react-select/async-creatable'
 import {processHtmlWithInlineImages} from './processHtmlWithInlineImages'
 import makeAnimated from 'react-select/animated'
+import MessageTemplatesModal from './MessageTemplatesModel'
 const animatedComponents = makeAnimated()
 const ReplyModal = ({show, onHide, incidentData, onSend}) => {
   const {orgId, toolId, incidentID} = incidentData || {}
@@ -28,6 +29,18 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
   const [conversation, setConversation] = useState([])
   console.log('Conversation data:', conversation)
   const [showConversation, setShowConversation] = useState(false)
+  const [conversationHtml, setConversationHtml] = useState('')
+  const [showMessageTemplateModal, setShowMessageTemplateModal] = useState(false)
+  const handleMessageTemplateClick = () => {
+    setShowMessageTemplateModal(true)
+  }
+
+  const handleTemplateSelect = (templateHtml) => {
+    if (templateHtml) {
+      setMessage((prev) => `${prev}<br/>${templateHtml}`)
+    }
+    setShowMessageTemplateModal(false)
+  }
   const formatDateTime = (dateString) => {
     const date = new Date(dateString)
     return date.toLocaleString('en-IN', {
@@ -39,58 +52,59 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
       year: 'numeric',
     })
   }
-const renderConversationHtml = (mail) => {
-  let html = `
-    <div style="margin-top:10px; padding-top:10px; border-top:1px solid #ddd;">
-      <p><strong>${mail.originalMailHeader || 'Mail'}</strong> - ${formatDateTime(mail.createdAt)}</p>
-      <div><strong>From:</strong> ${mail.author || ''}</div>
-      ${mail.toEmails ? `<div><strong>To:</strong> ${mail.toEmails}</div>` : ''}
-      ${mail.ccEmails ? `<div><strong>Cc:</strong> ${mail.ccEmails}</div>` : ''}
-      ${mail.bccEmails ? `<div><strong>Bcc:</strong> ${mail.bccEmails}</div>` : ''}
-      <div>${mail.htmlCurrent || ''}</div>
-    </div>
-  `;
+  const renderConversationHtml = (mail) => {
+    // Helper to recursively get all HTML content
+    const getAllMailContent = (m) => {
+      let content = `
+      On ${formatDateTime(m.createdAt)}, ${m.author || 'Unknown Sender'} wrote:<br>
+      ${m.htmlCurrent || ''}<br><br>
+    `
 
-  // ✅ If there are nested trails, just append their content directly (no extra blockquotes)
-  if (Array.isArray(mail.conversationMailTrailData) && mail.conversationMailTrailData.length > 0) {
-    html += mail.conversationMailTrailData.map(trail => renderConversationHtml(trail)).join('');
-  }
+      if (Array.isArray(m.conversationMailTrailData) && m.conversationMailTrailData.length > 0) {
+        content += m.conversationMailTrailData.map(getAllMailContent).join('')
+      }
 
-  return html;
-};
-
-const loadConversation = async () => {
-  try {
-    setConversation([]);
-
-    const response = await fetchIncidentConversationUrl(orgId, toolId, incidentID);
-    if (response?.isSuccess) {
-      const convos = response?.conversations || [];
-      const lastConvo = convos[convos.length - 1] ? [convos[convos.length - 1]] : [];
-      setConversation(lastConvo);
-
-      // Combine all conversation HTML
-      const innerHtml = lastConvo.map((mail) => renderConversationHtml(mail)).join('');
-
-      // ✅ Wrap everything in ONE <blockquote>
-      const conversationHtml = `
-        <blockquote style="margin-left:20px; border-left:2px solid #ccc; padding-left:10px;">
-          ${innerHtml}
-        </blockquote>
-      `;
-
-      return conversationHtml;
-    } else {
-      console.error('API failed:', response?.message);
-      setConversation([]);
-      return '';
+      return content
     }
-  } catch (error) {
-    console.error('Error fetching conversation:', error);
-    setConversation([]);
-    return '';
+
+    // ✅ Wrap all items inside a single quoted-text div
+    const allContent = getAllMailContent(mail)
+
+    const html = `
+    <div rel='quoted-text'>
+      <div style="border-left:1px solid #ccc; margin-left:8px; padding-left:8px; color:#6c757d;">
+        ${allContent}
+      </div>
+    </div>
+  `
+
+    return html
   }
-};
+
+  const loadConversation = async () => {
+    try {
+      setConversation([])
+      const response = await fetchIncidentConversationUrl(orgId, toolId, incidentID)
+
+      if (response?.isSuccess) {
+        const convos = response?.conversations || []
+        const lastConvo = convos.length > 0 ? [convos[convos.length - 1]] : []
+        setConversation(lastConvo)
+
+        // ✅ Generate quoted HTML with single wrapper
+        const conversationHtml = lastConvo.map((mail) => renderConversationHtml(mail)).join('')
+        return conversationHtml
+      } else {
+        console.error('API failed:', response?.message)
+        setConversation([])
+        return ''
+      }
+    } catch (error) {
+      console.error('Error fetching conversation:', error)
+      setConversation([])
+      return ''
+    }
+  }
 
   const handleShowConversation = async () => {
     const convoHtml = await loadConversation()
@@ -100,7 +114,7 @@ const loadConversation = async () => {
     }
   }
   const handleHideConversation = () => {
-    setMessage((prev) => prev.replace(/<blockquote[\s\S]*<\/blockquote>/, ''))
+    setMessage('')
     setShowConversation(false)
   }
   useEffect(() => {
@@ -144,18 +158,31 @@ const loadConversation = async () => {
       notifyFail('Please enter the message')
       return
     }
+
     const {cleanedHtml, attachments: inlineAttachments} = processHtmlWithInlineImages(message)
+
     try {
       setLoading(true)
       let responseData
+
+      // ✅ Fetch quoted conversation HTML before sending (if applicable)
+      const quotedHtml = await loadConversation()
+      const finalBody = `
+      <div>
+        ${cleanedHtml}
+        ${quotedHtml ? quotedHtml : ''}
+      </div>
+    `
+
       if (incidentData?.conversationId) {
+        // ✅ Existing conversation (Reply)
         const data = {
           forwardDateTime: new Date().toISOString(),
           orgId: incidentData?.orgId,
           toolId: incidentData?.toolId,
           incidentId: incidentData?.incidentID,
           email: [incidentData?.incidentEmail],
-          body: cleanedHtml,
+          body: finalBody,
           ccEmails: cc.map((e) => e.value),
           bccEmails: bcc.map((e) => e.value),
           userId: Number(sessionStorage.getItem('userId')),
@@ -165,12 +192,13 @@ const loadConversation = async () => {
         }
         responseData = await fetchReplyToForwardUrl(data)
       } else {
+        // ✅ New conversation (First Reply)
         const data = {
           replyDateTime: new Date().toISOString(),
           orgId: incidentData?.orgId,
           toolId: incidentData?.toolId,
           incidentId: incidentData?.incidentID,
-          notes: cleanedHtml,
+          notes: finalBody,
           ccEmails: cc.map((e) => e.value),
           bccEmails: bcc.map((e) => e.value),
           userId: Number(sessionStorage.getItem('userId')),
@@ -178,6 +206,7 @@ const loadConversation = async () => {
         }
         responseData = await fetchReplyIncidentWithHtmlContentUrl(data)
       }
+
       const {isSuccess, message: responseMessage} = responseData
       if (isSuccess) {
         notify(responseMessage)
@@ -369,6 +398,21 @@ const loadConversation = async () => {
                 </Button>
               </>
             )}
+            <Button
+              variant='outline-info'
+              size='sm'
+              onClick={() => setShowMessageTemplateModal(true)}
+              title='Insert Message Template'
+            >
+              <i className='fa fa-file-alt'></i> Templates
+            </Button>
+
+            <MessageTemplatesModal
+              show={showMessageTemplateModal}
+              onHide={() => setShowMessageTemplateModal(false)}
+              onSelectTemplate={handleTemplateSelect}
+              incidentData={incidentData}
+            />
             <Button variant='secondary me-2' onClick={handleClose} disabled={loading}>
               Close
             </Button>
