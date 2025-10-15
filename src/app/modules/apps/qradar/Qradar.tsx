@@ -110,6 +110,12 @@ import EmailLogs from './qradar-pages/email-logs/EmailLogs'
 import ChatBot from './qradar-pages/chat-bot/ChatBot'
 import IncidentReport from './qradar-pages/reports/IncidentReport'
 import IncidentReportSummery from './qradar-pages/reports/IncidentReportSummery'
+import { Templates } from './qradar-pages/components/message-templates/Templates'
+import { AddTemplates } from './qradar-pages/components/message-templates/AddTemplates'
+import { Placeholder } from './qradar-pages/components/message-templates/Placeholder'
+import { AddPlaceholder } from './qradar-pages/components/message-templates/AddPlaceholder'
+import UpdatePlaceholder from './qradar-pages/components/message-templates/UpdatePlaceholder'
+import { UpdateTemplates } from './qradar-pages/components/message-templates/UpdateTemplates'
 
 
 const QradarPages = () => {
@@ -186,6 +192,13 @@ const QradarPages = () => {
       <Route path='users-data/:status' element={<UserData />} />
       <Route path='users-data/add' element={<AddUserData />} />
       <Route path='/users-data/update/:id' element={<UpdateUserData />} />
+
+      <Route path='templates/:status' element={<Templates />} />
+      <Route path='templates/add' element={<AddTemplates />} />
+      <Route path='/templates/update/:id' element={<UpdateTemplates />} />
+       <Route path='placeholder/:status' element={<Placeholder />} />
+      <Route path='placeholder/add' element={<AddPlaceholder />} />
+      <Route path='/placeholder/update/:id' element={<UpdatePlaceholder />} />
       <Route path='roles-data/:status' element={<RoleData />} />
       <Route path='roles-data/add' element={<AddRoleData />} />
       <Route path='/roles-data/update/:id' element={<UpdateRoleData />} />

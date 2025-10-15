@@ -64,7 +64,7 @@ const MessageTemplatesModal = ({
     try {
       const payload = {
         orgId: effectiveOrgId,
-        toolId: toolId,
+        toolId: 0,
         templateId: 0,
         templatetypeid: selectedType?.masterId || 0,
         templategroupid: selectedGroup?.masterId || 0,
