@@ -9,8 +9,12 @@ const MessageTemplateUpdateUrl =
 const MessagePlaceholderUrl = 'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Placeholder'
 const TablesListUrl = 'http://10.41.3.232:501/api/GenerelFunctions/v1/TablesList'
 const TablesUrl = 'http://10.41.3.232:501/api/GenerelFunctions/v1/Tables'
-const MessagePlaceholderUpdateUrl="http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Placeholder/Update"
-const MessagePlaceholderDeleteUrl ="http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Placeholder/Delete"
+const MessagePlaceholderUpdateUrl =
+  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Placeholder/Update'
+const MessagePlaceholderDeleteUrl =
+  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Placeholder/Delete'
+const MessagePlaceHolderGroupsUrl =
+  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/PlaceHolder/Groups'
 
 export const fetchMessageTemplateUrl = async (data) => {
   try {
@@ -121,7 +125,7 @@ export const fetchTablesUrl = async (tableName) => {
   try {
     const response = await fetch(`${TablesUrl}/${tableName}/Columns`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {'Content-Type': 'application/json'},
     })
 
     const data = await response.json()
@@ -165,5 +169,20 @@ export const fetchMessagePlaceholderDeleteUrl = async (data) => {
     return responseData
   } catch (error) {
     console.log(error)
+  }
+}
+export const fetchMessagePlaceHolderGroupsUrl = async () => {
+  try {
+    const response = await FetchWithToken(`${MessagePlaceHolderGroupsUrl}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.error('Error fetching template groups:', error)
+    return {isSuccess: false, data: []}
   }
 }

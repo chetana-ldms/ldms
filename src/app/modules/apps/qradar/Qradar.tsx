@@ -116,6 +116,15 @@ import { Placeholder } from './qradar-pages/components/message-templates/Placeho
 import { AddPlaceholder } from './qradar-pages/components/message-templates/AddPlaceholder'
 import { UpdateTemplates } from './qradar-pages/components/message-templates/UpdateTemplates'
 import { UpdatePlaceholder } from './qradar-pages/components/message-templates/UpdatePlaceholder'
+import { TemplateGroupes } from './qradar-pages/components/message-templates/TemplateGroupes'
+import { AddTemplateGroupes } from './qradar-pages/components/message-templates/AddTemplateGroupes'
+import { UpdateTemplateGroupes } from './qradar-pages/components/message-templates/UpdateTemplateGroupes'
+import { TemplateTypes } from './qradar-pages/components/message-templates/TemplateTypes'
+import { AddTemplateTypes } from './qradar-pages/components/message-templates/AddTemplateTypes'
+import { UpdateTemplateTypes } from './qradar-pages/components/message-templates/UpdateTemplateTypes'
+import { PlaceholderGroups } from './qradar-pages/components/message-templates/PlaceholderGroups'
+import { AddPlaceholderGroups } from './qradar-pages/components/message-templates/AddPlaceholderGroups'
+import { UpdatePlaceholderGroups } from './qradar-pages/components/message-templates/UpdatePlaceholderGroups'
 
 
 const QradarPages = () => {
@@ -199,6 +208,15 @@ const QradarPages = () => {
        <Route path='placeholder/:status' element={<Placeholder />} />
       <Route path='placeholder/add' element={<AddPlaceholder />} />
       <Route path='/placeholder/update/:id' element={<UpdatePlaceholder />} />
+          <Route path='template-groupes/:status' element={<TemplateGroupes />} />
+      <Route path='template-groupes/add' element={<AddTemplateGroupes />} />
+      <Route path='/template-groupes/update/:id' element={<UpdateTemplateGroupes />} />
+        <Route path='template-types/:status' element={<TemplateTypes />} />
+      <Route path='template-types/add' element={<AddTemplateTypes />} />
+      <Route path='/template-types/update/:id' element={<UpdateTemplateTypes />} />
+       <Route path='placeholder-groups/:status' element={<PlaceholderGroups />} />
+      <Route path='placeholder-groups/add' element={<AddPlaceholderGroups />} />
+      <Route path='/placeholder-groups/update/:id' element={<UpdatePlaceholderGroups />} />
       <Route path='roles-data/:status' element={<RoleData />} />
       <Route path='roles-data/add' element={<AddRoleData />} />
       <Route path='/roles-data/update/:id' element={<UpdateRoleData />} />

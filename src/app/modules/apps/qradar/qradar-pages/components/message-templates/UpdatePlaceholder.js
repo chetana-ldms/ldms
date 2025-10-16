@@ -4,6 +4,7 @@ import { useErrorBoundary } from 'react-error-boundary'
 import { ToastContainer } from 'react-toastify'
 import { notify, notifyFail } from '../notification/Notification'
 import {
+  fetchMessagePlaceHolderGroupsUrl,
   fetchMessagePlaceholderUpdateUrl,
   fetchMessagePlaceholdersUrl,
   fetchTablesListUrl,
@@ -50,7 +51,7 @@ const UpdatePlaceholder = () => {
       try {
         // 1️⃣ Load Groups and Tables first
         const [groupsRes, tablesRes] = await Promise.all([
-          fetchTemplatesGroupsUrl(),
+          fetchMessagePlaceHolderGroupsUrl(),
           fetchTablesListUrl(),
         ])
 

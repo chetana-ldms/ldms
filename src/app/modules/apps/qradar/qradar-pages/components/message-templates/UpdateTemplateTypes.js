@@ -15,7 +15,7 @@ import {
 import Select from 'react-select'
 import PlaceholdersModal from './PlaceholdersModal'
 
-const UpdateTemplateGroupes = () => {
+const UpdateTemplateTypes = () => {
   const { showBoundary } = useErrorBoundary()
   const navigate = useNavigate()
   const location = useLocation()
@@ -360,4 +360,4 @@ const UpdateTemplateGroupes = () => {
   )
 }
 
-export { UpdateTemplateGroupes }
+export { UpdateTemplateTypes }

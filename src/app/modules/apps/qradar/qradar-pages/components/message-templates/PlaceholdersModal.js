@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import {Modal, Button, Spinner} from 'react-bootstrap'
 import Select from 'react-select'
-import {fetchMessagePlaceholdersUrl} from '../../../../../../api/MessageTemplateApi'
+import {fetchMessagePlaceHolderGroupsUrl, fetchMessagePlaceholdersUrl} from '../../../../../../api/MessageTemplateApi'
 import {notifyFail} from '../notification/Notification'
-import {fetchTemplatesGroupsUrl} from '../../../../../../api/IncidentsApi'
 
 const PlaceholdersModal = ({show, onHide, onSelect}) => {
   const [placeholders, setPlaceholders] = useState([])
@@ -37,7 +36,7 @@ const PlaceholdersModal = ({show, onHide, onSelect}) => {
 
   const loadGroups = async () => {
     try {
-      const res = await fetchTemplatesGroupsUrl()
+      const res = await fetchMessagePlaceHolderGroupsUrl()
       setGroups(Array.isArray(res?.data) ? res.data : [])
     } catch (err) {
       console.error('Failed to load groups', err)

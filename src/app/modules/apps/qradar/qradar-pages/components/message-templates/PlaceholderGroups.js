@@ -17,7 +17,7 @@ import {getCurrentTimeZone} from '../../../../../../../utils/helper'
 import {truncateText} from '../../../../../../../utils/TruncateText'
 import {fetchMessageTemplateDeleteUrl} from '../../../../../../api/MessageTemplateApi'
 
-const TemplateTypes = () => {
+const PlaceholderGroups = () => {
   const navigate = useNavigate()
   const handleError = useErrorBoundary()
   const [tools, setTools] = useState([])
@@ -300,4 +300,4 @@ const TemplateTypes = () => {
   )
 }
 
-export {TemplateTypes}
+export {PlaceholderGroups}

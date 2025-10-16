@@ -4,12 +4,12 @@ import { useErrorBoundary } from 'react-error-boundary'
 import { ToastContainer } from 'react-toastify'
 import { notify, notifyFail } from '../notification/Notification'
 import {
+  fetchMessagePlaceHolderGroupsUrl,
   fetchMessagePlaceholderUrl,
   fetchMessagePlaceholdersUrl,
   fetchTablesListUrl,
   fetchTablesUrl,
 } from '../../../../../../api/MessageTemplateApi'
-import { fetchTemplatesGroupsUrl } from '../../../../../../api/IncidentsApi'
 import Select from 'react-select'
 
 const AddPlaceholder = () => {
@@ -49,7 +49,7 @@ const AddPlaceholder = () => {
   const loadDropdownData = async () => {
     try {
       const [groupsRes, tablesRes] = await Promise.all([
-        fetchTemplatesGroupsUrl(),
+        fetchMessagePlaceHolderGroupsUrl(),
         fetchTablesListUrl(),
       ])
 

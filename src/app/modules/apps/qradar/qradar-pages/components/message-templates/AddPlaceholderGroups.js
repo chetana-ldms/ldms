@@ -11,7 +11,7 @@ import {
 import Select from 'react-select'
 import PlaceholdersModal from './PlaceholdersModal'
 
-const AddTemplateGroupes = () => {
+const AddPlaceholderGroups = () => {
   const {showBoundary} = useErrorBoundary()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
@@ -243,4 +243,4 @@ const AddTemplateGroupes = () => {
   )
 }
 
-export {AddTemplateGroupes}
+export {AddPlaceholderGroups}

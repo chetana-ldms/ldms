@@ -11,8 +11,7 @@ import {notify, notifyFail} from '../notification/Notification'
 import Select from 'react-select'
 import {getCurrentTimeZone} from '../../../../../../../utils/helper'
 import {truncateText} from '../../../../../../../utils/TruncateText'
-import {fetchTemplatesGroupsUrl} from '../../../../../../api/IncidentsApi'
-import {fetchMessagePlaceholderDeleteUrl, fetchMessagePlaceholdersUrl} from '../../../../../../api/MessageTemplateApi'
+import {fetchMessagePlaceholderDeleteUrl, fetchMessagePlaceHolderGroupsUrl, fetchMessagePlaceholdersUrl} from '../../../../../../api/MessageTemplateApi'
 
 const Placeholder = () => {
   const navigate = useNavigate()
@@ -66,7 +65,7 @@ const Placeholder = () => {
 
   const loadGroups = async () => {
     try {
-      const groupsRes = await fetchTemplatesGroupsUrl()
+      const groupsRes = await fetchMessagePlaceHolderGroupsUrl()
       setGroups(Array.isArray(groupsRes?.data) ? groupsRes.data : [])
     } catch (err) {
       console.error('Failed to load groups', err)
