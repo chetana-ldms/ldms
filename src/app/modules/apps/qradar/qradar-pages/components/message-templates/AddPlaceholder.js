@@ -1,123 +1,181 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {Link, useNavigate} from 'react-router-dom'
-import {useErrorBoundary} from 'react-error-boundary'
-import {ToastContainer} from 'react-toastify'
-import {notify, notifyFail} from '../notification/Notification'
-import {fetchMessageTemplateUrl} from '../../../../../../api/MessageTemplateApi'
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useErrorBoundary } from 'react-error-boundary'
+import { ToastContainer } from 'react-toastify'
+import { notify, notifyFail } from '../notification/Notification'
 import {
-  fetchTemplatesGroupsUrl,
-  fetchTemplatesTemplateTypesUrl,
-} from '../../../../../../api/IncidentsApi'
+  fetchMessagePlaceholderUrl,
+  fetchMessagePlaceholdersUrl,
+  fetchTablesListUrl,
+  fetchTablesUrl,
+} from '../../../../../../api/MessageTemplateApi'
+import { fetchTemplatesGroupsUrl } from '../../../../../../api/IncidentsApi'
 import Select from 'react-select'
-import PlaceholdersModal from './PlaceholdersModal'
 
 const AddPlaceholder = () => {
-  const {showBoundary} = useErrorBoundary()
+  const { showBoundary } = useErrorBoundary()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+
   const orgId = Number(sessionStorage.getItem('orgId'))
+  const createdUserId = Number(sessionStorage.getItem('userId'))
 
-  const [selectedType, setSelectedType] = useState(null)
-  const [selectedGroup, setSelectedGroup] = useState(null)
-  const [types, setTypes] = useState([])
+  // Dropdown Data
   const [groups, setGroups] = useState([])
+  const [tables, setTables] = useState([])
+  const [columns, setColumns] = useState([])
+  const [placeholders, setPlaceholders] = useState([])
 
-  const [showModal, setShowModal] = useState(false)
-  const [selectedPlaceholders, setSelectedPlaceholders] = useState([]) // array of objects
-  const contentRef = useRef()
-  const titleRef = useRef()
+  // Selected values
+  const [selectedGroup, setSelectedGroup] = useState(null)
+  const [selectedTable, setSelectedTable] = useState(null)
+  const [selectedColumn, setSelectedColumn] = useState(null)
+  const [selectedCriteriaColumn, setSelectedCriteriaColumn] = useState(null)
+  const [selectedDependency, setSelectedDependency] = useState(null)
 
+  // Input fields
+  const [objectType, setObjectType] = useState('')
+  const [placeholderData, setPlaceholderData] = useState('')
+  const [placeholderText, setPlaceholderText] = useState('')
+  const [description, setDescription] = useState('')
+  const [sourceType, setSourceType] = useState('')
+
+  // 🔹 Load dropdown data on mount
   useEffect(() => {
     loadDropdownData()
+    loadPlaceholders()
   }, [])
 
   const loadDropdownData = async () => {
     try {
-      const [typesRes, groupsRes] = await Promise.all([
-        fetchTemplatesTemplateTypesUrl(),
+      const [groupsRes, tablesRes] = await Promise.all([
         fetchTemplatesGroupsUrl(),
+        fetchTablesListUrl(),
       ])
-      setTypes(Array.isArray(typesRes?.data) ? typesRes.data : [])
+
       setGroups(Array.isArray(groupsRes?.data) ? groupsRes.data : [])
+      setTables(Array.isArray(tablesRes?.tableNameList) ? tablesRes.tableNameList : [])
     } catch (err) {
       console.error('Failed to load dropdown data', err)
       notifyFail('Failed to load dropdown data')
     }
   }
 
-  const handleSelectPlaceholders = (placeholders) => {
-    setSelectedPlaceholders((prev) => [...prev, ...placeholders])
-    setShowModal(false)
-  }
-  const removePlaceholder = (index) => {
-    setSelectedPlaceholders((prev) => prev.filter((_, i) => i !== index))
-  }
-  useEffect(() => {
-    const textarea = contentRef.current
-    if (!textarea) return
-    const placeholdersText = selectedPlaceholders.map((p) => p.placeholderData).join(' ')
-    textarea.value = placeholdersText
-  }, [selectedPlaceholders])
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  // 🔹 Fetch existing placeholders (for dependency dropdown)
+  const loadPlaceholders = async () => {
     setLoading(true)
-
-    const titleValue = titleRef.current?.value?.trim()
-    const contentValue = contentRef.current?.value?.trim()
-
-    if (!titleValue) {
-      notifyFail('Enter Template Title')
-      setLoading(false)
-      return
-    }
-
-    if (!contentValue) {
-      notifyFail('Enter Template Content')
-      setLoading(false)
-      return
-    }
-
-    const createdUserId = Number(sessionStorage.getItem('userId'))
-    const createdDate = new Date().toISOString()
-
-    const data = {
-      orgId,
-      templateTypeId: selectedType?.masterId || 0,
-      groupId: selectedGroup?.masterId || 0,
-      title: titleValue,
-      content: contentValue,
-      placeholderIds: selectedPlaceholders.map((p) => p.placeholderId), // only remaining placeholders
-      createdUserId,
-      createdDate,
-    }
-
     try {
-      const response = await fetchMessageTemplateUrl(data)
-      if (response?.isSuccess) {
-        notify(response.message || 'Template created successfully!')
-        setTimeout(() => navigate('/qradar/organizations/updated'), 2000)
-      } else {
-        notifyFail(response?.message || 'Failed to create template')
+      const payload = {
+        orgId,
+        toolId: 0,
+        templateId: 0,
+        placeholderId: 0,
+        placeholdergroupid: 0,
+        searchText: '',
       }
-    } catch (error) {
-      showBoundary(error)
+
+      const response = await fetchMessagePlaceholdersUrl(payload)
+      if (response?.isSuccess && Array.isArray(response?.placeholders)) {
+        setPlaceholders(response.placeholders)
+      } else {
+        setPlaceholders([])
+      }
+    } catch (err) {
+      console.error('Failed to fetch placeholders', err)
+      setPlaceholders([])
     } finally {
       setLoading(false)
     }
   }
 
-  const typeOptions = types.map((t) => ({
-    label: t.displayName,
-    value: t.templateTypeId,
-    masterId: t.masterId,
-  }))
+  // 🔹 Fetch columns based on selected table
+  useEffect(() => {
+    if (selectedTable?.value) {
+      loadColumns(selectedTable.value)
+    } else {
+      setColumns([])
+      setSelectedColumn(null)
+      setSelectedCriteriaColumn(null)
+    }
+  }, [selectedTable])
+
+  const loadColumns = async (tableName) => {
+    try {
+      const data = await fetchTablesUrl(tableName)
+
+      if (data?.tableColumnNameList && Array.isArray(data.tableColumnNameList)) {
+        setColumns(data.tableColumnNameList)
+      } else {
+        setColumns([])
+        notifyFail('No columns found for selected table')
+      }
+    } catch (error) {
+      console.error('Error loading columns:', error)
+      notifyFail('Failed to load columns')
+    }
+  }
 
   const groupOptions = groups.map((g) => ({
     label: g.displayName,
     value: g.templateGroupId,
     masterId: g.masterId,
   }))
+
+  const tableOptions = tables.map((t) => ({
+    label: t,
+    value: t,
+  }))
+
+  const columnOptions = columns.map((c) => ({
+    label: c,
+    value: c,
+  }))
+
+  const dependencyOptions = placeholders.map((p) => ({
+    label: p.placeholderText,
+    value: p.placeholderId,
+  }))
+
+  // 🔹 Submit handler
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    if (!selectedGroup) return notifyFail('Select a Group')
+    if (!placeholderText.trim()) return notifyFail('Enter Placeholder Text')
+
+    setLoading(true)
+    const payload = {
+      orgId,
+      toolId: 0,
+      groupId: selectedGroup?.masterId || 0,
+      objectType,
+      placeholderData,
+      placeholderText,
+      description,
+      sourceTable: selectedTable?.value || '',
+      sourceDataColumn: selectedColumn?.value || '',
+      sourceCriteriaColumn: selectedCriteriaColumn?.value || '',
+      sourceType,
+      dependency_PlaceholderId: selectedDependency?.value || 0,
+      createdDate: new Date().toISOString(),
+      createdUserId,
+    }
+
+    try {
+      const response = await fetchMessagePlaceholderUrl(payload)
+      if (response?.isSuccess) {
+        notify(response.message || 'Placeholder added successfully!')
+        setTimeout(() => navigate('/qradar/placeholder/list'), 2000)
+      } else {
+        notifyFail(response?.message || 'Failed to add placeholder')
+      }
+    } catch (err) {
+      console.error('Error creating placeholder:', err)
+      showBoundary(err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const customSelectStyle = {
     control: (provided) => ({
@@ -135,8 +193,8 @@ const AddPlaceholder = () => {
     <div className='config card'>
       <ToastContainer />
       <div className='card-header bg-heading d-flex justify-content-between align-items-center'>
-        <h3 className='card-title white mb-0'>Add New Templates</h3>
-        <Link to='/qradar/templates/list' className='white fs-15 text-underline'>
+        <h3 className='card-title white mb-1'>Add New Placeholder</h3>
+        <Link to='/qradar/placeholder/list' className='white fs-15 text-underline'>
           <i className='fa fa-chevron-left white me-2' /> Back
         </Link>
       </div>
@@ -144,19 +202,9 @@ const AddPlaceholder = () => {
       <form onSubmit={handleSubmit}>
         <div className='card-body p-4'>
           <div className='row'>
+            {/* Group */}
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Template Type</label>
-              <Select
-                options={typeOptions}
-                value={selectedType}
-                onChange={setSelectedType}
-                isClearable
-                placeholder='Select Type'
-                styles={customSelectStyle}
-              />
-            </div>
-            <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Template Group</label>
+              <label className='form-label fw-bold'>Group</label>
               <Select
                 options={groupOptions}
                 value={selectedGroup}
@@ -166,65 +214,128 @@ const AddPlaceholder = () => {
                 styles={customSelectStyle}
               />
             </div>
+
+            {/* Object Type */}
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Template Title</label>
+              <label className='form-label fw-bold'>Object Type</label>
               <input
                 type='text'
-                className='form-control form-control-solid'
-                maxLength={200}
-                placeholder='Enter template title'
-                ref={titleRef}
+                className='form-control'
+                value={objectType}
+                onChange={(e) => setObjectType(e.target.value)}
+                placeholder='Enter object type'
               />
             </div>
-          </div>
 
-          <div className='row'>
-            <div className='col-md-12 mb-3 position-relative'>
-              <label className='form-label fw-bold'>Template Content</label>
+            {/* Placeholder Data */}
+            <div className='col-md-4 mb-3'>
+              <label className='form-label fw-bold'>Placeholder Data</label>
+              <input
+                type='text'
+                className='form-control'
+                value={placeholderData}
+                onChange={(e) => setPlaceholderData(e.target.value)}
+                placeholder='Enter placeholder data'
+              />
+            </div>
+
+            {/* Placeholder Text */}
+            <div className='col-md-4 mb-3'>
+              <label className='form-label fw-bold'>Placeholder Text</label>
+              <input
+                type='text'
+                className='form-control'
+                value={placeholderText}
+                onChange={(e) => setPlaceholderText(e.target.value)}
+                placeholder='Enter placeholder text'
+              />
+            </div>
+
+            {/* Description */}
+            <div className='col-md-8 mb-3'>
+              <label className='form-label fw-bold'>Description</label>
               <textarea
-                className='form-control form-control-solid pe-5'
-                rows={6}
-                maxLength={2000}
-                placeholder='Enter template content'
-                ref={contentRef}
-                style={{minHeight: '160px', resize: 'vertical'}}
+                className='form-control'
+                rows={2}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder='Enter description'
               />
-              <i
-                className='fa fa-plus-circle text-success position-absolute'
-                style={{bottom: '12px', right: '15px', cursor: 'pointer', fontSize: '18px'}}
-                title='Add Placeholder'
-                onClick={() => setShowModal(true)}
-              ></i>
+            </div>
+
+            {/* Source Type */}
+            <div className='col-md-4 mb-3'>
+              <label className='form-label fw-bold'>Source Type</label>
+              <input
+                type='text'
+                className='form-control'
+                value={sourceType}
+                onChange={(e) => setSourceType(e.target.value)}
+                placeholder='Enter source type'
+              />
+            </div>
+
+            {/* Source Table */}
+            <div className='col-md-4 mb-3'>
+              <label className='form-label fw-bold'>Source Table</label>
+              <Select
+                options={tableOptions}
+                value={selectedTable}
+                onChange={setSelectedTable}
+                isClearable
+                placeholder='Select Source Table'
+                styles={customSelectStyle}
+              />
+            </div>
+
+            {/* Source Data Column */}
+            <div className='col-md-4 mb-3'>
+              <label className='form-label fw-bold'>Source Data Column</label>
+              <Select
+                options={columnOptions}
+                value={selectedColumn}
+                onChange={setSelectedColumn}
+                isDisabled={!selectedTable}
+                isClearable
+                placeholder={selectedTable ? 'Select Data Column' : 'Select Source Table first'}
+                styles={customSelectStyle}
+              />
+            </div>
+
+            {/* Source Criteria Column (same dropdown as Source Data Column) */}
+            <div className='col-md-4 mb-3'>
+              <label className='form-label fw-bold'>Source Criteria Column</label>
+              <Select
+                options={columnOptions}
+                value={selectedCriteriaColumn}
+                onChange={setSelectedCriteriaColumn}
+                isDisabled={!selectedTable}
+                isClearable
+                placeholder={selectedTable ? 'Select Criteria Column' : 'Select Source Table first'}
+                styles={customSelectStyle}
+              />
+            </div>
+
+            {/* Dependency Placeholder */}
+            <div className='col-md-4 mb-3'>
+              <label className='form-label fw-bold'>Dependency Placeholder</label>
+              <Select
+                options={dependencyOptions}
+                value={selectedDependency}
+                onChange={setSelectedDependency}
+                isClearable
+                placeholder='Select Dependency Placeholder'
+                styles={customSelectStyle}
+              />
             </div>
           </div>
-
-          {/* Show selected placeholders below textarea with remove button */}
-          {selectedPlaceholders.length > 0 && (
-            <div className='mb-3'>
-              <label className='form-label fw-bold'>Selected Placeholders</label>
-              <div className='d-flex flex-wrap gap-2'>
-                {selectedPlaceholders.map((ph, index) => (
-                  <span
-                    key={index}
-                    className='badge bg-primary rounded-pill d-flex align-items-center'
-                  >
-                    {ph.placeholderText}
-                    <i
-                      className='fa fa-times ms-2'
-                      style={{cursor: 'pointer'}}
-                      onClick={() => removePlaceholder(index)}
-                    ></i>
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         <div className='card-footer d-flex justify-content-end p-3'>
           <button type='submit' className='btn btn-new btn-small' disabled={loading}>
-            {!loading && 'Save Changes'}
-            {loading && (
+            {!loading ? (
+              'Save Placeholder'
+            ) : (
               <span className='indicator-progress'>
                 Please wait...
                 <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
@@ -233,14 +344,8 @@ const AddPlaceholder = () => {
           </button>
         </div>
       </form>
-
-      <PlaceholdersModal
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        onSelect={handleSelectPlaceholders}
-      />
     </div>
   )
 }
 
-export {AddPlaceholder}
+export { AddPlaceholder }

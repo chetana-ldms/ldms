@@ -12,7 +12,7 @@ import Select from 'react-select'
 import {getCurrentTimeZone} from '../../../../../../../utils/helper'
 import {truncateText} from '../../../../../../../utils/TruncateText'
 import {fetchTemplatesGroupsUrl} from '../../../../../../api/IncidentsApi'
-import {fetchMessagePlaceholdersUrl} from '../../../../../../api/MessageTemplateApi'
+import {fetchMessagePlaceholderDeleteUrl, fetchMessagePlaceholdersUrl} from '../../../../../../api/MessageTemplateApi'
 
 const Placeholder = () => {
   const navigate = useNavigate()
@@ -81,13 +81,13 @@ const Placeholder = () => {
   const confirmDelete = async () => {
     if (itemToDelete) {
       const data = {
-        orgID: itemToDelete.placeholderId,
+        placeholderId: itemToDelete.placeholderId,
         deletedDate: new Date().toISOString(),
-        deletedUserId: Number(sessionStorage.getItem('userId')),
+        deleteUserId: Number(sessionStorage.getItem('userId')),
       }
 
       try {
-        const response = await fetchOrganizationDelete(data)
+        const response = await fetchMessagePlaceholderDeleteUrl(data)
         const {isSuccess, message} = response
         if (isSuccess) {
           notify(message)

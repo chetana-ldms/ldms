@@ -1,11 +1,11 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {Link, useLocation, useNavigate, useParams} from 'react-router-dom'
-import {useErrorBoundary} from 'react-error-boundary'
-import {ToastContainer} from 'react-toastify'
-import {notify, notifyFail} from '../notification/Notification'
+import React, { useState, useRef, useEffect } from 'react'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useErrorBoundary } from 'react-error-boundary'
+import { ToastContainer } from 'react-toastify'
+import { notify, notifyFail } from '../notification/Notification'
 import {
   fetchMessageTemplateUpdateUrl,
-  fetchMessageTemplateUrl,
+  fetchMessagePlaceholdersUrl,
 } from '../../../../../../api/MessageTemplateApi'
 import {
   fetchMessageTemplatesUrl,
@@ -16,13 +16,12 @@ import Select from 'react-select'
 import PlaceholdersModal from './PlaceholdersModal'
 
 const UpdateTemplates = () => {
-  const {showBoundary} = useErrorBoundary()
+  const { showBoundary } = useErrorBoundary()
   const navigate = useNavigate()
   const location = useLocation()
-  const {id} = useParams()
+  const { id } = useParams()
 
   const [tools, setTools] = useState(null)
-  console.log('Templates', tools)
   const [loading, setLoading] = useState(false)
   const [types, setTypes] = useState([])
   const [groups, setGroups] = useState([])
@@ -30,9 +29,10 @@ const UpdateTemplates = () => {
   const [selectedGroup, setSelectedGroup] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [selectedPlaceholders, setSelectedPlaceholders] = useState([])
+  const [placeholders, setPlaceholders] = useState([])
 
   const orgId = Number(sessionStorage.getItem('orgId'))
-  const [save, setSave] = useState(location.state?.save || '')
+  const [save] = useState(location.state?.save || '')
 
   const contentRef = useRef()
   const titleRef = useRef()
@@ -49,22 +49,24 @@ const UpdateTemplates = () => {
     masterId: g.masterId,
   }))
 
+  // ✅ Load all dropdowns and template data
   useEffect(() => {
     const init = async () => {
       setLoading(true)
       try {
-        // 1️⃣ Load dropdowns first
+        // 1️⃣ Load dropdown data
         const [typesRes, groupsRes] = await Promise.all([
           fetchTemplatesTemplateTypesUrl(),
           fetchTemplatesGroupsUrl(),
         ])
+
         const typeData = Array.isArray(typesRes?.data) ? typesRes.data : []
         const groupData = Array.isArray(groupsRes?.data) ? groupsRes.data : []
         setTypes(typeData)
         setGroups(groupData)
 
-        // 2️⃣ Then load template details
-        const payload = {orgId, templateId: id}
+        // 2️⃣ Load template details
+        const payload = { orgId, templateId: id }
         const response = await fetchMessageTemplatesUrl(payload)
 
         if (response?.isSuccess && Array.isArray(response?.data)) {
@@ -74,7 +76,6 @@ const UpdateTemplates = () => {
           if (titleRef.current) titleRef.current.value = data.title || ''
           if (contentRef.current) contentRef.current.value = data.content || ''
 
-          // 3️⃣ Now that dropdown data exists, match type and group
           const matchedType = typeData.find(
             (t) => t.templateTypeId === data.templateTypeId || t.masterId === data.templateTypeId
           )
@@ -96,9 +97,16 @@ const UpdateTemplates = () => {
               masterId: matchedGroup.masterId,
             })
           }
+
+          if (Array.isArray(data.placeholders) && data.placeholders.length > 0) {
+            setSelectedPlaceholders(data.placeholders)
+          }
         } else {
           setTools(null)
         }
+
+        // 3️⃣ Load placeholders (not based on group)
+        await loadPlaceholders()
       } catch (err) {
         console.error('Error loading template data:', err)
         notifyFail('Failed to load template details')
@@ -110,21 +118,62 @@ const UpdateTemplates = () => {
     init()
   }, [id])
 
-  const handleSelectPlaceholders = (placeholders) => {
-    setSelectedPlaceholders((prev) => [...prev, ...placeholders])
+  // ✅ Load placeholders (not dependent on group)
+  const loadPlaceholders = async () => {
+    try {
+      const payload = {
+        orgId,
+        toolId: 0,
+        templateId: 0,
+        placeholderId: 0,
+        placeholdergroupid: 0, // group not used
+        searchText: '',
+      }
+
+      const response = await fetchMessagePlaceholdersUrl(payload)
+      if (response?.isSuccess && Array.isArray(response?.placeholders)) {
+        setPlaceholders(response.placeholders)
+      } else {
+        setPlaceholders([])
+        notifyFail(response?.message || 'No placeholders found')
+      }
+    } catch (err) {
+      console.error('Failed to load placeholders:', err)
+      notifyFail('Failed to load placeholders')
+      setPlaceholders([])
+    }
+  }
+
+  // ✅ Add placeholders from modal
+  const handleSelectPlaceholders = (selected) => {
+    const newPlaceholders = selected.filter(
+      (p) => !selectedPlaceholders.some((sp) => sp.placeholderId === p.placeholderId)
+    )
+
+    setSelectedPlaceholders((prev) => [...prev, ...newPlaceholders])
+
+    // Insert placeholder text into content
+    if (contentRef.current) {
+      const content = contentRef.current.value
+      const toAdd = newPlaceholders.map((p) => p.placeholderText).join(' ')
+      contentRef.current.value = content
+        ? `${content} ${toAdd}`
+        : toAdd
+    }
+
     setShowModal(false)
   }
 
+  // ✅ Remove placeholder and also remove from textarea content
   const removePlaceholder = (index) => {
+    const removed = selectedPlaceholders[index]
     setSelectedPlaceholders((prev) => prev.filter((_, i) => i !== index))
-  }
 
-  useEffect(() => {
-    const textarea = contentRef.current
-    if (!textarea) return
-    const placeholdersText = selectedPlaceholders.map((p) => p.placeholderText).join(' ')
-    textarea.value = placeholdersText
-  }, [selectedPlaceholders])
+    if (contentRef.current && removed) {
+      const updatedContent = contentRef.current.value.replaceAll(removed.placeholderText, '').trim()
+      contentRef.current.value = updatedContent
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -159,6 +208,7 @@ const UpdateTemplates = () => {
       modifiedUserId,
       modifiedDate,
     }
+
     try {
       const response = await fetchMessageTemplateUpdateUrl(data)
       if (response?.isSuccess) {
@@ -191,11 +241,7 @@ const UpdateTemplates = () => {
       <ToastContainer />
       <div className='card-header bg-heading d-flex justify-content-between align-items-center'>
         <h3 className='card-title white mb-1'>
-          {save ? (
-            <span className='white'>View Template</span>
-          ) : (
-            <span className='white'>Update Template</span>
-          )}
+          {save ? 'View Template' : 'Update Template'}
         </h3>
         <Link to='/qradar/templates/list' className='white fs-15 text-underline'>
           <i className='fa fa-chevron-left white me-2' /> Back
@@ -251,12 +297,17 @@ const UpdateTemplates = () => {
                 maxLength={2000}
                 placeholder='Enter template content'
                 ref={contentRef}
-                style={{minHeight: '160px', resize: 'vertical'}}
+                style={{ minHeight: '160px', resize: 'vertical' }}
                 disabled={loading}
               />
               <i
                 className='fa fa-plus-circle text-success position-absolute'
-                style={{bottom: '12px', right: '15px', cursor: 'pointer', fontSize: '18px'}}
+                style={{
+                  bottom: '12px',
+                  right: '15px',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                }}
                 title='Add Placeholder'
                 onClick={() => setShowModal(true)}
               ></i>
@@ -275,7 +326,7 @@ const UpdateTemplates = () => {
                     {ph.placeholderText}
                     <i
                       className='fa fa-times ms-2'
-                      style={{cursor: 'pointer'}}
+                      style={{ cursor: 'pointer' }}
                       onClick={() => removePlaceholder(index)}
                     ></i>
                   </span>
@@ -303,9 +354,10 @@ const UpdateTemplates = () => {
         show={showModal}
         onHide={() => setShowModal(false)}
         onSelect={handleSelectPlaceholders}
+        placeholders={placeholders}
       />
     </div>
   )
 }
 
-export {UpdateTemplates}
+export { UpdateTemplates }

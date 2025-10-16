@@ -114,8 +114,8 @@ import { Templates } from './qradar-pages/components/message-templates/Templates
 import { AddTemplates } from './qradar-pages/components/message-templates/AddTemplates'
 import { Placeholder } from './qradar-pages/components/message-templates/Placeholder'
 import { AddPlaceholder } from './qradar-pages/components/message-templates/AddPlaceholder'
-import UpdatePlaceholder from './qradar-pages/components/message-templates/UpdatePlaceholder'
 import { UpdateTemplates } from './qradar-pages/components/message-templates/UpdateTemplates'
+import { UpdatePlaceholder } from './qradar-pages/components/message-templates/UpdatePlaceholder'
 
 
 const QradarPages = () => {
