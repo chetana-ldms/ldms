@@ -49,7 +49,7 @@ const AddPlaceholder = () => {
   const loadDropdownData = async () => {
     try {
       const [groupsRes, tablesRes] = await Promise.all([
-        fetchMessagePlaceHolderGroupsUrl(),
+        fetchMessagePlaceHolderGroupsUrl(0),
         fetchTablesListUrl(),
       ])
 

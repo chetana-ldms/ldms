@@ -51,7 +51,7 @@ const UpdatePlaceholder = () => {
       try {
         // 1️⃣ Load Groups and Tables first
         const [groupsRes, tablesRes] = await Promise.all([
-          fetchMessagePlaceHolderGroupsUrl(),
+          fetchMessagePlaceHolderGroupsUrl(0),
           fetchTablesListUrl(),
         ])
 

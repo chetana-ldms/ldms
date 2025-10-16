@@ -65,7 +65,7 @@ const Placeholder = () => {
 
   const loadGroups = async () => {
     try {
-      const groupsRes = await fetchMessagePlaceHolderGroupsUrl()
+      const groupsRes = await fetchMessagePlaceHolderGroupsUrl(0)
       setGroups(Array.isArray(groupsRes?.data) ? groupsRes.data : [])
     } catch (err) {
       console.error('Failed to load groups', err)

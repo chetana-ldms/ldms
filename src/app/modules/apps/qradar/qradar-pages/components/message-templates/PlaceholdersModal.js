@@ -36,7 +36,7 @@ const PlaceholdersModal = ({show, onHide, onSelect}) => {
 
   const loadGroups = async () => {
     try {
-      const res = await fetchMessagePlaceHolderGroupsUrl()
+      const res = await fetchMessagePlaceHolderGroupsUrl(0)
       setGroups(Array.isArray(res?.data) ? res.data : [])
     } catch (err) {
       console.error('Failed to load groups', err)

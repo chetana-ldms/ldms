@@ -1,142 +1,72 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {Link, useNavigate} from 'react-router-dom'
-import {useErrorBoundary} from 'react-error-boundary'
-import {ToastContainer} from 'react-toastify'
-import {notify, notifyFail} from '../notification/Notification'
-import {fetchMessageTemplateUrl} from '../../../../../../api/MessageTemplateApi'
-import {
-  fetchTemplatesGroupsUrl,
-  fetchTemplatesTemplateTypesUrl,
-} from '../../../../../../api/IncidentsApi'
-import Select from 'react-select'
-import PlaceholdersModal from './PlaceholdersModal'
+import React, { useState, useRef } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useErrorBoundary } from 'react-error-boundary'
+import { ToastContainer } from 'react-toastify'
+import { notify, notifyFail } from '../notification/Notification'
+import { fetchMessagePlaceHolderGroupUrl, fetchMessageTemplateGroupUrl, fetchMessageTemplateTypeUrl } from '../../../../../../api/MessageTemplateApi'
 
 const AddPlaceholderGroups = () => {
-  const {showBoundary} = useErrorBoundary()
+  const { showBoundary } = useErrorBoundary()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const orgId = Number(sessionStorage.getItem('orgId'))
-
-  const [selectedType, setSelectedType] = useState(null)
-  const [selectedGroup, setSelectedGroup] = useState(null)
-  const [types, setTypes] = useState([])
-  const [groups, setGroups] = useState([])
-
-  const [showModal, setShowModal] = useState(false)
-  const [selectedPlaceholders, setSelectedPlaceholders] = useState([]) // array of objects
-  const contentRef = useRef()
-  const titleRef = useRef()
-
-  useEffect(() => {
-    loadDropdownData()
-  }, [])
-
-  const loadDropdownData = async () => {
-    try {
-      const [typesRes, groupsRes] = await Promise.all([
-        fetchTemplatesTemplateTypesUrl(),
-        fetchTemplatesGroupsUrl(),
-      ])
-      setTypes(Array.isArray(typesRes?.data) ? typesRes.data : [])
-      setGroups(Array.isArray(groupsRes?.data) ? groupsRes.data : [])
-    } catch (err) {
-      console.error('Failed to load dropdown data', err)
-      notifyFail('Failed to load dropdown data')
-    }
-  }
-
-  const handleSelectPlaceholders = (placeholders) => {
-    setSelectedPlaceholders((prev) => [...prev, ...placeholders])
-    setShowModal(false)
-  }
-  const removePlaceholder = (index) => {
-    setSelectedPlaceholders((prev) => prev.filter((_, i) => i !== index))
-  }
-  useEffect(() => {
-    const textarea = contentRef.current
-    if (!textarea) return
-    const placeholdersText = selectedPlaceholders.map((p) => p.placeholderData).join(' ')
-    textarea.value = placeholdersText
-  }, [selectedPlaceholders])
+  const codeRef = useRef()
+  const displayNameRef = useRef()
+  const descriptionRef = useRef()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-
-    const titleValue = titleRef.current?.value?.trim()
-    const contentValue = contentRef.current?.value?.trim()
-
-    if (!titleValue) {
-      notifyFail('Enter Template Title')
+    const code = codeRef.current?.value?.trim()
+    const displayName = displayNameRef.current?.value?.trim()
+    const description = descriptionRef.current?.value?.trim()
+    if (!code) {
+      notifyFail('Enter Code')
+      setLoading(false)
+      return
+    }
+    if (!displayName) {
+      notifyFail('Enter Display Name')
+      setLoading(false)
+      return
+    }
+    if (!description) {
+      notifyFail('Enter Description')
       setLoading(false)
       return
     }
 
-    if (!contentValue) {
-      notifyFail('Enter Template Content')
-      setLoading(false)
-      return
-    }
-
-    const createdUserId = Number(sessionStorage.getItem('userId'))
+    const createdUserId = Number(sessionStorage.getItem('userId')) || 0
     const createdDate = new Date().toISOString()
-
-    const data = {
-      orgId,
-      templateTypeId: selectedType?.masterId || 0,
-      groupId: selectedGroup?.masterId || 0,
-      title: titleValue,
-      content: contentValue,
-      placeholderIds: selectedPlaceholders.map((p) => p.placeholderId), // only remaining placeholders
-      createdUserId,
+    const payload = {
+      code,
+      displayName,
+      description,
       createdDate,
+      createdUserId,
     }
 
     try {
-      const response = await fetchMessageTemplateUrl(data)
+      const response = await fetchMessagePlaceHolderGroupUrl(payload)
       if (response?.isSuccess) {
-        notify(response.message || 'Template created successfully!')
-        setTimeout(() => navigate('/qradar/templates/list'), 2000)
+        notify(response.message)
+        setTimeout(() => navigate('/qradar/placeholder-groups/list'), 2000)
       } else {
-        notifyFail(response?.message || 'Failed to create template')
+        notifyFail(response?.message)
       }
     } catch (error) {
+      console.error('Error creating Template Group:', error)
       showBoundary(error)
     } finally {
       setLoading(false)
     }
   }
 
-  const typeOptions = types.map((t) => ({
-    label: t.displayName,
-    value: t.templateTypeId,
-    masterId: t.masterId,
-  }))
-
-  const groupOptions = groups.map((g) => ({
-    label: g.displayName,
-    value: g.templateGroupId,
-    masterId: g.masterId,
-  }))
-
-  const customSelectStyle = {
-    control: (provided) => ({
-      ...provided,
-      minHeight: '36px',
-      fontSize: '0.9rem',
-    }),
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 9999,
-    }),
-  }
-
   return (
     <div className='config card'>
       <ToastContainer />
       <div className='card-header bg-heading d-flex justify-content-between align-items-center'>
-        <h3 className='card-title white mb-1'>Add New Templates</h3>
-        <Link to='/qradar/templates/list' className='white fs-15 text-underline'>
+        <h3 className='card-title white mb-1'>Add New PlaceHolder Group</h3>
+        <Link to='/qradar/placeholder-groups/list' className='white fs-15 text-underline'>
           <i className='fa fa-chevron-left white me-2' /> Back
         </Link>
       </div>
@@ -144,86 +74,47 @@ const AddPlaceholderGroups = () => {
       <form onSubmit={handleSubmit}>
         <div className='card-body p-4'>
           <div className='row'>
-            <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Template Type</label>
-              <Select
-                options={typeOptions}
-                value={selectedType}
-                onChange={setSelectedType}
-                isClearable
-                placeholder='Select Type'
-                styles={customSelectStyle}
-              />
-            </div>
-            <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Template Group</label>
-              <Select
-                options={groupOptions}
-                value={selectedGroup}
-                onChange={setSelectedGroup}
-                isClearable
-                placeholder='Select Group'
-                styles={customSelectStyle}
-              />
-            </div>
-            <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Template Title</label>
+
+            {/* Code */}
+            <div className='col-md-6 mb-3'>
+              <label className='form-label fw-bold'>Code</label>
               <input
                 type='text'
-                className='form-control form-control-solid'
+                className='form-control'
+                placeholder='Enter code'
+                ref={codeRef}
+                maxLength={100}
+              />
+            </div>
+
+            {/* Display Name */}
+            <div className='col-md-6 mb-3'>
+              <label className='form-label fw-bold'>Display Name</label>
+              <input
+                type='text'
+                className='form-control'
+                placeholder='Enter display name'
+                ref={displayNameRef}
                 maxLength={200}
-                placeholder='Enter template title'
-                ref={titleRef}
               />
             </div>
-          </div>
 
-          <div className='row'>
-            <div className='col-md-12 mb-3 position-relative'>
-              <label className='form-label fw-bold'>Template Content</label>
+            {/* Description */}
+            <div className='col-md-6 mb-3'>
+              <label className='form-label fw-bold'>Description</label>
               <textarea
-                className='form-control form-control-solid pe-5'
-                rows={6}
-                maxLength={2000}
-                placeholder='Enter template content'
-                ref={contentRef}
-                style={{minHeight: '160px', resize: 'vertical'}}
+                className='form-control'
+                rows={3}
+                placeholder='Enter description'
+                ref={descriptionRef}
               />
-              <i
-                className='fa fa-plus-circle text-success position-absolute'
-                style={{bottom: '12px', right: '15px', cursor: 'pointer', fontSize: '18px'}}
-                title='Add Placeholder'
-                onClick={() => setShowModal(true)}
-              ></i>
             </div>
           </div>
-
-          {/* Show selected placeholders below textarea with remove button */}
-          {selectedPlaceholders.length > 0 && (
-            <div className='mb-3'>
-              <label className='form-label fw-bold'>Selected Placeholders</label>
-              <div className='d-flex flex-wrap gap-2'>
-                {selectedPlaceholders.map((ph, index) => (
-                  <span
-                    key={index}
-                    className='badge bg-primary rounded-pill d-flex align-items-center'
-                  >
-                    {ph.placeholderText}
-                    <i
-                      className='fa fa-times ms-2'
-                      style={{cursor: 'pointer'}}
-                      onClick={() => removePlaceholder(index)}
-                    ></i>
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         <div className='card-footer d-flex justify-content-end p-3'>
           <button type='submit' className='btn btn-new btn-small' disabled={loading}>
-            {!loading && 'Save Changes'}
+            {!loading && 'Save Placeholder Group'}
             {loading && (
               <span className='indicator-progress'>
                 Please wait...
@@ -233,14 +124,8 @@ const AddPlaceholderGroups = () => {
           </button>
         </div>
       </form>
-
-      <PlaceholdersModal
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        onSelect={handleSelectPlaceholders}
-      />
     </div>
   )
 }
 
-export {AddPlaceholderGroups}
+export { AddPlaceholderGroups }
