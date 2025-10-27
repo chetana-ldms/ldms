@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {useErrorBoundary} from 'react-error-boundary'
 import {ToastContainer} from 'react-toastify'
@@ -10,21 +10,23 @@ import {
 } from '../../../../../../api/IncidentsApi'
 import Select from 'react-select'
 import PlaceholdersModal from './PlaceholdersModal'
+import RichTextEditor from '../../../../../../../utils/RichTextEditor'
+import {processHtmlWithInlineImages} from '../../incidents/processHtmlWithInlineImages'
 
 const AddTemplates = () => {
   const {showBoundary} = useErrorBoundary()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState('')
+  const [attachments, setAttachments] = useState([])
   const orgId = Number(sessionStorage.getItem('orgId'))
-
+  const toolId = Number(sessionStorage.getItem('toolID'))
   const [selectedType, setSelectedType] = useState(null)
   const [selectedGroup, setSelectedGroup] = useState(null)
   const [types, setTypes] = useState([])
   const [groups, setGroups] = useState([])
-
   const [showModal, setShowModal] = useState(false)
-  const [selectedPlaceholders, setSelectedPlaceholders] = useState([]) // array of objects
-  const contentRef = useRef()
+  const [selectedPlaceholders, setSelectedPlaceholders] = useState([])
   const titleRef = useRef()
 
   useEffect(() => {
@@ -46,25 +48,40 @@ const AddTemplates = () => {
   }
 
   const handleSelectPlaceholders = (placeholders) => {
-    setSelectedPlaceholders((prev) => [...prev, ...placeholders])
+    setSelectedPlaceholders((prev) => {
+      const newPlaceholders = [...prev, ...placeholders]
+      const placeholdersText = placeholders.map((p) => p.placeholderData).join(' ')
+      setMessage((msg) => (msg ? msg + ' ' + placeholdersText : placeholdersText))
+      return newPlaceholders
+    })
     setShowModal(false)
   }
+
   const removePlaceholder = (index) => {
+    const removedPlaceholder = selectedPlaceholders[index]
     setSelectedPlaceholders((prev) => prev.filter((_, i) => i !== index))
+    setMessage((prev) =>
+      prev.replace(new RegExp(removedPlaceholder.placeholderData, 'g'), '').trim()
+    )
   }
-  useEffect(() => {
-    const textarea = contentRef.current
-    if (!textarea) return
-    const placeholdersText = selectedPlaceholders.map((p) => p.placeholderData).join(' ')
-    textarea.value = placeholdersText
-  }, [selectedPlaceholders])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
 
     const titleValue = titleRef.current?.value?.trim()
-    const contentValue = contentRef.current?.value?.trim()
+    const {cleanedHtml, attachments: inlineAttachments} = processHtmlWithInlineImages(message)
+    if (!selectedType) {
+      notifyFail('Select Type')
+      setLoading(false)
+      return
+    }
+
+    if (!selectedGroup) {
+      notifyFail('Select Group')
+      setLoading(false)
+      return
+    }
 
     if (!titleValue) {
       notifyFail('Enter Template Title')
@@ -72,7 +89,7 @@ const AddTemplates = () => {
       return
     }
 
-    if (!contentValue) {
+    if (!message?.trim()) {
       notifyFail('Enter Template Content')
       setLoading(false)
       return
@@ -80,25 +97,30 @@ const AddTemplates = () => {
 
     const createdUserId = Number(sessionStorage.getItem('userId'))
     const createdDate = new Date().toISOString()
-
     const data = {
-      orgId,
-      templateTypeId: selectedType?.masterId || 0,
-      groupId: selectedGroup?.masterId || 0,
-      title: titleValue,
-      content: contentValue,
-      placeholderIds: selectedPlaceholders.map((p) => p.placeholderId), // only remaining placeholders
-      createdUserId,
-      createdDate,
+      OrgId: orgId,
+      ToolId: 2,
+      TemplateTypeId: selectedType.masterId,
+      GroupId: selectedGroup.masterId,
+      Title: titleValue,
+      Content: cleanedHtml, // ✅ use CID replaced html
+      PlaceholderIds: selectedPlaceholders.map((p) => p.placeholderId),
+      CreatedUserId: createdUserId,
+      CreatedDate: createdDate,
+      SignatureContent: 'test',
+      attachments: [
+        ...attachments.map((f) => ({file: f})),
+        ...inlineAttachments, // ✅ cid objects from helper
+      ],
     }
 
     try {
       const response = await fetchMessageTemplateUrl(data)
       if (response?.isSuccess) {
-        notify(response.message || 'Template created successfully!')
+        notify('Template created successfully!')
         setTimeout(() => navigate('/qradar/templates/list'), 2000)
       } else {
-        notifyFail(response?.message || 'Failed to create template')
+        notifyFail('Failed to create template')
       }
     } catch (error) {
       showBoundary(error)
@@ -145,7 +167,9 @@ const AddTemplates = () => {
         <div className='card-body p-4'>
           <div className='row'>
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Template Type</label>
+              <label className='form-label fw-bold'>
+                Type <sup className='red'>*</sup>
+              </label>
               <Select
                 options={typeOptions}
                 value={selectedType}
@@ -156,7 +180,9 @@ const AddTemplates = () => {
               />
             </div>
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Template Group</label>
+              <label className='form-label fw-bold'>
+                Group <sup className='red'>*</sup>
+              </label>
               <Select
                 options={groupOptions}
                 value={selectedGroup}
@@ -167,11 +193,13 @@ const AddTemplates = () => {
               />
             </div>
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Template Title</label>
+              <label className='form-label fw-bold'>
+                Title <sup className='red'>*</sup>
+              </label>
               <input
                 type='text'
-                className='form-control form-control-solid'
-                maxLength={200}
+                className='form-control'
+                maxLength={255}
                 placeholder='Enter template title'
                 ref={titleRef}
               />
@@ -180,14 +208,35 @@ const AddTemplates = () => {
 
           <div className='row'>
             <div className='col-md-12 mb-3 position-relative'>
-              <label className='form-label fw-bold'>Template Content</label>
-              <textarea
-                className='form-control form-control-solid pe-5'
-                rows={6}
-                maxLength={2000}
-                placeholder='Enter template content'
-                ref={contentRef}
-                style={{minHeight: '160px', resize: 'vertical'}}
+              <label className='form-label fw-bold'>
+                Content <sup className='red'>*</sup>
+              </label>
+              {attachments.length > 0 && (
+                <div className='d-flex flex-wrap gap-2 mb-2'>
+                  {attachments.map((file, idx) => (
+                    <div
+                      key={idx}
+                      className='d-flex align-items-center px-2 py-1 border rounded bg-light'
+                      style={{fontSize: '13px'}}
+                    >
+                      <span className='me-2'>
+                        {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                      </span>
+                      <button
+                        type='button'
+                        className='btn btn-sm btn-link text-danger p-0'
+                        onClick={() => setAttachments((prev) => prev.filter((_, i) => i !== idx))}
+                      >
+                        ✖
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <RichTextEditor
+                value={message}
+                onChange={setMessage}
+                onAttach={(file) => setAttachments((prev) => [...prev, file])}
               />
               <i
                 className='fa fa-plus-circle text-success position-absolute'
@@ -198,7 +247,6 @@ const AddTemplates = () => {
             </div>
           </div>
 
-          {/* Show selected placeholders below textarea with remove button */}
           {selectedPlaceholders.length > 0 && (
             <div className='mb-3'>
               <label className='form-label fw-bold'>Selected Placeholders</label>

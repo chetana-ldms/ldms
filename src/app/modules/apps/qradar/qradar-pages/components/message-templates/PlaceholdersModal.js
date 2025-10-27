@@ -1,7 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import {Modal, Button, Spinner} from 'react-bootstrap'
 import Select from 'react-select'
-import {fetchMessagePlaceHolderGroupsUrl, fetchMessagePlaceholdersUrl} from '../../../../../../api/MessageTemplateApi'
+import {
+  fetchMessagePlaceHolderGroupsUrl,
+  fetchMessagePlaceholdersUrl,
+} from '../../../../../../api/MessageTemplateApi'
 import {notifyFail} from '../notification/Notification'
 
 const PlaceholdersModal = ({show, onHide, onSelect}) => {
@@ -100,9 +103,12 @@ const PlaceholdersModal = ({show, onHide, onSelect}) => {
   }
 
   return (
-    <Modal show={show} onHide={onHide} centered backdrop='static' size='lg'>
+    <Modal show={show} onHide={onHide}  className="selectPlaceholders application-modal">
       <Modal.Header closeButton>
-        <Modal.Title className='fw-semibold'>Select Placeholders</Modal.Title>
+        <Modal.Title className='fw-semibold'>Placeholders</Modal.Title>
+        <button type='button' class='application-modal-close' aria-label='Close'>
+          <i className='fa fa-close' />
+        </button>
       </Modal.Header>
 
       <Modal.Body style={{maxHeight: '70vh', overflowY: 'auto'}}>

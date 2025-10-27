@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useErrorBoundary } from 'react-error-boundary'
-import { ToastContainer } from 'react-toastify'
-import { notify, notifyFail } from '../notification/Notification'
+import React, {useEffect, useState} from 'react'
+import {Link, useNavigate} from 'react-router-dom'
+import {useErrorBoundary} from 'react-error-boundary'
+import {ToastContainer} from 'react-toastify'
+import {notify, notifyFail} from '../notification/Notification'
 import {
   fetchMessagePlaceHolderGroupsUrl,
   fetchMessagePlaceholderUrl,
@@ -13,7 +13,7 @@ import {
 import Select from 'react-select'
 
 const AddPlaceholder = () => {
-  const { showBoundary } = useErrorBoundary()
+  const {showBoundary} = useErrorBoundary()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
 
@@ -39,6 +39,7 @@ const AddPlaceholder = () => {
   const [placeholderText, setPlaceholderText] = useState('')
   const [description, setDescription] = useState('')
   const [sourceType, setSourceType] = useState('')
+  const [showIn, setShowIn] = useState(false)
 
   // 🔹 Load dropdown data on mount
   useEffect(() => {
@@ -136,38 +137,48 @@ const AddPlaceholder = () => {
     value: p.placeholderId,
   }))
 
-  // 🔹 Submit handler
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    // Common mandatory fields
     if (!selectedGroup) return notifyFail('Select a Group')
-    if (!placeholderText.trim()) return notifyFail('Enter Placeholder Text')
+    if (!placeholderData.trim()) return notifyFail('Enter Placeholder Data')
+    if (!placeholderText.trim()) return notifyFail('Enter DisplayName')
+    if (!sourceType) return notifyFail('Select Source Type')
+
+    // If sourceType is TABLE → these must be filled
+    if (sourceType === 'Table') {
+      if (!selectedTable) return notifyFail('Select Source Table')
+      if (!selectedColumn) return notifyFail('Select Source Data Column')
+      if (!selectedCriteriaColumn) return notifyFail('Select Source Criteria Column')
+    }
 
     setLoading(true)
+
     const payload = {
       orgId,
       toolId: 0,
       groupId: selectedGroup?.masterId || 0,
-      objectType,
       placeholderData,
       placeholderText,
       description,
-      sourceTable: selectedTable?.value || '',
-      sourceDataColumn: selectedColumn?.value || '',
-      sourceCriteriaColumn: selectedCriteriaColumn?.value || '',
+      sourceTable: sourceType === 'Table' ? selectedTable?.value || '' : '',
+      sourceDataColumn: sourceType === 'Table' ? selectedColumn?.value || '' : '',
+      sourceCriteriaColumn: sourceType === 'Table' ? selectedCriteriaColumn?.value || '' : '',
       sourceType,
       dependency_PlaceholderId: selectedDependency?.value || 0,
       createdDate: new Date().toISOString(),
       createdUserId,
+      showInSelection:showIn,
     }
 
     try {
       const response = await fetchMessagePlaceholderUrl(payload)
       if (response?.isSuccess) {
-        notify(response.message || 'Placeholder added successfully!')
+        notify('Placeholder added successfully!')
         setTimeout(() => navigate('/qradar/placeholder/list'), 2000)
       } else {
-        notifyFail(response?.message || 'Failed to add placeholder')
+        notifyFail('Failed to add placeholder')
       }
     } catch (err) {
       console.error('Error creating placeholder:', err)
@@ -188,6 +199,10 @@ const AddPlaceholder = () => {
       zIndex: 9999,
     }),
   }
+  const sourceTypeOptions = [
+    {label: 'Table', value: 'Table'},
+    {label: 'Static Data', value: 'Static Data'},
+  ]
 
   return (
     <div className='config card'>
@@ -204,7 +219,9 @@ const AddPlaceholder = () => {
           <div className='row'>
             {/* Group */}
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Group</label>
+              <label className='form-label fw-bold'>
+                Group<span className='text-danger'>*</span>
+              </label>
               <Select
                 options={groupOptions}
                 value={selectedGroup}
@@ -214,9 +231,7 @@ const AddPlaceholder = () => {
                 styles={customSelectStyle}
               />
             </div>
-
-            {/* Object Type */}
-            <div className='col-md-4 mb-3'>
+            {/* <div className='col-md-4 mb-3'>
               <label className='form-label fw-bold'>Object Type</label>
               <input
                 type='text'
@@ -225,33 +240,33 @@ const AddPlaceholder = () => {
                 onChange={(e) => setObjectType(e.target.value)}
                 placeholder='Enter object type'
               />
-            </div>
-
-            {/* Placeholder Data */}
+            </div> */}
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Placeholder Data</label>
+              <label className='form-label fw-bold'>
+                Placeholder Data<span className='text-danger'>*</span>
+              </label>
               <input
                 type='text'
                 className='form-control'
                 value={placeholderData}
                 onChange={(e) => setPlaceholderData(e.target.value)}
                 placeholder='Enter placeholder data'
+                maxLength={100}
               />
             </div>
-
-            {/* Placeholder Text */}
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Placeholder Text</label>
+              <label className='form-label fw-bold'>
+               DisplayName<span className='text-danger'>*</span>
+              </label>
               <input
                 type='text'
                 className='form-control'
                 value={placeholderText}
                 onChange={(e) => setPlaceholderText(e.target.value)}
                 placeholder='Enter placeholder text'
+                maxLength={255}
               />
             </div>
-
-            {/* Description */}
             <div className='col-md-8 mb-3'>
               <label className='form-label fw-bold'>Description</label>
               <textarea
@@ -260,24 +275,24 @@ const AddPlaceholder = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder='Enter description'
+                maxLength={500}
               />
             </div>
-
-            {/* Source Type */}
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Source Type</label>
-              <input
-                type='text'
-                className='form-control'
-                value={sourceType}
-                onChange={(e) => setSourceType(e.target.value)}
-                placeholder='Enter source type'
+              <label className='form-label fw-bold'>Source Type<span className='text-danger'>*</span></label>
+              <Select
+                options={sourceTypeOptions}
+                value={sourceTypeOptions.find((opt) => opt.value === sourceType) || null}
+                onChange={(opt) => setSourceType(opt?.value || '')}
+                placeholder='Select Source Type'
+                isClearable
+                styles={customSelectStyle}
               />
             </div>
-
-            {/* Source Table */}
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Source Table</label>
+              <label className='form-label fw-bold'>
+                Source Table
+              </label>
               <Select
                 options={tableOptions}
                 value={selectedTable}
@@ -287,8 +302,6 @@ const AddPlaceholder = () => {
                 styles={customSelectStyle}
               />
             </div>
-
-            {/* Source Data Column */}
             <div className='col-md-4 mb-3'>
               <label className='form-label fw-bold'>Source Data Column</label>
               <Select
@@ -301,8 +314,6 @@ const AddPlaceholder = () => {
                 styles={customSelectStyle}
               />
             </div>
-
-            {/* Source Criteria Column (same dropdown as Source Data Column) */}
             <div className='col-md-4 mb-3'>
               <label className='form-label fw-bold'>Source Criteria Column</label>
               <Select
@@ -315,8 +326,6 @@ const AddPlaceholder = () => {
                 styles={customSelectStyle}
               />
             </div>
-
-            {/* Dependency Placeholder */}
             <div className='col-md-4 mb-3'>
               <label className='form-label fw-bold'>Dependency Placeholder</label>
               <Select
@@ -327,6 +336,18 @@ const AddPlaceholder = () => {
                 placeholder='Select Dependency Placeholder'
                 styles={customSelectStyle}
               />
+            </div>
+            <div className='col-md-4 mb-3 d-flex align-items-center mt-5'>
+              <input
+                type='checkbox'
+                id='showIn'
+                className='form-check-input ms-0'
+                checked={showIn}
+                onChange={(e) => setShowIn(e.target.checked)}
+              />
+              <label htmlFor='showIn' className='form-label fw-bold ms-5 p-5'>
+                Show In
+              </label>
             </div>
           </div>
         </div>
@@ -348,4 +369,4 @@ const AddPlaceholder = () => {
   )
 }
 
-export { AddPlaceholder }
+export {AddPlaceholder}

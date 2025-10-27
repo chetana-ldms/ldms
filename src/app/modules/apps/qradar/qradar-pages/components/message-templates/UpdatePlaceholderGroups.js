@@ -63,11 +63,6 @@ const UpdatePlaceholderGroups = () => {
       setLoading(false)
       return
     }
-    if (!description) {
-      notifyFail('Enter Description')
-      setLoading(false)
-      return
-    }
 
     const modifiedUserId = Number(sessionStorage.getItem('userId')) || 0
     const modifiedDate = new Date().toISOString()
@@ -84,10 +79,10 @@ const UpdatePlaceholderGroups = () => {
     try {
       const response = await fetchMessagePlaceHolderGroupUpdateUrl(payload)
       if (response?.isSuccess) {
-        notify(response.message)
+        notify('Placeholder group Updated successfully!')
         setTimeout(() => navigate('/qradar/placeholder-groups/list'), 2000)
       } else {
-        notifyFail(response?.message)
+        notifyFail('Failed to Update Placeholder group')
       }
     } catch (error) {
       console.error('Error updating Template Group:', error)
@@ -115,7 +110,9 @@ const UpdatePlaceholderGroups = () => {
           <div className='row'>
             {/* Code */}
             <div className='col-md-6 mb-3'>
-              <label className='form-label fw-bold'>Code</label>
+              <label className='form-label fw-bold'>
+                Code <sup className='red'>*</sup>
+              </label>
               <input
                 type='text'
                 className='form-control'
@@ -128,13 +125,15 @@ const UpdatePlaceholderGroups = () => {
 
             {/* Display Name */}
             <div className='col-md-6 mb-3'>
-              <label className='form-label fw-bold'>Display Name</label>
+              <label className='form-label fw-bold'>
+                Display Name <sup className='red'>*</sup>
+              </label>
               <input
                 type='text'
                 className='form-control'
                 placeholder='Enter display name'
                 ref={displayNameRef}
-                maxLength={200}
+                maxLength={255}
                 readOnly={save}
               />
             </div>
@@ -147,6 +146,7 @@ const UpdatePlaceholderGroups = () => {
                 rows={3}
                 placeholder='Enter description'
                 ref={descriptionRef}
+                maxLength={500}
                 readOnly={save}
               />
             </div>

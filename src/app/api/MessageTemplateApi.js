@@ -25,31 +25,83 @@ const MessageTemplateGroupDeleteUrl =
   'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Group/Delete'
 const MessageTemplateTypesUrl =
   'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Types'
-  const MessageTemplateTypeUrl ="http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Type"
-  const MessageTemplateTypeUpdateUrl ="http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Type/Update"
-  const MessageTemplateTypeDeleteUrl ="http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Type/Delete"
-  const MessagePlaceHolderGroupUrl ="http://10.41.3.232:501/api/GenerelFunctions/v1/Message/PlaceHolder/Group"
-  const MessagePlaceHolderGroupUpdateUrl="http://10.41.3.232:501/api/GenerelFunctions/v1/Message/PlaceHolder/Group/Update"
-  const MessagePlaceHolderGroupDeleteUrl ="http://10.41.3.232:501/api/GenerelFunctions/v1/Message/PlaceHolder/Group/Delete"
+const MessageTemplateTypeUrl =
+  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Type'
+const MessageTemplateTypeUpdateUrl =
+  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Type/Update'
+const MessageTemplateTypeDeleteUrl =
+  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Type/Delete'
+const MessagePlaceHolderGroupUrl =
+  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/PlaceHolder/Group'
+const MessagePlaceHolderGroupUpdateUrl =
+  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/PlaceHolder/Group/Update'
+const MessagePlaceHolderGroupDeleteUrl =
+  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/PlaceHolder/Group/Delete'
+
+// export const fetchMessageTemplateUrl = async (data) => {
+//   try {
+//     const response = await FetchWithToken(`${MessageTemplateUrl}`, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({
+//         ...data,
+//       }),
+//     })
+
+//     const responseData = await response.json()
+//     return responseData
+//   } catch (error) {
+//     console.log(error)
+//   }
+// }
 
 export const fetchMessageTemplateUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${MessageTemplateUrl}`, {
+    const formData = new FormData()
+
+    // Basic fields
+    formData.append('OrgId', data.OrgId)
+    formData.append('ToolId', data.ToolId)
+    formData.append('ToolTemplateId', 0)
+    formData.append('TemplateTypeId', data.TemplateTypeId)
+    formData.append('GroupId', data.GroupId)
+    formData.append('Title', data.Title)
+    formData.append('ScopeName', data.ScopeName || '')
+    formData.append('ScopeValue', data.ScopeValue || '')
+    formData.append('SignatureContent', data.SignatureContent || '')
+    formData.append('CreatedUserId', data.CreatedUserId)
+    formData.append('CreatedDate', data.CreatedDate)
+
+    // Placeholders
+    data.PlaceholderIds?.forEach((id) => formData.append('PlaceholderIds', id))
+
+   if (data.attachments?.length) {
+      data.attachments.forEach((att) => {
+        if (att.contentId) {
+          // inline image
+          formData.append('Attachments', att.file, att.file.name)
+          formData.append('ContentIds', att.contentId)
+        } else {
+          formData.append('Attachments', att.file || att)
+        }
+      })
+    }
+
+    formData.append('Content', data.Content)
+
+    const response = await fetch(MessageTemplateUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...data,
-      }),
+      body: formData,
     })
 
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.log(error)
+    return await response.json()
+  } catch (err) {
+    console.error('API call failed:', err)
   }
 }
+
 export const fetchMessagePlaceholdersUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${MessagePlaceholdersUrl}`, {

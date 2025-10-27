@@ -11,7 +11,11 @@ import {notify, notifyFail} from '../notification/Notification'
 import Select from 'react-select'
 import {getCurrentTimeZone} from '../../../../../../../utils/helper'
 import {truncateText} from '../../../../../../../utils/TruncateText'
-import {fetchMessagePlaceholderDeleteUrl, fetchMessagePlaceHolderGroupsUrl, fetchMessagePlaceholdersUrl} from '../../../../../../api/MessageTemplateApi'
+import {
+  fetchMessagePlaceholderDeleteUrl,
+  fetchMessagePlaceHolderGroupsUrl,
+  fetchMessagePlaceholdersUrl,
+} from '../../../../../../api/MessageTemplateApi'
 
 const Placeholder = () => {
   const navigate = useNavigate()
@@ -189,16 +193,16 @@ const Placeholder = () => {
 
       {/* 🔹 Table */}
       <div className='card-body no-pad'>
-        <table className='table alert-table fixed-table scroll-x'>
+        <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
-              <th>Object Type</th>
+              {/* <th>Object Type</th> */}
               <th>Placeholder Data</th>
-              <th>Placeholder Text</th>
+              <th>Display Name</th>
               <th>Description</th>
-              <th>Source Table</th>
+              {/* <th>Source Table</th>
               <th>Source Data Column</th>
-              <th>Source Criteria Column</th>
+              <th>Source Criteria Column</th> */}
               <th>Source Type</th>
               <th>Actions</th>
             </tr>
@@ -224,15 +228,15 @@ const Placeholder = () => {
             {!loading &&
               placeholders.map((item, index) => (
                 <tr key={index} className='fs-12 table-row'>
-                  <td>{item.objectType}</td>
+                  {/* <td>{item.objectType}</td> */}
                   <td>{item.placeholderData}</td>
                   <td className=''>{item.placeholderText}</td>
                   <td className='' title={item.description}>
                     {truncateText(item.description || '', 30)}
                   </td>
-                  <td>{item.sourceTable}</td>
+                  {/* <td>{item.sourceTable}</td>
                   <td>{item.sourceDataColumn}</td>
-                  <td>{item.sourceCriteriaColumn}</td>
+                  <td>{item.sourceCriteriaColumn}</td> */}
                   <td>{item.sourceType}</td>
                   <td>
                     {isActionAuthorized('View') ? (

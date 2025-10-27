@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useErrorBoundary } from 'react-error-boundary'
-import { ToastContainer } from 'react-toastify'
-import { notify, notifyFail } from '../notification/Notification'
+import React, {useEffect, useState} from 'react'
+import {Link, useLocation, useNavigate, useParams} from 'react-router-dom'
+import {useErrorBoundary} from 'react-error-boundary'
+import {ToastContainer} from 'react-toastify'
+import {notify, notifyFail} from '../notification/Notification'
 import {
   fetchMessagePlaceHolderGroupsUrl,
   fetchMessagePlaceholderUpdateUrl,
@@ -10,14 +10,14 @@ import {
   fetchTablesListUrl,
   fetchTablesUrl,
 } from '../../../../../../api/MessageTemplateApi'
-import { fetchTemplatesGroupsUrl } from '../../../../../../api/IncidentsApi'
+import {fetchTemplatesGroupsUrl} from '../../../../../../api/IncidentsApi'
 import Select from 'react-select'
 
 const UpdatePlaceholder = () => {
-  const { showBoundary } = useErrorBoundary()
+  const {showBoundary} = useErrorBoundary()
   const navigate = useNavigate()
   const location = useLocation()
-  const { id } = useParams()
+  const {id} = useParams()
   const [loading, setLoading] = useState(false)
 
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -43,6 +43,7 @@ const UpdatePlaceholder = () => {
   const [placeholderText, setPlaceholderText] = useState('')
   const [description, setDescription] = useState('')
   const [sourceType, setSourceType] = useState('')
+  const [showIn, setShowIn] = useState(false)
 
   // 🔹 Init sequence — ensures groups and placeholders load before details
   useEffect(() => {
@@ -56,9 +57,7 @@ const UpdatePlaceholder = () => {
         ])
 
         const groupData = Array.isArray(groupsRes?.data) ? groupsRes.data : []
-        const tableData = Array.isArray(tablesRes?.tableNameList)
-          ? tablesRes.tableNameList
-          : []
+        const tableData = Array.isArray(tablesRes?.tableNameList) ? tablesRes.tableNameList : []
 
         setGroups(groupData)
         setTables(tableData)
@@ -95,17 +94,19 @@ const UpdatePlaceholder = () => {
   const loadPlaceholderDetails = async (groupData, placeholderList) => {
     if (!id) return
     try {
-      const payload = { orgId, placeholderId: Number(id) }
+      const payload = {orgId, placeholderId: Number(id)}
       const response = await fetchMessagePlaceholdersUrl(payload)
 
       if (response?.isSuccess && Array.isArray(response?.placeholders)) {
         const data = response.placeholders[0]
         if (data) {
+          console.log('Loaded placeholder data:', data)
           setObjectType(data.objectType || '')
           setPlaceholderData(data.placeholderData || '')
           setPlaceholderText(data.placeholderText || '')
           setDescription(data.description || '')
           setSourceType(data.sourceType || '')
+          setShowIn(data.showInSelection)
 
           // ✅ Match Group from already loaded list
           const matchedGroup = groupData.find(
@@ -121,18 +122,16 @@ const UpdatePlaceholder = () => {
 
           // ✅ Source Table + Columns
           if (data.sourceTable) {
-            const tableOption = { label: data.sourceTable, value: data.sourceTable }
+            const tableOption = {label: data.sourceTable, value: data.sourceTable}
             setSelectedTable(tableOption)
 
             const tableInfo = await fetchTablesUrl(data.sourceTable)
             const colList = tableInfo?.tableColumnNameList || []
             setColumns(colList)
 
-            const colOptions = colList.map((c) => ({ label: c, value: c }))
+            const colOptions = colList.map((c) => ({label: c, value: c}))
             const matchedDataCol = colOptions.find((c) => c.value === data.sourceDataColumn)
-            const matchedCriteriaCol = colOptions.find(
-              (c) => c.value === data.sourceCriteriaColumn
-            )
+            const matchedCriteriaCol = colOptions.find((c) => c.value === data.sourceCriteriaColumn)
 
             setSelectedColumn(matchedDataCol || null)
             setSelectedCriteriaColumn(matchedCriteriaCol || null)
@@ -171,9 +170,7 @@ const UpdatePlaceholder = () => {
   const loadColumns = async (tableName) => {
     try {
       const data = await fetchTablesUrl(tableName)
-      const list = Array.isArray(data?.tableColumnNameList)
-        ? data.tableColumnNameList
-        : []
+      const list = Array.isArray(data?.tableColumnNameList) ? data.tableColumnNameList : []
       setColumns(list)
     } catch (err) {
       console.error('Error loading columns:', err)
@@ -186,8 +183,8 @@ const UpdatePlaceholder = () => {
     value: g.templateGroupId,
     masterId: g.masterId,
   }))
-  const tableOptions = tables.map((t) => ({ label: t, value: t }))
-  const columnOptions = columns.map((c) => ({ label: c, value: c }))
+  const tableOptions = tables.map((t) => ({label: t, value: t}))
+  const columnOptions = columns.map((c) => ({label: c, value: c}))
   const dependencyOptions = placeholders.map((p) => ({
     label: p.placeholderText,
     value: p.placeholderId,
@@ -196,15 +193,24 @@ const UpdatePlaceholder = () => {
   // 🔹 Submit handler
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!selectedGroup) return notifyFail('Select a Group')
-    if (!placeholderText.trim()) return notifyFail('Enter Placeholder Text')
+    if (!selectedGroup) return notifyFail('Group is required')
+    if (!placeholderData.trim()) return notifyFail('Placeholder Data is required')
+    if (!placeholderText.trim()) return notifyFail('Display Name is required')
+    if (!sourceType) return notifyFail('Source Type is required')
+    if (sourceType === 'Table') {
+      if (!selectedTable) return notifyFail('Source Table is required when Source Type is Table')
+      if (!selectedColumn)
+        return notifyFail('Source Data Column is required when Source Type is Table')
+      if (!selectedCriteriaColumn)
+        return notifyFail('Source Criteria Column is required when Source Type is Table')
+    }
 
     setLoading(true)
     const payload = {
       orgId,
       toolId: 0,
       groupId: selectedGroup?.masterId || 0,
-      objectType,
+      // objectType,
       placeholderData,
       placeholderText,
       description,
@@ -216,15 +222,16 @@ const UpdatePlaceholder = () => {
       placeholderId: Number(id),
       modifiedDate: new Date().toISOString(),
       modifiedUserId,
+      showInSelection: showIn,
     }
 
     try {
       const response = await fetchMessagePlaceholderUpdateUrl(payload)
       if (response?.isSuccess) {
-        notify(response.message || 'Placeholder updated successfully!')
+        notify('Placeholder updated successfully!')
         setTimeout(() => navigate('/qradar/placeholder/list'), 2000)
       } else {
-        notifyFail(response?.message || 'Failed to update placeholder')
+        notifyFail('Failed to update placeholder')
       }
     } catch (err) {
       console.error('Error updating placeholder:', err)
@@ -245,6 +252,10 @@ const UpdatePlaceholder = () => {
       zIndex: 9999,
     }),
   }
+  const sourceTypeOptions = [
+    {label: 'Table', value: 'Table'},
+    {label: 'Static Data', value: 'Static Data'},
+  ]
 
   return (
     <div className='config card'>
@@ -263,7 +274,7 @@ const UpdatePlaceholder = () => {
           <div className='row'>
             {/* Group */}
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Group</label>
+              <label className='form-label fw-bold'>Group<span className='text-danger'>*</span></label>
               <Select
                 options={groupOptions}
                 value={selectedGroup}
@@ -275,7 +286,7 @@ const UpdatePlaceholder = () => {
             </div>
 
             {/* Object Type */}
-            <div className='col-md-4 mb-3'>
+            {/* <div className='col-md-4 mb-3'>
               <label className='form-label fw-bold'>Object Type</label>
               <input
                 type='text'
@@ -284,29 +295,31 @@ const UpdatePlaceholder = () => {
                 onChange={(e) => setObjectType(e.target.value)}
                 placeholder='Enter object type'
               />
-            </div>
+            </div> */}
 
             {/* Placeholder Data */}
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Placeholder Data</label>
+              <label className='form-label fw-bold'>Placeholder Data<span className='text-danger'>*</span></label>
               <input
                 type='text'
                 className='form-control'
                 value={placeholderData}
                 onChange={(e) => setPlaceholderData(e.target.value)}
                 placeholder='Enter placeholder data'
+                maxLength={100}
               />
             </div>
 
             {/* Placeholder Text */}
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Placeholder Text</label>
+              <label className='form-label fw-bold'>DisplayName<span className='text-danger'>*</span></label>
               <input
                 type='text'
                 className='form-control'
                 value={placeholderText}
                 onChange={(e) => setPlaceholderText(e.target.value)}
                 placeholder='Enter placeholder text'
+                maxLength={255}
               />
             </div>
 
@@ -319,18 +332,18 @@ const UpdatePlaceholder = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder='Enter description'
+                maxLength={500}
               />
             </div>
-
-            {/* Source Type */}
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Source Type</label>
-              <input
-                type='text'
-                className='form-control'
-                value={sourceType}
-                onChange={(e) => setSourceType(e.target.value)}
-                placeholder='Enter source type'
+              <label className='form-label fw-bold'>Source Type<span className='text-danger'>*</span></label>
+              <Select
+                options={sourceTypeOptions}
+                value={sourceTypeOptions.find((opt) => opt.value === sourceType) || null}
+                onChange={(opt) => setSourceType(opt?.value || '')}
+                placeholder='Select Source Type'
+                isClearable
+                styles={customSelectStyle}
               />
             </div>
 
@@ -356,9 +369,7 @@ const UpdatePlaceholder = () => {
                 onChange={setSelectedColumn}
                 isDisabled={!selectedTable}
                 isClearable
-                placeholder={
-                  selectedTable ? 'Select Data Column' : 'Select Source Table first'
-                }
+                placeholder={selectedTable ? 'Select Data Column' : 'Select Source Table first'}
                 styles={customSelectStyle}
               />
             </div>
@@ -372,9 +383,7 @@ const UpdatePlaceholder = () => {
                 onChange={setSelectedCriteriaColumn}
                 isDisabled={!selectedTable}
                 isClearable
-                placeholder={
-                  selectedTable ? 'Select Criteria Column' : 'Select Source Table first'
-                }
+                placeholder={selectedTable ? 'Select Criteria Column' : 'Select Source Table first'}
                 styles={customSelectStyle}
               />
             </div>
@@ -390,6 +399,18 @@ const UpdatePlaceholder = () => {
                 placeholder='Select Dependency Placeholder'
                 styles={customSelectStyle}
               />
+            </div>
+            <div className='col-md-4 mb-3 d-flex align-items-center mt-5'>
+              <input
+                type='checkbox'
+                id='showIn'
+                className='form-check-input ms-0'
+                checked={showIn}
+                onChange={(e) => setShowIn(e.target.checked)}
+              />
+              <label htmlFor='showIn' className='form-label fw-bold ms-5 p-5'>
+                Show In
+              </label>
             </div>
           </div>
         </div>
@@ -411,4 +432,4 @@ const UpdatePlaceholder = () => {
   )
 }
 
-export { UpdatePlaceholder }
+export {UpdatePlaceholder}

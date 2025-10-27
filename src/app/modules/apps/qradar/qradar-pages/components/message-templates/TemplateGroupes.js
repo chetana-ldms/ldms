@@ -156,8 +156,8 @@ const TemplateGroupes = () => {
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
-              <th>MasterId</th>
-              <th>Data Type</th>
+              {/* <th>MasterId</th>
+              <th>Data Type</th> */}
               <th>Code</th>
               <th>DisplayName</th>
               <th>Description</th>
@@ -170,8 +170,8 @@ const TemplateGroupes = () => {
             {currentItems !== null ? (
               currentItems.map((item, index) => (
                 <tr key={index} className='fs-12 table-row'>
-                  <td>{item.masterId}</td>
-                  <td>{item.dataType}</td>
+                  {/* <td>{item.masterId}</td>
+                  <td>{item.dataType}</td> */}
                   <td>{item.code}</td>
                   <td>{item.displayName}</td>
                   <td className='wrap-txt' title={item.description}>

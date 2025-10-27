@@ -1,12 +1,16 @@
-import React, { useState, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useErrorBoundary } from 'react-error-boundary'
-import { ToastContainer } from 'react-toastify'
-import { notify, notifyFail } from '../notification/Notification'
-import { fetchMessagePlaceHolderGroupUrl, fetchMessageTemplateGroupUrl, fetchMessageTemplateTypeUrl } from '../../../../../../api/MessageTemplateApi'
+import React, {useState, useRef} from 'react'
+import {Link, useNavigate} from 'react-router-dom'
+import {useErrorBoundary} from 'react-error-boundary'
+import {ToastContainer} from 'react-toastify'
+import {notify, notifyFail} from '../notification/Notification'
+import {
+  fetchMessagePlaceHolderGroupUrl,
+  fetchMessageTemplateGroupUrl,
+  fetchMessageTemplateTypeUrl,
+} from '../../../../../../api/MessageTemplateApi'
 
 const AddPlaceholderGroups = () => {
-  const { showBoundary } = useErrorBoundary()
+  const {showBoundary} = useErrorBoundary()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const codeRef = useRef()
@@ -29,12 +33,6 @@ const AddPlaceholderGroups = () => {
       setLoading(false)
       return
     }
-    if (!description) {
-      notifyFail('Enter Description')
-      setLoading(false)
-      return
-    }
-
     const createdUserId = Number(sessionStorage.getItem('userId')) || 0
     const createdDate = new Date().toISOString()
     const payload = {
@@ -48,10 +46,10 @@ const AddPlaceholderGroups = () => {
     try {
       const response = await fetchMessagePlaceHolderGroupUrl(payload)
       if (response?.isSuccess) {
-        notify(response.message)
+        notify('Placeholder group created successfully!')
         setTimeout(() => navigate('/qradar/placeholder-groups/list'), 2000)
       } else {
-        notifyFail(response?.message)
+        notifyFail('Failed to create Placeholder group')
       }
     } catch (error) {
       console.error('Error creating Template Group:', error)
@@ -74,10 +72,11 @@ const AddPlaceholderGroups = () => {
       <form onSubmit={handleSubmit}>
         <div className='card-body p-4'>
           <div className='row'>
-
             {/* Code */}
             <div className='col-md-6 mb-3'>
-              <label className='form-label fw-bold'>Code</label>
+              <label className='form-label fw-bold'>
+                Code <sup className='red'>*</sup>
+              </label>
               <input
                 type='text'
                 className='form-control'
@@ -89,13 +88,15 @@ const AddPlaceholderGroups = () => {
 
             {/* Display Name */}
             <div className='col-md-6 mb-3'>
-              <label className='form-label fw-bold'>Display Name</label>
+              <label className='form-label fw-bold'>
+                Display Name <sup className='red'>*</sup>
+              </label>
               <input
                 type='text'
                 className='form-control'
                 placeholder='Enter display name'
                 ref={displayNameRef}
-                maxLength={200}
+                maxLength={255}
               />
             </div>
 
@@ -107,6 +108,7 @@ const AddPlaceholderGroups = () => {
                 rows={3}
                 placeholder='Enter description'
                 ref={descriptionRef}
+                maxLength={255}
               />
             </div>
           </div>
@@ -128,4 +130,4 @@ const AddPlaceholderGroups = () => {
   )
 }
 
-export { AddPlaceholderGroups }
+export {AddPlaceholderGroups}

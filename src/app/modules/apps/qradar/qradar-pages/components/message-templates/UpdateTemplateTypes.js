@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useErrorBoundary } from 'react-error-boundary'
-import { ToastContainer } from 'react-toastify'
-import { notify, notifyFail } from '../notification/Notification'
+import React, {useState, useRef, useEffect} from 'react'
+import {Link, useLocation, useNavigate, useParams} from 'react-router-dom'
+import {useErrorBoundary} from 'react-error-boundary'
+import {ToastContainer} from 'react-toastify'
+import {notify, notifyFail} from '../notification/Notification'
 import {
   fetchMessageTemplateGroupsUrl,
   fetchMessageTemplateGroupUpdateUrl,
@@ -12,39 +12,38 @@ import {
 } from '../../../../../../api/MessageTemplateApi'
 
 const UpdateTemplateTypes = () => {
-  const { showBoundary } = useErrorBoundary()
+  const {showBoundary} = useErrorBoundary()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const location = useLocation()
-  const { id } = useParams()
+  const {id} = useParams()
   const codeRef = useRef()
   const displayNameRef = useRef()
   const descriptionRef = useRef()
 
   const [save] = useState(location.state?.save || '')
 
-useEffect(() => {
-  const fetchGroupDetails = async () => {
-    try {
-      const response = await fetchMessageTemplateTypesUrl(Number(id))
+  useEffect(() => {
+    const fetchGroupDetails = async () => {
+      try {
+        const response = await fetchMessageTemplateTypesUrl(Number(id))
 
-      if (response?.isSuccess && response?.data) {
-        const group = response.data[0]
-        if (codeRef.current) codeRef.current.value = group.code || ''
-        if (displayNameRef.current) displayNameRef.current.value = group.displayName || ''
-        if (descriptionRef.current) descriptionRef.current.value = group.description || ''
-      } else {
-        notifyFail('No group details found')
+        if (response?.isSuccess && response?.data) {
+          const group = response.data[0]
+          if (codeRef.current) codeRef.current.value = group.code || ''
+          if (displayNameRef.current) displayNameRef.current.value = group.displayName || ''
+          if (descriptionRef.current) descriptionRef.current.value = group.description || ''
+        } else {
+          notifyFail('No group details found')
+        }
+      } catch (error) {
+        console.error('Failed to load group details:', error)
+        notifyFail('Failed to load group details')
       }
-    } catch (error) {
-      console.error('Failed to load group details:', error)
-      notifyFail('Failed to load group details')
     }
-  }
 
-  if (id) fetchGroupDetails()
-}, [id])
-
+    if (id) fetchGroupDetails()
+  }, [id])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -62,12 +61,6 @@ useEffect(() => {
       setLoading(false)
       return
     }
-    if (!description) {
-      notifyFail('Enter Description')
-      setLoading(false)
-      return
-    }
-
     const modifiedUserId = Number(sessionStorage.getItem('userId')) || 0
     const modifiedDate = new Date().toISOString()
 
@@ -112,10 +105,11 @@ useEffect(() => {
       <form onSubmit={handleSubmit}>
         <div className='card-body p-4'>
           <div className='row'>
-
             {/* Code */}
             <div className='col-md-6 mb-3'>
-              <label className='form-label fw-bold'>Code</label>
+              <label className='form-label fw-bold'>
+                Code <sup className='red'>*</sup>
+              </label>
               <input
                 type='text'
                 className='form-control'
@@ -128,13 +122,15 @@ useEffect(() => {
 
             {/* Display Name */}
             <div className='col-md-6 mb-3'>
-              <label className='form-label fw-bold'>Display Name</label>
+              <label className='form-label fw-bold'>
+                Display Name <sup className='red'>*</sup>
+              </label>
               <input
                 type='text'
                 className='form-control'
                 placeholder='Enter display name'
                 ref={displayNameRef}
-                maxLength={200}
+                maxLength={255}
                 readOnly={save}
               />
             </div>
@@ -147,6 +143,7 @@ useEffect(() => {
                 rows={3}
                 placeholder='Enter description'
                 ref={descriptionRef}
+                 maxLength={500}
                 readOnly={save}
               />
             </div>
@@ -171,4 +168,4 @@ useEffect(() => {
   )
 }
 
-export { UpdateTemplateTypes }
+export {UpdateTemplateTypes}

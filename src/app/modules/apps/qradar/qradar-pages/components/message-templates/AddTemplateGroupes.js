@@ -29,11 +29,6 @@ const AddTemplateGroupes = () => {
       setLoading(false)
       return
     }
-    if (!description) {
-      notifyFail('Enter Description')
-      setLoading(false)
-      return
-    }
 
     const createdUserId = Number(sessionStorage.getItem('userId')) || 0
     const createdDate = new Date().toISOString()
@@ -48,10 +43,10 @@ const AddTemplateGroupes = () => {
     try {
       const response = await fetchMessageTemplateGroupUrl(payload)
       if (response?.isSuccess) {
-        notify(response.message)
+        notify('Template group created successfully!')
         setTimeout(() => navigate('/qradar/template-groupes/list'), 2000)
       } else {
-        notifyFail(response?.message)
+        notifyFail('Failed to create template group')
       }
     } catch (error) {
       console.error('Error creating Template Group:', error)
@@ -77,7 +72,7 @@ const AddTemplateGroupes = () => {
 
             {/* Code */}
             <div className='col-md-6 mb-3'>
-              <label className='form-label fw-bold'>Code</label>
+              <label className='form-label fw-bold'>Code <sup className='red'>*</sup></label>
               <input
                 type='text'
                 className='form-control'
@@ -89,13 +84,13 @@ const AddTemplateGroupes = () => {
 
             {/* Display Name */}
             <div className='col-md-6 mb-3'>
-              <label className='form-label fw-bold'>Display Name</label>
+              <label className='form-label fw-bold'>Display Name <sup className='red'>*</sup></label>
               <input
                 type='text'
                 className='form-control'
                 placeholder='Enter display name'
                 ref={displayNameRef}
-                maxLength={200}
+                maxLength={255}
               />
             </div>
 
@@ -107,6 +102,7 @@ const AddTemplateGroupes = () => {
                 rows={3}
                 placeholder='Enter description'
                 ref={descriptionRef}
+                maxLength={500}
               />
             </div>
           </div>

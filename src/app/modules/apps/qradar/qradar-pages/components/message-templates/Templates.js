@@ -209,10 +209,10 @@ const Templates = () => {
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
-              <th>User</th>
-              <th>Date</th>
+              {/* <th>User</th>
+              <th>Date</th> */}
               <th>Title</th>
-              <th>Content</th>
+              {/* <th>Content</th> */}
               <th>Actions</th>
             </tr>
           </thead>
@@ -237,12 +237,12 @@ const Templates = () => {
             {!loading &&
               tools.map((item, index) => (
                 <tr key={index} className='fs-12 table-row'>
-                  <td>{item.createdUser}</td>
-                  <td>{getCurrentTimeZone(item.createdDate)}</td>
+                  {/* <td>{item.createdUser}</td>
+                  <td>{getCurrentTimeZone(item.createdDate)}</td> */}
                   <td className=''>{item.title}</td>
-                  <td className='' title={item.content}>
+                  {/* <td className='' title={item.content}>
                     {truncateText(item.content, 70)}
-                  </td>
+                  </td> */}
                   <td>
                     {isActionAuthorized('View') ? (
                       <span className='me-8' title='View'>

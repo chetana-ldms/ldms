@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useErrorBoundary } from 'react-error-boundary'
-import { ToastContainer } from 'react-toastify'
-import { notify, notifyFail } from '../notification/Notification'
+import React, {useState, useRef, useEffect} from 'react'
+import {Link, useLocation, useNavigate, useParams} from 'react-router-dom'
+import {useErrorBoundary} from 'react-error-boundary'
+import {ToastContainer} from 'react-toastify'
+import {notify, notifyFail} from '../notification/Notification'
 import {
   fetchMessageTemplateUpdateUrl,
   fetchMessagePlaceholdersUrl,
@@ -14,13 +14,16 @@ import {
 } from '../../../../../../api/IncidentsApi'
 import Select from 'react-select'
 import PlaceholdersModal from './PlaceholdersModal'
+import RichTextEditor from '../../../../../../../utils/RichTextEditor'
 
 const UpdateTemplates = () => {
-  const { showBoundary } = useErrorBoundary()
+  const {showBoundary} = useErrorBoundary()
+  const toolId = Number(sessionStorage.getItem('toolID'))
   const navigate = useNavigate()
   const location = useLocation()
-  const { id } = useParams()
-
+  const {id} = useParams()
+  const [message, setMessage] = useState('')
+  const [attachments, setAttachments] = useState([])
   const [tools, setTools] = useState(null)
   const [loading, setLoading] = useState(false)
   const [types, setTypes] = useState([])
@@ -48,8 +51,16 @@ const UpdateTemplates = () => {
     value: g.templateGroupId,
     masterId: g.masterId,
   }))
+  const base64ToFile = (base64, fileName, contentType) => {
+    const byteString = atob(base64)
+    const ab = new ArrayBuffer(byteString.length)
+    const ia = new Uint8Array(ab)
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i)
+    }
+    return new File([ab], fileName, {type: contentType})
+  }
 
-  // ✅ Load all dropdowns and template data
   useEffect(() => {
     const init = async () => {
       setLoading(true)
@@ -66,7 +77,15 @@ const UpdateTemplates = () => {
         setGroups(groupData)
 
         // 2️⃣ Load template details
-        const payload = { orgId, templateId: id }
+        const payload = {
+          orgId,
+          templateId: Number(id),
+          toolId: toolId,
+          templatetypeid: 0,
+          templategroupid: 0,
+          searchText: '',
+          templateSeletion: false,
+        }
         const response = await fetchMessageTemplatesUrl(payload)
 
         if (response?.isSuccess && Array.isArray(response?.data)) {
@@ -74,7 +93,16 @@ const UpdateTemplates = () => {
           setTools(data)
 
           if (titleRef.current) titleRef.current.value = data.title || ''
-          if (contentRef.current) contentRef.current.value = data.content || ''
+          setMessage(data.content || '')
+          if (Array.isArray(data?.attachmentsInBase64)) {
+            const converted = data?.attachmentsInBase64?.map((att) =>
+              base64ToFile(att.data, att.fileName, att.fileType)
+            )
+
+            setAttachments(converted)
+          } else {
+            setAttachments([])
+          }
 
           const matchedType = typeData.find(
             (t) => t.templateTypeId === data.templateTypeId || t.masterId === data.templateTypeId
@@ -156,9 +184,7 @@ const UpdateTemplates = () => {
     if (contentRef.current) {
       const content = contentRef.current.value
       const toAdd = newPlaceholders.map((p) => p.placeholderText).join(' ')
-      contentRef.current.value = content
-        ? `${content} ${toAdd}`
-        : toAdd
+      contentRef.current.value = content ? `${content} ${toAdd}` : toAdd
     }
 
     setShowModal(false)
@@ -212,10 +238,10 @@ const UpdateTemplates = () => {
     try {
       const response = await fetchMessageTemplateUpdateUrl(data)
       if (response?.isSuccess) {
-        notify(response.message)
+        notify('Template Updated successfully!')
         setTimeout(() => navigate('/qradar/templates/list'), 2000)
       } else {
-        notifyFail(response?.message)
+        notifyFail('Failed Update the template')
       }
     } catch (error) {
       showBoundary(error)
@@ -240,9 +266,7 @@ const UpdateTemplates = () => {
     <div className='config card'>
       <ToastContainer />
       <div className='card-header bg-heading d-flex justify-content-between align-items-center'>
-        <h3 className='card-title white mb-1'>
-          {save ? 'View Template' : 'Update Template'}
-        </h3>
+        <h3 className='card-title white mb-1'>{save ? 'View Template' : 'Update Template'}</h3>
         <Link to='/qradar/templates/list' className='white fs-15 text-underline'>
           <i className='fa fa-chevron-left white me-2' /> Back
         </Link>
@@ -252,7 +276,9 @@ const UpdateTemplates = () => {
         <div className='card-body p-4'>
           <div className='row'>
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Template Type</label>
+              <label className='form-label fw-bold'>
+                Type <sup className='red'>*</sup>
+              </label>
               <Select
                 options={typeOptions}
                 value={selectedType}
@@ -264,7 +290,9 @@ const UpdateTemplates = () => {
               />
             </div>
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Template Group</label>
+              <label className='form-label fw-bold'>
+                Group <sup className='red'>*</sup>
+              </label>
               <Select
                 options={groupOptions}
                 value={selectedGroup}
@@ -276,11 +304,13 @@ const UpdateTemplates = () => {
               />
             </div>
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Template Title</label>
+              <label className='form-label fw-bold'>
+                Title <sup className='red'>*</sup>
+              </label>
               <input
                 type='text'
-                className='form-control form-control-solid'
-                maxLength={200}
+                className='form-control'
+                maxLength={255}
                 placeholder='Enter template title'
                 ref={titleRef}
                 disabled={loading}
@@ -290,24 +320,54 @@ const UpdateTemplates = () => {
 
           <div className='row'>
             <div className='col-md-12 mb-3 position-relative'>
-              <label className='form-label fw-bold'>Template Content</label>
-              <textarea
-                className='form-control form-control-solid pe-5'
-                rows={6}
-                maxLength={2000}
-                placeholder='Enter template content'
-                ref={contentRef}
-                style={{ minHeight: '160px', resize: 'vertical' }}
-                disabled={loading}
+              <label className='form-label fw-bold'>
+                Content <sup className='red'>*</sup>
+              </label>
+              {attachments.length > 0 && (
+                <div className='d-flex flex-wrap gap-2 mb-2'>
+                  {attachments.map((file, idx) => (
+                    <div
+                      key={idx}
+                      className='d-flex align-items-center px-2 py-1 border rounded bg-light'
+                      style={{fontSize: '13px'}}
+                    >
+                      <span className='me-2'>
+                        {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                      </span>
+                      <button
+                        type='button'
+                        className='btn btn-sm btn-link text-primary p-0 me-2'
+                        onClick={() => {
+                          const url = URL.createObjectURL(file)
+                          const a = document.createElement('a')
+                          a.href = url
+                          a.download = file.name
+                          a.click()
+                          URL.revokeObjectURL(url)
+                        }}
+                      >
+                        ⬇ 
+                      </button>
+                      <button
+                        type='button'
+                        className='btn btn-sm btn-link text-danger p-0'
+                        onClick={() => setAttachments((prev) => prev.filter((_, i) => i !== idx))}
+                      >
+                        ✖
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <RichTextEditor
+                value={message}
+                onChange={setMessage}
+                onAttach={(file) => setAttachments((prev) => [...prev, file])}
               />
               <i
                 className='fa fa-plus-circle text-success position-absolute'
-                style={{
-                  bottom: '12px',
-                  right: '15px',
-                  cursor: 'pointer',
-                  fontSize: '18px',
-                }}
+                style={{bottom: '12px', right: '15px', cursor: 'pointer', fontSize: '18px'}}
                 title='Add Placeholder'
                 onClick={() => setShowModal(true)}
               ></i>
@@ -326,7 +386,7 @@ const UpdateTemplates = () => {
                     {ph.placeholderText}
                     <i
                       className='fa fa-times ms-2'
-                      style={{ cursor: 'pointer' }}
+                      style={{cursor: 'pointer'}}
                       onClick={() => removePlaceholder(index)}
                     ></i>
                   </span>
@@ -338,14 +398,7 @@ const UpdateTemplates = () => {
 
         <div className='card-footer d-flex justify-content-end p-3'>
           <button type='submit' className='btn btn-new btn-small' disabled={loading}>
-            {!loading ? (
-              'Save Changes'
-            ) : (
-              <span className='indicator-progress'>
-                Please wait...
-                <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
-              </span>
-            )}
+            Save Changes
           </button>
         </div>
       </form>
@@ -360,4 +413,4 @@ const UpdateTemplates = () => {
   )
 }
 
-export { UpdateTemplates }
+export {UpdateTemplates}

@@ -29,12 +29,6 @@ const AddTemplateTypes = () => {
       setLoading(false)
       return
     }
-    if (!description) {
-      notifyFail('Enter Description')
-      setLoading(false)
-      return
-    }
-
     const createdUserId = Number(sessionStorage.getItem('userId')) || 0
     const createdDate = new Date().toISOString()
     const payload = {
@@ -48,10 +42,10 @@ const AddTemplateTypes = () => {
     try {
       const response = await fetchMessageTemplateTypeUrl(payload)
       if (response?.isSuccess) {
-        notify(response.message)
+        notify('Template type created successfully!')
         setTimeout(() => navigate('/qradar/template-types/list'), 2000)
       } else {
-        notifyFail(response?.message)
+        notifyFail('Failed to create template type')
       }
     } catch (error) {
       console.error('Error creating Template Group:', error)
@@ -77,7 +71,7 @@ const AddTemplateTypes = () => {
 
             {/* Code */}
             <div className='col-md-6 mb-3'>
-              <label className='form-label fw-bold'>Code</label>
+              <label className='form-label fw-bold'>Code <sup className='red'>*</sup></label>
               <input
                 type='text'
                 className='form-control'
@@ -89,13 +83,13 @@ const AddTemplateTypes = () => {
 
             {/* Display Name */}
             <div className='col-md-6 mb-3'>
-              <label className='form-label fw-bold'>Display Name</label>
+              <label className='form-label fw-bold'>Display Name <sup className='red'>*</sup></label>
               <input
                 type='text'
                 className='form-control'
                 placeholder='Enter display name'
                 ref={displayNameRef}
-                maxLength={200}
+                maxLength={255}
               />
             </div>
 
@@ -106,6 +100,7 @@ const AddTemplateTypes = () => {
                 className='form-control'
                 rows={3}
                 placeholder='Enter description'
+                maxLength={500}
                 ref={descriptionRef}
               />
             </div>
