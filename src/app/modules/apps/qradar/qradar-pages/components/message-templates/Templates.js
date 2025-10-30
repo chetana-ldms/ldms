@@ -239,7 +239,7 @@ const Templates = () => {
                 <tr key={index} className='fs-12 table-row'>
                   {/* <td>{item.createdUser}</td>
                   <td>{getCurrentTimeZone(item.createdDate)}</td> */}
-                  <td className=''>{item.title}</td>
+                  <td className='' title={item.title}>{truncateText(item.title, 110)}</td>
                   {/* <td className='' title={item.content}>
                     {truncateText(item.content, 70)}
                   </td> */}

@@ -38,25 +38,6 @@ const MessagePlaceHolderGroupUpdateUrl =
 const MessagePlaceHolderGroupDeleteUrl =
   'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/PlaceHolder/Group/Delete'
 
-// export const fetchMessageTemplateUrl = async (data) => {
-//   try {
-//     const response = await FetchWithToken(`${MessageTemplateUrl}`, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({
-//         ...data,
-//       }),
-//     })
-
-//     const responseData = await response.json()
-//     return responseData
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
-
 export const fetchMessageTemplateUrl = async (data) => {
   try {
     const formData = new FormData()
@@ -68,16 +49,17 @@ export const fetchMessageTemplateUrl = async (data) => {
     formData.append('TemplateTypeId', data.TemplateTypeId)
     formData.append('GroupId', data.GroupId)
     formData.append('Title', data.Title)
-    formData.append('ScopeName', data.ScopeName || '')
-    formData.append('ScopeValue', data.ScopeValue || '')
     formData.append('SignatureContent', data.SignatureContent || '')
     formData.append('CreatedUserId', data.CreatedUserId)
     formData.append('CreatedDate', data.CreatedDate)
+    formData.append('ScopeName', data.ScopeName)
+    formData.append('ScopeValue', data.ScopeValue)
+    formData.append('ScopeTemplateGroupId', data.ScopeTemplateGroupId)
 
     // Placeholders
     data.PlaceholderIds?.forEach((id) => formData.append('PlaceholderIds', id))
 
-   if (data.attachments?.length) {
+    if (data.attachments?.length) {
       data.attachments.forEach((att) => {
         if (att.contentId) {
           // inline image
@@ -140,20 +122,48 @@ export const fetchMessageTemplateDeleteUrl = async (data) => {
 }
 export const fetchMessageTemplateUpdateUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${MessageTemplateUpdateUrl}`, {
+    const formData = new FormData()
+
+    // Basic fields
+    formData.append('OrgId', data.orgId)
+    formData.append('TemplateId', data.templateId)
+    formData.append('ToolId', data.toolId)
+    formData.append('ToolTemplateId', 0)
+    formData.append('TemplateTypeId', data.templateTypeId)
+    formData.append('GroupId', data.groupId)
+    formData.append('Title', data.title)
+    formData.append('SignatureContent', data.SignatureContent || '')
+    formData.append('ModifiedUserId', data.modifiedUserId)
+    formData.append('ModifiedDate', data.modifiedDate)
+    formData.append('ScopeName', data.ScopeName)
+    formData.append('ScopeValue', data.ScopeValue)
+    formData.append('ScopeTemplateGroupId', data.ScopeTemplateGroupId)
+
+    // Placeholders
+    data.PlaceholderIds?.forEach((id) => formData.append('PlaceholderIds', id))
+
+    if (data.attachments?.length) {
+      data.attachments.forEach((att) => {
+        if (att.contentId) {
+          // inline image
+          formData.append('Attachments', att.file, att.file.name)
+          formData.append('ContentIds', att.contentId)
+        } else {
+          formData.append('Attachments', att.file || att)
+        }
+      })
+    }
+
+    formData.append('Content', data.content)
+
+    const response = await fetch(MessageTemplateUpdateUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...data,
-      }),
+      body: formData,
     })
 
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.log(error)
+    return await response.json()
+  } catch (err) {
+    console.error('API call failed:', err)
   }
 }
 export const fetchMessagePlaceholderUrl = async (data) => {

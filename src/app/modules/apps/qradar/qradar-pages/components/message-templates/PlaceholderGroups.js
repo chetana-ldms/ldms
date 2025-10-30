@@ -10,7 +10,15 @@ import {fetchOrganizationsUrl} from '../../../../../../api/ConfigurationApi'
 import {UsersListLoading} from '../loading/UsersListLoading'
 import DeleteConfirmation from '../../../../../../../utils/DeleteConfirmation'
 import Pagination from '../../../../../../../utils/Pagination'
-import {fetchMessagePlaceHolderGroupDeleteUrl, fetchMessagePlaceHolderGroupsUrl, fetchMessageTemplateGroupDeleteUrl, fetchMessageTemplateGroupsUrl, fetchMessageTemplateTypeDeleteUrl, fetchMessageTemplateTypesUrl} from '../../../../../../api/MessageTemplateApi'
+import {
+  fetchMessagePlaceHolderGroupDeleteUrl,
+  fetchMessagePlaceHolderGroupsUrl,
+  fetchMessageTemplateGroupDeleteUrl,
+  fetchMessageTemplateGroupsUrl,
+  fetchMessageTemplateTypeDeleteUrl,
+  fetchMessageTemplateTypesUrl,
+} from '../../../../../../api/MessageTemplateApi'
+import { truncateText } from '../../../../../../../utils/TruncateText'
 
 const PlaceholderGroups = () => {
   const navigate = useNavigate()
@@ -172,11 +180,9 @@ const PlaceholderGroups = () => {
                 <tr key={index} className='fs-12 table-row'>
                   {/* <td>{item.masterId}</td>
                   <td>{item.dataType}</td> */}
-                  <td>{item.code}</td>
-                  <td>{item.displayName}</td>
-                  <td className='wrap-txt' title={item.description}>
-                    {item.description}
-                  </td>
+                  <td title={item.code}>{truncateText(item.code || '', 30)}</td>
+                  <td title={item.displayName}>{truncateText(item.displayName || '', 30)}</td>
+                  <td title={item.description}>{truncateText(item.description || '', 30)}</td>
                   <td>
                     {isActionAuthorized('View') ? (
                       <span className='me-8' title='View'>

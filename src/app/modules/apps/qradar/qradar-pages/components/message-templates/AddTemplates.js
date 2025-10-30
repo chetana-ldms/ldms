@@ -5,6 +5,7 @@ import {ToastContainer} from 'react-toastify'
 import {notify, notifyFail} from '../notification/Notification'
 import {fetchMessageTemplateUrl} from '../../../../../../api/MessageTemplateApi'
 import {
+  fetchIncidentGroupsUrl,
   fetchTemplatesGroupsUrl,
   fetchTemplatesTemplateTypesUrl,
 } from '../../../../../../api/IncidentsApi'
@@ -20,7 +21,7 @@ const AddTemplates = () => {
   const [message, setMessage] = useState('')
   const [attachments, setAttachments] = useState([])
   const orgId = Number(sessionStorage.getItem('orgId'))
-  const toolId = Number(sessionStorage.getItem('toolID'))
+  const toolId = Number(sessionStorage.getItem('incidentToolId'))
   const [selectedType, setSelectedType] = useState(null)
   const [selectedGroup, setSelectedGroup] = useState(null)
   const [types, setTypes] = useState([])
@@ -28,6 +29,11 @@ const AddTemplates = () => {
   const [showModal, setShowModal] = useState(false)
   const [selectedPlaceholders, setSelectedPlaceholders] = useState([])
   const titleRef = useRef()
+  const [availableFor, setAvailableFor] = useState('self')
+  const [selectedAgentGroups, setSelectedAgentGroups] = useState([])
+  const [folderOptions, setFolderOptions] = useState([])
+  const [selectedFolder, setSelectedFolder] = useState(null)
+  console.log('selectedFolder', selectedFolder)
 
   useEffect(() => {
     loadDropdownData()
@@ -50,7 +56,7 @@ const AddTemplates = () => {
   const handleSelectPlaceholders = (placeholders) => {
     setSelectedPlaceholders((prev) => {
       const newPlaceholders = [...prev, ...placeholders]
-      const placeholdersText = placeholders.map((p) => p.placeholderData).join(' ')
+      const placeholdersText = placeholders.map((p) => p.placeholderTag).join(' ')
       setMessage((msg) => (msg ? msg + ' ' + placeholdersText : placeholdersText))
       return newPlaceholders
     })
@@ -61,7 +67,7 @@ const AddTemplates = () => {
     const removedPlaceholder = selectedPlaceholders[index]
     setSelectedPlaceholders((prev) => prev.filter((_, i) => i !== index))
     setMessage((prev) =>
-      prev.replace(new RegExp(removedPlaceholder.placeholderData, 'g'), '').trim()
+      prev.replace(new RegExp(removedPlaceholder.placeholderTag, 'g'), '').trim()
     )
   }
 
@@ -94,6 +100,47 @@ const AddTemplates = () => {
       setLoading(false)
       return
     }
+    // ===== Scope based validations =====
+    if (availableFor === 'all agents') {
+      if (!selectedFolder) {
+        notifyFail('Select Template Group for All Agents scope')
+        setLoading(false)
+        return
+      }
+    }
+
+    if (availableFor === 'agents in group') {
+      if (!selectedAgentGroups.length) {
+        notifyFail('Select at least one User Group')
+        setLoading(false)
+        return
+      }
+      if (!selectedFolder) {
+        notifyFail('Select Template Group for Agents in Group scope')
+        setLoading(false)
+        return
+      }
+    }
+
+    let ScopeName = availableFor // 'self' | 'all agents' | 'agents in group'
+    let ScopeValue = null // userId OR groupIds OR 0
+    let ScopeTemplateGroupId = null // selectedFolder?.masterId or 0
+    const userId = Number(sessionStorage.getItem('userId'))
+
+    if (availableFor === 'self') {
+      ScopeValue = userId
+      ScopeTemplateGroupId = 0
+    }
+
+    if (availableFor === 'all agents') {
+      ScopeValue = 0
+      ScopeTemplateGroupId = selectedFolder?.masterId || 0
+    }
+
+    if (availableFor === 'agents in group') {
+      ScopeValue = selectedAgentGroups.map((g) => g.masterId) // array
+      ScopeTemplateGroupId = selectedFolder?.masterId || 0
+    }
 
     const createdUserId = Number(sessionStorage.getItem('userId'))
     const createdDate = new Date().toISOString()
@@ -112,6 +159,9 @@ const AddTemplates = () => {
         ...attachments.map((f) => ({file: f})),
         ...inlineAttachments, // ✅ cid objects from helper
       ],
+      ScopeName,
+      ScopeValue,
+      ScopeTemplateGroupId,
     }
 
     try {
@@ -152,6 +202,25 @@ const AddTemplates = () => {
       zIndex: 9999,
     }),
   }
+  const scopeOptions = [
+    {label: 'Myself', value: 'self'},
+    {label: 'All agents', value: 'all agents'},
+    {label: 'Agents in group', value: 'agents in group'},
+  ]
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetchIncidentGroupsUrl(orgId, toolId, 0)
+      if (Array.isArray(res)) {
+        const mapped = res.map((g) => ({
+          label: g.groupName,
+          value: g.groupId,
+          masterId: g.groupId,
+        }))
+        setFolderOptions(mapped)
+      }
+    }
+    fetchData()
+  }, [orgId, toolId])
 
   return (
     <div className='config card'>
@@ -267,6 +336,42 @@ const AddTemplates = () => {
               </div>
             </div>
           )}
+          <div className='p-3'>
+            <label className='form-label fw-bold'>Scope</label>
+            <Select
+              options={scopeOptions}
+              value={scopeOptions?.find((o) => o.value === availableFor)}
+              onChange={(opt) => setAvailableFor(opt.value)}
+              placeholder='Select Scope'
+              styles={customSelectStyle}
+            />
+            {availableFor === 'agents in group' && (
+              <div className='mt-2'>
+                <Select
+                  options={groupOptions}
+                  value={selectedAgentGroups}
+                  onChange={setSelectedAgentGroups}
+                  isMulti
+                  placeholder='Select User Group'
+                  styles={customSelectStyle}
+                />
+              </div>
+            )}
+
+            {(availableFor === 'all agents' || availableFor === 'agents in group') && (
+              <div className='mt-3'>
+                <label className='form-label fw-bold'>Template group</label>
+                <Select
+                  options={folderOptions}
+                  value={selectedFolder}
+                  onChange={setSelectedFolder}
+                  placeholder='Select Template group'
+                  styles={customSelectStyle}
+                  isClearable
+                />
+              </div>
+            )}
+          </div>
         </div>
 
         <div className='card-footer d-flex justify-content-end p-3'>

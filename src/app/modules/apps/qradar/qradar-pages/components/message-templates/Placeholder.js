@@ -229,8 +229,12 @@ const Placeholder = () => {
               placeholders.map((item, index) => (
                 <tr key={index} className='fs-12 table-row'>
                   {/* <td>{item.objectType}</td> */}
-                  <td>{item.placeholderData}</td>
-                  <td className=''>{item.placeholderText}</td>
+                  <td title={item.placeholderData}>
+                    {truncateText(item.placeholderData || '', 30)}
+                  </td>
+                  <td className='' title={item.placeholderText}>
+                    {truncateText(item.placeholderText || '', 30)}
+                  </td>
                   <td className='' title={item.description}>
                     {truncateText(item.description || '', 30)}
                   </td>

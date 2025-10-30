@@ -8,6 +8,7 @@ import {
   fetchMessagePlaceholdersUrl,
 } from '../../../../../../api/MessageTemplateApi'
 import {
+  fetchIncidentGroupsUrl,
   fetchMessageTemplatesUrl,
   fetchTemplatesGroupsUrl,
   fetchTemplatesTemplateTypesUrl,
@@ -15,10 +16,11 @@ import {
 import Select from 'react-select'
 import PlaceholdersModal from './PlaceholdersModal'
 import RichTextEditor from '../../../../../../../utils/RichTextEditor'
+import {processHtmlWithInlineImages} from '../../incidents/processHtmlWithInlineImages'
 
 const UpdateTemplates = () => {
   const {showBoundary} = useErrorBoundary()
-  const toolId = Number(sessionStorage.getItem('toolID'))
+  const toolId = Number(sessionStorage.getItem('incidentToolId'))
   const navigate = useNavigate()
   const location = useLocation()
   const {id} = useParams()
@@ -30,22 +32,23 @@ const UpdateTemplates = () => {
   const [groups, setGroups] = useState([])
   const [selectedType, setSelectedType] = useState(null)
   const [selectedGroup, setSelectedGroup] = useState(null)
+  console.log('Selected Group:', selectedGroup)
   const [showModal, setShowModal] = useState(false)
   const [selectedPlaceholders, setSelectedPlaceholders] = useState([])
   const [placeholders, setPlaceholders] = useState([])
-
+  const [availableFor, setAvailableFor] = useState('self')
+  const [selectedAgentGroups, setSelectedAgentGroups] = useState([])
+  const [folderOptions, setFolderOptions] = useState([])
+  const [selectedFolder, setSelectedFolder] = useState(null)
   const orgId = Number(sessionStorage.getItem('orgId'))
   const [save] = useState(location.state?.save || '')
-
   const contentRef = useRef()
   const titleRef = useRef()
-
   const typeOptions = types.map((t) => ({
     label: t.displayName,
     value: t.templateTypeId,
     masterId: t.masterId,
   }))
-
   const groupOptions = groups.map((g) => ({
     label: g.displayName,
     value: g.templateGroupId,
@@ -60,23 +63,64 @@ const UpdateTemplates = () => {
     }
     return new File([ab], fileName, {type: contentType})
   }
+const didInitMatch = useRef(false)
 
+useEffect(() => {
+  if (!tools || folderOptions.length === 0 || groupOptions.length === 0) return
+  if (didInitMatch.current) return
+  didInitMatch.current = true
+  const data = tools
+  if (data.scopeName) {
+    setAvailableFor(data.scopeName)
+  }
+  if (data.scopeTemplateGroupId) {
+    const matchedFolder = folderOptions.find(
+      (f) => f.masterId === data.scopeTemplateGroupId
+    )
+    if (matchedFolder) setSelectedFolder(matchedFolder)
+  }
+  /** ----- Agents Group Match ----- **/
+  if (data.scopeName === 'agents in group' && Array.isArray(data.scopeValue)) {
+    const matchedAgentGroups = groupOptions.filter((g) =>
+      data.scopeValue.includes(g.groupId)
+    )
+    setSelectedAgentGroups(matchedAgentGroups)
+  }
+  /** ----- Type Match ----- **/
+  const matchedType = types.find(
+    (t) => t.templateTypeId === data.templateTypeId || t.masterId === data.templateTypeId
+  )
+  if (matchedType) {
+    setSelectedType({
+      label: matchedType.displayName,
+      value: matchedType.templateTypeId,
+      masterId: matchedType.masterId,
+    })
+  }
+  /** ----- Group Match ----- **/
+  const matchedGroup = groups.find(
+    (g) => g.templateGroupId === data.groupId || g.masterId === data.groupId
+  )
+  if (matchedGroup) {
+    setSelectedAgentGroups({
+      label: matchedGroup.displayName,
+      value: matchedGroup.templateGroupId,
+      masterId: matchedGroup.masterId,
+    })
+  }
+}, [tools, folderOptions, groupOptions, types, groups])
   useEffect(() => {
     const init = async () => {
       setLoading(true)
       try {
-        // 1️⃣ Load dropdown data
         const [typesRes, groupsRes] = await Promise.all([
           fetchTemplatesTemplateTypesUrl(),
           fetchTemplatesGroupsUrl(),
         ])
-
         const typeData = Array.isArray(typesRes?.data) ? typesRes.data : []
         const groupData = Array.isArray(groupsRes?.data) ? groupsRes.data : []
         setTypes(typeData)
         setGroups(groupData)
-
-        // 2️⃣ Load template details
         const payload = {
           orgId,
           templateId: Number(id),
@@ -87,23 +131,19 @@ const UpdateTemplates = () => {
           templateSeletion: false,
         }
         const response = await fetchMessageTemplatesUrl(payload)
-
         if (response?.isSuccess && Array.isArray(response?.data)) {
           const data = response.data[0]
           setTools(data)
-
           if (titleRef.current) titleRef.current.value = data.title || ''
           setMessage(data.content || '')
           if (Array.isArray(data?.attachmentsInBase64)) {
             const converted = data?.attachmentsInBase64?.map((att) =>
               base64ToFile(att.data, att.fileName, att.fileType)
             )
-
             setAttachments(converted)
           } else {
             setAttachments([])
           }
-
           const matchedType = typeData.find(
             (t) => t.templateTypeId === data.templateTypeId || t.masterId === data.templateTypeId
           )
@@ -114,7 +154,6 @@ const UpdateTemplates = () => {
               masterId: matchedType.masterId,
             })
           }
-
           const matchedGroup = groupData.find(
             (g) => g.templateGroupId === data.groupId || g.masterId === data.groupId
           )
@@ -125,15 +164,12 @@ const UpdateTemplates = () => {
               masterId: matchedGroup.masterId,
             })
           }
-
           if (Array.isArray(data.placeholders) && data.placeholders.length > 0) {
             setSelectedPlaceholders(data.placeholders)
           }
         } else {
           setTools(null)
         }
-
-        // 3️⃣ Load placeholders (not based on group)
         await loadPlaceholders()
       } catch (err) {
         console.error('Error loading template data:', err)
@@ -142,11 +178,8 @@ const UpdateTemplates = () => {
         setLoading(false)
       }
     }
-
     init()
   }, [id])
-
-  // ✅ Load placeholders (not dependent on group)
   const loadPlaceholders = async () => {
     try {
       const payload = {
@@ -157,7 +190,6 @@ const UpdateTemplates = () => {
         placeholdergroupid: 0, // group not used
         searchText: '',
       }
-
       const response = await fetchMessagePlaceholdersUrl(payload)
       if (response?.isSuccess && Array.isArray(response?.placeholders)) {
         setPlaceholders(response.placeholders)
@@ -171,68 +203,107 @@ const UpdateTemplates = () => {
       setPlaceholders([])
     }
   }
+const handleSelectPlaceholders = (selected) => {
+  // Allow duplicates — just append all
+  const newPlaceholders = Array.isArray(selected) ? selected : [selected]
 
-  // ✅ Add placeholders from modal
-  const handleSelectPlaceholders = (selected) => {
-    const newPlaceholders = selected.filter(
-      (p) => !selectedPlaceholders.some((sp) => sp.placeholderId === p.placeholderId)
-    )
+  // Add to list (duplicates allowed)
+  setSelectedPlaceholders((prev) => [...prev, ...newPlaceholders])
 
-    setSelectedPlaceholders((prev) => [...prev, ...newPlaceholders])
+  // Add all placeholder texts into the editor content
+  const toAdd = newPlaceholders.map((p) => p.placeholderTag).join(' ')
+  setMessage((prev) => (prev ? `${prev} ${toAdd}` : toAdd))
 
-    // Insert placeholder text into content
-    if (contentRef.current) {
-      const content = contentRef.current.value
-      const toAdd = newPlaceholders.map((p) => p.placeholderText).join(' ')
-      contentRef.current.value = content ? `${content} ${toAdd}` : toAdd
-    }
+  setShowModal(false)
+}
 
-    setShowModal(false)
-  }
+const removePlaceholder = (index) => {
+  const removed = selectedPlaceholders[index]
+  if (!removed) return
 
-  // ✅ Remove placeholder and also remove from textarea content
-  const removePlaceholder = (index) => {
-    const removed = selectedPlaceholders[index]
-    setSelectedPlaceholders((prev) => prev.filter((_, i) => i !== index))
+  // Remove only that specific badge from list (by index, not text)
+  const updated = selectedPlaceholders.filter((_, i) => i !== index)
+  setSelectedPlaceholders(updated)
 
-    if (contentRef.current && removed) {
-      const updatedContent = contentRef.current.value.replaceAll(removed.placeholderText, '').trim()
-      contentRef.current.value = updatedContent
-    }
-  }
+  // Remove only ONE occurrence from editor content, not all duplicates
+  setMessage((prev) => {
+    const idx = prev.indexOf(removed.placeholderTag)
+    if (idx === -1) return prev // not found
+    return (
+      prev.slice(0, idx) +
+      prev.slice(idx + removed.placeholderTag.length)
+    ).trim()
+  })
+}
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-
     const titleValue = titleRef.current?.value?.trim()
     const contentValue = contentRef.current?.value?.trim()
-
     if (!titleValue) {
       notifyFail('Enter Template Title')
       setLoading(false)
       return
     }
-
-    if (!contentValue) {
-      notifyFail('Enter Template Content')
-      setLoading(false)
-      return
+    // ===== Scope based validations =====
+    if (availableFor === 'all agents') {
+      if (!selectedFolder) {
+        notifyFail('Select Template Group for All Agents scope')
+        setLoading(false)
+        return
+      }
     }
-
+    if (availableFor === 'agents in group') {
+      if (!selectedAgentGroups.length) {
+        notifyFail('Select at least one User Group')
+        setLoading(false)
+        return
+      }
+      if (!selectedFolder) {
+        notifyFail('Select Template Group for Agents in Group scope')
+        setLoading(false)
+        return
+      }
+    }
+    let ScopeName = availableFor // 'self' | 'all agents' | 'agents in group'
+    let ScopeValue = null // userId OR groupIds OR 0
+    let ScopeTemplateGroupId = null // selectedFolder?.masterId or 0
+    const userId = Number(sessionStorage.getItem('userId'))
+    if (availableFor === 'self') {
+      ScopeValue = userId
+      ScopeTemplateGroupId = 0
+    }
+    if (availableFor === 'all agents') {
+      ScopeValue = 0
+      ScopeTemplateGroupId = selectedFolder?.masterId || 0
+    }
+    if (availableFor === 'agents in group') {
+      ScopeValue = selectedAgentGroups.map((g) => g.masterId) // array
+      ScopeTemplateGroupId = selectedFolder?.masterId || 0
+    }
     const modifiedUserId = Number(sessionStorage.getItem('userId'))
     const modifiedDate = new Date().toISOString()
-
+    const {cleanedHtml, attachments: inlineAttachments} = processHtmlWithInlineImages(message)
     const data = {
       orgId,
+      toolId,
       templateTypeId: selectedType?.masterId || 0,
       groupId: selectedGroup?.masterId || 0,
       title: titleValue,
-      content: contentValue,
+      content: cleanedHtml,
       templateId: Number(id),
       placeholderIds: selectedPlaceholders.map((p) => p.placeholderId),
       modifiedUserId,
       modifiedDate,
+      SignatureContent: 'test',
+      attachments: [
+        ...attachments.map((f) => ({file: f})),
+        ...inlineAttachments, // ✅ cid objects from helper
+      ],
+      ScopeName,
+      ScopeValue,
+      ScopeTemplateGroupId,
     }
 
     try {
@@ -261,6 +332,25 @@ const UpdateTemplates = () => {
       zIndex: 9999,
     }),
   }
+  const scopeOptions = [
+    {label: 'Myself', value: 'self'},
+    {label: 'All agents', value: 'all agents'},
+    {label: 'Agents in group', value: 'agents in group'},
+  ]
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetchIncidentGroupsUrl(orgId, toolId, 0)
+      if (Array.isArray(res)) {
+        const mapped = res.map((g) => ({
+          label: g.groupName,
+          value: g.groupId,
+          masterId: g.groupId,
+        }))
+        setFolderOptions(mapped)
+      }
+    }
+    fetchData()
+  }, [orgId, toolId])
 
   return (
     <div className='config card'>
@@ -271,7 +361,6 @@ const UpdateTemplates = () => {
           <i className='fa fa-chevron-left white me-2' /> Back
         </Link>
       </div>
-
       <form onSubmit={handleSubmit}>
         <div className='card-body p-4'>
           <div className='row'>
@@ -317,7 +406,6 @@ const UpdateTemplates = () => {
               />
             </div>
           </div>
-
           <div className='row'>
             <div className='col-md-12 mb-3 position-relative'>
               <label className='form-label fw-bold'>
@@ -346,7 +434,7 @@ const UpdateTemplates = () => {
                           URL.revokeObjectURL(url)
                         }}
                       >
-                        ⬇ 
+                        ⬇
                       </button>
                       <button
                         type='button'
@@ -359,7 +447,6 @@ const UpdateTemplates = () => {
                   ))}
                 </div>
               )}
-
               <RichTextEditor
                 value={message}
                 onChange={setMessage}
@@ -373,7 +460,6 @@ const UpdateTemplates = () => {
               ></i>
             </div>
           </div>
-
           {selectedPlaceholders.length > 0 && (
             <div className='mb-3'>
               <label className='form-label fw-bold'>Selected Placeholders</label>
@@ -394,15 +480,50 @@ const UpdateTemplates = () => {
               </div>
             </div>
           )}
+          <div className='p-3'>
+            <label className='form-label fw-bold'>Scope</label>
+            <Select
+              options={scopeOptions}
+              value={scopeOptions?.find((o) => o.value === availableFor)}
+              onChange={(opt) => setAvailableFor(opt.value)}
+              placeholder='Select Scope'
+              styles={customSelectStyle}
+            />
+            {availableFor === 'agents in group' && (
+              <div className='mt-2'>
+                <Select
+                  options={groupOptions}
+                  value={selectedAgentGroups}
+                  onChange={setSelectedAgentGroups}
+                  isMulti
+                  placeholder='Select User Group'
+                  styles={customSelectStyle}
+                />
+              </div>
+            )}
+            {(availableFor === 'all agents' || availableFor === 'agents in group') && (
+              <div className='mt-3'>
+                <label className='form-label fw-bold'>Template group</label>
+                <Select
+                  options={folderOptions}
+                  value={selectedFolder}
+                  onChange={setSelectedFolder}
+                  placeholder='Select Template group'
+                  styles={customSelectStyle}
+                  isClearable
+                />
+              </div>
+            )}
+          </div>
         </div>
-
-        <div className='card-footer d-flex justify-content-end p-3'>
-          <button type='submit' className='btn btn-new btn-small' disabled={loading}>
-            Save Changes
-          </button>
-        </div>
+        {!save && (
+          <div className='card-footer d-flex justify-content-end p-3'>
+            <button type='submit' className='btn btn-new btn-small' disabled={loading}>
+              Save Changes
+            </button>
+          </div>
+        )}
       </form>
-
       <PlaceholdersModal
         show={showModal}
         onHide={() => setShowModal(false)}

@@ -274,7 +274,9 @@ const UpdatePlaceholder = () => {
           <div className='row'>
             {/* Group */}
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Group<span className='text-danger'>*</span></label>
+              <label className='form-label fw-bold'>
+                Group<span className='text-danger'>*</span>
+              </label>
               <Select
                 options={groupOptions}
                 value={selectedGroup}
@@ -299,7 +301,9 @@ const UpdatePlaceholder = () => {
 
             {/* Placeholder Data */}
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Placeholder Data<span className='text-danger'>*</span></label>
+              <label className='form-label fw-bold'>
+                Placeholder Data<span className='text-danger'>*</span>
+              </label>
               <input
                 type='text'
                 className='form-control'
@@ -312,7 +316,9 @@ const UpdatePlaceholder = () => {
 
             {/* Placeholder Text */}
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>DisplayName<span className='text-danger'>*</span></label>
+              <label className='form-label fw-bold'>
+                DisplayName<span className='text-danger'>*</span>
+              </label>
               <input
                 type='text'
                 className='form-control'
@@ -336,7 +342,9 @@ const UpdatePlaceholder = () => {
               />
             </div>
             <div className='col-md-4 mb-3'>
-              <label className='form-label fw-bold'>Source Type<span className='text-danger'>*</span></label>
+              <label className='form-label fw-bold'>
+                Source Type<span className='text-danger'>*</span>
+              </label>
               <Select
                 options={sourceTypeOptions}
                 value={sourceTypeOptions.find((opt) => opt.value === sourceType) || null}
@@ -415,18 +423,13 @@ const UpdatePlaceholder = () => {
           </div>
         </div>
 
-        <div className='card-footer d-flex justify-content-end p-3'>
-          <button type='submit' className='btn btn-new btn-small' disabled={loading}>
-            {!loading ? (
-              'Save Placeholder'
-            ) : (
-              <span className='indicator-progress'>
-                Please wait...
-                <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
-              </span>
-            )}
-          </button>
-        </div>
+        {!save && (
+          <div className='card-footer d-flex justify-content-end p-3'>
+            <button type='submit' className='btn btn-new btn-small' disabled={loading}>
+              Save Changes
+            </button>
+          </div>
+        )}
       </form>
     </div>
   )
