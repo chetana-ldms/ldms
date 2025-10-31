@@ -48,6 +48,7 @@ const TemplatesTemplateTypesUrl =
 const TemplatesGroupsUrl = 'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Groups'
 const MessageTemplatesProcessUrl =
   'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Process'
+  const IncidentPreviousConversationUrl ="http://10.41.3.232:501/api/IncidentManagement/v1/IncidentPreviousConversation"
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -621,6 +622,9 @@ export const fetchReplyIncidentWithHtmlContentUrl = async (data) => {
     formData.append('IncidentId', data.incidentId)
     formData.append('ToolId', data.toolId)
     formData.append('OrgId', data.orgId)
+    formData.append('PreviousConversations', data.PreviousConversations)
+    formData.append('PreviousConversations_Attachments', data.PreviousConversations_Attachments)
+    formData.append('FromEmails', data.FromEmails)
 
     // CC
     data.ccEmails?.forEach((email) => formData.append('CcEmails', email))
@@ -854,6 +858,23 @@ export const fetchMessageTemplatesProcessUrl = async (templateId, transactionId)
   try {
     const response = await FetchWithToken(
       `${MessageTemplatesProcessUrl}?templateId=${templateId}&transactionId=${transactionId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchIncidentPreviousConversationUrl = async (orgId, ToolId, incidentid) => {
+  try {
+    const response = await FetchWithToken(
+      `${IncidentPreviousConversationUrl}?orgid=${orgId}&toolid=${ToolId}&incidentid=${incidentid}`,
       {
         method: 'GET',
         headers: {

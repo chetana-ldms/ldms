@@ -15,6 +15,7 @@ import AsyncCreatableSelect from 'react-select/async-creatable'
 import {processHtmlWithInlineImages} from './processHtmlWithInlineImages'
 import makeAnimated from 'react-select/animated'
 import MessageTemplatesModal from './MessageTemplatesModel'
+import QuotedTextModal from './QuotedTextModal'
 const animatedComponents = makeAnimated()
 const ReplyModal = ({show, onHide, incidentData, onSend}) => {
   const {orgId, toolId, incidentID} = incidentData || {}
@@ -31,6 +32,8 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
   const [showConversation, setShowConversation] = useState(false)
   const [conversationHtml, setConversationHtml] = useState('')
   const [showMessageTemplateModal, setShowMessageTemplateModal] = useState(false)
+  const [showQuotedTextModal, setShowQuotedTextModal] = useState(false)
+  const [quotedText, setQuotedText] = useState('')
   const handleMessageTemplateClick = () => {
     setShowMessageTemplateModal(true)
   }
@@ -105,18 +108,6 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
       return ''
     }
   }
-
-  const handleShowConversation = async () => {
-    const convoHtml = await loadConversation()
-    if (convoHtml) {
-      setMessage((prev) => `${prev}<br/>${convoHtml}`)
-      setShowConversation(true)
-    }
-  }
-  const handleHideConversation = () => {
-    setMessage('')
-    setShowConversation(false)
-  }
   useEffect(() => {
     const userId = Number(sessionStorage.getItem('userId'))
     if (show && userId) {
@@ -170,7 +161,6 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
       const finalBody = `
       <div>
         ${cleanedHtml}
-        ${quotedHtml ? quotedHtml : ''}
       </div>
     `
 
@@ -192,7 +182,30 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
         }
         responseData = await fetchReplyToForwardUrl(data)
       } else {
-        // ✅ New conversation (First Reply)
+        const extractEmail = (text) => {
+          if (!text) return null
+          const match = text.match(/<?([\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})>?/)
+          return match ? match[1] : null
+        }
+        const fromEmailsRaw = Array.isArray(incidentData?.toEmails)
+          ? incidentData.toEmails
+          : incidentData?.toEmails
+          ? [incidentData.toEmails]
+          : incidentData?.incidentEmail
+          ? [incidentData.incidentEmail]
+          : []
+        const fromEmails = fromEmailsRaw
+          .map((item) => extractEmail(item))
+          .filter((email) => !!email)
+        if (fromEmails.length === 0) {
+          notifyFail('From email is required before sending the reply')
+          setLoading(false)
+          return
+        }
+        const previousConversations = quotedText ? [quotedText] : []
+        const previousConversationsAttachments =
+          conversation?.flatMap((mail) => mail.attachments || []) || []
+
         const data = {
           replyDateTime: new Date().toISOString(),
           orgId: incidentData?.orgId,
@@ -203,7 +216,11 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
           bccEmails: bcc.map((e) => e.value),
           userId: Number(sessionStorage.getItem('userId')),
           attachments: [...attachments.map((f) => ({file: f})), ...inlineAttachments],
+          PreviousConversations: previousConversations,
+          PreviousConversations_Attachments: previousConversationsAttachments,
+          FromEmails: fromEmails,
         }
+
         responseData = await fetchReplyIncidentWithHtmlContentUrl(data)
       }
 
@@ -360,17 +377,26 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
                 ))}
               </div>
             )}
+            <div className='d-flex justify-content-end mb-2'></div>
             <div className='d-flex justify-content-end mb-2'>
-              {!showConversation ? (
-                <Button variant='outline-secondary' size='sm' onClick={handleShowConversation}>
-                  Add Previous Conversation
-                </Button>
-              ) : (
-                <Button variant='outline-danger' size='sm' onClick={handleHideConversation}>
-                  Remove Previous Conversation
-                </Button>
-              )}
+              <Button
+                variant='outline-secondary'
+                size='sm'
+                onClick={() => setShowQuotedTextModal(true)}
+              >
+                <i className='fa fa-quote-right me-1'></i> Quoted Text
+              </Button>
             </div>
+
+            <QuotedTextModal
+              show={showQuotedTextModal}
+              onHide={() => setShowQuotedTextModal(false)}
+              orgId={incidentData?.orgId}
+              toolId={incidentData?.toolId}
+              incidentID={incidentData?.incidentID}
+              onSave={(html) => setQuotedText(html)}
+            />
+
             <RichTextEditor
               value={message}
               onChange={setMessage}
