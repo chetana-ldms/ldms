@@ -6,6 +6,7 @@ import { fetchIncidentPreviousConversationUrl } from '../../../../../api/Inciden
 const QuotedTextModal = ({ show, onHide, orgId, toolId, incidentID, onSave }) => {
   const [loading, setLoading] = useState(false)
   const [htmlContent, setHtmlContent] = useState('')
+  const [previousAttachments, setPreviousAttachments] = useState([])
 
   useEffect(() => {
     const loadConversation = async () => {
@@ -24,41 +25,42 @@ const QuotedTextModal = ({ show, onHide, orgId, toolId, incidentID, onSave }) =>
             ...(convo.previousConversationAttachmentsInBase64 || []),
           ]
 
-          // 🧩 Replace cid: with base64 data
+          setPreviousAttachments(attachments)
+
+          // 🧩 Replace cid: with base64 in HTML for preview only
+          let previewHtml = html
           attachments.forEach((file) => {
             if (file?.contentId && file?.data) {
               const cidRegex = new RegExp(`cid:${file.contentId}`, 'g')
-              html = html.replace(cidRegex, `data:${file.fileType};base64,${file.data}`)
+              previewHtml = previewHtml.replace(
+                cidRegex,
+                `data:${file.fileType};base64,${file.data}`
+              )
             }
           })
 
           // 🧹 Clean HTML safely using DOMParser
           const parser = new DOMParser()
-          const doc = parser.parseFromString(html, 'text/html')
+          const doc = parser.parseFromString(previewHtml, 'text/html')
 
-          // Remove any alt text or stray descriptive text containing "AI-generated"
+          // Remove unwanted alt text and AI labels
           doc.querySelectorAll('img').forEach((img) => {
             img.removeAttribute('alt')
           })
-
-          // Remove any text nodes containing the unwanted AI note
           doc.body.querySelectorAll('*').forEach((node) => {
-            if (node.childNodes) {
-              node.childNodes.forEach((child) => {
-                if (
-                  child.nodeType === 3 &&
-                  /AI-generated content may be incorrect/i.test(child.textContent)
-                ) {
-                  child.textContent = ''
-                }
-              })
-            }
+            node.childNodes.forEach((child) => {
+              if (
+                child.nodeType === 3 &&
+                /AI-generated content may be incorrect/i.test(child.textContent)
+              ) {
+                child.textContent = ''
+              }
+            })
           })
 
-          // Get clean HTML
           const cleanedHtml = doc.body.innerHTML.trim()
 
-          // 🧩 Combine with mail trail if exists
+          // 🧩 Combine with mail trail if available
           const formattedHtml = `
             <div>
               ${cleanedHtml}
@@ -88,7 +90,23 @@ const QuotedTextModal = ({ show, onHide, orgId, toolId, incidentID, onSave }) =>
   }, [show, orgId, toolId, incidentID])
 
   const handleSave = () => {
-    onSave(htmlContent)
+    // 🧩 Before sending back — convert inline base64 back to cid references
+    let htmlToSend = htmlContent
+    previousAttachments.forEach((file) => {
+      if (file?.contentId && file?.data) {
+        const base64Pattern = new RegExp(
+          `data:${file.fileType};base64,${file.data.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`,
+          'g'
+        )
+        htmlToSend = htmlToSend.replace(base64Pattern, `cid:${file.contentId}`)
+      }
+    })
+
+    // ✅ Send back as required
+    onSave({
+      PreviousConversations: htmlToSend,
+      PreviousConversations_Attachments: previousAttachments,
+    })
     onHide()
   }
 

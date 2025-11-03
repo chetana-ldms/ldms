@@ -34,6 +34,8 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
   const [showMessageTemplateModal, setShowMessageTemplateModal] = useState(false)
   const [showQuotedTextModal, setShowQuotedTextModal] = useState(false)
   const [quotedText, setQuotedText] = useState('')
+  const [quotedAttachments, setQuotedAttachments] = useState([])
+
   const handleMessageTemplateClick = () => {
     setShowMessageTemplateModal(true)
   }
@@ -203,8 +205,9 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
           return
         }
         const previousConversations = quotedText ? [quotedText] : []
-        const previousConversationsAttachments =
-          conversation?.flatMap((mail) => mail.attachments || []) || []
+        const previousConversationsAttachments = quotedAttachments?.length
+          ? quotedAttachments
+          : conversation?.flatMap((mail) => mail.attachments || []) || []
 
         const data = {
           replyDateTime: new Date().toISOString(),
@@ -217,7 +220,7 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
           userId: Number(sessionStorage.getItem('userId')),
           attachments: [...attachments.map((f) => ({file: f})), ...inlineAttachments],
           PreviousConversations: previousConversations,
-          PreviousConversations_Attachments: previousConversationsAttachments,
+          PreviousConversations_Attachments: JSON.stringify(previousConversationsAttachments), // 🔥 fix
           FromEmails: fromEmails,
         }
 
@@ -394,7 +397,10 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
               orgId={incidentData?.orgId}
               toolId={incidentData?.toolId}
               incidentID={incidentData?.incidentID}
-              onSave={(html) => setQuotedText(html)}
+              onSave={({PreviousConversations, PreviousConversations_Attachments}) => {
+                setQuotedText(PreviousConversations)
+                setQuotedAttachments(PreviousConversations_Attachments)
+              }}
             />
 
             <RichTextEditor
