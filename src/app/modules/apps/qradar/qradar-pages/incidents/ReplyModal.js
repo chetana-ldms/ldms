@@ -220,7 +220,13 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
           userId: Number(sessionStorage.getItem('userId')),
           attachments: [...attachments.map((f) => ({file: f})), ...inlineAttachments],
           PreviousConversations: previousConversations,
-          PreviousConversations_Attachments: JSON.stringify(previousConversationsAttachments), // 🔥 fix
+          PreviousConversations_Attachments: previousConversationsAttachments.map(
+            (file, index) => ({
+              file,
+              ContentId: `inline_${index}.png`,
+            })
+          ),
+
           FromEmails: fromEmails,
         }
 
@@ -387,7 +393,7 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
                 size='sm'
                 onClick={() => setShowQuotedTextModal(true)}
               >
-                <i className='fa fa-quote-right me-1'></i> Quoted Text
+                <i className='fa fa-quote-right me-1'></i> Previous Conversation
               </Button>
             </div>
 

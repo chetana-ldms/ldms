@@ -623,16 +623,27 @@ export const fetchReplyIncidentWithHtmlContentUrl = async (data) => {
     formData.append('ToolId', data.toolId)
     formData.append('OrgId', data.orgId)
     formData.append('PreviousConversations', data.PreviousConversations)
-    formData.append('PreviousConversations_Attachments', data.PreviousConversations_Attachments)
     formData.append('FromEmails', data.FromEmails)
 
-    // CC
+    // ✅ Handle Previous Conversation Attachments properly
+    if (data.PreviousConversations_Attachments?.length) {
+      data.PreviousConversations_Attachments.forEach((file) => {
+        if (file?.file) {
+          formData.append('PreviousConversations_Attachments', file.file, file.file.name)
+        }
+        if (file?.ContentId) {
+          formData.append('ContentIds', file.ContentId)
+        }
+      })
+    }
+
+    // ✅ CC
     data.ccEmails?.forEach((email) => formData.append('CcEmails', email))
 
-    // BCC
+    // ✅ BCC
     data.bccEmails?.forEach((email) => formData.append('BccEmails', email))
 
-    // Attachments (inline + normal)
+    // ✅ Attachments (inline + normal)
     if (data.attachments?.length) {
       data.attachments.forEach((att) => {
         if (att.contentId) {
@@ -657,6 +668,7 @@ export const fetchReplyIncidentWithHtmlContentUrl = async (data) => {
     console.error('API call failed:', err)
   }
 }
+
 export const fetchIncidentConversationDeleteUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${IncidentConversationDeleteUrl}`, {

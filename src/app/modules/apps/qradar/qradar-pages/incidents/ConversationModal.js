@@ -11,18 +11,13 @@ const ConversationModal = ({show, onClose, incidentData}) => {
   const {orgId, toolId, incidentID} = incidentData || {}
   const [conversation, setConversation] = useState([])
   console.log(conversation, 'conversation')
-
-  // States for Reply / Forward modals
   const [showForwardModal, setShowForwardModal] = useState(false)
   const [showReplyModal, setShowReplyModal] = useState(false)
   const [selectedConversationId, setSelectedConversationId] = useState(null)
-
-  // Fetch conversations
   const loadConversation = async () => {
     try {
       setConversation([])
       const response = await fetchIncidentConversationUrl(orgId, toolId, incidentID)
-
       if (response?.isSuccess) {
         setConversation(response?.conversations || [])
       } else {
@@ -34,14 +29,11 @@ const ConversationModal = ({show, onClose, incidentData}) => {
       setConversation([])
     }
   }
-
   useEffect(() => {
     if (show && orgId && toolId && incidentID) {
       loadConversation()
     }
   }, [show, orgId, toolId, incidentID])
-
-  // Delete trail
   const handleDeleteTrail = async (conversationId) => {
     if (!conversationId) return
     try {
@@ -58,21 +50,16 @@ const ConversationModal = ({show, onClose, incidentData}) => {
   }
   const handleEditTrail = (mailId) => {
 };
-
   const handleForwardTrail = (trailId) => {
     setSelectedConversationId(trailId)
     incidentData.replyForward = false
     setShowForwardModal(true)
   }
-
-  // Reply trail
   const handleReplyTrail = (trailId) => {
     setSelectedConversationId(trailId)
     incidentData.replyForward = true
     setShowForwardModal(true)
   }
-
-  // Format time
   const formatDateTime = (dateString) => {
     const date = new Date(dateString)
     const now = new Date()
@@ -102,7 +89,6 @@ const ConversationModal = ({show, onClose, incidentData}) => {
     if (mail.incoming === false && mail.private === true) return 'bg-warning bg-opacity-25'
     return 'bg-info bg-opacity-25'
   }
-
   return (
     <>
       <Modal
@@ -122,7 +108,6 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                 key={mail.id || index}
                 className={`mb-4 p-3 rounded ${getMailBackgroundClass(mail)}`}
               >
-                {/* Main header with author + actions */}
                 <div className='d-flex justify-content-between align-items-center mb-2'>
                   <div className='d-flex align-items-center'>
                     <div className='symbol symbol-circle symbol-35px bg-light-primary text-primary fw-bold me-3 p-4'>
@@ -168,8 +153,6 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                     )}
                   </div>
                 </div>
-
-                {/* Mail details */}
                 <div className='ps-5'>
                   {(mail.toEmails || mail.ccEmails || mail.bccEmails) && (
                     <div className='text-muted small mt-2'>
@@ -205,8 +188,6 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                       </ul>
                     </div>
                   )}
-
-                  {/* Trails */}
                   {Array.isArray(mail.conversationMailTrailData) &&
                     mail.conversationMailTrailData.length > 0 && (
                       <Accordion className='mt-3'>
