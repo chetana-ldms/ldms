@@ -48,8 +48,7 @@ const ConversationModal = ({show, onClose, incidentData}) => {
       console.error('Error deleting conversation trail:', error)
     }
   }
-  const handleEditTrail = (mailId) => {
-};
+  const handleEditTrail = (mailId) => {}
   const handleForwardTrail = (trailId) => {
     setSelectedConversationId(trailId)
     incidentData.replyForward = false
@@ -89,6 +88,73 @@ const ConversationModal = ({show, onClose, incidentData}) => {
     if (mail.incoming === false && mail.private === true) return 'bg-warning bg-opacity-25'
     return 'bg-info bg-opacity-25'
   }
+  const renderHtmlWithBase64Images = (htmlString) => {
+    if (!htmlString) return null
+
+    // Create a DOMParser to parse the HTML content
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(htmlString, 'text/html')
+
+    // Fix all base64 <img> tags if they exist
+    doc.querySelectorAll('img').forEach((img) => {
+      const src = img.getAttribute('src')
+      if (src && src.startsWith('data:image/')) {
+        // Already base64 image → let it render directly
+        img.setAttribute('src', src)
+        img.style.maxWidth = '100%'
+        img.style.height = 'auto'
+      }
+    })
+
+    return {__html: doc.body.innerHTML}
+  }
+ const renderHtmlWithInlineImages = (htmlContent, attachmentsInBase64) => {
+  if (!htmlContent) return {__html: ''}
+
+  let processedHtml = htmlContent
+
+  if (Array.isArray(attachmentsInBase64)) {
+    attachmentsInBase64.forEach((att) => {
+      const base64Content = att.data || att.fileContent || att.content || ''
+      if (att?.contentId && base64Content) {
+        const base64Src = `data:${att.fileType || 'image/png'};base64,${base64Content}`
+        const cidPattern = new RegExp(`cid:${att.contentId}`, 'g')
+        processedHtml = processedHtml.replace(cidPattern, base64Src)
+      }
+    })
+  }
+
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(processedHtml, 'text/html')
+
+  doc.querySelectorAll('img').forEach((img) => {
+    img.style.maxWidth = '100%'
+    img.style.height = 'auto'
+  })
+
+  return {__html: doc.body.innerHTML}
+}
+const getFileUrl = (att) => {
+  const base64Content = att.data || att.fileContent || att.content || ''
+  if (!base64Content) return null
+
+  try {
+    const byteCharacters = atob(base64Content)
+    const byteNumbers = new Array(byteCharacters.length)
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i)
+    }
+    const byteArray = new Uint8Array(byteNumbers)
+    const blob = new Blob([byteArray], {type: att.fileType || 'application/octet-stream'})
+    return URL.createObjectURL(blob)
+  } catch (err) {
+    console.error('Error decoding base64 for file:', att.fileName, err)
+    return null
+  }
+}
+
+
+
   return (
     <>
       <Modal
@@ -173,21 +239,61 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                       )}
                     </div>
                   )}
-                  <div className='mail-body' dangerouslySetInnerHTML={{__html: mail.htmlCurrent}} />
-                  {Array.isArray(mail?.attachments) && mail?.attachments?.length > 0 && (
-                    <div className='mt-2'>
-                      <strong>Attachments:</strong>
-                      <ul className='list-unstyled mt-1'>
-                        {mail?.attachments?.map((att, aIndex) => (
-                          <li key={aIndex}>
-                            <a href={att?.url} target='_blank' rel='noopener noreferrer'>
-                              {att?.name || att?.fileName || 'Attachment'}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  <div
+                    className='mail-body'
+                    dangerouslySetInnerHTML={renderHtmlWithInlineImages(
+                      mail.htmlCurrent,
+                      mail.attachmentsInBase64
+                    )}
+                  />
+                  {Array.isArray(mail.attachmentsInBase64) &&
+                    mail.attachmentsInBase64.some((att) => !att.isInline) && (
+                      <div className='mt-3'>
+                        <strong>Attachments:</strong>
+                        <ul className='list-unstyled mt-2'>
+                          {mail.attachmentsInBase64
+                            .filter((att) => !att.isInline)
+                            .map((att, index) => {
+                              const fileUrl = `data:${att.fileType};base64,${att.data}`
+                              const isPdf = att.fileType === 'application/pdf'
+                              const isImage = att.fileType.startsWith('image/')
+                              return (
+                                <li key={index} className='mb-2'>
+                                  {isImage ? (
+                                    <div>
+                                      <img
+                                        src={fileUrl}
+                                        alt={att.fileName}
+                                        style={{maxWidth: '200px', borderRadius: '5px'}}
+                                      />
+                                      <div>
+                                        <a href={fileUrl} download={att.fileName}>
+                                          {att.fileName}
+                                        </a>
+                                      </div>
+                                    </div>
+                                  ) : isPdf ? (
+                                    <div>
+                                      <i className='fa fa-file-pdf text-danger me-2'></i>
+                                      <a href={fileUrl} target='_blank' rel='noopener noreferrer'>
+                                        {att.fileName}
+                                      </a>
+                                    </div>
+                                  ) : (
+                                    <div>
+                                      <i className='fa fa-paperclip text-secondary me-2'></i>
+                                      <a href={fileUrl} download={att.fileName}>
+                                        {att.fileName}
+                                      </a>
+                                    </div>
+                                  )}
+                                </li>
+                              )
+                            })}
+                        </ul>
+                      </div>
+                    )}
+
                   {Array.isArray(mail.conversationMailTrailData) &&
                     mail.conversationMailTrailData.length > 0 && (
                       <Accordion className='mt-3'>

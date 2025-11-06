@@ -154,7 +154,7 @@ useEffect(() => {
           Cancel
         </Button>
         <Button variant='primary' onClick={handleSave}>
-          Save
+          Add
         </Button>
       </Modal.Footer>
     </Modal>
