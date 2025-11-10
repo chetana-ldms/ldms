@@ -10,10 +10,10 @@ import ReplyModal from './ReplyModal'
 const ConversationModal = ({show, onClose, incidentData}) => {
   const {orgId, toolId, incidentID} = incidentData || {}
   const [conversation, setConversation] = useState([])
-  console.log(conversation, 'conversation')
   const [showForwardModal, setShowForwardModal] = useState(false)
   const [showReplyModal, setShowReplyModal] = useState(false)
   const [selectedConversationId, setSelectedConversationId] = useState(null)
+
   const loadConversation = async () => {
     try {
       setConversation([])
@@ -29,11 +29,13 @@ const ConversationModal = ({show, onClose, incidentData}) => {
       setConversation([])
     }
   }
+
   useEffect(() => {
     if (show && orgId && toolId && incidentID) {
       loadConversation()
     }
   }, [show, orgId, toolId, incidentID])
+
   const handleDeleteTrail = async (conversationId) => {
     if (!conversationId) return
     try {
@@ -48,21 +50,25 @@ const ConversationModal = ({show, onClose, incidentData}) => {
       console.error('Error deleting conversation trail:', error)
     }
   }
+
   const handleEditTrail = (mailId) => {}
+
   const handleForwardTrail = (trailId) => {
     setSelectedConversationId(trailId)
     incidentData.replyForward = false
     setShowForwardModal(true)
   }
+
   const handleReplyTrail = (trailId) => {
     setSelectedConversationId(trailId)
     incidentData.replyForward = true
     setShowForwardModal(true)
   }
+
   const formatDateTime = (dateString) => {
     const date = new Date(dateString)
     const now = new Date()
-    const diff = Math.floor((now - date) / 1000) // seconds
+    const diff = Math.floor((now - date) / 1000)
 
     if (diff < 60) return `${diff} sec${diff !== 1 ? 's' : ''} ago`
     if (diff < 3600)
@@ -88,72 +94,52 @@ const ConversationModal = ({show, onClose, incidentData}) => {
     if (mail.incoming === false && mail.private === true) return 'bg-warning bg-opacity-25'
     return 'bg-info bg-opacity-25'
   }
-  const renderHtmlWithBase64Images = (htmlString) => {
-    if (!htmlString) return null
 
-    // Create a DOMParser to parse the HTML content
+  const renderHtmlWithInlineImages = (htmlContent, attachmentsInBase64) => {
+    if (!htmlContent) return {__html: ''}
+
+    let processedHtml = htmlContent
+
+    if (Array.isArray(attachmentsInBase64)) {
+      attachmentsInBase64.forEach((att) => {
+        const base64Content = att.data || att.fileContent || att.content || ''
+        if (att?.contentId && base64Content) {
+          const base64Src = `data:${att.fileType || 'image/png'};base64,${base64Content}`
+          const cidPattern = new RegExp(`cid:${att.contentId}`, 'g')
+          processedHtml = processedHtml.replace(cidPattern, base64Src)
+        }
+      })
+    }
+
     const parser = new DOMParser()
-    const doc = parser.parseFromString(htmlString, 'text/html')
+    const doc = parser.parseFromString(processedHtml, 'text/html')
 
-    // Fix all base64 <img> tags if they exist
     doc.querySelectorAll('img').forEach((img) => {
-      const src = img.getAttribute('src')
-      if (src && src.startsWith('data:image/')) {
-        // Already base64 image → let it render directly
-        img.setAttribute('src', src)
-        img.style.maxWidth = '100%'
-        img.style.height = 'auto'
-      }
+      img.style.maxWidth = '100%'
+      img.style.height = 'auto'
     })
 
     return {__html: doc.body.innerHTML}
   }
- const renderHtmlWithInlineImages = (htmlContent, attachmentsInBase64) => {
-  if (!htmlContent) return {__html: ''}
 
-  let processedHtml = htmlContent
+  const getFileUrl = (att) => {
+    const base64Content = att.data || att.fileContent || att.content || ''
+    if (!base64Content) return null
 
-  if (Array.isArray(attachmentsInBase64)) {
-    attachmentsInBase64.forEach((att) => {
-      const base64Content = att.data || att.fileContent || att.content || ''
-      if (att?.contentId && base64Content) {
-        const base64Src = `data:${att.fileType || 'image/png'};base64,${base64Content}`
-        const cidPattern = new RegExp(`cid:${att.contentId}`, 'g')
-        processedHtml = processedHtml.replace(cidPattern, base64Src)
+    try {
+      const byteCharacters = atob(base64Content)
+      const byteNumbers = new Array(byteCharacters.length)
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i)
       }
-    })
-  }
-
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(processedHtml, 'text/html')
-
-  doc.querySelectorAll('img').forEach((img) => {
-    img.style.maxWidth = '100%'
-    img.style.height = 'auto'
-  })
-
-  return {__html: doc.body.innerHTML}
-}
-const getFileUrl = (att) => {
-  const base64Content = att.data || att.fileContent || att.content || ''
-  if (!base64Content) return null
-
-  try {
-    const byteCharacters = atob(base64Content)
-    const byteNumbers = new Array(byteCharacters.length)
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i)
+      const byteArray = new Uint8Array(byteNumbers)
+      const blob = new Blob([byteArray], {type: att.fileType || 'application/octet-stream'})
+      return URL.createObjectURL(blob)
+    } catch (err) {
+      console.error('Error decoding base64 for file:', att.fileName, err)
+      return null
     }
-    const byteArray = new Uint8Array(byteNumbers)
-    const blob = new Blob([byteArray], {type: att.fileType || 'application/octet-stream'})
-    return URL.createObjectURL(blob)
-  } catch (err) {
-    console.error('Error decoding base64 for file:', att.fileName, err)
-    return null
   }
-}
-
-
 
   return (
     <>
@@ -246,6 +232,8 @@ const getFileUrl = (att) => {
                       mail.attachmentsInBase64
                     )}
                   />
+
+                  {/* ✅ Fixed attachment rendering with getFileUrl() */}
                   {Array.isArray(mail.attachmentsInBase64) &&
                     mail.attachmentsInBase64.some((att) => !att.isInline) && (
                       <div className='mt-3'>
@@ -254,9 +242,9 @@ const getFileUrl = (att) => {
                           {mail.attachmentsInBase64
                             .filter((att) => !att.isInline)
                             .map((att, index) => {
-                              const fileUrl = `data:${att.fileType};base64,${att.data}`
+                              const fileUrl = getFileUrl(att)
                               const isPdf = att.fileType === 'application/pdf'
-                              const isImage = att.fileType.startsWith('image/')
+                              const isImage = att.fileType?.startsWith('image/')
                               return (
                                 <li key={index} className='mb-2'>
                                   {isImage ? (
@@ -275,7 +263,12 @@ const getFileUrl = (att) => {
                                   ) : isPdf ? (
                                     <div>
                                       <i className='fa fa-file-pdf text-danger me-2'></i>
-                                      <a href={fileUrl} target='_blank' rel='noopener noreferrer'>
+                                      <a
+                                        href={fileUrl}
+                                        target='_blank'
+                                        rel='noopener noreferrer'
+                                        download={att.fileName}
+                                      >
                                         {att.fileName}
                                       </a>
                                     </div>
@@ -362,6 +355,7 @@ const getFileUrl = (att) => {
           </Button>
         </Modal.Footer>
       </Modal>
+
       <ForwardModal
         show={showForwardModal}
         onHide={() => setShowForwardModal(false)}

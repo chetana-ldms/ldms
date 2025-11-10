@@ -48,7 +48,8 @@ const TemplatesTemplateTypesUrl =
 const TemplatesGroupsUrl = 'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Groups'
 const MessageTemplatesProcessUrl =
   'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Process'
-  const IncidentPreviousConversationUrl ="http://10.41.3.232:501/api/IncidentManagement/v1/IncidentPreviousConversation"
+const IncidentPreviousConversationUrl =
+  'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentPreviousConversation'
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -627,12 +628,19 @@ export const fetchReplyIncidentWithHtmlContentUrl = async (data) => {
 
     // ✅ Handle Previous Conversation Attachments properly
     if (data.PreviousConversations_Attachments?.length) {
-      data.PreviousConversations_Attachments.forEach((file) => {
-        if (file?.file) {
-          formData.append('PreviousConversations_Attachments', file.file, file.file.name)
+      data.PreviousConversations_Attachments.forEach((item) => {
+        // Check if it’s nested
+        const innerFileObj = item.file
+        const fileToSend = innerFileObj?.file instanceof File ? innerFileObj.file : null
+        const contentId = innerFileObj?.ContentId || item.ContentId
+
+        if (fileToSend) {
+          // Use file.name as filename
+          formData.append('PreviousConversations_Attachments', fileToSend, fileToSend.name)
         }
-        if (file?.ContentId) {
-          formData.append('ContentIds', file.ContentId)
+
+        if (contentId) {
+          formData.append('ContentIds', contentId)
         }
       })
     }
