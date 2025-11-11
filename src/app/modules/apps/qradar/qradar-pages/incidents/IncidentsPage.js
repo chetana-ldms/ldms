@@ -29,7 +29,8 @@ import useFeatureActions from '../configuration/useFeatureActions'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
 import MergeModal from './MergeModal'
 import {truncateText} from '../../../../../../utils/TruncateText'
-import { fetchMasterDataByOrganization } from '../../../../../api/dashBoardApi'
+import {fetchMasterDataByOrganization} from '../../../../../api/dashBoardApi'
+import ConversationModal from './ConversationModal'
 
 const IncidentsPage = () => {
   const handleError = useErrorBoundary()
@@ -72,7 +73,9 @@ const IncidentsPage = () => {
   const [daysFromDashBoard, setDaysFromDashBoard] = useState(location.state?.days || '')
   const [selectedDays, setSelectedDays] = useState([])
   const [selectedFilterValue, setSelectedFilterValue] = useState(1)
-  const [selectedToolId, setSelectedToolId] = useState(sessionStorage.getItem('incidentToolId') || '')
+  const [selectedToolId, setSelectedToolId] = useState(
+    sessionStorage.getItem('incidentToolId') || ''
+  )
   const [tools, setTools] = useState([])
   const [showConfirmation, setShowConfirmation] = useState(false)
   const toolRef = useRef()
@@ -869,9 +872,10 @@ const IncidentsPage = () => {
                 orgId={sessionStorage.getItem('orgId')}
                 selectedIncident={selectedIncident}
               />
+              <ConversationModal />
             </div>
             <div className='col-md-4 border-1 border-gray-600 incident-details'>
-            <IncidentDetails incident={selectedIncident} onRefreshIncidents={refreshIncidents} />
+              <IncidentDetails incident={selectedIncident} onRefreshIncidents={refreshIncidents} />
             </div>
           </div>
           {showConfirmation && (

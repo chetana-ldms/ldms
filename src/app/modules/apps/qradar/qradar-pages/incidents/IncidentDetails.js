@@ -32,6 +32,7 @@ import ForwardModal from './ForwardModal'
 import SendMailModal from './SendMailModal'
 import Conversation from './Conversation'
 import ConversationModal from './ConversationModal'
+import DetailsModal from './DetailsModal '
 
 const IncidentDetails = ({incident, onRefreshIncidents}) => {
   console.log('incident11111', incident)
@@ -51,6 +52,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const id = incidentID
   console.log(id, 'id')
   const [showReplyModal, setShowReplyModal] = useState(false)
+  const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [showConversationModal, setShowConversationModal] = useState(false)
   const [activeTab, setActiveTab] = useState('general')
   const userID = Number(sessionStorage.getItem('userId'))
@@ -685,7 +687,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
         <div className='mb-3 incident-tabs'>
           <div className='p-2 bd-highlight'>
             <ul className='nav nav-tabs nav-line-tabs mb-5 fs-8 no-pad'>
-              {/* 1. General */}
               <li className='nav-item'>
                 <a
                   className={`nav-link ${activeTab === 'general' ? 'active' : ''}`}
@@ -697,7 +698,18 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 </a>
               </li>
 
-              {/* 2. Conversation */}
+              <li className='nav-item'>
+                <a
+                  className='nav-link'
+                  href='#'
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setShowDetailsModal(true)
+                  }}
+                >
+                  Description
+                </a>
+              </li>
               <li className='nav-item'>
                 <a
                   className='nav-link'
@@ -710,8 +722,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   Conversation
                 </a>
               </li>
-
-              {/* 3. Timeline */}
               <li className='nav-item'>
                 <a
                   className={`nav-link ${activeTab === 'timeline' ? 'active' : ''}`}
@@ -723,7 +733,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 </a>
               </li>
 
-              {/* 4. Notes */}
               <li className='nav-item'>
                 <a
                   className={`nav-link ${activeTab === 'notes' ? 'active' : ''}`}
@@ -735,7 +744,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 </a>
               </li>
 
-              {/* 5. SLA Details */}
               <li className='nav-item'>
                 <a
                   className={`nav-link ${activeTab === 'sla' ? 'active' : ''}`}
@@ -743,11 +751,10 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   href='#kt_tab_pane_sla'
                   onClick={() => setActiveTab('sla')}
                 >
-                  SLA Details
+                  SLA
                 </a>
               </li>
 
-              {/* 6. Alerts (if present) */}
               {Array.isArray(incidentData?.alertId) && incidentData.alertId.length > 0 && (
                 <li className='nav-item'>
                   <a
@@ -761,9 +768,15 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 </li>
               )}
             </ul>
+
             <ConversationModal
               show={showConversationModal}
               onClose={() => setShowConversationModal(false)}
+              incidentData={incidentData}
+            />
+            <DetailsModal
+              show={showDetailsModal}
+              onClose={() => setShowDetailsModal(false)}
               incidentData={incidentData}
             />
             <div className='tab-content scroll-y h-600px' id='myTabContent'>
@@ -772,6 +785,23 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 id='kt_tab_pane_1'
                 role='tabpanel'
               >
+                <div className='row bd-highlight mb-1'>
+                  <div className='col-md-3 bd-highlight mt-2'>
+                    Subject<sup className='red'>*</sup>
+                  </div>
+                  <div className='col-md-9 bd-highlight'>
+                    <div className='w-100'>
+                      <textarea
+                        name='subject'
+                        className='form-control form-control-sm'
+                        placeholder='Enter subject'
+                        rows={2}
+                        value={incidentData.subject}
+                        onChange={(event) => handleChange(event, 'subject')}
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
                 <div className='row bd-highlight mb-3'>
                   <div className='col-md-3 bd-highlight mt-2'>
                     Requester<sup className='red'>*</sup>
@@ -805,23 +835,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                       onChange={(e) => handleChange(e, 'incidentEmail')}
                       disabled={incidentData?.incidentEmail}
                     />
-                  </div>
-                </div>
-                <div className='row bd-highlight mb-1'>
-                  <div className='col-md-3 bd-highlight mt-2'>
-                    Subject<sup className='red'>*</sup>
-                  </div>
-                  <div className='col-md-9 bd-highlight'>
-                    <div className='w-100'>
-                      <textarea
-                        name='subject'
-                        className='form-control form-control-sm'
-                        placeholder='Enter subject'
-                        rows={2}
-                        value={incidentData.subject}
-                        onChange={(event) => handleChange(event, 'subject')}
-                      ></textarea>
-                    </div>
                   </div>
                 </div>
 
@@ -1113,14 +1126,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   </div>
                 </div>
               </div>
-              {/* <div
-                className={`tab-pane fade ${activeTab === 'conversation' ? 'show active' : ''}`}
-                id='kt_tab_pane_conversation'
-                role='tabpanel'
-              >
-                {activeTab === 'conversation' && <Conversation incidentData={incidentData} />}
-              </div> */}
-
               <div className='tab-pane fade' id='kt_tab_pane_2' role='tabpanel'>
                 <table
                   className='me-n5 pe-5 table table-hover table-row-dashed fs-6 gy-5 my-0 dataTable no-footer'
