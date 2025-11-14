@@ -50,6 +50,8 @@ const MessageTemplatesProcessUrl =
   'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Process'
 const IncidentPreviousConversationUrl =
   'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentPreviousConversation'
+const UpdateDescriptionAndAttachmentUrl =
+  'http://10.41.3.232:501/api/IncidentManagement/v1/UpdateDescriptionAndAttachment'
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -906,5 +908,66 @@ export const fetchIncidentPreviousConversationUrl = async (orgId, ToolId, incide
     return responseData
   } catch (error) {
     console.log(error)
+  }
+}
+export const fetchUpdateDescriptionAndAttachmentUrl = async (data) => {
+  try {
+    const formData = new FormData()
+    formData.append('ReplyDateTime', data.replyDateTime)
+    formData.append('UserId', data.userId)
+    formData.append('IncidentId', data.incidentId)
+    formData.append('ToolId', data.toolId)
+    formData.append('OrgId', data.orgId)
+    formData.append('PreviousConversations', data.PreviousConversations)
+    formData.append('FromEmails', data.FromEmails)
+
+    // ✅ Handle Previous Conversation Attachments properly
+    if (data.PreviousConversations_Attachments?.length) {
+      data.PreviousConversations_Attachments.forEach((item) => {
+        // Check if it’s nested
+        const innerFileObj = item.file
+        const fileToSend = innerFileObj?.file instanceof File ? innerFileObj.file : null
+        const contentId = innerFileObj?.ContentId || item.ContentId
+
+        if (fileToSend) {
+          // Use file.name as filename
+          formData.append('PreviousConversations_Attachments', fileToSend, fileToSend.name)
+        }
+
+        if (contentId) {
+          formData.append('ContentIds', contentId)
+        }
+      })
+    }
+
+    // ✅ CC
+    data.ccEmails?.forEach((email) => formData.append('CcEmails', email))
+
+    // ✅ BCC
+    data.bccEmails?.forEach((email) => formData.append('BccEmails', email))
+
+    // ✅ Attachments (inline + normal)
+    if (data.attachments?.length) {
+      data.attachments.forEach((att) => {
+        if (att.contentId) {
+          // inline image
+          formData.append('Attachments', att.file, att.file.name)
+          formData.append('ContentIds', att.contentId)
+        } else {
+          formData.append('Attachments', att.file || att)
+        }
+      })
+    }
+
+    formData.append('BodyHtml', data.notes)
+
+    const response = await fetch(UpdateDescriptionAndAttachmentUrl, {
+      method: 'POST',
+      body: formData,
+    })
+
+    return await response.json()
+  } catch (err) {
+    console.error('API call failed:', err)
   }
 }

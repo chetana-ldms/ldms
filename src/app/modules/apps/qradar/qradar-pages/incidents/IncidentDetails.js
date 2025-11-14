@@ -33,9 +33,9 @@ import SendMailModal from './SendMailModal'
 import Conversation from './Conversation'
 import ConversationModal from './ConversationModal'
 import DetailsModal from './DetailsModal '
+import {UsersListLoading} from '../components/loading/UsersListLoading'
 
 const IncidentDetails = ({incident, onRefreshIncidents}) => {
-  console.log('incident11111', incident)
   const handleError = useErrorBoundary()
   const {
     description,
@@ -89,6 +89,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const [modalMode, setModalMode] = useState('add')
   const [selectedNote, setSelectedNote] = useState(null)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [incidentData, setIncidentData] = useState({
     incidentStatus: '',
     incidentStatusName: '',
@@ -130,6 +131,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     incidentTags: [],
     replyCCEmails: [],
     toEmails: [],
+    attachmentsInBase64:[],
   })
   console.log(incidentData, 'incidentDataTest')
   const [selectedAlertId, setSelectedAlertId] = useState(null)
@@ -217,6 +219,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
 
   const fetchData = async (resolvedId) => {
     try {
+      setLoading(true)
       const data = await fetchIncidentDetails(resolvedId)
       if (data == null) {
         setIncidentData({
@@ -244,6 +247,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
           incidentTags: [],
           replyCCEmails: [],
           toEmails: [],
+          attachmentsInBase64:[],
         })
         return // Exit the function early
       }
@@ -298,6 +302,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
         incidentTags: data?.incidentTags || [],
         replyCCEmails: data?.replyCCEmails || [],
         toEmails: data?.toEmails || [],
+        attachmentsInBase64: data?.attachmentsInBase64 || [],
       })
       const tagsFromIncident = data?.incidentTags || []
 
@@ -314,6 +319,8 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
       })
     } catch (error) {
       handleError(error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -443,11 +450,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
       notifyFail('select the Priority')
       return
     }
-
-    if (!incidentData.description) {
-      notifyFail('Enter the Description')
-      return
-    }
     const data = {
       incidentId: Number(id),
       statusId: incidentData.incidentStatus,
@@ -456,11 +458,11 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
       typeId: incidentData.typeId,
       ownerUserId: incidentData?.owner,
       incidentEmail: incidentData.incidentEmail,
+      description: 'test',
       significantIncident: incidentData.significantIncident,
       modifiedUserId: userID,
       modifiedDate: date,
       subject: incidentData.subject,
-      description: incidentData.description,
       requestorUserId: incidentData.requestorUserId,
       groupId: incidentData.groupId,
       productId: incidentData.productId,
@@ -608,6 +610,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
 
   return (
     <div className=''>
+      {loading && <UsersListLoading />}
       <div className='card'>
         <div className='bg-heading'>
           <div className='d-flex justify-content-between '>
@@ -1047,24 +1050,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     </div>
                   </div>
                 </div>
-                <div className='row bd-highlight mb-1'>
-                  <div className='col-md-3 bd-highlight mt-2'>
-                    Description<sup className='red'>*</sup>
-                  </div>
-                  <div className='col-md-9 bd-highlight'>
-                    <div className='w-100'>
-                      <textarea
-                        name='description'
-                        className='form-control form-control-sm'
-                        placeholder='Enter Description'
-                        rows={3}
-                        value={incidentData.description}
-                        onChange={(event) => handleChange(event, 'description')}
-                      ></textarea>
-                    </div>
-                  </div>
-                </div>
-
                 <div className='checkbox-wrapper'>
                   <input
                     className='p-2 v-middle'
