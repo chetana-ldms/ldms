@@ -12,12 +12,14 @@ import {
 } from '../../../../../api/IncidentsApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import MessageTemplatesModal from './MessageTemplatesModel'
+import {processHtmlWithInlineImages} from './processHtmlWithInlineImages'
+import QuotedTextModal from './QuotedTextModal'
 
 const animatedComponents = makeAnimated()
 
 const ForwardModal = ({show, onHide, incidentData, onForward}) => {
   console.log('Incident Data in Forward Modal:', incidentData)
-
+  const [attachments, setAttachments] = useState([])
   const [subject, setSubject] = useState(`${incidentData?.subject || 'Incident update'}`)
   const [to, setTo] = useState([])
   const [cc, setCc] = useState([])
@@ -27,6 +29,12 @@ const ForwardModal = ({show, onHide, incidentData, onForward}) => {
   const [includeOriginalAttachments, setIncludeOriginalAttachments] = useState(true)
   const [includePreviousConversations, setIncludePreviousConversations] = useState(true)
   const [showMessageTemplateModal, setShowMessageTemplateModal] = useState(false)
+  const [showQuotedTextModal, setShowQuotedTextModal] = useState(false)
+  const [quotedText, setQuotedText] = useState('')
+  const [quotedAttachments, setQuotedAttachments] = useState([])
+  const [conversation, setConversation] = useState([])
+  console.log('Conversation data:', conversation)
+
   const handleMessageTemplateClick = () => {
     setShowMessageTemplateModal(true)
   }
@@ -42,6 +50,11 @@ const ForwardModal = ({show, onHide, incidentData, onForward}) => {
       notifyFail('All required fields must be filled')
       return
     }
+    const {cleanedHtml, attachments: inlineAttachments} = processHtmlWithInlineImages(message)
+    const previousConversations = quotedText ? [quotedText] : []
+    const previousConversationsAttachments = quotedAttachments?.length
+      ? quotedAttachments
+      : conversation?.flatMap((mail) => mail.attachments || []) || []
 
     // Base data (common)
     const baseData = {
@@ -87,6 +100,14 @@ const ForwardModal = ({show, onHide, incidentData, onForward}) => {
           ...baseData,
           includeOriginalAttachments,
           includePreviousConversations,
+          attachments: [...attachments.map((f) => ({file: f})), ...inlineAttachments],
+          PreviousConversations: previousConversations,
+          PreviousConversations_Attachments: previousConversationsAttachments.map(
+            (file, index) => ({
+              file,
+              ContentId: `inline_${index}.png`,
+            })
+          ),
         })
       }
 
@@ -231,7 +252,49 @@ const ForwardModal = ({show, onHide, incidentData, onForward}) => {
               />
             </div>
           </Form.Group>
-
+          {attachments.length > 0 && (
+            <div className='d-flex flex-wrap gap-2 mb-2'>
+              {attachments.map((file, idx) => (
+                <div
+                  key={idx}
+                  className='d-flex align-items-center px-2 py-1 border rounded bg-light'
+                  style={{fontSize: '13px'}}
+                >
+                  <span className='me-2'>
+                    {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                  </span>
+                  <button
+                    type='button'
+                    className='btn btn-sm btn-link text-danger p-0'
+                    onClick={() => setAttachments((prev) => prev.filter((_, i) => i !== idx))}
+                  >
+                    ✖
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className='d-flex justify-content-end mb-2'></div>
+          <div className='d-flex justify-content-end mb-2'>
+            <Button
+              variant='outline-secondary'
+              size='sm'
+              onClick={() => setShowQuotedTextModal(true)}
+            >
+              <i className='fa fa-quote-right me-1'></i> Previous Conversation
+            </Button>
+          </div>
+          <QuotedTextModal
+            show={showQuotedTextModal}
+            onHide={() => setShowQuotedTextModal(false)}
+            orgId={incidentData?.orgId}
+            toolId={incidentData?.toolId}
+            incidentID={incidentData?.incidentID}
+            onSave={({PreviousConversations, PreviousConversations_Attachments}) => {
+              setQuotedText(PreviousConversations)
+              setQuotedAttachments(PreviousConversations_Attachments)
+            }}
+          />
           <Form.Group className='mb-1'>
             <RichTextEditor value={message} onChange={setMessage} />
           </Form.Group>

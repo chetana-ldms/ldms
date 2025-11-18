@@ -546,22 +546,67 @@ export const fetchSearchIncidentTagsUrl = async (orgId, ToolId, keyword) => {
   }
 }
 export const fetchForwardIncidentUrl = async (data) => {
-  try {
-    const response = await FetchWithToken(`${ForwardIncidentUrl}`, {
+   try {
+    const formData = new FormData()
+    formData.append('ForwardDateTime', data.replyDateTime)
+    formData.append('UserId', data.userId)
+    formData.append('IncidentId', data.incidentId)
+    formData.append('ToolId', data.toolId)
+    formData.append('OrgId', data.orgId)
+    formData.append('PreviousConversations', data.PreviousConversations)
+    formData.append('Email', data.Email)
+
+    // ✅ Handle Previous Conversation Attachments properly
+    if (data.PreviousConversations_Attachments?.length) {
+      data.PreviousConversations_Attachments.forEach((item) => {
+        // Check if it’s nested
+        const innerFileObj = item.file
+        const fileToSend = innerFileObj?.file instanceof File ? innerFileObj.file : null
+        const contentId = innerFileObj?.ContentId || item.ContentId
+
+        if (fileToSend) {
+          // Use file.name as filename
+          formData.append('PreviousConversations_Attachments', fileToSend, fileToSend.name)
+        }
+
+        if (contentId) {
+          formData.append('ContentIds', contentId)
+        }
+      })
+    }
+
+    // ✅ CC
+    data.ccEmails?.forEach((email) => formData.append('CcEmails', email))
+
+    // ✅ BCC
+    data.bccEmails?.forEach((email) => formData.append('BccEmails', email))
+
+    // ✅ Attachments (inline + normal)
+    if (data.attachments?.length) {
+      data.attachments.forEach((att) => {
+        if (att.contentId) {
+          // inline image
+          formData.append('Attachments', att.file, att.file.name)
+          formData.append('ContentIds', att.contentId)
+        } else {
+          formData.append('Attachments', att.file || att)
+        }
+      })
+    }
+
+    formData.append('BodyHtml', data.notes)
+
+    const response = await fetch(ForwardIncidentUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...data,
-      }),
+      body: formData,
     })
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.log(error)
+
+    return await response.json()
+  } catch (err) {
+    console.error('API call failed:', err)
   }
 }
+
 
 export const fetchEmailSearchUrl = async (orgid, toolid, emailpartialstring) => {
   try {
@@ -912,62 +957,28 @@ export const fetchIncidentPreviousConversationUrl = async (orgId, ToolId, incide
 }
 export const fetchUpdateDescriptionAndAttachmentUrl = async (data) => {
   try {
-    const formData = new FormData()
-    formData.append('ReplyDateTime', data.replyDateTime)
-    formData.append('UserId', data.userId)
-    formData.append('IncidentId', data.incidentId)
-    formData.append('ToolId', data.toolId)
-    formData.append('OrgId', data.orgId)
-    formData.append('PreviousConversations', data.PreviousConversations)
-    formData.append('FromEmails', data.FromEmails)
+    const formData = new FormData();
 
-    // ✅ Handle Previous Conversation Attachments properly
-    if (data.PreviousConversations_Attachments?.length) {
-      data.PreviousConversations_Attachments.forEach((item) => {
-        // Check if it’s nested
-        const innerFileObj = item.file
-        const fileToSend = innerFileObj?.file instanceof File ? innerFileObj.file : null
-        const contentId = innerFileObj?.ContentId || item.ContentId
+    formData.append("ModifiedDate", data.ModifiedDate);
+    formData.append("ModifiedUserId", data.ModifiedUserId);
+    formData.append("IncidentId", data.IncidentId);
+    formData.append("Description", data.Description);
 
-        if (fileToSend) {
-          // Use file.name as filename
-          formData.append('PreviousConversations_Attachments', fileToSend, fileToSend.name)
-        }
-
-        if (contentId) {
-          formData.append('ContentIds', contentId)
-        }
-      })
+    if (data.Attachments?.length) {
+      data.Attachments.forEach((att) => {
+        formData.append("Attachments", att.file, att.file.name);        // <-- BINARY FILE
+        formData.append("ContentIds", att.contentId);    // <-- CID
+      });
     }
-
-    // ✅ CC
-    data.ccEmails?.forEach((email) => formData.append('CcEmails', email))
-
-    // ✅ BCC
-    data.bccEmails?.forEach((email) => formData.append('BccEmails', email))
-
-    // ✅ Attachments (inline + normal)
-    if (data.attachments?.length) {
-      data.attachments.forEach((att) => {
-        if (att.contentId) {
-          // inline image
-          formData.append('Attachments', att.file, att.file.name)
-          formData.append('ContentIds', att.contentId)
-        } else {
-          formData.append('Attachments', att.file || att)
-        }
-      })
-    }
-
-    formData.append('BodyHtml', data.notes)
 
     const response = await fetch(UpdateDescriptionAndAttachmentUrl, {
-      method: 'POST',
+      method: "POST",
       body: formData,
-    })
+    });
 
-    return await response.json()
+    return await response.json();
   } catch (err) {
-    console.error('API call failed:', err)
+    console.error("API call failed:", err);
   }
-}
+};
+
