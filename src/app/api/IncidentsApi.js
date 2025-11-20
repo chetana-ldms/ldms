@@ -546,7 +546,7 @@ export const fetchSearchIncidentTagsUrl = async (orgId, ToolId, keyword) => {
   }
 }
 export const fetchForwardIncidentUrl = async (data) => {
-   try {
+  try {
     const formData = new FormData()
     formData.append('ForwardDateTime', data.replyDateTime)
     formData.append('UserId', data.userId)
@@ -554,6 +554,7 @@ export const fetchForwardIncidentUrl = async (data) => {
     formData.append('ToolId', data.toolId)
     formData.append('OrgId', data.orgId)
     formData.append('PreviousConversations', data.PreviousConversations)
+    formData.append('FromEmails', data.FromEmails)
     formData.append('Email', data.Email)
 
     // ✅ Handle Previous Conversation Attachments properly
@@ -606,7 +607,6 @@ export const fetchForwardIncidentUrl = async (data) => {
     console.error('API call failed:', err)
   }
 }
-
 
 export const fetchEmailSearchUrl = async (orgid, toolid, emailpartialstring) => {
   try {
@@ -957,28 +957,28 @@ export const fetchIncidentPreviousConversationUrl = async (orgId, ToolId, incide
 }
 export const fetchUpdateDescriptionAndAttachmentUrl = async (data) => {
   try {
-    const formData = new FormData();
-
-    formData.append("ModifiedDate", data.ModifiedDate);
-    formData.append("ModifiedUserId", data.ModifiedUserId);
-    formData.append("IncidentId", data.IncidentId);
-    formData.append("Description", data.Description);
+    const formData = new FormData()
+    formData.append('ToolId', data.ToolId)
+    formData.append('OrgId', data.OrgId)
+    formData.append('ModifiedDate', data.ModifiedDate)
+    formData.append('ModifiedUserId', data.ModifiedUserId)
+    formData.append('IncidentId', data.IncidentId)
+    formData.append('Description', data.Description)
 
     if (data.Attachments?.length) {
       data.Attachments.forEach((att) => {
-        formData.append("Attachments", att.file, att.file.name);        // <-- BINARY FILE
-        formData.append("ContentIds", att.contentId);    // <-- CID
-      });
+        formData.append('Attachments', att.file, att.file.name) // <-- BINARY FILE
+        formData.append('ContentIds', att.contentId) // <-- CID
+      })
     }
 
     const response = await fetch(UpdateDescriptionAndAttachmentUrl, {
-      method: "POST",
+      method: 'POST',
       body: formData,
-    });
+    })
 
-    return await response.json();
+    return await response.json()
   } catch (err) {
-    console.error("API call failed:", err);
+    console.error('API call failed:', err)
   }
-};
-
+}

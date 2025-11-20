@@ -18,6 +18,7 @@ import MessageTemplatesModal from './MessageTemplatesModel'
 import QuotedTextModal from './QuotedTextModal'
 const animatedComponents = makeAnimated()
 const ReplyModal = ({show, onHide, incidentData, onSend}) => {
+  console.log('Incident Data in ReplyModal:', incidentData)
   const {orgId, toolId, incidentID} = incidentData || {}
   const [message, setMessage] = useState('')
   const [attachments, setAttachments] = useState([])

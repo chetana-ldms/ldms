@@ -296,7 +296,11 @@ const ForwardModal = ({show, onHide, incidentData, onForward}) => {
             }}
           />
           <Form.Group className='mb-1'>
-            <RichTextEditor value={message} onChange={setMessage} />
+            <RichTextEditor
+              value={message}
+              onChange={setMessage}
+              onAttach={(file) => setAttachments((prev) => [...prev, file])}
+            />
           </Form.Group>
           {/* Show checkboxes only when conversationId exists and NOT replyForward */}
           {!incidentData?.conversationId && !incidentData?.replyForward && (
