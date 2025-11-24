@@ -1,7 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import {Modal, Button, Spinner} from 'react-bootstrap'
 import RichTextEditor from '../../../../../../utils/RichTextEditor'
-import {fetchUpdateDescriptionAndAttachmentUrl} from '../../../../../api/IncidentsApi'
+import {
+  fetchIncidentDescriptionAndAttachmentsUrl,
+  fetchUpdateDescriptionAndAttachmentUrl,
+} from '../../../../../api/IncidentsApi'
 import {processHtmlWithInlineImages} from './processHtmlWithInlineImages'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
@@ -23,8 +26,13 @@ const DetailsModal = ({show, onClose, incidentData, onSave}) => {
       setHtmlContent('')
 
       try {
-        const html = incidentData?.description || ''
-        const backendFiles = incidentData?.attachmentsInBase64 || []
+        const data = {
+          incidentID: incidentData?.incidentID,
+        }
+        const response = await fetchIncidentDescriptionAndAttachmentsUrl(data)
+        const {description, attachmentsInBase64} = response || {}
+        const html = description || ''
+        const backendFiles = attachmentsInBase64 || []
         const convertedFiles = backendFiles.map((f) => {
           const byteCharacters = atob(f.data)
           const byteArray = new Uint8Array([...byteCharacters].map((c) => c.charCodeAt(0)))

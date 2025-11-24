@@ -52,6 +52,8 @@ const IncidentPreviousConversationUrl =
   'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentPreviousConversation'
 const UpdateDescriptionAndAttachmentUrl =
   'http://10.41.3.232:501/api/IncidentManagement/v1/UpdateDescriptionAndAttachment'
+const IncidentDescriptionAndAttachmentsUrl =
+  'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentDescriptionAndAttachments'
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -980,5 +982,22 @@ export const fetchUpdateDescriptionAndAttachmentUrl = async (data) => {
     return await response.json()
   } catch (err) {
     console.error('API call failed:', err)
+  }
+}
+export const fetchIncidentDescriptionAndAttachmentsUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${IncidentDescriptionAndAttachmentsUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
   }
 }

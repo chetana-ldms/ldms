@@ -50,6 +50,24 @@ const ForwardModal = ({show, onHide, incidentData, onForward}) => {
       notifyFail('All required fields must be filled')
       return
     }
+    const extractEmail = (text) => {
+      if (!text) return null
+      const match = text.match(/<?([\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})>?/)
+      return match ? match[1] : null
+    }
+    const fromEmailsRaw = Array.isArray(incidentData?.toEmails)
+      ? incidentData.toEmails
+      : incidentData?.toEmails
+      ? [incidentData.toEmails]
+      : incidentData?.incidentEmail
+      ? [incidentData.incidentEmail]
+      : []
+    const fromEmails = fromEmailsRaw.map((item) => extractEmail(item)).filter((email) => !!email)
+    if (fromEmails.length === 0) {
+      notifyFail('From email is required before sending the reply')
+      setLoading(false)
+      return
+    }
     const {cleanedHtml, attachments: inlineAttachments} = processHtmlWithInlineImages(message)
     const previousConversations = quotedText ? [quotedText] : []
     const previousConversationsAttachments = quotedAttachments?.length
@@ -100,6 +118,7 @@ const ForwardModal = ({show, onHide, incidentData, onForward}) => {
           ...baseData,
           includeOriginalAttachments,
           includePreviousConversations,
+          FromEmails: fromEmails,
           attachments: [...attachments.map((f) => ({file: f})), ...inlineAttachments],
           PreviousConversations: previousConversations,
           PreviousConversations_Attachments: previousConversationsAttachments.map(
