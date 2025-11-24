@@ -54,6 +54,8 @@ const UpdateDescriptionAndAttachmentUrl =
   'http://10.41.3.232:501/api/IncidentManagement/v1/UpdateDescriptionAndAttachment'
 const IncidentDescriptionAndAttachmentsUrl =
   'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentDescriptionAndAttachments'
+const IncidentConversationWithoutAttachmentsUrl =
+  'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentConversationWithoutAttachments'
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -995,6 +997,23 @@ export const fetchIncidentDescriptionAndAttachmentsUrl = async (data) => {
         ...data,
       }),
     })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchIncidentConversationWithoutAttachmentsUrl = async (orgId, ToolId, incidentid) => {
+  try {
+    const response = await FetchWithToken(
+      `${IncidentConversationWithoutAttachmentsUrl}?orgid=${orgId}&toolid=${ToolId}&incidentid=${incidentid}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
     const responseData = await response.json()
     return responseData
   } catch (error) {
