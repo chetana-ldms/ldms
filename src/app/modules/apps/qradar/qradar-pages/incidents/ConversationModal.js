@@ -3,9 +3,10 @@ import {Modal, Button, Accordion} from 'react-bootstrap'
 import {
   fetchIncidentConversationDeleteUrl,
   fetchIncidentConversationUrl,
+  fetchIncidentConversationWithoutAttachmentsUrl,
 } from '../../../../../api/IncidentsApi'
 import ForwardModal from './ForwardModal'
-import ReplyModal from './ReplyModal'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
 
 const ConversationModal = ({show, onClose, incidentData}) => {
   const {orgId, toolId, incidentID} = incidentData || {}
@@ -13,58 +14,50 @@ const ConversationModal = ({show, onClose, incidentData}) => {
   const [showForwardModal, setShowForwardModal] = useState(false)
   const [showReplyModal, setShowReplyModal] = useState(false)
   const [selectedConversationId, setSelectedConversationId] = useState(null)
-
-  const loadConversation = async () => {
+  const [loading, setLoading] = useState(false)
+  const loadConversationWithoutAttachments = async () => {
     try {
+      setLoading(true)
       setConversation([])
-      const response = await fetchIncidentConversationUrl(orgId, toolId, incidentID)
-      if (response?.isSuccess) {
-        setConversation(response?.conversations || [])
+      const res = await fetchIncidentConversationWithoutAttachmentsUrl(orgId, toolId, incidentID)
+
+      if (res?.isSuccess) {
+        setConversation(res?.conversations || [])
       } else {
-        console.error('API failed:', response?.message)
-        setConversation([])
+        console.error('API failed:', res?.message)
       }
-    } catch (error) {
-      console.error('Error fetching conversation:', error)
-      setConversation([])
+    } catch (err) {
+      console.error('Error loading conv without attachments:', err)
+    } finally {
+      setLoading(false)
     }
   }
 
-  useEffect(() => {
-    if (show && orgId && toolId && incidentID) {
-      loadConversation()
-    }
-  }, [show, orgId, toolId, incidentID])
-
-  const handleDeleteTrail = async (conversationId) => {
-    if (!conversationId) return
+  // -------------------------------
+  // STEP 2: Load attachments for each conversation (one-by-one)
+  // -------------------------------
+  const progressivelyLoadAttachments = async () => {
     try {
-      const payload = {orgId, toolId, conversationId}
-      const response = await fetchIncidentConversationDeleteUrl(payload)
-      if (response?.isSuccess) {
-        await loadConversation()
-      } else {
-        console.error('Delete failed:', response?.message)
+      const res = await fetchIncidentConversationUrl(orgId, toolId, incidentID)
+
+      if (!res?.isSuccess) return
+
+      const fullList = res?.conversations || []
+
+      // Load attachments one-by-one
+      for (let item of fullList) {
+        setConversation((prev) =>
+          prev.map((conv) =>
+            conv.id === item.id ? {...conv, attachmentsInBase64: item.attachmentsInBase64} : conv
+          )
+        )
+
+        await new Promise((r) => setTimeout(r, 300)) // 300ms delay for smooth loading
       }
-    } catch (error) {
-      console.error('Error deleting conversation trail:', error)
+    } catch (err) {
+      console.error('Error loading attachments:', err)
     }
   }
-
-  const handleEditTrail = (mailId) => {}
-
-  const handleForwardTrail = (trailId) => {
-    setSelectedConversationId(trailId)
-    incidentData.replyForward = false
-    setShowForwardModal(true)
-  }
-
-  const handleReplyTrail = (trailId) => {
-    setSelectedConversationId(trailId)
-    incidentData.replyForward = true
-    setShowForwardModal(true)
-  }
-
   const formatDateTime = (dateString) => {
     const date = new Date(dateString)
     const now = new Date()
@@ -87,17 +80,56 @@ const ConversationModal = ({show, onClose, incidentData}) => {
       year: 'numeric',
     })
   }
+  // -------------------------------
+  // Combined loader
+  // -------------------------------
+  const loadConversation = async () => {
+    await loadConversationWithoutAttachments() // Step 1
+    progressivelyLoadAttachments() // Step 2 (async background)
+  }
 
+  useEffect(() => {
+    if (show && orgId && toolId && incidentID) {
+      loadConversation()
+    }
+  }, [show, orgId, toolId, incidentID])
+
+  // --------------------------------------
+  // DELETE HANDLER (unchanged)
+  // --------------------------------------
+  const handleDeleteTrail = async (conversationId) => {
+    try {
+      const payload = {orgId, toolId, conversationId}
+      const response = await fetchIncidentConversationDeleteUrl(payload)
+      if (response?.isSuccess) loadConversation()
+    } catch (err) {
+      console.error('Delete failed:', err)
+    }
+  }
+
+  const handleForwardTrail = (trailId) => {
+    setSelectedConversationId(trailId)
+    incidentData.replyForward = false
+    setShowForwardModal(true)
+  }
+
+  const handleReplyTrail = (trailId) => {
+    setSelectedConversationId(trailId)
+    incidentData.replyForward = true
+    setShowForwardModal(true)
+  }
   const getMailBackgroundClass = (mail) => {
     if (mail.incoming === true) return 'bg-white border'
     if (mail.incoming === false && mail.private === false) return 'bg-primary bg-opacity-10'
     if (mail.incoming === false && mail.private === true) return 'bg-warning bg-opacity-25'
     return 'bg-info bg-opacity-25'
   }
+  // --------------------------------------
+  // RENDERER PART (keep your existing code)
+  // --------------------------------------
 
   const renderHtmlWithInlineImages = (htmlContent, attachmentsInBase64) => {
     if (!htmlContent) return {__html: ''}
-
     let processedHtml = htmlContent
 
     if (Array.isArray(attachmentsInBase64)) {
@@ -113,7 +145,6 @@ const ConversationModal = ({show, onClose, incidentData}) => {
 
     const parser = new DOMParser()
     const doc = parser.parseFromString(processedHtml, 'text/html')
-
     doc.querySelectorAll('img').forEach((img) => {
       img.style.maxWidth = '100%'
       img.style.height = 'auto'
@@ -133,13 +164,16 @@ const ConversationModal = ({show, onClose, incidentData}) => {
         byteNumbers[i] = byteCharacters.charCodeAt(i)
       }
       const byteArray = new Uint8Array(byteNumbers)
-      const blob = new Blob([byteArray], {type: att.fileType || 'application/octet-stream'})
+      const blob = new Blob([byteArray], {
+        type: att.fileType || 'application/octet-stream',
+      })
       return URL.createObjectURL(blob)
     } catch (err) {
-      console.error('Error decoding base64 for file:', att.fileName, err)
+      console.error('Error decoding base64:', err)
       return null
     }
   }
+  const handleEditTrail = (mailId) => {}
 
   return (
     <>
@@ -154,6 +188,7 @@ const ConversationModal = ({show, onClose, incidentData}) => {
           <Modal.Title>Conversation</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {loading && <UsersListLoading />}
           <div className='conversation-tab'>
             {conversation?.map((mail, index) => (
               <div
@@ -252,7 +287,10 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                                       <img
                                         src={fileUrl}
                                         alt={att.fileName}
-                                        style={{maxWidth: '200px', borderRadius: '5px'}}
+                                        style={{
+                                          maxWidth: '200px',
+                                          borderRadius: '5px',
+                                        }}
                                       />
                                       <div>
                                         <a href={fileUrl} download={att.fileName}>
@@ -323,7 +361,9 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                               </div>
                               <div
                                 className='mail-body'
-                                dangerouslySetInnerHTML={{__html: trail.htmlCurrent}}
+                                dangerouslySetInnerHTML={{
+                                  __html: trail.htmlCurrent,
+                                }}
                               />
                               {Array.isArray(trail?.attachments) && trail?.attachments.length > 0 && (
                                 <div className='mt-2'>
@@ -359,7 +399,10 @@ const ConversationModal = ({show, onClose, incidentData}) => {
       <ForwardModal
         show={showForwardModal}
         onHide={() => setShowForwardModal(false)}
-        incidentData={{...incidentData, conversationId: selectedConversationId}}
+        incidentData={{
+          ...incidentData,
+          conversationId: selectedConversationId,
+        }}
         onForward={loadConversation}
       />
     </>

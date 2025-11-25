@@ -17,6 +17,7 @@ import Select from 'react-select'
 import PlaceholdersModal from './PlaceholdersModal'
 import RichTextEditor from '../../../../../../../utils/RichTextEditor'
 import {processHtmlWithInlineImages} from '../../incidents/processHtmlWithInlineImages'
+import { UsersListLoading } from '../loading/UsersListLoading'
 
 const UpdateTemplates = () => {
   const {showBoundary} = useErrorBoundary()
@@ -63,52 +64,48 @@ const UpdateTemplates = () => {
     }
     return new File([ab], fileName, {type: contentType})
   }
-const didInitMatch = useRef(false)
+  const didInitMatch = useRef(false)
 
-useEffect(() => {
-  if (!tools || folderOptions.length === 0 || groupOptions.length === 0) return
-  if (didInitMatch.current) return
-  didInitMatch.current = true
-  const data = tools
-  if (data.scopeName) {
-    setAvailableFor(data.scopeName)
-  }
-  if (data.scopeTemplateGroupId) {
-    const matchedFolder = folderOptions.find(
-      (f) => f.masterId === data.scopeTemplateGroupId
+  useEffect(() => {
+    if (!tools || folderOptions.length === 0 || groupOptions.length === 0) return
+    if (didInitMatch.current) return
+    didInitMatch.current = true
+    const data = tools
+    if (data.scopeName) {
+      setAvailableFor(data.scopeName)
+    }
+    if (data.scopeTemplateGroupId) {
+      const matchedFolder = folderOptions.find((f) => f.masterId === data.scopeTemplateGroupId)
+      if (matchedFolder) setSelectedFolder(matchedFolder)
+    }
+    /** ----- Agents Group Match ----- **/
+    if (data.scopeName === 'agents in group' && Array.isArray(data.scopeValue)) {
+      const matchedAgentGroups = groupOptions.filter((g) => data.scopeValue.includes(g.groupId))
+      setSelectedAgentGroups(matchedAgentGroups)
+    }
+    /** ----- Type Match ----- **/
+    const matchedType = types.find(
+      (t) => t.templateTypeId === data.templateTypeId || t.masterId === data.templateTypeId
     )
-    if (matchedFolder) setSelectedFolder(matchedFolder)
-  }
-  /** ----- Agents Group Match ----- **/
-  if (data.scopeName === 'agents in group' && Array.isArray(data.scopeValue)) {
-    const matchedAgentGroups = groupOptions.filter((g) =>
-      data.scopeValue.includes(g.groupId)
+    if (matchedType) {
+      setSelectedType({
+        label: matchedType.displayName,
+        value: matchedType.templateTypeId,
+        masterId: matchedType.masterId,
+      })
+    }
+    /** ----- Group Match ----- **/
+    const matchedGroup = groups.find(
+      (g) => g.templateGroupId === data.groupId || g.masterId === data.groupId
     )
-    setSelectedAgentGroups(matchedAgentGroups)
-  }
-  /** ----- Type Match ----- **/
-  const matchedType = types.find(
-    (t) => t.templateTypeId === data.templateTypeId || t.masterId === data.templateTypeId
-  )
-  if (matchedType) {
-    setSelectedType({
-      label: matchedType.displayName,
-      value: matchedType.templateTypeId,
-      masterId: matchedType.masterId,
-    })
-  }
-  /** ----- Group Match ----- **/
-  const matchedGroup = groups.find(
-    (g) => g.templateGroupId === data.groupId || g.masterId === data.groupId
-  )
-  if (matchedGroup) {
-    setSelectedAgentGroups({
-      label: matchedGroup.displayName,
-      value: matchedGroup.templateGroupId,
-      masterId: matchedGroup.masterId,
-    })
-  }
-}, [tools, folderOptions, groupOptions, types, groups])
+    if (matchedGroup) {
+      setSelectedAgentGroups({
+        label: matchedGroup.displayName,
+        value: matchedGroup.templateGroupId,
+        masterId: matchedGroup.masterId,
+      })
+    }
+  }, [tools, folderOptions, groupOptions, types, groups])
   useEffect(() => {
     const init = async () => {
       setLoading(true)
@@ -203,38 +200,35 @@ useEffect(() => {
       setPlaceholders([])
     }
   }
-const handleSelectPlaceholders = (selected) => {
-  // Allow duplicates — just append all
-  const newPlaceholders = Array.isArray(selected) ? selected : [selected]
+  const handleSelectPlaceholders = (selected) => {
+    // Allow duplicates — just append all
+    const newPlaceholders = Array.isArray(selected) ? selected : [selected]
 
-  // Add to list (duplicates allowed)
-  setSelectedPlaceholders((prev) => [...prev, ...newPlaceholders])
+    // Add to list (duplicates allowed)
+    setSelectedPlaceholders((prev) => [...prev, ...newPlaceholders])
 
-  // Add all placeholder texts into the editor content
-  const toAdd = newPlaceholders.map((p) => p.placeholderTag).join(' ')
-  setMessage((prev) => (prev ? `${prev} ${toAdd}` : toAdd))
+    // Add all placeholder texts into the editor content
+    const toAdd = newPlaceholders.map((p) => p.placeholderTag).join(' ')
+    setMessage((prev) => (prev ? `${prev} ${toAdd}` : toAdd))
 
-  setShowModal(false)
-}
+    setShowModal(false)
+  }
 
-const removePlaceholder = (index) => {
-  const removed = selectedPlaceholders[index]
-  if (!removed) return
+  const removePlaceholder = (index) => {
+    const removed = selectedPlaceholders[index]
+    if (!removed) return
 
-  // Remove only that specific badge from list (by index, not text)
-  const updated = selectedPlaceholders.filter((_, i) => i !== index)
-  setSelectedPlaceholders(updated)
+    // Remove only that specific badge from list (by index, not text)
+    const updated = selectedPlaceholders.filter((_, i) => i !== index)
+    setSelectedPlaceholders(updated)
 
-  // Remove only ONE occurrence from editor content, not all duplicates
-  setMessage((prev) => {
-    const idx = prev.indexOf(removed.placeholderTag)
-    if (idx === -1) return prev // not found
-    return (
-      prev.slice(0, idx) +
-      prev.slice(idx + removed.placeholderTag.length)
-    ).trim()
-  })
-}
+    // Remove only ONE occurrence from editor content, not all duplicates
+    setMessage((prev) => {
+      const idx = prev.indexOf(removed.placeholderTag)
+      if (idx === -1) return prev // not found
+      return (prev.slice(0, idx) + prev.slice(idx + removed.placeholderTag.length)).trim()
+    })
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -354,6 +348,7 @@ const removePlaceholder = (index) => {
 
   return (
     <div className='config card'>
+      {loading && <UsersListLoading />}
       <ToastContainer />
       <div className='card-header bg-heading d-flex justify-content-between align-items-center'>
         <h3 className='card-title white mb-1'>{save ? 'View Template' : 'Update Template'}</h3>
