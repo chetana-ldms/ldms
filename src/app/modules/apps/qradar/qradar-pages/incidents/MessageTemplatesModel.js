@@ -225,7 +225,7 @@ const MessageTemplatesModal = ({
                     className='text-dark lh-base mb-3'
                     style={{whiteSpace: 'pre-wrap', fontSize: '0.95rem'}}
                   >
-                    {tpl.content}
+                    {tpl.contentText}
                   </div>
 
                   <div className='d-flex justify-content-end gap-2'>
@@ -248,7 +248,7 @@ const MessageTemplatesModal = ({
                       size='sm'
                       onClick={(e) => {
                         e.stopPropagation()
-                        handleFetchTemplateProcess(tpl.templateId, false, tpl.content)
+                        handleFetchTemplateProcess(tpl.templateId, false, tpl.contentText)
                       }}
                     >
                       Select Template

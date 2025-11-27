@@ -48,11 +48,18 @@ const ConversationModal = ({show, onClose, incidentData}) => {
       for (let item of fullList) {
         setConversation((prev) =>
           prev.map((conv) =>
-            conv.id === item.id ? {...conv, attachmentsInBase64: item.attachmentsInBase64} : conv
+            conv.id === item.id
+              ? {
+                  ...conv,
+                  bodyText: null, // ← REMOVE PHASE-1 DATA
+                  htmlCurrent: item.htmlCurrent, // ← UPDATE HTML
+                  attachmentsInBase64: item.attachmentsInBase64,
+                }
+              : conv
           )
         )
 
-        await new Promise((r) => setTimeout(r, 300)) // 300ms delay for smooth loading
+        await new Promise((r) => setTimeout(r, 300))
       }
     } catch (err) {
       console.error('Error loading attachments:', err)
@@ -262,10 +269,11 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                   )}
                   <div
                     className='mail-body'
-                    dangerouslySetInnerHTML={renderHtmlWithInlineImages(
-                      mail.htmlCurrent,
-                      mail.attachmentsInBase64
-                    )}
+                    dangerouslySetInnerHTML={
+                      mail.bodyText
+                        ? {__html: mail.bodyText} // Show bodyText when available
+                        : renderHtmlWithInlineImages(mail.htmlCurrent, mail.attachmentsInBase64) // Otherwise show HTML
+                    }
                   />
 
                   {/* ✅ Fixed attachment rendering with getFileUrl() */}
@@ -361,10 +369,13 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                               </div>
                               <div
                                 className='mail-body'
-                                dangerouslySetInnerHTML={{
-                                  __html: trail.htmlCurrent,
-                                }}
+                                dangerouslySetInnerHTML={
+                                  trail.bodyText
+                                    ? {__html: trail.bodyText}
+                                    : {__html: trail.htmlCurrent}
+                                }
                               />
+
                               {Array.isArray(trail?.attachments) && trail?.attachments.length > 0 && (
                                 <div className='mt-2'>
                                   <strong>Attachments:</strong>
