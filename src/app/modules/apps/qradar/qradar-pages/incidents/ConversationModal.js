@@ -100,13 +100,15 @@ const ConversationModal = ({show, onClose, incidentData}) => {
       loadConversation()
     }
   }, [show, orgId, toolId, incidentID])
-
-  // --------------------------------------
-  // DELETE HANDLER (unchanged)
-  // --------------------------------------
   const handleDeleteTrail = async (conversationId) => {
     try {
-      const payload = {orgId, toolId, conversationId}
+      const payload = {
+        orgId,
+        toolId,
+        conversationId,
+        deleteUserId: Number(sessionStorage.getItem('userId')),
+        deletedDate: new Date().toISOString(),
+      }
       const response = await fetchIncidentConversationDeleteUrl(payload)
       if (response?.isSuccess) loadConversation()
     } catch (err) {

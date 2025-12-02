@@ -552,14 +552,17 @@ export const fetchSearchIncidentTagsUrl = async (orgId, ToolId, keyword) => {
 export const fetchForwardIncidentUrl = async (data) => {
   try {
     const formData = new FormData()
-    formData.append('ForwardDateTime', data.replyDateTime)
+    formData.append('ForwardDateTime', data.forwardDateTime)
     formData.append('UserId', data.userId)
     formData.append('IncidentId', data.incidentId)
     formData.append('ToolId', data.toolId)
     formData.append('OrgId', data.orgId)
     formData.append('PreviousConversations', data.PreviousConversations)
     formData.append('FromEmails', data.FromEmails)
-    formData.append('Email', data.Email)
+    formData.append('ToEmails', data.email)
+    formData.append('Subject', data.Subject)
+    formData.append('IncludeOriginalAttachments', data.includeOriginalAttachments)
+    formData.append('IncludePreviousConversations', data.includePreviousConversations)
 
     // ✅ Handle Previous Conversation Attachments properly
     if (data.PreviousConversations_Attachments?.length) {
@@ -599,7 +602,7 @@ export const fetchForwardIncidentUrl = async (data) => {
       })
     }
 
-    formData.append('BodyHtml', data.notes)
+    formData.append('BodyHtml', data.body)
 
     const response = await fetch(ForwardIncidentUrl, {
       method: 'POST',

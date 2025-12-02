@@ -41,7 +41,8 @@ const ForwardModal = ({show, onHide, incidentData, onForward}) => {
 
   const handleTemplateSelect = (templateHtml) => {
     if (templateHtml) {
-      setMessage((prev) => `${prev}<br/>${templateHtml}`)
+      setMessage((prev) => `${prev}<br/>${templateHtml?.html}`)
+      setAttachments((prev) => [...prev, ...(templateHtml?.attachments || [])])
     }
     setShowMessageTemplateModal(false)
   }
@@ -119,6 +120,7 @@ const ForwardModal = ({show, onHide, incidentData, onForward}) => {
           includeOriginalAttachments,
           includePreviousConversations,
           FromEmails: fromEmails,
+          Subject: incidentData?.subject,
           attachments: [...attachments.map((f) => ({file: f})), ...inlineAttachments],
           PreviousConversations: previousConversations,
           PreviousConversations_Attachments: previousConversationsAttachments.map(

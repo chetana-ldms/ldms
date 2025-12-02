@@ -43,7 +43,8 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
 
   const handleTemplateSelect = (templateHtml) => {
     if (templateHtml) {
-      setMessage((prev) => `${prev}<br/>${templateHtml}`)
+      setMessage((prev) => `${prev}<br/>${templateHtml?.html}`)
+      setAttachments((prev) => [...prev, ...(templateHtml?.attachments || [])])
     }
     setShowMessageTemplateModal(false)
   }
