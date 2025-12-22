@@ -3,6 +3,7 @@ import Select from 'react-select'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {
   fetchAlertsByAlertIds,
+  fetchDeleteIncidentsUrl,
   fetchGetIncidentHistory,
   fetchGroupUsersUrl,
   fetchIncidentDetails,
@@ -34,6 +35,7 @@ import Conversation from './Conversation'
 import ConversationModal from './ConversationModal'
 import DetailsModal from './DetailsModal '
 import {UsersListLoading} from '../components/loading/UsersListLoading'
+import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
 
 const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const handleError = useErrorBoundary()
@@ -60,7 +62,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const toolID = Number(sessionStorage.getItem('toolID'))
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
-
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const {featureActions} = useFeatureActions(orgId, toolID, roleId, featureId)
 
   const isActionAuthorized = (actionName) => {
@@ -131,7 +133,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     incidentTags: [],
     replyCCEmails: [],
     toEmails: [],
-    attachmentsInBase64:[],
+    attachmentsInBase64: [],
   })
   console.log(incidentData, 'incidentDataTest')
   const [selectedAlertId, setSelectedAlertId] = useState(null)
@@ -247,7 +249,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
           incidentTags: [],
           replyCCEmails: [],
           toEmails: [],
-          attachmentsInBase64:[],
+          attachmentsInBase64: [],
         })
         return // Exit the function early
       }
@@ -607,6 +609,39 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
       incidentTags: (selected || []).map((tag) => tag.value),
     }))
   }
+  const handleDelete = () => {
+    setShowConfirmation(true)
+  }
+
+  const confirmDelete = async () => {
+    if (id) {
+      const data = {
+        orgId: orgId,
+        deletedIncidentIds: [Number(id)],
+        toolId: toolId,
+        deletedDate: new Date().toISOString(),
+        deleteUserId: Number(sessionStorage.getItem('userId')),
+      }
+
+      try {
+        const response = await fetchDeleteIncidentsUrl(data)
+        const {isSuccess, message} = response
+        if (isSuccess) {
+          notify(message)
+          onRefreshIncidents()
+        } else {
+          notifyFail(message)
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setShowConfirmation(false)
+      }
+    }
+  }
+  const cancelDelete = () => {
+    setShowConfirmation(false)
+  }
 
   return (
     <div className=''>
@@ -626,7 +661,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 >
                   <DropdownToggle className='no-pad'>
                     <div className='btn btn-border btn-small no-horizontal-padding'>
-                      Action <i className='fa fa-angle-down' />
+                      <span className='text-black'>Action</span> <i className='fa fa-angle-down' />
                     </div>
                   </DropdownToggle>
                   <DropdownMenu className='w-auto'>
@@ -644,6 +679,9 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                       disabled={!isActionAuthorized('SendMail')}
                     >
                       Send Mail
+                    </DropdownItem>
+                    <DropdownItem onClick={handleDelete} disabled={!isActionAuthorized('Delete')}>
+                      Delete
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
@@ -1352,6 +1390,13 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   fetchNotes={fetchNotes}
                   id={id}
                 />
+                {showConfirmation && (
+                  <DeleteConfirmation
+                    show={showConfirmation}
+                    onConfirm={confirmDelete}
+                    onCancel={cancelDelete}
+                  />
+                )}
               </div>
             </div>
           </div>

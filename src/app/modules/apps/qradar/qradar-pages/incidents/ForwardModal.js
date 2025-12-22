@@ -107,7 +107,7 @@ const ForwardModal = ({show, onHide, incidentData, onForward}) => {
         })
       } else if (incidentData?.conversationId) {
         // 🔹 Conversation-specific forward API
-        response = await fetchIncidentConversationForwardUrl({
+        response = await fetchForwardIncidentUrl({
           ...baseData,
           includeOriginalAttachments,
           includePreviousConversations,
