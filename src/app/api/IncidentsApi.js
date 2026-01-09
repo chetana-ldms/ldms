@@ -56,6 +56,8 @@ const IncidentDescriptionAndAttachmentsUrl =
   'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentDescriptionAndAttachments'
 const IncidentConversationWithoutAttachmentsUrl =
   'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentConversationWithoutAttachments'
+  const NotesDetailsUrl ="http://10.41.3.232:501/api/IncidentManagement/v1/Notes/Details"
+  const NotesDeleteUrl ="http://10.41.3.232:501/api/IncidentManagement/v1/Notes/Delete"
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -308,38 +310,63 @@ export const fetchIncidentNotesListUrl = async (incidentID) => {
 }
 export const fetchIncidentNotesAddUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${IncidentNotesAddUrl}`, {
+    const formData = new FormData()
+    formData.append('IncidentId', data.IncidentId)
+    formData.append('IsPriviate', data.IsPriviate)
+    formData.append('CreateUserId', data.CreateUserId)
+    formData.append('CreatedDate', data.CreatedDate)
+    data.NotifyEmails?.forEach((email) => formData.append('NotifyEmails', email))
+    if (data.attachments?.length) {
+      data.attachments.forEach((att) => {
+        if (att.contentId) {
+          formData.append('Attachments', att.file, att.file.name)
+          formData.append('ContentIds', att.contentId)
+        } else {
+          formData.append('Attachments', att.file || att)
+        }
+      })
+    }
+
+    formData.append('NotesHtmlContent', data.NotesHtmlContent)
+
+    const response = await fetch(IncidentNotesAddUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...data,
-      }),
+      body: formData,
     })
 
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.log(error)
+    return await response.json()
+  } catch (err) {
+    console.error('API call failed:', err)
   }
 }
 export const fetchIncidentNotesUpdateUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${IncidentNotesUpdateUrl}`, {
+    const formData = new FormData()
+    formData.append('IncidentId', data.IncidentId)
+    formData.append('IncidentNotesId', data.IncidentNotesId)
+    formData.append('ModifiedUserId', data.ModifiedUserId)
+    formData.append('ModifiedDate', data.ModifiedDate)
+    if (data.attachments?.length) {
+      data.attachments.forEach((att) => {
+        if (att.contentId) {
+          formData.append('Attachments', att.file, att.file.name)
+          formData.append('ContentIds', att.contentId)
+        } else {
+          formData.append('Attachments', att.file || att)
+        }
+      })
+    }
+
+    formData.append('NotesHtmlContent', data.NotesHtmlContent)
+
+    const response = await fetch(IncidentNotesUpdateUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...data,
-      }),
+      body: formData,
     })
 
-    const responseData = await response.json()
-    return responseData
-  } catch (error) {
-    console.log(error)
+    return await response.json()
+  } catch (err) {
+    console.error('API call failed:', err)
   }
 }
 export const fetchOrganizationToolsDetailsUrl = async (orgid) => {
@@ -1017,6 +1044,38 @@ export const fetchIncidentConversationWithoutAttachmentsUrl = async (orgId, Tool
         },
       }
     )
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchNotesDetailsUrl = async (incidentNotesId) => {
+  try {
+    const response = await FetchWithToken(`${NotesDetailsUrl}?incidentnoteid=${incidentNotesId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const fetchNotesDeleteUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${NotesDeleteUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
     const responseData = await response.json()
     return responseData
   } catch (error) {

@@ -1,0 +1,12 @@
+.note-content {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.note-content.collapsed {
+  max-height: 200px; /* ~10 lines */
+}
+
+.note-content.expanded {
+  max-height: 2000px;
+}

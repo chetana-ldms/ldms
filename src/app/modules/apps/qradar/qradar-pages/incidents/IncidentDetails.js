@@ -36,6 +36,7 @@ import ConversationModal from './ConversationModal'
 import DetailsModal from './DetailsModal '
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
+import NotesListModalComponent from './NotesListModalComponent'
 
 const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const handleError = useErrorBoundary()
@@ -81,15 +82,12 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const [incidentHistory, setIncidentHistory] = useState([])
   const [alertsList, setAlertsList] = useState({})
   const [ldp_security_user, setldp_security_user] = useState([])
+  const [showNotesList, setShowNotesList] = useState(false)
   const [tagOptions, setTagOptions] = useState([])
   const [selectedTags, setSelectedTags] = useState([])
   const [incidentCreatorRole, setIncidentCreatorRole] = useState([])
   const [incidentGroup, setIncidentGroup] = useState([])
   const [incidentProducts, setIncidentProducts] = useState([])
-  const [notes, setNotes] = useState([])
-  const [modalVisible, setModalVisible] = useState(false)
-  const [modalMode, setModalMode] = useState('add')
-  const [selectedNote, setSelectedNote] = useState(null)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [incidentData, setIncidentData] = useState({
@@ -330,26 +328,12 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     const resolvedId = id !== undefined && id !== null ? id : 0
     fetchData(resolvedId)
   }, [id])
-  const fetchNotes = async (id) => {
-    if (!id) {
-      setNotes([]) // Clear notes if no id
-      return
-    }
-    try {
-      const result = await fetchIncidentNotesListUrl(id)
-      setNotes(Array.isArray(result) ? result : []) // Always set notes, even if empty
-    } catch (error) {
-      setNotes([]) // Clear notes on error
-      handleError(error)
-    }
+  const stripHtml = (html) => {
+    if (!html) return ''
+    const tempDiv = document.createElement('div')
+    tempDiv.innerHTML = html
+    return tempDiv.textContent || tempDiv.innerText || ''
   }
-
-  useEffect(() => {
-    setNotes([]) // Clear notes when incident changes
-    if (id) {
-      fetchNotes(id)
-    }
-  }, [id])
 
   const handleChange = (event, field) => {
     const selectedId = event.target.options
@@ -541,23 +525,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const handleAlert = (alertId) => {
     setSelectedAlertId(alertId)
     setSelectedAlertPopUp(true)
-  }
-  const handleAddNotesClick = () => {
-    setModalMode('add')
-    setSelectedNote(null)
-    setModalVisible(true)
-  }
-
-  const handleViewClick = (note) => {
-    setModalMode('view')
-    setSelectedNote(note)
-    setModalVisible(true)
-  }
-
-  const handleEditClick = (note) => {
-    setModalMode('edit')
-    setSelectedNote(note)
-    setModalVisible(true)
   }
   const handleReply = () => {
     setShowReplyModal(true)
@@ -773,13 +740,14 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   Timeline
                 </a>
               </li>
-
               <li className='nav-item'>
                 <a
-                  className={`nav-link ${activeTab === 'notes' ? 'active' : ''}`}
-                  data-bs-toggle='tab'
-                  href='#kt_tab_pane_6'
-                  onClick={() => setActiveTab('notes')}
+                  className='nav-link'
+                  href='#'
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setShowNotesList(true)
+                  }}
                 >
                   Notes
                 </a>
@@ -819,6 +787,11 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
               show={showDetailsModal}
               onClose={() => setShowDetailsModal(false)}
               incidentData={incidentData}
+            />
+            <NotesListModalComponent
+              show={showNotesList}
+              id={id}
+              onClose={() => setShowNotesList(false)}
             />
             <div className='tab-content scroll-y h-600px' id='myTabContent'>
               <div
@@ -1328,75 +1301,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     </tbody>
                   </table>
                 </div>
-              </div>
-              <div className='tab-pane fade' id='kt_tab_pane_6' role='tabpanel'>
-                {id && (
-                  <div className='d-flex justify-content-end mb-1'>
-                    <button
-                      className='btn btn-primary btn-sm'
-                      title='Add Note'
-                      onClick={handleAddNotesClick}
-                    >
-                      <i className='fa fa-plus ms-0' /> Add Note
-                    </button>
-                  </div>
-                )}
-
-                <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
-                  <thead>
-                    <tr className='fw-bold text-muted bg-blue'>
-                      <th className='min-w-50px'>User</th>
-                      <th className='min-w-50px'>Date</th>
-                      <th className='min-w-50px'>Notes</th>
-                      <th className='min-w-50px'>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Array.isArray(notes) && notes.length > 0 ? (
-                      notes.map((note) => (
-                        <tr key={note.incidentId} className='table-row'>
-                          <td>{note.createdUser || 'N/A'}</td>
-                          <td>{getCurrentTimeZone(note.createdDate) || 'N/A'}</td>
-                          <td>{note.notes || 'N/A'}</td>
-                          <td>
-                            <div className='d-flex'>
-                              <span>
-                                <i
-                                  className='fa fa-eye cursor me-2'
-                                  onClick={() => handleViewClick(note)}
-                                />
-                              </span>
-                              <span>
-                                <i className='fa fa-pencil' onClick={() => handleEditClick(note)} />
-                              </span>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan='4' className='text-center text-muted'>
-                          No data found
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-                <NotesModalComponent
-                  show={modalVisible}
-                  mode={modalMode}
-                  noteData={selectedNote}
-                  onClose={() => setModalVisible(false)}
-                  fetchNotes={fetchNotes}
-                  id={id}
-                />
-                {showConfirmation && (
-                  <DeleteConfirmation
-                    show={showConfirmation}
-                    onConfirm={confirmDelete}
-                    onCancel={cancelDelete}
-                  />
-                )}
               </div>
             </div>
           </div>

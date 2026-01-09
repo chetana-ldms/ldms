@@ -11,6 +11,7 @@ import {UsersListLoading} from '../components/loading/UsersListLoading'
 const ConversationModal = ({show, onClose, incidentData}) => {
   const {orgId, toolId, incidentID} = incidentData || {}
   const [conversation, setConversation] = useState([])
+  console.log(conversation, "conversation")
   const [showForwardModal, setShowForwardModal] = useState(false)
   const [showReplyModal, setShowReplyModal] = useState(false)
   const [selectedConversationId, setSelectedConversationId] = useState(null)
@@ -161,7 +162,6 @@ const ConversationModal = ({show, onClose, incidentData}) => {
 
     return {__html: doc.body.innerHTML}
   }
-
   const getFileUrl = (att) => {
     const base64Content = att.data || att.fileContent || att.content || ''
     if (!base64Content) return null
@@ -277,8 +277,6 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                         : renderHtmlWithInlineImages(mail.htmlCurrent, mail.attachmentsInBase64) // Otherwise show HTML
                     }
                   />
-
-                  {/* ✅ Fixed attachment rendering with getFileUrl() */}
                   {Array.isArray(mail.attachmentsInBase64) &&
                     mail.attachmentsInBase64.some((att) => !att.isInline) && (
                       <div className='mt-3'>
@@ -334,7 +332,6 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                         </ul>
                       </div>
                     )}
-
                   {Array.isArray(mail.conversationMailTrailData) &&
                     mail.conversationMailTrailData.length > 0 && (
                       <Accordion className='mt-3'>
@@ -377,7 +374,6 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                                     : {__html: trail.htmlCurrent}
                                 }
                               />
-
                               {Array.isArray(trail?.attachments) && trail?.attachments.length > 0 && (
                                 <div className='mt-2'>
                                   <strong>Attachments:</strong>
