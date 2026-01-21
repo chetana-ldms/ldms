@@ -56,8 +56,10 @@ const IncidentDescriptionAndAttachmentsUrl =
   'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentDescriptionAndAttachments'
 const IncidentConversationWithoutAttachmentsUrl =
   'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentConversationWithoutAttachments'
-  const NotesDetailsUrl ="http://10.41.3.232:501/api/IncidentManagement/v1/Notes/Details"
-  const NotesDeleteUrl ="http://10.41.3.232:501/api/IncidentManagement/v1/Notes/Delete"
+const NotesDetailsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/Notes/Details'
+const NotesDeleteUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/Notes/Delete'
+const IncidenttNotesByIncidentByConversationIdUrl =
+  'http://10.41.3.232:501/api/IncidentManagement/v1/Notes/IncidenttNotesByIncidentByConversationId'
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -1078,6 +1080,25 @@ export const fetchNotesDeleteUrl = async (data) => {
     })
     const responseData = await response.json()
     return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const fetchIncidenttNotesByIncidentByConversationIdUrl = async (ConversationId) => {
+  try {
+    const response = await FetchWithToken(
+      `${IncidenttNotesByIncidentByConversationIdUrl}?ConversationId=${ConversationId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    const responseData = await response.json()
+    const incidentNotes = responseData.incidentNotes
+    return incidentNotes
   } catch (error) {
     console.log(error)
   }

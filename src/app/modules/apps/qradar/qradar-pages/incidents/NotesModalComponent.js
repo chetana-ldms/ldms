@@ -5,17 +5,28 @@ import {
   fetchIncidentNotesAddUrl,
   fetchIncidentNotesUpdateUrl,
   fetchNotesDetailsUrl,
+  fetchIncidenttNotesByIncidentByConversationIdUrl,
 } from '../../../../../api/IncidentsApi'
 import AsyncCreatableSelect from 'react-select/async-creatable'
+import makeAnimated from 'react-select/animated'
 import {notify, notifyFail} from '../components/notification/Notification'
 import RichTextEditor from '../../../../../../utils/RichTextEditor'
-import makeAnimated from 'react-select/animated'
 import {processHtmlWithInlineImages} from './processHtmlWithInlineImages'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 
 const animatedComponents = makeAnimated()
 
-const NotesModalComponent = ({show, mode, noteData, onClose, incidentData, fetchNotes, id}) => {
+const NotesModalComponent = ({
+  show,
+  mode,
+  noteData,
+  onClose,
+  incidentData,
+  fetchNotes,
+  id,
+  conversationId,
+}) => {
+  console.log('conversationId from edit', conversationId)
   const userID = Number(sessionStorage.getItem('userId'))
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('incidentToolId'))
@@ -29,60 +40,82 @@ const NotesModalComponent = ({show, mode, noteData, onClose, incidentData, fetch
 
   /* -------------------- GROUP USERS -------------------- */
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchUsers = async () => {
       if (!orgId || !toolId) return
       try {
-        const response = await fetchGroupUsersUrl(orgId, toolId, incidentData?.groupId || 0)
-        setGroupUsers(Array.isArray(response?.usersList) ? response.usersList : [])
-      } catch (err) {
-        console.error(err)
+        const res = await fetchGroupUsersUrl(orgId, toolId, incidentData?.groupId || 0)
+        setGroupUsers(Array.isArray(res?.usersList) ? res.usersList : [])
+      } catch (e) {
+        console.error(e)
         setGroupUsers([])
       }
     }
-    fetchData()
+    fetchUsers()
   }, [orgId, toolId, incidentData?.groupId])
 
-  /* -------------------- NOTE DETAILS -------------------- */
+  /* -------------------- NOTE LOAD (EDIT / VIEW) -------------------- */
   useEffect(() => {
-    if ((mode === 'edit' || mode === 'view') && noteData?.incidentNotesId) {
-      fetchNoteDetails()
+    if (mode === 'edit' || mode === 'view') {
+      loadNoteDetails()
     } else {
-      setMessage('')
-      setAttachments([])
-      setNotifyList([])
-      setIsPrivate(true)
+      resetForm()
     }
-  }, [mode, noteData])
+  }, [mode, noteData, conversationId])
 
-  const fetchNoteDetails = async () => {
+  const resetForm = () => {
+    setMessage('')
+    setAttachments([])
+    setNotifyList([])
+    setIsPrivate(true)
+  }
+
+  const loadNoteDetails = async () => {
     try {
       setLoading(true)
 
-      const response = await fetchNotesDetailsUrl(noteData.incidentNotesId)
-      if (!response) return
+      let incidentNotesId = noteData?.incidentNotesId
 
-      const html = response?.incidentNotes?.notesHtmlContent || ''
+      // ✅ conversationId based fetch
+      if (conversationId) {
+        const convRes = await fetchIncidenttNotesByIncidentByConversationIdUrl(conversationId)
+        incidentNotesId = convRes?.incidentNotesId
+      }
 
-      const mappedAttachments =
-        response.attachmentsInBase64?.map((att) => ({
-          attachmentId: att.attachmentId,
-          name: att.fileName,
-          size: att.fileSize,
-          type: att.fileType,
-          filePath: att.filePath,
-          fromServer: true,
-          isInline: att.isInline,
-        })) || []
+      if (!incidentNotesId) {
+        return
+      }
 
-      setMessage(html)
-      setAttachments(mappedAttachments)
+      await fetchNoteDetailsById(incidentNotesId)
     } catch (err) {
       console.error(err)
-      notifyFail('Failed to load note details')
+      notifyFail('Failed to load note')
     } finally {
       setLoading(false)
     }
   }
+
+  const fetchNoteDetailsById = async (incidentNotesId) => {
+    const response = await fetchNotesDetailsUrl(incidentNotesId)
+    if (!response) return
+
+    const html = response?.incidentNotes?.notesHtmlContent || ''
+
+    const mappedAttachments =
+      response.attachmentsInBase64?.map((att) => ({
+        attachmentId: att.attachmentId,
+        name: att.fileName,
+        size: att.fileSize,
+        type: att.fileType,
+        filePath: att.filePath,
+        fromServer: true,
+        isInline: att.isInline,
+      })) || []
+
+    setMessage(html)
+    setAttachments(mappedAttachments)
+  }
+
+  /* -------------------- SAVE NOTE -------------------- */
   const handleSaveNote = async () => {
     try {
       if (!id || !message || message === '<p><br></p>') {
@@ -92,7 +125,7 @@ const NotesModalComponent = ({show, mode, noteData, onClose, incidentData, fetch
 
       const {cleanedHtml, attachments: inlineAttachments} = processHtmlWithInlineImages(message)
 
-      const allAttachments = [...attachments.map((f) => ({file: f})), ...inlineAttachments]
+      const finalAttachments = [...attachments.map((f) => ({file: f})), ...inlineAttachments]
 
       let response
 
@@ -103,7 +136,7 @@ const NotesModalComponent = ({show, mode, noteData, onClose, incidentData, fetch
           IsPriviate: isPrivate,
           CreateUserId: userID,
           CreatedDate: new Date().toISOString(),
-          attachments: allAttachments,
+          attachments: finalAttachments,
           NotifyEmails: notifyList.map((e) => e.value),
         })
       }
@@ -113,7 +146,7 @@ const NotesModalComponent = ({show, mode, noteData, onClose, incidentData, fetch
           IncidentNotesId: noteData?.incidentNotesId,
           IncidentId: id,
           NotesHtmlContent: cleanedHtml,
-          attachments: allAttachments,
+          attachments: finalAttachments,
           ModifiedUserId: userID,
           ModifiedDate: new Date().toISOString(),
         })
@@ -132,14 +165,17 @@ const NotesModalComponent = ({show, mode, noteData, onClose, incidentData, fetch
     }
   }
 
+  /* -------------------- HELPERS -------------------- */
   const loadEmailOptions = async (inputValue) =>
     groupUsers
       .filter((u) => u?.emailId?.toLowerCase().includes(inputValue.toLowerCase()))
       .map((u) => ({label: u.emailId, value: u.emailId}))
+
   const handleRemoveAttachment = (index) => {
     setAttachments((prev) => prev.filter((_, i) => i !== index))
   }
 
+  /* -------------------- UI -------------------- */
   return (
     <Modal show={show} onHide={onClose} className='addANoteModal application-modal'>
       <Modal.Header closeButton>
@@ -148,15 +184,11 @@ const NotesModalComponent = ({show, mode, noteData, onClose, incidentData, fetch
           {mode === 'edit' && 'Edit Note'}
           {mode === 'view' && 'View Note'}
         </Modal.Title>
-        <button type='button' class='application-modal-close' aria-label='Close'>
-          <i className='fa fa-close' />
-        </button>
       </Modal.Header>
 
       <Modal.Body>
         {loading && <UsersListLoading />}
 
-        {/* ✅ Notify To (ONLY ADD MODE) */}
         {mode === 'add' && (
           <Form.Group className='mb-3 row'>
             <Form.Label className='col-md-2'>Notify To</Form.Label>
@@ -177,23 +209,19 @@ const NotesModalComponent = ({show, mode, noteData, onClose, incidentData, fetch
             Message <sup className='red'>*</sup>
           </Form.Label>
 
-          {/* Attachments */}
-          {/* Attachments */}
           {attachments.length > 0 && (
             <div className='mb-2'>
               {attachments.map((f, i) => (
-                <div key={i} className='d-flex align-items-center justify-content-between'>
+                <div key={i} className='d-flex justify-content-between align-items-center'>
                   <a href={f.filePath} target='_blank' rel='noreferrer'>
                     {f.name}
                   </a>
 
-                  {/* ❌ Remove icon (not in view mode) */}
                   {mode !== 'view' && (
                     <Button
                       variant='link'
-                      className='text-danger p-0 ms-2'
+                      className='text-danger p-0'
                       onClick={() => handleRemoveAttachment(i)}
-                      title='Remove attachment'
                     >
                       ❌
                     </Button>
@@ -203,7 +231,6 @@ const NotesModalComponent = ({show, mode, noteData, onClose, incidentData, fetch
             </div>
           )}
 
-          {/* ✅ Private (ONLY ADD MODE) */}
           {mode === 'add' && (
             <div className='d-flex justify-content-end mb-2'>
               <Form.Check

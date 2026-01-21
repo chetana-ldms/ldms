@@ -4,16 +4,25 @@ import {
   fetchIncidentConversationDeleteUrl,
   fetchIncidentConversationUrl,
 } from '../../../../../api/IncidentsApi'
+
 import ForwardModal from './ForwardModal'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
+import DetailsModal from './DetailsModal '
+import NotesModalComponent from './NotesModalComponent'
 
 const ConversationModal = ({show, onClose, incidentData}) => {
   const {orgId, toolId, incidentID} = incidentData || {}
 
   const [conversation, setConversation] = useState([])
+  const [loading, setLoading] = useState(false)
+
   const [showForwardModal, setShowForwardModal] = useState(false)
   const [selectedConversationId, setSelectedConversationId] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [conversationId, setConversationId] = useState(null)
+  const [showNotesModal, setShowNotesModal] = useState(false)
+  const [showDetailsModal, setShowDetailsModal] = useState(false)
+  const [selectedMail, setSelectedMail] = useState(null)
+  console.log('selectedMail', selectedMail)
 
   /* ---------------- LOAD CONVERSATION ---------------- */
   const loadConversation = async () => {
@@ -22,11 +31,8 @@ const ConversationModal = ({show, onClose, incidentData}) => {
       setConversation([])
 
       const res = await fetchIncidentConversationUrl(orgId, toolId, incidentID)
-
       if (res?.isSuccess) {
         setConversation(res.conversations || [])
-      } else {
-        console.error(res?.message)
       }
     } catch (err) {
       console.error('Conversation load failed', err)
@@ -42,9 +48,8 @@ const ConversationModal = ({show, onClose, incidentData}) => {
   }, [show, orgId, toolId, incidentID])
 
   /* ---------------- HELPERS ---------------- */
-  const formatDateTime = (dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleString('en-IN', {
+  const formatDateTime = (dateString) =>
+    new Date(dateString).toLocaleString('en-IN', {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
@@ -52,12 +57,11 @@ const ConversationModal = ({show, onClose, incidentData}) => {
       minute: '2-digit',
       hour12: true,
     })
-  }
 
   const getMailBackgroundClass = (mail) => {
-    if (mail.incoming === true) return 'bg-white border'
-    if (mail.incoming === false && mail.private === false) return 'bg-primary bg-opacity-10'
-    if (mail.incoming === false && mail.private === true) return 'bg-warning bg-opacity-25'
+    if (mail.incoming) return 'bg-white border'
+    if (!mail.incoming && !mail.private) return 'bg-primary bg-opacity-10'
+    if (!mail.incoming && mail.private) return 'bg-warning bg-opacity-25'
     return 'bg-info bg-opacity-25'
   }
 
@@ -85,24 +89,32 @@ const ConversationModal = ({show, onClose, incidentData}) => {
     setShowForwardModal(true)
   }
 
+  /* ---------------- EDIT HANDLER ---------------- */
+  const handleEditTrail = (mail) => {
+    setSelectedMail(mail)
+
+    if (mail.type === 'Incident Notes') {
+      setShowNotesModal(true)
+      setConversationId(mail.id)
+    }
+
+    if (mail.type === 'Incident') {
+      setShowDetailsModal(true)
+    }
+  }
+
   /* ---------------- INLINE IMAGE HANDLER ---------------- */
   const renderHtmlWithInlineImages = (html, attachments) => {
-    if (!html) return {__html: ''}
+    let processedHtml = html || ''
 
-    let processedHtml = html
-
-    if (Array.isArray(attachments)) {
-      attachments.forEach((att) => {
-        if (att.isInline && att.contentId && att.filePath) {
-          const cidRegex = new RegExp(`cid:${att.contentId}`, 'g')
-          processedHtml = processedHtml.replace(cidRegex, att.filePath)
-        }
-      })
-    }
+    attachments?.forEach((att) => {
+      if (att.isInline && att.contentId && att.filePath) {
+        processedHtml = processedHtml.replace(new RegExp(`cid:${att.contentId}`, 'g'), att.filePath)
+      }
+    })
 
     return {__html: processedHtml}
   }
-   const handleEditTrail = (mailId) => {}
 
   return (
     <>
@@ -137,12 +149,13 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                 <div className='d-flex gap-3'>
                   {mail.canEdit && (
                     <i
-                      className='fa fa-edit text-warning me-3'
+                      className='fa fa-edit text-warning'
                       title='Edit'
                       style={{cursor: 'pointer'}}
-                      onClick={() => handleEditTrail(mail.id)}
+                      onClick={() => handleEditTrail(mail)}
                     />
                   )}
+
                   {mail.canReply && (
                     <i
                       className='fa fa-reply text-success cursor'
@@ -150,6 +163,7 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                       onClick={() => handleForwardTrail(mail.id, true)}
                     />
                   )}
+
                   {mail.canFowward && (
                     <i
                       className='fa fa-share text-primary cursor'
@@ -157,6 +171,7 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                       onClick={() => handleForwardTrail(mail.id, false)}
                     />
                   )}
+
                   {mail.canDelete && (
                     <i
                       className='fa fa-trash text-danger cursor'
@@ -176,51 +191,39 @@ const ConversationModal = ({show, onClose, incidentData}) => {
                 )}
               />
 
-              {/* ATTACHMENTS (NON-INLINE ONLY) */}
-              {Array.isArray(mail.attachmentsInBase64) &&
-                mail.attachmentsInBase64.some((a) => !a.isInline && a.filePath) && (
-                  <div className='mt-3'>
-                    <strong>Attachments:</strong>
-                    <ul className='list-unstyled mt-2'>
-                      {mail.attachmentsInBase64
-                        .filter((a) => !a.isInline && a.filePath)
-                        .map((att, i) => (
-                          <li key={i} className='mb-2'>
-                            <i className='fa fa-paperclip me-2'></i>
-                            <a
-                              href={att.filePath}
-                              target='_blank'
-                              rel='noopener noreferrer'
-                              download
-                            >
-                              {att.fileName}
-                            </a>
-                          </li>
-                        ))}
-                    </ul>
-                  </div>
-                )}
+              {/* ATTACHMENTS */}
+              {mail.attachmentsInBase64?.some((a) => !a.isInline) && (
+                <div className='mt-3'>
+                  <strong>Attachments:</strong>
+                  <ul className='list-unstyled mt-2'>
+                    {mail.attachmentsInBase64
+                      .filter((a) => !a.isInline)
+                      .map((att, i) => (
+                        <li key={i}>
+                          <a href={att.filePath} target='_blank' rel='noreferrer'>
+                            {att.fileName}
+                          </a>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              )}
 
               {/* TRAILS */}
-              {Array.isArray(mail.conversationMailTrailData) &&
-                mail.conversationMailTrailData.length > 0 && (
-                  <Accordion className='mt-3'>
-                    {mail.conversationMailTrailData.map((trail, idx) => (
-                      <Accordion.Item eventKey={String(idx)} key={idx}>
-                        <Accordion.Header>
-                          {trail.author} - {trail.originalMailHeader}
-                        </Accordion.Header>
-                        <Accordion.Body>
-                          <div
-                            dangerouslySetInnerHTML={{
-                              __html: trail.htmlCurrent,
-                            }}
-                          />
-                        </Accordion.Body>
-                      </Accordion.Item>
-                    ))}
-                  </Accordion>
-                )}
+              {mail.conversationMailTrailData?.length > 0 && (
+                <Accordion className='mt-3'>
+                  {mail.conversationMailTrailData.map((trail, idx) => (
+                    <Accordion.Item eventKey={String(idx)} key={idx}>
+                      <Accordion.Header>
+                        {trail.author} - {trail.originalMailHeader}
+                      </Accordion.Header>
+                      <Accordion.Body>
+                        <div dangerouslySetInnerHTML={{__html: trail.htmlCurrent}} />
+                      </Accordion.Body>
+                    </Accordion.Item>
+                  ))}
+                </Accordion>
+              )}
             </div>
           ))}
         </Modal.Body>
@@ -232,6 +235,37 @@ const ConversationModal = ({show, onClose, incidentData}) => {
         </Modal.Footer>
       </Modal>
 
+      {/* NOTES MODAL */}
+      {showNotesModal && selectedMail && (
+        <NotesModalComponent
+          show={showNotesModal}
+          mode='edit'
+          conversationId={selectedMail?.id}
+          incidentData={incidentData}
+          id={incidentID}
+          fetchNotes={loadConversation}
+          onClose={() => {
+            setShowNotesModal(false)
+            setSelectedMail(null)
+          }}
+        />
+      )}
+
+      {/* DETAILS MODAL */}
+      {showDetailsModal && selectedMail && (
+        <DetailsModal
+          show={showDetailsModal}
+          incidentData={incidentData}
+          incidentId={incidentID}
+          onClose={() => {
+            setShowDetailsModal(false)
+            setSelectedMail(null)
+          }}
+          onUpdated={loadConversation}
+        />
+      )}
+
+      {/* FORWARD MODAL */}
       <ForwardModal
         show={showForwardModal}
         onHide={() => setShowForwardModal(false)}
