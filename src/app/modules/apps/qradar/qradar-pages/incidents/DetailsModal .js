@@ -134,6 +134,9 @@ const DetailsModal = ({show, onClose, incidentData, onSave}) => {
       <ToastContainer />
       <Modal.Header closeButton>
         <Modal.Title>Incident Description</Modal.Title>
+        <button type='button' class='application-modal-close' aria-label='Close'>
+          <i className='fa fa-close' />
+        </button>
       </Modal.Header>
 
       <Modal.Body>

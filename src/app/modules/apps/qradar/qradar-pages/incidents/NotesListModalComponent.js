@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react'
-import {Modal, Button} from 'react-bootstrap'
+import {Modal, Button, Form} from 'react-bootstrap'
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import NotesModalComponent from './NotesModalComponent'
 import {fetchIncidentNotesListUrl, fetchNotesDeleteUrl} from '../../../../../api/IncidentsApi'
@@ -17,14 +17,22 @@ const NotesListModalComponent = ({show, onClose, id}) => {
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [itemToDelete, setItemToDelete] = useState(null)
 
+  // 🔹 search state
+  const [searchText, setSearchText] = useState('')
+
   // 🔹 expanded state
   const [expandedNotes, setExpandedNotes] = useState({})
 
-  // 🔹 track which notes need "Show more"
+  // 🔹 overflow tracking
   const [overflowNotes, setOverflowNotes] = useState({})
-
-  // 🔹 refs for note content
   const noteRefs = useRef({})
+
+  /* -------------------- HELPERS -------------------- */
+  const stripHtml = (html) => {
+    const div = document.createElement('div')
+    div.innerHTML = html
+    return div.textContent || div.innerText || ''
+  }
 
   const toggleExpand = (noteId) => {
     setExpandedNotes((prev) => ({
@@ -54,7 +62,7 @@ const NotesListModalComponent = ({show, onClose, id}) => {
     fetchNotes(id)
   }, [show, id])
 
-  // 🔹 CHECK OVERFLOW AFTER RENDER
+  /* -------------------- CHECK OVERFLOW -------------------- */
   useEffect(() => {
     const overflowMap = {}
 
@@ -68,6 +76,15 @@ const NotesListModalComponent = ({show, onClose, id}) => {
     setOverflowNotes(overflowMap)
   }, [notes])
 
+  /* -------------------- FILTERED NOTES -------------------- */
+  const filteredNotes = notes.filter((note) => {
+    if (!searchText.trim()) return true
+
+    const contentText = stripHtml(note.notesHtmlContent || '').toLowerCase()
+    return contentText.includes(searchText.toLowerCase())
+  })
+
+  /* -------------------- ACTIONS -------------------- */
   const handleAddNotesClick = () => {
     setModalMode('add')
     setSelectedNote(null)
@@ -118,6 +135,7 @@ const NotesListModalComponent = ({show, onClose, id}) => {
     }
   }
 
+  /* -------------------- UI -------------------- */
   return (
     <>
       <Modal show={show} onHide={onClose} className='notesListModal application-modal'>
@@ -131,15 +149,26 @@ const NotesListModalComponent = ({show, onClose, id}) => {
         </Modal.Header>
 
         <Modal.Body>
+          {/* 🔍 SEARCH BAR */}
+          <Form.Control
+            type='text'
+            placeholder='Search notes...'
+            className='mb-3'
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+
           <div className='d-flex justify-content-end mb-3'>
             <button className='btn btn-primary btn-sm' onClick={handleAddNotesClick}>
               <i className='fa fa-plus' /> Add Note
             </button>
           </div>
 
-          {notes.length === 0 && <div className='text-center text-muted'>No notes available</div>}
+          {filteredNotes.length === 0 && (
+            <div className='text-center text-muted'>No matching notes found</div>
+          )}
 
-          {notes.map((note) => (
+          {filteredNotes.map((note) => (
             <div key={note.incidentNotesId} className='border rounded p-3 mb-3 shadow-sm bg-light'>
               <div className='d-flex justify-content-between align-items-center mb-2'>
                 <div className='d-flex align-items-center gap-2'>
@@ -155,7 +184,6 @@ const NotesListModalComponent = ({show, onClose, id}) => {
                 </div>
               </div>
 
-              {/* NOTE CONTENT */}
               <div
                 ref={(el) => (noteRefs.current[note.incidentNotesId] = el)}
                 className={`note-content ${
@@ -164,16 +192,13 @@ const NotesListModalComponent = ({show, onClose, id}) => {
                 dangerouslySetInnerHTML={{__html: note.notesHtmlContent}}
               />
 
-              {/* 🔹 SHOW BUTTON ONLY IF OVERFLOW */}
               {overflowNotes[note.incidentNotesId] && (
-                <div className='mt-1'>
-                  <button
-                    className='btn btn-link p-0'
-                    onClick={() => toggleExpand(note.incidentNotesId)}
-                  >
-                    {expandedNotes[note.incidentNotesId] ? '▲ Show less' : '▼ Show more'}
-                  </button>
-                </div>
+                <button
+                  className='btn btn-link p-0 mt-1'
+                  onClick={() => toggleExpand(note.incidentNotesId)}
+                >
+                  {expandedNotes[note.incidentNotesId] ? '▲ Show less' : '▼ Show more'}
+                </button>
               )}
             </div>
           ))}

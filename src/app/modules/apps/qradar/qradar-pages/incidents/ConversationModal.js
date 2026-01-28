@@ -127,6 +127,9 @@ const ConversationModal = ({show, onClose, incidentData}) => {
       >
         <Modal.Header closeButton>
           <Modal.Title>Conversation</Modal.Title>
+          <button type='button' class='application-modal-close' aria-label='Close'>
+            <i className='fa fa-close' />
+          </button>
         </Modal.Header>
 
         <Modal.Body>

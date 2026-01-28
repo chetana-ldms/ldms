@@ -26,7 +26,6 @@ const NotesModalComponent = ({
   id,
   conversationId,
 }) => {
-  console.log('conversationId from edit', conversationId)
   const userID = Number(sessionStorage.getItem('userId'))
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('incidentToolId'))
@@ -38,6 +37,14 @@ const NotesModalComponent = ({
   const [loading, setLoading] = useState(false)
   const [groupUsers, setGroupUsers] = useState([])
 
+  /* -------------------- RESET FORM -------------------- */
+  const resetForm = () => {
+    setMessage('')
+    setAttachments([])
+    setNotifyList([])
+    setIsPrivate(true)
+  }
+
   /* -------------------- GROUP USERS -------------------- */
   useEffect(() => {
     const fetchUsers = async () => {
@@ -45,15 +52,15 @@ const NotesModalComponent = ({
       try {
         const res = await fetchGroupUsersUrl(orgId, toolId, incidentData?.groupId || 0)
         setGroupUsers(Array.isArray(res?.usersList) ? res.usersList : [])
-      } catch (e) {
-        console.error(e)
+      } catch (err) {
+        console.error(err)
         setGroupUsers([])
       }
     }
     fetchUsers()
   }, [orgId, toolId, incidentData?.groupId])
 
-  /* -------------------- NOTE LOAD (EDIT / VIEW) -------------------- */
+  /* -------------------- LOAD NOTE -------------------- */
   useEffect(() => {
     if (mode === 'edit' || mode === 'view') {
       loadNoteDetails()
@@ -62,57 +69,42 @@ const NotesModalComponent = ({
     }
   }, [mode, noteData, conversationId])
 
-  const resetForm = () => {
-    setMessage('')
-    setAttachments([])
-    setNotifyList([])
-    setIsPrivate(true)
-  }
-
   const loadNoteDetails = async () => {
     try {
       setLoading(true)
 
       let incidentNotesId = noteData?.incidentNotesId
 
-      // ✅ conversationId based fetch
       if (conversationId) {
         const convRes = await fetchIncidenttNotesByIncidentByConversationIdUrl(conversationId)
         incidentNotesId = convRes?.incidentNotesId
       }
 
-      if (!incidentNotesId) {
-        return
-      }
+      if (!incidentNotesId) return
 
-      await fetchNoteDetailsById(incidentNotesId)
+      const response = await fetchNotesDetailsUrl(incidentNotesId)
+      if (!response) return
+
+      setMessage(response?.incidentNotes?.notesHtmlContent || '')
+
+      const mappedAttachments =
+        response?.attachmentsInBase64?.map((att) => ({
+          attachmentId: att.attachmentId,
+          name: att.fileName,
+          size: att.fileSize,
+          type: att.fileType,
+          filePath: att.filePath,
+          fromServer: true,
+          isInline: att.isInline,
+        })) || []
+
+      setAttachments(mappedAttachments)
     } catch (err) {
       console.error(err)
       notifyFail('Failed to load note')
     } finally {
       setLoading(false)
     }
-  }
-
-  const fetchNoteDetailsById = async (incidentNotesId) => {
-    const response = await fetchNotesDetailsUrl(incidentNotesId)
-    if (!response) return
-
-    const html = response?.incidentNotes?.notesHtmlContent || ''
-
-    const mappedAttachments =
-      response.attachmentsInBase64?.map((att) => ({
-        attachmentId: att.attachmentId,
-        name: att.fileName,
-        size: att.fileSize,
-        type: att.fileType,
-        filePath: att.filePath,
-        fromServer: true,
-        isInline: att.isInline,
-      })) || []
-
-    setMessage(html)
-    setAttachments(mappedAttachments)
   }
 
   /* -------------------- SAVE NOTE -------------------- */
@@ -154,6 +146,8 @@ const NotesModalComponent = ({
 
       if (response?.isSuccess) {
         notify(response.message)
+
+        resetForm() // ✅ clear inputs after success
         onClose()
         fetchNotes?.(id)
       } else {
@@ -184,6 +178,9 @@ const NotesModalComponent = ({
           {mode === 'edit' && 'Edit Note'}
           {mode === 'view' && 'View Note'}
         </Modal.Title>
+        <button type='button' class='application-modal-close' aria-label='Close'>
+          <i className='fa fa-close' />
+        </button>
       </Modal.Header>
 
       <Modal.Body>
