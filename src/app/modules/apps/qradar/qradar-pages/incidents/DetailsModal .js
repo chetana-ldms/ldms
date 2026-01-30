@@ -10,66 +10,64 @@ import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-const DetailsModal = ({show, onClose, incidentData, onSave}) => {
+const DetailsModal = ({show, onClose, incidentData}) => {
   const [loading, setLoading] = useState(false)
   const [htmlContent, setHtmlContent] = useState('')
   const [attachments, setAttachments] = useState([])
   const [noDetails, setNoDetails] = useState(false)
+
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('incidentToolId'))
-  useEffect(() => {
-    const loadData = async () => {
-      if (!show) return
+  const userId = Number(sessionStorage.getItem('userId'))
 
+  /* ===================== LOAD DATA ===================== */
+  useEffect(() => {
+    if (!show) return
+
+    const loadData = async () => {
       setLoading(true)
       setNoDetails(false)
       setHtmlContent('')
+      setAttachments([])
 
       try {
-        const data = {
-          incidentID: incidentData?.incidentID,
-        }
-        const response = await fetchIncidentDescriptionAndAttachmentsUrl(data)
-        const {description, attachmentsInBase64} = response || {}
-        const html = description || ''
-        const backendFiles = attachmentsInBase64 || []
-        const convertedFiles = backendFiles.map((f) => {
-          const byteCharacters = atob(f.data)
-          const byteArray = new Uint8Array([...byteCharacters].map((c) => c.charCodeAt(0)))
-          const file = new File([byteArray], f.fileName, {type: f.fileType})
+        const payload = {incidentID: incidentData?.incidentID}
+        const response = await fetchIncidentDescriptionAndAttachmentsUrl(payload)
 
-          return {file, contentId: f.contentId}
-        })
-        setAttachments(convertedFiles)
-        if (!html.trim() && convertedFiles.length === 0) {
+        const {description, attachmentsInBase64 = []} = response || {}
+
+        if (!description && attachmentsInBase64.length === 0) {
           setNoDetails(true)
           return
         }
-        let htmlPreview = html
-        backendFiles.forEach((f) => {
-          if (f?.contentId) {
+
+        const backendAttachments = attachmentsInBase64.map((f) => ({
+          attachmentId: f.attachmentId,
+          fileName: f.fileName,
+          fileType: f.fileType,
+          fileSize: f.fileSize,
+          contentId: f.contentId,
+          isInline: f.isInline,
+          filePath: f.filePath,
+          isExisting: true,
+        }))
+
+        setAttachments(backendAttachments)
+
+        let htmlPreview = description || ''
+
+        backendAttachments.forEach((f) => {
+          if (f.contentId && f.filePath) {
             htmlPreview = htmlPreview.replace(
               new RegExp(`cid:${f.contentId}`, 'g'),
-              `data:${f.fileType};base64,${f.data}`
+              f.filePath
             )
           }
         })
-        const parser = new DOMParser()
-        const doc = parser.parseFromString(htmlPreview, 'text/html')
-        doc.querySelectorAll('img').forEach((img) => img.removeAttribute('alt'))
-        doc.querySelectorAll('*').forEach((node) => {
-          node.childNodes.forEach((child) => {
-            if (
-              child.nodeType === 3 &&
-              /AI-generated content may be incorrect/i.test(child.textContent)
-            ) {
-              child.textContent = ''
-            }
-          })
-        })
-        setHtmlContent(doc.body.innerHTML.trim())
-      } catch (e) {
-        console.error('Load error:', e)
+
+        setHtmlContent(htmlPreview)
+      } catch (err) {
+        console.error(err)
         setNoDetails(true)
       } finally {
         setLoading(false)
@@ -78,65 +76,95 @@ const DetailsModal = ({show, onClose, incidentData, onSave}) => {
 
     loadData()
   }, [show, incidentData])
+
+  /* ===================== ATTACHMENTS ===================== */
   const handleNewAttachment = (file) => {
-    setAttachments((prev) => [...prev, {file, contentId: null}])
+    setAttachments((prev) => [
+      ...prev,
+      {
+        file,
+        isInline: false,
+        contentId: null,
+        isExisting: false,
+      },
+    ])
   }
-  const removeAttachment = (idx) => {
-    setAttachments((prev) => prev.filter((_, i) => i !== idx))
+
+  const removeAttachment = (attachment) => {
+    setAttachments((prev) => prev.filter((a) => a !== attachment))
   }
-  const handleSave = async () => {
-    setLoading(true)
 
-    try {
-      // Extract inline embedded images
-      const {cleanedHtml, attachments: inlineImages} = processHtmlWithInlineImages(htmlContent)
+  const downloadAttachment = (attachment) => {
+    // Existing file
+    if (attachment.filePath) {
+      window.open(attachment.filePath, '_blank')
+      return
+    }
 
-      // Normal attachments
-      const nonInline = attachments.filter((x) => !x.contentId)
-
-      // FINAL MERGED ATTACHMENT ARRAY
-      const finalFiles = [...inlineImages, ...nonInline]
-
-      const payload = {
-        ModifiedDate: new Date().toISOString(),
-        ToolId: toolId,
-        OrgId: orgId,
-        ModifiedUserId: Number(sessionStorage.getItem('userId')),
-        IncidentId: incidentData?.incidentID,
-        Description: cleanedHtml,
-        Attachments: finalFiles, // <-- EXACT FORMAT
-      }
-
-      const res = await fetchUpdateDescriptionAndAttachmentUrl(payload)
-      const {isSuccess, message} = res
-      if (isSuccess) {
-        notify(message)
-        onClose()
-      } else {
-        notifyFail(message)
-      }
-    } catch (err) {
-      console.error('Save failed:', err)
-    } finally {
-      setLoading(false)
+    // New file (local)
+    if (attachment.file) {
+      const url = URL.createObjectURL(attachment.file)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = attachment.file.name
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
     }
   }
-
-  const regularFiles = attachments.filter((x) => !x.contentId)
 
   const formatSize = (bytes) =>
     bytes > 1024 * 1024
       ? (bytes / 1024 / 1024).toFixed(1) + ' MB'
       : (bytes / 1024).toFixed(1) + ' KB'
 
+  /* ===================== SAVE ===================== */
+  const handleSave = async () => {
+    setLoading(true)
+
+    try {
+      const {cleanedHtml, attachments: inlineImages} =
+        processHtmlWithInlineImages(htmlContent)
+
+      const newFiles = attachments.filter(
+        (a) => a.file && !a.contentId
+      )
+
+      const payload = {
+        ModifiedDate: new Date().toISOString(),
+        ToolId: toolId,
+        OrgId: orgId,
+        ModifiedUserId: userId,
+        IncidentId: incidentData?.incidentID,
+        Description: cleanedHtml,
+        Attachments: [...inlineImages, ...newFiles],
+      }
+
+      const res = await fetchUpdateDescriptionAndAttachmentUrl(payload)
+
+      if (res?.isSuccess) {
+        notify(res.message)
+        onClose()
+      } else {
+        notifyFail(res?.message || 'Update failed')
+      }
+    } catch (err) {
+      notifyFail('Something went wrong')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const regularFiles = attachments.filter((a) => !a.isInline)
+
+  /* ===================== UI ===================== */
   return (
-    <Modal show={show} onHide={onClose} className='detailsModal application-modal'>
+    <Modal show={show} onHide={onClose} size='lg'>
       <ToastContainer />
+
       <Modal.Header closeButton>
         <Modal.Title>Incident Description</Modal.Title>
-        <button type='button' class='application-modal-close' aria-label='Close'>
-          <i className='fa fa-close' />
-        </button>
       </Modal.Header>
 
       <Modal.Body>
@@ -145,30 +173,45 @@ const DetailsModal = ({show, onClose, incidentData, onSave}) => {
             <Spinner animation='border' />
           </div>
         ) : noDetails ? (
-          <div className='text-center text-muted'>No details found.</div>
+          <div className='text-center text-muted'>No details found</div>
         ) : (
           <>
             {regularFiles.length > 0 && (
               <>
-                <h6 className='fw-bold'>Attachments:</h6>
+                <h6 className='fw-bold'>Attachments</h6>
+
                 <div className='d-flex flex-wrap gap-2'>
-                  {regularFiles.map((att, idx) => (
+                  {regularFiles.map((att) => (
                     <div
-                      key={idx}
+                      key={att.filePath || att.file?.name}
                       className='d-flex align-items-center border rounded-pill px-3 py-1 bg-light'
                     >
                       <span className='me-2'>
-                        {att.file.name} ({formatSize(att.file.size)})
+                        {att.fileName || att.file?.name}
+                        {att.fileSize && ` (${formatSize(att.fileSize)})`}
                       </span>
+
+                      {/* Download */}
+                      <button
+                        className='btn btn-link text-primary p-0 me-2'
+                        title='Download'
+                        onClick={() => downloadAttachment(att)}
+                      >
+                        <i className='fa fa-download' />
+                      </button>
+
+                      {/* Remove */}
                       <button
                         className='btn btn-link text-danger p-0'
-                        onClick={() => removeAttachment(idx)}
+                        title='Remove'
+                        onClick={() => removeAttachment(att)}
                       >
-                        <i className='fa fa-times'></i>
+                        <i className='fa fa-times' />
                       </button>
                     </div>
                   ))}
                 </div>
+
                 <hr />
               </>
             )}
@@ -188,7 +231,7 @@ const DetailsModal = ({show, onClose, incidentData, onSave}) => {
         </Button>
 
         {!noDetails && (
-          <Button variant='primary' onClick={handleSave}>
+          <Button variant='primary' onClick={handleSave} disabled={loading}>
             Save
           </Button>
         )}
