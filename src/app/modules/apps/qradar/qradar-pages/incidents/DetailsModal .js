@@ -20,28 +20,29 @@ const DetailsModal = ({show, onClose, incidentData}) => {
   const toolId = Number(sessionStorage.getItem('incidentToolId'))
   const userId = Number(sessionStorage.getItem('userId'))
 
-  /* ===================== LOAD DATA ===================== */
+  /* ================= LOAD DATA ================= */
   useEffect(() => {
     if (!show) return
 
     const loadData = async () => {
       setLoading(true)
       setNoDetails(false)
-      setHtmlContent('')
       setAttachments([])
+      setHtmlContent('')
 
       try {
-        const payload = {incidentID: incidentData?.incidentID}
-        const response = await fetchIncidentDescriptionAndAttachmentsUrl(payload)
+        const res = await fetchIncidentDescriptionAndAttachmentsUrl({
+          incidentID: incidentData?.incidentID,
+        })
 
-        const {description, attachmentsInBase64 = []} = response || {}
+        const {description, attachmentsInBase64 = []} = res || {}
 
-        if (!description && attachmentsInBase64.length === 0) {
+        if (!description && !attachmentsInBase64.length) {
           setNoDetails(true)
           return
         }
 
-        const backendAttachments = attachmentsInBase64.map((f) => ({
+        const mapped = attachmentsInBase64.map((f) => ({
           attachmentId: f.attachmentId,
           fileName: f.fileName,
           fileType: f.fileType,
@@ -52,22 +53,18 @@ const DetailsModal = ({show, onClose, incidentData}) => {
           isExisting: true,
         }))
 
-        setAttachments(backendAttachments)
+        setAttachments(mapped)
 
-        let htmlPreview = description || ''
-
-        backendAttachments.forEach((f) => {
-          if (f.contentId && f.filePath) {
-            htmlPreview = htmlPreview.replace(
-              new RegExp(`cid:${f.contentId}`, 'g'),
-              f.filePath
-            )
+        let html = description || ''
+        mapped.forEach((a) => {
+          if (a.contentId && a.filePath) {
+            html = html.replace(new RegExp(`cid:${a.contentId}`, 'g'), a.filePath)
           }
         })
 
-        setHtmlContent(htmlPreview)
-      } catch (err) {
-        console.error(err)
+        setHtmlContent(html)
+      } catch (e) {
+        console.error(e)
         setNoDetails(true)
       } finally {
         setLoading(false)
@@ -77,7 +74,7 @@ const DetailsModal = ({show, onClose, incidentData}) => {
     loadData()
   }, [show, incidentData])
 
-  /* ===================== ATTACHMENTS ===================== */
+  /* ================= ATTACHMENTS ================= */
   const handleNewAttachment = (file) => {
     setAttachments((prev) => [
       ...prev,
@@ -90,36 +87,29 @@ const DetailsModal = ({show, onClose, incidentData}) => {
     ])
   }
 
-  const removeAttachment = (attachment) => {
-    setAttachments((prev) => prev.filter((a) => a !== attachment))
+  const removeAttachment = (att) => {
+    setAttachments((prev) => prev.filter((a) => a !== att))
   }
 
-  const downloadAttachment = (attachment) => {
-    // Existing file
-    if (attachment.filePath) {
-      window.open(attachment.filePath, '_blank')
-      return
-    }
-
-    // New file (local)
-    if (attachment.file) {
-      const url = URL.createObjectURL(attachment.file)
+  const downloadAttachment = (att) => {
+    if (att.filePath) {
+      window.open(att.filePath, '_blank')
+    } else if (att.file) {
+      const url = URL.createObjectURL(att.file)
       const a = document.createElement('a')
       a.href = url
-      a.download = attachment.file.name
-      document.body.appendChild(a)
+      a.download = att.file.name
       a.click()
-      document.body.removeChild(a)
       URL.revokeObjectURL(url)
     }
   }
 
-  const formatSize = (bytes) =>
-    bytes > 1024 * 1024
-      ? (bytes / 1024 / 1024).toFixed(1) + ' MB'
-      : (bytes / 1024).toFixed(1) + ' KB'
+  const formatSize = (b) =>
+    b > 1024 * 1024
+      ? (b / 1024 / 1024).toFixed(1) + ' MB'
+      : (b / 1024).toFixed(1) + ' KB'
 
-  /* ===================== SAVE ===================== */
+  /* ================= SAVE ================= */
   const handleSave = async () => {
     setLoading(true)
 
@@ -127,18 +117,14 @@ const DetailsModal = ({show, onClose, incidentData}) => {
       const {cleanedHtml, attachments: inlineImages} =
         processHtmlWithInlineImages(htmlContent)
 
-      const newFiles = attachments.filter(
-        (a) => a.file && !a.contentId
-      )
-
       const payload = {
-        ModifiedDate: new Date().toISOString(),
         ToolId: toolId,
         OrgId: orgId,
-        ModifiedUserId: userId,
         IncidentId: incidentData?.incidentID,
         Description: cleanedHtml,
-        Attachments: [...inlineImages, ...newFiles],
+        ModifiedDate: new Date().toISOString(),
+        ModifiedUserId: userId,
+        Attachments: [...inlineImages, ...attachments],
       }
 
       const res = await fetchUpdateDescriptionAndAttachmentUrl(payload)
@@ -149,7 +135,7 @@ const DetailsModal = ({show, onClose, incidentData}) => {
       } else {
         notifyFail(res?.message || 'Update failed')
       }
-    } catch (err) {
+    } catch {
       notifyFail('Something went wrong')
     } finally {
       setLoading(false)
@@ -158,7 +144,7 @@ const DetailsModal = ({show, onClose, incidentData}) => {
 
   const regularFiles = attachments.filter((a) => !a.isInline)
 
-  /* ===================== UI ===================== */
+  /* ================= UI ================= */
   return (
     <Modal show={show} onHide={onClose} size='lg'>
       <ToastContainer />
@@ -179,31 +165,26 @@ const DetailsModal = ({show, onClose, incidentData}) => {
             {regularFiles.length > 0 && (
               <>
                 <h6 className='fw-bold'>Attachments</h6>
-
                 <div className='d-flex flex-wrap gap-2'>
-                  {regularFiles.map((att) => (
+                  {regularFiles.map((att, i) => (
                     <div
-                      key={att.filePath || att.file?.name}
+                      key={i}
                       className='d-flex align-items-center border rounded-pill px-3 py-1 bg-light'
                     >
                       <span className='me-2'>
                         {att.fileName || att.file?.name}
-                        {att.fileSize && ` (${formatSize(att.fileSize)})`}
+                        {/* {att.fileSize && ` (${formatSize(att.fileSize)})`} */}
                       </span>
 
-                      {/* Download */}
                       <button
-                        className='btn btn-link text-primary p-0 me-2'
-                        title='Download'
+                        className='btn btn-link p-0 me-2 text-primary'
                         onClick={() => downloadAttachment(att)}
                       >
                         <i className='fa fa-download' />
                       </button>
 
-                      {/* Remove */}
                       <button
-                        className='btn btn-link text-danger p-0'
-                        title='Remove'
+                        className='btn btn-link p-0 text-danger'
                         onClick={() => removeAttachment(att)}
                       >
                         <i className='fa fa-times' />
@@ -211,7 +192,6 @@ const DetailsModal = ({show, onClose, incidentData}) => {
                     </div>
                   ))}
                 </div>
-
                 <hr />
               </>
             )}
@@ -229,7 +209,6 @@ const DetailsModal = ({show, onClose, incidentData}) => {
         <Button variant='secondary' onClick={onClose}>
           Cancel
         </Button>
-
         {!noDetails && (
           <Button variant='primary' onClick={handleSave} disabled={loading}>
             Save

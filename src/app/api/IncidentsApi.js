@@ -994,19 +994,34 @@ export const fetchIncidentPreviousConversationUrl = async (orgId, ToolId, incide
 export const fetchUpdateDescriptionAndAttachmentUrl = async (data) => {
   try {
     const formData = new FormData()
+
     formData.append('ToolId', data.ToolId)
     formData.append('OrgId', data.OrgId)
-    formData.append('ModifiedDate', data.ModifiedDate)
-    formData.append('ModifiedUserId', data.ModifiedUserId)
     formData.append('IncidentId', data.IncidentId)
     formData.append('Description', data.Description)
+    formData.append('ModifiedDate', data.ModifiedDate)
+    formData.append('ModifiedUserId', data.ModifiedUserId)
 
-    if (data.Attachments?.length) {
-      data.Attachments.forEach((att) => {
-        formData.append('Attachments', att.file, att.file.name) // <-- BINARY FILE
-        formData.append('ContentIds', att.contentId) // <-- CID
-      })
-    }
+    data.Attachments.forEach((att, index) => {
+      // EXISTING
+      if (att.attachmentId) {
+        formData.append(`Attachments[${index}].attachmentId`, att.attachmentId)
+        formData.append(`Attachments[${index}].type`, 'ExistingUrl')
+        formData.append(`Attachments[${index}].url`, att.filePath)
+        formData.append(`Attachments[${index}].fileName`, att.fileName)
+        formData.append(`Attachments[${index}].contentType`, att.fileType || '')
+        formData.append(`Attachments[${index}].contentId`, att.contentId || '')
+        formData.append(`Attachments[${index}].isInline`, att.isInline)
+      }
+      // NEW
+      else if (att.file) {
+        formData.append(`Attachments[${index}].base64Content`, att.file)
+        formData.append(`Attachments[${index}].fileName`, att.file.name)
+        formData.append(`Attachments[${index}].contentType`, att.file.type)
+        formData.append(`Attachments[${index}].contentId`, att.contentId || '')
+        formData.append(`Attachments[${index}].isInline`, att.isInline)
+      }
+    })
 
     const response = await fetch(UpdateDescriptionAndAttachmentUrl, {
       method: 'POST',
@@ -1018,6 +1033,7 @@ export const fetchUpdateDescriptionAndAttachmentUrl = async (data) => {
     console.error('API call failed:', err)
   }
 }
+
 export const fetchIncidentDescriptionAndAttachmentsUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${IncidentDescriptionAndAttachmentsUrl}`, {
