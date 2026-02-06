@@ -1002,26 +1002,46 @@ export const fetchUpdateDescriptionAndAttachmentUrl = async (data) => {
     formData.append('ModifiedDate', data.ModifiedDate)
     formData.append('ModifiedUserId', data.ModifiedUserId)
 
-    data.Attachments.forEach((att, index) => {
-      // EXISTING
-      if (att.attachmentId) {
-        formData.append(`Attachments[${index}].attachmentId`, att.attachmentId)
-        formData.append(`Attachments[${index}].type`, 'ExistingUrl')
-        formData.append(`Attachments[${index}].url`, att.filePath)
-        formData.append(`Attachments[${index}].fileName`, att.fileName)
-        formData.append(`Attachments[${index}].contentType`, att.fileType || '')
-        formData.append(`Attachments[${index}].contentId`, att.contentId || '')
-        formData.append(`Attachments[${index}].isInline`, att.isInline)
-      }
-      // NEW
-      else if (att.file) {
-        formData.append(`Attachments[${index}].base64Content`, att.file)
-        formData.append(`Attachments[${index}].fileName`, att.file.name)
-        formData.append(`Attachments[${index}].contentType`, att.file.type)
-        formData.append(`Attachments[${index}].contentId`, att.contentId || '')
-        formData.append(`Attachments[${index}].isInline`, att.isInline)
-      }
-    })
+    /* =========================
+       ✅ NEW ATTACHMENTS
+       ========================= */
+
+    if (data.NewAttachments?.length) {
+      data.NewAttachments.forEach((att) => {
+        if (!att?.file) return // prevent null upload
+
+        // inline image
+        if (att.contentId) {
+          formData.append('NewAttachments', att.file, att.file.name)
+          formData.append('ContentIds', att.contentId)
+        }
+        // normal file
+        else {
+          formData.append('NewAttachments', att.file)
+        }
+      })
+    }
+
+    /* =========================
+       ✅ EXISTING ATTACHMENTS
+       ========================= */
+
+    const existingJson =
+      data.ExistingAttachments?.length > 0
+        ? data.ExistingAttachments.map((a) => ({
+            attachmentId: a.attachmentId,
+            url: a.filePath,
+          }))
+        : []
+
+    formData.append(
+      'ExistingAttachmentUrlsJson',
+      JSON.stringify(existingJson) // always [] if empty
+    )
+
+    /* =========================
+       ✅ API CALL
+       ========================= */
 
     const response = await fetch(UpdateDescriptionAndAttachmentUrl, {
       method: 'POST',
@@ -1030,9 +1050,10 @@ export const fetchUpdateDescriptionAndAttachmentUrl = async (data) => {
 
     return await response.json()
   } catch (err) {
-    console.error('API call failed:', err)
+    console.error('API failed:', err)
   }
 }
+
 
 export const fetchIncidentDescriptionAndAttachmentsUrl = async (data) => {
   try {

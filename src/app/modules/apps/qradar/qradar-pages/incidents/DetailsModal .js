@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useRef} from 'react'
 import {Modal, Button, Spinner} from 'react-bootstrap'
 import RichTextEditor from '../../../../../../utils/RichTextEditor'
 import {
@@ -8,6 +8,7 @@ import {
 import {processHtmlWithInlineImages} from './processHtmlWithInlineImages'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
+import ConfirmPopup from '../../../../../../utils/ConfirmPopup'
 import 'react-toastify/dist/ReactToastify.css'
 
 const DetailsModal = ({show, onClose, incidentData}) => {
@@ -16,13 +17,31 @@ const DetailsModal = ({show, onClose, incidentData}) => {
   const [attachments, setAttachments] = useState([])
   const [noDetails, setNoDetails] = useState(false)
 
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [confirmMessage, setConfirmMessage] = useState('')
+  const [confirmCallback, setConfirmCallback] = useState(() => {})
+
+  const initialState = useRef({fingerprint: '', attachments: ''})
+  const hasLoaded = useRef(false)
+
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('incidentToolId'))
   const userId = Number(sessionStorage.getItem('userId'))
 
-  /* ================= LOAD DATA ================= */
+  /* ========= HTML NORMALIZER ========= */
+  const fingerprint = (html) => {
+    if (!html) return ''
+    return html
+      .replace(/<p><br><\/p>/g, '')
+      .replace(/<[^>]+>/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+  }
+
+  /* ========= LOAD DATA ========= */
   useEffect(() => {
     if (!show) return
+    hasLoaded.current = false
 
     const loadData = async () => {
       setLoading(true)
@@ -35,34 +54,32 @@ const DetailsModal = ({show, onClose, incidentData}) => {
           incidentID: incidentData?.incidentID,
         })
 
-        const {description, attachmentsInBase64 = []} = res || {}
+        const {description, attachmentsInBase64 = [], isSuccess} = res || {}
+        const attachmentsArray = attachmentsInBase64 || []
 
-        if (!description && !attachmentsInBase64.length) {
+        if (!isSuccess || (!description && attachmentsArray.length === 0)) {
           setNoDetails(true)
           return
         }
 
-        const mapped = attachmentsInBase64.map((f) => ({
+        const mapped = attachmentsArray.map((f) => ({
           attachmentId: f.attachmentId,
-          fileName: f.fileName,
-          fileType: f.fileType,
-          fileSize: f.fileSize,
-          contentId: f.contentId,
-          isInline: f.isInline,
           filePath: f.filePath,
+          fileName: f.fileName,
+          isInline: f.isInline || false,
           isExisting: true,
         }))
 
+        setHtmlContent(description || '')
         setAttachments(mapped)
 
-        let html = description || ''
-        mapped.forEach((a) => {
-          if (a.contentId && a.filePath) {
-            html = html.replace(new RegExp(`cid:${a.contentId}`, 'g'), a.filePath)
+        setTimeout(() => {
+          initialState.current = {
+            fingerprint: fingerprint(description || ''),
+            attachments: JSON.stringify(mapped),
           }
-        })
-
-        setHtmlContent(html)
+          hasLoaded.current = true
+        }, 300)
       } catch (e) {
         console.error(e)
         setNoDetails(true)
@@ -74,21 +91,33 @@ const DetailsModal = ({show, onClose, incidentData}) => {
     loadData()
   }, [show, incidentData])
 
-  /* ================= ATTACHMENTS ================= */
+  /* ========= CHANGE DETECTION ========= */
+  const isChanged = () => {
+    if (!hasLoaded.current) return false
+    return (
+      fingerprint(htmlContent) !== initialState.current.fingerprint ||
+      JSON.stringify(attachments) !== initialState.current.attachments
+    )
+  }
+
+  /* ========= ATTACHMENTS ========= */
   const handleNewAttachment = (file) => {
+    const isImage = file.type.startsWith('image/')
+
     setAttachments((prev) => [
       ...prev,
       {
         file,
-        isInline: false,
-        contentId: null,
+        isInline: isImage, // ✅ images inline
         isExisting: false,
       },
     ])
   }
 
   const removeAttachment = (att) => {
-    setAttachments((prev) => prev.filter((a) => a !== att))
+    setAttachments((prev) =>
+      prev.filter((a) => (att.isExisting ? a.attachmentId !== att.attachmentId : a !== att))
+    )
   }
 
   const downloadAttachment = (att) => {
@@ -104,27 +133,71 @@ const DetailsModal = ({show, onClose, incidentData}) => {
     }
   }
 
-  const formatSize = (b) =>
-    b > 1024 * 1024
-      ? (b / 1024 / 1024).toFixed(1) + ' MB'
-      : (b / 1024).toFixed(1) + ' KB'
-
-  /* ================= SAVE ================= */
-  const handleSave = async () => {
+  /* ========= SAVE ========= */
+  const executeSave = async () => {
     setLoading(true)
 
     try {
-      const {cleanedHtml, attachments: inlineImages} =
-        processHtmlWithInlineImages(htmlContent)
+      const {cleanedHtml, attachments: inlineImages} = processHtmlWithInlineImages(htmlContent)
+
+      let updatedHtml = cleanedHtml
+
+      const now = new Date()
+      const timestamp =
+        now.getFullYear().toString() +
+        String(now.getMonth() + 1).padStart(2, '0') +
+        String(now.getDate()).padStart(2, '0') +
+        '_' +
+        String(now.getHours()).padStart(2, '0') +
+        String(now.getMinutes()).padStart(2, '0') +
+        String(now.getSeconds()).padStart(2, '0')
+
+      // ✅ rename inline images + rewrite HTML
+      const newInlineAttachments = inlineImages.map((img) => {
+        const oldCid = img.contentId
+        const ext = img.file.name.split('.').pop()
+
+        const uniqueContentId = `${oldCid}_${timestamp}.${ext}`
+
+        updatedHtml = updatedHtml.replaceAll(`cid:${oldCid}`, `cid:${uniqueContentId}`)
+
+        const renamedFile = new File([img.file], uniqueContentId, {
+          type: img.file.type,
+        })
+
+        return {
+          file: renamedFile,
+          contentId: uniqueContentId,
+          isInline: true,
+        }
+      })
+
+      // ✅ new normal files
+      const newFiles = attachments.filter(
+        (a) => !a.isExisting && !a.isInline && a.file instanceof File
+      )
+
+      // ✅ filter existing attachments AFTER html is ready
+      const existingAttachments = attachments.filter((a) => {
+        if (!a.isExisting || !a.attachmentId || !a.filePath) return false
+
+        if (a.isInline) {
+          const fileName = a.filePath.split('/').pop()
+          return updatedHtml.includes(fileName)
+        }
+
+        return true
+      })
 
       const payload = {
         ToolId: toolId,
         OrgId: orgId,
         IncidentId: incidentData?.incidentID,
-        Description: cleanedHtml,
+        Description: updatedHtml,
         ModifiedDate: new Date().toISOString(),
         ModifiedUserId: userId,
-        Attachments: [...inlineImages, ...attachments],
+        ExistingAttachments: existingAttachments,
+        NewAttachments: [...newFiles, ...newInlineAttachments],
       }
 
       const res = await fetchUpdateDescriptionAndAttachmentUrl(payload)
@@ -135,87 +208,114 @@ const DetailsModal = ({show, onClose, incidentData}) => {
       } else {
         notifyFail(res?.message || 'Update failed')
       }
-    } catch {
+    } catch (err) {
+      console.error(err)
       notifyFail('Something went wrong')
     } finally {
       setLoading(false)
     }
   }
 
+  const handleSave = () => {
+    if (!isChanged()) {
+      setConfirmMessage('No changes detected. Save anyway?')
+      setConfirmCallback(() => executeSave)
+      setShowConfirm(true)
+    } else {
+      executeSave()
+    }
+  }
+
+  const handleCancel = () => {
+    if (isChanged()) {
+      setConfirmMessage('You are losing unsaved information. Continue?')
+      setConfirmCallback(() => onClose)
+      setShowConfirm(true)
+    } else {
+      onClose()
+    }
+  }
+
   const regularFiles = attachments.filter((a) => !a.isInline)
 
-  /* ================= UI ================= */
   return (
-    <Modal show={show} onHide={onClose} size='lg'>
-      <ToastContainer />
+    <>
+      <Modal show={show} onHide={handleCancel} size='lg'>
+        <ToastContainer />
 
-      <Modal.Header closeButton>
-        <Modal.Title>Incident Description</Modal.Title>
-      </Modal.Header>
+        <Modal.Header closeButton>
+          <Modal.Title>Incident Description</Modal.Title>
+        </Modal.Header>
 
-      <Modal.Body>
-        {loading ? (
-          <div className='text-center py-4'>
-            <Spinner animation='border' />
-          </div>
-        ) : noDetails ? (
-          <div className='text-center text-muted'>No details found</div>
-        ) : (
-          <>
-            {regularFiles.length > 0 && (
-              <>
-                <h6 className='fw-bold'>Attachments</h6>
-                <div className='d-flex flex-wrap gap-2'>
-                  {regularFiles.map((att, i) => (
-                    <div
-                      key={i}
-                      className='d-flex align-items-center border rounded-pill px-3 py-1 bg-light'
-                    >
-                      <span className='me-2'>
-                        {att.fileName || att.file?.name}
-                        {/* {att.fileSize && ` (${formatSize(att.fileSize)})`} */}
-                      </span>
+        <Modal.Body>
+          {loading ? (
+            <div className='text-center py-4'>
+              <Spinner animation='border' />
+            </div>
+          ) : noDetails ? (
+            <div className='text-center text-muted'>No details found</div>
+          ) : (
+            <>
+              {regularFiles.length > 0 && (
+                <>
+                  <h6 className='fw-bold'>Attachments</h6>
+                  <div className='d-flex flex-wrap gap-2'>
+                    {regularFiles.map((att, i) => (
+                      <div key={i} className='border rounded-pill px-3 py-1 bg-light'>
+                        <span className='me-2'>
+                          {att?.fileName || `Attachment #${att.attachmentId}`}
+                        </span>
+                        <button
+                          className='btn btn-link p-0 me-2 text-primary'
+                          onClick={() => downloadAttachment(att)}
+                        >
+                          <i className='fa fa-download' />
+                        </button>
+                        <button
+                          className='btn btn-link p-0 text-danger'
+                          onClick={() => removeAttachment(att)}
+                        >
+                          <i className='fa fa-times' />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <hr />
+                </>
+              )}
 
-                      <button
-                        className='btn btn-link p-0 me-2 text-primary'
-                        onClick={() => downloadAttachment(att)}
-                      >
-                        <i className='fa fa-download' />
-                      </button>
+              <RichTextEditor
+                value={htmlContent}
+                onChange={setHtmlContent}
+                onAttach={handleNewAttachment}
+              />
+            </>
+          )}
+        </Modal.Body>
 
-                      <button
-                        className='btn btn-link p-0 text-danger'
-                        onClick={() => removeAttachment(att)}
-                      >
-                        <i className='fa fa-times' />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <hr />
-              </>
-            )}
-
-            <RichTextEditor
-              value={htmlContent}
-              onChange={setHtmlContent}
-              onAttach={handleNewAttachment}
-            />
-          </>
-        )}
-      </Modal.Body>
-
-      <Modal.Footer>
-        <Button variant='secondary' onClick={onClose}>
-          Cancel
-        </Button>
-        {!noDetails && (
-          <Button variant='primary' onClick={handleSave} disabled={loading}>
-            Save
+        <Modal.Footer>
+          <Button variant='secondary' onClick={handleCancel}>
+            Cancel
           </Button>
-        )}
-      </Modal.Footer>
-    </Modal>
+          {!noDetails && (
+            <Button variant='primary' onClick={handleSave} disabled={loading}>
+              Save
+            </Button>
+          )}
+        </Modal.Footer>
+      </Modal>
+
+      <ConfirmPopup
+        show={showConfirm}
+        title='Confirmation'
+        message={confirmMessage}
+        onConfirm={() => {
+          setShowConfirm(false)
+          confirmCallback()
+        }}
+        onCancel={() => setShowConfirm(false)}
+      />
+    </>
   )
 }
 

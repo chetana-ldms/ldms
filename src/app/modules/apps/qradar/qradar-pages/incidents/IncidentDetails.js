@@ -621,38 +621,52 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
             </h4>
             <div>
               <div className='mt-2'>
-                <Dropdown
-                  isOpen={dropdownOpen}
-                  disabled={!id}
-                  toggle={() => setDropdownOpen(!dropdownOpen)}
-                >
+                <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
                   <DropdownToggle className='no-pad'>
                     <div className='btn btn-border btn-small no-horizontal-padding'>
                       <span className='text-black'>Action</span> <i className='fa fa-angle-down' />
                     </div>
                   </DropdownToggle>
+
                   <DropdownMenu className='w-auto'>
+                    {/* Always visible */}
                     <DropdownItem onClick={handleAddClick} disabled={!isActionAuthorized('Create')}>
                       Add
                     </DropdownItem>
-                    <DropdownItem onClick={handleReply} disabled={!isActionAuthorized('Reply')}>
-                      Reply
-                    </DropdownItem>
-                    <DropdownItem onClick={handleForward} disabled={!isActionAuthorized('Forward')}>
-                      Forward
-                    </DropdownItem>
+
                     <DropdownItem
                       onClick={handleSendMail}
                       disabled={!isActionAuthorized('SendMail')}
                     >
                       Send Mail
                     </DropdownItem>
-                    <DropdownItem onClick={handleDelete} disabled={!isActionAuthorized('Delete')}>
-                      Delete
-                    </DropdownItem>
+
+                    {/* Only show when id exists */}
+                    {id && (
+                      <>
+                        <DropdownItem onClick={handleReply} disabled={!isActionAuthorized('Reply')}>
+                          Reply
+                        </DropdownItem>
+
+                        <DropdownItem
+                          onClick={handleForward}
+                          disabled={!isActionAuthorized('Forward')}
+                        >
+                          Forward
+                        </DropdownItem>
+
+                        <DropdownItem
+                          onClick={handleDelete}
+                          disabled={!isActionAuthorized('Delete')}
+                        >
+                          Delete
+                        </DropdownItem>
+                      </>
+                    )}
                   </DropdownMenu>
                 </Dropdown>
               </div>
+
               <AddIncidentModal
                 show={showModal}
                 onHide={() => setShowModal(false)}
