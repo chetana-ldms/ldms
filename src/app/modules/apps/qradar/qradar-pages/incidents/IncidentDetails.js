@@ -697,7 +697,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 <button
                   type='submit'
                   onClick={(event) => handleSubmit(event, incidentData)}
-                  className='btn btn-primary btn-new btn-small no-horizontal-padding'
+                  className='btn btn-primary btn-sm'
                   disabled={!id}
                 >
                   Save Changes

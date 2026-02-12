@@ -344,22 +344,40 @@ export const fetchIncidentNotesAddUrl = async (data) => {
 export const fetchIncidentNotesUpdateUrl = async (data) => {
   try {
     const formData = new FormData()
+
     formData.append('IncidentId', data.IncidentId)
     formData.append('IncidentNotesId', data.IncidentNotesId)
     formData.append('ModifiedUserId', data.ModifiedUserId)
     formData.append('ModifiedDate', data.ModifiedDate)
-    if (data.attachments?.length) {
-      data.attachments.forEach((att) => {
+    formData.append('NotesHtmlContent', data.NotesHtmlContent)
+
+    /* ==== new attachments ==== */
+    if (data.NewAttachments?.length) {
+      data.NewAttachments.forEach((att) => {
+        if (!att?.file) return
+
         if (att.contentId) {
-          formData.append('Attachments', att.file, att.file.name)
+          formData.append('NewAttachments', att.file, att.file.name)
           formData.append('ContentIds', att.contentId)
         } else {
-          formData.append('Attachments', att.file || att)
+          formData.append('NewAttachments', att.file)
         }
       })
     }
 
-    formData.append('NotesHtmlContent', data.NotesHtmlContent)
+    /* ==== existing attachments ==== */
+    const existingJson =
+      data.ExistingAttachments?.length > 0
+        ? data.ExistingAttachments.map((a) => ({
+            attachmentId: a.attachmentId,
+            url: a.filePath,
+          }))
+        : []
+
+    formData.append(
+      'ExistingAttachmentUrlsJson',
+      JSON.stringify(existingJson)
+    )
 
     const response = await fetch(IncidentNotesUpdateUrl, {
       method: 'POST',
@@ -371,6 +389,7 @@ export const fetchIncidentNotesUpdateUrl = async (data) => {
     console.error('API call failed:', err)
   }
 }
+
 export const fetchOrganizationToolsDetailsUrl = async (orgid) => {
   try {
     const response = await FetchWithToken(`${OrganizationToolsDetailsUrl}?orgid=${orgid}`, {
@@ -1053,7 +1072,6 @@ export const fetchUpdateDescriptionAndAttachmentUrl = async (data) => {
     console.error('API failed:', err)
   }
 }
-
 
 export const fetchIncidentDescriptionAndAttachmentsUrl = async (data) => {
   try {

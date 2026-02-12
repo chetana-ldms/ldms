@@ -1,7 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react'
 import {Modal, Button, Form} from 'react-bootstrap'
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
-import NotesModalComponent from './NotesModalComponent'
+import NotesAddModalComponent from './NotesAddModalComponent'
+import NotesEditModalComponent from './NotesEditModalComponent'
 import {fetchIncidentNotesListUrl, fetchNotesDeleteUrl} from '../../../../../api/IncidentsApi'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
 import {notify, notifyFail} from '../components/notification/Notification'
@@ -9,45 +10,31 @@ import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import './NotesListModalComponent.css'
 
-const NotesListModalComponent = ({show, onClose, id}) => {
+const NotesListModalComponent = ({show, onClose, id, incidentData}) => {
   const [notes, setNotes] = useState([])
-  const [modalVisible, setModalVisible] = useState(false)
+
+  // 🔹 modal control
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
   const [modalMode, setModalMode] = useState('view')
   const [selectedNote, setSelectedNote] = useState(null)
+
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [itemToDelete, setItemToDelete] = useState(null)
 
-  // 🔹 search state
   const [searchText, setSearchText] = useState('')
-
-  // 🔹 expanded state
   const [expandedNotes, setExpandedNotes] = useState({})
-
-  // 🔹 overflow tracking
   const [overflowNotes, setOverflowNotes] = useState({})
   const noteRefs = useRef({})
 
-  /* -------------------- HELPERS -------------------- */
-  const stripHtml = (html) => {
-    const div = document.createElement('div')
-    div.innerHTML = html
-    return div.textContent || div.innerText || ''
-  }
-
-  const toggleExpand = (noteId) => {
-    setExpandedNotes((prev) => ({
-      ...prev,
-      [noteId]: !prev[noteId],
-    }))
-  }
-
+  /* ---------------- FETCH NOTES ---------------- */
   const fetchNotes = async (id) => {
     try {
       const result = await fetchIncidentNotesListUrl(id)
-      const sortedNotes = Array.isArray(result)
+      const sorted = Array.isArray(result)
         ? [...result].sort((a, b) => b.incidentNotesId - a.incidentNotesId)
         : []
-      setNotes(sortedNotes)
+      setNotes(sorted)
     } catch (error) {
       console.error(error)
       setNotes([])
@@ -62,45 +49,48 @@ const NotesListModalComponent = ({show, onClose, id}) => {
     fetchNotes(id)
   }, [show, id])
 
-  /* -------------------- CHECK OVERFLOW -------------------- */
-  useEffect(() => {
-    const overflowMap = {}
+  /* ---------------- SEARCH ---------------- */
+  const stripHtml = (html) => {
+    const div = document.createElement('div')
+    div.innerHTML = html
+    return div.textContent || div.innerText || ''
+  }
 
-    notes.forEach((note) => {
-      const el = noteRefs.current[note.incidentNotesId]
-      if (el) {
-        overflowMap[note.incidentNotesId] = el.scrollHeight > el.clientHeight
-      }
-    })
-
-    setOverflowNotes(overflowMap)
-  }, [notes])
-
-  /* -------------------- FILTERED NOTES -------------------- */
   const filteredNotes = notes.filter((note) => {
     if (!searchText.trim()) return true
-
-    const contentText = stripHtml(note.notesHtmlContent || '').toLowerCase()
-    return contentText.includes(searchText.toLowerCase())
+    const text = stripHtml(note.notesHtmlContent || '').toLowerCase()
+    return text.includes(searchText.toLowerCase())
   })
 
-  /* -------------------- ACTIONS -------------------- */
-  const handleAddNotesClick = () => {
-    setModalMode('add')
-    setSelectedNote(null)
-    setModalVisible(true)
+  /* ---------------- OVERFLOW ---------------- */
+  useEffect(() => {
+    const map = {}
+    notes.forEach((note) => {
+      const el = noteRefs.current[note.incidentNotesId]
+      if (el) map[note.incidentNotesId] = el.scrollHeight > el.clientHeight
+    })
+    setOverflowNotes(map)
+  }, [notes])
+
+  const toggleExpand = (id) => {
+    setExpandedNotes((p) => ({...p, [id]: !p[id]}))
   }
 
-  const handleViewClick = (note) => {
+  /* ---------------- ACTIONS ---------------- */
+  const handleAdd = () => {
+    setShowAddModal(true)
+  }
+
+  const handleView = (note) => {
+    setSelectedNote(note)
     setModalMode('view')
-    setSelectedNote(note)
-    setModalVisible(true)
+    setShowEditModal(true)
   }
 
-  const handleEditClick = (note) => {
-    setModalMode('edit')
+  const handleEdit = (note) => {
     setSelectedNote(note)
-    setModalVisible(true)
+    setModalMode('edit')
+    setShowEditModal(true)
   }
 
   const handleDelete = (item) => {
@@ -120,22 +110,20 @@ const NotesListModalComponent = ({show, onClose, id}) => {
     }
 
     try {
-      const response = await fetchNotesDeleteUrl(data)
-      if (response?.isSuccess) {
-        notify(response.message)
+      const res = await fetchNotesDeleteUrl(data)
+      if (res?.isSuccess) {
+        notify(res.message)
         fetchNotes(id)
-      } else {
-        notifyFail(response.message)
-      }
-    } catch (error) {
-      console.error(error)
+      } else notifyFail(res.message)
+    } catch (e) {
+      console.error(e)
     } finally {
       setShowConfirmation(false)
       setItemToDelete(null)
     }
   }
 
-  /* -------------------- UI -------------------- */
+  /* ---------------- UI ---------------- */
   return (
     <>
       <Modal show={show} onHide={onClose} className='notesListModal application-modal'>
@@ -149,7 +137,6 @@ const NotesListModalComponent = ({show, onClose, id}) => {
         </Modal.Header>
 
         <Modal.Body>
-          {/* 🔍 SEARCH BAR */}
           <Form.Control
             type='text'
             placeholder='Search notes...'
@@ -159,7 +146,7 @@ const NotesListModalComponent = ({show, onClose, id}) => {
           />
 
           <div className='d-flex justify-content-end mb-3'>
-            <button className='btn btn-primary btn-sm' onClick={handleAddNotesClick}>
+            <button className='btn btn-primary btn-sm' onClick={handleAdd}>
               <i className='fa fa-plus' /> Add Note
             </button>
           </div>
@@ -170,16 +157,16 @@ const NotesListModalComponent = ({show, onClose, id}) => {
 
           {filteredNotes.map((note) => (
             <div key={note.incidentNotesId} className='border rounded p-3 mb-3 shadow-sm bg-light'>
-              <div className='d-flex justify-content-between align-items-center mb-2'>
-                <div className='d-flex align-items-center gap-2'>
+              <div className='d-flex justify-content-between mb-2'>
+                <div>
                   <strong>{note.createdUser || 'N/A'}</strong>
-                  <span className='text-muted'>|</span>
+                  <span className='mx-2'>|</span>
                   <span className='text-muted fs-12'>{getCurrentTimeZone(note.createdDate)}</span>
                 </div>
 
                 <div className='d-flex gap-3'>
-                  <i className='fa fa-eye cursor' onClick={() => handleViewClick(note)} />
-                  <i className='fa fa-pencil cursor' onClick={() => handleEditClick(note)} />
+                  <i className='fa fa-eye cursor' onClick={() => handleView(note)} />
+                  <i className='fa fa-pencil cursor' onClick={() => handleEdit(note)} />
                   <i className='fa fa-trash cursor' onClick={() => handleDelete(note)} />
                 </div>
               </div>
@@ -211,11 +198,21 @@ const NotesListModalComponent = ({show, onClose, id}) => {
         </Modal.Footer>
       </Modal>
 
-      <NotesModalComponent
-        show={modalVisible}
+      {/* ✅ ADD MODAL */}
+      <NotesAddModalComponent
+        show={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        id={id}
+        incidentData={incidentData}
+        fetchNotes={fetchNotes}
+      />
+
+      {/* ✅ EDIT / VIEW MODAL */}
+      <NotesEditModalComponent
+        show={showEditModal}
         mode={modalMode}
         noteData={selectedNote}
-        onClose={() => setModalVisible(false)}
+        onClose={() => setShowEditModal(false)}
         fetchNotes={fetchNotes}
         id={id}
       />

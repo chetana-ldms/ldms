@@ -69,7 +69,6 @@ const DetailsModal = ({show, onClose, incidentData}) => {
           isInline: f.isInline || false,
           isExisting: true,
         }))
-
         setHtmlContent(description || '')
         setAttachments(mapped)
 
@@ -240,11 +239,18 @@ const DetailsModal = ({show, onClose, incidentData}) => {
 
   return (
     <>
-      <Modal show={show} onHide={handleCancel} size='lg'>
+      <Modal show={show} onHide={handleCancel} className="DetailModal application-modal">
         <ToastContainer />
 
         <Modal.Header closeButton>
           <Modal.Title>Incident Description</Modal.Title>
+          <button
+          type="button"
+          class="application-modal-close"
+          aria-label="Close"
+        >
+          <i className="fa fa-close" />
+        </button>
         </Modal.Header>
 
         <Modal.Body>
@@ -263,7 +269,7 @@ const DetailsModal = ({show, onClose, incidentData}) => {
                     {regularFiles.map((att, i) => (
                       <div key={i} className='border rounded-pill px-3 py-1 bg-light'>
                         <span className='me-2'>
-                          {att?.fileName || `Attachment #${att.attachmentId}`}
+                          {att.file?.name || att.fileName}
                         </span>
                         <button
                           className='btn btn-link p-0 me-2 text-primary'
