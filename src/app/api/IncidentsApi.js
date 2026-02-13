@@ -31,35 +31,29 @@ const ForwardIncidentUrl = process.env.REACT_APP_FORWARD_INCIDENT_URL
 const EmailSearchUrl = process.env.REACT_APP_EMAIL_SEARCH_URL
 const SendMailUrl = process.env.REACT_APP_SEND_MAIL_URL
 const IncidentConversationUrl = process.env.REACT_APP_INCIDENT_CONVERSATION_URL
-const ReplyIncidentWithHtmlContentUrl =
-  'http://10.41.3.232:501/api/IncidentManagement/v1/ReplyIncidentWithHtmlContent'
-const IncidentConversationDeleteUrl =
-  'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentConversation/Delete'
+const ReplyIncidentWithHtmlContentUrl = process.env.REACT_APP_REPLY_INCIDENT_WITH_HTML_CONTENT_URL
+const IncidentConversationDeleteUrl = process.env.REACT_APP_DELETE_INCIDENT_CONVERSATION_URL
 const ForwardIncidentWithHtmlContentUrl =
-  'http://10.41.3.232:501/api/IncidentManagement/v1/ForwardIncidentWithHtmlContent'
-const IncidentConversationForwardUrl =
-  'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentConversation/Forward'
-const ReplyToForwardUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/ReplyToForward'
+  process.env.REACT_APP_FORWARD_INCIDENT_WITH_HTML_CONTENT_UR
+const IncidentConversationForwardUrl = process.env.REACT_APP_REPLY_INCIDENT_CONVERSATION_FORWARD_URL
+const ReplyToForwardUrl = process.env.REPLY_TO_FORWARD_URL
 const SendIncidentMailWithHtmlContentUrl =
-  'http://10.41.3.232:501/api/IncidentManagement/v1/SendIncidentMailWithHtmlContent'
-const MessageTemplatesUrl = 'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Templates'
-const TemplatesTemplateTypesUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Types'
-const TemplatesGroupsUrl = 'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Groups'
-const MessageTemplatesProcessUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Process'
-const IncidentPreviousConversationUrl =
-  'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentPreviousConversation'
+  process.env.REACT_APP_SEND_INCIDENT_MAIL_WITH_HTML_CONTENT_URL
+const MessageTemplatesUrl = process.env.REACT_APP_MESSAGE_TEMPLATES_URL
+const TemplatesTemplateTypesUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_TYPES_URL
+const TemplatesGroupsUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_GROUPS_URL
+const MessageTemplatesProcessUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_PROCESS_URL
+const IncidentPreviousConversationUrl = process.env.REACT_APP_INCIDENT_PREVIOUS_CONVERSATION_URL
 const UpdateDescriptionAndAttachmentUrl =
-  'http://10.41.3.232:501/api/IncidentManagement/v1/UpdateDescriptionAndAttachment'
+  process.env.REACT_APP_UPDATE_DESCRIPTION_AND_ATTACHMENT_URL
 const IncidentDescriptionAndAttachmentsUrl =
-  'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentDescriptionAndAttachments'
+  process.env.REACT_APP_INCIDENT_DESCRIPTION_AND_ATTACHMENTS_URL
 const IncidentConversationWithoutAttachmentsUrl =
-  'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentConversationWithoutAttachments'
-const NotesDetailsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/Notes/Details'
-const NotesDeleteUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/Notes/Delete'
+  process.env.REACT_APP_INCIDENT_CONVERSATION_WITHOUT_ATTACHMENTS_URL
+const NotesDetailsUrl = process.env.REACT_APP_NOTES_DETAILS_URL
+const NotesDeleteUrl = process.env.REACT_APP_NOTES_DELETE_URL
 const IncidenttNotesByIncidentByConversationIdUrl =
-  'http://10.41.3.232:501/api/IncidentManagement/v1/Notes/IncidenttNotesByIncidentByConversationId'
+  process.env.REACT_APP_INCIDENT_NOTES_BY_INCIDENT_BY_CONVERSATION_ID_URL
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {
@@ -374,10 +368,7 @@ export const fetchIncidentNotesUpdateUrl = async (data) => {
           }))
         : []
 
-    formData.append(
-      'ExistingAttachmentUrlsJson',
-      JSON.stringify(existingJson)
-    )
+    formData.append('ExistingAttachmentUrlsJson', JSON.stringify(existingJson))
 
     const response = await fetch(IncidentNotesUpdateUrl, {
       method: 'POST',

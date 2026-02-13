@@ -1,42 +1,26 @@
 import FetchWithToken from '../modules/auth/FetchWithToken'
 
-const MessageTemplateUrl = 'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template'
-const MessagePlaceholdersUrl = 'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Placeholders'
-const MessageTemplateDeleteUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Delete'
-const MessageTemplateUpdateUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Update'
-const MessagePlaceholderUrl = 'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Placeholder'
-const TablesListUrl = 'http://10.41.3.232:501/api/GenerelFunctions/v1/TablesList'
-const TablesUrl = 'http://10.41.3.232:501/api/GenerelFunctions/v1/Tables'
-const MessagePlaceholderUpdateUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Placeholder/Update'
-const MessagePlaceholderDeleteUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Placeholder/Delete'
-const MessagePlaceHolderGroupsUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/PlaceHolder/Groups'
-const MessageTemplateGroupsUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Groups'
-const MessageTemplateGroupUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Group'
-const MessageTemplateGroupUpdateUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Group/Update'
-const MessageTemplateGroupDeleteUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Group/Delete'
-const MessageTemplateTypesUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Types'
-const MessageTemplateTypeUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Type'
-const MessageTemplateTypeUpdateUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Type/Update'
-const MessageTemplateTypeDeleteUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/Template/Type/Delete'
-const MessagePlaceHolderGroupUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/PlaceHolder/Group'
-const MessagePlaceHolderGroupUpdateUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/PlaceHolder/Group/Update'
-const MessagePlaceHolderGroupDeleteUrl =
-  'http://10.41.3.232:501/api/GenerelFunctions/v1/Message/PlaceHolder/Group/Delete'
+const MessageTemplateUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_URL
+const MessagePlaceholdersUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDERS_URL
+const MessageTemplateDeleteUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_DELETE_URL
+const MessageTemplateUpdateUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_UPDATE_URL
+const MessagePlaceholderUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDER_URL
+const TablesListUrl = process.env.REACT_APP_TABLES_LIST_URL
+const TablesUrl = process.env.REACT_APP_TABLES_URL
+const MessagePlaceholderUpdateUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDER_UPDATE_URL
+const MessagePlaceholderDeleteUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDER_DELETE_URL
+const MessagePlaceHolderGroupsUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDER_GROUPS_URL
+const MessageTemplateGroupsUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_GROUPS_URL
+const MessageTemplateGroupUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_GROUP_URL
+const MessageTemplateGroupUpdateUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_GROUP_UPDATE_URL
+const MessageTemplateGroupDeleteUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_GROUP_DELETE_URL
+const MessageTemplateTypesUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_TYPES_URL
+const MessageTemplateTypeUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_TYPE_URL
+const MessageTemplateTypeUpdateUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_TYPE_UPDATE_URL
+const MessageTemplateTypeDeleteUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_TYPE_DELETE_URL
+const MessagePlaceHolderGroupUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDER_GROUP_URL
+const MessagePlaceHolderGroupUpdateUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDER_GROUP_UPDATE_URL
+const MessagePlaceHolderGroupDeleteUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDER_GROUP_DELETE_URL
 
 export const fetchMessageTemplateUrl = async (data) => {
   try {

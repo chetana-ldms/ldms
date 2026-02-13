@@ -28,8 +28,7 @@ const FeaturesActionsAuthorizedUrl = process.env.REACT_APP_FEATURES_ACTION_AUTHO
 const AgentActionUrl = process.env.REACT_APP_AGENT_ACTION_URL
 const AuthUserVerifyOTPUrl = process.env.REACT_APP_USER_VERIFY_OTP_URL
 const AuthUserResendOTPUrl = process.env.REACT_APP_USER_RESEND_OTP_URL
-const TicketManagementToolUrl =
-  'http://10.41.3.232:501/api/LDPlattform/v1/Organization/ToolsByToolType'
+const TicketManagementToolUrl = process.env.REACT_APP_ORGANIZATION_TOOLS_BY_TOOL_TYPE_URL
 
 export const fetchMasterData = async (data) => {
   try {

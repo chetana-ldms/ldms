@@ -52,8 +52,8 @@ const APIAuthDataUpdateUrl = process.env.REACT_APP_APIAUTHDATA_UPDATE_URL
 const ToolMasterDataUrl = process.env.REACT_APP_TOOL_MASTER_DATA_URL
 const AllUsersUrl = process.env.REACT_APP_ALL_USERS_URL
 const IncidentClientsUrl = process.env.REACT_APP_INCIDENT_CLIENTS_URL
-const ManageSignatureUrl="http://10.41.3.232:501/api/LDPSecurity/v1/User/ManageSignature"
-const SignatureUrl="http://10.41.3.232:501/api/LDPSecurity/v1/User/Signature"
+const ManageSignatureUrl = process.env.REACT_APP_USER_MANAGE_SIGNATURE_URL
+const SignatureUrl = process.env.REACT_APP_USER_SIGNATURE_URL
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {
