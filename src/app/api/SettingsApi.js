@@ -1,10 +1,11 @@
-import FetchWithToken from "../modules/auth/FetchWithToken"
+import {API} from '../../config/apiConfig'
+import FetchWithToken from '../modules/auth/FetchWithToken'
 
-const SitesUrl = process.env.REACT_APP_SITES_URL
-const SiteActionUrl = process.env.REACT_APP_AGENT_SITEACTION_URL
-const SoftwarePackagesUrl = process.env.REACT_APP_SOFTWAREPACKAGES_URL
-const SitesCreateUrl = process.env.REACT_APP_SITE_CREATE_URL
-const SitesUpdateUrl = process.env.REACT_APP_SITE_UPDATE_URL
+const SitesUrl = API.SITES
+const SiteActionUrl = API.AGENT_SITE_ACTION
+const SoftwarePackagesUrl = API.SOFTWARE_PACKAGES
+const SitesCreateUrl = API.SITE_CREATE
+const SitesUpdateUrl = API.SITE_UPDATE
 
 export const fetchSitesUrl = async (data) => {
   try {

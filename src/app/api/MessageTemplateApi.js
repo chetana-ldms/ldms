@@ -1,26 +1,28 @@
+import { API } from '../../config/apiConfig';
 import FetchWithToken from '../modules/auth/FetchWithToken'
+const MessageTemplateUrl = API.MESSAGE_TEMPLATE;
+const MessageTemplateDeleteUrl = API.MESSAGE_TEMPLATE_DELETE;
+const MessageTemplateUpdateUrl = API.MESSAGE_TEMPLATE_UPDATE;
+const MessagePlaceholdersUrl = API.MESSAGE_PLACEHOLDERS;
+const MessagePlaceholderUrl = API.MESSAGE_PLACEHOLDERS;
+const MessagePlaceholderUpdateUrl = API.MESSAGE_PLACEHOLDER_UPDATE;
+const MessagePlaceholderDeleteUrl = API.MESSAGE_PLACEHOLDER_DELETE;
+const TablesListUrl = API.TABLES_LIST;
+const TablesUrl = API.TABLES;
+const MessagePlaceHolderGroupsUrl = API.MESSAGE_PLACEHOLDER_GROUPS;
+const MessagePlaceHolderGroupUrl = API.MESSAGE_PLACEHOLDER_GROUP;
+const MessagePlaceHolderGroupUpdateUrl = API.MESSAGE_PLACEHOLDER_GROUP_UPDATE;
+const MessagePlaceHolderGroupDeleteUrl = API.MESSAGE_PLACEHOLDER_GROUP_DELETE;
+const MessageTemplateGroupsUrl = API.MESSAGE_TEMPLATE_GROUPS;
+const MessageTemplateGroupUrl = API.MESSAGE_TEMPLATE_GROUP;
+const MessageTemplateGroupUpdateUrl = API.MESSAGE_TEMPLATE_GROUP_UPDATE;
+const MessageTemplateGroupDeleteUrl = API.MESSAGE_TEMPLATE_GROUP_DELETE;
+const MessageTemplateTypesUrl = API.MESSAGE_TEMPLATE_TYPES;
+const MessageTemplateTypeUrl = API.MESSAGE_TEMPLATE_TYPE;
+const MessageTemplateTypeUpdateUrl = API.MESSAGE_TEMPLATE_TYPE_UPDATE;
+const MessageTemplateTypeDeleteUrl = API.MESSAGE_TEMPLATE_TYPE_DELETE;
 
-const MessageTemplateUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_URL
-const MessagePlaceholdersUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDERS_URL
-const MessageTemplateDeleteUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_DELETE_URL
-const MessageTemplateUpdateUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_UPDATE_URL
-const MessagePlaceholderUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDER_URL
-const TablesListUrl = process.env.REACT_APP_TABLES_LIST_URL
-const TablesUrl = process.env.REACT_APP_TABLES_URL
-const MessagePlaceholderUpdateUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDER_UPDATE_URL
-const MessagePlaceholderDeleteUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDER_DELETE_URL
-const MessagePlaceHolderGroupsUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDER_GROUPS_URL
-const MessageTemplateGroupsUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_GROUPS_URL
-const MessageTemplateGroupUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_GROUP_URL
-const MessageTemplateGroupUpdateUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_GROUP_UPDATE_URL
-const MessageTemplateGroupDeleteUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_GROUP_DELETE_URL
-const MessageTemplateTypesUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_TYPES_URL
-const MessageTemplateTypeUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_TYPE_URL
-const MessageTemplateTypeUpdateUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_TYPE_UPDATE_URL
-const MessageTemplateTypeDeleteUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_TYPE_DELETE_URL
-const MessagePlaceHolderGroupUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDER_GROUP_URL
-const MessagePlaceHolderGroupUpdateUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDER_GROUP_UPDATE_URL
-const MessagePlaceHolderGroupDeleteUrl = process.env.REACT_APP_MESSAGE_PLACEHOLDER_GROUP_DELETE_URL
+
 
 export const fetchMessageTemplateUrl = async (data) => {
   try {

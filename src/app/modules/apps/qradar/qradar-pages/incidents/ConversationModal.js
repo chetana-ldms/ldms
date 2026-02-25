@@ -9,6 +9,7 @@ import ForwardModal from './ForwardModal'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import DetailsModal from './DetailsModal '
 import NotesModalComponent from './NotesModalComponent'
+import NotesEditModalComponent from './NotesEditModalComponent'
 
 const ConversationModal = ({show, onClose, incidentData}) => {
   const {orgId, toolId, incidentID} = incidentData || {}
@@ -240,7 +241,7 @@ const ConversationModal = ({show, onClose, incidentData}) => {
 
       {/* NOTES MODAL */}
       {showNotesModal && selectedMail && (
-        <NotesModalComponent
+        <NotesEditModalComponent
           show={showNotesModal}
           mode='edit'
           conversationId={selectedMail?.id}

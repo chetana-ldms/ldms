@@ -1,13 +1,15 @@
+import { API } from "../../config/apiConfig";
 import FetchWithToken from "../modules/auth/FetchWithToken"
 
-const AlertsSummeryUrl = process.env.REACT_APP_ALERTS_SUMMERY_URL
-const AlertsRuleUrl = process.env.REACT_APP_ALERTS_RULE_SUMMERY_URL
-const SLAMeasurementSummeryUrl = process.env.REACT_APP_SLA_MEASURMENT_SUMMERY_URL
-const AllIncidentsSummeryUrl = process.env.REACT_APP_ALL_INCIDENTS_SUMMERY_URL
-const ClosedIncidentsSummeryUrl=process.env.REACT_APP_CLOSED_INCIDENTS_SUMMERY_URL
-const OpenIncidentsSummeryUrl=process.env.REACT_APP_OPEN_INCIDENTS_SUMMERY_URL
-const SignificantsIncidentsSummeryUrl= process.env.REACT_APP_SIGNIFICANTS_INCIDENTS_SUMMERY_URL
-const IncidentsSLAMeasurementSummeryUrl =process.env.REACT_APP_INCIDENTS_SLA_REPORT_Data_URL
+const AlertsSummeryUrl = API.ALERTS_SUMMARY;
+const AlertsRuleUrl = API.ALERTS_RULE_SUMMARY;
+const SLAMeasurementSummeryUrl = API.SLA_MEASUREMENT_SUMMARY;
+const AllIncidentsSummeryUrl = API.ALL_INCIDENTS_SUMMARY;
+const ClosedIncidentsSummeryUrl = API.CLOSED_INCIDENTS_SUMMARY;
+const OpenIncidentsSummeryUrl = API.OPEN_INCIDENTS_SUMMARY;
+const SignificantsIncidentsSummeryUrl = API.SIGNIFICANT_INCIDENTS_SUMMARY;
+const IncidentsSLAMeasurementSummeryUrl = API.INCIDENTS_SLA_REPORT_DATA;
+
 
 
 export const fetchAlertsSummeryUrl = async (data) => {

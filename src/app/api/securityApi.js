@@ -1,23 +1,23 @@
+import {API} from '../../config/apiConfig'
 import FetchWithToken from '../modules/auth/FetchWithToken'
 
-const FeaturesUrl = process.env.REACT_APP_FEATURES_URL
-const OrganizationToolsUrl = process.env.REACT_APP_ORGANIZATION_TOOLS_SECURITY_URL
-const OrganizationRolesUrl = process.env.REACT_APP_ORGANIZATION_ROLES_URL
-const FeaturesActionsAuthorizedAccessUrl = process.env.REACT_APP_FEATURES_ACTIONS_AUTHORIZED_URL
-const FeaturesActionsAuthorizationConfigurationUrl =
-  process.env.REACT_APP_FEATURES_ACTIONS_AUTHORIZATION_CONFIGURATION_URL
-const FeaturesListUrl = process.env.REACT_APP_FEATURES_LIST_URL
-const ActionsUrl = process.env.REACT_APP_ACTIONS_URL
-const FeaturesAddUrl = process.env.REACT_APP_FEATURES_ADD_URL
-const FeaturesDeleteUrl = process.env.REACT_APP_FEATURES_DELETE_URL
-const FeaturesUpdateUrl = process.env.REACT_APP_FEATURES_UPDATE_URL
-const FeatureDetailsUrl = process.env.REACT_APP_FEATURES_DETAILS_URL
-const ActionsAddUrl = process.env.REACT_APP_ACTIONS_ADD_URL
-const ActionsDeleteUrl = process.env.REACT_APP_ACTIONS_DELETE_URL
-const ActionsUpdateUrl = process.env.REACT_APP_ACTIONS_UPDATE_URL
-const ActionTypesUrl = process.env.REACT_APP_ACTIONSTYPES_URL
-const AuthUserlockedUrl = process.env.REACT_APP_AUTH_USER_LOCKED_URL
-const AuthUserUnlockUrl = process.env.REACT_APP_AUTH_USER_UNLOCK_URL
+const FeaturesUrl = API.FEATURES
+const OrganizationToolsUrl = API.ORGANIZATION_TOOLS_SECURITY
+const OrganizationRolesUrl = API.ORGANIZATION_ROLES
+const FeaturesActionsAuthorizedAccessUrl = API.FEATURES_ACTIONS_AUTHORIZED
+const FeaturesActionsAuthorizationConfigurationUrl = API.FEATURES_ACTIONS_AUTH_CONFIG
+const FeaturesListUrl = API.FEATURES_LIST
+const ActionsUrl = API.ACTIONS
+const FeaturesAddUrl = API.FEATURES_ADD
+const FeaturesDeleteUrl = API.FEATURES_DELETE
+const FeaturesUpdateUrl = API.FEATURES_UPDATE
+const FeatureDetailsUrl = API.FEATURE_DETAILS
+const ActionsAddUrl = API.ACTIONS_ADD
+const ActionsDeleteUrl = API.ACTIONS_DELETE
+const ActionsUpdateUrl = API.ACTIONS_UPDATE
+const ActionTypesUrl = API.ACTION_TYPES
+const AuthUserlockedUrl = API.AUTH_USER_LOCKED
+const AuthUserUnlockUrl = API.AUTH_USER_UNLOCK
 
 export const fetchFeaturesUrl = async (data) => {
   try {

@@ -74,7 +74,7 @@ const IncidentsPage = () => {
   const [selectedDays, setSelectedDays] = useState([])
   const [selectedFilterValue, setSelectedFilterValue] = useState(1)
   const [selectedToolId, setSelectedToolId] = useState(
-    sessionStorage.getItem('incidentToolId') || ''
+    sessionStorage.getItem('incidentToolId') || 0
   )
   const [tools, setTools] = useState([])
   const [showConfirmation, setShowConfirmation] = useState(false)

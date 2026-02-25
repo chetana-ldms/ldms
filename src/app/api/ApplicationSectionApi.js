@@ -1,17 +1,19 @@
+import { API } from '../../config/apiConfig'
 import FetchWithToken from '../modules/auth/FetchWithToken'
 
-const ApplicationsAndRisksUrl = process.env.REACT_APP_RISKS_APPLICATIONS_URL
-const ApplicationInventoryUrl = process.env.REACT_APP_INVENTORY_APPLICATIONS_URL
-const ApplicationEndPointsUrl = process.env.REACT_APP_RISKS_APPLICATIONS_ENDPOINTS_URL
-const ApplicationCVSUrl = process.env.REACT_APP_RISKS_APPLICATION_CVES_URL
-const EndPointDetailsUrl = process.env.REACT_APP_ENDPONT_DETAILS_URL
-const EndPointApplicationsUrl = process.env.REACT_APP_ENDPOINT_APPLICATIONS_URL
-const InventoryApplicationsEndpointsUrl = process.env.REACT_APP_INVENTORY_APPLICATIONS_ENDPOINTS_URL
-const EndPointUpdatesUrl = process.env.REACT_APP_ENDPOINT_UPDATES_URL
-const ApplicationManagementSettingsUrl = process.env.REACT_APP_APPLICATION_MANAGEMENT_SETTINGS_URL
-const CVEMarkAsFalsePositiveUrl = process.env.REACT_APP_CVE_MARK_AS_FALSEPOSITIVE_URL
-const MissingCVEAddUrl = process.env.REACT_APP_MISSING_CVE_ADD_URL
-const ApplicationManagementSettingsUpdateUrl = process.env.REACT_APP_SETTINGS_UPDATE_URL
+const ApplicationsAndRisksUrl = API.APPLICATIONS_AND_RISKS
+const ApplicationInventoryUrl = API.APPLICATION_INVENTORY
+const ApplicationEndPointsUrl = API.APPLICATION_ENDPOINTS
+const ApplicationCVSUrl = API.APPLICATION_CVES
+const EndPointDetailsUrl = API.ENDPOINT_DETAILS
+const EndPointApplicationsUrl = API.ENDPOINT_APPLICATIONS
+const InventoryApplicationsEndpointsUrl = API.INVENTORY_APPLICATION_ENDPOINTS
+const EndPointUpdatesUrl = API.ENDPOINT_UPDATES
+const ApplicationManagementSettingsUrl = API.APPLICATION_MANAGEMENT_SETTINGS
+const CVEMarkAsFalsePositiveUrl = API.CVE_MARK_FALSE_POSITIVE
+const MissingCVEAddUrl = API.MISSING_CVE_ADD
+const ApplicationManagementSettingsUpdateUrl = API.APPLICATION_SETTINGS_UPDATE
+
 
 export const fetchApplicationsAndRisksUrl = async (data) => {
   try {

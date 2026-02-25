@@ -1,7 +1,8 @@
+import { API } from "../../config/apiConfig";
 import FetchWithToken from "../modules/auth/FetchWithToken"
 
-const EmaillogsOutboundUrl =process.env.REACT_APP_EMAIL_LOGS_OUTBOUND_URL
-const EmaillogsOutboundStreamUrl=process.env.REACT_APP_EMAIL_LOGS_OUTBOUND_STRAM_URL
+const EmaillogsOutboundUrl = API.EMAIL_LOGS_OUTBOUND;
+const EmaillogsOutboundStreamUrl = API.EMAIL_LOGS_OUTBOUND_STREAM;
 
 export const fetchEmaillogsOutboundUrl = async (data) => {
     try {

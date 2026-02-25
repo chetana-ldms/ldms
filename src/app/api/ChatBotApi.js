@@ -1,7 +1,7 @@
 
+import { API } from "../../config/apiConfig";
 import FetchWithToken from "../modules/auth/FetchWithToken";
-const ADUserBOTAskUrl =process.env.REACT_APP_ADUSER_BOT_ASK_URL
-
+const ADUserBOTAskUrl = API.ADUSER_BOT_ASK
 
 export const fetchADUserBOTAskUrl = async (data) => {
     try {

@@ -1,7 +1,8 @@
+import { API } from "../../config/apiConfig";
 import FetchWithToken from "../modules/auth/FetchWithToken";
 
-const tasksUrl = process.env.REACT_APP_TASK_LIST_URL
-const taskCancelUrl =process.env.REACT_APP_STATUS_CANCEL_URL
+const tasksUrl = API.TASK_LIST;
+const taskCancelUrl = API.STATUS_CANCEL;
 
 export const fetchTasksUrl = async (ownerUserId) => {
     try {

@@ -1,59 +1,55 @@
+import { API } from '../../config/apiConfig'
 import FetchWithToken from '../modules/auth/FetchWithToken'
 
-const createIncidentUrl = process.env.REACT_APP_CREATE_INCIDENT_URL
-const incidentsUrl = process.env.REACT_APP_INCIDENTS_URL
-const getIncidentSearchResultUrl = process.env.REACT_APP_GET_INCIDENT_SEARCH_RESULT_URL
-const incidentDetailsUrl = process.env.REACT_APP_INCIDENT_DETAILS_URL
-const updateIncidentUrl = process.env.REACT_APP_UPDATE_INCIDENT_URL
-const getIncidentHistoryUrl = process.env.REACT_APP_GET_INCIDENT_HISTORY_URL
-const alertsByAlertIdsUrl = process.env.REACT_APP_ALERTS_BY_ALERT_IDS_URL
-const getChatHistoryUrl = process.env.REACT_APP_GET_CHAT_HISTORY_URL
-const addChatMessageUrl = process.env.REACT_APP_SEND_CHAT_MESSAGE_URL
-const DownloadAttachmentUrl = process.env.REACT_APP_DOWNLOAD_ATTACHMENT_URL
-const masterDataUrl = process.env.REACT_APP_MASTER_DATA_URL
-const UsersByOrgToolUrl = process.env.REACT_APP_USERS_BY_ORG_TOOL_URL
-const IncidentNotesListUrl = process.env.REACT_APP_INCIDENT_NOTES_LIST_URL
-const IncidentNotesAddUrl = process.env.REACT_APP_INCIDENT_NOTES_ADD_URL
-const IncidentNotesUpdateUrl = process.env.REACT_APP_INCIDENT_NOTES_UPDATE_URL
-const OrganizationToolsDetailsUrl = process.env.REACT_APP_ORG_TOOLS_DETAILS_URL
-const IncidentReportTypesUrl = process.env.REACT_APP_INCIDENT_REPORT_TYPES_URL
-const IncidentReportDataUrl = process.env.REACT_APP_INCIDENT_REPORT_DATA_URL
-const IncidentsHasChangesUrl = process.env.REACT_APP_HAS_CHANGES_URL
-const DeleteIncidentsUrl = process.env.REACT_APP_DELETE_INCIDENTS_URL
-const MergeIncidentsUrl = process.env.REACT_APP_MERGE_INCIDENTS_URL
-const GroupUsersUrl = process.env.REACT_APP_GROUP_USERS_URL
-const UsersForIncidentCreatorRoleUrl = process.env.REACT_APP_USERS_FOR_INCIDENT_CREATER_ROLE_URL
-const ReplyIncidentUrl = process.env.REACT_APP_REPLY_INCIDENT_URL
-const IncidentGroupsUrl = process.env.REACT_APP_INCIDENT_GROUPS_URL
-const IncidentProductsUrl = process.env.REACT_APP_INCIDENT_PRODUCTS_URL
-const SearchIncidentTagsUrl = process.env.REACT_APP_SEARCH_INCIDENT_TAGS_UR
-const ForwardIncidentUrl = process.env.REACT_APP_FORWARD_INCIDENT_URL
-const EmailSearchUrl = process.env.REACT_APP_EMAIL_SEARCH_URL
-const SendMailUrl = process.env.REACT_APP_SEND_MAIL_URL
-const IncidentConversationUrl = process.env.REACT_APP_INCIDENT_CONVERSATION_URL
-const ReplyIncidentWithHtmlContentUrl = process.env.REACT_APP_REPLY_INCIDENT_WITH_HTML_CONTENT_URL
-const IncidentConversationDeleteUrl = process.env.REACT_APP_DELETE_INCIDENT_CONVERSATION_URL
-const ForwardIncidentWithHtmlContentUrl =
-  process.env.REACT_APP_FORWARD_INCIDENT_WITH_HTML_CONTENT_UR
-const IncidentConversationForwardUrl = process.env.REACT_APP_REPLY_INCIDENT_CONVERSATION_FORWARD_URL
-const ReplyToForwardUrl = process.env.REPLY_TO_FORWARD_URL
-const SendIncidentMailWithHtmlContentUrl =
-  process.env.REACT_APP_SEND_INCIDENT_MAIL_WITH_HTML_CONTENT_URL
-const MessageTemplatesUrl = process.env.REACT_APP_MESSAGE_TEMPLATES_URL
-const TemplatesTemplateTypesUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_TYPES_URL
-const TemplatesGroupsUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_GROUPS_URL
-const MessageTemplatesProcessUrl = process.env.REACT_APP_MESSAGE_TEMPLATE_PROCESS_URL
-const IncidentPreviousConversationUrl = process.env.REACT_APP_INCIDENT_PREVIOUS_CONVERSATION_URL
-const UpdateDescriptionAndAttachmentUrl =
-  process.env.REACT_APP_UPDATE_DESCRIPTION_AND_ATTACHMENT_URL
-const IncidentDescriptionAndAttachmentsUrl =
-  process.env.REACT_APP_INCIDENT_DESCRIPTION_AND_ATTACHMENTS_URL
-const IncidentConversationWithoutAttachmentsUrl =
-  process.env.REACT_APP_INCIDENT_CONVERSATION_WITHOUT_ATTACHMENTS_URL
-const NotesDetailsUrl = process.env.REACT_APP_NOTES_DETAILS_URL
-const NotesDeleteUrl = process.env.REACT_APP_NOTES_DELETE_URL
-const IncidenttNotesByIncidentByConversationIdUrl =
-  process.env.REACT_APP_INCIDENT_NOTES_BY_INCIDENT_BY_CONVERSATION_ID_URL
+const createIncidentUrl = API.CREATE_INCIDENT
+const incidentsUrl = API.INCIDENTS
+const getIncidentSearchResultUrl = API.GET_INCIDENT_SEARCH_RESULT
+const incidentDetailsUrl = API.INCIDENT_DETAILS
+const updateIncidentUrl = API.UPDATE_INCIDENT
+const getIncidentHistoryUrl = API.GET_INCIDENT_HISTORY
+const alertsByAlertIdsUrl = API.ALERTS_BY_ALERT_IDS
+const getChatHistoryUrl = API.GET_CHAT_HISTORY
+const addChatMessageUrl = API.SEND_CHAT_MESSAGE
+const DownloadAttachmentUrl = API.DOWNLOAD_ATTACHMENT
+const masterDataUrl = API.MASTER_DATA
+const UsersByOrgToolUrl = API.USERS_BY_ORG_TOOL
+const IncidentNotesListUrl = API.INCIDENT_NOTES_LIST
+const IncidentNotesAddUrl = API.INCIDENT_NOTES_ADD
+const IncidentNotesUpdateUrl = API.INCIDENT_NOTES_UPDATE
+const OrganizationToolsDetailsUrl = API.ORG_TOOLS_DETAILS
+const IncidentReportTypesUrl = API.INCIDENT_REPORT_TYPES
+const IncidentReportDataUrl = API.INCIDENT_REPORT_DATA
+const IncidentsHasChangesUrl = API.HAS_CHANGES
+const DeleteIncidentsUrl = API.DELETE_INCIDENTS
+const MergeIncidentsUrl = API.MERGE_INCIDENTS
+const GroupUsersUrl = API.GROUP_USERS
+const UsersForIncidentCreatorRoleUrl = API.USERS_FOR_INCIDENT_CREATOR_ROLE
+const ReplyIncidentUrl = API.REPLY_INCIDENT
+const IncidentGroupsUrl = API.INCIDENT_GROUPS
+const IncidentProductsUrl = API.INCIDENT_PRODUCTS
+const SearchIncidentTagsUrl = API.SEARCH_INCIDENT_TAGS
+const ForwardIncidentUrl = API.FORWARD_INCIDENT
+const EmailSearchUrl = API.EMAIL_SEARCH
+const SendMailUrl = API.SEND_MAIL
+const IncidentConversationUrl = API.INCIDENT_CONVERSATION
+const ReplyIncidentWithHtmlContentUrl = API.REPLY_INCIDENT_HTML
+const IncidentConversationDeleteUrl = API.INCIDENT_CONVERSATION_DELETE
+const ForwardIncidentWithHtmlContentUrl = API.FORWARD_INCIDENT_HTML
+const IncidentConversationForwardUrl = API.INCIDENT_CONVERSATION_FORWARD
+const ReplyToForwardUrl = API.REPLY_TO_FORWARD
+const SendIncidentMailWithHtmlContentUrl = API.SEND_INCIDENT_HTML_MAIL
+const MessageTemplatesUrl = API.MESSAGE_TEMPLATES
+const TemplatesTemplateTypesUrl = API.MESSAGE_TEMPLATE_TYPES
+const TemplatesGroupsUrl = API.MESSAGE_TEMPLATE_GROUPS
+const MessageTemplatesProcessUrl = API.MESSAGE_TEMPLATE_PROCESS
+const IncidentPreviousConversationUrl = API.INCIDENT_PREVIOUS_CONVERSATION
+const UpdateDescriptionAndAttachmentUrl = API.UPDATE_DESCRIPTION_ATTACHMENT
+const IncidentDescriptionAndAttachmentsUrl = API.INCIDENT_DESCRIPTION_ATTACHMENTS
+const IncidentConversationWithoutAttachmentsUrl = API.INCIDENT_CONVERSATION_NO_ATTACH
+const NotesDetailsUrl = API.NOTES_DETAILS
+const NotesDeleteUrl = API.NOTES_DELETE
+const IncidenttNotesByIncidentByConversationIdUrl = API.INCIDENT_NOTES_BY_CONVERSATION
+
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {

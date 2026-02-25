@@ -413,10 +413,10 @@ const DashboardWrapper = () => {
                         className='form-select form-select-solid bg-blue-light'
                         value={selectedToolId || ''}
                         onChange={(e) => setSelectedToolId(e.target.value)}
-                        disabled={!tools.length}
+                        disabled={!tools || tools.length === 0}
                       >
                         <option value=''>Select Tools</option>
-                        {tools.map((tool) => (
+                        {tools?.map((tool) => (
                           <option key={tool.toolId} value={tool.toolId}>
                             {tool.toolName}
                           </option>

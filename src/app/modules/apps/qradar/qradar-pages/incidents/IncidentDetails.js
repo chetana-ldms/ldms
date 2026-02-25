@@ -49,9 +49,10 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     destinationUser,
     sourceIP,
     vendor,
-    toolId,
     subject,
   } = incident
+  const toolId = incident?.toolId ?? 0
+  console.log(toolId, 'toolId')
   const id = incidentID
   console.log(id, 'id')
   const [showReplyModal, setShowReplyModal] = useState(false)
@@ -107,7 +108,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     subject: '',
     description: '',
     orgId: '',
-    toolId: '',
+    toolId: 0,
     incidentID: '',
     // SLA fields
     resolvedDatetime: null,

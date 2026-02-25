@@ -1,20 +1,18 @@
+import { API } from "../../config/apiConfig";
 import FetchWithToken from "../modules/auth/FetchWithToken"
-
-const OrganizationsUrl = process.env.REACT_APP_DASHBOARD_ORGANIZATION_URL
-const GetAlertsMostUsedTagesUrl=process.env.REACT_APP_DASHBOARD_GETALERTSMOSTUSEDTAGES_URL
-const UserActionsByUserUrl=process.env.REACT_APP_DASHBOARD_USERACTIONSBYUSER_URL
-const GetMyInternalIncidentsUrl =process.env.REACT_APP_DASHBOARD_GETMYINTERNALINCIDENTS_URL
-const GetUnAttendedIncidentsCountUrl =process.env.REACT_APP_DASHBOARD_GETUNATTNDEDINCIDENTSCOUNT_URL
-const GetUnAttendedAletsCountUrl =process.env.REACT_APP_DASHBOARD_GETUNATTENDEDALERTSCOUNT_URL
-const GetFalsePositiveAlertsCountUrl =process.env.REACT_APP_DASHBOARD_GETFALSEPOSITIVEALERTSCOUNT_URL
-const GetAlertsResolvedMeanTimeUrl =process.env.REACT_APP_DASHBOARD_GETALERTSRESOLVEDMEANTIME_URL
-const masterDataUrl = process.env.REACT_APP_MASTER_DATA_URL
-const masterDataByOrganization = process.env.REACT_APP_MASTER_DATABY_ORGANIZATION_URL
-// const MasterDataUrl = process.env.REACT_APP_DASHBOARD_MASTERDATA_URL
-const AllIncidentsSummeryUrl =process.env.REACT_APP_DASHBOARD_ALLINCIDENTSSUMMERY_URL
-const GetAlertsTrendDataUrl =process.env.REACT_APP_DASHBOARD_GETALERTSTRENDDATA_URL
-const GetIncidentCountByPriorityAndStatusUrl= process.env.REACT_APP_DASHBOARD_GET_INCIDENT_COUNTBY_PRIORITY_AND_STATUS_URL
-
+const OrganizationsUrl = API.DASHBOARD_ORGANIZATIONS;
+const GetAlertsMostUsedTagesUrl = API.DASHBOARD_ALERTS_MOST_USED_TAGS;
+const UserActionsByUserUrl = API.DASHBOARD_USER_ACTIONS_BY_USER;
+const GetMyInternalIncidentsUrl = API.DASHBOARD_MY_INTERNAL_INCIDENTS;
+const GetUnAttendedIncidentsCountUrl = API.DASHBOARD_UNATTENDED_INCIDENTS_COUNT;
+const GetUnAttendedAletsCountUrl = API.DASHBOARD_UNATTENDED_ALERTS_COUNT;
+const GetFalsePositiveAlertsCountUrl = API.DASHBOARD_FALSE_POSITIVE_ALERTS_COUNT;
+const GetAlertsResolvedMeanTimeUrl = API.DASHBOARD_ALERTS_RESOLVED_MEAN_TIME;
+const AllIncidentsSummeryUrl = API.DASHBOARD_ALL_INCIDENTS_SUMMARY;
+const GetAlertsTrendDataUrl = API.DASHBOARD_ALERTS_TREND_DATA;
+const GetIncidentCountByPriorityAndStatusUrl = API.DASHBOARD_INCIDENT_COUNT_BY_PRIORITY_STATUS;
+const masterDataUrl = API.MASTER_DATA;
+const masterDataByOrganization = API.MASTER_DATA_BY_ORGANIZATION;
 
 export const fetchOrganizations = async () => {
     try {

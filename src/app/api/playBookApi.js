@@ -1,8 +1,10 @@
+import { API } from "../../config/apiConfig";
 import FetchWithToken from "../modules/auth/FetchWithToken";
 
-const playBooksUrl = process.env.REACT_APP_PLAYBOOKS_URL;
-const deletePlaybookUrl = process.env.REACT_APP_DELETE_PLAYBOOK_URL;
-const playbookByIdUrl = process.env.REACT_APP_PLAYBOOK_BY_ID_URL;
+const playBooksUrl = API.PLAYBOOKS;
+const deletePlaybookUrl = API.DELETE_PLAYBOOK;
+const playbookByIdUrl = API.PLAYBOOK_BY_ID;
+
 
 export const fetchDelete = async (data) => {
   try {

@@ -1,7 +1,7 @@
+import { API } from "../../config/apiConfig";
 import FetchWithToken from "../modules/auth/FetchWithToken";
 
-const ApplicationLogsUrl =process.env.REACT_APP_APPLICATION_LOGS_URL
-
+const ApplicationLogsUrl = API.APPLICATION_LOGS
 
 export const fetchApplicationLogsUrl = async (data) => {
     try {

@@ -40,8 +40,8 @@ export function Login() {
   const [showChangePwdModal, setShowChangePwdModal] = useState(false)
   const [showMFAModal, setShowMFAModal] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const handleOpen = () => setShowMFAModal(true);
-  const handleClose = () => setShowMFAModal(false);
+  const handleOpen = () => setShowMFAModal(true)
+  const handleClose = () => setShowMFAModal(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -77,56 +77,64 @@ export function Login() {
           sessionStorage.setItem('accessToken', authData.accessToken.toString())
           sessionStorage.setItem('refreshToken', authData.refreshToken)
           sessionStorage.setItem('openTaskCount', authData.openTaskCount.toString())
-          sessionStorage.setItem('defaultPassword', authData.defaultPassword.toString() || "")
-          sessionStorage.setItem('isMFAEnabled', authData.isMFAEnabled.toString() || "")
-          if (authData.orgToolsData && authData.orgToolsData.length > 0) {
+          sessionStorage.setItem('defaultPassword', authData.defaultPassword.toString() || '')
+          sessionStorage.setItem('isMFAEnabled', authData.isMFAEnabled.toString() || '')
+          let safeToolId = '0'
+
+          if (authData?.orgToolsData?.length > 0) {
             const toolData = authData.orgToolsData[0]
-            sessionStorage.setItem('toolID', toolData.toolId.toString())
-            sessionStorage.setItem('login_toolID', toolData.toolId.toString())
-            if(toolData.toolOrgStructure !==null)
-            toolData.toolOrgStructure.forEach((level) => {
-              switch (level.levelName) {
-                case 'AccountName':
-                  sessionStorage.setItem('accountName', level.levelData)
-                  break
-                case 'AccountId':
-                  sessionStorage.setItem('accountId', level.levelData)
-                  break
-                case 'SiteName':
-                  sessionStorage.setItem('siteName', level.levelData)
-                  break
-                case 'SiteId':
-                  sessionStorage.setItem('siteId', level.levelData)
-                  break
-                case 'GroupName':
-                  sessionStorage.setItem('groupName', level.levelData)
-                  break
-                case 'GroupId':
-                  sessionStorage.setItem('groupId', level.levelData)
-                  break
-                default:
-                  break
-              }
-            })
+
+            safeToolId = (toolData?.toolId ?? 0).toString()
+
+            if (toolData?.toolOrgStructure) {
+              toolData.toolOrgStructure.forEach((level) => {
+                switch (level.levelName) {
+                  case 'AccountName':
+                    sessionStorage.setItem('accountName', level.levelData)
+                    break
+                  case 'AccountId':
+                    sessionStorage.setItem('accountId', level.levelData)
+                    break
+                  case 'SiteName':
+                    sessionStorage.setItem('siteName', level.levelData)
+                    break
+                  case 'SiteId':
+                    sessionStorage.setItem('siteId', level.levelData)
+                    break
+                  case 'GroupName':
+                    sessionStorage.setItem('groupName', level.levelData)
+                    break
+                  case 'GroupId':
+                    sessionStorage.setItem('groupId', level.levelData)
+                    break
+                  default:
+                    break
+                }
+              })
+            }
           }
+
+          // Always set toolID (even if orgToolsData not present)
+          sessionStorage.setItem('toolID', safeToolId)
+          sessionStorage.setItem('login_toolID', safeToolId)
 
           sessionStorage.setItem('toolExpire', 'true')
           sessionStorage.setItem('sentinalTesting', 'false')
           sessionStorage.setItem('selectedFeatureId', '1')
-try {
-          const orgId = sessionStorage.getItem('orgId')
-          if (orgId) {
-            const organizationToolList = await fetchTicketManagementToolUrl(orgId)
-            if (organizationToolList && organizationToolList.length > 0) {
-              const incidentToolId = organizationToolList[0]?.toolID
-              if (incidentToolId) {
-                sessionStorage.setItem('incidentToolId', incidentToolId.toString())
+          try {
+            const orgId = sessionStorage.getItem('orgId')
+            if (orgId) {
+              const organizationToolList = await fetchTicketManagementToolUrl(orgId)
+              if (organizationToolList && organizationToolList.length > 0) {
+                const incidentToolId = organizationToolList[0]?.toolID
+                if (incidentToolId) {
+                  sessionStorage.setItem('incidentToolId', incidentToolId.toString())
+                }
               }
             }
+          } catch (error) {
+            console.error('Error fetching TicketManagement tool:', error)
           }
-        } catch (error) {
-          console.error("Error fetching TicketManagement tool:", error)
-        }
 
           if (authData.isMFAEnabled) {
             setShowMFAModal(true)
@@ -139,13 +147,13 @@ try {
             try {
               const data = {
                 orgId: orgId,
-                toolId: toolId ? toolId : 0,
+                toolId: toolId ?? 0,
                 roleId: roleId,
                 parentFeatureId: 0,
               }
               const response = await fetchFeaturesAuthorizedUrl(data)
               const features = response.features
-              if(response.isSuccess == false){
+              if (response.isSuccess == false) {
                 setMessage('Please contact administrator')
               }
               if (features.length > 0) {
@@ -172,23 +180,23 @@ try {
     setShowPassword(!showPassword)
   }
 
-  const fetchFeatures = async () => {
-    const orgId = sessionStorage.getItem('orgId')
-    const toolId = sessionStorage.getItem('toolID')
-    const roleId = sessionStorage.getItem('roleID')
-    try {
-      const data = {
-        orgId: orgId,
-        toolId: toolId,
-        roleId: roleId,
-        parentFeatureId: 0,
-      }
-      const response = await fetchFeaturesAuthorizedUrl(data)
-      setFeatures(response.features)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  // const fetchFeatures = async () => {
+  //   const orgId = sessionStorage.getItem('orgId')
+  //   const toolId = sessionStorage.getItem('toolID')
+  //   const roleId = sessionStorage.getItem('roleID')
+  //   try {
+  //     const data = {
+  //       orgId: orgId,
+  //       toolId: toolId,
+  //       roleId: roleId,
+  //       parentFeatureId: 0,
+  //     }
+  //     const response = await fetchFeaturesAuthorizedUrl(data)
+  //     setFeatures(response.features)
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
   return (
     <div className='card pad-20'>
@@ -319,7 +327,7 @@ try {
         showChangePwdModal={showChangePwdModal}
         setShowChangePwdModal={setShowChangePwdModal}
       />
-      <MFAModal show={showMFAModal} onClose={handleClose}/>
+      <MFAModal show={showMFAModal} onClose={handleClose} />
     </div>
   )
 }

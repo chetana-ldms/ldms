@@ -1,25 +1,26 @@
+import { API } from "../../config/apiConfig"
 import FetchWithToken from "../modules/auth/FetchWithToken"
 
-const alertsUrl = process.env.REACT_APP_ALERTS_URL
-const setAlertEscalationStatusUrl = process.env.REACT_APP_SET_ALERT_ESCALATION_URL
-const usersUrl = process.env.REACT_APP_LDP_SECURIY_USER_URL
-const getAlertNotesByAlertIDUrl = process.env.REACT_APP_ALERTS_NOTES_URL
-const GetalertHistoryUrl = process.env.REACT_APP_GET_ALERT_HISTORY_URL
-const getSentinalOneUrl = process.env.REACT_APP_THREAT_DETAILS_URL
-const AnalystVerdictUpdateUrl = process.env.REACT_APP_ANALYSTVERDICT_UPDATE_URL
-const MitigateActionUrl = process.env.REACT_APP_MITIGATEACTION_URL
-const ThreatNotesUrl = process.env.REACT_APP_NOTES_ADD_URL
-const AddToblockListUrl = process.env.REACT_APP_ADDTOBLOCKLIST_THREAT_URL
-const AddToExclusionListUrl = process.env.REACT_APP_ADDTOEXCLUSIONLIST_URL
-const ConnectToNetworkUrl = process.env.REACT_APP_CONNECTTONETWORK_URL
-const DisConnectFromNetworkUrl = process.env.REACT_APP_DISCONNECTFROMNETWORK_URL
-const ThreatsActionUrl = process.env.REACT_APP_ACTION_URL
-const AlertsStatusUpdateUrl = process.env.REACT_APP_ALERTS_STATUS_UPDATE_URL
-const MitigateActionValidationUrl = process.env.REACT_APP_MITIGATE_ACTION_VALIDATION_URL
-const ThreatFileDownloadUrl=process.env.REACT_APP_THREAT_FILEDOWNLOAD_URL
-const CustomAlertsUrl = process.env.REACT_APP_CUSTOM_ALERTS_URL
-const CustomAlertsAnalystVerdictUpdateUrl=process.env.REACT_APP_CUSTOM_ALERTS_ANALYSTVERDICT_UPDATE_URL
-const CustomAlertsIncidentStatusUpdateUrl=process.env.REACT_APP_CUSTOM_ALERTS_INCIDENT_STATUS_UPDATE_URL
+const alertsUrl = API.ALERTS
+const setAlertEscalationStatusUrl = API.SET_ALERT_ESCALATION
+const usersUrl = API.USERS
+const getAlertNotesByAlertIDUrl = API.ALERT_NOTES
+const GetalertHistoryUrl = API.ALERT_HISTORY
+const getSentinalOneUrl = API.THREAT_DETAILS
+const AnalystVerdictUpdateUrl = API.ANALYST_VERDICT_UPDATE
+const MitigateActionUrl = API.MITIGATE_ACTION
+const ThreatNotesUrl = API.THREAT_NOTES_ADD
+const AddToblockListUrl = API.ADD_TO_BLOCKLIST
+const AddToExclusionListUrl = API.ADD_TO_EXCLUSION_LIST
+const ConnectToNetworkUrl = API.CONNECT_TO_NETWORK
+const DisConnectFromNetworkUrl = API.DISCONNECT_FROM_NETWORK
+const ThreatsActionUrl = API.THREATS_ACTION
+const AlertsStatusUpdateUrl = API.ALERT_STATUS_UPDATE
+const MitigateActionValidationUrl = API.MITIGATE_ACTION_VALIDATION
+const ThreatFileDownloadUrl = API.THREAT_FILE_DOWNLOAD
+const CustomAlertsUrl = API.CUSTOM_ALERTS
+const CustomAlertsAnalystVerdictUpdateUrl = API.CUSTOM_ALERTS_ANALYST_UPDATE
+const CustomAlertsIncidentStatusUpdateUrl = API.CUSTOM_ALERTS_STATUS_UPDATE
 
 export const fetchAlertData = async (data) => {
   try {

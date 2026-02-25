@@ -1,13 +1,14 @@
-import FetchWithToken from "../modules/auth/FetchWithToken"
+import {API} from '../../config/apiConfig'
+import FetchWithToken from '../modules/auth/FetchWithToken'
 
-const SentinelReportsUrl = process.env.REACT_APP_SENTINELREPORTS_URL
-const SentinelReportsTypesUrl = process.env.REACT_APP_SENTINELREPORTS_TYPES_URL
-const SentinelReportTaskCreateUrl =process.env.REACT_APP_SENTINELREPORTS_TASK_CREAT_URL
-const SentinelReportDeleteUrl = process.env.REACT_APP_SENTINELREPORTS_DELETE_URL
-const SentinelReportsTasksUrl = process.env.REACT_APP_SENTINELREPORTS_TASKS_URL
-const SentinelReportTaskDeleteUrl =process.env.REACT_APP_SENTINELREPORTS_TASKS_DELETE_URL
-const SentinelReportsDownloadUrl =process.env.REACT_APP_SENTINELREPORTS_DOWNLOAD_URL
-const SentinelReportsTaskUpdateUrl =process.env.REACT_APP_SENTINELREPORTS_TASK_UPDATE_URL
+const SentinelReportsUrl = API.SENTINEL_REPORTS
+const SentinelReportsTypesUrl = API.SENTINEL_REPORT_TYPES
+const SentinelReportTaskCreateUrl = API.SENTINEL_REPORT_TASK_CREATE
+const SentinelReportDeleteUrl = API.SENTINEL_REPORT_DELETE
+const SentinelReportsTasksUrl = API.SENTINEL_REPORT_TASKS
+const SentinelReportTaskDeleteUrl = API.SENTINEL_REPORT_TASK_DELETE
+const SentinelReportsDownloadUrl = API.SENTINEL_REPORT_DOWNLOAD
+const SentinelReportsTaskUpdateUrl = API.SENTINEL_REPORT_TASK_UPDATE
 
 export const fetchSentinelReportsUrl = async (data) => {
   try {

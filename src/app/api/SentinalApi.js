@@ -1,41 +1,39 @@
+import { API } from '../../config/apiConfig'
 import FetchWithToken from '../modules/auth/FetchWithToken'
-
-const ExclusionListUrl = process.env.REACT_APP_EXCLUSION_LIST_URL
-const BlokckedListUrl = process.env.REACT_APP_BLOCKEDLIST_URL
-const AccountDetailsUrl = process.env.REACT_APP_ACCOUNT_DETAILS_URL
-const PolicyDetailsUrl = process.env.REACT_APP_POLICY_DETAILS_URL
-const blockedListItemDeleteUrl = process.env.REACT_APP_BLOCKEDLISTITEM_DELETE_URL
-const AddToblockListUrl = process.env.REACT_APP_ADDTOBLOCKLIST_URL
-const blockedListItemUpdateUrl = process.env.REACT_APP_BLOCKEDLISTITEM_UPDATE_URL
-const AddToExclusionListUrl = process.env.REACT_APP_ADDTOEXCLUSIONLIST_URL
-const ExcludedListItemDeleteUrl = process.env.REACT_APP_EXCLUSDEDLISTITEM_DELETE_URL
-const ExcludedListItemUpdateUrl = process.env.REACT_APP_EXCLUSDEDLISTITEM_UPDATE_URL
-const GroupActionUrl = process.env.REACT_APP_AGENT_GROUPACTION_URL
-const GroupsUrl = process.env.REACT_APP_GROUPS_URL
-const SoftwarePackagesUpdateUrl = process.env.REACT_APP_SOFTWAREPACKAGES_UPDATE_URL
-const BlockedListImportUrl = process.env.REACT_APP_BLOCKEDLIST_IMPORT_URL
-const BlockedListImportReportUrl = process.env.REACT_APP_BLOCKEDLIST_IMPORTREPORT_URL
-const ExclusionItemsImportUrl = process.env.REACT_APP_EXCLUSIONITEMS_IMPORT_URL
-const ExclusionItemsImportReportUrl = process.env.REACT_APP_EXCLUSIONITEMS_IMPORTREPORT_URL
-const GroupsCreateUrl = process.env.REACT_APP_GROUPS_CREATE_URL
-const UpgradePoliciesUrl = process.env.REACT_APP_SENTINEL_UPGRADE_POLICIES_URL
-const AvailablePackagesUrl = process.env.REACT_APP_SENTINEL_UPGRADE_POLICY_AVAILABLE_PACKAGES_URL
-const UpgradePolicyUrl = process.env.REACT_APP_SENTINEL_UPGRADE_POLICY_URL
-const ParentUpgradePoliciesUrl = process.env.REACT_APP_SENTINEL_PARENT_UPGRADE_POLICIES_URL
-const UpgradePolicyActionsUrl = process.env.REACT_APP_SENTINEL_UPGRADE_POLICY_ACTIONS_URL
-const UpgradePoliciesSetInheritingUrl =
-  process.env.REACT_APP_SENTINEL_UPGRADE_POLICIES_SETINHERITING_URL
-const UpgradePoliciesDeActivateUrl = process.env.REACT_APP_SENTINEL_UPGRADE_POLICIES_DEACTIVATE_URL
-const TagsUrl = process.env.REACT_APP_SENTINEL_TAGS_URL
-const TagAddUrl = process.env.REACT_APP_SENTINEL_TAG_ADD_URL
-const TagUpdateUrl = process.env.REACT_APP_SENTINEL_TAG_UPDATE_URL
-const TagsDeleteUrl = process.env.REACT_APP_SENTINEL_TAGS_DELETE_URL
-const TagsActionsUrl = process.env.REACT_APP_SENTINEL_ENDPOINT_TAGS_ACTIONS_URL
-const UpgradeMaintenanceDetailsUrl = process.env.REACT_APP_UPGRADE_MAINTENANCE_DETAILS_URL
-const UpgradeMaintenanceDetailsUpdateUrl =
-  process.env.REACT_APP_UPGRADE_MAINTENANCE_DETAILS_UPDATE_URL
-const SentinalOnePolicyUpdateUrl = process.env.REACT_APP_POLICY_UPDATE_URL
-const PolicyDeepVisiblityConfigurtionRefreshUrl=process.env.REACT_APP_POLICY_DEEPVISIBLITY_CONFIGURATION_REFRESH_URL
+const ExclusionListUrl = API.EXCLUSION_LIST
+const BlokckedListUrl = API.BLOCKED_LIST
+const AccountDetailsUrl = API.ACCOUNT_DETAILS
+const PolicyDetailsUrl = API.POLICY_DETAILS
+const blockedListItemDeleteUrl = API.BLOCKEDLIST_DELETE
+const AddToblockListUrl = API.BLOCKEDLIST_ADD
+const blockedListItemUpdateUrl = API.BLOCKEDLIST_UPDATE
+const AddToExclusionListUrl = API.EXCLUSION_ADD
+const ExcludedListItemDeleteUrl = API.EXCLUSION_DELETE
+const ExcludedListItemUpdateUrl = API.EXCLUSION_UPDATE
+const GroupActionUrl = API.AGENT_GROUP_ACTION
+const SoftwarePackagesUpdateUrl = API.SOFTWARE_PACKAGES_UPDATE
+const BlockedListImportUrl = API.BLOCKEDLIST_IMPORT
+const BlockedListImportReportUrl = API.BLOCKEDLIST_IMPORT_REPORT
+const ExclusionItemsImportUrl = API.EXCLUSION_IMPORT
+const ExclusionItemsImportReportUrl = API.EXCLUSION_IMPORT_REPORT
+const GroupsUrl = API.GROUPS
+const GroupsCreateUrl = API.GROUPS_CREATE
+const UpgradePoliciesUrl = API.UPGRADE_POLICIES
+const AvailablePackagesUrl = API.UPGRADE_POLICY_AVAILABLE_PACKAGES
+const UpgradePolicyUrl = API.UPGRADE_POLICY
+const ParentUpgradePoliciesUrl = API.PARENT_UPGRADE_POLICIES
+const UpgradePolicyActionsUrl = API.UPGRADE_POLICY_ACTIONS
+const UpgradePoliciesSetInheritingUrl = API.UPGRADE_POLICIES_SET_INHERITING
+const UpgradePoliciesDeActivateUrl = API.UPGRADE_POLICIES_DEACTIVATE
+const TagsUrl = API.SENTINEL_TAGS
+const TagAddUrl = API.SENTINEL_TAG_ADD
+const TagUpdateUrl = API.SENTINEL_TAG_UPDATE
+const TagsDeleteUrl = API.SENTINEL_TAG_DELETE
+const TagsActionsUrl = API.SENTINEL_TAG_ACTIONS
+const UpgradeMaintenanceDetailsUrl = API.UPGRADE_MAINTENANCE_DETAILS
+const UpgradeMaintenanceDetailsUpdateUrl = API.UPGRADE_MAINTENANCE_DETAILS_UPDATE
+const SentinalOnePolicyUpdateUrl = API.POLICY_UPDATE
+const PolicyDeepVisiblityConfigurtionRefreshUrl = API.POLICY_DEEP_VISIBILITY_REFRESH
 
 export const fetchExclusionListUrl = async (data) => {
   try {

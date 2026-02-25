@@ -37,7 +37,7 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
     ownerName: '',
     description: '',
     significantIncident: false,
-    toolID: sessionStorage.getItem('incidentToolId'),
+    toolID: sessionStorage.getItem('incidentToolId') ?? '0',
   })
   console.log(incidentData, 'incidentData')
   useEffect(() => {
@@ -269,7 +269,9 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
           </div>
         </div>
         <div className='row mb-2'>
-          <div className='col-md-3 mt-2'>Subject <sup className='red'>*</sup></div>
+          <div className='col-md-3 mt-2'>
+            Subject <sup className='red'>*</sup>
+          </div>
           <div className='col-md-9'>
             <input
               type='text'
@@ -281,7 +283,9 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
           </div>
         </div>
         <div className='row mb-2'>
-          <div className='col-md-3 mt-2'>Status <sup className='red'>*</sup> </div>
+          <div className='col-md-3 mt-2'>
+            Status <sup className='red'>*</sup>{' '}
+          </div>
           <div className='col-md-9'>
             <select
               className='form-select form-select-sm'
@@ -298,7 +302,9 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
           </div>
         </div>
         <div className='row mb-2'>
-          <div className='col-md-3 mt-2'>Priority <sup className='red'>*</sup> </div>
+          <div className='col-md-3 mt-2'>
+            Priority <sup className='red'>*</sup>{' '}
+          </div>
           <div className='col-md-9'>
             <select
               className='form-select form-select-sm'
@@ -410,7 +416,9 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
         </div>
 
         <div className='row mb-2'>
-          <div className='col-md-3 mt-2'>Description <sup className='red'>*</sup> </div>
+          <div className='col-md-3 mt-2'>
+            Description <sup className='red'>*</sup>{' '}
+          </div>
           <div className='col-md-9'>
             <textarea
               className='form-control form-control-sm'

@@ -1,26 +1,28 @@
+import { API } from "../../config/apiConfig"
 import FetchWithToken from "../modules/auth/FetchWithToken"
 
-const deleteUrl = process.env.REACT_APP_FILE_DELETE
-const uploadUrl = process.env.REACT_APP_FILE_UPLOAD
-const getUploadedFilesListUrl = process.env.REACT_APP_GET_UPLOADED_FILES
-const subItemsByOrgChannelUrl = process.env.REACT_APP_SUBITEMS_BY_ORG_CHANNEL_URL
-const questionsUrl = process.env.REACT_APP_QUESTIONS_URL
-const questionsAddUrl = process.env.REACT_APP_QUESTIONS_ADD_URL
-const questionsAnswerAddUrl = process.env.REACT_APP_QUESTIONS_ANSWER_ADD_URL
-const questionsUpdateUrl = process.env.REACT_APP_QUESTIONS_UPDATE_URL
-const questionsDeleteUrl = process.env.REACT_APP_QUESTIONS_DELETE_URL
-const questionsAnswerUpdateUrl = process.env.REACT_APP_QUESTIONS_ANSWER_UPDATE_URL
-const questionsAnswerDeleteUrl = process.env.REACT_APP_QUESTIONS_ANSWER_DELETE_URL
-const questionDetailsUrl = process.env.REACT_APP_QUESTION_DETAILS_URL
-const answerDetailsUrl = process.env.REACT_APP_ANSWER_DETAILS_URL
-const channelsUrl = process.env.REACT_APP_CHANNELS_URL
-const channelsDeleteUrl = process.env.REACT_APP_CHANNELS_DELETE_URL
-const channelsAddUrl = process.env.REACT_APP_CHANNELS_ADD_URL
-const channelsUpdateUrl = process.env.REACT_APP_CHANNELS_UPDATE_URL
-const channelDetailsUrl = process.env.REACT_APP_CHANNEL_DETAILS_URL
-const listUrl = process.env.REACT_APP_CHANNEL_LIST_URL
-const ChannelsCreateUrl = process.env.REACT_APP_CHANNELS_CREATE_URL
-const FilesDownloadUrl = process.env.REACT_APP_CHANNELS_FILES_DOWNLOAD_URL
+const deleteUrl = API.FILE_DELETE
+const uploadUrl = API.FILE_UPLOAD
+const getUploadedFilesListUrl = API.GET_UPLOADED_FILES
+const subItemsByOrgChannelUrl = API.SUBITEMS_BY_ORG_CHANNEL
+const questionsUrl = API.QUESTIONS
+const questionsAddUrl = API.QUESTIONS_ADD
+const questionsAnswerAddUrl = API.QUESTIONS_ANSWER_ADD
+const questionsUpdateUrl = API.QUESTIONS_UPDATE
+const questionsDeleteUrl = API.QUESTIONS_DELETE
+const questionsAnswerUpdateUrl = API.QUESTIONS_ANSWER_UPDATE
+const questionsAnswerDeleteUrl = API.QUESTIONS_ANSWER_DELETE
+const questionDetailsUrl = API.QUESTION_DETAILS
+const answerDetailsUrl = API.ANSWER_DETAILS
+const channelsUrl = API.CHANNELS
+const channelsDeleteUrl = API.CHANNELS_DELETE
+const channelsAddUrl = API.CHANNELS_ADD
+const channelsUpdateUrl = API.CHANNELS_UPDATE
+const channelDetailsUrl = API.CHANNEL_DETAILS
+const listUrl = API.CHANNEL_LIST
+const ChannelsCreateUrl = API.CHANNELS_CREATE
+const FilesDownloadUrl = API.FILES_DOWNLOAD
+
 
 export const fetchDelete = async (data) => {
   try {
