@@ -19,7 +19,7 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
         siteId: siteId,
       }
       const response = await fetchGroupsUrl(data)
-      setGroups(response.data)
+      setGroups(response?.data??[])
     } catch (error) {
       console.log(error)
     }

@@ -13,7 +13,6 @@ import {convertTo24HourFormat, convertTo12HourFormat} from './timeUtils'
 
 const MaintenanceWindow = () => {
   const [maintenanceWindow, setMaintenanceWindow] = useState([])
-  console.log(maintenanceWindow.inheritParentConcurrencyConfig, 'maintenanceWindow')
   const [loading, setLoading] = useState(false)
   const [maintenanceType, setMaintenanceType] = useState('agent_version_change')
   const toolId = Number(sessionStorage.getItem('toolID'))
