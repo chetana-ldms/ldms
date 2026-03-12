@@ -125,6 +125,9 @@ import { UpdateTemplateTypes } from './qradar-pages/components/message-templates
 import { PlaceholderGroups } from './qradar-pages/components/message-templates/PlaceholderGroups'
 import { AddPlaceholderGroups } from './qradar-pages/components/message-templates/AddPlaceholderGroups'
 import { UpdatePlaceholderGroups } from './qradar-pages/components/message-templates/UpdatePlaceholderGroups'
+import RiskProfile from './qradar-pages/risk-upgrade/RiskProfile'
+import Vulnerabilities from './qradar-pages/risk-upgrade/Vulnerabilities'
+import Domain from './qradar-pages/risk-upgrade/Domain'
 
 
 const QradarPages = () => {
@@ -255,6 +258,9 @@ const QradarPages = () => {
       <Route path="/site-stepper" element={<SiteStepper />} />
       <Route path="/sentinelsReport" element={<SentinelsReport />} />
       <Route path='load-report-task/:status' element={<LoadReportTask />} />
+       <Route path='RiskProfile/:status' element={<RiskProfile />} />
+       <Route path='Vulnerabilities/:status' element={<Vulnerabilities />} />
+       <Route path='Domain/:status' element={<Domain />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )

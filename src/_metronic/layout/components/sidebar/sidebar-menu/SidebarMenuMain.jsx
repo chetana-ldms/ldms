@@ -54,10 +54,8 @@ const SidebarMenuMain = () => {
     setSelectedFeatureId(feature.featureId);
     if(feature.toolId == 0){
       sessionStorage.setItem('toolID',login_toolID)
-      console.log(login_toolID, "toolID")
     }else{
       sessionStorage.setItem('toolID', feature.toolId.toString())
-      console.log(feature.toolId, 'toolID')
     }
   };
   const renderMenuItems = (features) => {

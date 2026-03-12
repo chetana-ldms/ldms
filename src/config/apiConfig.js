@@ -255,7 +255,7 @@ INCIDENT_NOTES_BY_CONVERSATION: `${base}/IncidentManagement/${v}/Notes/Incidentt
   ACTION_TYPES: `${base}/LDPSecurity/${v}/ActionTypes`,
   AUTH_USER_LOCKED: `${base}/Auth/User/locked`,
   AUTH_USER_UNLOCK: `${base}/Auth/User/Unlock`,
-  EXCLUSION_LIST: `${base}/Alerts/${v}/Exclusion/List`,
+  EXCLUSION_LIST: `${base}/SentinalOne/${v}/Exclusion/List`,
   BLOCKED_LIST: `${base}/SentinalOne/${v}/BlokckedList`,
   ACCOUNT_DETAILS: `${base}/SentinalOne/${v}/Account/Details`,
   POLICY_DETAILS: `${base}/SentinalOne/${v}/Policy/Details`,
