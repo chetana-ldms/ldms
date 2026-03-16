@@ -120,6 +120,8 @@ const ConversationModal = ({show, onClose, incidentData}) => {
   return (
     <>
       <Modal
+        backdrop='static'
+        keyboard={false}
         show={show}
         onHide={onClose}
         size='xl'

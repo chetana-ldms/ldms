@@ -53,8 +53,8 @@ function ChangePasswordPopUp({showChangePwdModal, setShowChangePwdModal}) {
         setTimeout(() => {
           navigate('/dashboard')
         }, 2000)
-      } else {   
-      setMessage("Invalid user")
+      } else {
+        setMessage('Invalid user')
       }
     } catch (error) {
       console.log(error)
@@ -63,7 +63,7 @@ function ChangePasswordPopUp({showChangePwdModal, setShowChangePwdModal}) {
   return (
     <div>
       <ToastContainer />
-      <Modal show={showChangePwdModal}>
+      <Modal backdrop='static' keyboard={false} show={showChangePwdModal}>
         <Modal.Body>
           {message && !message.isSuccess && (
             <div className={`alert alert-danger mb-3`}>

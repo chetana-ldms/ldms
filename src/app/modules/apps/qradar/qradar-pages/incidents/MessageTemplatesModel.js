@@ -227,6 +227,8 @@ const MessageTemplatesModal = ({
   return (
     <>
       <Modal
+        backdrop='static'
+        keyboard={false}
         show={show}
         onHide={handleClose}
         centered

@@ -122,8 +122,8 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (affectedEndpoints === 'filteredEndpoints' && tags.length === 0) {
-      notifyFail('Please add at least one tag when using "Filtered by endpoint tag".');
-      return;
+      notifyFail('Please add at least one tag when using "Filtered by endpoint tag".')
+      return
     }
     const selectedPackage = version.find((ver) => ver.displayName === agentVersion)
     if (!selectedPackage) {
@@ -179,7 +179,13 @@ const AutoUpgradePolicyModal = ({show, onClose, selectedOS, refreshData}) => {
     onClose()
   }
   return (
-    <Modal show={show} onHide={handleClose} className='application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={handleClose}
+      className='application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>New Upgrade Policy</Modal.Title>
         <button type='button' className='application-modal-close' aria-label='Close'>

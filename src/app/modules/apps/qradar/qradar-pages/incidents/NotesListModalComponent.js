@@ -126,7 +126,13 @@ const NotesListModalComponent = ({show, onClose, id, incidentData}) => {
   /* ---------------- UI ---------------- */
   return (
     <>
-      <Modal show={show} onHide={onClose} className='notesListModal application-modal'>
+      <Modal
+        backdrop='static'
+        keyboard={false}
+        show={show}
+        onHide={onClose}
+        className='notesListModal application-modal'
+      >
         <ToastContainer />
 
         <Modal.Header closeButton>

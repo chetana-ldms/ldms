@@ -231,6 +231,8 @@ const AddIncidentModal = ({show, onHide, onRefreshIncidents}) => {
   }
   return (
     <Modal
+      backdrop='static'
+      keyboard={false}
       show={show}
       onHide={() => {
         resetForm()

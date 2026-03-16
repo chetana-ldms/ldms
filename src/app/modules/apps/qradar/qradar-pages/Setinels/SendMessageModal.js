@@ -20,7 +20,7 @@ const SendMessageModal = ({show, handleClose, items, selectedActionId, refreshDa
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
-      agentName:item.computerName || item.endpointName
+      agentName: item.computerName || item.endpointName,
     }))
 
     const payload = {
@@ -62,12 +62,17 @@ const SendMessageModal = ({show, handleClose, items, selectedActionId, refreshDa
 
   return (
     <Modal
+      backdrop='static'
+      keyboard={false}
       show={show}
       onHide={handleCloseWithReset}
       className='application-modal small-modal border-0'
     >
       <Modal.Header closeButton>
-        <Modal.Title>Send Message {items && items.length > 0 && `(${items[0]?.computerName || items[0]?.endpointName})`}</Modal.Title>
+        <Modal.Title>
+          Send Message{' '}
+          {items && items.length > 0 && `(${items[0]?.computerName || items[0]?.endpointName})`}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className='mb-2 header-filter'>

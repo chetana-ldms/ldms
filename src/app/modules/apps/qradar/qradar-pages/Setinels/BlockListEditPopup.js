@@ -18,14 +18,14 @@ const BlockListEditPopup = ({show, onClose, refreshParent, selectedItem}) => {
     osType: selectedItem?.osType,
     description: selectedItem?.description,
   })
-  const {osType, description} = formData;
+  const {osType, description} = formData
   const handleChange = (e, field) => {
     e.preventDefault()
     setFormData({
       ...formData,
       [field]: e.target.value,
     })
-}
+  }
 
   const handleSubmit = async () => {
     try {
@@ -40,7 +40,7 @@ const BlockListEditPopup = ({show, onClose, refreshParent, selectedItem}) => {
         value: sha1InputRef.current.value,
         description: description,
         source: selectedItem?.source,
-        type : selectedItem?.type,
+        type: selectedItem?.type,
         id: selectedItem.id,
         modifiedDate: createdDate,
         modifiedUserId: createdUserId,
@@ -64,7 +64,13 @@ const BlockListEditPopup = ({show, onClose, refreshParent, selectedItem}) => {
   }
 
   return (
-    <Modal show={show} onHide={onClose} className='addToBlockList application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onClose}
+      className='addToBlockList application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           <div>
@@ -141,4 +147,4 @@ const BlockListEditPopup = ({show, onClose, refreshParent, selectedItem}) => {
   )
 }
 
-export default BlockListEditPopup;
+export default BlockListEditPopup

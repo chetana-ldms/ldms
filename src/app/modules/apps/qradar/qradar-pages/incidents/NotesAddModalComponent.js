@@ -105,7 +105,13 @@ const NotesAddModalComponent = ({show, onClose, incidentData, fetchNotes, id}) =
 
   /* ---------------- UI ---------------- */
   return (
-    <Modal show={show} onHide={onClose} className='addANoteModal application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onClose}
+      className='addANoteModal application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>Add Note</Modal.Title>
         <button type='button' class='application-modal-close' aria-label='Close'>

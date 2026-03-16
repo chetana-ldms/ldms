@@ -1,17 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
-import { fetchOrganizationDetails } from '../../../../../api/Api'
-import { fetchOrganizationUpdateUrl } from '../../../../../api/ConfigurationApi'
-import { notify, notifyFail } from '../components/notification/Notification'
-import { useErrorBoundary } from 'react-error-boundary'
-import { ToastContainer } from 'react-toastify'
+import React, {useState, useRef, useEffect} from 'react'
+import {Link, useNavigate, useParams, useLocation} from 'react-router-dom'
+import {fetchOrganizationDetails} from '../../../../../api/Api'
+import {fetchOrganizationUpdateUrl} from '../../../../../api/ConfigurationApi'
+import {notify, notifyFail} from '../components/notification/Notification'
+import {useErrorBoundary} from 'react-error-boundary'
+import {ToastContainer} from 'react-toastify'
 import ConfirmPopup from '../../../../../../utils/ConfirmPopup'
 
 const UpdateOrganizations = () => {
   const handleError = useErrorBoundary()
   const navigate = useNavigate()
   const location = useLocation()
-  const { id } = useParams()
+  const {id} = useParams()
 
   const [save, setSave] = useState(location.state?.save || '')
   const [loading, setLoading] = useState(false)
@@ -120,7 +120,7 @@ const UpdateOrganizations = () => {
 
     try {
       const responseData = await fetchOrganizationUpdateUrl(data)
-      const { isSuccess, message } = responseData
+      const {isSuccess, message} = responseData
       if (isSuccess) {
         notify(message)
         setTimeout(() => navigate('/qradar/organizations/updated'), 2000)
@@ -159,109 +159,113 @@ const UpdateOrganizations = () => {
   }
 
   return (
-    <div className="config card">
+    <div className='config card'>
       <ToastContainer />
-      <div className="card-header bg-heading">
-        <h3 className="card-title align-items-start flex-column">
-          {save ? <span className="white">View Organization</span> : <span className="white">Update Organization</span>}
+      <div className='card-header bg-heading'>
+        <h3 className='card-title align-items-start flex-column'>
+          {save ? (
+            <span className='white'>View Organization</span>
+          ) : (
+            <span className='white'>Update Organization</span>
+          )}
         </h3>
-        <div className="card-toolbar">
-          <div className="d-flex align-items-center gap-2 gap-lg-3">
-            <Link to="#" className="white fs-15" onClick={handleCloseClick}>
-              <i className="fa fa-chevron-left white mg-right-5" />
+        <div className='card-toolbar'>
+          <div className='d-flex align-items-center gap-2 gap-lg-3'>
+            <Link to='/qradar/organizations/list' className='white fs-15 text-underline'>
+              <i className='fa fa-chevron-left white mg-right-5' />
               Back
             </Link>
           </div>
         </div>
       </div>
       <form>
-        <div className="card-body pad-10">
-          <div className="row mb-6 table-filter">
-            <div className="col-lg-6 mb-5">
-              <div className="fv-row mb-0">
-                <label htmlFor="orgName" className="form-label fs-6 fw-bolder mb-3">
+        <div className='card-body pad-10'>
+          <div className='row mb-6 table-filter'>
+            <div className='col-lg-6 mb-5'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='orgName' className='form-label fs-6 fw-bolder mb-3'>
                   Organization Name
                 </label>
                 <input
-                  type="text"
+                  type='text'
                   required
                   maxLength={200}
-                  className="form-control form-control-lg form-control"
-                  id="orgName"
+                  className='form-control form-control-lg form-control'
+                  id='orgName'
                   ref={orgName}
-                  placeholder="Ex: lancesoft"
+                  placeholder='Ex: lancesoft'
                   defaultValue={organizationData?.orgName || ''}
                 />
               </div>
             </div>
-            <div className="col-lg-6 mb-4 mb-lg-0">
-              <div className="fv-row mb-0">
-                <label htmlFor="mobileNo" className="form-label fs-6 fw-bolder mb-3">
+            <div className='col-lg-6 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='mobileNo' className='form-label fs-6 fw-bolder mb-3'>
                   Organization Mobile
                 </label>
                 <input
-                  type="tel"
+                  type='tel'
                   required
-                  className="form-control form-control-lg form-control-solid"
-                  id="mobileNo"
+                  className='form-control form-control-lg form-control-solid'
+                  id='mobileNo'
                   ref={mobileNo}
-                  placeholder="Ex: 01 0102030405"
+                  placeholder='Ex: 01 0102030405'
                   minLength={10}
                   maxLength={15}
-                  pattern="^[0-9]{10,15}$"
+                  pattern='^[0-9]{10,15}$'
                   defaultValue={organizationData?.mobileNo || ''}
                 />
               </div>
             </div>
-            <div className="col-lg-6 mb-4 mb-lg-0">
-              <div className="fv-row mb-0">
-                <label htmlFor="email" className="form-label fs-6 fw-bolder mb-3">
+            <div className='col-lg-6 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='email' className='form-label fs-6 fw-bolder mb-3'>
                   Organization Email
                 </label>
                 <input
-                  type="email"
-                  className="form-control form-control-lg form-control-solid"
-                  id="email"
+                  type='email'
+                  className='form-control form-control-lg form-control-solid'
+                  id='email'
                   ref={email}
-                  placeholder="email@organization.com"
+                  placeholder='email@organization.com'
                   required
                   maxLength={100}
-                  pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+                  pattern='^[^\s@]+@[^\s@]+\.[^\s@]+$'
                   defaultValue={organizationData?.email || ''}
                 />
               </div>
             </div>
-            <div className="col-lg-6 mb-4 mb-lg-0">
-              <div className="fv-row mb-0">
-                <label htmlFor="address" className="form-label fs-6 fw-bolder mb-3">
+            <div className='col-lg-6 mb-4 mb-lg-0'>
+              <div className='fv-row mb-0'>
+                <label htmlFor='address' className='form-label fs-6 fw-bolder mb-3'>
                   Organization Address
                 </label>
                 <input
-                  type="text"
+                  type='text'
                   required
                   maxLength={200}
-                  className="form-control form-control-lg form-control-solid"
-                  id="address"
+                  className='form-control form-control-lg form-control-solid'
+                  id='address'
                   ref={address}
-                  placeholder="Address"
+                  placeholder='Address'
                   defaultValue={organizationData?.address || ''}
                 />
               </div>
             </div>
           </div>
         </div>
-        <div className="card-footer d-flex justify-content-end pad-10">
+        <div className='card-footer d-flex justify-content-end pad-10'>
           <button
-            type="submit"
+            type='submit'
             onClick={handleSaveClick}
-            className="btn btn-new btn-small"
-            style={{ display: loading || save ? 'none' : 'inline-block' }}
+            className='btn btn-new btn-small'
+            style={{display: loading || save ? 'none' : 'inline-block'}}
           >
             {!loading && 'Update Changes'}
             {loading && (
-              <span className="indicator-progress" style={{ display: 'block' }}>
+              <span className='indicator-progress' style={{display: 'block'}}>
                 Please wait...
-                <span className="spinner-border spinner-border-sm align-middle ms-2"></span>
+                <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
               </span>
             )}
           </button>
@@ -271,7 +275,7 @@ const UpdateOrganizations = () => {
       {/* Universal Confirm Popup */}
       <ConfirmPopup
         show={showConfirm}
-        title="Confirmation"
+        title='Confirmation'
         message={confirmMessage}
         onConfirm={() => {
           setShowConfirm(false)
@@ -283,4 +287,4 @@ const UpdateOrganizations = () => {
   )
 }
 
-export { UpdateOrganizations }
+export {UpdateOrganizations}

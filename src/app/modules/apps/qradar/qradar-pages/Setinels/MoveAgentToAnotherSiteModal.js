@@ -10,10 +10,10 @@ const MoveAgentToAnotherSiteModal = ({show, handleClose, items, selectedActionId
   const toolId = Number(sessionStorage.getItem('toolID'))
   const [accountId, setAccountId] = useState('')
   const [siteId, setSiteId] = useState('')
-  const [siteName, setSiteName] = useState('');
+  const [siteName, setSiteName] = useState('')
   const [accounts, setAccounts] = useState([])
   const [sites, setSites] = useState([])
-  console.log(sites, "sites")
+  console.log(sites, 'sites')
   const siteRef = useRef()
 
   const handleToolChange = (e) => {
@@ -45,7 +45,7 @@ const MoveAgentToAnotherSiteModal = ({show, handleClose, items, selectedActionId
         accountId: String(accountId),
       }
       const response = await fetchSitesUrl(data)
-      const sitesAvailable = response?.sites.filter((item)=>item.state == "active")
+      const sitesAvailable = response?.sites.filter((item) => item.state == 'active')
       setSites(sitesAvailable)
     } catch (error) {
       console.log(error)
@@ -58,28 +58,28 @@ const MoveAgentToAnotherSiteModal = ({show, handleClose, items, selectedActionId
   const fetchDataAccount = async () => {
     const data = {
       orgID: orgId,
-      testFlag: true
-    };
+      testFlag: true,
+    }
     try {
-      const response = await fetchAccountsStructureUrl(data);
+      const response = await fetchAccountsStructureUrl(data)
       // setAccountsStructure(response);
     } catch (error) {
-      console.error(error);
-    } 
-  };
+      console.error(error)
+    }
+  }
 
   const handleChange = (event) => {
-    const selectedSite = sites?.find((site) => site?.id === event.target.value); 
-    setSiteId(selectedSite?.id || '');
-    setSiteName(selectedSite?.name || '');
-  };
+    const selectedSite = sites?.find((site) => site?.id === event.target.value)
+    setSiteId(selectedSite?.id || '')
+    setSiteName(selectedSite?.name || '')
+  }
   const sendSelectedItemsToBackend = async () => {
     const endPointsData = items.map((item) => ({
       agentIds: item.id,
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
-      agentName:item.computerName || item.endpointName
+      agentName: item.computerName || item.endpointName,
     }))
 
     const payload = {
@@ -108,16 +108,16 @@ const MoveAgentToAnotherSiteModal = ({show, handleClose, items, selectedActionId
     }
   }
   const handleSubmit = () => {
-    if(!accountId){
-      notifyFail("Please select an Account")
-      return;
+    if (!accountId) {
+      notifyFail('Please select an Account')
+      return
     }
-    if(!siteId){
-      notifyFail("Please select the Site")
-      return;
+    if (!siteId) {
+      notifyFail('Please select the Site')
+      return
     }
     sendSelectedItemsToBackend()
-    window.location.reload();
+    window.location.reload()
   }
 
   const handleCloseWithReset = () => {
@@ -127,12 +127,17 @@ const MoveAgentToAnotherSiteModal = ({show, handleClose, items, selectedActionId
 
   return (
     <Modal
+      backdrop='static'
+      keyboard={false}
       show={show}
       onHide={handleCloseWithReset}
       className='application-modal small-modal border-0'
     >
       <Modal.Header closeButton>
-        <Modal.Title>Move Agent to Another Site {items && items.length > 0 && `(${items[0]?.computerName || items[0]?.endpointName})`}</Modal.Title>
+        <Modal.Title>
+          Move Agent to Another Site{' '}
+          {items && items.length > 0 && `(${items[0]?.computerName || items[0]?.endpointName})`}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className='mb-2 header-filter'>

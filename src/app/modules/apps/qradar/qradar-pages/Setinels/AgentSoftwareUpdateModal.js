@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react'
 import {Modal, Button} from 'react-bootstrap'
 import {fetchSoftwarePackagesUrl} from '../../../../../api/SettingsApi'
-import { fetchSoftwarePackagesUpdateUrl } from '../../../../../api/SentinalApi'
-import { notify, notifyFail } from '../components/notification/Notification'
+import {fetchSoftwarePackagesUpdateUrl} from '../../../../../api/SentinalApi'
+import {notify, notifyFail} from '../components/notification/Notification'
 
 const AgentSoftwareUpdateModal = ({isOpen, toggle, items, selectedActionId, refreshData}) => {
-  console.log(items, "items")
+  console.log(items, 'items')
   const [updateTiming, setUpdateTiming] = useState('Immediately')
   const [selectedUpdate, setSelectedUpdate] = useState(null)
   const [filterValue, setFilterValue] = useState('')
@@ -15,9 +15,10 @@ const AgentSoftwareUpdateModal = ({isOpen, toggle, items, selectedActionId, refr
   const [updates, setUpdates] = useState([])
   const [showDowngrade, setShowDowngrade] = useState(false)
   const [allowDowngrade, setAllowDowngrade] = useState(false)
-  const osTypes = items && items.length > 0 
-  ? [...new Set(items.map((item) => item?.osType?.toLowerCase() || 'windows'))] 
-  : ['windows'];
+  const osTypes =
+    items && items.length > 0
+      ? [...new Set(items.map((item) => item?.osType?.toLowerCase() || 'windows'))]
+      : ['windows']
 
   const sendSelectedItemsToBackend = async () => {
     const endPointsData = items.map((item) => ({
@@ -25,7 +26,7 @@ const AgentSoftwareUpdateModal = ({isOpen, toggle, items, selectedActionId, refr
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
-      agentName:item.computerName || item.endpointName
+      agentName: item.computerName || item.endpointName,
     }))
 
     const payload = {
@@ -42,9 +43,9 @@ const AgentSoftwareUpdateModal = ({isOpen, toggle, items, selectedActionId, refr
         osType: selectedUpdate?.osType,
       },
       modifiedDate: new Date().toISOString(),
-      modifiedUserId:Number(sessionStorage.getItem('userId')) ,
+      modifiedUserId: Number(sessionStorage.getItem('userId')),
     }
-    console.log(payload,  "payload")
+    console.log(payload, 'payload')
     try {
       const response = await fetchSoftwarePackagesUpdateUrl(payload)
       const {isSuccess, message} = response
@@ -76,8 +77,8 @@ const AgentSoftwareUpdateModal = ({isOpen, toggle, items, selectedActionId, refr
     setPlatform(event.target.value)
   }
   const handleDowngradeChange = (event) => {
-    setAllowDowngrade(event.target.checked);
-  };
+    setAllowDowngrade(event.target.checked)
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,14 +100,21 @@ const AgentSoftwareUpdateModal = ({isOpen, toggle, items, selectedActionId, refr
     setFilterValue(event.target.value)
   }
   const filteredList = filterValue
-  ? updates.filter((item) =>
-      item.searchData.toLowerCase().includes(filterValue.toLowerCase())
-    )
-  : updates
+    ? updates.filter((item) => item.searchData.toLowerCase().includes(filterValue.toLowerCase()))
+    : updates
   return (
-    <Modal show={isOpen} onHide={toggle} className='AgentSoftwareUpdateModal application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={isOpen}
+      onHide={toggle}
+      className='AgentSoftwareUpdateModal application-modal'
+    >
       <Modal.Header closeButton>
-        <Modal.Title>Update Agent {items && items.length > 0 && `(${items[0]?.computerName || items[0]?.endpointName})`}</Modal.Title>
+        <Modal.Title>
+          Update Agent{' '}
+          {items && items.length > 0 && `(${items[0]?.computerName || items[0]?.endpointName})`}
+        </Modal.Title>
         <button type='button' className='application-modal-close' aria-label='Close'>
           <i className='fa fa-close' />
         </button>
@@ -163,18 +171,18 @@ const AgentSoftwareUpdateModal = ({isOpen, toggle, items, selectedActionId, refr
           </div>
         </div>
         <div className=''>
-              <input
-                type='text'
-                placeholder='Search...'
-                className='form-control'
-                value={filterValue}
-                onChange={handleFilterChange}
-              />
-            </div>
+          <input
+            type='text'
+            placeholder='Search...'
+            className='form-control'
+            value={filterValue}
+            onChange={handleFilterChange}
+          />
+        </div>
         <ul className='list-unstyled mt-4' style={{maxHeight: '270px', overflowY: 'auto'}}>
           {filteredList?.map((update) => (
             <li key={update.id} className='d-flex align-items-center border-top border-1'>
-               <input
+              <input
                 type='radio'
                 id={`update-${update.id}`}
                 name='softwareUpdate'

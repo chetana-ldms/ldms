@@ -183,7 +183,14 @@ const ForwardModal = ({show, onHide, incidentData, onForward}) => {
   }
 
   return (
-    <Modal show={show} onHide={handleClose} size='lg' className='forwardModal application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={handleClose}
+      size='lg'
+      className='forwardModal application-modal'
+    >
       <ToastContainer />
       <Modal.Header closeButton>
         <Modal.Title> {incidentData?.replyForward ? 'Reply' : 'Forward'}</Modal.Title>

@@ -135,7 +135,13 @@ function UpdateSiteModel({show, handleClose, items, selectedActionId, refreshDat
 
   return (
     <>
-      <Modal show={show} onHide={handleClose} className='application-modal'>
+      <Modal
+        backdrop='static'
+        keyboard={false}
+        show={show}
+        onHide={handleClose}
+        className='application-modal'
+      >
         <Modal.Header closeButton>
           <Modal.Title>
             Update Site

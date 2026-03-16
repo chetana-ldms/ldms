@@ -19,7 +19,7 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
         siteId: siteId,
       }
       const response = await fetchGroupsUrl(data)
-      setGroups(response?.data??[])
+      setGroups(response?.data ?? [])
     } catch (error) {
       console.log(error)
     }
@@ -35,7 +35,7 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
       toolId,
       actionId: selectedActionId,
       groupId: selectedGroup,
-      groupName: selectedGroupName, 
+      groupName: selectedGroupName,
       executedUserId: Number(sessionStorage.getItem('userId')),
       executedDate: new Date().toISOString(),
     }
@@ -53,7 +53,6 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
       console.log(error)
     }
   }
-  
 
   const handleSave = () => {
     if (!selectedGroup) {
@@ -61,7 +60,7 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
       return
     }
     sendSelectedItemsToBackend()
-    window.location.reload();
+    window.location.reload()
   }
 
   const handleSelect = (groupId, groupName) => {
@@ -70,7 +69,13 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
   }
 
   return (
-    <Modal show={show} onHide={handleClose} className='application-modal small-modal border-0'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={handleClose}
+      className='application-modal small-modal border-0'
+    >
       <Modal.Header closeButton>
         <Modal.Title>Delete Group</Modal.Title>
       </Modal.Header>

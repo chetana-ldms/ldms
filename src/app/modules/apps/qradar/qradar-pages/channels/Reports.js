@@ -110,7 +110,7 @@ const Reports = ({channelId, channelName}) => {
         <div className='channel-report'>
           {/* Generate Report */}
           <div className='generate-report'>
-            {channelSubItems !== null? (
+            {channelSubItems !== null ? (
               channelSubItems?.map((subItem) => (
                 <div className='report-files mb-2' key={subItem.channelSubItemId}>
                   <label>
@@ -119,7 +119,7 @@ const Reports = ({channelId, channelName}) => {
                       checked={selectedItems.includes(subItem.channelSubItemId)}
                       onChange={() => handleItemCheckboxChange(subItem.channelSubItemId)}
                     />
-                    <a className='doc-section'  download='Document'>
+                    <a className='doc-section' download='Document'>
                       <i className='far fa-file-pdf' />{' '}
                       <span className='text-blue'>{subItem.channelSubItemName} Report</span>
                     </a>
@@ -140,7 +140,13 @@ const Reports = ({channelId, channelName}) => {
         </div>
       )}
       {/* Add channels in teams modal */}
-      <Modal isOpen={modalOpen} toggle={closeModal} className='teams-modal'>
+      <Modal
+        backdrop='static'
+        keyboard={false}
+        isOpen={modalOpen}
+        toggle={closeModal}
+        className='teams-modal'
+      >
         <ModalHeader toggle={closeModal}>Add Channel in Teams</ModalHeader>
         <ModalBody>
           <div className='form-group'>

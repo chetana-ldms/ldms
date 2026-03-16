@@ -139,7 +139,13 @@ const QuotedTextModal = ({show, onHide, orgId, toolId, incidentID, onSave}) => {
   }
 
   return (
-    <Modal show={show} onHide={onHide} className='quotedTextModal application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onHide}
+      className='quotedTextModal application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>Previous Conversation</Modal.Title>
         <button type='button' class='application-modal-close' aria-label='Close'>

@@ -28,7 +28,7 @@ const DisableAgentModal = ({isOpen, toggle, items, selectedActionId, refreshData
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
-      agentName:item.computerName || item.endpointName
+      agentName: item.computerName || item.endpointName,
     }))
 
     let expirationTime = ''
@@ -46,8 +46,8 @@ const DisableAgentModal = ({isOpen, toggle, items, selectedActionId, refreshData
       agentActionId: selectedActionId,
       endPointsData,
       disableAgent: {
-        expiration: expirationTime || "",
-        expirationTimeZone: expirationTime ? 'GMT+00:00' : "",
+        expiration: expirationTime || '',
+        expirationTimeZone: expirationTime ? 'GMT+00:00' : '',
         shouldReboot: isRebootChecked,
       },
       executedUserId: Number(sessionStorage.getItem('userId')),
@@ -109,7 +109,13 @@ const DisableAgentModal = ({isOpen, toggle, items, selectedActionId, refreshData
   }, [])
 
   return (
-    <Modal show={isOpen} onHide={toggle} className='DisableAgentModal application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={isOpen}
+      onHide={toggle}
+      className='DisableAgentModal application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           Disable Agent{' '}

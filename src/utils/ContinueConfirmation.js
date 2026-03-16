@@ -1,27 +1,37 @@
-import React from "react";
-import { Modal, Button } from "react-bootstrap";
+import React from 'react'
+import {Modal, Button} from 'react-bootstrap'
 
-function ContinueConfirmation({ isVisible, onContinue, onDismiss, computerNames, selectedActionDisplayName }) {
+function ContinueConfirmation({
+  isVisible,
+  onContinue,
+  onDismiss,
+  computerNames,
+  selectedActionDisplayName,
+}) {
   return (
     <Modal
+      backdrop='static'
+      keyboard={false}
       show={isVisible}
       onHide={onDismiss}
-      className="application-modal small-modal border-0"
+      className='application-modal small-modal border-0'
     >
-      <Modal.Body className="border-btm">
-        <h6 className="text-center">Selected {computerNames}</h6>
-        <p className="fs-15 text-center">Are you sure you want to perform : <strong>{selectedActionDisplayName}</strong>?</p>
+      <Modal.Body className='border-btm'>
+        <h6 className='text-center'>Selected {computerNames}</h6>
+        <p className='fs-15 text-center'>
+          Are you sure you want to perform : <strong>{selectedActionDisplayName}</strong>?
+        </p>
       </Modal.Body>
-      <Modal.Footer className="text-center margin-auto">
-        <Button className="btn-small btn-new" onClick={onContinue}>
+      <Modal.Footer className='text-center margin-auto'>
+        <Button className='btn-small btn-new' onClick={onContinue}>
           Yes
         </Button>
-        <Button className="btn-secondary btn-small" onClick={onDismiss}>
+        <Button className='btn-secondary btn-small' onClick={onDismiss}>
           No
         </Button>
       </Modal.Footer>
     </Modal>
-  );
+  )
 }
 
-export default ContinueConfirmation;
+export default ContinueConfirmation

@@ -1,138 +1,135 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Modal, Button } from "react-bootstrap";
-import { notify, notifyFail } from "../components/notification/Notification";
-import { fetchAddToblockListUrl } from "../../../../../api/SentinalApi";
+import React, {useState, useRef, useEffect} from 'react'
+import {Modal, Button} from 'react-bootstrap'
+import {notify, notifyFail} from '../components/notification/Notification'
+import {fetchAddToblockListUrl} from '../../../../../api/SentinalApi'
 
-const BlockListPopUp = ({ show, onClose, refreshParent }) => {
-  const osDropdownRef = useRef(null);
-  const descriptionTextareaRef = useRef(null);
-  const sha1InputRef = useRef(null);
-  const orgId = Number(sessionStorage.getItem("orgId"));
-  const createdDate = new Date().toISOString();
-  const createdUserId = Number(sessionStorage.getItem('userId'));
-  const accountId =sessionStorage.getItem('accountId');
-  const siteId = sessionStorage.getItem('siteId');
-  const groupId = sessionStorage.getItem('groupId');
-  const sentinalTesting = sessionStorage.getItem('sentinalTesting');
+const BlockListPopUp = ({show, onClose, refreshParent}) => {
+  const osDropdownRef = useRef(null)
+  const descriptionTextareaRef = useRef(null)
+  const sha1InputRef = useRef(null)
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const createdDate = new Date().toISOString()
+  const createdUserId = Number(sessionStorage.getItem('userId'))
+  const accountId = sessionStorage.getItem('accountId')
+  const siteId = sessionStorage.getItem('siteId')
+  const groupId = sessionStorage.getItem('groupId')
+  const sentinalTesting = sessionStorage.getItem('sentinalTesting')
 
   const handleSubmit = async () => {
     try {
       if (!osDropdownRef.current.value || !sha1InputRef.current.value) {
-        notifyFail("Please fill out all mandatory fields.");
-        return;
+        notifyFail('Please fill out all mandatory fields.')
+        return
       }
-      let data;
-  
-      if (sentinalTesting === "true") {
+      let data
+
+      if (sentinalTesting === 'true') {
         data = {
           orgID: orgId,
           osType: osDropdownRef.current.value,
           value: sha1InputRef.current.value,
           description: descriptionTextareaRef.current.value,
-          source: "",
+          source: '',
           createdDate: createdDate,
           createdUserId: createdUserId,
           siteId: siteId,
-        };
+        }
       } else {
         data = {
           orgID: orgId,
           osType: osDropdownRef.current.value,
           value: sha1InputRef.current.value,
           description: descriptionTextareaRef.current.value,
-          source: "",
+          source: '',
           createdDate: createdDate,
           createdUserId: createdUserId,
-          groupId: groupId || "",
+          groupId: groupId || '',
           siteId: siteId,
-          accountId: accountId || "",
-        };
+          accountId: accountId || '',
+        }
       }
-      const responseData = await fetchAddToblockListUrl(data);
-      const { isSuccess, message } = responseData;
-  
+      const responseData = await fetchAddToblockListUrl(data)
+      const {isSuccess, message} = responseData
+
       if (isSuccess) {
-        notify(message);
-        onClose();
-        refreshParent();
+        notify(message)
+        onClose()
+        refreshParent()
       } else {
-        notifyFail(message);
+        notifyFail(message)
       }
     } catch (error) {
-      console.error("Error during API call:", error);
+      console.error('Error during API call:', error)
     }
-  };
-  
+  }
 
   return (
     <Modal
+      backdrop='static'
+      keyboard={false}
       show={show}
       onHide={onClose}
-      className="addToBlockList application-modal"
+      className='addToBlockList application-modal'
     >
       <Modal.Header closeButton>
         <Modal.Title>
           <div>
-            {" "}
-            <i className="bi bi-shield-slash mr-2 white"></i> Add To Blocklist
+            {' '}
+            <i className='bi bi-shield-slash mr-2 white'></i> Add To Blocklist
           </div>
         </Modal.Title>
-        <button
-          type="button"
-          class="application-modal-close"
-          aria-label="Close"
-        >
-          <i className="fa fa-close" />
+        <button type='button' class='application-modal-close' aria-label='Close'>
+          <i className='fa fa-close' />
         </button>
       </Modal.Header>
       <Modal.Body>
-        <div className="mb-5">
+        <div className='mb-5'>
           <b>Blocklist Type : </b> Hash
         </div>
-        <div className="row">
-          <div className="col-md-6">
-            <label htmlFor="osInput" className="form-label">
+        <div className='row'>
+          <div className='col-md-6'>
+            <label htmlFor='osInput' className='form-label'>
               OS*
             </label>
-            <select className="form-select" id="osInput" ref={osDropdownRef} required>
-              <option value="">Select</option>
-              <option value="windows">Windows</option>
-              <option value="macos">MacOS</option>
-              <option value="linux">Linux</option>
+            <select className='form-select' id='osInput' ref={osDropdownRef} required>
+              <option value=''>Select</option>
+              <option value='windows'>Windows</option>
+              <option value='macos'>MacOS</option>
+              <option value='linux'>Linux</option>
             </select>
           </div>
         </div>
-        <div className="row mt-5">
-          <div className="col-md-6">
+        <div className='row mt-5'>
+          <div className='col-md-6'>
             <div>
-              <label className="form-label" htmlFor="sha1Input">
+              <label className='form-label' htmlFor='sha1Input'>
                 SHA1*
               </label>
-              <input type="text" className="form-control" ref={sha1InputRef} required />
+              <input type='text' className='form-control' ref={sha1InputRef} required />
             </div>
           </div>
         </div>
-        <div className="mt-5">
-          <label className="form-label">Description</label>
+        <div className='mt-5'>
+          <label className='form-label'>Description</label>
           <textarea
             ref={descriptionTextareaRef}
-            rows="1"
-            className="form-control"
+            rows='1'
+            className='form-control'
             maxLength={4000}
-            placeholder="Add Description or Leave empty"
+            placeholder='Add Description or Leave empty'
           ></textarea>
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="btn btn-small btn-secondary" onClick={onClose}>
+        <Button variant='btn btn-small btn-secondary' onClick={onClose}>
           Close
         </Button>
-        <Button variant="btn btn-new btn-small" onClick={handleSubmit}>
+        <Button variant='btn btn-new btn-small' onClick={handleSubmit}>
           Apply
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
-export default BlockListPopUp;
+export default BlockListPopUp

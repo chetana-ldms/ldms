@@ -133,12 +133,18 @@ const MitigationModal = ({
   }
   useEffect(() => {
     if (addToBlocklist) {
-      setIsChecked1(true);
+      setIsChecked1(true)
     }
-  }, [addToBlocklist]);
+  }, [addToBlocklist])
 
   return (
-    <Modal show={show} onHide={handleClose} className='mitigate application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={handleClose}
+      className='mitigate application-modal'
+    >
       {loading && <UsersListLoading />}
       <Modal.Header closeButton className='bg-heading'>
         <Modal.Title className='pad-10 white'>Mitigation Actions</Modal.Title>
@@ -233,18 +239,18 @@ const MitigationModal = ({
                 Scope:
               </label>
               <button
-                className="btn btn-outline-primary rounded-pill position-relative"
-                style={{ backgroundColor: "white", color: "#007BFF" }}
+                className='btn btn-outline-primary rounded-pill position-relative'
+                style={{backgroundColor: 'white', color: '#007BFF'}}
                 onClick={() => setGroupDropdownVisible(!groupDropdownVisible)}
               >
-              Group{" "}
-              <i
-                  className="bi bi-caret-down-fill"
+                Group{' '}
+                <i
+                  className='bi bi-caret-down-fill'
                   style={{
-                    position: "absolute",
-                    right: "0px",
-                    top: "55%",
-                    transform: "translateY(-50%)",
+                    position: 'absolute',
+                    right: '0px',
+                    top: '55%',
+                    transform: 'translateY(-50%)',
                   }}
                 ></i>
               </button>

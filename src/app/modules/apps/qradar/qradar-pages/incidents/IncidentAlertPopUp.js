@@ -56,7 +56,13 @@ const IncidentAlertPopUp = ({show, onClose, selectedAlertId}) => {
     }
   }
   return (
-    <Modal show={show} onHide={onClose} className='Incident-modal application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onClose}
+      className='Incident-modal application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>{threatInfo?.name}</Modal.Title>
         <button type='button' class='application-modal-close' aria-label='Close'>
@@ -259,7 +265,9 @@ const IncidentAlertPopUp = ({show, onClose, selectedAlertId}) => {
                   </div>
                   <div className='col-md-8'>
                     {/* <p>.</p> */}
-                    <p style={{fontSize: 10}} title={endpointInfo?.scope}>{truncateText(endpointInfo?.scope, 50)}</p>
+                    <p style={{fontSize: 10}} title={endpointInfo?.scope}>
+                      {truncateText(endpointInfo?.scope, 50)}
+                    </p>
                     <p>{endpointInfo?.osVersion}</p>
                     <p>{endpointInfo?.agentVersion}</p>
                     <p>{endpointInfo?.policy}</p>

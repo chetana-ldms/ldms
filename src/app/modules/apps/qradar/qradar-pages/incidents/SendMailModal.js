@@ -131,7 +131,14 @@ const SendMailModal = ({show, onHide, onSend}) => {
   }, [])
 
   return (
-    <Modal show={show} onHide={handleClose} className='sendMailModal application-modal' size='lg'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={handleClose}
+      className='sendMailModal application-modal'
+      size='lg'
+    >
       <ToastContainer />
       <Modal.Header closeButton>
         <Modal.Title>Send Mail</Modal.Title>

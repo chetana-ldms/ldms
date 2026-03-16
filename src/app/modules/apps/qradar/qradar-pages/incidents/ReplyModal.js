@@ -285,7 +285,14 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
   }, [incidentData.incidentID])
 
   return (
-    <Modal show={show} onHide={handleClose} className='replyModal application-modal' size='lg'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={handleClose}
+      className='replyModal application-modal'
+      size='lg'
+    >
       <ToastContainer />
       <Modal.Header closeButton>
         <Modal.Title>Reply</Modal.Title>

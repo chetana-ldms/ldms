@@ -37,7 +37,13 @@ function ApplicationLogsModel({selectedEndpoint, showModal, setShowModal}) {
   }, [logId])
 
   return (
-    <Modal className='application-modal' show={showModal} onHide={() => setShowModal(false)}>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      className='application-modal'
+      show={showModal}
+      onHide={() => setShowModal(false)}
+    >
       <Modal.Header closeButton className='pad-10'>
         <Modal.Title>Application Log Detail</Modal.Title>
         <button
@@ -96,7 +102,7 @@ function ApplicationLogsModel({selectedEndpoint, showModal, setShowModal}) {
             </div>
             <div className='row'>
               <div className='col-md-2'>
-              <div className='mb-2'>
+                <div className='mb-2'>
                   <strong>Stack Trace : </strong>
                 </div>
               </div>
@@ -106,7 +112,7 @@ function ApplicationLogsModel({selectedEndpoint, showModal, setShowModal}) {
             </div>
             <div className='row'>
               <div className='col-md-2'>
-              <div className='mb-2'>
+                <div className='mb-2'>
                   <strong>Request Data : </strong>
                 </div>
               </div>
@@ -116,7 +122,7 @@ function ApplicationLogsModel({selectedEndpoint, showModal, setShowModal}) {
             </div>
             <div className='row'>
               <div className='col-md-2'>
-              <div className='mb-2'>
+                <div className='mb-2'>
                   <strong>Response Data : </strong>
                 </div>
               </div>
@@ -126,7 +132,7 @@ function ApplicationLogsModel({selectedEndpoint, showModal, setShowModal}) {
             </div>
             <div className='row'>
               <div className='col-md-2'>
-              <div className='mb-2'>
+                <div className='mb-2'>
                   <strong>Additional Info : </strong>
                 </div>
               </div>

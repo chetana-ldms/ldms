@@ -343,6 +343,8 @@ const QA = ({channelId, channelName}) => {
       </div>
 
       <Modal
+        backdrop='static'
+        keyboard={false}
         show={showQuestionModal}
         onHide={() => setShowQuestionModal(false)}
         className='application-modal'
@@ -394,6 +396,8 @@ const QA = ({channelId, channelName}) => {
       </Modal>
 
       <Modal
+        backdrop='static'
+        keyboard={false}
         show={showEditQuestionModal}
         onHide={() => setShowEditQuestionModal(false)}
         className='application-modal'
@@ -435,6 +439,8 @@ const QA = ({channelId, channelName}) => {
       </Modal>
 
       <Modal
+        backdrop='static'
+        keyboard={false}
         show={showEditModal}
         onHide={() => setShowEditModal(false)}
         className='application-modal'

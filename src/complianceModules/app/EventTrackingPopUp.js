@@ -1,9 +1,15 @@
 import React from 'react'
-import { Modal } from 'react-bootstrap';
+import {Modal} from 'react-bootstrap'
 
-function EventTrackingPopUp({ showModal, setShowModal }) {
+function EventTrackingPopUp({showModal, setShowModal}) {
   return (
-    <Modal className='modal' show={showModal} onHide={() => setShowModal(false)}>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      className='modal'
+      show={showModal}
+      onHide={() => setShowModal(false)}
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           <h2>Audit Event</h2>
@@ -69,4 +75,4 @@ function EventTrackingPopUp({ showModal, setShowModal }) {
   )
 }
 
-export default EventTrackingPopUp;
+export default EventTrackingPopUp

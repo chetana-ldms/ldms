@@ -19,7 +19,7 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
         siteId: siteId,
       }
       const response = await fetchGroupsUrl(data)
-      setGroups(response?.data??[])
+      setGroups(response?.data ?? [])
     } catch (error) {
       console.log(error)
     }
@@ -35,22 +35,22 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
-      agentName: item.computerName, 
+      agentName: item.computerName,
     }))
     const currentGroupName = items.length > 0 ? items[0].groupName : null
-  
+
     const payload = {
       orgId,
       toolId,
       actionId: selectedActionId,
-      groupId: selectedGroup, 
-      groupName: currentGroupName, 
+      groupId: selectedGroup,
+      groupName: currentGroupName,
       moveToGroupName: selectedGroupName,
       endPointsData,
       executedUserId: Number(sessionStorage.getItem('userId')),
       executedDate: new Date().toISOString(),
     }
-  
+
     try {
       const response = await fetchGroupActionUrl(payload)
       const {isSuccess, message} = response
@@ -65,7 +65,6 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
       console.log(error)
     }
   }
-  
 
   const handleSave = () => {
     if (!selectedGroup) {
@@ -73,7 +72,7 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
       return
     }
     sendSelectedItemsToBackend()
-    window.location.reload();
+    window.location.reload()
   }
 
   const handleSelect = (groupId, groupName) => {
@@ -82,7 +81,13 @@ const MoveToGroupModal = ({show, handleClose, items, selectedActionId, refreshDa
   }
 
   return (
-    <Modal show={show} onHide={handleClose} className='application-modal small-modal border-0'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={handleClose}
+      className='application-modal small-modal border-0'
+    >
       <Modal.Header closeButton>
         <Modal.Title>Move Endpoint to Group</Modal.Title>
       </Modal.Header>

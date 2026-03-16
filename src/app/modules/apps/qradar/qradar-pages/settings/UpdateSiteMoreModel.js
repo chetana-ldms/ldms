@@ -35,7 +35,7 @@ function UpdateSiteMoreModel({show, handleClose, items, selectedActionId, refres
       unlimitedExpiration: siteTypeData?.isNonExpireChecked,
       unlimitedLicenses: siteTypeData?.isUnlimitedLicenses,
       inherits: true,
-      name: items.map(item => item.name).join(', '),
+      name: items.map((item) => item.name).join(', '),
       siteType: siteTypeData?.siteType,
       accountId: accountId,
       description: siteNameData?.siteDescription,
@@ -44,7 +44,7 @@ function UpdateSiteMoreModel({show, handleClose, items, selectedActionId, refres
       toolId: Number(sessionStorage.getItem('toolID')),
       createdDate: new Date().toISOString(),
       createdUserId: Number(sessionStorage.getItem('userId')),
-      siteIds: items.map(item => item.id),
+      siteIds: items.map((item) => item.id),
     }
 
     try {
@@ -111,11 +111,17 @@ function UpdateSiteMoreModel({show, handleClose, items, selectedActionId, refres
 
   return (
     <>
-      <Modal show={show} onHide={handleClose} className='application-modal'>
+      <Modal
+        backdrop='static'
+        keyboard={false}
+        show={show}
+        onHide={handleClose}
+        className='application-modal'
+      >
         <Modal.Header closeButton>
-            <Modal.Title>
-              Update Site - {items.length} ({items.map((item) => item.name).join(', ')})
-            </Modal.Title>
+          <Modal.Title>
+            Update Site - {items.length} ({items.map((item) => item.name).join(', ')})
+          </Modal.Title>
           <button type='button' className='application-modal-close' aria-label='Close'>
             <i className='fa fa-close' />
           </button>
@@ -149,7 +155,7 @@ function UpdateSiteMoreModel({show, handleClose, items, selectedActionId, refres
                         Site Description
                       </label>
                       <textarea
-                      className='p-2'
+                        className='p-2'
                         placeholder='Enter Site Description...'
                         maxLength={500}
                         rows={2}

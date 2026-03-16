@@ -17,7 +17,7 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
-  const sentinalTesting = sessionStorage.getItem('sentinalTesting');
+  const sentinalTesting = sessionStorage.getItem('sentinalTesting')
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [isCustomDropdownOpen, setIsCustomDropdownOpen] = useState(false)
   const [selectedValue, setSelectedValue] = useState('Hash')
@@ -88,8 +88,8 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
       }
       let data = null
       if (selectedValue === 'Hash') {
-        if (sentinalTesting === "true") {
-          data =  {
+        if (sentinalTesting === 'true') {
+          data = {
             orgID: orgId,
             osType: osDropdownRef.current.value,
             value: sha1InputRef.current.value,
@@ -98,9 +98,9 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
             createdUserId: createdUserId,
             type: 'white_hash',
             siteId: siteId || '',
-          };
+          }
         } else {
-          data =  {
+          data = {
             orgID: orgId,
             osType: osDropdownRef.current.value,
             value: sha1InputRef.current.value,
@@ -111,11 +111,11 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
             groupId: groupId || '',
             siteId: siteId || '',
             accountId: accountId || '',
-          };
+          }
         }
       } else if (selectedValue === 'Certificate') {
-        if (sentinalTesting === "true") {
-          data =  {
+        if (sentinalTesting === 'true') {
+          data = {
             orgID: orgId,
             osType: osDropdownRef.current.value,
             value: signerInputRef.current.value,
@@ -124,9 +124,9 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
             createdUserId: createdUserId,
             type: 'certificate',
             siteId: siteId || '',
-          };
+          }
         } else {
-          data =  {
+          data = {
             orgID: orgId,
             osType: osDropdownRef.current.value,
             value: signerInputRef.current.value,
@@ -137,11 +137,11 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
             groupId: groupId || '',
             siteId: siteId || '',
             accountId: accountId || '',
-          };
+          }
         }
       } else if (selectedValue === 'File Type') {
-        if (sentinalTesting === "true") {
-          data =  {
+        if (sentinalTesting === 'true') {
+          data = {
             orgID: orgId,
             osType: osDropdownRef.current.value,
             value: fileInputRef.current.value,
@@ -151,9 +151,9 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
             type: 'file_type',
             siteId: siteId || '',
             actions: actions,
-          };
+          }
         } else {
-          data =  {
+          data = {
             orgID: orgId,
             osType: osDropdownRef.current.value,
             value: fileInputRef.current.value,
@@ -165,11 +165,11 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
             siteId: siteId || '',
             accountId: accountId || '',
             actions: actions,
-          };
+          }
         }
       } else if (selectedValue === 'Browser') {
-        if (sentinalTesting === "true") {
-          data =  {
+        if (sentinalTesting === 'true') {
+          data = {
             orgID: orgId,
             osType: osDropdownRef.current.value,
             value: browserDropdownRef.current.value,
@@ -178,9 +178,9 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
             createdUserId: createdUserId,
             type: 'browser',
             siteId: siteId || '',
-          };
+          }
         } else {
-          data =  {
+          data = {
             orgID: orgId,
             osType: osDropdownRef.current.value,
             value: browserDropdownRef.current.value,
@@ -191,7 +191,7 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
             groupId: groupId || '',
             siteId: siteId || '',
             accountId: accountId || '',
-          };
+          }
         }
       } else if (selectedValue === 'Path') {
         let pathExclusionType = 'file'
@@ -232,8 +232,8 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
           default:
             mode = 'suppress'
         }
-        if (sentinalTesting === "true") {
-          data =  {
+        if (sentinalTesting === 'true') {
+          data = {
             orgID: orgId,
             osType: osDropdownRef.current.value,
             value: pathInputRef.current.value,
@@ -245,9 +245,9 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
             actions: actions,
             pathExclusionType,
             mode,
-          };
+          }
         } else {
-          data =  {
+          data = {
             orgID: orgId,
             osType: osDropdownRef.current.value,
             value: pathInputRef.current.value,
@@ -261,7 +261,7 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
             actions: actions,
             pathExclusionType,
             mode,
-          };
+          }
         }
       } else {
         return
@@ -289,7 +289,7 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
 
   const handleDropdownItemClick = (value) => {
     setSelectedValue(value)
-    console.log(selectedValue, "selectedValue")
+    console.log(selectedValue, 'selectedValue')
     setDropdownOpen(false)
   }
 
@@ -372,7 +372,13 @@ const CreateExclusionModal = ({show, onClose, refreshParent}) => {
   }
 
   return (
-    <Modal show={show} onHide={onClose} className='AddToExclusionsModal application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onClose}
+      className='AddToExclusionsModal application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>New Exclusions</Modal.Title>
         <button type='button' class='application-modal-close' aria-label='Close'>

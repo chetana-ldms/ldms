@@ -18,9 +18,9 @@ function ReportTaskModal({show, handleClose, refreshParent}) {
   const [reportName, setReportName] = useState('')
   const [grouptName, setGrouptName] = useState('')
   const [reportContent, setReportContent] = useState([])
-  console.log(reportContent, "reportContent")
+  console.log(reportContent, 'reportContent')
   const [selectedContent, setSelectedContent] = useState(null)
-  console.log(selectedContent, "selectedContent")
+  console.log(selectedContent, 'selectedContent')
   const [frequency, setFrequency] = useState('one-time')
   const [recipients, setRecipients] = useState('')
   const [scheduleInterval, setScheduleInterval] = useState('')
@@ -126,29 +126,30 @@ function ReportTaskModal({show, handleClose, refreshParent}) {
       }
     }
     const selectObject = reportContent
-    .filter((item) => item.report_Id_Name === selectedContent)
-    .map((item) => {
-      // If selectedContent matches 'group_exec_insights', set the value of 'group_name'
-      if (selectedContent === 'group_exec_insights') {
-        const updatedItem = { ...item };
-        updatedItem.report_Args = updatedItem.report_Args.map((arg) => {
-          if (arg.name === 'group_name') {
-            return { ...arg, value: grouptName }; // Assign grouptName to the value field
-          }
-          return arg;
-        });
-        return updatedItem;
-      }
-      return item;
-    });
-    console.log(selectObject, "selectObject")
+      .filter((item) => item.report_Id_Name === selectedContent)
+      .map((item) => {
+        // If selectedContent matches 'group_exec_insights', set the value of 'group_name'
+        if (selectedContent === 'group_exec_insights') {
+          const updatedItem = {...item}
+          updatedItem.report_Args = updatedItem.report_Args.map((arg) => {
+            if (arg.name === 'group_name') {
+              return {...arg, value: grouptName} // Assign grouptName to the value field
+            }
+            return arg
+          })
+          return updatedItem
+        }
+        return item
+      })
+    console.log(selectObject, 'selectObject')
     const data = {
       scope: siteId ? 'site' : 'Account',
       name: reportName,
       insightTypes: selectObject,
       scheduleType: frequency === 'one-time' ? 'manually' : 'scheduled',
       recipients: recipients ? recipients.split(',').map((email) => email.trim()) : [],
-      isTrend: frequency !== 'one-time' ? false : (selectedInterval === 'last-30-days' ? true : false),
+      isTrend:
+        frequency !== 'one-time' ? false : selectedInterval === 'last-30-days' ? true : false,
       toDate: selectedToDate ? selectedToDate.toISOString() : null,
       fromDate: selectedFromDate ? selectedFromDate.toISOString() : null,
       frequency:
@@ -215,7 +216,13 @@ function ReportTaskModal({show, handleClose, refreshParent}) {
   }
 
   return (
-    <Modal show={show} onHide={closeButton} className='application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={closeButton}
+      className='application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>New Report Task</Modal.Title>
         <button type='button' className='application-modal-close' aria-label='Close'>

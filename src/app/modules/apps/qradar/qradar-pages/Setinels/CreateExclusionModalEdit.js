@@ -385,7 +385,13 @@ const CreateExclusionModalEdit = ({show, onClose, refreshParent, selectedItem}) 
   }
 
   return (
-    <Modal show={show} onHide={onClose} className='AddToExclusionsModal application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onClose}
+      className='AddToExclusionsModal application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>Update Exclusionslist Item</Modal.Title>
         <button type='button' class='application-modal-close' aria-label='Close'>

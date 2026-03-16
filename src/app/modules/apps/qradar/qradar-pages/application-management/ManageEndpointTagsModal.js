@@ -144,7 +144,13 @@ const ManageEndpointTagsModal = ({show, handleClose, tags, onSave, id}) => {
   }
 
   return (
-    <Modal show={show} onHide={handleClose} className='application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={handleClose}
+      className='application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>Manage Endpoint Tags</Modal.Title>
         <button type='button' class='application-modal-close' aria-label='Close'>

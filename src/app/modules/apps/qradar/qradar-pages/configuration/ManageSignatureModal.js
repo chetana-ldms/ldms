@@ -1,19 +1,16 @@
-import React, { useState, useEffect } from 'react'
-import { Modal, Button, Spinner } from 'react-bootstrap'
-import ReactQuill, { Quill } from 'react-quill'
+import React, {useState, useEffect} from 'react'
+import {Modal, Button, Spinner} from 'react-bootstrap'
+import ReactQuill, {Quill} from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import {
-  fetchManageSignatureUrl,
-  fetchSignatureUrl,
-} from '../../../../../api/ConfigurationApi'
-import { notify, notifyFail } from '../components/notification/Notification'
-import { ToastContainer } from 'react-toastify'
+import {fetchManageSignatureUrl, fetchSignatureUrl} from '../../../../../api/ConfigurationApi'
+import {notify, notifyFail} from '../components/notification/Notification'
+import {ToastContainer} from 'react-toastify'
 
 // ✅ Import and register the maintained image resize module
 import ImageResize from 'quill-image-resize-module-react'
 Quill.register('modules/imageResize', ImageResize)
 
-const ManageSignatureModal = ({ show, onClose, userId }) => {
+const ManageSignatureModal = ({show, onClose, userId}) => {
   const [signatureHtml, setSignatureHtml] = useState('')
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(false)
@@ -21,9 +18,9 @@ const ManageSignatureModal = ({ show, onClose, userId }) => {
   // Quill modules (with image resize)
   const modules = {
     toolbar: [
-      [{ header: [1, 2, false] }],
+      [{header: [1, 2, false]}],
       ['bold', 'italic', 'underline', 'strike'],
-      [{ list: 'ordered' }, { list: 'bullet' }],
+      [{list: 'ordered'}, {list: 'bullet'}],
       ['link', 'image'],
       ['clean'],
     ],
@@ -68,7 +65,7 @@ const ManageSignatureModal = ({ show, onClose, userId }) => {
 
     try {
       const responseData = await fetchManageSignatureUrl(data)
-      const { isSuccess, message } = responseData
+      const {isSuccess, message} = responseData
 
       if (isSuccess) {
         notify(message)
@@ -91,59 +88,49 @@ const ManageSignatureModal = ({ show, onClose, userId }) => {
 
   return (
     <Modal
+      backdrop='static'
+      keyboard={false}
       show={show}
       onHide={onClose}
-      className="addAManageSignatureModal application-modal"
-      size="lg"
+      className='addAManageSignatureModal application-modal'
+      size='lg'
       centered
     >
       <ToastContainer />
       <Modal.Header closeButton>
         <Modal.Title>Manage Signature</Modal.Title>
-        <button
-          type="button"
-          className="application-modal-close"
-          aria-label="Close"
-        >
-          <i className="fa fa-close" />
+        <button type='button' className='application-modal-close' aria-label='Close'>
+          <i className='fa fa-close' />
         </button>
       </Modal.Header>
       <Modal.Body>
         {initialLoading ? (
-          <div className="text-center py-5">
-            <Spinner animation="border" />
-            <p className="mt-2">Loading signature...</p>
+          <div className='text-center py-5'>
+            <Spinner animation='border' />
+            <p className='mt-2'>Loading signature...</p>
           </div>
         ) : (
           <ReactQuill
             value={signatureHtml}
             onChange={setSignatureHtml}
-            placeholder="Paste or write your email signature here..."
-            theme="snow"
-            style={{ minHeight: '200px' }}
+            placeholder='Paste or write your email signature here...'
+            theme='snow'
+            style={{minHeight: '200px'}}
             modules={modules} // ✅ Added image resize support
           />
         )}
       </Modal.Body>
       <Modal.Footer>
-        <Button
-          variant="outline-danger"
-          onClick={handleClear}
-          disabled={loading || initialLoading}
-        >
+        <Button variant='outline-danger' onClick={handleClear} disabled={loading || initialLoading}>
           Clear
         </Button>
-        <Button variant="secondary" onClick={onClose} disabled={loading}>
+        <Button variant='secondary' onClick={onClose} disabled={loading}>
           Cancel
         </Button>
-        <Button
-          variant="primary"
-          onClick={handleSubmit}
-          disabled={loading || initialLoading}
-        >
+        <Button variant='primary' onClick={handleSubmit} disabled={loading || initialLoading}>
           {loading ? (
             <>
-              <Spinner animation="border" size="sm" className="me-2" />
+              <Spinner animation='border' size='sm' className='me-2' />
               Saving...
             </>
           ) : (

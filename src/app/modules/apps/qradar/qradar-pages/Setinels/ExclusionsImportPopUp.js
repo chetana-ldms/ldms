@@ -221,7 +221,7 @@ const ExclusionsImportPopUp = ({show, onClose, refreshParent}) => {
       }
     }
   }
-const handleExportTemplate = () =>{
+  const handleExportTemplate = () => {
     const headers = [
       'OS',
       'Description',
@@ -231,33 +231,39 @@ const handleExportTemplate = () =>{
       'User',
       'Last Updated',
       'Source',
-    ];
-  
+    ]
+
     // Convert the headers to a CSV string
-    const csvHeader = headers.join(',') + '\n';
-  
+    const csvHeader = headers.join(',') + '\n'
+
     // Create a Blob from the CSV string
-    const blob = new Blob([csvHeader], { type: 'text/csv;charset=utf-8;' });
-  
+    const blob = new Blob([csvHeader], {type: 'text/csv;charset=utf-8;'})
+
     // Trigger the download
-    const link = document.createElement('a');
-    const fileName = 'blocklist_template.csv';
-  
+    const link = document.createElement('a')
+    const fileName = 'blocklist_template.csv'
+
     if (navigator.msSaveBlob) {
       // IE 10+
-      navigator.msSaveBlob(blob, fileName);
+      navigator.msSaveBlob(blob, fileName)
     } else {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', fileName);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const url = URL.createObjectURL(blob)
+      link.setAttribute('href', url)
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     }
   }
 
   return (
-    <Modal show={show} onHide={handleClose} className='application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={handleClose}
+      className='application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>Import Exclusion List</Modal.Title>
         <button type='button' className='application-modal-close' aria-label='Close'>

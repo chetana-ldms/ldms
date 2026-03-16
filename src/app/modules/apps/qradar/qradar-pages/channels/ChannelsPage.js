@@ -89,7 +89,13 @@ const NewChannelModal = ({show, onClose, onAdd}) => {
   }
 
   return (
-    <Modal show={show} onHide={handleModalClose} className='application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={handleModalClose}
+      className='application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>Add new channel</Modal.Title>
         <button type='button' class='application-modal-close' aria-label='Close'>
@@ -395,6 +401,8 @@ const ChannelsPage = () => {
       </div>
 
       <Modal
+        backdrop='static'
+        keyboard={false}
         className='channel-edit application-modal'
         show={showEditChannel}
         onHide={() => setShowEditChannel(false)}
@@ -423,19 +431,19 @@ const ChannelsPage = () => {
                         <td>{channel.channelName}</td>
                         <td>{channel.channelTypeName}</td>
                         <td>
-                            <button
-                              className='btn-circle btn-new'
-                              onClick={() => handleAccordionToggle(channel.channelId)}
-                            >
-                              <i className='fa fa-pencil white fs-15' />
-                            </button>
-                         
-                            <button
-                              className='btn-circle btn-danger ms-5'
-                              onClick={() => handleDelete(channel)}
-                            >
-                              <i className='fa fa-trash white fs-15' />
-                            </button>
+                          <button
+                            className='btn-circle btn-new'
+                            onClick={() => handleAccordionToggle(channel.channelId)}
+                          >
+                            <i className='fa fa-pencil white fs-15' />
+                          </button>
+
+                          <button
+                            className='btn-circle btn-danger ms-5'
+                            onClick={() => handleDelete(channel)}
+                          >
+                            <i className='fa fa-trash white fs-15' />
+                          </button>
                         </td>
                       </tr>
                       {channel.isAccordionOpen && (

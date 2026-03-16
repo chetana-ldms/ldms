@@ -4,7 +4,8 @@ import { Modal, Button } from 'react-bootstrap'
 
 const ConfirmPopup = ({ show, title, message, onConfirm, onCancel }) => {
   return (
-    <Modal show={show} onHide={onCancel} backdrop="static" keyboard={false} centered>
+    <Modal
+     show={show} onHide={onCancel} backdrop="static" keyboard={false} centered>
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>

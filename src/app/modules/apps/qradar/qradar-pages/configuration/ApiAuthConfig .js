@@ -209,7 +209,13 @@ const ApiAuthConfig = ({show, onClose, orgToolID, selectedOrgToolActionId}) => {
   }
 
   return (
-    <Modal show={show} onHide={handleclose} className='application-modal channel-edit'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={handleclose}
+      className='application-modal channel-edit'
+    >
       <Modal.Header closeButton>
         <Modal.Title>API Auth Configuration</Modal.Title>
         <button type='button' class='application-modal-close' aria-label='Close'>

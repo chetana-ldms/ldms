@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Modal, Button, Spinner, Form } from 'react-bootstrap'
+import React, {useEffect, useState} from 'react'
+import {Modal, Button, Spinner, Form} from 'react-bootstrap'
 
 import {
   fetchIncidentNotesUpdateUrl,
@@ -7,18 +7,11 @@ import {
   fetchNotesDetailsUrl,
 } from '../../../../../api/IncidentsApi'
 
-import { notify, notifyFail } from '../components/notification/Notification'
+import {notify, notifyFail} from '../components/notification/Notification'
 import RichTextEditor from '../../../../../../utils/RichTextEditor'
-import { processHtmlWithInlineImages } from './processHtmlWithInlineImages'
+import {processHtmlWithInlineImages} from './processHtmlWithInlineImages'
 
-const NotesEditModalComponent = ({
-  show,
-  onClose,
-  noteData,
-  fetchNotes,
-  id,
-  conversationId,
-}) => {
+const NotesEditModalComponent = ({show, onClose, noteData, fetchNotes, id, conversationId}) => {
   const userID = Number(sessionStorage.getItem('userId'))
 
   const [message, setMessage] = useState('')
@@ -40,8 +33,7 @@ const NotesEditModalComponent = ({
 
       // If conversationId is provided, fetch by conversation first
       if (conversationId) {
-        const convRes =
-          await fetchIncidenttNotesByIncidentByConversationIdUrl(conversationId)
+        const convRes = await fetchIncidenttNotesByIncidentByConversationIdUrl(conversationId)
 
         incidentNotesId = convRes?.incidentNotesId
       }
@@ -89,9 +81,7 @@ const NotesEditModalComponent = ({
   /* ================= REMOVE ATTACHMENT ================= */
   const removeAttachment = (att) => {
     setAttachments((prev) =>
-      prev.filter((a) =>
-        att.isExisting ? a.attachmentId !== att.attachmentId : a !== att
-      )
+      prev.filter((a) => (att.isExisting ? a.attachmentId !== att.attachmentId : a !== att))
     )
   }
 
@@ -100,8 +90,7 @@ const NotesEditModalComponent = ({
     setLoading(true)
 
     try {
-      const { cleanedHtml, attachments: inlineImages } =
-        processHtmlWithInlineImages(message)
+      const {cleanedHtml, attachments: inlineImages} = processHtmlWithInlineImages(message)
 
       let updatedHtml = cleanedHtml
 
@@ -121,10 +110,7 @@ const NotesEditModalComponent = ({
         const ext = img.file.name.split('.').pop()
         const uniqueContentId = `${oldCid}_${timestamp}.${ext}`
 
-        updatedHtml = updatedHtml.replaceAll(
-          `cid:${oldCid}`,
-          `cid:${uniqueContentId}`
-        )
+        updatedHtml = updatedHtml.replaceAll(`cid:${oldCid}`, `cid:${uniqueContentId}`)
 
         const renamedFile = new File([img.file], uniqueContentId, {
           type: img.file.type,
@@ -194,45 +180,49 @@ const NotesEditModalComponent = ({
   const regularFiles = attachments.filter((a) => !a.isInline)
 
   return (
-    <Modal show={show} onHide={onClose} className="addANoteModal application-modal">
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onClose}
+      className='addANoteModal application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>Edit Note</Modal.Title>
-        <button type="button" className="application-modal-close" aria-label="Close">
-          <i className="fa fa-close" />
+        <button type='button' className='application-modal-close' aria-label='Close'>
+          <i className='fa fa-close' />
         </button>
       </Modal.Header>
 
       <Modal.Body>
         {loading ? (
-          <div className="text-center py-4">
-            <Spinner animation="border" />
+          <div className='text-center py-4'>
+            <Spinner animation='border' />
           </div>
         ) : (
           <Form.Group>
             <Form.Label>
-              Message <sup className="red">*</sup>
+              Message <sup className='red'>*</sup>
             </Form.Label>
 
             {regularFiles.length > 0 && (
               <>
-                <h6 className="fw-bold">Attachments</h6>
-                <div className="d-flex flex-wrap gap-2 mb-2">
+                <h6 className='fw-bold'>Attachments</h6>
+                <div className='d-flex flex-wrap gap-2 mb-2'>
                   {regularFiles.map((att, i) => (
-                    <div key={i} className="border rounded-pill px-3 py-1 bg-light">
-                      <span className="me-2">
-                        {att.file?.name || att.fileName}
-                      </span>
+                    <div key={i} className='border rounded-pill px-3 py-1 bg-light'>
+                      <span className='me-2'>{att.file?.name || att.fileName}</span>
                       <button
-                        className="btn btn-link p-0 me-2 text-primary"
+                        className='btn btn-link p-0 me-2 text-primary'
                         onClick={() => downloadAttachment(att)}
                       >
-                        <i className="fa fa-download" />
+                        <i className='fa fa-download' />
                       </button>
                       <button
-                        className="btn btn-link p-0 text-danger"
+                        className='btn btn-link p-0 text-danger'
                         onClick={() => removeAttachment(att)}
                       >
-                        <i className="fa fa-times" />
+                        <i className='fa fa-times' />
                       </button>
                     </div>
                   ))}
@@ -240,20 +230,16 @@ const NotesEditModalComponent = ({
               </>
             )}
 
-            <RichTextEditor
-              value={message}
-              onChange={setMessage}
-              onAttach={handleNewAttachment}
-            />
+            <RichTextEditor value={message} onChange={setMessage} onAttach={handleNewAttachment} />
           </Form.Group>
         )}
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
+        <Button variant='secondary' onClick={onClose}>
           Close
         </Button>
-        <Button variant="primary" onClick={executeSave} disabled={loading}>
+        <Button variant='primary' onClick={executeSave} disabled={loading}>
           Save
         </Button>
       </Modal.Footer>

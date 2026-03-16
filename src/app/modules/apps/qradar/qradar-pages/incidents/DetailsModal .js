@@ -239,18 +239,20 @@ const DetailsModal = ({show, onClose, incidentData}) => {
 
   return (
     <>
-      <Modal show={show} onHide={handleCancel} className="DetailModal application-modal">
+      <Modal
+        backdrop='static'
+        keyboard={false}
+        show={show}
+        onHide={handleCancel}
+        className='DetailModal application-modal'
+      >
         <ToastContainer />
 
         <Modal.Header closeButton>
           <Modal.Title>Incident Description</Modal.Title>
-          <button
-          type="button"
-          class="application-modal-close"
-          aria-label="Close"
-        >
-          <i className="fa fa-close" />
-        </button>
+          <button type='button' class='application-modal-close' aria-label='Close'>
+            <i className='fa fa-close' />
+          </button>
         </Modal.Header>
 
         <Modal.Body>
@@ -268,9 +270,7 @@ const DetailsModal = ({show, onClose, incidentData}) => {
                   <div className='d-flex flex-wrap gap-2'>
                     {regularFiles.map((att, i) => (
                       <div key={i} className='border rounded-pill px-3 py-1 bg-light'>
-                        <span className='me-2'>
-                          {att.file?.name || att.fileName}
-                        </span>
+                        <span className='me-2'>{att.file?.name || att.fileName}</span>
                         <button
                           className='btn btn-link p-0 me-2 text-primary'
                           onClick={() => downloadAttachment(att)}

@@ -53,7 +53,13 @@ const MergeModal = ({show, onClose, onConfirm, selectedItems}) => {
   }
 
   return (
-    <Modal show={show} onHide={onClose} className='mergrModal application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onClose}
+      className='mergrModal application-modal'
+    >
       <ToastContainer />
       <Modal.Header closeButton>
         <Modal.Title>Merge ticket</Modal.Title>

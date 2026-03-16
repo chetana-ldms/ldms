@@ -1,9 +1,9 @@
-import React from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import React from 'react'
+import {Modal, Button} from 'react-bootstrap'
 
-const MonitoringPopUp = ({ showModal, setShowModal, selectedItem }) => {
+const MonitoringPopUp = ({showModal, setShowModal, selectedItem}) => {
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)}>
+    <Modal backdrop='static' keyboard={false} show={showModal} onHide={() => setShowModal(false)}>
       <Modal.Header closeButton>
         <Modal.Title>Selected Item</Modal.Title>
       </Modal.Header>
@@ -12,7 +12,9 @@ const MonitoringPopUp = ({ showModal, setShowModal, selectedItem }) => {
           <>
             <p>Test Name: {selectedItem.testName}</p>
             <p>Last Tested: {selectedItem.lastTested}</p>
-            <p>Icon: <i className={selectedItem.icon} /></p>
+            <p>
+              Icon: <i className={selectedItem.icon} />
+            </p>
           </>
         )}
       </Modal.Body>
@@ -22,7 +24,7 @@ const MonitoringPopUp = ({ showModal, setShowModal, selectedItem }) => {
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
-export default MonitoringPopUp;
+export default MonitoringPopUp

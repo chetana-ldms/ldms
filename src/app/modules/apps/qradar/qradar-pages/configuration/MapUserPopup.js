@@ -51,7 +51,13 @@ const MapUserPopup = ({show, onClose, selectedTool, selectedDataType, onImport})
   )
 
   return (
-    <Modal show={show} onHide={onClose} className='addANoteModal application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onClose}
+      className='addANoteModal application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>{selectedDataType ? 'Map Data Value' : 'Map User Details'}</Modal.Title>
         <button type='button' class='application-modal-close' aria-label='Close'>

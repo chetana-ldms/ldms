@@ -15,7 +15,7 @@ const FetchLogsModal = ({isOpen, toggle, items, selectedActionId, refreshData}) 
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
-      agentName:item.computerName || item.endpointName
+      agentName: item.computerName || item.endpointName,
     }))
 
     const payload = {
@@ -59,7 +59,13 @@ const FetchLogsModal = ({isOpen, toggle, items, selectedActionId, refreshData}) 
   }
 
   return (
-    <Modal show={isOpen} onHide={handleClose} className='EnableAgentModal application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={isOpen}
+      onHide={handleClose}
+      className='EnableAgentModal application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           Fetch Logs{' '}

@@ -1,149 +1,142 @@
-import React, { useEffect, useState } from "react";
-import { Modal, Button } from "react-bootstrap";
-import { fetchInventoryApplicationsEndpointsUrl } from "../../../../../api/ApplicationSectionApi";
-import EndpointPopup from "./EndpointPopup";
-import { getCurrentTimeZone } from "../../../../../../utils/helper";
-import { UsersListLoading } from "../components/loading/UsersListLoading";
-import {
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
-import { fetchExportDataAddUrl } from "../../../../../api/Api";
-import EndpointPopupSentinal from "../Setinels/EndpointPopupSentinal";
+import React, {useEffect, useState} from 'react'
+import {Modal, Button} from 'react-bootstrap'
+import {fetchInventoryApplicationsEndpointsUrl} from '../../../../../api/ApplicationSectionApi'
+import EndpointPopup from './EndpointPopup'
+import {getCurrentTimeZone} from '../../../../../../utils/helper'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
+import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
+import {fetchExportDataAddUrl} from '../../../../../api/Api'
+import EndpointPopupSentinal from '../Setinels/EndpointPopupSentinal'
 
-const InventoryEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
-  const [dropdownOpen, setDropdownOpen] = useState(false); // State to manage dropdown toggle
+const InventoryEndpointPopUp = ({showModal, setShowModal, selectedItem}) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false) // State to manage dropdown toggle
   // Function to extract table data
   const extractTableData = (items) => {
     return items.map((item) => ({
-      "Endpoint Name": item.endpointName,
-      "Endpoint Type": item.endpointType,
+      'Endpoint Name': item.endpointName,
+      'Endpoint Type': item.endpointType,
       OS: item.osType,
-      "OS Version": item.osVersion,
+      'OS Version': item.osVersion,
       Account: item.accountName,
       Site: item.siteName,
       Group: item.groupName,
       version: item.version,
       Size: item.fileSize,
-      "First Detected": getCurrentTimeZone(item.detectionDate),
-      "Installation Path": item.applicationInstallationPath,
-    }));
-  };
+      'First Detected': getCurrentTimeZone(item.detectionDate),
+      'Installation Path': item.applicationInstallationPath,
+    }))
+  }
   // Function to convert data to CSV format
   const convertToCSV = (data) => {
-    const header = Object.keys(data[0]).join(",") + "\n";
-    const body = data.map((item) => Object.values(item).join(",")).join("\n");
-    return header + body;
-  };
+    const header = Object.keys(data[0]).join(',') + '\n'
+    const body = data.map((item) => Object.values(item).join(',')).join('\n')
+    return header + body
+  }
 
   const exportToCSV = (data) => {
-    const csvData = convertToCSV(data);
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    const fileName = "risk_data.csv";
+    const csvData = convertToCSV(data)
+    const blob = new Blob([csvData], {type: 'text/csv;charset=utf-8;'})
+    const fileName = 'risk_data.csv'
     if (navigator.msSaveBlob) {
       // IE 10+
-      navigator.msSaveBlob(blob, fileName);
+      navigator.msSaveBlob(blob, fileName)
     } else {
-      const link = document.createElement("a");
+      const link = document.createElement('a')
       if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const url = URL.createObjectURL(blob)
+        link.setAttribute('href', url)
+        link.setAttribute('download', fileName)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       }
     }
-  };
+  }
 
   const exportTableToCSV = async () => {
-    const tableData = extractTableData(endpoints);
-    exportToCSV(tableData);
+    const tableData = extractTableData(endpoints)
+    exportToCSV(tableData)
     const data = {
       createdDate: new Date().toISOString(),
-      createdUserId: Number(sessionStorage.getItem("userId")),
+      createdUserId: Number(sessionStorage.getItem('userId')),
       orgId: Number(sessionStorage.getItem('orgId')),
-      exportDataType: "Inventory Endpoints"
-    };
-    try {
-      const response = await fetchExportDataAddUrl(data);
-    } catch (error) {
-      console.error(error);
+      exportDataType: 'Inventory Endpoints',
     }
-  };
+    try {
+      const response = await fetchExportDataAddUrl(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
-  console.log(selectedItem, "selectedItem");
-  const name = selectedItem?.applicationName;
-  const vendor = selectedItem?.applicationVendor;
-  const orgId = Number(sessionStorage.getItem("orgId"));
-  const [loading, setLoading] = useState(false);
-  const [endpoints, setEndpoints] = useState([]);
-  const [selectedEndpoint, setSelectedEndpoint] = useState(null);
-  console.log(selectedEndpoint, "selectedEndpoint")
-  const [showPopup, setShowPopup] = useState(false);
+  console.log(selectedItem, 'selectedItem')
+  const name = selectedItem?.applicationName
+  const vendor = selectedItem?.applicationVendor
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const [loading, setLoading] = useState(false)
+  const [endpoints, setEndpoints] = useState([])
+  const [selectedEndpoint, setSelectedEndpoint] = useState(null)
+  console.log(selectedEndpoint, 'selectedEndpoint')
+  const [showPopup, setShowPopup] = useState(false)
   const fetchData = async () => {
     const data = {
       orgID: orgId,
       applicationName: name,
       applicationVendor: vendor,
-    };
-    try {
-      setLoading(true);
-      const response = await fetchInventoryApplicationsEndpointsUrl(data);
-      setEndpoints(response);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
     }
-  };
+    try {
+      setLoading(true)
+      const response = await fetchInventoryApplicationsEndpointsUrl(data)
+      setEndpoints(response)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
   useEffect(() => {
-    fetchData();
-  }, [name, vendor]);
+    fetchData()
+  }, [name, vendor])
   const refreshData = () => {
     fetchData()
   }
   const handleEndpointClick = (item) => {
-    setSelectedEndpoint(item);
-    setShowPopup(true);
-  };
+    setSelectedEndpoint(item)
+    setShowPopup(true)
+  }
   return (
     <Modal
+      backdrop='static'
+      keyboard={false}
       show={showModal}
       onHide={() => setShowModal(false)}
-      className="fullscreen-modal"
+      className='fullscreen-modal'
     >
       <Modal.Header closeButton>
         <h1>Inventory Details</h1>
-        <div className="back btn btn-small btn-border">
+        <div className='back btn btn-small btn-border'>
           {/* <i className="fa fa-chevron-left link" /> */}
           Back
         </div>
       </Modal.Header>
       <Modal.Body>
-        <div className="header-filter">
-          <div className="border-0 float-right mb-5">
-            <Dropdown
-              isOpen={dropdownOpen}
-              toggle={() => setDropdownOpen(!dropdownOpen)}
-            >
-              <DropdownToggle className="no-pad">
-                <div className="btn btn-border btn-small">
-                  Export <i className="fa fa-file-export link mg-left-5" />
+        <div className='header-filter'>
+          <div className='border-0 float-right mb-5'>
+            <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
+              <DropdownToggle className='no-pad'>
+                <div className='btn btn-border btn-small'>
+                  Export <i className='fa fa-file-export link mg-left-5' />
                 </div>
               </DropdownToggle>
               <DropdownMenu>
                 <DropdownItem onClick={exportTableToCSV}>
-                  Generate Report{" "}
-                  <i className="fa fa-file-excel link float-right report-icon" />
+                  Generate Report <i className='fa fa-file-excel link float-right report-icon' />
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
         </div>
-        <table className="table alert-table scroll-x mg-top-20">
+        <table className='table alert-table scroll-x mg-top-20'>
           <thead>
             <tr>
               <th>Endpoint Name</th>
@@ -162,15 +155,10 @@ const InventoryEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {endpoints !== null &&
-            endpoints !== undefined &&
-            endpoints.length > 0 ? (
+            {endpoints !== null && endpoints !== undefined && endpoints.length > 0 ? (
               endpoints?.map((item) => (
                 <tr key={item.id}>
-                  <td
-                    onClick={() => handleEndpointClick(item)}
-                    className="link-txt"
-                  >
+                  <td onClick={() => handleEndpointClick(item)} className='link-txt'>
                     {item.endpointName}
                   </td>
                   <td>{item.endpointType}</td>
@@ -182,28 +170,26 @@ const InventoryEndpointPopUp = ({ showModal, setShowModal, selectedItem }) => {
                   <td>{item.version}</td>
                   <td>{item.fileSize}</td>
                   <td>{getCurrentTimeZone(item.detectionDate)}</td>
-                  <td>
-                    {getCurrentTimeZone(item.applicationInstallationDate)}
-                  </td>
+                  <td>{getCurrentTimeZone(item.applicationInstallationDate)}</td>
                   <td>{item.applicationInstallationPath}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="12">No data found</td>
+                <td colSpan='12'>No data found</td>
               </tr>
             )}
           </tbody>
         </table>
         <EndpointPopup
-        selectedEndpoint={selectedEndpoint}
-        showModal={showPopup}
-        setShowModal={setShowPopup}
-        refreshData={refreshData}
-      />
+          selectedEndpoint={selectedEndpoint}
+          showModal={showPopup}
+          setShowModal={setShowPopup}
+          refreshData={refreshData}
+        />
       </Modal.Body>
     </Modal>
-  );
-};
+  )
+}
 
-export default InventoryEndpointPopUp;
+export default InventoryEndpointPopUp

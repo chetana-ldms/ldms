@@ -1,6 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import {Modal, Button, Form, Row, Col} from 'react-bootstrap'
-import {fetchAvailablePackagesUrl, fetchTagsUrl, fetchUpgradePolicyUrl} from '../../../../../api/SentinalApi'
+import {
+  fetchAvailablePackagesUrl,
+  fetchTagsUrl,
+  fetchUpgradePolicyUrl,
+} from '../../../../../api/SentinalApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 
 const AutoUpgradePolicyUpdateModal = ({
@@ -81,25 +85,30 @@ const AutoUpgradePolicyUpdateModal = ({
   }, [modalState])
   useEffect(() => {
     if (selectedItem) {
-      setPolicyName(selectedItem.name || '');
-      setPolicyDescription(selectedItem.description || '');
-      
-      const versionString = `${selectedItem.package?.major} ${selectedItem.package?.minor?.toString().toUpperCase()} (${selectedItem.package?.build})`;
-      const matchingVersion = version?.find((ver) => ver.displayName === versionString);
-  
-      setAgentVersion(matchingVersion ? matchingVersion.displayName : versionString);
-      setMaxRetries(selectedItem.maxRetries || '');
-      setUpdateTiming(selectedItem.isScheduled === false ? 'immediate' : 'maintenance');
-      setAffectedEndpoints(selectedItem.allEndpoints ? 'allEndpoints' : 'filteredEndpoints');
-      const matchedTags = selectedItem.tags?.map(tagId => {
-        const matchingTag = dropdownTags.find(tag => tag.id === tagId);
-        return matchingTag ? { key: matchingTag.key, value: matchingTag.value, id: matchingTag.id } : null;
-      }).filter(Boolean); 
-  
-      setTags(matchedTags || []);
+      setPolicyName(selectedItem.name || '')
+      setPolicyDescription(selectedItem.description || '')
+
+      const versionString = `${selectedItem.package?.major} ${selectedItem.package?.minor
+        ?.toString()
+        .toUpperCase()} (${selectedItem.package?.build})`
+      const matchingVersion = version?.find((ver) => ver.displayName === versionString)
+
+      setAgentVersion(matchingVersion ? matchingVersion.displayName : versionString)
+      setMaxRetries(selectedItem.maxRetries || '')
+      setUpdateTiming(selectedItem.isScheduled === false ? 'immediate' : 'maintenance')
+      setAffectedEndpoints(selectedItem.allEndpoints ? 'allEndpoints' : 'filteredEndpoints')
+      const matchedTags = selectedItem.tags
+        ?.map((tagId) => {
+          const matchingTag = dropdownTags.find((tag) => tag.id === tagId)
+          return matchingTag
+            ? {key: matchingTag.key, value: matchingTag.value, id: matchingTag.id}
+            : null
+        })
+        .filter(Boolean)
+
+      setTags(matchedTags || [])
     }
-  }, [selectedItem, dropdownTags]);
-  
+  }, [selectedItem, dropdownTags])
 
   const reload = async () => {
     try {
@@ -138,8 +147,8 @@ const AutoUpgradePolicyUpdateModal = ({
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (affectedEndpoints === 'filteredEndpoints' && tags.length === 0) {
-      notifyFail('Please add at least one tag when using "Filtered by endpoint tag".');
-      return;
+      notifyFail('Please add at least one tag when using "Filtered by endpoint tag".')
+      return
     }
     const selectedPackage = version.find((ver) => ver.displayName === agentVersion)
     if (!selectedPackage) {
@@ -198,7 +207,13 @@ const AutoUpgradePolicyUpdateModal = ({
   }
 
   return (
-    <Modal show={show} onHide={handleClose} className='application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={handleClose}
+      className='application-modal'
+    >
       <Modal.Header closeButton>
         {save ? (
           <Modal.Title>View Upgrade Policy</Modal.Title>
@@ -211,7 +226,7 @@ const AutoUpgradePolicyUpdateModal = ({
       </Modal.Header>
       <Modal.Body>
         <div>
-            <div className='mb-2'>{selectedItem?.name}</div>
+          <div className='mb-2'>{selectedItem?.name}</div>
           <div>
             <label>Scope : </label> {groupId ? 'group' : siteId ? 'site' : 'Account'}
           </div>
@@ -401,7 +416,12 @@ const AutoUpgradePolicyUpdateModal = ({
         <Button variant='secondary' onClick={handleClose}>
           Cancel
         </Button>
-        <Button style={{display: loading || save ? 'none' : 'inline-block'}} variant='primary' type='submit' onClick={handleSubmit}>
+        <Button
+          style={{display: loading || save ? 'none' : 'inline-block'}}
+          variant='primary'
+          type='submit'
+          onClick={handleSubmit}
+        >
           Save
         </Button>
       </Modal.Footer>

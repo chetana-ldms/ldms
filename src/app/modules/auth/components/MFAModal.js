@@ -1,6 +1,10 @@
 import React, {useState} from 'react'
 import {Button, Modal, Form} from 'react-bootstrap'
-import {fetchAuthUserResendOTPUrl, fetchAuthUserVerifyOTPUrl, fetchFeaturesAuthorizedUrl} from '../../../api/Api'
+import {
+  fetchAuthUserResendOTPUrl,
+  fetchAuthUserVerifyOTPUrl,
+  fetchFeaturesAuthorizedUrl,
+} from '../../../api/Api'
 import {
   notify,
   notifyFail,
@@ -113,27 +117,27 @@ function MFAModal({show, onClose}) {
     }
   }
   const handleResendOtp = async () => {
-    const userId = Number(sessionStorage.getItem("userId"));
+    const userId = Number(sessionStorage.getItem('userId'))
     const data = {
-        userId: userId,
-      }
+      userId: userId,
+    }
 
     try {
-      const response = await fetchAuthUserResendOTPUrl(data);
-      const { isSuccess, message } = response;
+      const response = await fetchAuthUserResendOTPUrl(data)
+      const {isSuccess, message} = response
 
       if (isSuccess) {
-        notify(message);
+        notify(message)
       } else {
-        notifyFail(message);
+        notifyFail(message)
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-  };
+  }
 
   return (
-    <Modal show={show} onHide={onClose} >
+    <Modal backdrop='static' keyboard={false} show={show} onHide={onClose}>
       <Modal.Header closeButton>
         <Modal.Title>
           OTP Verification

@@ -223,7 +223,13 @@ const BlockListImportPopUp = ({show, onClose, refreshParent}) => {
   }
 
   return (
-    <Modal show={show} onHide={handleClose} className='application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={handleClose}
+      className='application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>Import Block List</Modal.Title>
         <button type='button' className='application-modal-close' aria-label='Close'>

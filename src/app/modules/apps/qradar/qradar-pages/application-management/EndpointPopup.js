@@ -23,7 +23,7 @@ const EndpointPopup = ({selectedEndpoint, showModal, setShowModal, refreshData})
   const [activeTab, setActiveTab] = useState('general')
   const id = selectedEndpoint?.endpointId || selectedEndpoint?.id
   const [generalData, setGeneralData] = useState([])
-  const [selectedActionDisplayName, setSelectedActionDisplayName] = useState('');
+  const [selectedActionDisplayName, setSelectedActionDisplayName] = useState('')
   const [actionDropdownOpen, setActionDropdownOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [sendMessageModalVisible, setSendMessageModalVisible] = useState(false)
@@ -98,7 +98,7 @@ const EndpointPopup = ({selectedEndpoint, showModal, setShowModal, refreshData})
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
-      agentName: item.endpointName
+      agentName: item.endpointName,
     }))
 
     const payload = {
@@ -175,7 +175,13 @@ const EndpointPopup = ({selectedEndpoint, showModal, setShowModal, refreshData})
   }
 
   return (
-    <Modal className='application-modal' show={showModal} onHide={() => setShowModal(false)}>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      className='application-modal'
+      show={showModal}
+      onHide={() => setShowModal(false)}
+    >
       <ToastContainer />
       <Modal.Header closeButton className='pad-10'>
         <Modal.Title>

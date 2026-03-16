@@ -62,6 +62,7 @@ const Navbar = () => {
   const [totalSites, setTotalSites] = useState<number | null>(null);
   const [totalGroups, setTotalGroups] = useState<number | null>(null);
   const [totalAgents, setTotalAgents] = useState<number | null>(null);
+  const toolId = Number(sessionStorage.getItem('toolID'))
  
   useEffect(() => {
     const fetchData = async () => {
@@ -269,6 +270,11 @@ const orgNames = organizations
       {toolExpireMessage && typeof toolExpireMessage === 'object' && (
         <div className='d-flex align-items-center me-10'>{toolExpireMessage.message}</div>
       )}
+       {toolId == 0 && (
+      <div className="d-flex align-items-center text-center me-10">
+        Organisation tool configuration not found
+      </div>
+    )}
       <div className='d-flex align-items-center'><span>Welcome <b>{userName}!</b></span></div>
       <div className={clsx('app-navbar-item', itemClass)}>
         <HeaderNotificationsMenu />

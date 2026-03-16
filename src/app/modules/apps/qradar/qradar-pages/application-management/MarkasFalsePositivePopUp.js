@@ -52,7 +52,13 @@ const MarkasFalsePositivePopUp = ({
   }
 
   return (
-    <Modal show={show} onHide={onClose} className='application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onClose}
+      className='application-modal'
+    >
       <ToastContainer />
       <Modal.Header closeButton>
         <Modal.Title>

@@ -103,7 +103,13 @@ const PlaceholdersModal = ({show, onHide, onSelect}) => {
   }
 
   return (
-    <Modal show={show} onHide={onHide}  className="selectPlaceholders application-modal">
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onHide}
+      className='selectPlaceholders application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title className='fw-semibold'>Placeholders</Modal.Title>
         <button type='button' class='application-modal-close' aria-label='Close'>

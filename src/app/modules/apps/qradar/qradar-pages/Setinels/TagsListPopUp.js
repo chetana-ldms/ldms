@@ -23,23 +23,23 @@ const TagsListPopUp = ({show, onClose, refreshParent}) => {
         orgId: orgId,
         toolId: toolId,
         orgAccountStructureLevel: [
-            {
-              levelName: 'AccountId',
-              levelValue: accountId || '',
-            },
-            {
-              levelName: 'SiteId',
-              levelValue: siteId || '',
-            },
-            {
-              levelName: 'GroupId',
-              levelValue: groupId || '',
-            },
-          ],
+          {
+            levelName: 'AccountId',
+            levelValue: accountId || '',
+          },
+          {
+            levelName: 'SiteId',
+            levelValue: siteId || '',
+          },
+          {
+            levelName: 'GroupId',
+            levelValue: groupId || '',
+          },
+        ],
         tagKey: TagKeyRef.current.value,
         tagValue: TagValueRef.current.value,
-        tagKeyDescription: descriptionTextareaRef.current.value || "",
-        type: "agents"
+        tagKeyDescription: descriptionTextareaRef.current.value || '',
+        type: 'agents',
       }
 
       const responseData = await fetchTagAddUrl(data)
@@ -48,8 +48,8 @@ const TagsListPopUp = ({show, onClose, refreshParent}) => {
       if (isSuccess) {
         notify(message)
         onClose()
-        setTimeout(()=>{
-            refreshParent();
+        setTimeout(() => {
+          refreshParent()
         }, 2000)
       } else {
         notifyFail(message)
@@ -60,7 +60,13 @@ const TagsListPopUp = ({show, onClose, refreshParent}) => {
   }
 
   return (
-    <Modal show={show} onHide={onClose} className='addToBlockList application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onClose}
+      className='addToBlockList application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           <div> Create tag</div>
@@ -77,7 +83,7 @@ const TagsListPopUp = ({show, onClose, refreshParent}) => {
         <div className='row'>
           <div className='col-md-6'>
             <label htmlFor='osInput' className='form-label'>
-            Tag Key*
+              Tag Key*
             </label>
             <input type='text' className='form-control' ref={TagKeyRef} required />
           </div>
@@ -86,7 +92,7 @@ const TagsListPopUp = ({show, onClose, refreshParent}) => {
           <div className='col-md-6'>
             <div>
               <label className='form-label' htmlFor='sha1Input'>
-              Tag Value
+                Tag Value
               </label>
               <input type='text' className='form-control' ref={TagValueRef} required />
             </div>

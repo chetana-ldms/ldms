@@ -171,7 +171,13 @@ const NotesModalComponent = ({
 
   /* -------------------- UI -------------------- */
   return (
-    <Modal show={show} onHide={onClose} className='addANoteModal application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onClose}
+      className='addANoteModal application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           {mode === 'add' && 'Add Note'}

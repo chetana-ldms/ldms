@@ -132,7 +132,13 @@ function ReportTaskModalEditPopup({show, onClose, refreshParent, selectedItem}) 
   }
 
   return (
-    <Modal show={show} onHide={onClose} className='application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onClose}
+      className='application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>Edit Report Task</Modal.Title>
         <button type='button' className='application-modal-close' aria-label='Close'>

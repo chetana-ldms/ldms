@@ -3,7 +3,7 @@ import {Modal, Button, Form} from 'react-bootstrap'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { fetchMissingCVEAddUrl } from '../../../../../api/ApplicationSectionApi'
+import {fetchMissingCVEAddUrl} from '../../../../../api/ApplicationSectionApi'
 function AddMissingCVE({show, onClose, refreshData, id}) {
   const toolId = Number(sessionStorage.getItem('toolID'))
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -38,7 +38,13 @@ function AddMissingCVE({show, onClose, refreshData, id}) {
   }
 
   return (
-    <Modal show={show} onHide={onClose} className='application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onClose}
+      className='application-modal'
+    >
       <ToastContainer />
       <Modal.Header closeButton>
         <Modal.Title>Add Missing CVE</Modal.Title>

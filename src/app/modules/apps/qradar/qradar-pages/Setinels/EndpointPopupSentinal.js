@@ -18,11 +18,11 @@ import FetchLogsModal from './FetchLogsModal'
 import DropdownItemWithSubmenu from './DropdownItemWithSubmenu'
 
 const EndpointPopupSentinal = ({selectedEndpoint, showModal, setShowModal, refreshData}) => {
- const [activeTab, setActiveTab] = useState('general')
-  const id = selectedEndpoint?.endpointId || selectedEndpoint?.id;
+  const [activeTab, setActiveTab] = useState('general')
+  const id = selectedEndpoint?.endpointId || selectedEndpoint?.id
   const [actionDropdownOpen, setActionDropdownOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedActionDisplayName, setSelectedActionDisplayName] = useState('');
+  const [selectedActionDisplayName, setSelectedActionDisplayName] = useState('')
   const [sendMessageModalVisible, setSendMessageModalVisible] = useState(false)
   const [isDisableAgentModalVisible, setIsDisableAgentModalVisible] = useState(false)
   const [isEnableAgentModalVisible, setIsEnableAgentModalVisible] = useState(false)
@@ -32,7 +32,7 @@ const EndpointPopupSentinal = ({selectedEndpoint, showModal, setShowModal, refre
   const [isFetchLogsModalVisible, setIsFetchLogsModalVisible] = useState(false)
   const [selectedActionId, setSelectedActionId] = useState(null)
   const [items, setItems] = useState([selectedEndpoint])
-  console.log(items, "items")
+  console.log(items, 'items')
   const [computerNames, setComputerNames] = useState('')
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
@@ -40,7 +40,7 @@ const EndpointPopupSentinal = ({selectedEndpoint, showModal, setShowModal, refre
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
 
   const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
-  console.log(featureActions, "featureActions")
+  console.log(featureActions, 'featureActions')
 
   const isActionAuthorized = (actionName) => {
     return featureActions?.some(
@@ -89,7 +89,7 @@ const EndpointPopupSentinal = ({selectedEndpoint, showModal, setShowModal, refre
       accountIds: item.accountId,
       groupIds: item.groupId,
       siteIds: item.siteId,
-      agentName:item.computerName
+      agentName: item.computerName,
     }))
 
     const payload = {
@@ -127,35 +127,43 @@ const EndpointPopupSentinal = ({selectedEndpoint, showModal, setShowModal, refre
   }
   useEffect(() => {
     if (selectedEndpoint) {
-      setItems([selectedEndpoint]);
+      setItems([selectedEndpoint])
     }
-  }, [selectedEndpoint]);
+  }, [selectedEndpoint])
   useEffect(() => {
     if (items && items.length > 0) {
       const names = items
         .map((item, index) => {
-          const name = item?.computerName || item?.endpointName; 
-          return name ? (index === items.length - 1 ? name : `${name}, `) : '';
+          const name = item?.computerName || item?.endpointName
+          return name ? (index === items.length - 1 ? name : `${name}, `) : ''
         })
-        .join('');
-  
-      setComputerNames(names);
+        .join('')
+
+      setComputerNames(names)
     }
-  }, [items]);
-  
+  }, [items])
+
   const handleDismiss = () => {
     setIsConfirmModalVisible(false)
   }
 
   const filteredActionItems = featureActions
-  ?.filter((action) => action.actionDisplayName?.toLowerCase().includes(searchQuery.toLowerCase()))
-  ?.filter((action) => action.actionName !== 'Access') 
-  ?.filter((action) => action.actionType === 'End Point Action') 
-  ?.filter((action) => isActionAuthorized(action.actionName)) 
+    ?.filter((action) =>
+      action.actionDisplayName?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    ?.filter((action) => action.actionName !== 'Access')
+    ?.filter((action) => action.actionType === 'End Point Action')
+    ?.filter((action) => isActionAuthorized(action.actionName))
   console.log(filteredActionItems, 'filteredActionItems')
-  
+
   return (
-    <Modal className='application-modal' show={showModal} onHide={() => setShowModal(false)}>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      className='application-modal'
+      show={showModal}
+      onHide={() => setShowModal(false)}
+    >
       <Modal.Header closeButton className='pad-10'>
         <Modal.Title>
           {selectedEndpoint?.computerName || selectedEndpoint?.endpointName}

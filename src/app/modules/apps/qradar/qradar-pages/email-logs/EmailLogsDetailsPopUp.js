@@ -1,10 +1,17 @@
-import React from "react";
-import { Modal, Button } from "react-bootstrap";
-import { getCurrentTimeZone } from "../../../../../../utils/helper";
+import React from 'react'
+import {Modal, Button} from 'react-bootstrap'
+import {getCurrentTimeZone} from '../../../../../../utils/helper'
 
-function EmailLogsDetailsPopUp({ show, onClose, selectedItem }) {
+function EmailLogsDetailsPopUp({show, onClose, selectedItem}) {
   return (
-    <Modal show={show} onHide={onClose} className="application-modal" centered>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      show={show}
+      onHide={onClose}
+      className='application-modal'
+      centered
+    >
       <Modal.Header closeButton>
         <Modal.Title>Email Logs Details</Modal.Title>
         <button type='button' className='application-modal-close' aria-label='Close'>
@@ -35,12 +42,12 @@ function EmailLogsDetailsPopUp({ show, onClose, selectedItem }) {
         )}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
+        <Button variant='secondary' onClick={onClose}>
           Close
         </Button>
       </Modal.Footer>
     </Modal>
-  );
+  )
 }
 
-export default EmailLogsDetailsPopUp;
+export default EmailLogsDetailsPopUp

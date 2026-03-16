@@ -191,10 +191,10 @@ const EventTypeConfiguration = ({
       crossProcess: {
         isEnabled: false,
         count: '',
-          dvEventTypeCrossProcessDuplicateProcess: false,
-          dvEventTypeCrossProcessDuplicateThread: false,
-          dvEventTypeCrossProcessOpenProcess: false,
-          dvEventTypeCrossProcessRemoteThread: false,
+        dvEventTypeCrossProcessDuplicateProcess: false,
+        dvEventTypeCrossProcessDuplicateThread: false,
+        dvEventTypeCrossProcessOpenProcess: false,
+        dvEventTypeCrossProcessRemoteThread: false,
       },
       dataMasking: {
         isEnabled: false,
@@ -219,29 +219,29 @@ const EventTypeConfiguration = ({
       file: {
         isEnabled: false,
         count: '',
-          dvEventTypeFileCreation: false,
-          dvEventTypeFileDeletion: false,
-          dvEventTypeFileModification: false,
-          dvEventTypeFileRename: false,
-          fullDiskScan: false,
+        dvEventTypeFileCreation: false,
+        dvEventTypeFileDeletion: false,
+        dvEventTypeFileModification: false,
+        dvEventTypeFileRename: false,
+        fullDiskScan: false,
       },
       ip: {
         isEnabled: false,
         count: '',
-          dvEventTypeIpConnect: false,
-          dvEventTypeIpListen: false,
+        dvEventTypeIpConnect: false,
+        dvEventTypeIpListen: false,
       },
       login: {
         isEnabled: false,
         count: '',
-          dvEventTypeLoginLoggedIn: false,
-          dvEventTypeLoginLoggedOut: false,
+        dvEventTypeLoginLoggedIn: false,
+        dvEventTypeLoginLoggedOut: false,
       },
       namedPipe: {
         isEnabled: false,
         count: '',
-          dvEventTypeNamedPipeConnection: false,
-          dvEventTypeNamedPipeCreation: false,
+        dvEventTypeNamedPipeConnection: false,
+        dvEventTypeNamedPipeCreation: false,
       },
       namedPipeExtended: {
         isEnabled: false,
@@ -251,31 +251,31 @@ const EventTypeConfiguration = ({
       process: {
         isEnabled: false,
         count: '',
-          dvEventTypeProcessCreation: true,
-          dvEventTypeProcessExit: null,
-          dvEventTypeProcessModification: null,
+        dvEventTypeProcessCreation: true,
+        dvEventTypeProcessExit: null,
+        dvEventTypeProcessModification: null,
       },
       registry: {
         isEnabled: false,
         count: '',
-          dvEventTypeRegistryKeyCreated: false,
-          dvEventTypeRegistryKeyDelete: false,
-          dvEventTypeRegistryKeyExport: false,
-          dvEventTypeRegistryKeyImport: false,
-          dvEventTypeRegistryKeyRename: false,
-          dvEventTypeRegistryKeySecurityChanged: true,
-          dvEventTypeRegistryValueCreated: false,
-          dvEventTypeRegistryValueDeleted: false,
-          dvEventTypeRegistryValueModified: false,
+        dvEventTypeRegistryKeyCreated: false,
+        dvEventTypeRegistryKeyDelete: false,
+        dvEventTypeRegistryKeyExport: false,
+        dvEventTypeRegistryKeyImport: false,
+        dvEventTypeRegistryKeyRename: false,
+        dvEventTypeRegistryKeySecurityChanged: true,
+        dvEventTypeRegistryValueCreated: false,
+        dvEventTypeRegistryValueDeleted: false,
+        dvEventTypeRegistryValueModified: false,
       },
       scheduledTask: {
         isEnabled: false,
         count: '',
-          dvEventTypeScheduledTaskDelete: false,
-          dvEventTypeScheduledTaskRegister: false,
-          dvEventTypeScheduledTaskStart: false,
-          dvEventTypeScheduledTaskTrigger: false,
-          dvEventTypeScheduledTaskUpdate: false,
+        dvEventTypeScheduledTaskDelete: false,
+        dvEventTypeScheduledTaskRegister: false,
+        dvEventTypeScheduledTaskStart: false,
+        dvEventTypeScheduledTaskTrigger: false,
+        dvEventTypeScheduledTaskUpdate: false,
       },
       smartFileMonitoring: {
         isEnabled: false,
@@ -795,7 +795,13 @@ const EventTypeConfiguration = ({
   }
 
   return (
-    <Modal isOpen={show} toggle={handleClose} className='application-modal'>
+    <Modal
+      backdrop='static'
+      keyboard={false}
+      isOpen={show}
+      toggle={handleClose}
+      className='application-modal'
+    >
       <ModalHeader toggle={handleClose} closeButton>
         Event Type Configuration
         <button
