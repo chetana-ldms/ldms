@@ -1,6 +1,13 @@
-import React, {useState, useRef, useEffect, useMemo} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import RiskDetailsModal from './RiskDetailsModal'
-import {fetchDomainsUrl, fetchSyncDomainsUrl} from '../../../../../api/BreachRiskApi'
+import {
+  fetchDomainsUrl,
+  fetchIpsUrl,
+  fetchRisks,
+  fetchSyncDomainsUrl,
+  fetchSyncIpsUrl,
+  fetchSyncRisksUrl,
+} from '../../../../../api/BreachRiskApi'
 import useFeatureActions from '../configuration/useFeatureActions'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -10,8 +17,10 @@ import {renderSortIcon, sortedItems} from '../../../../../../utils/Sorting'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import HostRiskModal from './HostRiskModal'
+import {truncateText} from '../../../../../../utils/TruncateText'
+import IpDetailsModal from './IpDetailsModal'
 
-function Domain() {
+function IpAddress() {
   const [showDropdown, setShowDropdown] = useState(false)
   const [selectedAction, setSelectedAction] = useState(null)
   const dropdownRef = useRef(null)
@@ -25,12 +34,10 @@ function Domain() {
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [activePage, setActivePage] = useState(0)
   const [loading, setLoading] = useState(false)
-
-  const [statusFilter, setStatusFilter] = useState('active') // ✅ default active
-
   const orgId = Number(sessionStorage.getItem('orgId'))
-  const [showHostModal, setShowHostModal] = useState(false)
-  const [selectedHost, setSelectedHost] = useState(null)
+  const [statusFilter, setStatusFilter] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [selectedRisk, setSelectedRisk] = useState(null)
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
@@ -53,12 +60,7 @@ function Domain() {
   const reload = async () => {
     try {
       setLoading(true)
-
-      const orgid = sessionStorage.getItem('orgId')
-      const toolid = sessionStorage.getItem('toolID')
-
-      const response = await fetchDomainsUrl(orgid, toolid)
-
+      const response = await fetchIpsUrl()
       setTools(response?.data || [])
     } catch (error) {
       console.log(error)
@@ -71,31 +73,20 @@ function Domain() {
     reload()
   }, [itemsPerPage])
 
-  // ================= FILTER + SORT =================
-  const filteredAndSorted = useMemo(() => {
-    let data = [...tools]
+  /* ================= UNIQUE SOURCES FOR DROPDOWN ================= */
+  const uniqueSources = [...new Set(tools?.flatMap((item) => item.sources || []))]
 
-    // Priority sort
-    data.sort((a, b) => {
-      if (a.primaryAsset === 1 && b.primaryAsset !== 1) return -1
-      if (a.primaryAsset !== 1 && b.primaryAsset === 1) return 1
-      return 0
-    })
+  /* ================= FILTER + SORT + PAGINATION ================= */
+  const filteredAndSorted = sortedItems(
+    tools.filter((item) => {
+      const matchesSearch = item.assetName?.toLowerCase().includes(filterValue.toLowerCase())
 
-    // ✅ Status filter using active field
-    data = data.filter((item) => {
-      if (statusFilter === 'all') return true
-      if (statusFilter === 'active') return item.active === 1
-      if (statusFilter === 'inactive') return item.active === 0
-      return true
-    })
+      const matchesSource = statusFilter === '' || item.sources?.includes(statusFilter)
 
-    // Search filter
-    data = data.filter((item) => item.assetName?.toLowerCase().includes(filterValue.toLowerCase()))
-
-    // Sorting
-    return sortedItems(data, sortConfig)
-  }, [tools, statusFilter, filterValue, sortConfig])
+      return matchesSearch && matchesSource
+    }),
+    sortConfig
+  )
 
   const currentItems = filteredAndSorted.slice(
     currentPage * itemsPerPage,
@@ -120,8 +111,14 @@ function Domain() {
   }
 
   const handleRowClick = (risk) => {
-    setSelectedHost(risk.assetName)
-    setShowHostModal(true)
+    const source = risk.sources?.[0]
+
+    if (source === 'DNS' || source === 'Custom Range') {
+      setSelectedRisk(risk)
+      setShowModal(true)
+    } else {
+      setShowModal(false)
+    }
   }
 
   const handleSort = (key) => {
@@ -141,7 +138,7 @@ function Domain() {
         toolId,
       }
 
-      const response = await fetchSyncDomainsUrl(payload)
+      const response = await fetchSyncIpsUrl(payload)
       const {isSuccess, message} = response
       if (isSuccess) {
         notify(message)
@@ -164,10 +161,10 @@ function Domain() {
         <h3 className='card-title align-items-start flex-column'>
           <div className='d-flex align-items-center gap-3'>
             <span className='card-label fw-bold fs-3 mb-1'>
-              Domains ({currentItems.length} / {filteredAndSorted.length})
+              IP Address ({currentItems.length} / {filteredAndSorted.length})
             </span>
 
-            {/* ✅ Dropdown */}
+            {/* ===== DROPDOWN FROM SOURCES ===== */}
             <select
               className='form-select w-auto'
               style={{padding: '4px 36px 4px 10px'}}
@@ -178,15 +175,18 @@ function Domain() {
                 setActivePage(0)
               }}
             >
-              <option value='all'>All</option>
-              <option value='active'>Active</option>
-              <option value='inactive'>Inactive</option>
+              <option value=''>All Sources</option>
+              {uniqueSources.map((source, index) => (
+                <option key={index} value={source}>
+                  {source}
+                </option>
+              ))}
             </select>
           </div>
         </h3>
       </div>
 
-      {/* FILTER */}
+      {/* ================= FILTER + SYNC ================= */}
       <div className='m-4'>
         <div className='row align-items-center'>
           <div className='col-md-6'>
@@ -207,44 +207,37 @@ function Domain() {
         </div>
       </div>
 
-      {/* TABLE */}
+      {/* ================= TABLE ================= */}
       <div className='card-body no-pad'>
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
-              <th onClick={() => handleSort('assetName')}>
-                Domain {renderSortIcon(sortConfig, 'assetName')}
+              <th onClick={() => handleSort('sources')}>
+                Sources {renderSortIcon(sortConfig, 'sources')}
               </th>
-
+              <th onClick={() => handleSort('assetName')}>
+                IP Address {renderSortIcon(sortConfig, 'assetName')}
+              </th>
+              <th onClick={() => handleSort('owner')}>
+                Owner {renderSortIcon(sortConfig, 'owner')}
+              </th>
+              <th onClick={() => handleSort('asName')}>
+                Autonomous System {renderSortIcon(sortConfig, 'asName')}
+              </th>
+              <th onClick={() => handleSort('country')}>
+                Registrant Country {renderSortIcon(sortConfig, 'country')}
+              </th>
               <th onClick={() => handleSort('automatedScore')}>
                 Score {renderSortIcon(sortConfig, 'automatedScore')}
               </th>
-
-              <th onClick={() => handleSort('scannedDate')}>
-                Scanned on {renderSortIcon(sortConfig, 'scannedDate')}
-              </th>
-
-              <th onClick={() => handleSort('primaryAsset')}>
-                Primary Asset {renderSortIcon(sortConfig, 'primaryAsset')}
-              </th>
-
-              <th onClick={() => handleSort('Portfolio')}>
-                Portfolio {renderSortIcon(sortConfig, 'Portfolio')}
+              <th style={{width: '200px'}} onClick={() => handleSort('services')}>
+                Services {renderSortIcon(sortConfig, 'services')}
               </th>
             </tr>
           </thead>
 
           <tbody>
             {loading && <UsersListLoading />}
-
-            {!loading && currentItems.length === 0 && (
-              <tr>
-                <td colSpan='5' className='text-center'>
-                  No data found
-                </td>
-              </tr>
-            )}
-
             {currentItems?.map((risk) => (
               <tr
                 key={risk.id}
@@ -253,31 +246,40 @@ function Domain() {
                 onClick={() => handleRowClick(risk)}
               >
                 <td>
-                  <div className='sev-icon'>{risk.assetName}</div>
+                  <div className='sev-icon'>{risk.sources?.join(', ')}</div>
                 </td>
-
                 <td>
-                  <div className='fw-semibold'>{risk?.automatedScore}</div>
+                  <div className='fw-semibold'>{risk?.assetName}</div>
                 </td>
-
-                <td>{getCurrentTimeZone(risk.scannedDate)}</td>
-                <td>{risk.primaryAsset}</td>
-                <td>{risk.Portfolio}</td>
+                <td>
+                  <div title={risk.owner} className='fw-semibold'>
+                    {truncateText(risk?.owner, 20)}
+                  </div>
+                </td>
+                <td>
+                  <div className='fw-semibold'>{risk?.asName}</div>
+                  <div className='fw-semibold'>{risk?.asn ? `AS ${risk.asn}` : '-'}</div>
+                </td>
+                <td>
+                  <div className='fw-semibold'>{risk?.country}</div>
+                </td>
+                <td>
+                  <div className='fw-semibold'>{risk?.automatedScore || '-'}</div>
+                </td>
+                <td>{risk.services?.join(', ')}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* MODAL */}
-      <HostRiskModal
-        show={showHostModal}
-        handleClose={() => setShowHostModal(false)}
-        host={selectedHost}
+      <IpDetailsModal
+        show={showModal}
+        handleClose={() => setShowModal(false)}
+        risk={selectedRisk}
       />
 
-      {/* PAGINATION */}
-      {filteredAndSorted && (
+      {tools && (
         <Pagination
           pageCount={Math.ceil(filteredAndSorted.length / itemsPerPage)}
           handlePageClick={handlePageClick}
@@ -290,4 +292,4 @@ function Domain() {
   )
 }
 
-export default Domain
+export default IpAddress

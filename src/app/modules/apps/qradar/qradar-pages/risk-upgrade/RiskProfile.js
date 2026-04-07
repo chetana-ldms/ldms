@@ -225,7 +225,7 @@ function RiskDetailsPage() {
           </div>
 
           {/* RIGHT SIDE → Switches */}
-          <div className='col-md-6 d-flex justify-content-end gap-4'>
+          {/* <div className='col-md-6 d-flex justify-content-end gap-4'>
             <div className='form-check form-switch'>
               <input className='form-check-input' type='checkbox' defaultChecked />
               <label className='form-check-label'>Show passed checks</label>
@@ -235,7 +235,7 @@ function RiskDetailsPage() {
               <input className='form-check-input' type='checkbox' defaultChecked />
               <label className='form-check-label'>Show waived risks</label>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 

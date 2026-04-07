@@ -296,6 +296,9 @@ const ReplyModal = ({show, onHide, incidentData, onSend}) => {
       <ToastContainer />
       <Modal.Header closeButton>
         <Modal.Title>Reply</Modal.Title>
+        <button type='button' class='application-modal-close' aria-label='Close'>
+          <i className='fa fa-close' />
+        </button>
       </Modal.Header>
 
       <Modal.Body className='pt-1 pb-2'>

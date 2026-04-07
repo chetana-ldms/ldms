@@ -128,6 +128,7 @@ import { UpdatePlaceholderGroups } from './qradar-pages/components/message-templ
 import RiskProfile from './qradar-pages/risk-upgrade/RiskProfile'
 import Vulnerabilities from './qradar-pages/risk-upgrade/Vulnerabilities'
 import Domain from './qradar-pages/risk-upgrade/Domain'
+import IpAddress from './qradar-pages/risk-upgrade/IpAddress'
 
 
 const QradarPages = () => {
@@ -261,6 +262,7 @@ const QradarPages = () => {
        <Route path='RiskProfile/:status' element={<RiskProfile />} />
        <Route path='Vulnerabilities/:status' element={<Vulnerabilities />} />
        <Route path='Domain/:status' element={<Domain />} />
+       <Route path='IpAddress/:status' element={<IpAddress />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )
