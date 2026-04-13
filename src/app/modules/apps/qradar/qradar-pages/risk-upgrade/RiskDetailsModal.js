@@ -4,6 +4,7 @@ import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import HostRiskModal from './HostRiskModal'
 
 function RiskDetailsModal({show, handleClose, risk}) {
+  console.log('Risk details:', risk)
   const [showDropdown, setShowDropdown] = useState(false)
   const [selectedAction, setSelectedAction] = useState(null)
   const dropdownRef = useRef(null)
@@ -42,7 +43,6 @@ function RiskDetailsModal({show, handleClose, risk}) {
         className='riskDetailsModal application-modal channel-edit'
       >
         <Modal.Header className='border-0 pb-0 d-flex align-items-center'>
-          
           {/* LEFT SIDE */}
           <div className='d-flex align-items-center gap-3'>
             <div
@@ -72,9 +72,7 @@ function RiskDetailsModal({show, handleClose, risk}) {
                 >
                   <div
                     className={`px-3 py-2 ${
-                      selectedAction === 'remediate'
-                        ? 'bg-primary text-white'
-                        : ''
+                      selectedAction === 'remediate' ? 'bg-primary text-white' : ''
                     }`}
                     style={{cursor: 'pointer'}}
                     onClick={() => setSelectedAction('remediate')}
@@ -87,9 +85,7 @@ function RiskDetailsModal({show, handleClose, risk}) {
 
                   <div
                     className={`px-3 py-2 ${
-                      selectedAction === 'waive'
-                        ? 'bg-primary text-white'
-                        : ''
+                      selectedAction === 'waive' ? 'bg-primary text-white' : ''
                     }`}
                     style={{cursor: 'pointer'}}
                     onClick={() => setSelectedAction('waive')}
@@ -114,11 +110,9 @@ function RiskDetailsModal({show, handleClose, risk}) {
           </div>
         </Modal.Header>
 
-        <Modal.Body className="h-600px scroll-y">
-
+        <Modal.Body className='h-600px scroll-y'>
           {/* ACCORDION */}
-          <Accordion alwaysOpen defaultActiveKey={['0','1','2','3']} flush>
-
+          <Accordion alwaysOpen defaultActiveKey={['0', '1', '2', '3']} flush>
             {/* SUMMARY */}
             <Accordion.Item eventKey='0'>
               <Accordion.Header>Summary</Accordion.Header>
@@ -145,9 +139,7 @@ function RiskDetailsModal({show, handleClose, risk}) {
 
             {/* ASSETS */}
             <Accordion.Item eventKey='3'>
-              <Accordion.Header>
-                Assets affected ({risk.hostnameCount})
-              </Accordion.Header>
+              <Accordion.Header>Assets affected ({risk.assetCount})</Accordion.Header>
 
               <Accordion.Body>
                 <table className='table table-sm'>
@@ -160,20 +152,20 @@ function RiskDetailsModal({show, handleClose, risk}) {
                   </thead>
 
                   <tbody>
-                    {risk.hostnames?.map((host, index) => (
+                    {risk.riskAssets?.map((host, index) => (
                       <tr key={index}>
                         <td
                           className='text-primary'
                           style={{cursor: 'pointer'}}
-                          onClick={() => handleHostClick(host)}
+                          onClick={() => handleHostClick(host.assetName)}
                         >
-                          {host}
+                          {host.assetName}
                         </td>
 
-                        <td>{getCurrentTimeZone(risk.firstDetected)}</td>
+                        <td>{getCurrentTimeZone(host.firstSeenDate)}</td>
 
                         <td>
-                          <span className="badge bg-danger">Active</span>
+                          <span className='badge bg-danger'>{host.statusName}</span>
                         </td>
                       </tr>
                     ))}
@@ -181,7 +173,6 @@ function RiskDetailsModal({show, handleClose, risk}) {
                 </table>
               </Accordion.Body>
             </Accordion.Item>
-
           </Accordion>
         </Modal.Body>
       </Modal>
