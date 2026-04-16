@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
 import RiskDetailsModal from './RiskDetailsModal'
-import {fetchRisks, fetchSyncRisksUrl} from '../../../../../api/BreachRiskApi'
+import {fetchRisks, fetchSyncRisksUrl, fetchupdateRisksUrl} from '../../../../../api/BreachRiskApi'
 import useFeatureActions from '../configuration/useFeatureActions'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -12,23 +12,26 @@ import {notify, notifyFail} from '../components/notification/Notification'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {fetchAlertsStatusUpdateUrl} from '../../../../../api/AlertsApi'
 import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Form} from 'reactstrap'
-import { fetchExportDataAddUrl } from '../../../../../api/Api'
+import {fetchExportDataAddUrl, fetchMasterData} from '../../../../../api/Api'
+import ReactPaginate from 'react-paginate'
+import './RiskProfile.css'
+import {fetchUsersByOrgTool} from '../../../../../api/IncidentsApi'
+import { Link } from 'react-router-dom'
 
 function RiskDetailsPage() {
-    const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
-  const [selectedAction, setSelectedAction] = useState(null)
   const dropdownRef = useRef(null)
   const [tools, setTools] = useState([])
   const [sortConfig, setSortConfig] = useState({
     key: '',
     direction: 'ascending',
   })
+  const [showUsersDropdown, setShowUsersDropdown] = useState(false)
+  const [selectedUser, setSelectedUser] = useState('')
   const [filterValue, setFilterValue] = useState('')
   const [currentPage, setCurrentPage] = useState(0)
-  const [itemsPerPage, setItemsPerPage] = useState(10)
-  const [activePage, setActivePage] = useState(0)
-  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [activePage, setActivePage] = useState(1)
   const [loading, setLoading] = useState(false)
   const orgId = Number(sessionStorage.getItem('orgId'))
   const [selectedAlert, setselectedAlert] = useState([])
@@ -38,8 +41,10 @@ function RiskDetailsPage() {
   const [searchValue, setSearchValue] = useState('')
   const [selectedFilterValue, setSelectedFilterValue] = useState(1)
   const status = useRef()
-  const analystVerdict = useRef()
-  const [StatusDropDown, setStatusDropDown] = useState(false)
+  const severity = useRef()
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false)
+  const [showSeverityDropdown, setShowSeverityDropdown] = useState(false)
+  const [showActionsDropdown, setShowActionsDropdown] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [selectedRisk, setSelectedRisk] = useState(null)
@@ -50,10 +55,19 @@ function RiskDetailsPage() {
   const [actionsValue, setActionValue] = useState('')
   const [selectCheckBox, setSelectCheckBox] = useState(null)
   const [checkboxStates, setCheckboxStates] = useState({})
+  const userID = Number(sessionStorage.getItem('userId'))
+
+  const [ldp_security_user, setldp_security_user] = useState([])
+  console.log(ldp_security_user, 'ldp_security_user')
+  const [pageCount, setpageCount] = useState(0)
+  const [alertData, setAlertDate] = useState([])
+  const [alertsCount, setAlertsCount] = useState(0)
+  const [limit, setLimit] = useState(10)
   const [escalate, setEscalate] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [ignorVisible, setIgnorVisible] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [selectedSeverity, setSelectedSeverity] = useState('')
   const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
 
   useEffect(() => {
@@ -68,6 +82,35 @@ function RiskDetailsPage() {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+  useEffect(() => {
+    const fetchNumberOfDays = async () => {
+      try {
+        const data = {
+          maserDataType: 'Risk_Searchdata_duration',
+          orgId: orgId,
+          toolId: toolId,
+        }
+        const masterDataResponse = await fetchMasterData(data)
+        const response = masterDataResponse
+        setSelectedDays(response)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchNumberOfDays()
+  }, [])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetchUsersByOrgTool(orgId, toolId, userID)
+        setldp_security_user(response?.usersList ?? [])
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchData()
+  }, [])
   const [dropdownData, setDropdownData] = useState({
     severityNameDropDownData: [],
     statusDropDown: [],
@@ -76,33 +119,75 @@ function RiskDetailsPage() {
   })
   const {severityNameDropDownData, statusDropDown, observableTagDropDown, analystVerdictDropDown} =
     dropdownData
-  const reload = async () => {
+  useEffect(() => {
+    const fetchAllMasterData = async () => {
+      const severityDataRequest = {maserDataType: 'Risk_Severity', orgId: orgId, toolId: toolId}
+      const statusDataRequest = {maserDataType: 'Risk_Status', orgId: orgId, toolId: toolId}
+      const tagsDataRequest = {maserDataType: 'alert_Tags', orgId: orgId, toolId: toolId}
+      const verdictDataRequest = {maserDataType: 'analyst_verdict', orgId: orgId, toolId: toolId}
+
+      try {
+        const [severityData, statusData, tagsData, verdictData] = await Promise.all([
+          fetchMasterData(severityDataRequest),
+          fetchMasterData(statusDataRequest),
+          fetchMasterData(tagsDataRequest),
+          fetchMasterData(verdictDataRequest),
+        ])
+
+        setDropdownData((prevDropdownData) => ({
+          ...prevDropdownData,
+          severityNameDropDownData: severityData,
+          statusDropDown: statusData,
+          observableTagDropDown: tagsData,
+          analystVerdictDropDown: verdictData,
+        }))
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchAllMasterData()
+  }, [])
+  const getRisks = async (page = 1, duration = selectedFilterValue, search = searchValue) => {
+    const safePage = page <= 0 ? 1 : page
+
     const payload = {
       orgId: orgId,
       toolId: toolId,
+      paging: {
+        rangeStart: (safePage - 1) * limit + 1,
+        rangeEnd: safePage * limit,
+      },
+      statusId: status.current?.value || 0,
+      severutyId: severity.current?.value || 0,
+      userId: userID || 0,
+      searchDurationInDays: duration || 0,
+      searchText: search || '',
     }
+
     try {
       setLoading(true)
+
       const response = await fetchRisks(payload)
-      setTools(response?.data || [])
+
+      setAlertsCount(response.riskCount)
+      setTools(response.data || [])
+      setpageCount(Math.ceil(response.riskCount / limit))
     } catch (error) {
-      console.log(error)
+      console.error(error)
     } finally {
       setLoading(false)
     }
   }
-
   useEffect(() => {
-    reload()
-  }, [itemsPerPage])
-  const indexOfLastItem = (currentPage + 1) * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+    getRisks(currentPage, selectedFilterValue, searchValue)
+  }, [currentPage, limit, selectedFilterValue])
   const currentItems =
     tools !== null
       ? sortedItems(
           tools.filter((item) => item.finding.toLowerCase().includes(filterValue.toLowerCase())),
           sortConfig
-        ).slice(currentPage * itemsPerPage, currentPage * itemsPerPage + itemsPerPage)
+        )
       : null
 
   const filteredList = filterValue
@@ -113,22 +198,24 @@ function RiskDetailsPage() {
     : sortedItems(tools || [], sortConfig)
 
   const handlePageSelect = (event) => {
-    setItemsPerPage(Number(event.target.value))
-    setCurrentPage(0)
-    setActivePage(0)
+    const selectedPerPage = event.target.value
+    setLimit(selectedPerPage)
+    setCurrentPage(1)
+    setActivePage(1)
+  }
+  const handlePageClick = (data) => {
+    const newPage = data.selected + 1
+    setCurrentPage(newPage)
+    setActivePage(newPage)
   }
 
-  const handlePageClick = (selected) => {
-    setCurrentPage(selected.selected)
-    setActivePage(selected.selected)
-  }
+  const handleFilterChange = (e) => {
+    const value = Number(e.target.value)
 
-  const handleFilterChange = (event) => {
-    setFilterValue(event.target.value)
-    setCurrentPage(0)
-    setActivePage(0)
+    setSelectedFilterValue(value)
+    setCurrentPage(1)
+    setActivePage(1)
   }
-
   const isActionAuthorized = (actionName) => {
     return featureActions?.some(
       (action) => action.actionName === actionName && action.is_authorized === true
@@ -150,17 +237,15 @@ function RiskDetailsPage() {
   const handleSync = async () => {
     try {
       setLoading(true)
-
       const payload = {
         orgId,
         toolId,
       }
-
       const response = await fetchSyncRisksUrl(payload)
       const {isSuccess, message} = response
       if (isSuccess) {
         notify(message)
-        await reload()
+        await getRisks()
       } else {
         notifyFail(message)
       }
@@ -170,7 +255,7 @@ function RiskDetailsPage() {
       setLoading(false)
     }
   }
-  const handleselectedAlert = (item, e) => {
+  const handleselectedAlert = (risk, e) => {
     const {value, checked} = e.target
     if (checked) {
       setselectedAlert([...selectedAlert, value])
@@ -182,37 +267,77 @@ function RiskDetailsPage() {
     }
   }
   const handleStatus = () => {
-    setStatusDropDown(true)
+    setShowStatusDropdown((prev) => !prev)
+    setShowSeverityDropdown(false)
+    setShowUsersDropdown(false)
+    setShowActionsDropdown(false)
   }
-  const handleStatusClose = () => {
-    setStatusDropDown(false)
+
+  const handleSeverity = () => {
+    setShowSeverityDropdown((prev) => !prev)
+    setShowStatusDropdown(false)
+    setShowUsersDropdown(false)
+    setShowActionsDropdown(false)
+  }
+
+  const handleActions = () => {
+    setShowActionsDropdown((prev) => !prev)
+    setShowUsersDropdown(false)
+    setShowStatusDropdown(false)
+    setShowSeverityDropdown(false)
+  }
+  const handleUsers = () => {
+    setShowUsersDropdown((prev) => !prev)
+    setShowStatusDropdown(false)
+    setShowSeverityDropdown(false)
+    setShowActionsDropdown(false)
+  }
+  const handleCloseAll = () => {
+    setShowUsersDropdown(false)
+    setShowStatusDropdown(false)
+    setShowSeverityDropdown(false)
+    setShowActionsDropdown(false)
+  }
+
+  const handleUserChange = (e) => {
+    setSelectedUser(e.target.value)
   }
   const handleStatusDropDown = (event) => {
     setSelectedStatus(event.target.value)
   }
-  const handleSubmitStatus = async () => {
-    if (!selectedStatus) {
-      notifyFail('Please select a status option.')
-      return
-    }
+  const handleSubmitUpdate = async ({statusId, severityId, ownerUserId}) => {
     try {
       const modifiedUserId = Number(sessionStorage.getItem('userId'))
-      const data = {
-        orgID: orgId,
-        alertIds: selectedAlert,
-        statusId: selectedStatus,
-        notes: note,
-        modifiedDate: new Date().toISOString(),
+
+      // 🔥 Base payload
+      const payload = {
+        orgId,
+        toolId,
         modifiedUserId,
+        riskIds: selectedAlert.map(Number),
+        comment: note || '',
+        modifiedDate: new Date().toISOString(),
       }
-      const responseData = await fetchAlertsStatusUpdateUrl(data)
-      const {isSuccess, message} = responseData
+
+      // ✅ Add only if exists
+      if (statusId) payload.statusId = Number(statusId)
+      if (severityId) payload.severityId = Number(severityId)
+      if (ownerUserId) payload.ownerUserId = Number(ownerUserId)
+
+      const response = await fetchupdateRisksUrl(payload)
+      const {isSuccess, message} = response
+
       if (isSuccess) {
-        handleStatusClose()
-        reload()
-        if (dropdownRefSatus.current) {
-          dropdownRefSatus.current.classList.remove('show')
-        }
+        notify(message)
+        handleCloseAll()
+        setNote('')
+        setselectedAlert([])
+        setIsCheckboxSelected(false)
+        setSelectedStatus('')
+        setSelectedUser('')
+        setCurrentPage(1)
+        setActivePage(1)
+        getRisks(1, selectedFilterValue, searchValue)
       } else {
         notifyFail(message)
       }
@@ -223,34 +348,20 @@ function RiskDetailsPage() {
   const handleNoteChange = (event) => {
     setNote(event.target.value)
   }
-  const onActionsClick = () => {
-    if (isCheckboxSelected) {
-      setIsCheckboxSelected(true)
-    }
-    setShowForm(true)
-    setEscalate(true)
-    setIgnorVisible(true)
-  }
-  const handleCloseForm = () => {
-    setShowForm(false)
-  }
-   function createIncidentSubmit(e) {
+  function createIncidentSubmit(e) {
     setActionValue(e.target.value)
   }
-   const handleIgnoreSubmit = () => {}
-   const exportToExcel = async () => {
-  // ✅ Use same data as table
-  const dataToExport = currentItems || []
-
-  // ✅ Header
-  let csvContent = 'Risk Report\n'
-
-  csvContent +=
-    'Severity,Finding,Risk Title,Category,First Detected,Assets,Status,Owner,Source\n' +
-    dataToExport
-      .map(
-        (item) =>
-          `${item.severityName},
+  const handleIgnoreSubmit = () => {}
+  const exportToExcel = async () => {
+    const dataToExport = currentItems || []
+    // ✅ Header
+    let csvContent = 'Risk Report\n'
+    csvContent +=
+      'Severity,Finding,Risk Title,Category,First Detected,Assets,Status,Owner,Source\n' +
+      dataToExport
+        .map(
+          (item) =>
+            `${item.severityName},
            ${item.finding},
            ${item.riskTitle},
            ${item.category},
@@ -259,301 +370,330 @@ function RiskDetailsPage() {
            ${item.statusName},
            ${item.ownerName},
            ${item.source}`
-      )
-      .join('\n')
-
-  // ✅ Create file
-  const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'})
-  const link = document.createElement('a')
-  const url = URL.createObjectURL(blob)
-
-  link.setAttribute('href', url)
-  link.setAttribute('download', 'risk_report.csv')
-
-  document.body.appendChild(link)
-  link.click()
-
-  document.body.removeChild(link)
-  URL.revokeObjectURL(url)
-
-  // ✅ API logging (optional)
-  const payload = {
-    createdDate: new Date().toISOString(),
-    createdUserId: Number(sessionStorage.getItem('userId')),
-    orgId: Number(sessionStorage.getItem('orgId')),
-    exportDataType: 'Risks',
+        )
+        .join('\n')
+    const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'})
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', 'risk_report.csv')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+    const payload = {
+      createdDate: new Date().toISOString(),
+      createdUserId: Number(sessionStorage.getItem('userId')),
+      orgId: Number(sessionStorage.getItem('orgId')),
+      exportDataType: 'Risks',
+    }
+    try {
+      await fetchExportDataAddUrl(payload)
+    } catch (error) {
+      console.error(error)
+    }
   }
+  const handleSearchAlert = () => {
+    setCurrentPage(1)
+    setActivePage(1)
 
-  try {
-    await fetchExportDataAddUrl(payload)
-  } catch (error) {
-    console.error(error)
+    getRisks(1, selectedFilterValue, searchValue)
   }
-}
-      const handleSearchAlert = async () => {}
-  
+  const handleDelete = async (item) => {}
+
   return (
     <div className='alert-page'>
       <ToastContainer />
-      
       <div className='mb-1'>
         <div className='d-flex justify-content-between border-0'>
           <h3 className='align-items-start flex-column'>
             <span className='fw-bold fs-3'>
-              Risks({currentItems ? currentItems.length : 0} /{' '}
-              {filteredList ? filteredList.length : 0})
+              Risks({currentItems ? currentItems.length : 0} / {alertsCount ? alertsCount : 0})
             </span>
           </h3>
         </div>
       </div>
-       <div className='clearfix' />
+      <div className='clearfix' />
       <div className='card p-2'>
-      <div className='row ps-3'>
-        <div className='col-md-7'>
-          <div className='row'>
-            <div className='card-toolbar float-left'>
-              <div className='d-flex align-items-center gap-2 gap-lg-3'>
-                <div className='m-0'>
-                  {isActionAuthorized('UpdateStatus') && (
-                    <>
-                      <a
-                        href='#'
-                        className={`btn btn-small fw-bold fs-14 btn-green ${
-                          !isCheckboxSelected && 'disabled'
-                        }`}
-                        data-kt-menu-trigger='click'
-                        data-kt-menu-placement='bottom-end'
-                        onClick={handleStatus}
-                      >
-                        Status
-                      </a>
+        <div className='row'>
+          <div className='col-md-7'>
+            <div className='row'>
+              <div className='card-toolbar float-left'>
+                <div className='d-flex align-items-center gap-2 gap-lg-3'>
+                  {/* STATUS */}
+                  <div className='dropdown-wrapper'>
+                    <button
+                      className='btn btn-small fw-bold fs-14 btn-green'
+                      onClick={handleStatus}
+                      disabled={!isCheckboxSelected}
+                    >
+                      Status
+                    </button>
 
-                      <div
-                        ref={dropdownRefSatus}
-                        className='menu menu-sub menu-sub-dropdown w-250px w-md-300px alert-action'
-                        data-kt-menu='true'
-                      >
-                        {StatusDropDown && (
-                          <div className='px-3 py-3'>
-                            <div className='mb-5'>
-                              <div className='d-flex justify-content-end mb-5'>
-                                <div>
-                                  <div
-                                    className='close fs-20 text-muted pointer'
-                                    aria-label='Close'
-                                    onClick={handleStatusClose}
-                                  >
-                                    <span
-                                      aria-hidden='true'
-                                      style={{color: 'inherit', textShadow: 'none'}}
-                                    >
-                                      &times;
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                              <select
-                                className='form-select form-select-solid'
-                                data-kt-select2='true'
-                                data-placeholder='Select option'
-                                data-dropdown-parent='#kt_menu_637dc885a14bb'
-                                data-allow-clear='true'
-                                onChange={handleStatusDropDown}
-                              >
-                                <option value=''>Select</option>
-                                {statusDropDown.length > 0 &&
-                                  statusDropDown.map((item) => (
-                                    <option key={item.dataID} value={item.dataID}>
-                                      {item.dataValue}
-                                    </option>
-                                  ))}
-                              </select>
-                            </div>
-                            <div className='mb-5'>
-                              <textarea
-                                className='form-control'
-                                rows='1'
-                                placeholder='Write your note here...'
-                                onChange={handleNoteChange}
-                              ></textarea>
-                            </div>
-
-                            <div className='text-right'>
-                              <button
-                                className='btn btn-new btn-small'
-                                onClick={handleSubmitStatus}
-                              >
-                                Submit
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                <div className='m-0'>
-                  <a
-                    href='#'
-                    className={`btn btn-small fs-14 btn-green ${!isCheckboxSelected && 'disabled'}`}
-                    data-kt-menu-trigger='click'
-                    data-kt-menu-placement='bottom-end'
-                    onClick={onActionsClick}
-                  >
-                    Actions
-                  </a>
-
-                  <div
-                    className='menu-sub menu-sub-dropdown w-250px w-md-300px alert-action'
-                    data-kt-menu='true'
-                    id='kt_menu_637dc6f8a1c15'
-                  >
-                    {showForm && selectedAlert.length > 0 && (
-                      <div className='px-3 py-3'>
-                        <div className='mb-5'>
-                          <div className='d-flex justify-content-end mb-5'>
-                            <div>
-                              <div
-                                className='close fs-20 text-muted pointer'
-                                aria-label='Close'
-                                onClick={handleCloseForm}
-                              >
-                                <span
-                                  aria-hidden='true'
-                                  style={{color: 'inherit', textShadow: 'none'}}
-                                >
-                                  &times;
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className='header-filter'>
-                            <select
-                              onChange={createIncidentSubmit}
-                              className='form-select form-select-solid'
-                              data-kt-select2='true'
-                              data-control='select2'
-                              data-placeholder='Select option'
-                              data-dropdown-parent='#kt_menu_637dc6f8a1c15'
-                              data-allow-clear='true'
-                            >
-                              <option>Select</option>
-                              {isActionAuthorized('CreateIncident') && (
-                                <option
-                                  value='1'
-                                  disabled={
-                                    selectCheckBox.alertIncidentMappingId > 0 ||
-                                    selectCheckBox.positiveAnalysis === 'False Positive'
-                                  }
-                                >
-                                  Create Incident
-                                </option>
-                              )}
-                              {isActionAuthorized('Escalate') && (
-                                <option value='2'>Escalate</option>
-                              )}
-                              {isActionAuthorized('IrrelevantIgnore') && (
-                                <option value='3'>Irrelevant / Ignore</option>
-                              )}
-                            </select>
-                          </div>
-                        </div>
-
-                        
-
-                        {actionsValue === '3' && ignorVisible && (
-                          <div>
-                            <div className='mb-5'>
-                              <label className='form-label fw-bolder' htmlFor='noteField'>
-                                Note <sup className='red'>*</sup>:
-                              </label>
-                              <textarea
-                                id='noteField'
-                                className='form-control'
-                                rows='1'
-                                placeholder='Write your note here...'
-                                value={note}
-                                onChange={handleNoteChange}
-                                required
-                              ></textarea>
-                            </div>
-                            <div className='d-flex justify-content-end'>
+                    {showStatusDropdown && (
+                      <div className='alert-action'>
+                        <div className='p-3'>
+                          <div className='text-end mb-2'>
+                            <div className='d-flex justify-content-end mb-2'>
                               <button
                                 type='button'
-                                className='btn btn-small btn-new'
-                                onClick={handleIgnoreSubmit}
-                              >
-                                Submit
-                              </button>
+                                className='btn-close'
+                                aria-label='Close'
+                                onClick={handleCloseAll}
+                              />
                             </div>
                           </div>
-                        )}
+
+                          <select className='form-select mb-2' onChange={handleStatusDropDown}>
+                            <option value=''>Select</option>
+                            {statusDropDown.map((item) => (
+                              <option key={item.dataID} value={item.dataID}>
+                                {item.dataValue}
+                              </option>
+                            ))}
+                          </select>
+
+                          <textarea
+                            className='form-control mb-2'
+                            placeholder='Write note...'
+                            onChange={handleNoteChange}
+                          />
+
+                          <button
+                            className='btn btn-sm btn-primary w-100'
+                            onClick={() => handleSubmitUpdate({statusId: selectedStatus})}
+                          >
+                            Submit
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
-                </div>
 
-                <div className='mt-2 bd-highlight'>
-                  <div className='w-100px me-0'>
-                    <select
-                      className='form-select form-select-sm'
-                      data-kt-select2='true'
-                      data-placeholder='Select option'
-                      data-dropdown-parent='#kt_menu_637dc885a14bb'
-                      data-allow-clear='true'
-                      value={selectedFilterValue}
-                      onChange={handleFilterChange}
+                  {/* SEVERITY */}
+                  <div className='dropdown-wrapper'>
+                    <button
+                      className='btn btn-small fw-bold fs-14 btn-green'
+                      onClick={handleSeverity}
+                      disabled={!isCheckboxSelected}
                     >
-                      {selectedDays?.map((day, index) => (
-                        <option key={index} value={day.dataValue}>
-                          {day.dataName}
-                        </option>
-                      ))}
-                    </select>
+                      Severity
+                    </button>
+
+                    {showSeverityDropdown && (
+                      <div className='alert-action'>
+                        <div className='p-3'>
+                          <div className='d-flex justify-content-end mb-2'>
+                            <button
+                              type='button'
+                              className='btn-close'
+                              aria-label='Close'
+                              onClick={handleCloseAll}
+                            />
+                          </div>
+
+                          <select
+                            className='form-select mb-2'
+                            value={selectedSeverity}
+                            onChange={(e) => setSelectedSeverity(e.target.value)}
+                          >
+                            <option value=''>Select</option>
+                            {severityNameDropDownData.map((item) => (
+                              <option key={item.dataID} value={item.dataID}>
+                                {item.dataValue}
+                              </option>
+                            ))}
+                          </select>
+
+                          <textarea
+                            className='form-control mb-2'
+                            placeholder='Write note...'
+                            onChange={handleNoteChange}
+                          />
+
+                          <button
+                            className='btn btn-sm btn-primary w-100'
+                            onClick={() => handleSubmitUpdate({severityId: selectedSeverity})}
+                          >
+                            Submit
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className='dropdown-wrapper'>
+                    <button
+                      className='btn btn-small fw-bold fs-14 btn-green'
+                      onClick={handleUsers}
+                      disabled={!isCheckboxSelected}
+                    >
+                      Owner
+                    </button>
+
+                    {showUsersDropdown && (
+                      <div className='alert-action'>
+                        <div className='p-3'>
+                          {/* Close Button */}
+                          <div className='d-flex justify-content-end mb-2'>
+                            <button type='button' className='btn-close' onClick={handleCloseAll} />
+                          </div>
+
+                          {/* Users Dropdown */}
+                          <select
+                            className='form-select mb-2'
+                            value={selectedUser}
+                            onChange={handleUserChange}
+                          >
+                            <option value=''>Select</option>
+                            {ldp_security_user?.map((user, index) => (
+                              <option key={index} value={user.userID}>
+                                {user.name}
+                              </option>
+                            ))}
+                          </select>
+
+                          {/* Optional Note */}
+                          <textarea
+                            className='form-control mb-2'
+                            placeholder='Write note...'
+                            onChange={handleNoteChange}
+                          />
+                          <button
+                            className='btn btn-sm btn-primary w-100'
+                            onClick={() => handleSubmitUpdate({ownerUserId: selectedUser})}
+                          >
+                            Submit
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ACTIONS */}
+                  <div className='dropdown-wrapper'>
+                    <button
+                      className='btn btn-small fs-14 btn-green'
+                      onClick={handleActions}
+                      disabled={!isCheckboxSelected}
+                    >
+                      Actions
+                    </button>
+
+                    {showActionsDropdown && selectedAlert.length > 0 && (
+                      <div className='alert-action'>
+                        <div className='p-3'>
+                          <div className='text-end mb-2'>
+                            <div className='d-flex justify-content-end mb-2'>
+                              <button
+                                type='button'
+                                className='btn-close'
+                                aria-label='Close'
+                                onClick={handleCloseAll}
+                              />
+                            </div>
+                          </div>
+
+                          <select onChange={createIncidentSubmit} className='form-select mb-2'>
+                            <option>Select</option>
+                            <option value='1'>Create Incident</option>
+                            <option value='2'>Escalate</option>
+                            <option value='3'>Ignore</option>
+                          </select>
+
+                          {actionsValue === '3' && (
+                            <>
+                              <textarea
+                                className='form-control mb-2'
+                                placeholder='Write note...'
+                                value={note}
+                                onChange={handleNoteChange}
+                              />
+                              <button className='btn btn-sm btn-primary w-100'>Submit</button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className='mt-2 bd-highlight'>
+                    <div className='w-100px me-0'>
+                      <select
+                        className='form-select form-select-sm'
+                        data-kt-select2='true'
+                        data-placeholder='Select option'
+                        data-dropdown-parent='#kt_menu_637dc885a14bb'
+                        data-allow-clear='true'
+                        value={selectedFilterValue}
+                        onChange={handleFilterChange}
+                      >
+                        {selectedDays?.map((day, index) => (
+                          <option key={index} value={day.dataValue}>
+                            {day.dataName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className='row mt-2'>
-            <div className='d-flex'>
-              <div className='export-report ms-2 '>
-                <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
-                  <DropdownToggle caret>
-                    Export <i className='fa fa-file-export link mg-left-10' />
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    <DropdownItem onClick={exportToExcel}>
-                      Export to CSV <i className='fa fa-file-excel link float-right' />
-                    </DropdownItem>
-                    {/* <DropdownItem onClick={exportToPDF}>
-                  Export to PDF <i className='fa fa-file-pdf red float-right' />
-                </DropdownItem> */}
-                  </DropdownMenu>
-                </Dropdown>
+            <div className='row mt-2'>
+              <div className='d-flex'>
+                <div className='export-report ms-2 '>
+                  <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
+                    <DropdownToggle caret>
+                      Export <i className='fa fa-file-export link mg-left-10' />
+                    </DropdownToggle>
+                    <DropdownMenu>
+                      <DropdownItem onClick={exportToExcel}>
+                        Export to CSV <i className='fa fa-file-excel link float-right' />
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className='col-md-5'>
-          <div className='card-title header-filter'>
-            {/* begin::Search */}
-            <div className='input-group'>
-              <input
-                type='text'
-                className='form-control form-control-sm'
-                placeholder='Search Alert'
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-              />
-              <button className='btn btn-sm btn-primary' onClick={handleSearchAlert}>
-                <i className='fas fa-search'></i>
-              </button>
-            </div>
-            <div className='d-flex justify-content-between bd-highlight mb-3'>
-              <div className='mt-2 bd-highlight'>
-                <div className='w-150px me-2'>
+          <div className='col-md-5'>
+            <div className='card-title header-filter'>
+              {/* begin::Search */}
+              <div className='input-group'>
+                <input
+                  type='text'
+                  className='form-control form-control-sm'
+                  placeholder='Search Alert'
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                />
+                <button className='btn btn-sm btn-primary' onClick={handleSearchAlert}>
+                  <i className='fas fa-search'></i>
+                </button>
+              </div>
+              <div className='d-flex justify-content-between bd-highlight mb-3'>
+                <div className='mt-2 bd-highlight'>
+                  <div className='w-150px me-2'>
+                    <div>
+                      <select
+                        className='form-select form-select-sm'
+                        data-kt-select2='true'
+                        data-placeholder='Select option'
+                        data-dropdown-parent='#kt_menu_637dc885a14bb'
+                        data-allow-clear='true'
+                        ref={status}
+                        // onChange={handleStatusChange}
+                      >
+                        <option value=''>Select</option>
+                        {statusDropDown.length > 0 &&
+                          statusDropDown.map((item) => (
+                            <option key={item.dataID} value={item.dataID}>
+                              {item.dataValue}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className='w-150px mt-2'>
                   <div>
                     <select
                       className='form-select form-select-sm'
@@ -561,12 +701,11 @@ function RiskDetailsPage() {
                       data-placeholder='Select option'
                       data-dropdown-parent='#kt_menu_637dc885a14bb'
                       data-allow-clear='true'
-                      ref={status}
-                      // onChange={handleStatusChange}
+                      ref={severity}
                     >
                       <option value=''>Select</option>
-                      {statusDropDown.length > 0 &&
-                        statusDropDown.map((item) => (
+                      {severityNameDropDownData.length > 0 &&
+                        severityNameDropDownData.map((item) => (
                           <option key={item.dataID} value={item.dataID}>
                             {item.dataValue}
                           </option>
@@ -574,194 +713,167 @@ function RiskDetailsPage() {
                     </select>
                   </div>
                 </div>
-              </div>
-              <div className='w-150px mt-2'>
-                <div>
-                  <select
-                    className='form-select form-select-sm'
-                    data-kt-select2='true'
-                    data-placeholder='Select option'
-                    data-dropdown-parent='#kt_menu_637dc885a14bb'
-                    data-allow-clear='true'
-                    ref={analystVerdict}
-                  >
-                    <option value=''>Select</option>
-                    {analystVerdictDropDown.length > 0 &&
-                      analystVerdictDropDown.map((item) => (
-                        <option key={item.dataID} value={item.dataID}>
-                          {item.dataValue}
-                        </option>
-                      ))}
-                  </select>
+                <div className='mt-2 ms-1 btn btn-primary btn-sm ' onClick={handleSync}>
+                  Sync
                 </div>
               </div>
-              <div className='mt-2 ms-1 btn btn-primary btn-sm ' onClick={handleSync}>
-                Sync
-              </div>
             </div>
           </div>
         </div>
-      </div>
+         <table className='table alert-table fixed-table scroll-x'>
+          <thead>
+            <tr className='fw-bold text-muted bg-blue'>
+              <th className='checkbox-th'>{/* <input type="checkbox" name="selectAll" /> */}</th>
+              <th onClick={() => handleSort('severityName')}>
+                Severity {renderSortIcon(sortConfig, 'severityName')}
+              </th>
 
-      {/* <div className='card-header no-pad'>
-        <h3 className='card-title align-items-start flex-column'>
-          <span className='fw-bold fs-3'>
-            Risks({currentItems ? currentItems.length : 0} /{' '}
-            {filteredList ? filteredList.length : 0})
-          </span>
-        </h3>
+              <th onClick={() => handleSort('finding')}>
+                Finding / Risk {renderSortIcon(sortConfig, 'finding')}
+              </th>
 
-        <div className='card-toolbar'>
-          <div className='d-flex align-items-center gap-2 gap-lg-3'>
-            <div className='card-header bg-white d-flex justify-content-between align-items-center py-2 position-relative'>
-              <div className='position-relative' ref={dropdownRef}>
-                <button
-                  className='btn btn-green btn-small px-4'
-                  onClick={() => setShowDropdown(!showDropdown)}
-                >
-                  Manage risks {showDropdown ? '▲' : '▾'}
-                </button>
+              <th onClick={() => handleSort('category')}>
+                Category {renderSortIcon(sortConfig, 'category')}
+              </th>
 
-                {showDropdown && (
-                  <div
-                    className='position-absolute end-0 mt-2 bg-white shadow rounded-3 py-2'
-                    style={{width: '200px', zIndex: 1000}}
-                  >
-                    <div
-                      className={`px-3 py-2 ${
-                        selectedAction === 'remediate' ? 'bg-primary text-white' : ''
-                      }`}
-                      style={{cursor: 'pointer'}}
-                      onClick={() => setSelectedAction('remediate')}
-                    >
-                      <div>
-                        <strong>Request remediation</strong>
-                      </div>
-                      <div>Address risks</div>
-                    </div>
+              <th onClick={() => handleSort('firstDetected')}>
+                First detected {renderSortIcon(sortConfig, 'firstDetected')}
+              </th>
 
-                    <div
-                      className={`px-3 py-2 ${
-                        selectedAction === 'waive' ? 'bg-primary text-white' : ''
-                      }`}
-                      style={{cursor: 'pointer'}}
-                      onClick={() => setSelectedAction('waive')}
-                    >
-                      <div>
-                        <strong>Waive a risk</strong>
-                      </div>
-                      <div>Dismiss a risk</div>
-                    </div>
+              <th onClick={() => handleSort('hostnameCount')}>
+                Assets affected {renderSortIcon(sortConfig, 'hostnameCount')}
+              </th>
+              <th onClick={() => handleSort('statusName')}>
+                Status {renderSortIcon(sortConfig, 'statusName')}
+              </th>
+              <th onClick={() => handleSort('ownerName')}>
+                Owner {renderSortIcon(sortConfig, 'ownerName')}
+              </th>
+              <th onClick={() => handleSort('source')}>
+                Source {renderSortIcon(sortConfig, 'source')}
+              </th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {loading && <UsersListLoading />}
+            {currentItems?.map((risk) => (
+              <tr
+                key={risk.riskId}
+                className='fs-12 table-row'
+                style={{cursor: 'pointer'}}
+                onClick={() => handleRowClick(risk)}
+              >
+                <td>
+                  <div className='form-check form-check-sm form-check-custom form-check-solid px-3'>
+                    <input
+                      className='form-check-input widget-13-check'
+                      type='checkbox'
+                      value={risk.riskId}
+                      name={risk.riskId}
+                      checked={selectedAlert.includes(String(risk.riskId))}
+                      onChange={(e) => handleselectedAlert(risk, e)}
+                      autoComplete='off'
+                      onClick={(e) => e.stopPropagation()}
+                    />
                   </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> */}
-        {/* ================= TABLE ================= */}
-        <div className='card-body no-pad'>
-          <table className='table align-middle no-pad gs-0 gy-4 dash-table alert-table'>
-            <thead>
-              <tr className='fw-bold text-muted bg-blue'>
-                <th className='checkbox-th'>{/* <input type="checkbox" name="selectAll" /> */}</th>
-                <th onClick={() => handleSort('severityName')}>
-                  Sev. {renderSortIcon(sortConfig, 'severityName')}
-                </th>
+                </td>
+                <td>
+                  <div className='sev-icon'>{risk.severityName}</div>
+                </td>
 
-                <th onClick={() => handleSort('finding')}>
-                  Finding / Risk {renderSortIcon(sortConfig, 'finding')}
-                </th>
+                <td>
+                  <div title={risk.finding} className='fw-semibold'>
+                    {truncateText(risk.finding, 30)}
+                  </div>
+                  <div title={risk.riskTitle} className='text-muted small'>
+                    {truncateText(risk.riskTitle, 15)}
+                  </div>
+                </td>
 
-                <th onClick={() => handleSort('category')}>
-                  Category {renderSortIcon(sortConfig, 'category')}
-                </th>
-
-                <th onClick={() => handleSort('firstDetected')}>
-                  First detected {renderSortIcon(sortConfig, 'firstDetected')}
-                </th>
-
-                <th onClick={() => handleSort('hostnameCount')}>
-                  Assets affected {renderSortIcon(sortConfig, 'hostnameCount')}
-                </th>
-                <th onClick={() => handleSort('statusName')}>
-                  Status {renderSortIcon(sortConfig, 'statusName')}
-                </th>
-                <th onClick={() => handleSort('ownerName')}>
-                  Owner {renderSortIcon(sortConfig, 'ownerName')}
-                </th>
-                <th onClick={() => handleSort('source')}>
-                  Source {renderSortIcon(sortConfig, 'source')}
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {loading && <UsersListLoading />}
-              {currentItems?.map((risk) => (
-                <tr
-                  key={risk.riskId}
-                  className='fs-12 table-row'
-                  style={{cursor: 'pointer'}}
-                  onClick={() => handleRowClick(risk)}
-                >
-                  <td>
-                    <div className='form-check form-check-sm form-check-custom form-check-solid px-3'>
-                      <input
-                        className='form-check-input widget-13-check'
-                        type='checkbox'
-                        value={risk.riskId}
-                        name={risk.riskId}
-                        onChange={(e) => handleselectedAlert(risk, e)}
-                        autoComplete='off'
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </div>
-                  </td>
-                  <td>
-                    <div className='sev-icon'>{risk.severityName}</div>
-                  </td>
-
-                  <td>
-                    <div title={risk.finding} className='fw-semibold'>
-                      {truncateText(risk.finding, 40)}
-                    </div>
-                    <div title={risk.riskTitle} className='text-muted small'>
-                      {truncateText(risk.riskTitle, 40)}
-                    </div>
-                  </td>
-
-                  <td>
-                    <span className='badge bg-light text-dark border px-3 py-2'>
-                      {risk.category}
+                <td>
+                  <span title={risk.category} className='badge bg-light text-dark border px-3 py-2'>
+                    {' '}
+                    {truncateText(risk.category, 30)}
+                  </span>
+                </td>
+                <td>{getCurrentTimeZone(risk.firstDetected)}</td>
+                <td>{risk.assetCount}</td>
+                <td>{risk.statusName}</td>
+                <td>{risk.ownerName}</td>
+                <td>{risk.source}</td>
+                <td>
+                  {isActionAuthorized('Update') ? (
+                    <span>
+                      <Link
+                        className='text-white'
+                        to={`/qradar/organizations/update/${risk.riskId}`}
+                        title='Edit'
+                      >
+                        <i className='fa fa-pencil cursor link' />
+                      </Link>
                     </span>
-                  </td>
-                  <td>{getCurrentTimeZone(risk.firstDetected)}</td>
-                  <td>{risk.assetCount}</td>
+                  ) : (
+                    <span className='' title='Edit'>
+                      <i className='fa fa-pencil disabled' />
+                    </span>
+                  )}
 
-                  <td>{risk.statusName}</td>
-                  <td>{risk.ownerName}</td>
-                  <td>{risk.source}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* ================= CHILD MODAL ================= */}
+                  {isActionAuthorized('Delete') ? (
+                    <span className='ms-8' onClick={() => handleDelete(risk)} title='Delete'>
+                      <i className='fa fa-trash cursor red' />
+                    </span>
+                  ) : (
+                    <span className='ms-8' title='Delete'>
+                      <i className='fa fa-trash disabled' />
+                    </span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
         <RiskDetailsModal
           show={showModal}
           handleClose={() => setShowModal(false)}
           risk={selectedRisk}
         />
         {tools && (
-          <Pagination
-            pageCount={Math.ceil(filteredList.length / itemsPerPage)}
-            handlePageClick={handlePageClick}
-            itemsPerPage={itemsPerPage}
-            handlePageSelect={handlePageSelect}
-            forcePage={activePage}
-          />
+          <div className='d-flex justify-content-end align-items-center pagination-bar mt-5'>
+            <ReactPaginate
+              previousLabel={<i className='fa fa-chevron-left' />}
+              nextLabel={<i className='fa fa-chevron-right' />}
+              pageCount={pageCount}
+              marginPagesDisplayed={1}
+              pageRangeDisplayed={8}
+              onPageChange={handlePageClick}
+              containerClassName={'pagination justify-content-end'}
+              pageClassName={'page-item'}
+              pageLinkClassName={'page-link'}
+              previousClassName={'page-item custom-previous'}
+              previousLinkClassName={'page-link custom-previous-link'}
+              nextClassName={'page-item custom-next'}
+              nextLinkClassName={'page-link custom-next-link'}
+              breakClassName={'page-item'}
+              breakLinkClassName={'page-link'}
+              activeClassName={'active'}
+              forcePage={activePage - 1}
+            />
+            <div className='col-md-3 d-flex justify-content-end align-items-center'>
+              <span className='col-md-4'>Count: </span>
+              <select
+                className='form-select form-select-sm col-md-4'
+                value={limit}
+                onChange={handlePageSelect}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={15}>15</option>
+                <option value={20}>20</option>
+              </select>
+            </div>
+          </div>
         )}
       </div>
     </div>

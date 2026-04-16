@@ -1,0 +1,14 @@
+.alert-action {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  z-index: 1050;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  min-width: 260px;
+}
+
+.dropdown-wrapper {
+  position: relative;
+}
