@@ -1,6 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react'
 import RiskDetailsModal from './RiskDetailsModal'
 import RiskEditModal from './RiskEditModal'
+import RiskDeleteModal from './RiskDeleteModal'
 import {fetchRisks, fetchSyncRisksUrl, fetchupdateRisksUrl} from '../../../../../api/BreachRiskApi'
 import useFeatureActions from '../configuration/useFeatureActions'
 import {ToastContainer} from 'react-toastify'
@@ -48,6 +49,10 @@ function RiskProfile() {
   // ── Edit modal (pencil icon) ──────────────────────────────────────────────
   const [showEditModal, setShowEditModal] = useState(false)
   const [editRisk, setEditRisk] = useState(null)
+
+  // ── Delete modal ─────────────────────────────────────────────────────────
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleteRisk, setDeleteRisk] = useState(null)
 
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
@@ -224,6 +229,20 @@ function RiskProfile() {
     setShowEditModal(true)
   }
 
+  const handleDelete = (risk) => {
+    setDeleteRisk(risk)
+    setShowDeleteModal(true)
+  }
+
+  const handleActionDelete = () => {
+    if (selectedAlert.length === 0) {
+      notifyFail('Please select at least one risk to delete.')
+      return
+    }
+    setShowDeleteModal(true)
+    handleCloseAll()
+  }
+
   const handleSort = (key) => {
     setSortConfig((prev) => ({
       key,
@@ -311,10 +330,6 @@ function RiskProfile() {
     setCurrentPage(0)
     setActivePage(1)
     getRisks(1, selectedFilterValue, searchValue)
-  }
-
-  const handleDelete = async (_item) => {
-    // TODO: implement delete
   }
 
   const exportToExcel = async () => {
@@ -465,12 +480,16 @@ function RiskProfile() {
                             <option value='1'>Create Incident</option>
                             <option value='2'>Escalate</option>
                             <option value='3'>Ignore</option>
+                            <option value='4'>Delete</option>
                           </select>
                           {actionsValue === '3' && (
                             <>
                               <textarea className='form-control mb-2' placeholder='Write note...' value={note} onChange={handleNoteChange} />
                               <button className='btn btn-sm btn-primary w-100' onClick={handleIgnoreSubmit}>Submit</button>
                             </>
+                          )}
+                          {actionsValue === '4' && (
+                            <button className='btn btn-sm btn-danger w-100' onClick={handleActionDelete}>Delete Selected ({selectedAlert.length})</button>
                           )}
                         </div>
                       </div>
@@ -657,6 +676,34 @@ function RiskProfile() {
           }}
           risk={editRisk}
           onSuccess={() => getRisks(currentPage + 1, selectedFilterValue, searchValue)}
+        />
+
+        {/* Delete modal component */}
+        <RiskDeleteModal
+          show={showDeleteModal}
+          onHide={() => {
+            setShowDeleteModal(false)
+            setDeleteRisk(null)
+          }}
+          risk={deleteRisk}
+          onSuccess={() => getRisks(currentPage + 1, selectedFilterValue, searchValue)}
+        />
+
+        {/* Delete modal component for bulk delete */}
+        <RiskDeleteModal
+          show={showDeleteModal}
+          onHide={() => {
+            setShowDeleteModal(false)
+            setDeleteRisk(null)
+          }}
+          risk={deleteRisk}
+          riskIds={selectedAlert}
+          isBulkDelete={selectedAlert.length > 1}
+          onSuccess={() => {
+            setselectedAlert([])
+            setIsCheckboxSelected(false)
+            getRisks(currentPage + 1, selectedFilterValue, searchValue)
+          }}
         />
 
         {tools && (
