@@ -180,24 +180,6 @@ export function Login() {
     setShowPassword(!showPassword)
   }
 
-  // const fetchFeatures = async () => {
-  //   const orgId = sessionStorage.getItem('orgId')
-  //   const toolId = sessionStorage.getItem('toolID')
-  //   const roleId = sessionStorage.getItem('roleID')
-  //   try {
-  //     const data = {
-  //       orgId: orgId,
-  //       toolId: toolId,
-  //       roleId: roleId,
-  //       parentFeatureId: 0,
-  //     }
-  //     const response = await fetchFeaturesAuthorizedUrl(data)
-  //     setFeatures(response.features)
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-
   return (
     <div className='card pad-20'>
       <ToastContainer />
