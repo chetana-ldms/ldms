@@ -283,7 +283,19 @@ function RiskProfile() {
 
   const handleNoteChange = (e) => setNote(e.target.value)
 
-  const createIncidentSubmit = (e) => setActionValue(e.target.value)
+const createIncidentSubmit = (e) => {
+  const value = e.target.value
+  setActionValue(value)
+  if (value === '4') {
+    if (selectedAlert.length === 0) {
+      notifyFail('Please select at least one risk to delete.')
+      return
+    }
+    handleCloseAll()
+    setDeleteRisk(null)
+    setShowDeleteModal(true)
+  }
+}
 
   const handleSubmitUpdate = async ({statusId, severityId, ownerUserId}) => {
     try {
@@ -487,9 +499,6 @@ function RiskProfile() {
                               <textarea className='form-control mb-2' placeholder='Write note...' value={note} onChange={handleNoteChange} />
                               <button className='btn btn-sm btn-primary w-100' onClick={handleIgnoreSubmit}>Submit</button>
                             </>
-                          )}
-                          {actionsValue === '4' && (
-                            <button className='btn btn-sm btn-danger w-100' onClick={handleActionDelete}>Delete Selected ({selectedAlert.length})</button>
                           )}
                         </div>
                       </div>

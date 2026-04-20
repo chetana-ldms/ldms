@@ -4,6 +4,7 @@ import {fetchupdateRisksUrl} from '../../../../../api/BreachRiskApi'
 import {fetchMasterData} from '../../../../../api/Api'
 import {fetchUsersByOrgTool} from '../../../../../api/IncidentsApi'
 import {notify, notifyFail} from '../components/notification/Notification'
+import { getCurrentTimeZone } from '../../../../../../utils/helper'
 function RiskEditModal({show, onHide, risk, onSuccess}) {
     console.log('RiskEditModal: received risk', risk)
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -123,7 +124,7 @@ function RiskEditModal({show, onHide, risk, onSuccess}) {
                 </Col>
                 <Col xs={6}>
                   <span className='fw-semibold text-dark'>First detected: </span>
-                  {risk.firstDetected ? new Date(risk.firstDetected).toLocaleDateString() : '—'}
+                  {getCurrentTimeZone(risk.firstDetectedDate) ??  '—'}
                 </Col>
               </Row>
             </div>
