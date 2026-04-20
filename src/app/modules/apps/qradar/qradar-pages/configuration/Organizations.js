@@ -10,9 +10,12 @@ import useFeatureActions from './useFeatureActions'
 import {fetchOrganizationDelete} from '../../../../../api/Api'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {useErrorBoundary} from 'react-error-boundary'
+import { useSelector } from 'react-redux'
 
 const Organizations = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const userData = useSelector((state) => state?.user?.userData);
+  console.log(userData, 'userData')
   const handleError = useErrorBoundary()
   const [tools, setTools] = useState([])
   const [filterValue, setFilterValue] = useState('')

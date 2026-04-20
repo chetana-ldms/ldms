@@ -20,6 +20,8 @@ import { AuthProvider, setupAxios } from './app/modules/auth'
 import { MsalProvider } from '@azure/msal-react';
 import { msalConfig } from '../src/app/modules/auth/components/authConfig';
 import { AppContext, AppContextProvider } from './app/modules/apps/qradar/qradar-pages/context/AppContextProvider'
+import { Provider } from 'react-redux'
+import { store } from './store/slices/store'
 const msalInstance = new PublicClientApplication(msalConfig);
 
 /**
@@ -40,6 +42,7 @@ const queryClient = new QueryClient()
 const container = document.getElementById('root')
 if (container) {
   createRoot(container).render(
+    <Provider store={store}> 
     <AppContextProvider>
     <MsalProvider instance={msalInstance}>
       <QueryClientProvider client={queryClient}>
@@ -52,5 +55,6 @@ if (container) {
       </QueryClientProvider>
     </MsalProvider>
     </AppContextProvider>
+     </Provider>
   )
 }

@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react'
+import {useDispatch} from 'react-redux'
 import * as Yup from 'yup'
 import clsx from 'clsx'
 import {Link, useNavigate} from 'react-router-dom'
@@ -15,6 +16,7 @@ import ChangePasswordPopUp from './ChangePasswordPopUp'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import MFAModal from './MFAModal'
+import { setUserData } from '../../../../store/slices/slices/loginUserSlice'
 
 const loginSchema = Yup.object().shape({
   username: Yup.string().min(3, 'Minimum 3 symbols').required('Username is required'),
@@ -32,6 +34,7 @@ const initialValues = {
 }
 
 export function Login() {
+  const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
   const [organisation, setOrganisation] = useState([])
   const [features, setFeatures] = useState([])
@@ -64,7 +67,8 @@ export function Login() {
     onSubmit: async (values, {setStatus, setSubmitting}) => {
       setLoading(true)
       try {
-        const authData = await fetchAuthenticate(values.username, values.password, values.org)
+        const authData = await fetchAuthenticate(values.username, values.password, values.org);
+        dispatch(setUserData(authData))
         console.log(authData, 'authData')
         setMessage(authData.message || '')
         if (authData.isSuccess) {
