@@ -324,6 +324,7 @@ const createIncidentSubmit = (e) => {
         setSelectedUser('')
         // setCurrentPage(0)
         // setActivePage(1)
+        getRisks()
         getRisks(currentPage + 1, selectedFilterValue, searchValue)
       } else {
         notifyFail(message)
