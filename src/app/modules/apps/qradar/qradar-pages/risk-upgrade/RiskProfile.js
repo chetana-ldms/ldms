@@ -2,7 +2,12 @@ import React, {useState, useRef, useEffect} from 'react'
 import RiskDetailsModal from './RiskDetailsModal'
 import RiskEditModal from './RiskEditModal'
 import RiskDeleteModal from './RiskDeleteModal'
-import {fetchRisks, fetchSyncRisksUrl, fetchupdateRisksUrl} from '../../../../../api/BreachRiskApi'
+import {
+  fetchcreateRemediateRequestUrl,
+  fetchRisks,
+  fetchSyncRisksUrl,
+  fetchupdateRisksUrl,
+} from '../../../../../api/BreachRiskApi'
 import useFeatureActions from '../configuration/useFeatureActions'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -16,7 +21,7 @@ import {fetchExportDataAddUrl, fetchMasterData} from '../../../../../api/Api'
 import ReactPaginate from 'react-paginate'
 import './RiskProfile.css'
 import {fetchUsersByOrgTool} from '../../../../../api/IncidentsApi'
-import {Link} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 function RiskProfile() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -72,9 +77,7 @@ function RiskProfile() {
     statusDropDown: [],
   })
   const {severityNameDropDownData, statusDropDown} = dropdownData
-
-  // ─── Data fetching ────────────────────────────────────────────────────────
-
+ const navigate = useNavigate()
   useEffect(() => {
     const fetchNumberOfDays = async () => {
       try {
@@ -224,7 +227,7 @@ function RiskProfile() {
 
   // Opens the edit modal for a specific risk row
   const handleEditClick = (e, risk) => {
-    e.stopPropagation()        // prevent row-click / view modal from firing
+    e.stopPropagation() // prevent row-click / view modal from firing
     setEditRisk(risk)
     setShowEditModal(true)
   }
@@ -283,19 +286,19 @@ function RiskProfile() {
 
   const handleNoteChange = (e) => setNote(e.target.value)
 
-const createIncidentSubmit = (e) => {
-  const value = e.target.value
-  setActionValue(value)
-  if (value === '4') {
-    if (selectedAlert.length === 0) {
-      notifyFail('Please select at least one risk to delete.')
-      return
+  const createIncidentSubmit = (e) => {
+    const value = e.target.value
+    setActionValue(value)
+    if (value === '4') {
+      if (selectedAlert.length === 0) {
+        notifyFail('Please select at least one risk to delete.')
+        return
+      }
+      handleCloseAll()
+      setDeleteRisk(null)
+      setShowDeleteModal(true)
     }
-    handleCloseAll()
-    setDeleteRisk(null)
-    setShowDeleteModal(true)
   }
-}
 
   const handleSubmitUpdate = async ({statusId, severityId, ownerUserId}) => {
     try {
@@ -308,8 +311,8 @@ const createIncidentSubmit = (e) => {
         comment: note || '',
         modifiedDate: new Date().toISOString(),
       }
-      if (statusId)    payload.statusId    = Number(statusId)
-      if (severityId)  payload.severityId  = Number(severityId)
+      if (statusId) payload.statusId = Number(statusId)
+      if (severityId) payload.severityId = Number(severityId)
       if (ownerUserId) payload.ownerUserId = Number(ownerUserId)
 
       const response = await fetchupdateRisksUrl(payload)
@@ -379,9 +382,29 @@ const createIncidentSubmit = (e) => {
       console.error(error)
     }
   }
-
-  // ─── Render ───────────────────────────────────────────────────────────────
-
+  useEffect(() => {
+    if (actionsValue === '1' && selectedAlert.length > 0) {
+      const data = {
+        riskIds: selectedAlert.map(Number),
+        toolId: toolId,
+        orgId: orgId,
+        createdDate: new Date().toISOString(),
+        createdUserId: userID,
+      }
+      fetchcreateRemediateRequestUrl(data).then((response) => {
+        if (response.isSuccess) {
+          notify('Remediate Request Created')
+          setActionValue('')
+          setTimeout(() => {
+            navigate('/qradar/incidents', { state: { toolId: toolId } })
+          }, 2000)
+        } else {
+          notifyFail('Failed to Create Remediate Request')
+          setActionValue('')
+        }
+      })
+    }
+  }, [actionsValue])
   return (
     <div className='alert-page'>
       <ToastContainer />
@@ -404,26 +427,45 @@ const createIncidentSubmit = (e) => {
             <div className='row'>
               <div className='card-toolbar float-left'>
                 <div className='d-flex align-items-center gap-2 gap-lg-3'>
-
                   {/* STATUS */}
                   <div className='dropdown-wrapper'>
-                    <button className='btn btn-small fw-bold fs-14 btn-green' onClick={handleStatus} disabled={!isCheckboxSelected}>
+                    <button
+                      className='btn btn-small fw-bold fs-14 btn-green'
+                      onClick={handleStatus}
+                      disabled={!isCheckboxSelected}
+                    >
                       Status
                     </button>
                     {showStatusDropdown && (
                       <div className='alert-action'>
                         <div className='p-3'>
                           <div className='d-flex justify-content-end mb-2'>
-                            <button type='button' className='btn-close' aria-label='Close' onClick={handleCloseAll} />
+                            <button
+                              type='button'
+                              className='btn-close'
+                              aria-label='Close'
+                              onClick={handleCloseAll}
+                            />
                           </div>
                           <select className='form-select mb-2' onChange={handleStatusDropDown}>
                             <option value=''>Select</option>
                             {statusDropDown.map((item) => (
-                              <option key={item.dataID} value={item.dataID}>{item.dataValue}</option>
+                              <option key={item.dataID} value={item.dataID}>
+                                {item.dataValue}
+                              </option>
                             ))}
                           </select>
-                          <textarea className='form-control mb-2' placeholder='Write note...' onChange={handleNoteChange} />
-                          <button className='btn btn-sm btn-primary w-100' onClick={() => handleSubmitUpdate({statusId: selectedStatus})}>Submit</button>
+                          <textarea
+                            className='form-control mb-2'
+                            placeholder='Write note...'
+                            onChange={handleNoteChange}
+                          />
+                          <button
+                            className='btn btn-sm btn-primary w-100'
+                            onClick={() => handleSubmitUpdate({statusId: selectedStatus})}
+                          >
+                            Submit
+                          </button>
                         </div>
                       </div>
                     )}
@@ -431,23 +473,47 @@ const createIncidentSubmit = (e) => {
 
                   {/* SEVERITY */}
                   <div className='dropdown-wrapper'>
-                    <button className='btn btn-small fw-bold fs-14 btn-green' onClick={handleSeverity} disabled={!isCheckboxSelected}>
+                    <button
+                      className='btn btn-small fw-bold fs-14 btn-green'
+                      onClick={handleSeverity}
+                      disabled={!isCheckboxSelected}
+                    >
                       Severity
                     </button>
                     {showSeverityDropdown && (
                       <div className='alert-action'>
                         <div className='p-3'>
                           <div className='d-flex justify-content-end mb-2'>
-                            <button type='button' className='btn-close' aria-label='Close' onClick={handleCloseAll} />
+                            <button
+                              type='button'
+                              className='btn-close'
+                              aria-label='Close'
+                              onClick={handleCloseAll}
+                            />
                           </div>
-                          <select className='form-select mb-2' value={selectedSeverity} onChange={(e) => setSelectedSeverity(e.target.value)}>
+                          <select
+                            className='form-select mb-2'
+                            value={selectedSeverity}
+                            onChange={(e) => setSelectedSeverity(e.target.value)}
+                          >
                             <option value=''>Select</option>
                             {severityNameDropDownData.map((item) => (
-                              <option key={item.dataID} value={item.dataID}>{item.dataValue}</option>
+                              <option key={item.dataID} value={item.dataID}>
+                                {item.dataValue}
+                              </option>
                             ))}
                           </select>
-                          <textarea className='form-control mb-2' placeholder='Write note...' onChange={handleNoteChange} />
-                          <button className='btn btn-sm btn-primary w-100' onClick={() => handleSubmitUpdate({severityId: selectedSeverity})}>Submit</button>
+                          <textarea
+                            className='form-control mb-2'
+                            placeholder='Write note...'
+                            onChange={handleNoteChange}
+                          />
+                          <button
+                            className='btn btn-sm btn-primary w-100'
+                            onClick={() => handleSubmitUpdate({severityId: selectedSeverity})}
+                          >
+                            Submit
+                          </button>
                         </div>
                       </div>
                     )}
@@ -455,7 +521,11 @@ const createIncidentSubmit = (e) => {
 
                   {/* OWNER */}
                   <div className='dropdown-wrapper'>
-                    <button className='btn btn-small fw-bold fs-14 btn-green' onClick={handleUsers} disabled={!isCheckboxSelected}>
+                    <button
+                      className='btn btn-small fw-bold fs-14 btn-green'
+                      onClick={handleUsers}
+                      disabled={!isCheckboxSelected}
+                    >
                       Owner
                     </button>
                     {showUsersDropdown && (
@@ -464,14 +534,29 @@ const createIncidentSubmit = (e) => {
                           <div className='d-flex justify-content-end mb-2'>
                             <button type='button' className='btn-close' onClick={handleCloseAll} />
                           </div>
-                          <select className='form-select mb-2' value={selectedUser} onChange={handleUserChange}>
+                          <select
+                            className='form-select mb-2'
+                            value={selectedUser}
+                            onChange={handleUserChange}
+                          >
                             <option value=''>Select</option>
                             {ldp_security_user?.map((user, index) => (
-                              <option key={index} value={user.userID}>{user.name}</option>
+                              <option key={index} value={user.userID}>
+                                {user.name}
+                              </option>
                             ))}
                           </select>
-                          <textarea className='form-control mb-2' placeholder='Write note...' onChange={handleNoteChange} />
-                          <button className='btn btn-sm btn-primary w-100' onClick={() => handleSubmitUpdate({ownerUserId: selectedUser})}>Submit</button>
+                          <textarea
+                            className='form-control mb-2'
+                            placeholder='Write note...'
+                            onChange={handleNoteChange}
+                          />
+                          <button
+                            className='btn btn-sm btn-primary w-100'
+                            onClick={() => handleSubmitUpdate({ownerUserId: selectedUser})}
+                          >
+                            Submit
+                          </button>
                         </div>
                       </div>
                     )}
@@ -479,26 +564,45 @@ const createIncidentSubmit = (e) => {
 
                   {/* ACTIONS */}
                   <div className='dropdown-wrapper'>
-                    <button className='btn btn-small fs-14 btn-green' onClick={handleActions} disabled={!isCheckboxSelected}>
+                    <button
+                      className='btn btn-small fs-14 btn-green'
+                      onClick={handleActions}
+                      disabled={!isCheckboxSelected}
+                    >
                       Actions
                     </button>
                     {showActionsDropdown && selectedAlert.length > 0 && (
                       <div className='alert-action'>
                         <div className='p-3'>
                           <div className='d-flex justify-content-end mb-2'>
-                            <button type='button' className='btn-close' aria-label='Close' onClick={handleCloseAll} />
+                            <button
+                              type='button'
+                              className='btn-close'
+                              aria-label='Close'
+                              onClick={handleCloseAll}
+                            />
                           </div>
                           <select onChange={createIncidentSubmit} className='form-select mb-2'>
                             <option value=''>Select</option>
-                            <option value='1'>Create Incident</option>
+                            <option value='1'>Create Remediate Request</option>
                             <option value='2'>Escalate</option>
                             <option value='3'>Ignore</option>
                             <option value='4'>Delete</option>
                           </select>
                           {actionsValue === '3' && (
                             <>
-                              <textarea className='form-control mb-2' placeholder='Write note...' value={note} onChange={handleNoteChange} />
-                              <button className='btn btn-sm btn-primary w-100' onClick={handleIgnoreSubmit}>Submit</button>
+                              <textarea
+                                className='form-control mb-2'
+                                placeholder='Write note...'
+                                value={note}
+                                onChange={handleNoteChange}
+                              />
+                              <button
+                                className='btn btn-sm btn-primary w-100'
+                                onClick={handleIgnoreSubmit}
+                              >
+                                Submit
+                              </button>
                             </>
                           )}
                         </div>
@@ -509,9 +613,15 @@ const createIncidentSubmit = (e) => {
                   {/* Duration filter */}
                   <div className='mt-2 bd-highlight'>
                     <div className='w-100px me-0'>
-                      <select className='form-select form-select-sm' value={selectedFilterValue} onChange={handleFilterChange}>
+                      <select
+                        className='form-select form-select-sm'
+                        value={selectedFilterValue}
+                        onChange={handleFilterChange}
+                      >
                         {selectedDays?.map((day, index) => (
-                          <option key={index} value={day.dataValue}>{day.dataName}</option>
+                          <option key={index} value={day.dataValue}>
+                            {day.dataName}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -560,7 +670,9 @@ const createIncidentSubmit = (e) => {
                     <select className='form-select form-select-sm' ref={status}>
                       <option value=''>Select</option>
                       {statusDropDown.map((item) => (
-                        <option key={item.dataID} value={item.dataID}>{item.dataValue}</option>
+                        <option key={item.dataID} value={item.dataID}>
+                          {item.dataValue}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -569,7 +681,9 @@ const createIncidentSubmit = (e) => {
                   <select className='form-select form-select-sm' ref={severity}>
                     <option value=''>Select</option>
                     {severityNameDropDownData.map((item) => (
-                      <option key={item.dataID} value={item.dataID}>{item.dataValue}</option>
+                      <option key={item.dataID} value={item.dataID}>
+                        {item.dataValue}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -586,14 +700,30 @@ const createIncidentSubmit = (e) => {
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
               <th className='checkbox-th' />
-              <th onClick={() => handleSort('severityName')}>Severity {renderSortIcon(sortConfig, 'severityName')}</th>
-              <th onClick={() => handleSort('finding')}>Finding / Risk {renderSortIcon(sortConfig, 'finding')}</th>
-              <th onClick={() => handleSort('category')}>Category {renderSortIcon(sortConfig, 'category')}</th>
-              <th onClick={() => handleSort('firstDetected')}>First detected {renderSortIcon(sortConfig, 'firstDetected')}</th>
-              <th onClick={() => handleSort('hostnameCount')}>Assets affected {renderSortIcon(sortConfig, 'hostnameCount')}</th>
-              <th onClick={() => handleSort('statusName')}>Status {renderSortIcon(sortConfig, 'statusName')}</th>
-              <th onClick={() => handleSort('ownerName')}>Owner {renderSortIcon(sortConfig, 'ownerName')}</th>
-              <th onClick={() => handleSort('source')}>Source {renderSortIcon(sortConfig, 'source')}</th>
+              <th onClick={() => handleSort('severityName')}>
+                Severity {renderSortIcon(sortConfig, 'severityName')}
+              </th>
+              <th onClick={() => handleSort('finding')}>
+                Finding / Risk {renderSortIcon(sortConfig, 'finding')}
+              </th>
+              <th onClick={() => handleSort('category')}>
+                Category {renderSortIcon(sortConfig, 'category')}
+              </th>
+              <th onClick={() => handleSort('firstDetected')}>
+                First detected {renderSortIcon(sortConfig, 'firstDetected')}
+              </th>
+              <th onClick={() => handleSort('hostnameCount')}>
+                Assets affected {renderSortIcon(sortConfig, 'hostnameCount')}
+              </th>
+              <th onClick={() => handleSort('statusName')}>
+                Status {renderSortIcon(sortConfig, 'statusName')}
+              </th>
+              <th onClick={() => handleSort('ownerName')}>
+                Owner {renderSortIcon(sortConfig, 'ownerName')}
+              </th>
+              <th onClick={() => handleSort('source')}>
+                Source {renderSortIcon(sortConfig, 'source')}
+              </th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -620,10 +750,16 @@ const createIncidentSubmit = (e) => {
                     />
                   </div>
                 </td>
-                <td><div className='sev-icon'>{risk.severityName}</div></td>
                 <td>
-                  <div title={risk.finding} className='fw-semibold'>{truncateText(risk.finding, 30)}</div>
-                  <div title={risk.riskTitle} className='text-muted small'>{truncateText(risk.riskTitle, 15)}</div>
+                  <div className='sev-icon'>{risk.severityName}</div>
+                </td>
+                <td>
+                  <div title={risk.finding} className='fw-semibold'>
+                    {truncateText(risk.finding, 30)}
+                  </div>
+                  <div title={risk.riskTitle} className='text-muted small'>
+                    {truncateText(risk.riskTitle, 15)}
+                  </div>
                 </td>
                 <td>
                   <span title={risk.category} className='badge bg-light text-dark border px-3 py-2'>
@@ -646,7 +782,9 @@ const createIncidentSubmit = (e) => {
                       <i className='fa fa-pencil cursor link' />
                     </span>
                   ) : (
-                    <span title='Edit'><i className='fa fa-pencil disabled' /></span>
+                    <span title='Edit'>
+                      <i className='fa fa-pencil disabled' />
+                    </span>
                   )}
 
                   {/* ── Delete ── */}
@@ -662,7 +800,9 @@ const createIncidentSubmit = (e) => {
                       <i className='fa fa-trash cursor red' />
                     </span>
                   ) : (
-                    <span className='ms-8' title='Delete'><i className='fa fa-trash disabled' /></span>
+                    <span className='ms-8' title='Delete'>
+                      <i className='fa fa-trash disabled' />
+                    </span>
                   )}
                 </td>
               </tr>
@@ -739,7 +879,11 @@ const createIncidentSubmit = (e) => {
             />
             <div className='col-md-3 d-flex justify-content-end align-items-center'>
               <span className='col-md-4'>Count: </span>
-              <select className='form-select form-select-sm col-md-4' value={limit} onChange={handlePageSelect}>
+              <select
+                className='form-select form-select-sm col-md-4'
+                value={limit}
+                onChange={handlePageSelect}
+              >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={15}>15</option>
