@@ -136,10 +136,11 @@ const IncidentsPage = () => {
     setDaysFromDashBoard(location.state?.days || '')
     if (location.state?.toolId) {
       setSelectedToolId(location.state.toolId)
-      sessionStorage.setItem('incidentToolId', location.state.toolId)
+      // sessionStorage.setItem('incidentToolId', location.state.toolId)
     }
   }, [location.state])
 
+  
   useEffect(() => {
     const fetchNumberOfDays = async () => {
       try {
