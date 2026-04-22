@@ -4,7 +4,9 @@ import { fetchGetAlertsTrendData } from "../../api/dashBoardApi";
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 function AlertsTrends(props) {
-  const { days, orgId, toolID } = props;
+  // const { days, orgId, toolID } = props;
+  const { days, orgId } = props;
+  const toolID = 2;
   const toolId = Number(sessionStorage.getItem('toolID'))
   const [alertData, setAlertData] = useState([]);
   console.log(alertData, "alertData");

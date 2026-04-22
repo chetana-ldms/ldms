@@ -101,7 +101,7 @@ const Reports = () => {
                   <TabPanel className="main-tab">
                     <SlaMeasurement />
                   </TabPanel>
-                  <TabPanel className="main-tab">
+                  {/* <TabPanel className="main-tab">
                     <div>
                       <CreatedIncidentStatusReport />
                     </div>
@@ -114,17 +114,17 @@ const Reports = () => {
                   </TabPanel>
                   <TabPanel>
                     <SignificantIncident />
-                  </TabPanel>
+                  </TabPanel> */}
                 </div>
               </div>
               <TabList className="tab-list mt-5">
                 <Tab>Alert Summary</Tab>
                 <Tab>Alerts Category</Tab>
                 <Tab>SLA Measurement</Tab>
-                <Tab>Status of Created Incidents</Tab>
+                {/* <Tab>Status of Created Incidents</Tab>
                 <Tab>Closed Incidents</Tab>
                 <Tab>Open Incident Status</Tab>
-                <Tab>Significant Incidents</Tab>
+                <Tab>Significant Incidents</Tab> */}
               </TabList>
             </Tabs>
           </div>

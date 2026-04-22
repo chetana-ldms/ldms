@@ -1,0 +1,57 @@
+[
+  {
+    "step": "Step 3",
+    "type": "question",
+    "message": "🤖 Would you like to initiate a disk health check?"
+  },
+  {
+    "step": "Step 4",
+    "type": "response",
+    "message": "🔄 Proceeding with the disk health check..."
+  },
+  {
+    "step": "Step 5",
+    "type": "action",
+    "message": "📟 Health check executed.\n🧪 Disk overall status: ❌ FAILED"
+  },
+  {
+    "step": "Step 6",
+    "type": "action",
+    "message": "📜 Fetching recent disk-related errors from Windows Event Log...\n🧾 Log found: `Event ID 7: The device, \\\\Device\\\\Harddisk0\\\\DR0, has a bad block.`"
+  },
+  {
+    "step": "Step 8",
+    "type": "question",
+    "message": "📊 Shall I verify the disk status and volumes?"
+  },
+  {
+    "step": "Step 9",
+    "type": "response",
+    "message": "✅ Checking disk and volume status...\n💽 Disk status: `Disk 0` - Offline. Volumes: ❌ Unavailable"
+  },
+  {
+    "step": "Step 11",
+    "type": "question",
+    "message": "⚙️ Attempting to bring Disk 0 back online. Shall I proceed?"
+  },
+  {
+    "step": "Step 14",
+    "type": "response",
+    "message": "✅ Bringing disk online...\n📟 Command: `Set-Disk -Number 0 -IsOffline $false`"
+  },
+  {
+    "step": "Step 15",
+    "type": "action",
+    "message": "✅ Disk brought online successfully. Volumes restored and accessible."
+  },
+  {
+    "step": "Step 16",
+    "type": "action",
+    "message": "🔎 Verifying disk and volume status post-recovery...\n📟 Commands:\n`Get-Disk -Number 0 | Select Number, OperationalStatus, HealthStatus`\n`Get-Volume | Select DriveLetter, FileSystem, HealthStatus, SizeRemaining, Size`"
+  },
+  {
+    "step": "Step 17",
+    "type": "status",
+    "message": "🎉 Verification successful! Disk 0 is ONLINE and volumes are HEALTHY."
+  }
+]

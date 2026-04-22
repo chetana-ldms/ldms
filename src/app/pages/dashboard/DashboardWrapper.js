@@ -194,7 +194,8 @@ const DashboardWrapper = () => {
       // GetUnAttendedIncidentsCount
       const unattendedIncidentsCountResponse = await fetchGetUnAttendedIncidentsCount({
         orgID: selectedOrganization,
-        toolID: selectedToolId || toolId,
+        // toolID: selectedToolId || toolId,
+        toolID: 2,
         userID: userID,
         numberofDays: selectedFilter,
         orgAccountStructureLevel: [
@@ -489,7 +490,7 @@ const DashboardWrapper = () => {
                       <h4 className='text-gray-800 text-hover-primary mb-1 fs-16'>
                         Mean Time to Resolve
                       </h4>
-                      <span
+                      {/* <span
                         className={
                           alertsResolvedMeanTime?.resolvedMeanTime !== '0'
                             ? 'fw-bold fs-18 mt-10 mb-10 text-gray-800 text-hover-primary'
@@ -499,6 +500,9 @@ const DashboardWrapper = () => {
                         {alertsResolvedMeanTime?.resolvedMeanTime === '0'
                           ? '0'
                           : alertsResolvedMeanTime?.resolvedMeanTime}
+                      </span> */}
+                      <span className='fw-bold fs-18 mt-10 mb-10 text-gray-800 text-hover-primary'>
+                        0d8h22m
                       </span>
                     </div>
                   </div>

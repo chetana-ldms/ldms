@@ -1,222 +1,239 @@
-import React, { useState, useEffect } from "react";
-import IncidentChat from "./IncidentChat";
-import IncidentDetailsDemo from "./IncidentDetailsDemo";
-import { useLocation } from "react-router-dom";
-import { toAbsoluteUrl } from "../../../../../../_metronic/helpers";
-import Chat from "./Chat";
-import ChatBox, { ChatFrame } from "react-chat-plugin";
-import { IncidentsPageCollaboration } from "./IncidentsPageCollaboration";
+import React, {useState, useEffect} from 'react'
+import IncidentChat from './IncidentChat'
+import IncidentDetailsDemo from './IncidentDetailsDemo'
+import {useLocation} from 'react-router-dom'
+import Chat from './Chat'
+import ChatBox, {ChatFrame} from 'react-chat-plugin'
+import {IncidentsPageCollaboration} from './IncidentsPageCollaboration'
+import IncidentChatDisk from './IncidentChatDisk'
+import IncidentChatMemory from './IncidentChatMemory'
+import IncidentChatNetwork from './IncidentChatNetwork'
+import {toAbsoluteUrl} from '../../../../../../_metronic/helpers'
+import IncidentChatPhishing from './IncidentChatPhishing'
 
 const IncidentsPageDemo = () => {
-  const location = useLocation();
-  const alertData = JSON.parse(localStorage.getItem("alertData"));
-  const [demoAlertData, setDemoAlertData] = useState([]);
-  const [selectedAlert, setSelectedAlert] = useState(null);
-  const [showChat, setShowChat] = useState(false);
+  const location = useLocation()
+  const alertData = JSON.parse(localStorage.getItem('alertData'))
+  const [demoAlertData, setDemoAlertData] = useState([])
+  const [selectedAlert, setSelectedAlert] = useState(null)
+  const [showChat, setShowChat] = useState(false)
 
   useEffect(() => {
     if (Array.isArray(alertData)) {
-      setDemoAlertData(
-        alertData.reverse().map((alert) => ({ ...alert, isSelected: false }))
-      );
+      setDemoAlertData(alertData.reverse().map((alert) => ({...alert, isSelected: false})))
     }
-  }, [alertData]);
+  }, [alertData])
 
   const handleIncSecClick = () => {
-    setShowChat(true);
-  };
+    setShowChat(true)
+  }
 
   const handleAlertClick = (selectedAlert) => {
     const updatedAlerts = demoAlertData.map((alert) => {
       if (alert.id === selectedAlert.id) {
-        return { ...alert, isSelected: true }; // Set isSelected to true for the clicked incident
+        return {...alert, isSelected: true}
       } else {
-        return { ...alert, isSelected: false }; // Deselect other alerts
+        return {...alert, isSelected: false}
       }
-    });
+    })
 
-    console.log(updatedAlerts); // Check the updatedAlerts in the console
+    console.log(updatedAlerts)
 
-    setSelectedAlert(selectedAlert);
-    setDemoAlertData(updatedAlerts);
-    // Show the chat only when the "Demo: Add Failed Login Alert" incident is selected
-    setShowChat(selectedAlert.name === "Failed Login Alert");
-  };
+    setSelectedAlert(selectedAlert)
+    setDemoAlertData(updatedAlerts)
+
+    const chatAlertNames = [
+      'Failed Login Alert',
+      'Disk failure event detected',
+      'Memory spike detected',
+      'Network outage detected',
+      'Phishing Email Detected',
+    ]
+
+    setShowChat(chatAlertNames.includes(selectedAlert.name))
+  }
 
   //Chat window
   const [messages, setMessages] = useState([
     {
       // text: "user2 has joined the conversation",
       timestamp: 1578366389250,
-      type: "notification",
+      type: 'notification',
       // text: 'Cyber Defense Head Operation IT',
     },
     {
       author: {
-        username: "Smith Cyber Defense Head",
+        username: 'Senior Security Analyst',
         id: 1,
-        avatarUrl: "/media/avatars/avatar.png",
+        avatarUrl: '/media/avatars/300-1.jpg',
       },
     },
-  ]);
+  ])
 
-  const shouldShowCollaboration =
-    selectedAlert && selectedAlert.name === "Suspecious mail";
+  const shouldShowCollaboration = selectedAlert && selectedAlert.name === 'Suspecious mail'
 
   const handleOnSendMessage = (message) => {
     setMessages(
       messages.concat({
         author: {
-          username: "Smith Cyber Defense Head",
+          username: 'Senior Security Analyst',
           id: 1,
-          avatarUrl: "/ldms/media/avatars/avatar.png",
-          html: "<span>Cyber Defense Head Operation IT</span>",
+          avatarUrl: '/ldms/media/avatars/300-1.jpg',
+          html: '<span>Cyber Defense Head Operation IT</span>',
         },
         timestamp: +new Date(),
         text: message,
-        type: "text",
+        type: 'text',
       })
-    );
-  };
-
-  const ChatHeader = ({ selectedAlert }) => {
+    )
+  }
+  const ChatHeader = ({selectedAlert}) => {
     return (
       <>
-        <div className="mt-2 float-left">
-          <p>
-            DC -20210728-00056
-            {/* <i className='far fa-copy'></i> */}
-          </p>
+        <div className='mt-2 float-left'>
+          <p>DC -20210728-00056</p>
           {selectedAlert ? (
-            <p className="fs-12">User | {selectedAlert.name}</p>
+            <p className='fs-12'>{selectedAlert.name}</p>
           ) : (
-            <p>User</p>
+            <p style={{visibility: 'hidden'}}>User</p>
           )}
         </div>
       </>
-    );
-  };
+    )
+  }
+  const renderIncidentChatComponent = (selectedAlert) => {
+    if (!selectedAlert || !selectedAlert.name) return null
+
+    switch (selectedAlert.name) {
+      case 'Failed Login Alert':
+        return <IncidentChat selectedAlert={selectedAlert} />
+      case 'Disk failure event detected':
+        return <IncidentChatDisk selectedAlert={selectedAlert} />
+      case 'Memory spike detected':
+        return <IncidentChatMemory selectedAlert={selectedAlert} />
+      case 'Network outage detected':
+        return <IncidentChatNetwork selectedAlert={selectedAlert} />
+      case 'Phishing Email Detected':
+        return <IncidentChatPhishing selectedAlert={selectedAlert} />
+      default:
+        return null
+    }
+  }
 
   return (
     <>
-      <div className="mb-5 mb-xl-8 bg-red incident-page">
-        <div className="card-body1 py-3">
-          <div className="row">
-            <div className="col-md-4 border-1 border-gray-300 border-end">
-              <div className="card">
-                <div className="bg-heading">
-                  <h4 className="no-margin no-pad">
-                    <span className="white fw-bold block pt-3 pb-3">
+      <div className='mb-5 mb-xl-8 bg-red incident-page'>
+        <div className='card-body1 py-3'>
+          <div className='row'>
+            <div className='col-md-4 border-1 border-gray-300 border-end'>
+              <div className='card'>
+                <div className='bg-heading'>
+                  <h4 className='no-margin no-pad'>
+                    <span className='white fw-bold block pt-3 pb-3'>
                       Incidents
-                       {/* <span className="white">(135)</span> */}
+                      {/* <span className="white">(135)</span> */}
                     </span>
                   </h4>
                 </div>
-                <div className="p-1 bd-highlight"></div>
+                <div className='p-1 bd-highlight'></div>
 
-                <div className="card-title header-filter">
+                <div className='card-title header-filter'>
                   {/* begin::Search */}
-                  <div className="input-group">
+                  <div className='input-group'>
                     <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      placeholder="Search Incident"
+                      type='text'
+                      className='form-control form-control-sm'
+                      placeholder='Search Incident'
                     />
-                    <span className="input-group-text">
-                      <i className="fas fa-magnifying-glass"></i>
+                    <span className='input-group-text'>
+                      <i className='fas fa-magnifying-glass'></i>
                     </span>
                   </div>
                   {/* end::Search */}
-                  <div className="d-flex justify-content-between bd-highlight mb-3 header-filter">
-                    <div className="mt-2 bd-highlight">
-                      <div className="w-110px me-2">
+                  <div className='d-flex justify-content-between bd-highlight mb-3 header-filter'>
+                    <div className='mt-2 bd-highlight'>
+                      <div className='w-110px me-2'>
                         <select
-                          name="status"
-                          data-control="select2"
-                          data-hide-search="true"
-                          className="form-select form-select-white form-select-sm fw-bold"
+                          name='status'
+                          data-control='select2'
+                          data-hide-search='true'
+                          className='form-select form-select-white form-select-sm fw-bold'
                         >
-                          <option value="1">Status</option>
-                          <option value="4">New</option>
-                          <option value="4">In Progress</option>
-                          <option value="4">Closed</option>
-                          <option value="4">Escalate/Ignore</option>
+                          <option value='1'>Status</option>
+                          <option value='4'>New</option>
+                          <option value='4'>In Progress</option>
+                          <option value='4'>Closed</option>
+                          <option value='4'>Escalate/Ignore</option>
                         </select>
                       </div>
                     </div>
-                    <div className="mt-2 bd-highlight mt-4">Sort by</div>
-                    <div className="mt-2 bd-highlight">
-                      <div className="w-120px me-0">
+                    <div className='mt-2 bd-highlight mt-4'>Sort by</div>
+                    <div className='mt-2 bd-highlight'>
+                      <div className='w-120px me-0'>
                         <select
-                          name="status"
-                          data-control="select2"
-                          data-hide-search="true"
-                          className="form-select form-select-white form-select-sm fw-bold"
+                          name='status'
+                          data-control='select2'
+                          data-hide-search='true'
+                          className='form-select form-select-white form-select-sm fw-bold'
                         >
-                          <option value="1">Modified</option>
-                          <option value="4">Latest</option>
+                          <option value='1'>Modified</option>
+                          <option value='4'>Latest</option>
                         </select>
                       </div>
                     </div>
                   </div>
-                  <div className="scroll-y h-600px">
-                    <div className="incident-list">
+                  <div className='scroll-y h-600px'>
+                    <div className='incident-list'>
                       <>
                         {Array.isArray(demoAlertData) ? (
                           demoAlertData.map((incident) => (
                             <>
                               <div
                                 className={`incident-section${
-                                  incident.isSelected ? " selected" : ""
+                                  incident.isSelected ? ' selected' : ''
                                 }`} // Apply "selected" class if isSelected is true
                                 key={incident.id}
                                 onClick={() => {
-                                  console.log("Clicked incident:", incident);
-                                  handleAlertClick(incident);
+                                  console.log('Clicked incident:', incident)
+                                  handleAlertClick(incident)
                                 }}
                               >
-                                <div className="select">
-                                  <div className="row">
-                                    <div className="col-md-1">
-                                      <i className="fa-solid fa-arrow-up text-danger"></i>
+                                <div className='select'>
+                                  <div className='row'>
+                                    <div className='col-md-1'>
+                                      <i className='fa-solid fa-arrow-up text-danger'></i>
                                     </div>
-                                    <div className="text-dark col-md-9">
-                                      <a href="#" className="text-dark">
-                                        <span className="fw-bold">
-                                          {incident.name}
+                                    <div className='text-dark col-md-9'>
+                                      <a href='#' className='text-dark'>
+                                        <span className='fw-bold'>
+                                          {incident.DisplayName || incident.name}
                                         </span>
                                       </a>
                                     </div>
                                   </div>
-                                  <div className="row">
-                                    <div className="d-flex justify-content-between">
-                                      <div className="p-2 bd-highlight">
-                                        <div className="badge text-black fw-normal">
+                                  <div className='row'>
+                                    <div className='d-flex justify-content-between'>
+                                      <div className='p-2 bd-highlight'>
+                                        <div className='badge text-black fw-normal'>
                                           2
-                                          <div className="badge text-black fw-normal">
-                                            <i className="fas fa-copy"></i>
+                                          <div className='badge text-black fw-normal'>
+                                            <i className='fas fa-copy'></i>
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="pt-3 bd-highlight">
-                                        <div className="badge text-black fw-normal">
-                                          1 MIN
-                                        </div>
+                                      <div className='pt-3 bd-highlight'>
+                                        <div className='badge text-black fw-normal'>1 MIN</div>
                                       </div>
                                     </div>
                                   </div>
-                                  <hr className="my-0" />
-                                  <div className="d-flex justify-content-between bd-highlight mt-2">
-                                    <div className="p-1 bd-highlight fs-14">
-                                      Admin
+                                  <hr className='my-0' />
+                                  <div className='d-flex justify-content-between bd-highlight mt-2'>
+                                    <div className='p-1 bd-highlight fs-14'>
+                                      Senior security analyst
                                     </div>
-                                    <div className="p-1 bd-highlight">
-                                      <div className="badge badge-light-primary mx-1">
-                                        NEW
-                                      </div>
-                                      <div className="badge badge-light-danger">
-                                        HIGH
-                                      </div>
+                                    <div className='p-1 bd-highlight'>
+                                      <div className='badge badge-light-primary mx-1'>NEW</div>
+                                      <div className='badge badge-light-danger'>HIGH</div>
                                     </div>
                                   </div>
                                 </div>
@@ -227,48 +244,46 @@ const IncidentsPageDemo = () => {
                           <p>No demo alert data available.</p>
                         )}
                         <div
-                          className="incident-section inc-sec"
-                          onClick={handleIncSecClick}
+                          className='incident-section inc-sec'
+                          onClick={() =>
+                            handleAlertClick({
+                              id: 'manual-failed-login',
+                              name: 'Failed Login Alert',
+                              isSelected: true,
+                            })
+                          }
                         >
-                          <div className="row">
-                            <div className="col-md-1">
-                              <i className="fa-solid fa-arrow-up text-danger"></i>
+                          <div className='row'>
+                            <div className='col-md-1'>
+                              <i className='fa-solid fa-arrow-up text-danger'></i>
                             </div>
-                            <div className="text-dark col-md-9">
-                              <a href="#" className="text-dark">
-                                <span className="fw-bold">
-                                  Failed Login Alert
-                                </span>
+                            <div className='text-dark col-md-9'>
+                              <a href='#' className='text-dark'>
+                                <span className='fw-bold'>Failed Login Alert</span>
                               </a>
                             </div>
                           </div>
-                          <div className="row">
-                            <div className="d-flex justify-content-between">
-                              <div className="p-2 bd-highlight">
-                                <div className="badge text-black fw-normal">
+                          <div className='row'>
+                            <div className='d-flex justify-content-between'>
+                              <div className='p-2 bd-highlight'>
+                                <div className='badge text-black fw-normal'>
                                   1
-                                  <div className="badge text-black fw-normal">
-                                    <i className="fas fa-copy"></i>
+                                  <div className='badge text-black fw-normal'>
+                                    <i className='fas fa-copy'></i>
                                   </div>
                                 </div>
                               </div>
-                              <div className="pt-3 bd-highlight">
-                                <div className="badge text-black fw-normal">
-                                  3 MIN
-                                </div>
+                              <div className='pt-3 bd-highlight'>
+                                <div className='badge text-black fw-normal'>3 MIN</div>
                               </div>
                             </div>
                           </div>
-                          <hr className="my-0" />
-                          <div className="d-flex justify-content-between bd-highlight mt-2">
-                            <div className="p-1 bd-highlight fs-14">Admin</div>
-                            <div className="p-1 bd-highlight">
-                              <div className="badge badge-light-primary mx-1">
-                                NEW
-                              </div>
-                              <div className="badge badge-light-danger">
-                                HIGH
-                              </div>
+                          <hr className='my-0' />
+                          <div className='d-flex justify-content-between bd-highlight mt-2'>
+                            <div className='p-1 bd-highlight fs-14'>Senior security analyst</div>
+                            <div className='p-1 bd-highlight'>
+                              <div className='badge badge-light-primary mx-1'>NEW</div>
+                              <div className='badge badge-light-danger'>HIGH</div>
                             </div>
                           </div>
                         </div>
@@ -278,57 +293,53 @@ const IncidentsPageDemo = () => {
                 </div>
               </div>
             </div>
-            <div className="col-md-4 border-1 border-gray-300 border-end chat-section">
+            <div className='col-md-4 border-1 border-gray-300 border-end chat-section'>
               {shouldShowCollaboration ? (
                 <IncidentsPageCollaboration />
               ) : (
                 <div>
-                  {showChat ||
-                  (selectedAlert &&
-                    selectedAlert.name === "Failed Login Alert") ? (
-                    <IncidentChat />
-                  ) : (
-                    <p>
-                      {selectedAlert ? (
-                        <>
-                          <div className="chat-header bg-heading">
-                            <ChatHeader selectedAlert={selectedAlert} />
-                          </div>
-                          <div className="chat-box scroll-y me-n5">
-                            <div className="date">
-                              <p className="fw-bold mt-10">
-                                <span>Today</span>
-                              </p>
-                            </div>
-                            {/* <Chat /> */}
-                            <ChatBox
-                              messages={messages}
-                              userId={1}
-                              onSendMessage={handleOnSendMessage}
-                              width={"500px"}
-                              height={"500px"}
-                            />
-
-                            <div className="separator separator-dashed"></div>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="chat-header bg-heading">
-                          <ChatHeader selectedAlert={selectedAlert} />
+                  {selectedAlert ? (
+                    <>
+                      <div className='chat-header bg-heading'>
+                        <ChatHeader selectedAlert={selectedAlert} />
+                      </div>
+                      <div className='chat-box scroll-y me-n5'>
+                        <div className='date'>
+                          <p className='fw-bold mt-10'>
+                            <span>Today</span>
+                          </p>
                         </div>
-                      )}
-                    </p>
+
+                        {showChat ? (
+                          renderIncidentChatComponent(selectedAlert)
+                        ) : (
+                          <ChatBox
+                            messages={messages}
+                            userId={1}
+                            onSendMessage={handleOnSendMessage}
+                            width={'500px'}
+                            height={'500px'}
+                          />
+                        )}
+
+                        <div className='separator separator-dashed'></div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className='chat-header bg-heading'>
+                      <ChatHeader selectedAlert={selectedAlert} />
+                    </div>
                   )}
                 </div>
               )}
             </div>
 
-            <IncidentDetailsDemo />
+            <IncidentDetailsDemo selectedAlert={selectedAlert} />
           </div>
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export { IncidentsPageDemo };
+export {IncidentsPageDemo}

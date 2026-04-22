@@ -30,13 +30,10 @@ const DemoAlert = () => {
   const [isAlertSelected, setIsAlertSelected] = useState(false);
 
   const handleCreateIncident = () => {
-    // const alertData = "add failed login";
-    // notify("Alert Identified as Threat");
-    notify("Incident Created");
+    notify("Triage alert");
     setTimeout(() => {
       navigate("/qradar/incidentsDemo");
     }, 5000);
-    // navigate("/qradar/incidents", { state: { alertData: [alertData] } });
   };
 
   const notify = (message) => {
@@ -154,7 +151,7 @@ const DemoAlert = () => {
                           data-allow-clear="true"
                         >
                           <option>--</option>
-                          <option value="1">Create Incident</option>
+                          <option value="1">Triage alert</option>
                         </select>
                       </div>
                     </div>
@@ -176,7 +173,7 @@ const DemoAlert = () => {
                   <th className="min-w-50px">Score</th>
                   <th className="min-w-50px">Status</th>
                   <th className="min-w-50px">Detected Time</th>
-                  <th className="min-w-50px">Name</th>
+                  <th className="min-w-50px">Description</th>
                   <th className="min-w-50px">Observables Tags</th>
                   <th className="min-w-50px">Owner</th>
                   <th className="min-w-50px">Source</th>
@@ -241,7 +238,7 @@ const DemoAlert = () => {
                           `text-dark text-hover-primary` + newAlertAdded
                         }
                       >
-                        {item.name}
+                        {item.DisplayName || item.name}
                       </td>
                       <td className="text-dark text-hover-primary">
                         {item.observableTag}

@@ -28,6 +28,7 @@ import {
   fetchAlertsStatusUpdateUrl,
   fetchMitigateActionValidationUrl,
   fetchThreatFileDownloadUrl,
+  fetchAlertUrl,
 } from '../../../../../api/AlertsApi'
 import MitigationModal from './MitigationModal'
 import ReactPaginate from 'react-paginate'
@@ -67,6 +68,7 @@ const AlertsPage = () => {
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
   const [loading, setLoading] = useState(false)
   const [activeAccordion, setActiveAccordion] = useState(null)
+  const [otherDetails, setOtherDetails] = useState('')
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
@@ -89,6 +91,7 @@ const AlertsPage = () => {
   const [checkboxStates, setCheckboxStates] = useState({})
   const [statusFromDashBoard, setStatusFromDashBoard] = useState(location.state?.status || '')
   const [daysFromDashBoard, setDaysFromDashBoard] = useState(location.state?.days || '')
+
   useEffect(() => {
     const fetchNumberOfDays = async () => {
       try {
@@ -306,6 +309,26 @@ const AlertsPage = () => {
   useEffect(() => {
     reloadHistory()
   }, [selectedAlertId])
+  useEffect(() => {
+    const alertData = async () => {
+      try {
+        const res = await fetch('/ldms/media/reports/Alert.json')
+        const allAlerts = await res.json()
+
+        // Filter only the matching alert(s)
+        const filteredAlerts = allAlerts.filter((item) => item.alert_id === selectedAlertId)
+
+        setOtherDetails(filteredAlerts)
+      } catch (error) {
+        handleError(error)
+      }
+    }
+
+    if (selectedAlertId) {
+      alertData()
+    }
+  }, [selectedAlertId])
+
   const reloadNotes = async () => {
     try {
       if (selectedAlertId !== null && selectedAlertId !== undefined) {
@@ -1147,29 +1170,28 @@ const AlertsPage = () => {
         toolId: toolId,
         alertId: selectedAlertId,
         threatId: '',
-      };
-  
-      const response = await fetchThreatFileDownloadUrl(data);
-  
+      }
+
+      const response = await fetchThreatFileDownloadUrl(data)
+
       if (response?.ok) {
-        const blob = await response.blob();
+        const blob = await response.blob()
         const fileName =
           response.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/"/g, '') ||
-          'downloaded_file';
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+          'downloaded_file'
+        const link = document.createElement('a')
+        link.href = window.URL.createObjectURL(blob)
+        link.download = fileName
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       } else {
-        throw new Error('Failed to download file');
+        throw new Error('Failed to download file')
       }
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
-  
+  }
 
   return (
     <KTCardBody className='alert-page'>
@@ -2394,7 +2416,7 @@ const AlertsPage = () => {
                                       Details
                                     </a>
                                   </li>
-                                  {orgId == 2 && (
+                                  {/* {orgId == 2 && (
                                     <li className='nav-item' role='presentation'>
                                       <a
                                         className='nav-link'
@@ -2408,7 +2430,20 @@ const AlertsPage = () => {
                                         More Details
                                       </a>
                                     </li>
-                                  )}
+                                  )} */}
+                                  <li className='nav-item' role='presentation'>
+                                    <a
+                                      className='nav-link'
+                                      id={`otherDetailsTab_${index}`}
+                                      data-bs-toggle='tab'
+                                      href={`#otherDetails_${index}`}
+                                      role='tab'
+                                      aria-controls={`otherDetails_${index}`}
+                                      aria-selected='false'
+                                    >
+                                      Other Details
+                                    </a>
+                                  </li>
                                   <li className='nav-item' role='presentation'>
                                     <a
                                       className='nav-link'
@@ -2836,6 +2871,30 @@ const AlertsPage = () => {
                                       <span>No Data found</span>
                                     )}
                                   </div>
+                                  <div
+                                    className='tab-pane fade'
+                                    id={`otherDetails_${index}`}
+                                    role='tabpanel'
+                                    aria-labelledby={`otherDetailsTab_${index}`}
+                                  >
+                                    {otherDetails?.length > 0 ? (
+                                      <div className='other-details-container'>
+                                        {otherDetails.map((item) => (
+                                          <div
+                                            key={item?.alert_id}
+                                            className='detail-item mb-3 p-2 border rounded'
+                                          >
+                                            <p style={{whiteSpace: 'pre-line', margin: 0}}>
+                                              {item?.alert_details}
+                                            </p>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <div>No other details available.</div>
+                                    )}
+                                  </div>
+
                                   <div
                                     className='tab-pane fade'
                                     id={`notes_${index}`}

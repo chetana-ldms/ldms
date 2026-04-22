@@ -1,0 +1,44 @@
+{
+  "indicator": "91.223.236.248",
+  "type": "IP Address",
+  "riskScore": 92,
+  "riskLevel": "High",
+  "categories": [
+    "Malware C2 Server",
+    "Phishing Source",
+    "Botnet Activity"
+  ],
+  "firstSeen": "19-1-2026 2:00 PM",
+  "lastSeen": "20-1-2026 7:00 AM",
+  "geoLocation": {
+    "country": "Russia",
+    "city": "Moscow"
+  },
+  "networkInfo": {
+    "asn": 12389,
+    "organization": "PJSC Rostelecom",
+    "isp": "Rostelecom"
+  },
+  "associatedEntities": {
+    "subdomains": [
+      "malicious-updates.ru",
+      "securelogin-check.net"
+    ],
+    "urls": [
+      "http://91.223.236.248/run.exe"
+    ]
+  },
+  "threatContext": [
+    {
+      "source": "AbuseIPDB",
+      "description": "Reported 87 times for malware distribution"
+    },
+    {
+      "source": "OSINT",
+      "description": "Used as C2 for RedLine Stealer malware"
+    }
+  ],
+  "evidenceCount": 23,
+  "recommendation": "Block IP at firewall; investigate endpoints communicating with this IP.",
+  "confidence": "High"
+}

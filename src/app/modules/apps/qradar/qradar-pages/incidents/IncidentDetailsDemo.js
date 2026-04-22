@@ -13,23 +13,94 @@ import {
 import {getCurrentTimeZone} from '../../../../../../utils/helper'
 import {useErrorBoundary} from 'react-error-boundary'
 
-const IncidentDetails = ({incident, onRefreshIncidents}) => {
-  console.log('incident11111', incident)
-  const handleError = useErrorBoundary()
+const IncidentDetails = ({selectedAlert, onRefreshIncidents}) => {
+  console.log('selectedAlert', selectedAlert)
+  const [timelineData, setTimelineData] = useState([])
+  const [currentDateTime, setCurrentDateTime] = useState('')
+
+  useEffect(() => {
+    const now = new Date()
+
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+
+    let hours = now.getHours()
+    const minutes = String(now.getMinutes()).padStart(2, '0')
+    const seconds = String(now.getSeconds()).padStart(2, '0')
+
+    const ampm = hours >= 12 ? 'PM' : 'AM'
+    hours = hours % 12 || 12 // convert 0 to 12 for 12 AM
+
+    const formatted = `${year}-${month}-${day} ${String(hours).padStart(
+      2,
+      '0'
+    )}:${minutes}:${seconds} ${ampm}`
+    setCurrentDateTime(formatted)
+  }, [selectedAlert?.name])
+
+  useEffect(() => {
+    if (!selectedAlert?.name) return
+
+    fetch('/ldms/media/reports/LDC_Timeline_All_Scenarios.json')
+      .then((res) => res.json())
+      .then((data) => {
+        const timeline = data[selectedAlert.name]
+        if (timeline) {
+          setTimelineData(timeline)
+        } else {
+          setTimelineData([])
+          console.warn(`No timeline found for alert: ${selectedAlert.name}`)
+        }
+      })
+      .catch((err) => console.error('Failed to load timeline:', err))
+  }, [selectedAlert?.name])
+
+  const getReportLink = (name) => {
+    switch (name) {
+      case 'Memory spike detected':
+        return '/ldms/media/reports/Memory_Spike_Incident_Report.pdf'
+      case 'Network outage detected':
+        return '/ldms/media/reports/Network_Outage_Incident_Report.pdf'
+      case 'Disk failure event detected':
+        return '/ldms/media/reports/Disk_Failure_Incident_Report.pdf'
+      case 'Failed Login Alert':
+        return '/ldms/media/reports/failed_login_report.pdf'
+      case 'Phishing Email Detected':
+        return '/ldms/media/reports/Phishing_Incident_Report.pdf'
+      default:
+        return null
+    }
+  }
+
+  const reportLink = getReportLink(selectedAlert?.name)
 
   return (
     <div className='col-md-4 border-1 border-gray-600'>
-      <div className='card' style={{ height: '738px' }}>
-        <div className='d-flex justify-content-between bg-heading bd-highlight mb-3'>
-          <div className='p-2 bd-highlight'>
-            <h6 className='card-title align-items-start flex-column pt-2'>
-              <span className='card-label white fw-bold fs-3 mb-1'>Incidents Details</span>
-            </h6>
-          </div>
+      <div className='card' style={{height: '738px'}}>
+        <div className='d-flex justify-content-between align-items-center bg-heading bd-highlight mb-3 px-3'>
+          {/* Left side: Title */}
+          <h6 className='card-title mb-0 p-3'>
+            <span className='card-label white fw-bold fs-3'>Incidents Details</span>
+          </h6>
+          {reportLink && (
+            <div className='badge text-black fw-normal'>
+              <a
+                href={reportLink}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='btn btn-link p-0'
+                title='Download Report'
+              >
+                <i className='fas fa-download white'></i>
+              </a>
+            </div>
+          )}
         </div>
-        <div className='d-flex justify-content-between bd-highlight mb-3 incident-tabs'>
+
+        <div className='container-fluid px-0 incident-tabs'>
           <div className='p-2 bd-highlight'>
-            <ul className='nav nav-tabs nav-line-tabs mb-5 fs-8' role='tablist'>
+            <ul className='nav nav-line-tabs mb-5 fs-8' role='tablist'>
               <li className='nav-item' role='presentation'>
                 <a
                   className='nav-link active'
@@ -65,7 +136,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   Playbooks
                 </a>
               </li>
-              <li className='nav-item' role='presentation'>
+              {/* <li className='nav-item' role='presentation'>
                 <a
                   className='nav-link'
                   data-bs-toggle='tab'
@@ -76,7 +147,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 >
                   Observables
                 </a>
-              </li>
+              </li> */}
               <li className='nav-item' role='presentation'>
                 <a
                   className='nav-link'
@@ -170,38 +241,35 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                         data-hide-search='true'
                         className='form-select form-control form-select-white form-select-sm fw-bold'
                       >
-                        <option value='1'>AD Failed Login</option>
-                        <option value='1'>AD Failed Login</option>
-                        <option value='1'>AD Failed Login</option>
+                        <option value='1'>{selectedAlert?.playBookName}</option>
                       </select>
                     </div>
                   </div>
                 </div>
                 <div className='bd-highlight mb-3 bdr-top'>
-                  <div className='col-md-12 bd-highlight'>
+                  <div className='col-md-12 bd-highlight p-0 m-0 pt-4 ps-1'>
                     <div className='d-flex align-items-center gap-2'>
-                      <span className='fw-bold'>Alert Name - </span> Multiple failed login for same
-                      IP
+                      <span className='fw-bold'>Alert Name - </span> {selectedAlert?.name}
                     </div>
                   </div>
-                  <div className='col-md-12 bd-highlight'>
+                  <div className='col-md-12 bd-highlight p-0 m-0 pt-2 ps-1'>
                     <div className='d-flex align-items-center gap-2'>
                       <span className='fw-bold'>Event ID - </span> 4625
                     </div>
                   </div>
-                  <div className='col-md-12 bd-highlight'>
+                  <div className='col-md-12 bd-highlight p-0 m-0 pt-2 ps-1'>
                     <div className='d-flex align-items-center gap-2'>
-                      <span className='fw-bold'> Destination User - </span> James James
+                      <span className='fw-bold'> Destination User - </span> --
                     </div>
                   </div>
-                  <div className='col-md-12 bd-highlight'>
+                  <div className='col-md-12 bd-highlight p-0 m-0 pt-2 ps-1'>
                     <div className='d-flex align-items-center gap-2'>
-                      <span className='fw-bold'>Source IP - </span> 192.168.0.1
+                      <span className='fw-bold'>Host - </span> 10.0.0.25
                     </div>
                   </div>
-                  <div className='col-md-12 bd-highlight'>
+                  <div className='col-md-12 bd-highlight p-0 m-0 pt-2 ps-1'>
                     <div className='d-flex align-items-center gap-2'>
-                      <span className='fw-bold'>Vendor - </span> Microsoft
+                      <span className='fw-bold'>Vendor - </span> --
                     </div>
                   </div>
                 </div>
@@ -225,9 +293,10 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                         data-hide-search='true'
                         className='form-select form-control form-select-white form-select-sm fw-bold'
                       >
-                        <option value='1'>User 1</option>
-                        <option value='1'>User 2</option>
-                        <option value='1'>User 3</option>
+                        <option value='1'>Senior security analyst</option>
+                        <option value='1'>Arun</option>
+                        <option value='1'>Naveen</option>
+                        <option value='1'>Yohith</option>
                       </select>
                     </div>
                   </div>
@@ -237,7 +306,9 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     <div className='fs-13'>Created</div>
                   </div>
                   <div className='p-2 bd-highlight'>
-                    <div className='badge text-black fw-normal'>Jul 28, 2022 02:02:02 PM</div>
+                    <div className='badge text-black fw-normal'>
+                      {getCurrentTimeZone(selectedAlert?.detectedtime)}
+                    </div>
                   </div>
                 </div>
                 <div className='d-flex justify-content-between bd-highlight'>
@@ -245,7 +316,9 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     <div className='fs-13'>Updated</div>
                   </div>
                   <div className='p-2 bd-highlight'>
-                    <div className='badge text-black fw-normal'>Jul 29, 2022 01:12:32 AM</div>
+                    <div className='badge text-black fw-normal'>
+                      {getCurrentTimeZone(selectedAlert?.detectedtime)}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -261,7 +334,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                           <div className='p-1 bd-highlight fw-bold fs-12'>
                             <div className='text-dark mb-1'>
                               <a href='#' className='text-dark'>
-                                <span className='fw-bold'>Login Failure Alert</span>
+                                <span className='fw-bold'>{selectedAlert?.name}</span>
                               </a>
                             </div>
                           </div>
@@ -288,45 +361,9 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                         </div>
                         <div className='d-flex justify-content-between align-text-left bd-highlight'>
                           <div className='p-1 bd-highlight fw-bold fs-12'>Detected date</div>
-                          <div className='p-1 bd-highlight fs-12'>7/01/2023, 02:20 PM</div>
-                        </div>
-                        <hr className='my-0' />
-                      </td>
-                    </tr>
-                    <tr className='bg-gray-100'>
-                      <td className='min-w-80px p-2 pb-8'>
-                        <div className='d-flex justify-content-between bd-highlight'>
-                          <div className='p-1 bd-highlight fw-bold fs-12'>
-                            <div className='text-dark mb-1'>
-                              <a href='#' className='text-dark'>
-                                <span className='fw-bold'>CheckPoint - Malware Traffic</span>
-                              </a>
-                            </div>
+                          <div className='p-1 bd-highlight fs-12'>
+                            {getCurrentTimeZone(selectedAlert?.detectedtime)}
                           </div>
-                          <div className='p-1 bd-highlight'>
-                            <a
-                              href='#'
-                              className='btn btn-sm btn-icon btn-light btn-secondary mx-1'
-                            >
-                              <i className='fa-solid fa-trash'></i>
-                            </a>
-                            <a
-                              href='#'
-                              className='btn btn-sm btn-icon btn-light btn-secondary mx-1'
-                            >
-                              <i className='fa-solid fa-arrow-down'></i>
-                            </a>
-                          </div>
-                        </div>
-                        <div className='d-flex justify-content-between align-text-left bd-highlight'>
-                          <div className='p-1 bd-highlight fw-bold fs-12'>Suspicious Rate</div>
-                          <div className='p-1 bd-highlight fw-bold fs-12'>
-                            <i className='fa-solid fa-circle-check text-success'></i> 2
-                          </div>
-                        </div>
-                        <div className='d-flex justify-content-between align-text-left bd-highlight'>
-                          <div className='p-1 bd-highlight fw-bold fs-12'>Detected date</div>
-                          <div className='p-1 bd-highlight fs-12'>5/04/2023, 12:15 PM</div>
                         </div>
                         <hr className='my-0' />
                       </td>
@@ -345,8 +382,8 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   </thead>
                   <tbody>
                     <tr className='fs-12'>
-                      <td>Login Failure</td>
-                      <td>Failed Login</td>
+                      <td>{selectedAlert?.playBookName}</td>
+                      <td>{selectedAlert?.playBookDescription}</td>
                       <td>
                         <span className='badge badge-success'>Active</span>
                       </td>
@@ -354,91 +391,56 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   </tbody>
                 </table>
               </div>
-              <div className='tab-pane fade' id='kt_tab_pane_4' role='tabpanel'>
+              {/* <div className='tab-pane fade' id='kt_tab_pane_4' role='tabpanel'>
                 Observables data
-              </div>
+              </div> */}
               <div className='tab-pane fade' id='kt_tab_pane_5' role='tabpanel'>
-                <div className='card-body pt-6 h-600px'>
+                <div className='card-body p-0 h-600px scroll-y'>
                   <div className='timeline-label'>
-                    <div className='timeline-item'>
-                      <div className='timeline-label fw-bold text-gray-800 fs-6'>08:42</div>
-                      <div className='timeline-badge'>
-                        <i className='fa fa-genderless text-gray-600 fs-1'></i>
-                      </div>
-                      <div className='fw-semibold text-gray-700 ps-3 pb-5 fs-7'>
-                        Information passed to Concern team.
-                      </div>
-                    </div>
-                    <div className='timeline-item d-flex align-items-center'>
-                      <div className='timeline-label fw-bold text-gray-800 fs-6'>10:00</div>
-                      <div className='timeline-badge'>
-                        <i className='fa fa-genderless text-success fs-1'></i>
-                      </div>
-                      <div className='d-flex align-items-center'>
-                        <span className='fw-bold text-gray-800 px-3 p-10'>Alert Reviewed by </span>
-                        <div className='symbol symbol-35px me-3'>
-                          <img alt='Pic' src='/ldms/media/avatars/300-1.jpg' />
+                    {timelineData?.map((entry, index) => {
+                      const baseTime = new Date(currentDateTime) // start from current time
+                      baseTime.setSeconds(baseTime.getSeconds() + index * 2) // add 2 seconds per step
+
+                      let hours = baseTime.getHours()
+                      const minutes = String(baseTime.getMinutes()).padStart(2, '0')
+                      const seconds = String(baseTime.getSeconds()).padStart(2, '0')
+                      const ampm = hours >= 12 ? 'PM' : 'AM'
+                      hours = hours % 12 || 12
+
+                      const stepTime = `${baseTime.getFullYear()}-${String(
+                        baseTime.getMonth() + 1
+                      ).padStart(2, '0')}-${String(baseTime.getDate()).padStart(2, '0')} ${String(
+                        hours
+                      ).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`
+
+                      return (
+                        <div key={index} className='timeline-item'>
+                          <div
+                            className='timeline-label fw-bold text-gray-800 fs-10'
+                            style={{width: '60px'}}
+                          >
+                            {stepTime}
+                          </div>
+
+                          <div className='timeline-badge'>
+                            <i className='fa fa-genderless text-primary fs-1'></i>
+                          </div>
+                          <div className='fw-semibold text-gray-700 ps-1 pb-5 fs-7'>
+                            <div>
+                              <div>
+                                {entry.action} <strong>by</strong> {entry.user}
+                              </div>
+                            </div>
+
+                            {entry?.result && (
+                              <div>
+                                <strong>Result:</strong> {entry.result}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <div className='symbol symbol-35px'>
-                          <img alt='Pic' src='/ldms/media/avatars/300-2.jpg' />
-                        </div>
-                      </div>
-                    </div>
-                    <div className='timeline-item'>
-                      <div className='timeline-label fw-bold text-gray-800 fs-6'>14:37</div>
-                      <div className='timeline-badge'>
-                        <i className='fa fa-genderless text-danger fs-1'></i>
-                      </div>
-                      <div className='timeline-content fw-bold text-gray-800 pb-10 ps-3'>
-                        severity: notice message: undefined Rule:
-                        <a href='#' className='text-primary'>
-                          Count 9
-                        </a>
-                      </div>
-                    </div>
-                    <div className='timeline-item'>
-                      <div className='timeline-label fw-bold text-gray-800 fs-6'>16:50</div>
-                      <div className='timeline-badge'>
-                        <i className='fa fa-genderless text-primary fs-1'></i>
-                      </div>
-                      <div className='fw-semibold text-gray-700 ps-3 pb-10 fs-7'>
-                        Alert : IP address need to be blocked
-                      </div>
-                    </div>
-                    <div className='timeline-item'>
-                      <div className='timeline-label fw-bold text-gray-800 fs-6'>21:03</div>
-                      <div className='timeline-badge'>
-                        <i className='fa fa-genderless text-warning fs-1'></i>
-                      </div>
-                      <div className='timeline-content fw-semibold text-gray-800 pb-10 ps-3'>
-                        New Ticket Raised{' '}
-                        <a href='#' className='text-primary'>
-                          #XF-2356
-                        </a>
-                        .
-                      </div>
-                    </div>
-                    <div className='timeline-item'>
-                      <div className='timeline-label fw-bold text-gray-800 fs-6'>16:50</div>
-                      <div className='timeline-badge'>
-                        <i className='fa fa-genderless text-info fs-1'></i>
-                      </div>
-                      <div className='fw-semibold text-gray-700 ps-3 pb-10 fs-7'>
-                        Ticket status updated
-                      </div>
-                    </div>
-                    <div className='timeline-item'>
-                      <div className='timeline-label fw-bold text-gray-800 fs-6'>14:37</div>
-                      <div className='timeline-badge'>
-                        <i className='fa fa-genderless text-danger fs-1'></i>
-                      </div>
-                      <div className='timeline-content fw-bold text-gray-800 ps-3'>
-                        Ticket Closed -
-                        <a href='#' className='text-primary'>
-                          Issue Resolved
-                        </a>
-                      </div>
-                    </div>
+                      )
+                    })}
                   </div>
                 </div>
               </div>

@@ -1,17 +1,19 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { fetchMasterData } from "../../api/Api";
-import { fetchGetIncidentCountByPriorityAndStatusUrl } from "../../api/dashBoardApi";
+import {useState, useEffect} from 'react'
+import axios from 'axios'
+import {fetchMasterData} from '../../api/Api'
+import {fetchGetIncidentCountByPriorityAndStatusUrl} from '../../api/dashBoardApi'
 
 function IncidentStatus(props) {
   // const toolId = Number(sessionStorage.getItem('toolID'))
-  const { days, orgId, toolID } = props;
-  console.log('IncidentStatus props:', props);
-  const [incidentCount, setIncidentCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedPriority, setSelectedPriority] = useState("");
+  // const { days, orgId, toolID } = props;
+  const {days, orgId} = props
+  const toolID = 2
+  console.log('IncidentStatus props:', props)
+  const [incidentCount, setIncidentCount] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [selectedStatus, setSelectedStatus] = useState('')
+  const [selectedPriority, setSelectedPriority] = useState('')
   const accountId = sessionStorage.getItem('accountId')
   const siteId = sessionStorage.getItem('siteId')
   const groupId = sessionStorage.getItem('groupId')
@@ -20,64 +22,62 @@ function IncidentStatus(props) {
     statusDropDown: [],
     priorityDropDown: [],
     typeDropDown: [],
-  });
+  })
 
   useEffect(() => {
     const fetchAllIncidentMasterData = async () => {
-      const severityDataRequest = { maserDataType: 'incident_severity', orgId: orgId, toolId: toolID };
-      const statusDataRequest = { maserDataType: 'incident_status', orgId: orgId, toolId: toolID };
-      const priorityDataRequest = { maserDataType: 'incident_priority', orgId: orgId, toolId: toolID };
-      const typeDataRequest = { maserDataType: 'Incident_Type', orgId: orgId, toolId: toolID };
-  
+      const severityDataRequest = {maserDataType: 'incident_severity', orgId: orgId, toolId: toolID}
+      const statusDataRequest = {maserDataType: 'incident_status', orgId: orgId, toolId: toolID}
+      const priorityDataRequest = {maserDataType: 'incident_priority', orgId: orgId, toolId: toolID}
+      const typeDataRequest = {maserDataType: 'Incident_Type', orgId: orgId, toolId: toolID}
+
       try {
         const [severityData, statusData, priorityData, typeData] = await Promise.all([
           fetchMasterData(severityDataRequest),
           fetchMasterData(statusDataRequest),
           fetchMasterData(priorityDataRequest),
           fetchMasterData(typeDataRequest),
-        ]);
-  
+        ])
+
         setDropdownData((prevDropdownData) => ({
           ...prevDropdownData,
           severityNameDropDownData: severityData,
           statusDropDown: statusData,
           priorityDropDown: priorityData,
           typeDropDown: typeData,
-        }));
-  
+        }))
+
         if (statusData.length > 0) {
-          setSelectedStatus(statusData[0].dataID);
+          setSelectedStatus(statusData[0].dataID)
         }
         if (priorityData.length > 0) {
-          setSelectedPriority(priorityData[0].dataID);
+          setSelectedPriority(priorityData[0].dataID)
         }
-  
       } catch (error) {
-        console.log(error);
+        console.log(error)
       }
-    };
-  
-    fetchAllIncidentMasterData();
-  }, []);
-  
+    }
+
+    fetchAllIncidentMasterData()
+  }, [])
 
   useEffect(() => {
     if (selectedStatus && selectedPriority) {
-      fetchAlertCount();
+      fetchAlertCount()
     }
-  }, [selectedStatus, selectedPriority, toolID, orgId]);
+  }, [selectedStatus, selectedPriority, toolID, orgId])
 
   const handleSelectStatusChange = (event) => {
-    setSelectedStatus(event.target.value);
-  };
+    setSelectedStatus(event.target.value)
+  }
 
   const handleSelectPriorityChange = (event) => {
-    setSelectedPriority(event.target.value);
-  };
+    setSelectedPriority(event.target.value)
+  }
 
   const fetchAlertCount = async () => {
     try {
-      setLoading(true);
+      setLoading(true)
       const requestData = {
         statusID: selectedStatus,
         priorityID: selectedPriority,
@@ -86,132 +86,125 @@ function IncidentStatus(props) {
         toolID: toolID,
         orgAccountStructureLevel: [
           {
-            levelName: "AccountId",
-            levelValue: accountId || ""
+            levelName: 'AccountId',
+            levelValue: accountId || '',
           },
-       {
-            levelName: "SiteId",
-            levelValue:  siteId || ""
+          {
+            levelName: 'SiteId',
+            levelValue: siteId || '',
           },
-      {
-            levelName: "GroupId",
-            levelValue: groupId || ""
-          }
-        ]
-      };
-      const response = await fetchGetIncidentCountByPriorityAndStatusUrl(requestData);
-      const incidentCount =  response?.incidentCount;
-      setIncidentCount(incidentCount);
-      setLoading(false);
+          {
+            levelName: 'GroupId',
+            levelValue: groupId || '',
+          },
+        ],
+      }
+      const response = await fetchGetIncidentCountByPriorityAndStatusUrl(requestData)
+      const incidentCount = response?.incidentCount
+      setIncidentCount(incidentCount)
+      setLoading(false)
     } catch (error) {
-      setError(error.message);
-      setLoading(false);
+      setError(error.message)
+      setLoading(false)
     }
-  };
+  }
 
   if (!orgId) {
-    return <div>Organization ID is missing.</div>;
+    return <div>Organization ID is missing.</div>
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div>Error: {error}</div>
   }
   // if (incidentCount === 0) {
   //   return <div>No Data Found</div>;
   // }
 
   return (
-    <div className="card-body">
-      <div className="row p-1">
-        <label className="form-label fw-bold fs-12 col-lg-5 lh-40">
+    <div className='card-body'>
+      <div className='row p-1'>
+        <label className='form-label fw-bold fs-12 col-lg-5 lh-40'>
           <span>Incident by Status & Priority :</span>
         </label>
-        <div className="col-lg-4 header-filter">
-          {dropdownData?.statusDropDown !== null && dropdownData.statusDropDown !== undefined  ? (
+        <div className='col-lg-4 header-filter'>
+          {dropdownData?.statusDropDown !== null && dropdownData.statusDropDown !== undefined ? (
             <select
-              name="incidentStatusName"
-              data-control="select2"
-              data-hide-search="true"
-              className="form-select form-control form-select-white form-select-sm mt-2"
+              name='incidentStatusName'
+              data-control='select2'
+              data-hide-search='true'
+              className='form-select form-control form-select-white form-select-sm mt-2'
               value={selectedStatus}
               onChange={handleSelectStatusChange}
             >
               {dropdownData?.statusDropDown.map((status) => (
-                <option
-                  key={status.dataID}
-                  value={status.dataID}
-                  data-id={status.dataID}
-                >
+                <option key={status.dataID} value={status.dataID} data-id={status.dataID}>
                   {status.dataValue}
                 </option>
               ))}
             </select>
           ) : (
             <select
-              name="incidentStatusName"
-              data-control="select2"
-              data-hide-search="true"
-              className="form-select form-control form-select-white form-select-sm mt-2"
+              name='incidentStatusName'
+              data-control='select2'
+              data-hide-search='true'
+              className='form-select form-control form-select-white form-select-sm mt-2'
               value={selectedStatus}
               onChange={handleSelectStatusChange}
             >
-              <option value="">Select</option>
+              <option value=''>Select</option>
             </select>
           )}
         </div>
 
-        <div className="col-lg-3 header-filter">
-          {dropdownData?.priorityDropDown !== null && dropdownData?.priorityDropDown !== undefined ? (
+        <div className='col-lg-3 header-filter'>
+          {dropdownData?.priorityDropDown !== null &&
+          dropdownData?.priorityDropDown !== undefined ? (
             <select
-              name="priorityName"
-              data-control="select2"
-              data-hide-search="true"
-              className="form-select form-control form-select-white form-select-sm mt-2"
+              name='priorityName'
+              data-control='select2'
+              data-hide-search='true'
+              className='form-select form-control form-select-white form-select-sm mt-2'
               value={selectedPriority}
               onChange={handleSelectPriorityChange}
             >
               {dropdownData?.priorityDropDown.map((priority) => (
-                <option
-                  key={priority.dataID}
-                  value={priority.dataID}
-                  data-id={priority.dataID}
-                >
+                <option key={priority.dataID} value={priority.dataID} data-id={priority.dataID}>
                   {priority.dataValue}
                 </option>
               ))}
             </select>
           ) : (
             <select
-              name="priorityName"
-              data-control="select2"
-              data-hide-search="true"
-              className="form-select form-control form-select-white form-select-sm mt-2"
+              name='priorityName'
+              data-control='select2'
+              data-hide-search='true'
+              className='form-select form-control form-select-white form-select-sm mt-2'
               value={selectedPriority}
               onChange={handleSelectPriorityChange}
             >
-              <option value="">Select</option>
+              <option value=''>Select</option>
             </select>
           )}
         </div>
 
-        <div className="row bar-chart mt-10">
+        <div className='row bar-chart mt-10'>
           {incidentCount !== null && incidentCount !== undefined ? (
             <>
-              <div className="col-lg-2 fw-bold">Count:</div>
-              <div className="col-lg-7">
-                <span className="bar">{incidentCount}</span>
+              <div className='col-lg-2 fw-bold'>Count:</div>
+              <div className='col-lg-7'>
+                <span className='bar'>{incidentCount}</span>
               </div>
-              <div className="col-lg-2">
+              <div className='col-lg-2'>
                 <span>Total</span> <span>{incidentCount}</span>
               </div>
             </>
           ) : (
             <>
-              <div className="col-lg-2 fw-bold">Count:</div>
-              <div className="col-lg-7">
-                <span className="bar">{incidentCount ?? 0}</span>
+              <div className='col-lg-2 fw-bold'>Count:</div>
+              <div className='col-lg-7'>
+                <span className='bar'>{incidentCount ?? 0}</span>
               </div>
-              <div className="col-lg-2">
+              <div className='col-lg-2'>
                 <span>Total</span> <span>{incidentCount ?? 0}</span>
               </div>
             </>
@@ -219,7 +212,7 @@ function IncidentStatus(props) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default IncidentStatus;
+export default IncidentStatus

@@ -124,9 +124,11 @@ const Organizations = () => {
       <div className='card-header no-pad'>
         <h3 className='card-title align-items-start flex-column'>
           <span className='card-label fw-bold fs-3 mb-1'>
-            Organizations ({currentItems?currentItems.length:0} / {filteredList?filteredList.length:0})
+            Organizations ({currentItems ? currentItems.length : 0} /{' '}
+            {filteredList ? filteredList.length : 0})
           </span>
         </h3>
+      
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
             <Link
@@ -174,46 +176,46 @@ const Organizations = () => {
                   </td>
                   <td>{item.mobileNo}</td>
                   <td>{item.email}</td>
-                   <td>
-                        {isActionAuthorized('View') ? (
-                          <span className='me-8' title='View'>
-                            <i
-                              className='fa fa-eye cursor'
-                              onClick={() => handleNavigateToUpdate(item.orgID)}
-                            />
-                          </span>
-                        ) : (
-                          <span className='me-8' title='View'>
-                            <i className='fa fa-eye disabled' />
-                          </span>
-                        )}
+                  <td>
+                    {isActionAuthorized('View') ? (
+                      <span className='me-8' title='View'>
+                        <i
+                          className='fa fa-eye cursor'
+                          onClick={() => handleNavigateToUpdate(item.orgID)}
+                        />
+                      </span>
+                    ) : (
+                      <span className='me-8' title='View'>
+                        <i className='fa fa-eye disabled' />
+                      </span>
+                    )}
 
-                        {isActionAuthorized('Update') ? (
-                          <span>
-                            <Link
-                              className='text-white'
-                              to={`/qradar/organizations/update/${item.orgID}`}
-                              title='Edit'
-                            >
-                              <i className='fa fa-pencil cursor link' />
-                            </Link>
-                          </span>
-                        ) : (
-                          <span className='' title='Edit'>
-                            <i className='fa fa-pencil disabled' />
-                          </span>
-                        )}
+                    {isActionAuthorized('Update') ? (
+                      <span>
+                        <Link
+                          className='text-white'
+                          to={`/qradar/organizations/update/${item.orgID}`}
+                          title='Edit'
+                        >
+                          <i className='fa fa-pencil cursor link' />
+                        </Link>
+                      </span>
+                    ) : (
+                      <span className='' title='Edit'>
+                        <i className='fa fa-pencil disabled' />
+                      </span>
+                    )}
 
-                        {isActionAuthorized('Delete') ? (
-                          <span className='ms-8' onClick={() => handleDelete(item)} title='Delete'>
-                            <i className='fa fa-trash cursor red' />
-                          </span>
-                        ) : (
-                          <span className='ms-8' title='Delete'>
-                            <i className='fa fa-trash disabled' />
-                          </span>
-                        )}
-                      </td>
+                    {isActionAuthorized('Delete') ? (
+                      <span className='ms-8' onClick={() => handleDelete(item)} title='Delete'>
+                        <i className='fa fa-trash cursor red' />
+                      </span>
+                    ) : (
+                      <span className='ms-8' title='Delete'>
+                        <i className='fa fa-trash disabled' />
+                      </span>
+                    )}
+                  </td>
                 </tr>
               ))
             ) : (

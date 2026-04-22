@@ -1,0 +1,82 @@
+[
+  {
+    "step": 1,
+    "isResolved": 0,
+    "command": "ping 192.168.10.1",
+    "description": "Test connectivity to the server before any configuration",
+    "result": "Request timed out – Server 192.168.10.1 unreachable",
+    "isAfterResolved": 0
+  },
+  {
+    "step": 2,
+    "isResolved": 0,
+    "command": "ping 192.100.5.1 -l 1000",
+    "description": "Ping the network switch",
+    "result": "Switch not reachable",
+    "isAfterResolved": 0
+  },
+  {
+    "step": 3,
+    "isResolved": 0,
+    "command": "configure terminal",
+    "description": "Enter global configuration mode on the switch",
+    "result": "Entered global configuration mode to update the Configuration",
+    "isAfterResolved": 0
+  },
+  {
+    "step": 4,
+    "isResolved": 0,
+    "command": "interface vlan 10",
+    "description": "Select VLAN 10 interface for configuration",
+    "result": "Selected VLAN 10 interface to update the Configuration",
+    "isAfterResolved": 0
+  },
+  {
+    "step": 5,
+    "isResolved": 0,
+    "command": "no shutdown",
+    "description": "Bring the VLAN 10 interface administratively up",
+    "result": "VLAN 10 interface is successfully reconfigured",
+    "isAfterResolved": 1
+  },
+  {
+    "step": 6,
+    "isResolved": 1,
+    "command": "exit",
+    "description": "Exit configuration mode",
+    "result": "Exited global configuration mode",
+    "isAfterResolved": 1
+  },
+  {
+    "step": 7,
+    "isResolved": 1,
+    "command": "write memory",
+    "description": "Save the configuration",
+    "result": "VLAN 10 configuration saved",
+    "isAfterResolved": 1
+  },
+  {
+    "step": 8,
+    "isResolved": 1,
+    "command": "show ip interface brief",
+    "description": "Verify VLAN interface status and IP configuration",
+    "result": "Interface: VLAN 10, IP-Address: 192.168.10.1, Status: up, Protocol: up",
+    "isAfterResolved": 1
+  },
+  {
+    "step": 9,
+    "isResolved": 1,
+    "command": "ping 192.168.10.1",
+    "description": "Test connectivity to the server after resolving the issue",
+    "result": "Reply from 192.168.10.1: bytes=32 time=2ms TTL=64 – Connectivity restored",
+    "isAfterResolved": 1
+  },
+  {
+    "step": 10,
+    "isResolved": 1,
+    "command": "show vlan id 10",
+    "description": "Verify VLAN 10 status",
+    "result": "VLAN 10 Status : active",
+    "isAfterResolved": 1
+  }
+]

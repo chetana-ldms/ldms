@@ -1,0 +1,2061 @@
+{
+    "data": {
+        "orgAssetId": 52,
+        "toolId": 9,
+        "automatedScore": 0,
+        "scannedDate": "2026-04-01T09:28:42",
+        "risks": [
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "caa_enabled",
+                "title": "CAA not enabled",
+                "description": "The domain does not contain a valid Certification Authority Authorization (CAA) record. A CAA record indicates which Certificate Authorities (CAs) are authorized to issue certificates for a domain.",
+                "category": "dns",
+                "riskType": "caa_enabled",
+                "riskSubtype": "",
+                "severity": 1,
+                "severityName": "info",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "CAA",
+                            "propertyValue": "[set]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "CAA",
+                            "propertyValue": "[not set]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "content_security_policy_header_v2",
+                "title": "CSP is not implemented",
+                "description": "No valid Content Security Policy is implemented. This increases the risk of XSS and clickjacking attacks.",
+                "category": "website_sec",
+                "riskType": "content_security_policy_header_v2",
+                "riskSubtype": "",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Headers \u003E content-security-policy",
+                            "propertyValue": "[valid policy]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Headers \u003E content-security-policy",
+                            "propertyValue": "[not set]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:2083",
+                    "ext.lancesoft.com:443",
+                    "ext.lancesoft.com:80"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "dmarc_policy_quarantine",
+                "title": "DMARC policy is p=quarantine",
+                "description": "The DMARC policy should be set to p=reject for maximum protection.",
+                "category": "email_sec",
+                "riskType": "dmarc_policy_quarantine",
+                "riskSubtype": "",
+                "severity": 2,
+                "severityName": "low",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "DNS \u003E DMARC",
+                            "propertyValue": "v=DMARC1; p=reject; ..."
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "DNS \u003E DMARC",
+                            "propertyValue": "v=DMARC1; p=quarantine; pct=100; rua=mailto:f199659956@rua.easydmarc.us,mailto:rua@lancesoft.com; ruf=mailto:f199659956@ruf.easydmarc.us,mailto:ruf@lancesoft.com; fo=1; [inherited from lancesoft.com]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "exposed_service:FTP",
+                "title": "\u0027FTP\u0027 port open",
+                "description": "The \u0027FTP\u0027 service is running and exposed to the internet. The configuration of the server should be reviewed and unnecessary ports closed.",
+                "category": "network_sec",
+                "riskType": "exposed_service",
+                "riskSubtype": "FTP",
+                "severity": 5,
+                "severityName": "critical",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Ports \u003E \u0027FTP\u0027",
+                            "propertyValue": "[closed]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Ports \u003E \u0027FTP\u0027",
+                            "propertyValue": "\u0027FTP\u0027: [listening on port 21]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "exposed_service:HTTP",
+                "title": "\u0027HTTP\u0027 port open",
+                "description": "The \u0027HTTP\u0027 service is running and exposed to the internet. The configuration of the server should be reviewed and unnecessary ports closed.",
+                "category": "network_sec",
+                "riskType": "exposed_service",
+                "riskSubtype": "HTTP",
+                "severity": 1,
+                "severityName": "info",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Ports \u003E \u0027HTTP\u0027",
+                            "propertyValue": "[closed]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Ports \u003E \u0027HTTP\u0027",
+                            "propertyValue": "\u0027HTTP\u0027: [listening on ports 2082, 2095]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "exposed_service:HTTPS",
+                "title": "\u0027HTTPS\u0027 port open",
+                "description": "The \u0027HTTPS\u0027 service is running and exposed to the internet. The configuration of the server should be reviewed and unnecessary ports closed.",
+                "category": "network_sec",
+                "riskType": "exposed_service",
+                "riskSubtype": "HTTPS",
+                "severity": 1,
+                "severityName": "info",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Ports \u003E \u0027HTTPS\u0027",
+                            "propertyValue": "[closed]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Ports \u003E \u0027HTTPS\u0027",
+                            "propertyValue": "\u0027HTTPS\u0027: [listening on port 2083]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "exposed_service:IMAP",
+                "title": "\u0027IMAP\u0027 port open",
+                "description": "The \u0027IMAP\u0027 service is running and exposed to the internet. The configuration of the server should be reviewed and unnecessary ports closed.",
+                "category": "network_sec",
+                "riskType": "exposed_service",
+                "riskSubtype": "IMAP",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Ports \u003E \u0027IMAP\u0027",
+                            "propertyValue": "[closed]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Ports \u003E \u0027IMAP\u0027",
+                            "propertyValue": "\u0027IMAP\u0027: [listening on ports 143, 993]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "exposed_service:MySQL",
+                "title": "\u0027MySQL\u0027 port open",
+                "description": "The \u0027MySQL\u0027 service is running and exposed to the internet. The configuration of the server should be reviewed and unnecessary ports closed.",
+                "category": "network_sec",
+                "riskType": "exposed_service",
+                "riskSubtype": "MySQL",
+                "severity": 5,
+                "severityName": "critical",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Ports \u003E \u0027MySQL\u0027",
+                            "propertyValue": "[closed]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Ports \u003E \u0027MySQL\u0027",
+                            "propertyValue": "\u0027MySQL\u0027: [listening on port 3306]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "exposed_service:POP3",
+                "title": "\u0027POP3\u0027 port open",
+                "description": "The \u0027POP3\u0027 service is running and exposed to the internet. The configuration of the server should be reviewed and unnecessary ports closed.",
+                "category": "network_sec",
+                "riskType": "exposed_service",
+                "riskSubtype": "POP3",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Ports \u003E \u0027POP3\u0027",
+                            "propertyValue": "[closed]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Ports \u003E \u0027POP3\u0027",
+                            "propertyValue": "\u0027POP3\u0027: [listening on ports 110, 995]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "exposed_service:SMTP",
+                "title": "\u0027SMTP\u0027 port open",
+                "description": "The \u0027SMTP\u0027 service is running and exposed to the internet. The configuration of the server should be reviewed and unnecessary ports closed.",
+                "category": "network_sec",
+                "riskType": "exposed_service",
+                "riskSubtype": "SMTP",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Ports \u003E \u0027SMTP\u0027",
+                            "propertyValue": "[closed]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Ports \u003E \u0027SMTP\u0027",
+                            "propertyValue": "\u0027SMTP\u0027: [listening on ports 25, 465, 587]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "exposed_service:SSH",
+                "title": "\u0027SSH\u0027 port open",
+                "description": "The \u0027SSH\u0027 service is running and exposed to the internet. The configuration of the server should be reviewed and unnecessary ports closed.",
+                "category": "network_sec",
+                "riskType": "exposed_service",
+                "riskSubtype": "SSH",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Ports \u003E \u0027SSH\u0027",
+                            "propertyValue": "[closed]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Ports \u003E \u0027SSH\u0027",
+                            "propertyValue": "\u0027SSH\u0027: [listening on port 22]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "http_available",
+                "title": "HTTP does not redirect to HTTPS",
+                "description": "The domain is still accessible over HTTP. All HTTP requests should be redirected to HTTPS.",
+                "category": "encryption",
+                "riskType": "http_available",
+                "riskSubtype": "",
+                "severity": 4,
+                "severityName": "high",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "HTTP Accessible",
+                            "propertyValue": "false"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "HTTP Accessible",
+                            "propertyValue": "true"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:80"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "http_strict_transport_security",
+                "title": "HTTP Strict Transport Security (HSTS) not enforced",
+                "description": "Without HSTS enforced, people browsing this site are more susceptible to man-in-the-middle attacks. The server should be configured to support HSTS.",
+                "category": "encryption",
+                "riskType": "http_strict_transport_security",
+                "riskSubtype": "",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Headers \u003E strict-transport-security",
+                            "propertyValue": "[header set]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Headers \u003E strict-transport-security",
+                            "propertyValue": "[not set]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:2083",
+                    "ext.lancesoft.com:443"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "ssl_enabled_redirect",
+                "title": "HTTPS redirect not supported",
+                "description": "HTTPS is the standard protocol for secure communication on the internet. All redirects should be performed over HTTPS.",
+                "category": "encryption",
+                "riskType": "ssl_enabled_redirect",
+                "riskSubtype": "",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "SSL \u003E HTTPS Redirect",
+                            "propertyValue": "true"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "SSL \u003E HTTPS Redirect",
+                            "propertyValue": "false"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:2082",
+                    "ext.lancesoft.com:2095"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "ssl_expired",
+                "title": "SSL expired",
+                "description": "SSL certificate has expired. The certificate will need to be renewed for connections to your domain to be trusted.",
+                "category": "encryption",
+                "riskType": "ssl_expired",
+                "riskSubtype": "",
+                "severity": 4,
+                "severityName": "high",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "SSL \u003E Expired",
+                            "propertyValue": "[has not expired]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "SSL \u003E Expired",
+                            "propertyValue": "2022-02-11 18:08:14 UTC"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:443"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "ssl_expires_soon",
+                "title": "SSL expires in less than 20% of its total valid period",
+                "description": "SSL certificate has less than 20% of its total valid period remaining. The certificate will need to be renewed to avoid expiry.",
+                "category": "encryption",
+                "riskType": "ssl_expires_soon",
+                "riskSubtype": "",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "SSL \u003E Expires",
+                            "propertyValue": "[has more than 20% of its valid period remaining]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "SSL \u003E Expires",
+                            "propertyValue": "2026-04-11 04:24:12 UTC"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136:110",
+                    "160.153.57.136:143",
+                    "160.153.57.136:21",
+                    "160.153.57.136:587",
+                    "160.153.57.136:993",
+                    "160.153.57.136:995",
+                    "ext.lancesoft.com:2083"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "ssl_host_match",
+                "title": "Hostname does not match SSL certificate",
+                "description": "The site\u0027s hostname does not match the SSL certificate. The domain name should be added to the certificate, either as a Subject Alternative Name or as the Common Name.",
+                "category": "encryption",
+                "riskType": "ssl_host_match",
+                "riskSubtype": "",
+                "severity": 4,
+                "severityName": "high",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "SSL \u003E Host Match",
+                            "propertyValue": "[hostname matches SSL certificate]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "SSL \u003E Host Match",
+                            "propertyValue": "ext.lancesoft.com does not match any of these Subject Alternative Names in the SSL certificate: *.prod.phx3.secureserver.net, prod.phx3.secureserver.net"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:2083"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "ssl_weak_cipher",
+                "title": "Weak cipher suites supported in TLS 1.2",
+                "description": "Weak cipher suites can potentially be broken by a well resourced attacker, and should not be supported by the server unless very old devices or browsers must be supported.",
+                "category": "encryption",
+                "riskType": "ssl_weak_cipher",
+                "riskSubtype": "",
+                "severity": 1,
+                "severityName": "info",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "SSL \u003E Supported Cipher Suite",
+                            "propertyValue": "[secure ciphers only]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "SSL \u003E Supported Cipher Suite",
+                            "propertyValue": "TLSv1.2: TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:443"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "unmaintained_page",
+                "title": "Unmaintained page detected",
+                "description": "This domain appears to be unmaintained based on indicators like page content or status code. Unmaintained pages expand the attack surface for malicious actors.",
+                "category": "website_sec",
+                "riskType": "unmaintained_page",
+                "riskSubtype": "",
+                "severity": 1,
+                "severityName": "info",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Unmaintained Page",
+                            "propertyValue": "[not detected]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Unmaintained Page",
+                            "propertyValue": "Status Code: 500"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:443",
+                    "ext.lancesoft.com:80"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "vulnerable_software_version:cpe:/a:openbsd:openssh:8.0",
+                "title": "OpenSSH 8.0 has potential vulnerabilities",
+                "description": "OpenSSH 8.0 has vulnerabilities which might be exploitable under certain conditions. Affected domains should be checked to determine which vulnerabilities might pose a risk.",
+                "category": "vulnerability_management",
+                "riskType": "vulnerable_software_version",
+                "riskSubtype": "cpe:/a:openbsd:openssh:8.0",
+                "severity": 1,
+                "severityName": "info",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Vulnerabilities \u003E OpenSSH 8.0",
+                            "propertyValue": "[none found]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Vulnerabilities \u003E OpenSSH 8.0",
+                            "propertyValue": "CVE-2020-15778, CVE-2020-14145, CVE-2021-41617, CVE-2023-38408, CVE-2023-48795, CVE-2021-36368, CVE-2016-20012, CVE-2025-32728, CVE-2023-51385, CVE-2025-26465, CVE-2019-16905"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "x_content_type_options_header_v2",
+                "title": "X-Content-Type-Options is not nosniff",
+                "description": "Browsers may interpret files as a different MIME type than what is specified in the Content-Type HTTP header. This can lead to MIME confusion attacks.",
+                "category": "website_sec",
+                "riskType": "x_content_type_options_header_v2",
+                "riskSubtype": "",
+                "severity": 2,
+                "severityName": "low",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Headers \u003E x-content-type-options",
+                            "propertyValue": "nosniff"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Headers \u003E x-content-type-options",
+                            "propertyValue": "[not set]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:2083",
+                    "ext.lancesoft.com:443",
+                    "ext.lancesoft.com:80"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "x_frame_options_header_v2",
+                "title": "X-Frame-Options is not deny or sameorigin",
+                "description": "Browsers may display this website\u0027s content in frames. This can lead to clickjacking attacks.",
+                "category": "website_sec",
+                "riskType": "x_frame_options_header_v2",
+                "riskSubtype": "",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Headers \u003E x-frame-options",
+                            "propertyValue": "[deny or sameorigin]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Headers \u003E x-frame-options",
+                            "propertyValue": "[not set]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:2083",
+                    "ext.lancesoft.com:443",
+                    "ext.lancesoft.com:80"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "x_powered_by_header",
+                "title": "X-Powered-By header exposed",
+                "description": "The X-Powered-By header reveals information about specific technology used on the server. This information can be used to exploit vulnerabilities. The server configuration should be changed to remove this header.",
+                "category": "website_sec",
+                "riskType": "x_powered_by_header",
+                "riskSubtype": "",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": false,
+                "resultStatus": "FAIL",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Headers \u003E x-powered-by",
+                            "propertyValue": "[not set]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Headers \u003E x-powered-by",
+                            "propertyValue": "PHP/8.4.18"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:443",
+                    "ext.lancesoft.com:80"
+                ]
+            }
+        ],
+        "otherChecks": [
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "asp_net_header",
+                "title": "ASP.NET version header not exposed",
+                "description": "Ensuring the ASP.NET version header is not exposed makes it harder for attackers to exploit certain vulnerabilities.",
+                "category": "website_sec",
+                "riskType": "asp_net_header",
+                "riskSubtype": "",
+                "severity": 2,
+                "severityName": "low",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Headers \u003E x-aspnet-version present",
+                            "propertyValue": "[not present]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Headers \u003E x-aspnet-version present",
+                            "propertyValue": "[not present]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:2082",
+                    "ext.lancesoft.com:2083",
+                    "ext.lancesoft.com:2095",
+                    "ext.lancesoft.com:443",
+                    "ext.lancesoft.com:80"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "asp_net_version_header",
+                "title": "ASP.NET version header not exposing specific ASP.net version",
+                "description": "Ensuring the ASP.NET version header is not exposing a specific version makes it harder for attackers to exploit certain vulnerabilities.",
+                "category": "website_sec",
+                "riskType": "asp_net_version_header",
+                "riskSubtype": "",
+                "severity": 2,
+                "severityName": "low",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Headers \u003E x-aspnet-version",
+                            "propertyValue": "[not set]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Headers \u003E x-aspnet-version",
+                            "propertyValue": "[not set]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:2082",
+                    "ext.lancesoft.com:2083",
+                    "ext.lancesoft.com:2095",
+                    "ext.lancesoft.com:443",
+                    "ext.lancesoft.com:80"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "botnet_active",
+                "title": "No reports of botnet activity in the last 30 days",
+                "description": "This IP/domain has not been reported as a source of botnet activity in the last 30 days.",
+                "category": "ip_domain_reputation",
+                "riskType": "botnet_active",
+                "riskSubtype": "",
+                "severity": 4,
+                "severityName": "high",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Botnet Activity",
+                            "propertyValue": "false"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Botnet Activity",
+                            "propertyValue": ""
+                        }
+                    ]
+                },
+                "sources": []
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "botnet_inactive",
+                "title": "No reports of botnet activity in the last 90 days",
+                "description": "This IP/domain has not been reported as a source of botnet activity in the last 90 days.",
+                "category": "ip_domain_reputation",
+                "riskType": "botnet_inactive",
+                "riskSubtype": "",
+                "severity": 1,
+                "severityName": "info",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Botnet Activity",
+                            "propertyValue": "false"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Botnet Activity",
+                            "propertyValue": ""
+                        }
+                    ]
+                },
+                "sources": []
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "brute_force_login_active",
+                "title": "No reports of brute force login attempts in the last 30 days",
+                "description": "This IP/domain did not appear on any list of IPs and domains known to perform brute force login attempts in the last 30 days.",
+                "category": "ip_domain_reputation",
+                "riskType": "brute_force_login_active",
+                "riskSubtype": "",
+                "severity": 4,
+                "severityName": "high",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Unsolicited Communication \u003E Brute Force Login Attempt",
+                            "propertyValue": "false"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Unsolicited Communication \u003E Brute Force Login Attempt",
+                            "propertyValue": ""
+                        }
+                    ]
+                },
+                "sources": []
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "brute_force_login_inactive",
+                "title": "No reports of brute force login attempts in the last 90 days",
+                "description": "This IP/domain did not appear on any list of IPs and domains known to perform brute force login attempts in the last 90 days.",
+                "category": "ip_domain_reputation",
+                "riskType": "brute_force_login_inactive",
+                "riskSubtype": "",
+                "severity": 1,
+                "severityName": "info",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Unsolicited Communication \u003E Brute Force Login Attempt",
+                            "propertyValue": "false"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Unsolicited Communication \u003E Brute Force Login Attempt",
+                            "propertyValue": ""
+                        }
+                    ]
+                },
+                "sources": []
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "dangling_mx_record",
+                "title": "No unregistered MX records detected",
+                "description": "No unregistered MX records that could lead to receiving mail on behalf of the target organization were detected.",
+                "category": "dns",
+                "riskType": "dangling_mx_record",
+                "riskSubtype": "",
+                "severity": 4,
+                "severityName": "high",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Unregistered MX Domains",
+                            "propertyValue": "[none]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Unregistered MX Domains",
+                            "propertyValue": "[none]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "dmarc_enabled",
+                "title": "DMARC policy exists",
+                "description": "DMARC protects against fraudulent emails being sent from a domain.",
+                "category": "email_sec",
+                "riskType": "dmarc_enabled",
+                "riskSubtype": "",
+                "severity": 4,
+                "severityName": "high",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "DNS \u003E DMARC",
+                            "propertyValue": "v=DMARC1; p=reject; ..."
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "DNS \u003E DMARC",
+                            "propertyValue": "v=DMARC1; p=quarantine; pct=100; rua=mailto:f199659956@rua.easydmarc.us,mailto:rua@lancesoft.com; ruf=mailto:f199659956@ruf.easydmarc.us,mailto:ruf@lancesoft.com; fo=1;"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "dmarc_policy_percent",
+                "title": "DMARC policy percentage is default",
+                "description": "DMARC policy percentage is set to default 100%, ensuring all mail is covered by the policy.",
+                "category": "email_sec",
+                "riskType": "dmarc_policy_percent",
+                "riskSubtype": "",
+                "severity": 2,
+                "severityName": "low",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "DNS \u003E DMARC",
+                            "propertyValue": "v=DMARC1; p=reject; pct=100..."
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "DNS \u003E DMARC",
+                            "propertyValue": "v=DMARC1; p=quarantine; pct=100; rua=mailto:f199659956@rua.easydmarc.us,mailto:rua@lancesoft.com; ruf=mailto:f199659956@ruf.easydmarc.us,mailto:ruf@lancesoft.com; fo=1; [inherited from lancesoft.com]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "httponly_cookies",
+                "title": "HttpOnly cookies used",
+                "description": "Using HttpOnly cookies reduces the risk of client side script attacks, by preventing cookies being read on the client.",
+                "category": "website_sec",
+                "riskType": "httponly_cookies",
+                "riskSubtype": "",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Headers",
+                            "propertyValue": "[all set-cookie headers include \u0027httponly\u0027]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Headers",
+                            "propertyValue": "[no set-cookie headers]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:2083"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "listable_dirs",
+                "title": "Domain index is not a listable directory",
+                "description": "The domain index is not a listable directory.",
+                "category": "data_leakage",
+                "riskType": "listable_dirs",
+                "riskSubtype": "",
+                "severity": 1,
+                "severityName": "info",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Domain Index",
+                            "propertyValue": "[not a listable directory]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Domain Index",
+                            "propertyValue": "[not a listable directory]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:2083",
+                    "ext.lancesoft.com:443",
+                    "ext.lancesoft.com:80"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "malware_server_active",
+                "title": "No reports of malware distribution in the last 30 days",
+                "description": "This IP/domain has been reported for distributing malware in the last 30 days.",
+                "category": "ip_domain_reputation",
+                "riskType": "malware_server_active",
+                "riskSubtype": "",
+                "severity": 4,
+                "severityName": "high",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Malware Server",
+                            "propertyValue": "false"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Malware Server",
+                            "propertyValue": ""
+                        }
+                    ]
+                },
+                "sources": []
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "malware_server_inactive",
+                "title": "No reports of malware distribution in the last 90 days",
+                "description": "This IP/domain has been reported for distributing malware in the last 90 days.",
+                "category": "ip_domain_reputation",
+                "riskType": "malware_server_inactive",
+                "riskSubtype": "",
+                "severity": 1,
+                "severityName": "info",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Malware Server",
+                            "propertyValue": "false"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Malware Server",
+                            "propertyValue": ""
+                        }
+                    ]
+                },
+                "sources": []
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "open_cloud_storage",
+                "title": "No open cloud storage service detected",
+                "description": "No cloud storage service configured to allow anonymous file listing was detected.",
+                "category": "data_leakage",
+                "riskType": "open_cloud_storage",
+                "riskSubtype": "",
+                "severity": 1,
+                "severityName": "info",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Open Cloud Storage",
+                            "propertyValue": "[not detected]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Open Cloud Storage",
+                            "propertyValue": "[not detected]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:2083",
+                    "ext.lancesoft.com:443",
+                    "ext.lancesoft.com:80"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "phishing_site_active",
+                "title": "No reports of phishing activity in the last 30 days",
+                "description": "This IP/domain has not been reported as a phishing site in the last 30 days.",
+                "category": "ip_domain_reputation",
+                "riskType": "phishing_site_active",
+                "riskSubtype": "",
+                "severity": 4,
+                "severityName": "high",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Phishing Site",
+                            "propertyValue": "false"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Phishing Site",
+                            "propertyValue": ""
+                        }
+                    ]
+                },
+                "sources": []
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "phishing_site_inactive",
+                "title": "No reports of phishing activity in the last 90 days",
+                "description": "This IP/domain has not been reported as a phishing site in the last 90 days.",
+                "category": "ip_domain_reputation",
+                "riskType": "phishing_site_inactive",
+                "riskSubtype": "",
+                "severity": 1,
+                "severityName": "info",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Phishing Site",
+                            "propertyValue": "false"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Phishing Site",
+                            "propertyValue": ""
+                        }
+                    ]
+                },
+                "sources": []
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "referrer_policy_header_v2",
+                "title": "Referrer policy is not unsafe-url",
+                "description": "The website\u0027s Referrer Policy is not configured to allow unsafe information to be sent in the referrer header.",
+                "category": "website_sec",
+                "riskType": "referrer_policy_header_v2",
+                "riskSubtype": "",
+                "severity": 2,
+                "severityName": "low",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Headers \u003E referrer-policy",
+                            "propertyValue": "[not unsafe-url]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Headers \u003E referrer-policy",
+                            "propertyValue": "[not set]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:2082",
+                    "ext.lancesoft.com:2083",
+                    "ext.lancesoft.com:2095",
+                    "ext.lancesoft.com:443",
+                    "ext.lancesoft.com:80"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "secure_cookies",
+                "title": "Secure cookies used",
+                "description": "Using secure cookies reduces the risk of third parties intercepting information contained in these cookies.",
+                "category": "website_sec",
+                "riskType": "secure_cookies",
+                "riskSubtype": "",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Headers",
+                            "propertyValue": "[all set-cookie headers include \u0027secure\u0027]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Headers",
+                            "propertyValue": "[no set-cookie headers]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:2083"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "server_information_header",
+                "title": "Server information header not exposed",
+                "description": "Ensuring the server information header is not exposed reduces the ability of attackers to exploit certain vulnerabilities.",
+                "category": "website_sec",
+                "riskType": "server_information_header",
+                "riskSubtype": "",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Headers \u003E server",
+                            "propertyValue": "[does not contain version number]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Headers \u003E server",
+                            "propertyValue": "Apache"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:2082",
+                    "ext.lancesoft.com:2083",
+                    "ext.lancesoft.com:2095",
+                    "ext.lancesoft.com:443",
+                    "ext.lancesoft.com:80"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "spf_filter_check",
+                "title": "Strict SPF filtering - not using \u002Ball",
+                "description": "Sender Policy Framework (SPF) record strictly enforces specific domains allowed to send email on its behalf.",
+                "category": "email_sec",
+                "riskType": "spf_filter_check",
+                "riskSubtype": "",
+                "severity": 4,
+                "severityName": "high",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "DNS \u003E SPF \u003E Filter",
+                            "propertyValue": "contains -all"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "DNS \u003E SPF \u003E Filter",
+                            "propertyValue": "contains -all"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "spf_ptr_mechanism",
+                "title": "SPF ptr mechanism not used",
+                "description": "Sender Policy Framework (SPF) record does not include the ptr mechanism.",
+                "category": "email_sec",
+                "riskType": "spf_ptr_mechanism",
+                "riskSubtype": "",
+                "severity": 2,
+                "severityName": "low",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "DNS \u003E SPF \u003E ptr",
+                            "propertyValue": "SPF record does not contain a ptr mechanism"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "DNS \u003E SPF \u003E ptr",
+                            "propertyValue": "SPF record does not contain a ptr mechanism"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "spf_syntax_check",
+                "title": "SPF syntax correct",
+                "description": "Sender Policy Framework (SPF) record passes basic syntax checks.",
+                "category": "email_sec",
+                "riskType": "spf_syntax_check",
+                "riskSubtype": "",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "DNS \u003E SPF \u003E Syntax",
+                            "propertyValue": "passes simple syntax check"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "DNS \u003E SPF \u003E Syntax",
+                            "propertyValue": "passes simple syntax check"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "ssl_cert_revoked",
+                "title": "Certificate not found on our revoked certificate list",
+                "description": "The site\u0027s certificate chain was checked against our list of revoked certificates.",
+                "category": "encryption",
+                "riskType": "ssl_cert_revoked",
+                "riskSubtype": "",
+                "severity": 5,
+                "severityName": "critical",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "SSL \u003E Revoked",
+                            "propertyValue": "false"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "SSL \u003E Revoked",
+                            "propertyValue": "false"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136:110",
+                    "160.153.57.136:143",
+                    "160.153.57.136:21",
+                    "160.153.57.136:587",
+                    "160.153.57.136:993",
+                    "160.153.57.136:995",
+                    "ext.lancesoft.com:2083",
+                    "ext.lancesoft.com:443"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "ssl_certificate_length",
+                "title": "Strong public certificate key length",
+                "description": "The site\u0027s public certificate provides at least 112 bits of security strength.",
+                "category": "encryption",
+                "riskType": "ssl_certificate_length",
+                "riskSubtype": "",
+                "severity": 2,
+                "severityName": "low",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "SSL \u003E Public Certificate Key Length",
+                            "propertyValue": "[RSA \u003E= 2048 or ECDSA \u003E= 224]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "SSL \u003E Public Certificate Key Length",
+                            "propertyValue": "2048-bit RSA"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136:110",
+                    "160.153.57.136:143",
+                    "160.153.57.136:21",
+                    "160.153.57.136:587",
+                    "160.153.57.136:993",
+                    "160.153.57.136:995",
+                    "ext.lancesoft.com:2083",
+                    "ext.lancesoft.com:443"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "ssl_chain_present",
+                "title": "SSL certificate chain present in server response",
+                "description": "A complete SSL certificate chain was presented by the server for this domain.",
+                "category": "encryption",
+                "riskType": "ssl_chain_present",
+                "riskSubtype": "",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "SSL \u003E Chain",
+                            "propertyValue": "[certificate chain present in server response]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "SSL \u003E Chain",
+                            "propertyValue": "present"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136:110",
+                    "160.153.57.136:143",
+                    "160.153.57.136:21",
+                    "160.153.57.136:587",
+                    "160.153.57.136:993",
+                    "160.153.57.136:995"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "ssl_enabled",
+                "title": "SSL available",
+                "description": "SSL is supported for this site.",
+                "category": "encryption",
+                "riskType": "ssl_enabled",
+                "riskSubtype": "",
+                "severity": 5,
+                "severityName": "critical",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "SSL",
+                            "propertyValue": "true"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "SSL",
+                            "propertyValue": "true"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:80"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "ssl_expiry_chain",
+                "title": "SSL chain certificates do not expire within 20 days",
+                "description": "SSL intermediate and root certificates do not expire within 20 days.",
+                "category": "encryption",
+                "riskType": "ssl_expiry_chain",
+                "riskSubtype": "",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "SSL \u003E Chain",
+                            "propertyValue": "[does not expire within 20 days]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "SSL \u003E Chain",
+                            "propertyValue": "[none found]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136:110",
+                    "160.153.57.136:143",
+                    "160.153.57.136:21",
+                    "160.153.57.136:587",
+                    "160.153.57.136:993",
+                    "160.153.57.136:995"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "ssl_expiry_long",
+                "title": "SSL expiration period shorter than 398 days",
+                "description": "The SSL certificate presented by the server has an expiration period shorter than 398 days.",
+                "category": "encryption",
+                "riskType": "ssl_expiry_long",
+                "riskSubtype": "",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "SSL \u003E Expires",
+                            "propertyValue": "[expiration period shorter than 398 days]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "SSL \u003E Expires",
+                            "propertyValue": "397, 365"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136:110",
+                    "160.153.57.136:143",
+                    "160.153.57.136:21",
+                    "160.153.57.136:587",
+                    "160.153.57.136:993",
+                    "160.153.57.136:995",
+                    "ext.lancesoft.com:2083",
+                    "ext.lancesoft.com:443"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "ssl_strength",
+                "title": "Strong SSL algorithm",
+                "description": "Industry standard SHA-256 encryption in use.",
+                "category": "encryption",
+                "riskType": "ssl_strength",
+                "riskSubtype": "",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "SSL \u003E Algorithm",
+                            "propertyValue": "[at least \u0027sha256\u0027]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "SSL \u003E Algorithm",
+                            "propertyValue": "SHA256-RSA"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136:110",
+                    "160.153.57.136:143",
+                    "160.153.57.136:21",
+                    "160.153.57.136:587",
+                    "160.153.57.136:993",
+                    "160.153.57.136:995",
+                    "ext.lancesoft.com:2083",
+                    "ext.lancesoft.com:443"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "ssl_trusted_v2",
+                "title": "Trusted SSL certificate",
+                "description": "The certificate presented by this domain was issued by a trusted certificate authority.",
+                "category": "encryption",
+                "riskType": "ssl_trusted_v2",
+                "riskSubtype": "",
+                "severity": 4,
+                "severityName": "high",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "SSL \u003E Trusted",
+                            "propertyValue": "true"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "SSL \u003E Trusted",
+                            "propertyValue": "true"
+                        }
+                    ]
+                },
+                "sources": [
+                    "160.153.57.136:110",
+                    "160.153.57.136:143",
+                    "160.153.57.136:21",
+                    "160.153.57.136:587",
+                    "160.153.57.136:993",
+                    "160.153.57.136:995"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "ssl_version",
+                "title": "No insecure SSL/TLS versions available",
+                "description": "No insecure SSL/TLS versions are available for this site.",
+                "category": "encryption",
+                "riskType": "ssl_version",
+                "riskSubtype": "",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "SSL \u003E Insecure Protocol Versions",
+                            "propertyValue": "[none found]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "SSL \u003E Insecure Protocol Versions",
+                            "propertyValue": "[none found]"
+                        }
+                    ]
+                },
+                "sources": []
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "ssl_weak_diffie_hellman",
+                "title": "Strong Diffie-Hellman prime used in key exchange",
+                "description": "TLS connections to the site use a strong Diffie-Hellman prime during key exchange.",
+                "category": "encryption",
+                "riskType": "ssl_weak_diffie_hellman",
+                "riskSubtype": "",
+                "severity": 2,
+                "severityName": "low",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "SSL \u003E Diffie-Hellman Prime",
+                            "propertyValue": "[\u003E= 2048 bits]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "SSL \u003E Diffie-Hellman Prime",
+                            "propertyValue": "2048-bit prime"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:443"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "subdomain_takeover",
+                "title": "No subdomain takeover vulnerability detected",
+                "description": "No dangling DNS records that could lead to subdomain takeover were detected.",
+                "category": "dns",
+                "riskType": "subdomain_takeover",
+                "riskSubtype": "",
+                "severity": 4,
+                "severityName": "high",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Subdomain Takeover",
+                            "propertyValue": "[not vulnerable]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Subdomain Takeover",
+                            "propertyValue": "[not vulnerable]"
+                        }
+                    ]
+                },
+                "sources": [
+                    "ext.lancesoft.com:2083",
+                    "ext.lancesoft.com:443",
+                    "ext.lancesoft.com:80"
+                ]
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "unsolicited_scanning_active",
+                "title": "No reports of unsolicited scanning in the last 30 days",
+                "description": "This IP/domain has not been reported for performing unsolicited scanning in the last 30 days.",
+                "category": "ip_domain_reputation",
+                "riskType": "unsolicited_scanning_active",
+                "riskSubtype": "",
+                "severity": 4,
+                "severityName": "high",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Unsolicited Communication \u003E Scanning",
+                            "propertyValue": "false"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Unsolicited Communication \u003E Scanning",
+                            "propertyValue": ""
+                        }
+                    ]
+                },
+                "sources": []
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "unsolicited_scanning_inactive",
+                "title": "No reports of unsolicited scanning in the last 90 days",
+                "description": "This IP/domain has not been reported for performing unsolicited scanning in the last 90 days.",
+                "category": "ip_domain_reputation",
+                "riskType": "unsolicited_scanning_inactive",
+                "riskSubtype": "",
+                "severity": 1,
+                "severityName": "info",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Unsolicited Communication \u003E Scanning",
+                            "propertyValue": "false"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Unsolicited Communication \u003E Scanning",
+                            "propertyValue": ""
+                        }
+                    ]
+                },
+                "sources": []
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "verified_vuln:CVE-2014-0160",
+                "title": "Not vulnerable to CVE-2014-0160 (Heartbleed)",
+                "description": "A bug in OpenSSL\u0027s implementation of the TLS heartbeat extension allows access to portions of memory on the targeted host e.g. cryptographic keys and passwords.",
+                "category": "vulnerability_management",
+                "riskType": "verified_vuln",
+                "riskSubtype": "CVE-2014-0160",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Vulnerabilities \u003E CVE-2014-0160",
+                            "propertyValue": "[not vulnerable]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Vulnerabilities \u003E CVE-2014-0160",
+                            "propertyValue": "[not vulnerable]"
+                        }
+                    ]
+                },
+                "sources": []
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "verified_vuln:CVE-2014-3566",
+                "title": "Not vulnerable to CVE-2014-3566 (POODLE)",
+                "description": "The server does not support SSLv3, and is not vulnerable to the POODLE attack.",
+                "category": "vulnerability_management",
+                "riskType": "verified_vuln",
+                "riskSubtype": "CVE-2014-3566",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Vulnerabilities \u003E CVE-2014-3566",
+                            "propertyValue": "[not vulnerable]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Vulnerabilities \u003E CVE-2014-3566",
+                            "propertyValue": "[not vulnerable]"
+                        }
+                    ]
+                },
+                "sources": []
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "verified_vuln:CVE-2015-0204",
+                "title": "Not vulnerable to CVE-2015-0204 (FREAK)",
+                "description": "The server does not offer RSA_EXPORT cipher suites, so clients are not vulnerable to the FREAK attack.",
+                "category": "vulnerability_management",
+                "riskType": "verified_vuln",
+                "riskSubtype": "CVE-2015-0204",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Vulnerabilities \u003E CVE-2015-0204",
+                            "propertyValue": "[not vulnerable]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Vulnerabilities \u003E CVE-2015-0204",
+                            "propertyValue": "[not vulnerable]"
+                        }
+                    ]
+                },
+                "sources": []
+            },
+            {
+                "orgAssetId": 0,
+                "toolId": 0,
+                "externalCheckId": "verified_vuln:CVE-2015-4000",
+                "title": "Not vulnerable to CVE-2015-4000 (Logjam)",
+                "description": "The server is using strong Diffie-Hellman parameters and is not vulnerable to the Logjam attack.",
+                "category": "vulnerability_management",
+                "riskType": "verified_vuln",
+                "riskSubtype": "CVE-2015-4000",
+                "severity": 3,
+                "severityName": "medium",
+                "passed": true,
+                "resultStatus": "PASS",
+                "checkedDate": "2026-03-29T03:31:45",
+                "properties": {
+                    "expected": [
+                        {
+                            "propertyName": "Vulnerabilities \u003E CVE-2015-4000",
+                            "propertyValue": "[not vulnerable]"
+                        }
+                    ],
+                    "actual": [
+                        {
+                            "propertyName": "Vulnerabilities \u003E CVE-2015-4000",
+                            "propertyValue": "[not vulnerable]"
+                        }
+                    ]
+                },
+                "sources": []
+            }
+        ],
+        "waived": [],
+        "attributes": [
+            {
+                "attributeType": null,
+                "attributeName": "a_record",
+                "attributeValue": "160.153.57.136"
+            }
+        ]
+    },
+    "isSuccess": true,
+    "message": "Scan details retrieved successfully",
+    "httpStatusCode": "OK",
+    "errors": null,
+    "applogs": null,
+    "logTraceId": "44609c3c-1771-4c0e-b368-cd958a6fb454"
+}

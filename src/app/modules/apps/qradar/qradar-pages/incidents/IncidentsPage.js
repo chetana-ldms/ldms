@@ -71,7 +71,8 @@ const IncidentsPage = () => {
   const [daysFromDashBoard, setDaysFromDashBoard] = useState(location.state?.days || '')
   const [selectedDays, setSelectedDays] = useState([])
   const [selectedFilterValue, setSelectedFilterValue] = useState(1)
-  const [selectedToolId, setSelectedToolId] = useState(sessionStorage.getItem('toolID') || '')
+  // const [selectedToolId, setSelectedToolId] = useState(sessionStorage.getItem('toolID') || '')
+  const [selectedToolId, setSelectedToolId] = useState(2)
   const [tools, setTools] = useState([])
   const [showConfirmation, setShowConfirmation] = useState(false)
   const toolRef = useRef()
@@ -592,8 +593,9 @@ const IncidentsPage = () => {
                         <DropdownToggle
                           className={`no-pad ${!isCheckboxSelected ? 'disabled' : ''}`}
                         >
-                          <div className='btn btn-border btn-small'>
-                            Action <i className='fa fa-angle-down mg-left-5' />
+                           <div className='btn btn-border btn-small'>
+                            <span className='text-black'>Action</span>{' '}
+                            <i className='fa fa-angle-down mg-left-5' />
                           </div>
                         </DropdownToggle>
 
@@ -739,7 +741,7 @@ const IncidentsPage = () => {
                                           item?.alertIncidentMapping?.clientName || ''
                                         }`}
                                       >
-                                        <i className='bi bi-person-circle me-1 text-primary'></i>
+                                        <i className='bi bi-person-circle me-1'></i>
                                         {truncateText(item.requestorUserName, 12)}{' '}
                                         {truncateText(item.alertIncidentMapping?.clientName, 5)}
                                       </div>
@@ -780,8 +782,8 @@ const IncidentsPage = () => {
                               <div className='d-flex justify-content-between bd-highlight mt-2'>
                                 {item.incidentStatusName && (
                                   <div className='badge badge-light-primary fs-12' title='Status'>
-                                    <i className='bi bi-patch-check me-1 text-primary'></i>
-                                    {item.incidentStatusName}
+                                    <i className='bi bi-patch-check me-1'></i>
+                                    <span className='text-dark'>{item.incidentStatusName}</span>
                                   </div>
                                 )}
 
@@ -792,7 +794,7 @@ const IncidentsPage = () => {
                                       title='Priority'
                                     >
                                       <i className='bi bi-arrow-up-circle me-1'></i>
-                                      {item.priorityName}
+                                      <span className='text-dark'>{item.priorityName}</span>
                                     </div>
                                   )}
                                   {item.severityName && (

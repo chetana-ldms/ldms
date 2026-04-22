@@ -43,13 +43,13 @@ export const edges = [
     targetHandle: null,
     id: 'reactflow__edge-dndnode_6-dndnode_7',
   },
-  {
-    source: 'dndnode_6',
-    sourceHandle: null,
-    target: 'dndnode_5',
-    targetHandle: null,
-    id: 'reactflow__edge-dndnode_6-dndnode_5',
-  },
+  // {
+  //   source: 'dndnode_6',
+  //   sourceHandle: null,
+  //   target: 'dndnode_5',
+  //   targetHandle: null,
+  //   id: 'reactflow__edge-dndnode_6-dndnode_5',
+  // },
   {
     source: 'dndnode_7',
     sourceHandle: null,
@@ -79,11 +79,11 @@ export const edges = [
     id: 'reactflow__edge-dndnode_10-dndnode_11',
   },
   {
-    source: 'dndnode_5',
+    source: 'dndnode_6',
     sourceHandle: null,
     target: 'dndnode_12',
     targetHandle: null,
-    id: 'reactflow__edge-dndnode_5-dndnode_12',
+    id: 'reactflow__edge-dndnode_6-dndnode_12',
   },
 ]
 
@@ -95,9 +95,9 @@ export const dndinitialNodes = [
       x: 75,
       y: 75,
     },
-    className: 'qradar_offences_node',
+    className: 'alerts_node',
     data: {
-      label: 'Qradar Offences',
+      label: 'Alerts',
     },
     width: 75,
     height: 21,
@@ -197,28 +197,7 @@ export const dndinitialNodes = [
     },
     dragging: false,
   },
-  {
-    id: 'dndnode_5',
-    type: 'default',
-    position: {
-      x: 300,
-      y: 180,
-    },
-    className: 'service_now',
-    data: {
-      label: 'Service Now',
-    },
-    width: 65,
-    height: 21,
-    selected: false,
-    sourcePosition: 'right',
-    targetPosition: 'left',
-    positionAbsolute: {
-      x: 300,
-      y: 180,
-    },
-    dragging: false,
-  },
+ 
   {
     id: 'dndnode_6',
     type: 'default',
@@ -340,7 +319,7 @@ export const dndinitialNodes = [
     targetPosition: 'left',
     className: 'fire_wall',
     data: {
-      label: 'Firewwall ACL Block',
+      label: 'Firewall ACL Block',
     },
     width: 85,
     height: 21,

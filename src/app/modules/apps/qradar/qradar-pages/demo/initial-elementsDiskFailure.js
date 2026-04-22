@@ -1,0 +1,387 @@
+import React from 'react'
+import {MarkerType, Position} from 'reactflow'
+export const edges = [
+  {
+    source: 'dndnode_0',
+    sourceHandle: null,
+    target: 'dndnode_1',
+    targetHandle: null,
+    id: 'reactflow__edge-dndnode_0-dndnode_1',
+  },
+  {
+    source: 'dndnode_1',
+    sourceHandle: null,
+    target: 'dndnode_2',
+    targetHandle: null,
+    id: 'reactflow__edge-dndnode_1-dndnode_2',
+  },
+  {
+    source: 'dndnode_2',
+    sourceHandle: null,
+    target: 'dndnode_3',
+    targetHandle: null,
+    id: 'reactflow__edge-dndnode_2-dndnode_3',
+  },
+  {
+    source: 'dndnode_3',
+    sourceHandle: null,
+    target: 'dndnode_4',
+    targetHandle: null,
+    id: 'reactflow__edge-dndnode_3-dndnode_4',
+  },
+  {
+    source: 'dndnode_3',
+    sourceHandle: null,
+    target: 'dndnode_5',
+    targetHandle: null,
+    id: 'reactflow__edge-dndnode_3-dndnode_5',
+  },
+  {
+    source: 'dndnode_4',
+    sourceHandle: null,
+    target: 'dndnode_5',
+    targetHandle: null,
+    id: 'reactflow__edge-dndnode_4-dndnode_5',
+  },
+  {
+    source: 'dndnode_5',
+    sourceHandle: null,
+    target: 'dndnode_6',
+    targetHandle: null,
+    id: 'reactflow__edge-dndnode_5-dndnode_6',
+  },
+  {
+    source: 'dndnode_5',
+    sourceHandle: null,
+    target: 'dndnode_7',
+    targetHandle: null,
+    id: 'reactflow__edge-dndnode_5-dndnode_7',
+  },
+  {
+    source: 'dndnode_5',
+    sourceHandle: null,
+    target: 'dndnode_8',
+    targetHandle: null,
+    id: 'reactflow__edge-dndnode_5-dndnode_8',
+  },
+  {
+    source: 'dndnode_5',
+    sourceHandle: null,
+    target: 'dndnode_9',
+    targetHandle: null,
+    id: 'reactflow__edge-dndnode_5-dndnode_9',
+  },
+  {
+    source: 'dndnode_5',
+    sourceHandle: null,
+    target: 'dndnode_10',
+    targetHandle: null,
+    id: 'reactflow__edge-dndnode_5-dndnode_10',
+  },
+  {
+    source: 'dndnode_5',
+    sourceHandle: null,
+    target: 'dndnode_11',
+    targetHandle: null,
+    id: 'reactflow__edge-dndnode_5-dndnode_11',
+  },
+  {
+  source: 'dndnode_5',
+  sourceHandle: null,
+  target: 'dndnode_12',
+  targetHandle: null,
+  id: 'reactflow__edge-dndnode_6-dndnode_12',
+},
+
+ 
+ 
+]
+ 
+export const dndinitialNodes = [
+  {
+    id: 'dndnode_0',
+    type: 'input',
+    position: {
+      x: 75,
+      y: 75,
+    },
+    className: 'alert_node',
+    data: {
+      label: 'Alerts',
+    },
+    width: 75,
+    height: 21,
+    selected: false,
+    sourcePosition: 'right',
+    targetPosition: 'left',
+    positionAbsolute: {
+      x: 75,
+      y: 75,
+    },
+    dragging: false,
+  },
+  {
+    id: 'dndnode_1',
+    type: 'default',
+    position: {
+      x: 90,
+      y: 120,
+    },
+    className: 'check_hostname_ip',
+    data: {
+      label: 'Check for HostName IP Address SQL* 192.168.144 X',
+    },
+    width: 177,
+    height: 21,
+    selected: false,
+    sourcePosition: 'right',
+    targetPosition: 'left',
+    positionAbsolute: {
+      x: 90,
+      y: 120,
+    },
+    dragging: false,
+  },
+  {
+    id: 'dndnode_2',
+    type: 'default',
+    position: {
+      x: 120,
+      y: 180,
+    },
+    className: 'check_for_connection',
+    data: {
+      label: 'Check for Connection',
+    },
+    width: 91,
+    height: 21,
+    selected: false,
+    sourcePosition: 'right',
+    targetPosition: 'left',
+    positionAbsolute: {
+      x: 120,
+      y: 180,
+    },
+    dragging: false,
+  },
+  {
+    id: 'dndnode_3',
+    type: 'default',
+    position: {
+      x: 210,
+      y: 210,
+    },
+    className: 'cdc_out',
+    data: {
+      label: 'LDC Out',
+    },
+    width: 56,
+    height: 21,
+    selected: false,
+    sourcePosition: 'right',
+    targetPosition: 'left',
+    positionAbsolute: {
+      x: 210,
+      y: 180,
+    },
+    dragging: false,
+  },
+  {
+    id: 'dndnode_4',
+    type: 'output',
+    position: {
+      x: 300,
+      y: 150,
+    },
+    className: 'dba_admin',
+    data: {
+      label: 'DBA Admin',
+    },
+    width: 61,
+    height: 21,
+    selected: false,
+    targetPosition: 'left',
+    positionAbsolute: {
+      x: 300,
+      y: 135,
+    },
+    dragging: false,
+  },
+  {
+    id: 'dndnode_5',
+    type: 'default',
+    position: {
+      x: 300,
+      y: 240,
+    },
+    className: 'cdc_query',
+    data: {
+      label: 'LDC Query',
+    },
+    width: 63,
+    height: 21,
+    selected: false,
+    sourcePosition: 'right',
+    targetPosition: 'left',
+    positionAbsolute: {
+      x: 300,
+      y: 240,
+    },
+    dragging: false,
+  },
+  {
+    id: 'dndnode_6',
+    type: 'default',
+    position: {
+      x: 420,
+      y: 180,
+    },
+    className: 'Health check',
+    data: {
+      label: 'Health check',
+    },
+    width: 70,
+    height: 21,
+    selected: false,
+    sourcePosition: 'right',
+    targetPosition: 'left',
+    positionAbsolute: {
+      x: 420,
+      y: 180,
+    },
+    dragging: false,
+  },
+  // {
+  //   id: 'dndnode_7',
+  //   type: 'default',
+  //   position: {
+  //     x: 450,
+  //     y: 300,
+  //   },
+  //   className: 'Backup disc data',
+  //   data: {
+  //     label: 'Backup disc data',
+  //   },
+  //   width: 59,
+  //   height: 21,
+  //   selected: false,
+  //   sourcePosition: 'right',
+  //   targetPosition: 'left',
+  //   positionAbsolute: {
+  //     x: 330,
+  //     y: 300,
+  //   },
+  //   dragging: false,
+  // },
+    {
+    id: 'dndnode_8',
+    type: 'default',
+    position: {
+      x: 450,
+      y: 340,
+    },
+    className: 'bring disc online',
+    data: {
+      label: 'Bring disc online',
+    },
+    width: 59,
+    height: 21,
+    selected: false,
+    sourcePosition: 'right',
+    targetPosition: 'left',
+    positionAbsolute: {
+      x: 330,
+      y: 300,
+    },
+    dragging: false,
+  },
+  {
+    id: 'dndnode_9',
+    type: 'default',
+    position: {
+      x: 420,
+      y: 240,
+    },
+    className: 'Fetch disc related errors',
+    data: {
+      label: 'Fetch disc related errors',
+    },
+    width: 92,
+    height: 21,
+    selected: false,
+    sourcePosition: 'right',
+    targetPosition: 'left',
+    positionAbsolute: {
+      x: 420,
+      y: 240,
+    },
+    dragging: false,
+  },
+  {
+    id: 'dndnode_10',
+    type: 'default',
+    position: {
+      x: 450,
+      y: 270,
+    },
+    className: 'Verify disc status',
+    data: {
+      label: 'Verify disc status',
+    },
+    width: 60,
+    height: 21,
+    selected: false,
+    sourcePosition: 'right',
+    targetPosition: 'left',
+    positionAbsolute: {
+      x: 450,
+      y: 270,
+    },
+    dragging: false,
+  },
+  {
+    id: 'dndnode_11',
+    type: 'default',
+    position: {
+      x: 450,
+      y: 370,
+    },
+    className: 'verify disc status',
+    data: {
+      label: 'Verify disc status',
+    },
+    width: 60,
+    height: 21,
+    selected: false,
+    sourcePosition: 'right',
+    targetPosition: 'left',
+    positionAbsolute: {
+      x: 450,
+      y: 270,
+    },
+    dragging: false,
+  },
+  {
+  id: 'dndnode_12',
+  type: 'default',
+  position: {
+    x: 420,
+    y: 210,
+  },
+  className: 'establish_remote_session',
+  data: {
+    label: 'Establish remote session',
+  },
+  width: 130,
+  height: 21,
+  selected: false,
+  sourcePosition: 'right',
+  targetPosition: 'left',
+  positionAbsolute: {
+    x: 420,
+    y: 210,
+  },
+  dragging: false,
+},
+
+]

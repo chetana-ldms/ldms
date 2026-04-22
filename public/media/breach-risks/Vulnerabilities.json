@@ -1,0 +1,1866 @@
+{
+    "data": [
+        {
+            "externalId": "CVE-2021-36368",
+            "hostname": "ext.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2021-36368",
+                "description": "** DISPUTED ** An issue was discovered in OpenSSH before 8.9. If a client is using public-key authentication with agent forwarding but without -oLogLevel=verbose, and an attacker has silently modified the server to support the None authentication option, then the user cannot determine whether FIDO authentication is going to confirm that the user wishes to connect to that server, or that the user wishes to allow that server to connect to a different server on the user\u0027s behalf. NOTE: the vendor\u0027s position is \u0022this is not an authentication bypass, since nothing is being bypassed.\u0022",
+                "severity": 3.7,
+                "epss": 0.00395
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2023-08-22T05:12:38.637746Z",
+            "severityLevel": "Low",
+            "normalizedScore": 22.32,
+            "breachProbability": 0.0040
+        },
+        {
+            "externalId": "CVE-2016-20012",
+            "hostname": "ext.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2016-20012",
+                "description": "OpenSSH through 8.7 allows remote attackers, who have a suspicion that a certain combination of username and public key is known to an SSH server, to test whether this suspicion is correct. This occurs because a challenge is sent only when that combination could be valid for a login session. NOTE: the vendor does not recognize user enumeration as a vulnerability for this product",
+                "severity": 5.3,
+                "epss": 0.14603
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2023-08-22T05:12:38.637746Z",
+            "severityLevel": "Low",
+            "normalizedScore": 36.18,
+            "breachProbability": 0.1460
+        },
+        {
+            "externalId": "CVE-2023-38408",
+            "hostname": "ext.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2023-38408",
+                "description": "The PKCS#11 feature in ssh-agent in OpenSSH before 9.3p2 has an insufficiently trustworthy search path, leading to remote code execution if an agent is forwarded to an attacker-controlled system. (Code in /usr/lib is not necessarily safe for loading into ssh-agent.) NOTE: this issue exists because of an incomplete fix for CVE-2016-10009.",
+                "severity": 9.8,
+                "epss": 0.67693
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2023-08-22T05:12:38.637746Z",
+            "severityLevel": "High",
+            "normalizedScore": 79.11,
+            "breachProbability": 0.6769
+        },
+        {
+            "externalId": "CVE-2020-15778",
+            "hostname": "ext.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2020-15778",
+                "description": "** DISPUTED ** scp in OpenSSH through 8.3p1 allows command injection in the scp.c toremote function, as demonstrated by backtick characters in the destination argument. NOTE: the vendor reportedly has stated that they intentionally omit validation of \u0022anomalous argument transfers\u0022 because that could \u0022stand a great chance of breaking existing workflows.\u0022",
+                "severity": 7.8,
+                "epss": 0.61479
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2023-08-22T05:12:38.637746Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 65.24,
+            "breachProbability": 0.6148
+        },
+        {
+            "externalId": "CVE-2016-20012",
+            "hostname": "test.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2016-20012",
+                "description": "OpenSSH through 8.7 allows remote attackers, who have a suspicion that a certain combination of username and public key is known to an SSH server, to test whether this suspicion is correct. This occurs because a challenge is sent only when that combination could be valid for a login session. NOTE: the vendor does not recognize user enumeration as a vulnerability for this product",
+                "severity": 5.3,
+                "epss": 0.14603
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2023-08-24T10:18:16.752885Z",
+            "severityLevel": "Low",
+            "normalizedScore": 36.18,
+            "breachProbability": 0.1460
+        },
+        {
+            "externalId": "CVE-2020-15778",
+            "hostname": "test.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2020-15778",
+                "description": "** DISPUTED ** scp in OpenSSH through 8.3p1 allows command injection in the scp.c toremote function, as demonstrated by backtick characters in the destination argument. NOTE: the vendor reportedly has stated that they intentionally omit validation of \u0022anomalous argument transfers\u0022 because that could \u0022stand a great chance of breaking existing workflows.\u0022",
+                "severity": 7.8,
+                "epss": 0.61479
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2023-08-24T10:18:16.752885Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 65.24,
+            "breachProbability": 0.6148
+        },
+        {
+            "externalId": "CVE-2021-36368",
+            "hostname": "test.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2021-36368",
+                "description": "** DISPUTED ** An issue was discovered in OpenSSH before 8.9. If a client is using public-key authentication with agent forwarding but without -oLogLevel=verbose, and an attacker has silently modified the server to support the None authentication option, then the user cannot determine whether FIDO authentication is going to confirm that the user wishes to connect to that server, or that the user wishes to allow that server to connect to a different server on the user\u0027s behalf. NOTE: the vendor\u0027s position is \u0022this is not an authentication bypass, since nothing is being bypassed.\u0022",
+                "severity": 3.7,
+                "epss": 0.00395
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2023-08-24T10:18:16.752885Z",
+            "severityLevel": "Low",
+            "normalizedScore": 22.32,
+            "breachProbability": 0.0040
+        },
+        {
+            "externalId": "CVE-2023-38408",
+            "hostname": "test.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2023-38408",
+                "description": "The PKCS#11 feature in ssh-agent in OpenSSH before 9.3p2 has an insufficiently trustworthy search path, leading to remote code execution if an agent is forwarded to an attacker-controlled system. (Code in /usr/lib is not necessarily safe for loading into ssh-agent.) NOTE: this issue exists because of an incomplete fix for CVE-2016-10009.",
+                "severity": 9.8,
+                "epss": 0.67693
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2023-08-24T10:18:16.752885Z",
+            "severityLevel": "High",
+            "normalizedScore": 79.11,
+            "breachProbability": 0.6769
+        },
+        {
+            "externalId": "CVE-2023-51385",
+            "hostname": "ext.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2023-51385",
+                "description": "In ssh in OpenSSH before 9.6, OS command injection might occur if a user name or host name has shell metacharacters, and this name is referenced by an expansion token in certain situations. For example, an untrusted Git repository can have a submodule with shell metacharacters in a user name or host name.",
+                "severity": 6.5,
+                "epss": 0.16522
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2023-12-24T13:36:55.887872Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 43.96,
+            "breachProbability": 0.1652
+        },
+        {
+            "externalId": "CVE-2023-51385",
+            "hostname": "test.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2023-51385",
+                "description": "In ssh in OpenSSH before 9.6, OS command injection might occur if a user name or host name has shell metacharacters, and this name is referenced by an expansion token in certain situations. For example, an untrusted Git repository can have a submodule with shell metacharacters in a user name or host name.",
+                "severity": 6.5,
+                "epss": 0.16522
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2023-12-25T20:43:14.050257Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 43.96,
+            "breachProbability": 0.1652
+        },
+        {
+            "externalId": "CVE-2023-48795",
+            "hostname": "ext.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2023-48795",
+                "description": "The SSH transport protocol with certain OpenSSH extensions, found in OpenSSH before 9.6 and other products, allows remote attackers to bypass integrity checks such that some packets are omitted (from the extension negotiation message), and a client and server may consequently end up with a connection for which some security features have been downgraded or disabled, aka a Terrapin attack. This occurs because the SSH Binary Packet Protocol (BPP), implemented by these extensions, mishandles the handshake phase and mishandles use of sequence numbers. For example, there is an effective attack against SSH\u0027s use of ChaCha20-Poly1305 (and CBC with Encrypt-then-MAC). The bypass occurs in chacha20-poly1305@openssh.com and (if CBC is used) the -etm@openssh.com MAC algorithms. This also affects Maverick Synergy Java SSH API before 3.1.0-SNAPSHOT, Dropbear through 2022.83, Ssh before 5.1.1 in Erlang/OTP, PuTTY before 0.80, AsyncSSH before 2.14.2, golang.org/x/crypto before 0.17.0, libssh before 0.10.6, libssh2 through 1.11.0, Thorn Tech SFTP Gateway before 3.4.6, Tera Term before 5.1, Paramiko before 3.4.0, jsch before 0.2.15, SFTPGo before 2.5.6, Netgate pfSense Plus through 23.09.1, Netgate pfSense CE through 2.7.2, HPN-SSH through 18.2.0, ProFTPD before 1.3.8b (and before 1.3.9rc2), ORYX CycloneSSH before 2.3.4, NetSarang XShell 7 before Build 0144, CrushFTP before 10.6.0, ConnectBot SSH library before 2.2.22, Apache MINA sshd through 2.11.0, sshj through 0.37.0, TinySSH through 20230101, trilead-ssh2 6401, LANCOM LCOS and LANconfig, FileZilla before 3.66.4, Nova before 11.8, PKIX-SSH before 14.4, SecureCRT before 9.4.3, Transmit5 before 5.10.4, Win32-OpenSSH before 9.5.0.0p1-Beta, WinSCP before 6.2.2, Bitvise SSH Server before 9.32, Bitvise SSH Client before 9.33, KiTTY through 0.76.1.13, the net-ssh gem 7.2.0 for Ruby, the mscdex ssh2 module before 1.15.0 for Node.js, the thrussh library before 0.35.1 for Rust, and the Russh crate before 0.40.2 for Rust.",
+                "severity": 5.9,
+                "epss": 0.5673
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2024-01-01T11:14:42.766149Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 52.42,
+            "breachProbability": 0.5673
+        },
+        {
+            "externalId": "CVE-2023-48795",
+            "hostname": "test.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2023-48795",
+                "description": "The SSH transport protocol with certain OpenSSH extensions, found in OpenSSH before 9.6 and other products, allows remote attackers to bypass integrity checks such that some packets are omitted (from the extension negotiation message), and a client and server may consequently end up with a connection for which some security features have been downgraded or disabled, aka a Terrapin attack. This occurs because the SSH Binary Packet Protocol (BPP), implemented by these extensions, mishandles the handshake phase and mishandles use of sequence numbers. For example, there is an effective attack against SSH\u0027s use of ChaCha20-Poly1305 (and CBC with Encrypt-then-MAC). The bypass occurs in chacha20-poly1305@openssh.com and (if CBC is used) the -etm@openssh.com MAC algorithms. This also affects Maverick Synergy Java SSH API before 3.1.0-SNAPSHOT, Dropbear through 2022.83, Ssh before 5.1.1 in Erlang/OTP, PuTTY before 0.80, AsyncSSH before 2.14.2, golang.org/x/crypto before 0.17.0, libssh before 0.10.6, libssh2 through 1.11.0, Thorn Tech SFTP Gateway before 3.4.6, Tera Term before 5.1, Paramiko before 3.4.0, jsch before 0.2.15, SFTPGo before 2.5.6, Netgate pfSense Plus through 23.09.1, Netgate pfSense CE through 2.7.2, HPN-SSH through 18.2.0, ProFTPD before 1.3.8b (and before 1.3.9rc2), ORYX CycloneSSH before 2.3.4, NetSarang XShell 7 before Build 0144, CrushFTP before 10.6.0, ConnectBot SSH library before 2.2.22, Apache MINA sshd through 2.11.0, sshj through 0.37.0, TinySSH through 20230101, trilead-ssh2 6401, LANCOM LCOS and LANconfig, FileZilla before 3.66.4, Nova before 11.8, PKIX-SSH before 14.4, SecureCRT before 9.4.3, Transmit5 before 5.10.4, Win32-OpenSSH before 9.5.0.0p1-Beta, WinSCP before 6.2.2, Bitvise SSH Server before 9.32, Bitvise SSH Client before 9.33, KiTTY through 0.76.1.13, the net-ssh gem 7.2.0 for Ruby, the mscdex ssh2 module before 1.15.0 for Node.js, the thrussh library before 0.35.1 for Rust, and the Russh crate before 0.40.2 for Rust.",
+                "severity": 5.9,
+                "epss": 0.5673
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2024-01-02T05:52:54.967013Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 52.42,
+            "breachProbability": 0.5673
+        },
+        {
+            "externalId": "CVE-2021-41617",
+            "hostname": "ext.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2021-41617",
+                "description": "sshd in OpenSSH 6.2 through 8.x before 8.8, when certain non-default configurations are used, allows privilege escalation because supplemental groups are not initialized as expected. Helper programs for AuthorizedKeysCommand and AuthorizedPrincipalsCommand may run with privileges associated with group memberships of the sshd process, if the configuration specifies running the command as a different user.",
+                "severity": 7,
+                "epss": 0.00274
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2024-06-15T17:40:45.207559Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 42.08,
+            "breachProbability": 0.0027
+        },
+        {
+            "externalId": "CVE-2019-16905",
+            "hostname": "ext.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2019-16905",
+                "description": "OpenSSH 7.7 through 7.9 and 8.x before 8.1, when compiled with an experimental key type, has a pre-authentication integer overflow if a client or server is configured to use a crafted XMSS key. This leads to memory corruption and local code execution because of an error in the XMSS key parsing algorithm. NOTE: the XMSS implementation is considered experimental in all released OpenSSH versions, and there is no supported way to enable it when building portable OpenSSH.",
+                "severity": 7.8,
+                "epss": 0.00271
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2024-06-15T17:40:45.207559Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 46.88,
+            "breachProbability": 0.0027
+        },
+        {
+            "externalId": "CVE-2020-14145",
+            "hostname": "ext.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2020-14145",
+                "description": "The client side in OpenSSH 5.7 through 8.4 has an Observable Discrepancy leading to an information leak in the algorithm negotiation. This allows man-in-the-middle attackers to target initial connection attempts (where no host key for the server has been cached by the client). NOTE: some reports state that 8.5 and 8.6 are also affected.",
+                "severity": 5.9,
+                "epss": 0.01562
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2024-06-15T17:40:45.207559Z",
+            "severityLevel": "Low",
+            "normalizedScore": 35.87,
+            "breachProbability": 0.0156
+        },
+        {
+            "externalId": "CVE-2020-14145",
+            "hostname": "test.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2020-14145",
+                "description": "The client side in OpenSSH 5.7 through 8.4 has an Observable Discrepancy leading to an information leak in the algorithm negotiation. This allows man-in-the-middle attackers to target initial connection attempts (where no host key for the server has been cached by the client). NOTE: some reports state that 8.5 and 8.6 are also affected.",
+                "severity": 5.9,
+                "epss": 0.01562
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2024-06-16T04:04:29.033635Z",
+            "severityLevel": "Low",
+            "normalizedScore": 35.87,
+            "breachProbability": 0.0156
+        },
+        {
+            "externalId": "CVE-2019-16905",
+            "hostname": "test.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2019-16905",
+                "description": "OpenSSH 7.7 through 7.9 and 8.x before 8.1, when compiled with an experimental key type, has a pre-authentication integer overflow if a client or server is configured to use a crafted XMSS key. This leads to memory corruption and local code execution because of an error in the XMSS key parsing algorithm. NOTE: the XMSS implementation is considered experimental in all released OpenSSH versions, and there is no supported way to enable it when building portable OpenSSH.",
+                "severity": 7.8,
+                "epss": 0.00271
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2024-06-16T04:04:29.033635Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 46.88,
+            "breachProbability": 0.0027
+        },
+        {
+            "externalId": "CVE-2021-41617",
+            "hostname": "test.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2021-41617",
+                "description": "sshd in OpenSSH 6.2 through 8.x before 8.8, when certain non-default configurations are used, allows privilege escalation because supplemental groups are not initialized as expected. Helper programs for AuthorizedKeysCommand and AuthorizedPrincipalsCommand may run with privileges associated with group memberships of the sshd process, if the configuration specifies running the command as a different user.",
+                "severity": 7,
+                "epss": 0.00274
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2024-06-16T04:04:29.033635Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 42.08,
+            "breachProbability": 0.0027
+        },
+        {
+            "externalId": "CVE-2025-26465",
+            "hostname": "test.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2025-26465",
+                "description": "A vulnerability was found in OpenSSH when the VerifyHostKeyDNS option is enabled. A machine-in-the-middle attack can be performed by a malicious machine impersonating a legit server. This issue occurs due to how OpenSSH mishandles error codes in specific conditions when verifying the host key. For an attack to be considered successful, the attacker needs to manage to exhaust the client\u0027s memory resource first, turning the attack complexity high.",
+                "severity": 6.8,
+                "epss": 0.72397
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2025-04-15T06:58:11.734438Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 62.52,
+            "breachProbability": 0.7240
+        },
+        {
+            "externalId": "CVE-2025-26465",
+            "hostname": "ext.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2025-26465",
+                "description": "A vulnerability was found in OpenSSH when the VerifyHostKeyDNS option is enabled. A machine-in-the-middle attack can be performed by a malicious machine impersonating a legit server. This issue occurs due to how OpenSSH mishandles error codes in specific conditions when verifying the host key. For an attack to be considered successful, the attacker needs to manage to exhaust the client\u0027s memory resource first, turning the attack complexity high.",
+                "severity": 6.8,
+                "epss": 0.72397
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2025-04-15T12:01:45.915172Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 62.52,
+            "breachProbability": 0.7240
+        },
+        {
+            "externalId": "CVE-2025-32728",
+            "hostname": "test.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2025-32728",
+                "description": "In sshd in OpenSSH before 10.0, the DisableForwarding directive does not adhere to the documentation stating that it disables X11 and agent forwarding.",
+                "severity": 4.3,
+                "epss": 0.00274
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2025-06-13T00:48:37.497526Z",
+            "severityLevel": "Low",
+            "normalizedScore": 25.88,
+            "breachProbability": 0.0027
+        },
+        {
+            "externalId": "CVE-2025-32728",
+            "hostname": "ext.lancesoft.com",
+            "ipAddresses": [
+                "160.153.57.136"
+            ],
+            "cve": {
+                "id": "CVE-2025-32728",
+                "description": "In sshd in OpenSSH before 10.0, the DisableForwarding directive does not adhere to the documentation stating that it disables X11 and agent forwarding.",
+                "severity": 4.3,
+                "epss": 0.00274
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.0"
+                }
+            ],
+            "createdAt": "2025-06-14T04:06:00.418629Z",
+            "severityLevel": "Low",
+            "normalizedScore": 25.88,
+            "breachProbability": 0.0027
+        },
+        {
+            "externalId": "CVE-2025-64352",
+            "hostname": "healthcare.lancesoft.eu",
+            "ipAddresses": [],
+            "cve": {
+                "id": "CVE-2025-64352",
+                "description": "Missing Authorization vulnerability in WPDeveloper Essential Addons for Elementor essential-addons-for-elementor-lite allows Exploiting Incorrectly Configured Access Control Security Levels.This issue affects Essential Addons for Elementor: from n/a through \u003C= 6.2.4.",
+                "severity": 2.7,
+                "epss": 0.00028
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:wpdeveloper:essential_addons_for_elementor:6.2.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "wpdeveloper",
+                    "product": "essential_addons_for_elementor",
+                    "version": "6.2.0"
+                }
+            ],
+            "createdAt": "2026-01-31T18:19:40.702028Z",
+            "severityLevel": "Low",
+            "normalizedScore": 16.21,
+            "breachProbability": 0.0003
+        },
+        {
+            "externalId": "CVE-2025-69092",
+            "hostname": "healthcare.lancesoft.eu",
+            "ipAddresses": [],
+            "cve": {
+                "id": "CVE-2025-69092",
+                "description": "Improper Neutralization of Input During Web Page Generation (\u0027Cross-site Scripting\u0027) vulnerability in WPDeveloper Essential Addons for Elementor essential-addons-for-elementor-lite allows DOM-Based XSS.This issue affects Essential Addons for Elementor: from n/a through \u003C= 6.5.3.",
+                "severity": 6.5,
+                "epss": 0.00045
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:wpdeveloper:essential_addons_for_elementor:6.2.0"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "wpdeveloper",
+                    "product": "essential_addons_for_elementor",
+                    "version": "6.2.0"
+                }
+            ],
+            "createdAt": "2026-01-31T18:19:40.702028Z",
+            "severityLevel": "Low",
+            "normalizedScore": 39.01,
+            "breachProbability": 0.0004
+        },
+        {
+            "externalId": "CVE-2016-20012",
+            "hostname": "lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2016-20012",
+                "description": "OpenSSH through 8.7 allows remote attackers, who have a suspicion that a certain combination of username and public key is known to an SSH server, to test whether this suspicion is correct. This occurs because a challenge is sent only when that combination could be valid for a login session. NOTE: the vendor does not recognize user enumeration as a vulnerability for this product",
+                "severity": 5.3,
+                "epss": 0.14603
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-02T13:12:34.64151Z",
+            "severityLevel": "Low",
+            "normalizedScore": 36.18,
+            "breachProbability": 0.1460
+        },
+        {
+            "externalId": "CVE-2023-38408",
+            "hostname": "lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2023-38408",
+                "description": "The PKCS#11 feature in ssh-agent in OpenSSH before 9.3p2 has an insufficiently trustworthy search path, leading to remote code execution if an agent is forwarded to an attacker-controlled system. (Code in /usr/lib is not necessarily safe for loading into ssh-agent.) NOTE: this issue exists because of an incomplete fix for CVE-2016-10009.",
+                "severity": 9.8,
+                "epss": 0.67693
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-02T13:12:34.64151Z",
+            "severityLevel": "High",
+            "normalizedScore": 79.11,
+            "breachProbability": 0.6769
+        },
+        {
+            "externalId": "CVE-2023-48795",
+            "hostname": "lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2023-48795",
+                "description": "The SSH transport protocol with certain OpenSSH extensions, found in OpenSSH before 9.6 and other products, allows remote attackers to bypass integrity checks such that some packets are omitted (from the extension negotiation message), and a client and server may consequently end up with a connection for which some security features have been downgraded or disabled, aka a Terrapin attack. This occurs because the SSH Binary Packet Protocol (BPP), implemented by these extensions, mishandles the handshake phase and mishandles use of sequence numbers. For example, there is an effective attack against SSH\u0027s use of ChaCha20-Poly1305 (and CBC with Encrypt-then-MAC). The bypass occurs in chacha20-poly1305@openssh.com and (if CBC is used) the -etm@openssh.com MAC algorithms. This also affects Maverick Synergy Java SSH API before 3.1.0-SNAPSHOT, Dropbear through 2022.83, Ssh before 5.1.1 in Erlang/OTP, PuTTY before 0.80, AsyncSSH before 2.14.2, golang.org/x/crypto before 0.17.0, libssh before 0.10.6, libssh2 through 1.11.0, Thorn Tech SFTP Gateway before 3.4.6, Tera Term before 5.1, Paramiko before 3.4.0, jsch before 0.2.15, SFTPGo before 2.5.6, Netgate pfSense Plus through 23.09.1, Netgate pfSense CE through 2.7.2, HPN-SSH through 18.2.0, ProFTPD before 1.3.8b (and before 1.3.9rc2), ORYX CycloneSSH before 2.3.4, NetSarang XShell 7 before Build 0144, CrushFTP before 10.6.0, ConnectBot SSH library before 2.2.22, Apache MINA sshd through 2.11.0, sshj through 0.37.0, TinySSH through 20230101, trilead-ssh2 6401, LANCOM LCOS and LANconfig, FileZilla before 3.66.4, Nova before 11.8, PKIX-SSH before 14.4, SecureCRT before 9.4.3, Transmit5 before 5.10.4, Win32-OpenSSH before 9.5.0.0p1-Beta, WinSCP before 6.2.2, Bitvise SSH Server before 9.32, Bitvise SSH Client before 9.33, KiTTY through 0.76.1.13, the net-ssh gem 7.2.0 for Ruby, the mscdex ssh2 module before 1.15.0 for Node.js, the thrussh library before 0.35.1 for Rust, and the Russh crate before 0.40.2 for Rust.",
+                "severity": 5.9,
+                "epss": 0.5673
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-02T13:12:34.64151Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 52.42,
+            "breachProbability": 0.5673
+        },
+        {
+            "externalId": "CVE-2024-6387",
+            "hostname": "lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2024-6387",
+                "description": "A security regression (CVE-2006-5051) was discovered in OpenSSH\u0027s server (sshd). There is a race condition which can lead sshd to handle some signals in an unsafe manner. An unauthenticated, remote attacker may be able to trigger it by failing to authenticate within a set time period.",
+                "severity": 8.1,
+                "epss": 0.46693
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-02T13:12:34.64151Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 62.61,
+            "breachProbability": 0.4669
+        },
+        {
+            "externalId": "CVE-2021-36368",
+            "hostname": "lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2021-36368",
+                "description": "** DISPUTED ** An issue was discovered in OpenSSH before 8.9. If a client is using public-key authentication with agent forwarding but without -oLogLevel=verbose, and an attacker has silently modified the server to support the None authentication option, then the user cannot determine whether FIDO authentication is going to confirm that the user wishes to connect to that server, or that the user wishes to allow that server to connect to a different server on the user\u0027s behalf. NOTE: the vendor\u0027s position is \u0022this is not an authentication bypass, since nothing is being bypassed.\u0022",
+                "severity": 3.7,
+                "epss": 0.00395
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-02T13:12:34.64151Z",
+            "severityLevel": "Low",
+            "normalizedScore": 22.32,
+            "breachProbability": 0.0040
+        },
+        {
+            "externalId": "CVE-2021-41617",
+            "hostname": "lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2021-41617",
+                "description": "sshd in OpenSSH 6.2 through 8.x before 8.8, when certain non-default configurations are used, allows privilege escalation because supplemental groups are not initialized as expected. Helper programs for AuthorizedKeysCommand and AuthorizedPrincipalsCommand may run with privileges associated with group memberships of the sshd process, if the configuration specifies running the command as a different user.",
+                "severity": 7,
+                "epss": 0.00274
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-02T13:12:34.64151Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 42.08,
+            "breachProbability": 0.0027
+        },
+        {
+            "externalId": "CVE-2023-51385",
+            "hostname": "lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2023-51385",
+                "description": "In ssh in OpenSSH before 9.6, OS command injection might occur if a user name or host name has shell metacharacters, and this name is referenced by an expansion token in certain situations. For example, an untrusted Git repository can have a submodule with shell metacharacters in a user name or host name.",
+                "severity": 6.5,
+                "epss": 0.16522
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-02T13:12:34.64151Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 43.96,
+            "breachProbability": 0.1652
+        },
+        {
+            "externalId": "CVE-2025-26465",
+            "hostname": "lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2025-26465",
+                "description": "A vulnerability was found in OpenSSH when the VerifyHostKeyDNS option is enabled. A machine-in-the-middle attack can be performed by a malicious machine impersonating a legit server. This issue occurs due to how OpenSSH mishandles error codes in specific conditions when verifying the host key. For an attack to be considered successful, the attacker needs to manage to exhaust the client\u0027s memory resource first, turning the attack complexity high.",
+                "severity": 6.8,
+                "epss": 0.72397
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-02T13:12:34.64151Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 62.52,
+            "breachProbability": 0.7240
+        },
+        {
+            "externalId": "CVE-2025-32728",
+            "hostname": "lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2025-32728",
+                "description": "In sshd in OpenSSH before 10.0, the DisableForwarding directive does not adhere to the documentation stating that it disables X11 and agent forwarding.",
+                "severity": 4.3,
+                "epss": 0.00274
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-02T13:12:34.64151Z",
+            "severityLevel": "Low",
+            "normalizedScore": 25.88,
+            "breachProbability": 0.0027
+        },
+        {
+            "externalId": "CVE-2021-36368",
+            "hostname": "cybersecurity.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2021-36368",
+                "description": "** DISPUTED ** An issue was discovered in OpenSSH before 8.9. If a client is using public-key authentication with agent forwarding but without -oLogLevel=verbose, and an attacker has silently modified the server to support the None authentication option, then the user cannot determine whether FIDO authentication is going to confirm that the user wishes to connect to that server, or that the user wishes to allow that server to connect to a different server on the user\u0027s behalf. NOTE: the vendor\u0027s position is \u0022this is not an authentication bypass, since nothing is being bypassed.\u0022",
+                "severity": 3.7,
+                "epss": 0.00395
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-03T16:52:15.433215Z",
+            "severityLevel": "Low",
+            "normalizedScore": 22.32,
+            "breachProbability": 0.0040
+        },
+        {
+            "externalId": "CVE-2023-48795",
+            "hostname": "cybersecurity.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2023-48795",
+                "description": "The SSH transport protocol with certain OpenSSH extensions, found in OpenSSH before 9.6 and other products, allows remote attackers to bypass integrity checks such that some packets are omitted (from the extension negotiation message), and a client and server may consequently end up with a connection for which some security features have been downgraded or disabled, aka a Terrapin attack. This occurs because the SSH Binary Packet Protocol (BPP), implemented by these extensions, mishandles the handshake phase and mishandles use of sequence numbers. For example, there is an effective attack against SSH\u0027s use of ChaCha20-Poly1305 (and CBC with Encrypt-then-MAC). The bypass occurs in chacha20-poly1305@openssh.com and (if CBC is used) the -etm@openssh.com MAC algorithms. This also affects Maverick Synergy Java SSH API before 3.1.0-SNAPSHOT, Dropbear through 2022.83, Ssh before 5.1.1 in Erlang/OTP, PuTTY before 0.80, AsyncSSH before 2.14.2, golang.org/x/crypto before 0.17.0, libssh before 0.10.6, libssh2 through 1.11.0, Thorn Tech SFTP Gateway before 3.4.6, Tera Term before 5.1, Paramiko before 3.4.0, jsch before 0.2.15, SFTPGo before 2.5.6, Netgate pfSense Plus through 23.09.1, Netgate pfSense CE through 2.7.2, HPN-SSH through 18.2.0, ProFTPD before 1.3.8b (and before 1.3.9rc2), ORYX CycloneSSH before 2.3.4, NetSarang XShell 7 before Build 0144, CrushFTP before 10.6.0, ConnectBot SSH library before 2.2.22, Apache MINA sshd through 2.11.0, sshj through 0.37.0, TinySSH through 20230101, trilead-ssh2 6401, LANCOM LCOS and LANconfig, FileZilla before 3.66.4, Nova before 11.8, PKIX-SSH before 14.4, SecureCRT before 9.4.3, Transmit5 before 5.10.4, Win32-OpenSSH before 9.5.0.0p1-Beta, WinSCP before 6.2.2, Bitvise SSH Server before 9.32, Bitvise SSH Client before 9.33, KiTTY through 0.76.1.13, the net-ssh gem 7.2.0 for Ruby, the mscdex ssh2 module before 1.15.0 for Node.js, the thrussh library before 0.35.1 for Rust, and the Russh crate before 0.40.2 for Rust.",
+                "severity": 5.9,
+                "epss": 0.5673
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-03T16:52:15.433215Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 52.42,
+            "breachProbability": 0.5673
+        },
+        {
+            "externalId": "CVE-2023-51385",
+            "hostname": "cybersecurity.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2023-51385",
+                "description": "In ssh in OpenSSH before 9.6, OS command injection might occur if a user name or host name has shell metacharacters, and this name is referenced by an expansion token in certain situations. For example, an untrusted Git repository can have a submodule with shell metacharacters in a user name or host name.",
+                "severity": 6.5,
+                "epss": 0.16522
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-03T16:52:15.433215Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 43.96,
+            "breachProbability": 0.1652
+        },
+        {
+            "externalId": "CVE-2024-6387",
+            "hostname": "cybersecurity.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2024-6387",
+                "description": "A security regression (CVE-2006-5051) was discovered in OpenSSH\u0027s server (sshd). There is a race condition which can lead sshd to handle some signals in an unsafe manner. An unauthenticated, remote attacker may be able to trigger it by failing to authenticate within a set time period.",
+                "severity": 8.1,
+                "epss": 0.46693
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-03T16:52:15.433215Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 62.61,
+            "breachProbability": 0.4669
+        },
+        {
+            "externalId": "CVE-2025-26465",
+            "hostname": "cybersecurity.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2025-26465",
+                "description": "A vulnerability was found in OpenSSH when the VerifyHostKeyDNS option is enabled. A machine-in-the-middle attack can be performed by a malicious machine impersonating a legit server. This issue occurs due to how OpenSSH mishandles error codes in specific conditions when verifying the host key. For an attack to be considered successful, the attacker needs to manage to exhaust the client\u0027s memory resource first, turning the attack complexity high.",
+                "severity": 6.8,
+                "epss": 0.72397
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-03T16:52:15.433215Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 62.52,
+            "breachProbability": 0.7240
+        },
+        {
+            "externalId": "CVE-2025-32728",
+            "hostname": "cybersecurity.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2025-32728",
+                "description": "In sshd in OpenSSH before 10.0, the DisableForwarding directive does not adhere to the documentation stating that it disables X11 and agent forwarding.",
+                "severity": 4.3,
+                "epss": 0.00274
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-03T16:52:15.433215Z",
+            "severityLevel": "Low",
+            "normalizedScore": 25.88,
+            "breachProbability": 0.0027
+        },
+        {
+            "externalId": "CVE-2016-20012",
+            "hostname": "cybersecurity.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2016-20012",
+                "description": "OpenSSH through 8.7 allows remote attackers, who have a suspicion that a certain combination of username and public key is known to an SSH server, to test whether this suspicion is correct. This occurs because a challenge is sent only when that combination could be valid for a login session. NOTE: the vendor does not recognize user enumeration as a vulnerability for this product",
+                "severity": 5.3,
+                "epss": 0.14603
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-03T16:52:15.433215Z",
+            "severityLevel": "Low",
+            "normalizedScore": 36.18,
+            "breachProbability": 0.1460
+        },
+        {
+            "externalId": "CVE-2021-41617",
+            "hostname": "cybersecurity.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2021-41617",
+                "description": "sshd in OpenSSH 6.2 through 8.x before 8.8, when certain non-default configurations are used, allows privilege escalation because supplemental groups are not initialized as expected. Helper programs for AuthorizedKeysCommand and AuthorizedPrincipalsCommand may run with privileges associated with group memberships of the sshd process, if the configuration specifies running the command as a different user.",
+                "severity": 7,
+                "epss": 0.00274
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-03T16:52:15.433215Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 42.08,
+            "breachProbability": 0.0027
+        },
+        {
+            "externalId": "CVE-2023-38408",
+            "hostname": "cybersecurity.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2023-38408",
+                "description": "The PKCS#11 feature in ssh-agent in OpenSSH before 9.3p2 has an insufficiently trustworthy search path, leading to remote code execution if an agent is forwarded to an attacker-controlled system. (Code in /usr/lib is not necessarily safe for loading into ssh-agent.) NOTE: this issue exists because of an incomplete fix for CVE-2016-10009.",
+                "severity": 9.8,
+                "epss": 0.67693
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-03T16:52:15.433215Z",
+            "severityLevel": "High",
+            "normalizedScore": 79.11,
+            "breachProbability": 0.6769
+        },
+        {
+            "externalId": "CVE-2023-48795",
+            "hostname": "healthcare.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2023-48795",
+                "description": "The SSH transport protocol with certain OpenSSH extensions, found in OpenSSH before 9.6 and other products, allows remote attackers to bypass integrity checks such that some packets are omitted (from the extension negotiation message), and a client and server may consequently end up with a connection for which some security features have been downgraded or disabled, aka a Terrapin attack. This occurs because the SSH Binary Packet Protocol (BPP), implemented by these extensions, mishandles the handshake phase and mishandles use of sequence numbers. For example, there is an effective attack against SSH\u0027s use of ChaCha20-Poly1305 (and CBC with Encrypt-then-MAC). The bypass occurs in chacha20-poly1305@openssh.com and (if CBC is used) the -etm@openssh.com MAC algorithms. This also affects Maverick Synergy Java SSH API before 3.1.0-SNAPSHOT, Dropbear through 2022.83, Ssh before 5.1.1 in Erlang/OTP, PuTTY before 0.80, AsyncSSH before 2.14.2, golang.org/x/crypto before 0.17.0, libssh before 0.10.6, libssh2 through 1.11.0, Thorn Tech SFTP Gateway before 3.4.6, Tera Term before 5.1, Paramiko before 3.4.0, jsch before 0.2.15, SFTPGo before 2.5.6, Netgate pfSense Plus through 23.09.1, Netgate pfSense CE through 2.7.2, HPN-SSH through 18.2.0, ProFTPD before 1.3.8b (and before 1.3.9rc2), ORYX CycloneSSH before 2.3.4, NetSarang XShell 7 before Build 0144, CrushFTP before 10.6.0, ConnectBot SSH library before 2.2.22, Apache MINA sshd through 2.11.0, sshj through 0.37.0, TinySSH through 20230101, trilead-ssh2 6401, LANCOM LCOS and LANconfig, FileZilla before 3.66.4, Nova before 11.8, PKIX-SSH before 14.4, SecureCRT before 9.4.3, Transmit5 before 5.10.4, Win32-OpenSSH before 9.5.0.0p1-Beta, WinSCP before 6.2.2, Bitvise SSH Server before 9.32, Bitvise SSH Client before 9.33, KiTTY through 0.76.1.13, the net-ssh gem 7.2.0 for Ruby, the mscdex ssh2 module before 1.15.0 for Node.js, the thrussh library before 0.35.1 for Rust, and the Russh crate before 0.40.2 for Rust.",
+                "severity": 5.9,
+                "epss": 0.5673
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-04T18:58:42.561132Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 52.42,
+            "breachProbability": 0.5673
+        },
+        {
+            "externalId": "CVE-2025-32728",
+            "hostname": "healthcare.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2025-32728",
+                "description": "In sshd in OpenSSH before 10.0, the DisableForwarding directive does not adhere to the documentation stating that it disables X11 and agent forwarding.",
+                "severity": 4.3,
+                "epss": 0.00274
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-04T18:58:42.561132Z",
+            "severityLevel": "Low",
+            "normalizedScore": 25.88,
+            "breachProbability": 0.0027
+        },
+        {
+            "externalId": "CVE-2021-41617",
+            "hostname": "healthcare.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2021-41617",
+                "description": "sshd in OpenSSH 6.2 through 8.x before 8.8, when certain non-default configurations are used, allows privilege escalation because supplemental groups are not initialized as expected. Helper programs for AuthorizedKeysCommand and AuthorizedPrincipalsCommand may run with privileges associated with group memberships of the sshd process, if the configuration specifies running the command as a different user.",
+                "severity": 7,
+                "epss": 0.00274
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-04T18:58:42.561132Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 42.08,
+            "breachProbability": 0.0027
+        },
+        {
+            "externalId": "CVE-2023-51385",
+            "hostname": "healthcare.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2023-51385",
+                "description": "In ssh in OpenSSH before 9.6, OS command injection might occur if a user name or host name has shell metacharacters, and this name is referenced by an expansion token in certain situations. For example, an untrusted Git repository can have a submodule with shell metacharacters in a user name or host name.",
+                "severity": 6.5,
+                "epss": 0.16522
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-04T18:58:42.561132Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 43.96,
+            "breachProbability": 0.1652
+        },
+        {
+            "externalId": "CVE-2024-6387",
+            "hostname": "healthcare.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2024-6387",
+                "description": "A security regression (CVE-2006-5051) was discovered in OpenSSH\u0027s server (sshd). There is a race condition which can lead sshd to handle some signals in an unsafe manner. An unauthenticated, remote attacker may be able to trigger it by failing to authenticate within a set time period.",
+                "severity": 8.1,
+                "epss": 0.46693
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-04T18:58:42.561132Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 62.61,
+            "breachProbability": 0.4669
+        },
+        {
+            "externalId": "CVE-2025-26465",
+            "hostname": "healthcare.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2025-26465",
+                "description": "A vulnerability was found in OpenSSH when the VerifyHostKeyDNS option is enabled. A machine-in-the-middle attack can be performed by a malicious machine impersonating a legit server. This issue occurs due to how OpenSSH mishandles error codes in specific conditions when verifying the host key. For an attack to be considered successful, the attacker needs to manage to exhaust the client\u0027s memory resource first, turning the attack complexity high.",
+                "severity": 6.8,
+                "epss": 0.72397
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-04T18:58:42.561132Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 62.52,
+            "breachProbability": 0.7240
+        },
+        {
+            "externalId": "CVE-2016-20012",
+            "hostname": "healthcare.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2016-20012",
+                "description": "OpenSSH through 8.7 allows remote attackers, who have a suspicion that a certain combination of username and public key is known to an SSH server, to test whether this suspicion is correct. This occurs because a challenge is sent only when that combination could be valid for a login session. NOTE: the vendor does not recognize user enumeration as a vulnerability for this product",
+                "severity": 5.3,
+                "epss": 0.14603
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-04T18:58:42.561132Z",
+            "severityLevel": "Low",
+            "normalizedScore": 36.18,
+            "breachProbability": 0.1460
+        },
+        {
+            "externalId": "CVE-2021-36368",
+            "hostname": "healthcare.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2021-36368",
+                "description": "** DISPUTED ** An issue was discovered in OpenSSH before 8.9. If a client is using public-key authentication with agent forwarding but without -oLogLevel=verbose, and an attacker has silently modified the server to support the None authentication option, then the user cannot determine whether FIDO authentication is going to confirm that the user wishes to connect to that server, or that the user wishes to allow that server to connect to a different server on the user\u0027s behalf. NOTE: the vendor\u0027s position is \u0022this is not an authentication bypass, since nothing is being bypassed.\u0022",
+                "severity": 3.7,
+                "epss": 0.00395
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-04T18:58:42.561132Z",
+            "severityLevel": "Low",
+            "normalizedScore": 22.32,
+            "breachProbability": 0.0040
+        },
+        {
+            "externalId": "CVE-2023-38408",
+            "hostname": "healthcare.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2023-38408",
+                "description": "The PKCS#11 feature in ssh-agent in OpenSSH before 9.3p2 has an insufficiently trustworthy search path, leading to remote code execution if an agent is forwarded to an attacker-controlled system. (Code in /usr/lib is not necessarily safe for loading into ssh-agent.) NOTE: this issue exists because of an incomplete fix for CVE-2016-10009.",
+                "severity": 9.8,
+                "epss": 0.67693
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-04T18:58:42.561132Z",
+            "severityLevel": "High",
+            "normalizedScore": 79.11,
+            "breachProbability": 0.6769
+        },
+        {
+            "externalId": "CVE-2016-20012",
+            "hostname": "healthcare.lancesoft.eu",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2016-20012",
+                "description": "OpenSSH through 8.7 allows remote attackers, who have a suspicion that a certain combination of username and public key is known to an SSH server, to test whether this suspicion is correct. This occurs because a challenge is sent only when that combination could be valid for a login session. NOTE: the vendor does not recognize user enumeration as a vulnerability for this product",
+                "severity": 5.3,
+                "epss": 0.14603
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-07T00:42:23.045352Z",
+            "severityLevel": "Low",
+            "normalizedScore": 36.18,
+            "breachProbability": 0.1460
+        },
+        {
+            "externalId": "CVE-2021-36368",
+            "hostname": "healthcare.lancesoft.eu",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2021-36368",
+                "description": "** DISPUTED ** An issue was discovered in OpenSSH before 8.9. If a client is using public-key authentication with agent forwarding but without -oLogLevel=verbose, and an attacker has silently modified the server to support the None authentication option, then the user cannot determine whether FIDO authentication is going to confirm that the user wishes to connect to that server, or that the user wishes to allow that server to connect to a different server on the user\u0027s behalf. NOTE: the vendor\u0027s position is \u0022this is not an authentication bypass, since nothing is being bypassed.\u0022",
+                "severity": 3.7,
+                "epss": 0.00395
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-07T00:42:23.045352Z",
+            "severityLevel": "Low",
+            "normalizedScore": 22.32,
+            "breachProbability": 0.0040
+        },
+        {
+            "externalId": "CVE-2021-41617",
+            "hostname": "healthcare.lancesoft.eu",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2021-41617",
+                "description": "sshd in OpenSSH 6.2 through 8.x before 8.8, when certain non-default configurations are used, allows privilege escalation because supplemental groups are not initialized as expected. Helper programs for AuthorizedKeysCommand and AuthorizedPrincipalsCommand may run with privileges associated with group memberships of the sshd process, if the configuration specifies running the command as a different user.",
+                "severity": 7,
+                "epss": 0.00274
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-07T00:42:23.045352Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 42.08,
+            "breachProbability": 0.0027
+        },
+        {
+            "externalId": "CVE-2023-38408",
+            "hostname": "healthcare.lancesoft.eu",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2023-38408",
+                "description": "The PKCS#11 feature in ssh-agent in OpenSSH before 9.3p2 has an insufficiently trustworthy search path, leading to remote code execution if an agent is forwarded to an attacker-controlled system. (Code in /usr/lib is not necessarily safe for loading into ssh-agent.) NOTE: this issue exists because of an incomplete fix for CVE-2016-10009.",
+                "severity": 9.8,
+                "epss": 0.67693
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-07T00:42:23.045352Z",
+            "severityLevel": "High",
+            "normalizedScore": 79.11,
+            "breachProbability": 0.6769
+        },
+        {
+            "externalId": "CVE-2023-51385",
+            "hostname": "healthcare.lancesoft.eu",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2023-51385",
+                "description": "In ssh in OpenSSH before 9.6, OS command injection might occur if a user name or host name has shell metacharacters, and this name is referenced by an expansion token in certain situations. For example, an untrusted Git repository can have a submodule with shell metacharacters in a user name or host name.",
+                "severity": 6.5,
+                "epss": 0.16522
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-07T00:42:23.045352Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 43.96,
+            "breachProbability": 0.1652
+        },
+        {
+            "externalId": "CVE-2024-6387",
+            "hostname": "healthcare.lancesoft.eu",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2024-6387",
+                "description": "A security regression (CVE-2006-5051) was discovered in OpenSSH\u0027s server (sshd). There is a race condition which can lead sshd to handle some signals in an unsafe manner. An unauthenticated, remote attacker may be able to trigger it by failing to authenticate within a set time period.",
+                "severity": 8.1,
+                "epss": 0.46693
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-07T00:42:23.045352Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 62.61,
+            "breachProbability": 0.4669
+        },
+        {
+            "externalId": "CVE-2025-26465",
+            "hostname": "healthcare.lancesoft.eu",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2025-26465",
+                "description": "A vulnerability was found in OpenSSH when the VerifyHostKeyDNS option is enabled. A machine-in-the-middle attack can be performed by a malicious machine impersonating a legit server. This issue occurs due to how OpenSSH mishandles error codes in specific conditions when verifying the host key. For an attack to be considered successful, the attacker needs to manage to exhaust the client\u0027s memory resource first, turning the attack complexity high.",
+                "severity": 6.8,
+                "epss": 0.72397
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-07T00:42:23.045352Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 62.52,
+            "breachProbability": 0.7240
+        },
+        {
+            "externalId": "CVE-2023-48795",
+            "hostname": "healthcare.lancesoft.eu",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2023-48795",
+                "description": "The SSH transport protocol with certain OpenSSH extensions, found in OpenSSH before 9.6 and other products, allows remote attackers to bypass integrity checks such that some packets are omitted (from the extension negotiation message), and a client and server may consequently end up with a connection for which some security features have been downgraded or disabled, aka a Terrapin attack. This occurs because the SSH Binary Packet Protocol (BPP), implemented by these extensions, mishandles the handshake phase and mishandles use of sequence numbers. For example, there is an effective attack against SSH\u0027s use of ChaCha20-Poly1305 (and CBC with Encrypt-then-MAC). The bypass occurs in chacha20-poly1305@openssh.com and (if CBC is used) the -etm@openssh.com MAC algorithms. This also affects Maverick Synergy Java SSH API before 3.1.0-SNAPSHOT, Dropbear through 2022.83, Ssh before 5.1.1 in Erlang/OTP, PuTTY before 0.80, AsyncSSH before 2.14.2, golang.org/x/crypto before 0.17.0, libssh before 0.10.6, libssh2 through 1.11.0, Thorn Tech SFTP Gateway before 3.4.6, Tera Term before 5.1, Paramiko before 3.4.0, jsch before 0.2.15, SFTPGo before 2.5.6, Netgate pfSense Plus through 23.09.1, Netgate pfSense CE through 2.7.2, HPN-SSH through 18.2.0, ProFTPD before 1.3.8b (and before 1.3.9rc2), ORYX CycloneSSH before 2.3.4, NetSarang XShell 7 before Build 0144, CrushFTP before 10.6.0, ConnectBot SSH library before 2.2.22, Apache MINA sshd through 2.11.0, sshj through 0.37.0, TinySSH through 20230101, trilead-ssh2 6401, LANCOM LCOS and LANconfig, FileZilla before 3.66.4, Nova before 11.8, PKIX-SSH before 14.4, SecureCRT before 9.4.3, Transmit5 before 5.10.4, Win32-OpenSSH before 9.5.0.0p1-Beta, WinSCP before 6.2.2, Bitvise SSH Server before 9.32, Bitvise SSH Client before 9.33, KiTTY through 0.76.1.13, the net-ssh gem 7.2.0 for Ruby, the mscdex ssh2 module before 1.15.0 for Node.js, the thrussh library before 0.35.1 for Rust, and the Russh crate before 0.40.2 for Rust.",
+                "severity": 5.9,
+                "epss": 0.5673
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-07T00:42:23.045352Z",
+            "severityLevel": "Medium",
+            "normalizedScore": 52.42,
+            "breachProbability": 0.5673
+        },
+        {
+            "externalId": "CVE-2025-32728",
+            "hostname": "healthcare.lancesoft.eu",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2025-32728",
+                "description": "In sshd in OpenSSH before 10.0, the DisableForwarding directive does not adhere to the documentation stating that it disables X11 and agent forwarding.",
+                "severity": 4.3,
+                "epss": 0.00274
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-03-07T00:42:23.045352Z",
+            "severityLevel": "Low",
+            "normalizedScore": 25.88,
+            "breachProbability": 0.0027
+        },
+        {
+            "externalId": "CVE-2026-35414",
+            "hostname": "healthcare.lancesoft.com",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2026-35414",
+                "description": "OpenSSH before 10.3 mishandles the authorized_keys principals option in uncommon scenarios involving a principals list in conjunction with a Certificate Authority that makes certain use of comma characters.",
+                "severity": 4.2,
+                "epss": 0.00016
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-04-05T09:02:12.715417Z",
+            "severityLevel": "Low",
+            "normalizedScore": 25.20,
+            "breachProbability": 0.0002
+        },
+        {
+            "externalId": "CVE-2026-35414",
+            "hostname": "healthcare.lancesoft.eu",
+            "ipAddresses": [
+                "208.109.233.60"
+            ],
+            "cve": {
+                "id": "CVE-2026-35414",
+                "description": "OpenSSH before 10.3 mishandles the authorized_keys principals option in uncommon scenarios involving a principals list in conjunction with a Certificate Authority that makes certain use of comma characters.",
+                "severity": 4.2,
+                "epss": 0.00016
+            },
+            "verified": false,
+            "knownExploitedVulnerability": false,
+            "rawCpes": [
+                "cpe:/a:openbsd:openssh:8.7"
+            ],
+            "cpeDetails": [
+                {
+                    "part": "a",
+                    "vendor": "openbsd",
+                    "product": "openssh",
+                    "version": "8.7"
+                }
+            ],
+            "createdAt": "2026-04-05T10:30:00.027902Z",
+            "severityLevel": "Low",
+            "normalizedScore": 25.20,
+            "breachProbability": 0.0002
+        }
+    ],
+    "isSuccess": true,
+    "message": "List of vulnerabilities from tool",
+    "httpStatusCode": "OK",
+    "errors": null,
+    "applogs": null,
+    "logTraceId": "c828c7ee-eed5-4435-b5db-5ae0d84ec466"
+}

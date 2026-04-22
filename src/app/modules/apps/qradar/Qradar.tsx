@@ -110,6 +110,11 @@ import EmailLogs from './qradar-pages/email-logs/EmailLogs'
 import ChatBot from './qradar-pages/chat-bot/ChatBot'
 import IncidentReport from './qradar-pages/reports/IncidentReport'
 import IncidentReportSummery from './qradar-pages/reports/IncidentReportSummery'
+import ThreatIntelligence from './qradar-pages/threat-intelegence/ThreatIntelligence'
+import RiskProfile from './qradar-pages/risk-upgrade/RiskProfile'
+import Vulnerabilities from './qradar-pages/risk-upgrade/Vulnerabilities'
+import Domain from './qradar-pages/risk-upgrade/Domain'
+import IpAddress from './qradar-pages/risk-upgrade/IpAddress'
 
 
 const QradarPages = () => {
@@ -211,6 +216,9 @@ const QradarPages = () => {
       <Route path='settings/:status' element={<Settings />} />
       <Route path='accounts/:status' element={<Accounts />} />
       <Route path='sites/:status' element={<Sites />} />
+      <Route path='threatintelligence/:status' element={<ThreatIntelligence />} />
+
+
       <Route path='activity/:status' element={<Activity />} />
       <Route path='application-logs/:status' element={<ApplicationLogs />} />
       <Route path='features/:status' element={<Features />} />
@@ -224,6 +232,10 @@ const QradarPages = () => {
       <Route path="/site-stepper" element={<SiteStepper />} />
       <Route path="/sentinelsReport" element={<SentinelsReport />} />
       <Route path='load-report-task/:status' element={<LoadReportTask />} />
+       <Route path='RiskProfile/:status' element={<RiskProfile />} />
+       <Route path='Vulnerabilities/:status' element={<Vulnerabilities />} />
+       <Route path='Domain/:status' element={<Domain />} />
+         <Route path='IpAddress/:status' element={<IpAddress />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )

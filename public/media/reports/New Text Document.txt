@@ -1,0 +1,42 @@
+[
+  {
+    "alert_id": 899,
+    "alert_details": "Entity Involved: user_admin01, host_srv-45\nHost: srv-45.corp.local\nSource IP: 10.0.5.23\nDestination IP: 10.0.5.100\nSeverity: Critical\nMITRE Technique: T1068 - Exploitation for Privilege Escalation\nRecommended Action: Isolate affected host, reset credentials, review privilege assignments.\nCorrelated Alerts: 4"
+  },
+  {
+    "alert_id": 880,
+    "alert_details": "Entity Involved: db_user05, dbsrv-02\nHost: dbsrv-02\nSource IP: 172.16.3.88\nDestination IP: 172.16.3.12\nSeverity: High\nMITRE Technique: T1078 - Valid Accounts\nRecommended Action: Revoke session, change credentials, enable additional access logging.\nCorrelated Alerts: 2"
+  },
+  {
+    "alert_id": 877,
+    "alert_details": "Entity Involved: admin_qa, host-qadev\nHost: host-qadev\nSource IP: 192.168.88.44\nDestination IP: N/A\nSeverity: Critical\nMITRE Technique: T1003 - OS Credential Dumping\nRecommended Action: Terminate process, reset credentials, review endpoint security logs.\nCorrelated Alerts: 3"
+  },
+  {
+    "alert_id": 876,
+    "alert_details": "Entity Involved: svc_backup, backup-srv01\nHost: backup-srv01\nSource IP: 10.1.2.45\nDestination IP: 10.1.2.20\nSeverity: Medium\nMITRE Technique: T1110 - Brute Force\nRecommended Action: Lock account, investigate source IP, enable MFA.\nCorrelated Alerts: 1"
+  },
+  {
+    "alert_id": 875,
+    "alert_details": "Entity Involved: user_john, laptop-john\nHost: laptop-john\nSource IP: 203.0.113.78\nDestination IP: 10.0.0.10\nSeverity: Medium\nMITRE Technique: T1556 - Modify Authentication Process\nRecommended Action: Block legacy protocols, investigate device compliance.\nCorrelated Alerts: 2"
+  },
+  {
+    "alert_id": 874,
+    "alert_details": "Entity Involved: user_emily, corp-vpn\nHost: vpn-gateway01\nSource IP: 185.33.44.12\nDestination IP: 10.0.0.5\nSeverity: High\nMITRE Technique: T1078 - Valid Accounts\nRecommended Action: Block IP, force MFA revalidation, notify user.\nCorrelated Alerts: 3"
+  },
+  {
+    "alert_id": 873,
+    "alert_details": "Entity Involved: user_sam, cloud-portal\nHost: cloud-portal\nSource IP: 45.67.89.123\nDestination IP: 10.0.0.12\nSeverity: High\nMITRE Technique: T1110 - Brute Force\nRecommended Action: Lock account temporarily, investigate origin of attempts.\nCorrelated Alerts: 4"
+  },
+  {
+    "alert_id": 872,
+    "alert_details": "Entity Involved: root, linux-srv02\nHost: linux-srv02\nSource IP: 203.0.113.25\nDestination IP: 10.0.0.22\nSeverity: Critical\nMITRE Technique: T1110 - Brute Force\nRecommended Action: Block offending IPs, enforce key-based authentication.\nCorrelated Alerts: 5"
+  },
+  {
+    "alert_id": 871,
+    "alert_details": "Entity Involved: user_karen, host-finance\nHost: host-finance\nSource IP: N/A\nDestination IP: N/A\nSeverity: Medium\nMITRE Technique: T1059 - Command and Scripting Interpreter\nRecommended Action: Quarantine host, review executed script contents.\nCorrelated Alerts: 2"
+  },
+  {
+    "alert_id": 870,
+    "alert_details": "Entity Involved: user_admin02, endpoint-xyz\nHost: endpoint-xyz\nSource IP: 10.0.2.45\nDestination IP: 10.0.2.55\nSeverity: High\nMITRE Technique: T1070 - Indicator Removal\nRecommended Action: Investigate artifact deletion, restore logs.\nCorrelated Alerts: 3"
+  }
+]

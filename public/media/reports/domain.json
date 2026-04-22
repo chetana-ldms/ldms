@@ -1,0 +1,36 @@
+{
+  "indicator": "suspicious-login.net",
+  "type": "Domain",
+  "riskScore": 78,
+  "riskLevel": "Malicious",
+  "categories": [
+    "Phishing",
+    "Credential Harvesting"
+  ],
+  "whois": {
+    "registrar": "NameCheap",
+    "creationDate": "12-4-2025",
+    "country": "US"
+  },
+  "dns": {
+    "currentIp": "202.54.10.45",
+    "relatedIps": ["202.54.11.20", "202.54.8.10"]
+  },
+  "associatedEntities": {
+    "subdomains": [
+      "login.suspicious-login.net",
+      "secure.suspicious-login.net"
+    ]
+  },
+  "malwareAssociations": [
+    {
+      "family": "AgentTesla",
+      "activity": "Phishing email campaign"
+    }
+  ],
+  "firstSeen": "19-1-2026 2:00 PM",
+  "lastSeen": "20-1-2026 6:00 AM",
+  "evidenceSummary": "Used in Office365 credential phishing attacks",
+  "confidence": "Medium",
+  "recommendation": "Add to blocklist and monitor DNS traffic"
+}

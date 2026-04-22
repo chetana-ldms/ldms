@@ -24,8 +24,11 @@ function CreatedIncidentStatusReport({fromDate, toDate}) {
   const lastYear = new Date()
   lastYear.setFullYear(lastYear.getFullYear() - 1)
 
+  // const [incidentData, setIncidentData] = useState({
+  //   toolID: toolId || '',
+  // })
   const [incidentData, setIncidentData] = useState({
-    toolID: toolId || '',
+    toolID: 2,
   })
   const [startDate, setStartDate] = useState(fromDate || lastYear.toISOString().slice(0, 10))
   const [endDate, setEndDate] = useState(toDate || today.toISOString().slice(0, 10))

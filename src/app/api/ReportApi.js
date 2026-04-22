@@ -7,7 +7,7 @@ const AllIncidentsSummeryUrl = process.env.REACT_APP_ALL_INCIDENTS_SUMMERY_URL
 const ClosedIncidentsSummeryUrl=process.env.REACT_APP_CLOSED_INCIDENTS_SUMMERY_URL
 const OpenIncidentsSummeryUrl=process.env.REACT_APP_OPEN_INCIDENTS_SUMMERY_URL
 const SignificantsIncidentsSummeryUrl= process.env.REACT_APP_SIGNIFICANTS_INCIDENTS_SUMMERY_URL
-const IncidentsSLAMeasurementSummeryUrl ="http://10.41.3.232:501/api/Reports/v1/IncidentsSLAReportData"
+const IncidentsSLAMeasurementSummeryUrl =process.env.REACT_APP_INCIDENTS_SLA_REPORT_Data_URL
 
 
 export const fetchAlertsSummeryUrl = async (data) => {

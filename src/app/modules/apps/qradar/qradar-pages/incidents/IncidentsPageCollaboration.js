@@ -337,7 +337,7 @@ const IncidentsPageCollaboration = () => {
                           href="#"
                           className="fs-5 fw-bolder text-blue text-hover-primary mb-2"
                         >
-                          vinu@lancesoft.com Senior Analyst
+                         Senior Security Analyst
                         </a>
                         <span className="sub-txt float-right">2:09:18 PM</span>
                         <p>{message.text}</p>

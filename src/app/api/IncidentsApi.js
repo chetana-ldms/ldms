@@ -16,24 +16,22 @@ const IncidentNotesListUrl = process.env.REACT_APP_INCIDENT_NOTES_LIST_URL
 const IncidentNotesAddUrl = process.env.REACT_APP_INCIDENT_NOTES_ADD_URL
 const IncidentNotesUpdateUrl = process.env.REACT_APP_INCIDENT_NOTES_UPDATE_URL
 const OrganizationToolsDetailsUrl = process.env.REACT_APP_ORG_TOOLS_DETAILS_URL
-const IncidentReportTypesUrl = 'http://10.41.3.232:501/api/Reports/v1/IncidentReportTypes'
-const IncidentReportDataUrl = 'http://10.41.3.232:501/api/Reports/v1/IncidentReportData'
-const IncidentsHasChangesUrl =
-  'http://10.41.3.232:501/api/IncidentManagement/v1/Incidents/HasChanges'
-const DeleteIncidentsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/DeleteIncidents'
-const MergeIncidentsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/MergeIncidents'
-const GroupUsersUrl = 'http://10.41.3.232:501/api/LDPSecurity/v1/GroupUsers'
-const UsersForIncidentCreatorRoleUrl =
-  'http://10.41.3.232:501/api/LDPSecurity/v1/UsersForIncidentCreatorRole'
-const ReplyIncidentUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/ReplyIncident'
-const IncidentGroupsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentGroups'
-const IncidentProductsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentProducts'
-const SearchIncidentTagsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/SearchIncidentTags'
-const ForwardIncidentUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/ForwardIncident'
-const EmailSearchUrl = 'http://10.41.3.232:501/api/LDPSecurity/v1/EmailSearch'
-const SendMailUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/SendMail'
-const IncidentConversationUrl =
-  'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentConversation'
+
+const IncidentReportTypesUrl = process.env.REACT_APP_INCIDENT_REPORT_TYPES_URL
+const IncidentReportDataUrl =  process.env.REACT_APP_INCIDENT_REPORT_DATA_URL
+const IncidentsHasChangesUrl = process.env.REACT_APP_HAS_CHANGES_URL
+const DeleteIncidentsUrl =  process.env.REACT_APP_DELETE_INCIDENTS_URL
+const MergeIncidentsUrl =  process.env.REACT_APP_MERGE_INCIDENTS_URL
+const GroupUsersUrl =  process.env.REACT_APP_GROUP_USERS_URL
+const UsersForIncidentCreatorRoleUrl = process.env.REACT_APP_USERS_FOR_INCIDENT_CREATER_ROLE_URL
+const ReplyIncidentUrl =  process.env.REACT_APP_REPLY_INCIDENT_URL
+const IncidentGroupsUrl =  process.env.REACT_APP_INCIDENT_GROUPS_URL
+const IncidentProductsUrl =  process.env.REACT_APP_INCIDENT_PRODUCTS_URL
+const SearchIncidentTagsUrl =  process.env.REACT_APP_SEARCH_INCIDENT_TAGS_UR
+const ForwardIncidentUrl =  process.env.REACT_APP_FORWARD_INCIDENT_URL
+const EmailSearchUrl =  process.env.REACT_APP_EMAIL_SEARCH_URL
+const SendMailUrl =  process.env.REACT_APP_SEND_MAIL_URL
+const IncidentConversationUrl = process.env.REACT_APP_INCIDENT_CONVERSATION_URL
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
   try {

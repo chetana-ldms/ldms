@@ -1,25 +1,10 @@
-import { useState } from "react";
-import { DemoAlert } from "./DemoAlert";
-import { render } from "react-dom";
-import { Modal } from "react-bootstrap";
-import { MasterLayout } from "../../../../../../_metronic/layout/MasterLayout";
-import { HeaderWrapper } from "../../../../../../_metronic/layout/components/header";
-import { Sidebar } from "../../../../../../_metronic/layout/components/sidebar";
-import { Content } from "../../../../../../_metronic/layout/components/content";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import {useState} from 'react'
+import {Link, useNavigate, useParams} from 'react-router-dom'
+import {ToastContainer, toast} from 'react-toastify'
 const DemoPage = () => {
-  const { status } = useParams();
-  const navigate = useNavigate();
-  const [alert, setAlerts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isAlertVisible, setIsAlertVisible] = useState(false);
-
-  function createIncidentSubmit() {
-    setTimeout(() => {
-      navigate("/qradar/incidentscollaboration");
-    }, 500);
-  }
+  const {status} = useParams()
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
 
   const datatoBeadded = [
     {
@@ -27,18 +12,20 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Add SMB  Exploit Alert",
-      severity: "Low",
+      name: 'Add SMB  Exploit Alert',
+      severity: 'Low',
       score: 8,
-      status: "New",
-      sla: "1h 11m",
+      status: 'New',
+      playBookName: 'SMB Exploit',
+      playBookDescription: 'SMB Exploit',
+      sla: '1h 11m',
       statusID: null,
-      detectedtime: null,
+      detectedtime: new Date().toISOString(),
       observableTagID: 1,
-      observableTag: "BruteForce",
+      observableTag: 'BruteForce',
       ownerUserID: 0,
-      ownerusername: "admin",
-      source: "QRadar",
+      ownerusername: 'admin',
+      source: 'Microsoft Sentinel',
       alertData: null,
       createdUser: null,
       processed: 0,
@@ -48,18 +35,20 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Add CYREN Alert",
-      severity: "Low",
+      name: 'Add CYREN Alert',
+      severity: 'Low',
+      playBookName: 'CYREN Alert',
+      playBookDescription: 'CYREN Alert',
       score: 7,
-      status: "New",
-      sla: "2h 10m",
+      status: 'New',
+      sla: '2h 10m',
       statusID: null,
-      detectedtime: null,
+      detectedtime: new Date().toISOString(),
       observableTagID: 1,
-      observableTag: "Authentication",
+      observableTag: 'Authentication',
       ownerUserID: 0,
-      ownerusername: "analyst",
-      source: "QRadar",
+      ownerusername: 'analyst',
+      source: 'Microsoft Sentinel',
       alertData: null,
       createdUser: null,
       processed: 0,
@@ -69,18 +58,20 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Add Insights Alert",
-      severity: "Low",
+      name: 'Add Insights Alert',
+      severity: 'Low',
+      playBookName: 'Insights Alert',
+      playBookDescription: 'Insights Alert',
       score: 6,
-      status: "New",
-      sla: "3h 21m",
+      status: 'New',
+      sla: '3h 21m',
       statusID: null,
-      detectedtime: null,
-      observableTagID: "null",
-      observableTag: "Credential Access",
+      detectedtime: new Date().toISOString(),
+      observableTagID: 'null',
+      observableTag: 'Credential Access',
       ownerUserID: 0,
-      ownerusername: "admin",
-      source: "QRadar",
+      ownerusername: 'admin',
+      source: 'Microsoft Sentinel',
       alertData: null,
       createdUser: null,
       processed: 0,
@@ -90,18 +81,20 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Failed Login Alert",
-      sla: "5h 11m",
-      severity: "Medium",
+      name: 'Failed Login Alert',
+      sla: '5h 11m',
+      playBookName: 'Failed Login Alert',
+      playBookDescription: 'Failed Login Alert',
+      severity: 'Medium',
       score: 3,
-      status: "New",
+      status: 'New',
       statusID: null,
-      detectedtime: null,
+      detectedtime: new Date().toISOString(),
       observableTagID: null,
-      observableTag: "BruteForce",
+      observableTag: 'BruteForce',
       ownerUserID: 0,
-      ownerusername: "Global Admin",
-      source: "QRadar",
+      ownerusername: 'Global Admin',
+      source: 'Microsoft Sentinel',
       alertData: null,
       createdUser: null,
       processed: 0,
@@ -111,17 +104,19 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Add Channel Post",
-      severity: "Medium",
+      name: 'Add Channel Post',
+      severity: 'Medium',
+      playBookName: 'Channel Post',
+      playBookDescription: 'Channel Post',
       score: 2,
-      status: "New",
+      status: 'New',
       statusID: null,
-      detectedtime: null,
+      detectedtime: new Date().toISOString(),
       observableTagID: null,
-      observableTag: "BruteForce",
+      observableTag: 'BruteForce',
       ownerUserID: 0,
       ownerusername: null,
-      source: "QRadar",
+      source: 'Microsoft Sentinel',
       alertData: null,
       createdUser: null,
       processed: 0,
@@ -131,17 +126,19 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: " Add Checkpoint Alert",
-      severity: "Medium",
+      name: ' Add Checkpoint Alert',
+      severity: 'Medium',
+      playBookName: 'Checkpoint Alert',
+      playBookDescription: 'Checkpoint Alert',
       score: 1,
-      status: "New",
+      status: 'New',
       statusID: null,
-      detectedtime: null,
+      detectedtime: new Date().toISOString(),
       observableTagID: null,
-      observableTag: "Credential Access",
+      observableTag: 'Credential Access',
       ownerUserID: 0,
       ownerusername: null,
-      source: "QRadar",
+      source: 'Microsoft Sentinel',
       alertData: null,
       createdUser: null,
       processed: 0,
@@ -151,17 +148,19 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: " New XML Incident",
-      severity: "Medium",
+      name: ' New XML Incident',
+      severity: 'Medium',
+      playBookName: 'New XML Incident',
+      playBookDescription: 'New XML Incident',
       score: 2,
-      status: "New",
+      status: 'New',
       statusID: null,
-      detectedtime: null,
+      detectedtime: new Date().toISOString(),
       observableTagID: null,
-      observableTag: "Credential Access",
+      observableTag: 'Credential Access',
       ownerUserID: 0,
       ownerusername: null,
-      source: "QRadar",
+      source: 'Microsoft Sentinel',
       alertData: null,
       createdUser: null,
       processed: 0,
@@ -171,18 +170,20 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Add Scanning Alert",
-      severity: "High",
+      name: 'Add Scanning Alert',
+      severity: 'High',
+      playBookName: ' Scanning Alert',
+      playBookDescription: ' Scanning Alert',
       score: 3,
-      status: "New",
-      sla: "2h 10m",
+      status: 'New',
+      sla: '2h 10m',
       statusID: null,
-      detectedtime: null,
+      detectedtime: new Date().toISOString(),
       observableTagID: null,
-      observableTag: "Credential Access",
+      observableTag: 'Credential Access',
       ownerUserID: 0,
       ownerusername: null,
-      source: "QRadar",
+      source: 'Microsoft Sentinel',
       alertData: null,
       createdUser: null,
       processed: 0,
@@ -192,17 +193,19 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: " Add WDATP Alert",
-      severity: "High",
+      name: ' Add WDATP Alert',
+      severity: 'High',
+      playBookName: ' WDATP Alert',
+      playBookDescription: ' WDATP Alert',
       score: 4,
-      status: "New",
+      status: 'New',
       statusID: null,
-      detectedtime: null,
+      detectedtime: new Date().toISOString(),
       observableTagID: null,
-      observableTag: "Credential Access",
+      observableTag: 'Credential Access',
       ownerUserID: 0,
       ownerusername: null,
-      source: "QRadar",
+      source: 'Microsoft Sentinel',
       alertData: null,
       createdUser: null,
       processed: 0,
@@ -212,162 +215,261 @@ const DemoPage = () => {
       alertDevicePKID: 0,
       toolID: 1,
       orgID: 1,
-      name: "Suspecious mail",
-      sla: "4h 40m",
-      severity: "High",
+      name: 'Suspecious mail',
+      sla: '4h 40m',
+      playBookName: 'Suspecious mail',
+      playBookDescription: 'Suspecious mail',
+      severity: 'High',
       score: 2,
-      status: "New",
+      status: 'New',
       statusID: null,
-      detectedtime: null,
+      detectedtime: new Date().toISOString(),
       observableTagID: null,
-      observableTag: "Authentication",
+      observableTag: 'Authentication',
       ownerUserID: 0,
       ownerusername: null,
-      source: "QRadar",
+      source: 'Microsoft Sentinel',
       alertData: null,
       createdUser: null,
       processed: 0,
     },
-  ];
-  const localAlert = JSON.parse(localStorage.getItem("alertData"));
-  if (localStorage.getItem("alertData") === null) {
-    localStorage.setItem("alertData", JSON.stringify([]));
-  }
+    {
+      alertID: 22,
+      alertDevicePKID: 0,
+      toolID: 1,
+      orgID: 1,
+      name: 'Memory spike detected',
+      DisplayName: 'Memory Spike Detected on Server 10.0.0.25',
+      severity: 'High',
+      playBookName: 'Memory spike ',
+      playBookDescription: 'Memory spike ',
+      score: 8,
+      status: 'New',
+      sla: '45m',
+      statusID: null,
+      detectedtime: new Date().toISOString(),
+      observableTagID: null,
+      observableTag: 'Performance',
+      ownerUserID: 0,
+      ownerusername: 'Senior security analyst',
+      source: 'Microsoft Sentinel',
+      alertData: null,
+      createdUser: null,
+      processed: 0,
+    },
+    {
+      alertID: 21,
+      alertDevicePKID: 0,
+      toolID: 1,
+      orgID: 1,
+      name: 'Disk failure event detected',
+      DisplayName: 'Disk failure event detected on Server 10.1.0.26',
+      severity: 'High',
+      playBookName: 'Disk failure',
+      playBookDescription: 'Disk failure',
+      score: 9,
+      status: 'New',
+      sla: '30m',
+      statusID: null,
+      detectedtime: new Date().toISOString(),
+      observableTagID: null,
+      observableTag: 'Device State',
+      ownerUserID: 0,
+      ownerusername: 'Senior security analyst',
+      source: 'Microsoft Sentinel',
+      alertData: null,
+      createdUser: null,
+      processed: 0,
+    },
 
-  const notify = (e) => {
-    // console.log(e)
-    toast.success(e, {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-    });
-  };
-  if (status === "v2") {
-    console.log("status == ", status);
-    // setTimeout(() => {
-    //   navigate("/qradar/demoalert/updated");
-    // }, 4000);
-    navigate("/qradar/demoalert/updated");
+    {
+      alertID: 23,
+      alertDevicePKID: 0,
+      toolID: 1,
+      orgID: 1,
+      name: 'Network outage detected',
+      DisplayName: 'Server 192.168.10.1 Unreachable due to Network outage',
+      severity: 'High',
+      playBookName: 'Network outage',
+      playBookDescription: 'Network outage',
+      score: 7,
+      status: 'New',
+      sla: '1h',
+      statusID: null,
+      detectedtime: new Date().toISOString(),
+      observableTagID: null,
+      observableTag: 'Communication Failure',
+      ownerUserID: 0,
+      ownerusername: 'Senior security analyst',
+      source: 'Microsoft Sentinel',
+      alertData: null,
+      createdUser: null,
+      processed: 0,
+    },
+    {
+      alertID: 24,
+      alertDevicePKID: 0,
+      toolID: 1,
+      orgID: 1,
+      name: 'Phishing Email Detected',
+      DisplayName:
+        'An email with a suspicious URL and malicious attachment was delivered to user john.doe@connecthomes.com',
+      severity: 'High',
+      playBookName: 'Phishing ',
+      playBookDescription: 'Phishing',
+      score: 8,
+      status: 'New',
+      sla: '45m',
+      statusID: null,
+      detectedtime: new Date().toISOString(),
+      observableTagID: null,
+      observableTag: 'Phishing.Email',
+      ownerUserID: 0,
+      ownerusername: 'Senior security analyst',
+      source: 'Microsoft Sentinel',
+      alertData: null,
+      createdUser: null,
+      processed: 0,
+    },
+  ]
+
+  const localAlert = JSON.parse(localStorage.getItem('alertData'))
+  if (localStorage.getItem('alertData') === null) {
+    localStorage.setItem('alertData', JSON.stringify([]))
+  }
+  if (status === 'v2') {
+    console.log('status == ', status)
+    navigate('/qradar/demoalert/updated')
   }
   const addalerttolocal = (e) => {
-    localAlert.push(e);
-    setLoading(true);
-    localStorage.setItem("alertData", JSON.stringify(localAlert));
-    localStorage.setItem("alertadded", JSON.stringify(1));
-    navigate("/qradar/demoalert/updated");
-  };
-
+    localAlert.push(e)
+    setLoading(true)
+    localStorage.setItem('alertData', JSON.stringify(localAlert))
+    localStorage.setItem('alertadded', JSON.stringify(1))
+    navigate('/qradar/demoalert/updated')
+  }
   const addalerttolocalv1 = (e) => {
-    localAlert.push(e);
-    setLoading(true);
-    localStorage.setItem("alertData", JSON.stringify(localAlert));
-    localStorage.setItem("alertadded", JSON.stringify(1));
-    navigate("/qradar/demoalertv1/updated");
-  };
-
-  const addLoginFailAlert = () => {
-    setLoading(true);
-    setTimeout(() => {
-      addalerttolocal(datatoBeadded["3"]);
-      navigate("/qradar/demo/v2");
-      // navigate('/qradar/demoalert/updated')
-    }, 500);
-  };
-
+    localAlert.push(e)
+    setLoading(true)
+    localStorage.setItem('alertData', JSON.stringify(localAlert))
+    localStorage.setItem('alertadded', JSON.stringify(1))
+    navigate('/qradar/demoalertv1/updated')
+  }
   return (
-    <div className="row demo-page">
+    <div className='row demo-page'>
       <ToastContainer />
-      <div className="mb-10">
+      <div className='mb-10'>
         <a
-          href="#"
+          href='#'
           onClick={() => {
-            localStorage.setItem("alertData", JSON.stringify([]));
+            localStorage.setItem('alertData', JSON.stringify([]))
           }}
-          className="btn btn-danger btn-small"
+          className='btn btn-danger btn-small'
         >
           Reset
         </a>
       </div>
-
       {/* Begin Col */}
-      <div className="col-lg-5">
-        <div className="card mb-5 mb-xl-8">
-          <h5 className="bg-heading">Security Monitoring</h5>
-          <div className="card-body">
-            <div className="demo-block">
-              <p>
-                Add an alert from Int Sight about SMB exploit named EternalBlue
+      <div className='col-lg-5'>
+        <div className='card mb-8'>
+          <h5 className='bg-heading'>Phishing.Email</h5>
+          <div className='card-body'>
+            <div className='demo-block'>
+              <p className=''>
+                This alert triggers when a suspicious or malicious email is detected that may try to
+                steal user credentials, deliver malware, or trick users into visiting harmful
+                websites.
               </p>
+              <button className='btn btn-new' onClick={() => addalerttolocal(datatoBeadded[13])}>
+                Add Phishing Alert
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className='card mb-8'>
+          <h5 className='bg-heading p-3 mb-0'>Network: Communication Failure</h5>
+          <div className='card-body'>
+            <div className='demo-block'>
+              <p className=''>
+                Add Network Outage alert — triggered by NIC down events, ICMP failures, or dropped
+                outbound traffic
+              </p>
+              <button className='btn btn-new' onClick={() => addalerttolocal(datatoBeadded[12])}>
+                Add Network Outage Alert
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className='card mb-5 mb-xl-8'>
+          <h5 className='bg-heading'>Security Monitoring</h5>
+          <div className='card-body'>
+            <div className='demo-block'>
+              <p>Add an alert from Int Sight about SMB exploit named EternalBlue</p>
               <a
                 onClick={() => {
-                  addalerttolocal(datatoBeadded["0"]);
+                  addalerttolocal(datatoBeadded['0'])
                 }}
               >
-                <button className="btn btn-new">Add SMB Exploit Alert</button>
+                <button className='btn btn-new'>Add SMB Exploit Alert</button>
               </a>
             </div>
-            <div className="demo-block">
+            <div className='demo-block'>
               <p>Start collaboration on the latest modified incident</p>
               <button
                 onClick={() => {
-                  addalerttolocal(datatoBeadded["0"]);
+                  addalerttolocal(datatoBeadded['0'])
                 }}
-                className="btn btn-success"
+                className='btn btn-success'
               >
                 Start Collaboration
               </button>
             </div>
           </div>
         </div>
-        <div className="card mb-5 mb-xl-8 h-420px">
-          <h5 className="bg-heading">Leaked Credentials - Use Cases</h5>
-          <div className="card-body">
-            <div className="demo-block">
+        <div className='card mb-5 mb-xl-8 h-420px'>
+          <h5 className='bg-heading'>Leaked Credentials - Use Cases</h5>
+          <div className='card-body'>
+            <div className='demo-block'>
               <p>Add Insights alert</p>
               <button
                 onClick={() => {
-                  addalerttolocal(datatoBeadded["2"]);
+                  addalerttolocal(datatoBeadded['2'])
                 }}
-                className="btn btn-new"
+                className='btn btn-new'
               >
                 Add Insights Alert
               </button>
             </div>
-            <div className="demo-block">
+            <div className='demo-block'>
               <p>Start collaboration on the latest Intsights incident</p>
               <button
                 onClick={() => {
-                  addalerttolocalv1(datatoBeadded["2"]);
+                  addalerttolocalv1(datatoBeadded['2'])
                 }}
-                className="btn btn-success"
+                className='btn btn-success'
               >
                 Start Collaboration
               </button>
             </div>
-            <div className="demo-block">
+            <div className='demo-block'>
               <p>Failed Login Alert</p>
-
               <button
                 onClick={() => {
-                  addalerttolocal(datatoBeadded["3"]);
+                  addalerttolocal(datatoBeadded['3'])
                 }}
-                className="btn btn-new"
+                className='btn btn-new'
               >
                 Add Failed Login Alert
               </button>
             </div>
-            <div className="demo-block">
+            <div className='demo-block'>
               <p>Start collaboration on the latest failed login incident</p>
               <button
                 onClick={() => {
-                  addalerttolocalv1(datatoBeadded["3"]);
+                  addalerttolocalv1(datatoBeadded['3'])
                 }}
-                className="btn btn-success"
+                className='btn btn-success'
               >
                 Start Collaboration
               </button>
@@ -378,40 +480,77 @@ const DemoPage = () => {
       {/* End Col */}
 
       {/* Begin Col */}
-      <div className="col-lg-7">
-        <div className="card mb-5 mb-xl-8">
-          <h5 className="bg-heading">Automation</h5>
-          <div className="card-body">
-            <div className="demo-block">
-              <p>
-                Add an alert with known IOC (Open incident automatically -
-                CYREN)
-              </p>
+      <div className='col-lg-7'>
+        <div className='row'>
+          <div className='col-lg-6'>
+            <div className='card mb-5'>
+              <h5 className='bg-heading'>System: Device State</h5>
+              <div className='card-body'>
+                <div className='demo-block'>
+                  <p className=''>
+                    Add Memory Spike alert — triggered when system memory usage exceeds safe
+                    thresholds or OOM kill events occur.
+                  </p>
+                  <button
+                    className='btn btn-new'
+                    onClick={() => addalerttolocal(datatoBeadded[10])}
+                  >
+                    Add Memory Spike Alert
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className='col-lg-6'>
+            <div className='card mb-8'>
+              <h5 className='bg-heading p-3 mb-0'>System: Performance</h5>
+              <div className='card-body'>
+                <div className='demo-block'>
+                  <p>
+                    Add an Disk Failure alert — triggered when a disk shows signs of failure (I/O
+                    errors or SMART warnings).
+                  </p>
+                  <button
+                    className='btn btn-new'
+                    onClick={() => addalerttolocal(datatoBeadded[11])} // index 10
+                  >
+                    Add Disk Failure Alert
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className='card mb-5 mb-xl-8'>
+          <h5 className='bg-heading'>Automation</h5>
+          <div className='card-body'>
+            <div className='demo-block'>
+              <p>Add an alert with known IOC (Open incident automatically - CYREN)</p>
               <button
                 onClick={() => {
-                  addalerttolocal(datatoBeadded["1"]);
+                  addalerttolocal(datatoBeadded['1'])
                 }}
-                className="btn btn-new"
+                className='btn btn-new'
               >
                 Add CYREN Alert
               </button>
             </div>
           </div>
         </div>
-        <div className="mb-5 mb-xl-8">
-          <div className="row">
-            <div className="col-lg-6">
-              <div className="card">
-                <h5 className="bg-heading">Threat Intelligence</h5>
-                <div className="card-body">
-                  <div className="demo-block">
+        <div className='mb-5 mb-xl-8'>
+          <div className='row'>
+            <div className='col-lg-6'>
+              <div className='card'>
+                <h5 className='bg-heading'>Threat Intelligence</h5>
+                <div className='card-body'>
+                  <div className='demo-block'>
                     <p>Add Channel Post</p>
-                    {/* <button className='btn btn-new'>Add Channel Post</button> */}
                     <button
                       onClick={() => {
-                        addalerttolocal(datatoBeadded["4"]);
+                        addalerttolocal(datatoBeadded['4'])
                       }}
-                      className="btn btn-new"
+                      className='btn btn-new'
                     >
                       Add Channel Post
                     </button>
@@ -419,17 +558,17 @@ const DemoPage = () => {
                 </div>
               </div>
             </div>
-            <div className="col-lg-6">
-              <div className="card">
-                <h5 className="bg-heading">Malware Alert</h5>
-                <div className="card-body">
-                  <div className="demo-block">
+            <div className='col-lg-6'>
+              <div className='card'>
+                <h5 className='bg-heading'>Malware Alert</h5>
+                <div className='card-body'>
+                  <div className='demo-block'>
                     <p>Add Checkpoint</p>
                     <button
                       onClick={() => {
-                        addalerttolocal(datatoBeadded["5"]);
+                        addalerttolocal(datatoBeadded['5'])
                       }}
-                      className="btn btn-new"
+                      className='btn btn-new'
                     >
                       Add Checkpoint Alert
                     </button>
@@ -439,49 +578,46 @@ const DemoPage = () => {
             </div>
           </div>
         </div>
-
-        <div className="mb-5 mb-xl-8">
-          <div className="row">
-            <div className="col-lg-7">
-              <div className="card">
-                <h5 className="bg-heading">Vulnerability Management</h5>
-                <div className="card-body">
-                  <div className="demo-block">
+        <div className='mb-5 mb-xl-8'>
+          <div className='row'>
+            <div className='col-lg-7'>
+              <div className='card'>
+                <h5 className='bg-heading'>Vulnerability Management</h5>
+                <div className='card-body'>
+                  <div className='demo-block'>
                     <p>New XML Incident</p>
                     <button
                       onClick={() => {
-                        addalerttolocal(datatoBeadded["6"]);
+                        addalerttolocal(datatoBeadded['6'])
                       }}
-                      className="btn btn-new"
+                      className='btn btn-new'
                     >
                       New XML Incident
                     </button>
                   </div>
-                  <div className="demo-block">
+                  <div className='demo-block'>
                     <p>Start collaborating on latest XM incident</p>
-
                     <button
                       onClick={() => {
-                        addalerttolocal(datatoBeadded["6"]);
+                        addalerttolocal(datatoBeadded['6'])
                       }}
-                      className="btn btn-success"
+                      className='btn btn-success'
                     >
                       Start Collaboration
                     </button>
                   </div>
                 </div>
               </div>
-              <div className="card mt-8">
-                <h5 className="bg-heading">Suspicious mail</h5>
-                <div className="card-body">
-                  <div className="demo-block">
+              <div className='card mt-8'>
+                <h5 className='bg-heading'>Suspicious mail</h5>
+                <div className='card-body'>
+                  <div className='demo-block'>
                     <p>Start Collaboration </p>
-
                     <button
                       onClick={() => {
-                        addalerttolocalv1(datatoBeadded["9"]);
+                        addalerttolocalv1(datatoBeadded['9'])
                       }}
-                      className="btn btn-success"
+                      className='btn btn-success'
                     >
                       Start Collaboration
                     </button>
@@ -489,42 +625,36 @@ const DemoPage = () => {
                 </div>
               </div>
             </div>
-            <div className="col-lg-5">
-              <div className="card">
-                <h5 className="bg-heading">Blacklist</h5>
-                <div className="card-body">
-                  <div className="demo-block">
+            <div className='col-lg-5'>
+              <div className='card'>
+                <h5 className='bg-heading'>Blacklist</h5>
+                <div className='card-body'>
+                  <div className='demo-block'>
                     <p>Add Scanning Alert</p>
                     <button
                       onClick={() => {
-                        addalerttolocal(datatoBeadded["7"]);
+                        addalerttolocal(datatoBeadded['7'])
                       }}
-                      className="btn btn-new"
+                      className='btn btn-new'
                     >
                       Add Scanning Alert
                     </button>
-                    {/* <a href='alerts'>
-                      <button className='btn btn-new'>Add Scanning Alert</button>
-                    </a> */}
                   </div>
                 </div>
               </div>
-              <div className="card mt-8">
-                <h5 className="bg-heading">Malicious code</h5>
-                <div className="card-body">
-                  <div className="demo-block">
+              <div className='card mt-8'>
+                <h5 className='bg-heading'>Malicious code</h5>
+                <div className='card-body'>
+                  <div className='demo-block'>
                     <p>Add WDATP Alert</p>
                     <button
-                      className="btn btn-new"
+                      className='btn btn-new'
                       onClick={() => {
-                        addalerttolocal(datatoBeadded["8"]);
+                        addalerttolocal(datatoBeadded['8'])
                       }}
                     >
                       Add WDATP Alert
                     </button>
-                    {/* <a href='alerts'>
-                      <button className='btn btn-new'>Add WDATP Alert</button>
-                    </a> */}
                   </div>
                 </div>
               </div>
@@ -534,7 +664,7 @@ const DemoPage = () => {
       </div>
       {/* End Col */}
     </div>
-  );
-};
+  )
+}
 
-export { DemoPage };
+export {DemoPage}

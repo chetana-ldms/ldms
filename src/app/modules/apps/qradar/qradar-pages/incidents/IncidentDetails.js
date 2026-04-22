@@ -151,20 +151,21 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     }
     fetchData()
   }, [orgId, toolId])
-  useEffect(() => {
-    const fetchData = async () => {
-      const groupIdToSend = incidentData?.groupId ? incidentData.groupId : 0
-      const response = await fetchGroupUsersUrl(orgId, toolId, groupIdToSend)
-      setldp_security_user(response?.usersList !== undefined ? response.usersList : [])
-    }
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const groupIdToSend = incidentData?.groupId ? incidentData.groupId : 0
+  //     const response = await fetchGroupUsersUrl(orgId, toolId, groupIdToSend)
+  //     setldp_security_user(response?.usersList !== undefined ? response.usersList : [])
+  //   }
 
-    fetchData()
-  }, [orgId, toolId, incidentData?.groupId])
+  //   fetchData()
+  // }, [orgId, toolId, incidentData?.groupId])
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchUsersForIncidentCreatorRoleUrl(orgId, toolId)
       setIncidentCreatorRole(response?.usersList != undefined ? response?.usersList : [])
+      setldp_security_user(response?.usersList != undefined ? response?.usersList : [])
     }
 
     fetchData()
@@ -621,7 +622,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 >
                   <DropdownToggle className='no-pad'>
                     <div className='btn btn-border btn-small no-horizontal-padding'>
-                      Action <i className='fa fa-angle-down' />
+                      <span className='text-black'>Action</span> <i className='fa fa-angle-down' />
                     </div>
                   </DropdownToggle>
                   <DropdownMenu className='w-auto'>
@@ -673,7 +674,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 <button
                   type='submit'
                   onClick={(event) => handleSubmit(event, incidentData)}
-                  className='btn btn-primary btn-new btn-small no-horizontal-padding'
+                  className='btn btn-primary btn-sm'
                   disabled={!id}
                 >
                   Save Changes
@@ -698,7 +699,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
               </li>
 
               {/* 2. Conversation */}
-              <li className='nav-item'>
+              {/* <li className='nav-item'>
                 <a
                   className='nav-link'
                   href='#'
@@ -709,7 +710,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 >
                   Conversation
                 </a>
-              </li>
+              </li> */}
 
               {/* 3. Timeline */}
               <li className='nav-item'>

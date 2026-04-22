@@ -1,0 +1,292 @@
+{
+ "Disk failure event detected": [
+   {
+    "datetime": "2025-08-06 17:00",
+    "user": "Senior Security Analyst",
+    "action": "Incident created, name:Disk Failure event was detected on Server 10.0.0.26 ",
+    "result": ""
+  },
+  {
+    "datetime": "2025-08-06 17:01",
+    "user": "Pluto",
+    "action": "Retrieved host details, Host: 10.0.0.26 | OS: Windows",
+    "result": ""
+  },
+  {
+    "user": "Senior security analyst",
+    "action": "confirmed for Proceeding with the disk health check,",
+    "result": "",
+    "datetime": "2025-08-06 10:36:13"
+  },
+   {
+    "user": "Pluto",
+    "action": "Proceeding with the disk health check,",
+    "result": "📟 Health check executed. 🧪 Disk overall status: ❌ FAILED",
+    "datetime": "2025-08-06 10:36:13"
+  },
+  {
+    "user": "Pluto",
+    "action": "📜 Fetching recent disk-related errors from Windows Event Log...",
+    "result": "🧾 Log found: Event ID 7: The device, \\\\Device\\\\Harddisk0\\\\DR0, has a bad block.",
+    "datetime": "2025-08-06 10:36:17"
+  },
+  {
+    "user": "Senior security analyst",
+    "action": "confirmed for Checking disk and volume status...",
+    "result": "",
+    "datetime": "2025-08-06 10:37:51"
+  },
+  {
+    "user": "Pluto",
+    "action": "Checking disk and volume status...",
+    "result": "💽 Disk status: Disk 0 - Offline. Volumes: ❌ Unavailable",
+    "datetime": "2025-08-06 10:37:51"
+  },
+  {
+    "user": "Senior security analyst",
+    "action": "confirmed for bring Disk 0 back online",
+    "result": "",
+    "datetime": "2025-08-06 10:37:53"
+  },
+  {
+    "user": "Pluto",
+    "action": "✅ Bringing disk online... \n 📟 executed the Command: Set-Disk -Number 0 -IsOffline $false | ✅ Disk brought online successfully.",
+    "result": "Volumes restored and accessible.",
+    "datetime": "2025-08-06 10:38:22"
+  },
+  {
+    "user": "Pluto",
+    "action": "🔎 Verifying disk and volume status post-recovery...",
+    "result": "🎉 Verification successful! Disk 0 is ONLINE and volumes are HEALTHY",
+    "datetime": "2025-08-06 10:38:26"
+  }
+],
+ "Memory spike detected": [
+  {
+    "datetime": "2025-08-06 17:00",
+    "user": "Senior Security Analyst",
+    "action": "Incident created, name:Memory Spike detected on Server 10.0.0.25 ",
+    "result": ""
+  },
+  {
+    "datetime": "2025-08-06 17:01",
+    "user": "Pluto",
+    "action": "Retrieved host details, Host: 10.0.0.25 | OS: Windows",
+    "result": ""
+  },
+  {
+    "datetime": "2025-08-06 17:02",
+    "user": "Pluto",
+    "action": "Connectivity check, executed the command: ping 10.0.0.25",
+    "result": "✅ Host reachable"
+  },
+  {
+    "datetime": "2025-08-06 17:06",
+    "user": "Pluto",
+    "action": "Establish remote session, executed the command:Enter-PSSession -ComputerName 10.0.0.25 -Credential $Credential",
+    "result": "Remote session established successfully"
+  },
+  {
+    "datetime": "2025-08-06 17:08",
+    "user": "Pluto",
+    "action": "Identify high memory consuming processes, executed the command:Get-Process | Sort-Object -Property WorkingSet -Descending | Select-Object -First 5",
+    "result": "Process `java.exe` (PID 9876) consuming 2.5 GB RAM"
+  },
+  {
+    "datetime": "2025-08-06 17:10",
+    "user": "Pluto",
+    "action": "Terminate process, executed the command:Stop-Process -Id 9876 -Force",
+    "result": "Process 9876 (`java.exe`) terminated"
+  },
+  {
+    "datetime": "2025-08-06 17:14",
+    "user": "Pluto",
+    "action": "Validate memory release, executed the command:Get-Process | Measure-Object WorkingSet -Sum",
+    "result": "Memory usage dropped from 91% → 56%"
+  },
+  {
+    "datetime": "2025-08-06 17:16",
+    "user": "Pluto",
+    "action": "Task completed",
+    "result": "✅ Memory normalized | Task completed in 18 minutes"
+  }
+]
+,
+"Network outage detected": [
+  {
+    "datetime": "2025-08-06 17:00",
+    "user": "Senior Security Analyst",
+    "action": "Incident created, name: Unable to connect to the server at 192.168.10.1 due to a network connectivity issue",
+    "result": ""
+  },
+  {
+    "datetime": "2025-08-06 17:01",
+    "user": "Pluto",
+    "action": "Retrieved host details, Host: 192.168.10.1 | Switch: 192.100.5.1",
+    "result": ""
+  },
+  {
+    "datetime": "2025-08-14 12:01:00",
+    "user": "Senior Security Analyst",
+    "action": "Executed `ping 192.168.10.1` to test connectivity",
+    "result": "Request timed out – 192.168.10.1 server not reachable"
+  },
+  {
+    "datetime": "2025-08-14 12:01:30",
+    "user": "Senior Security Analyst",
+    "action": "ping 192.100.5.1 -l 1000`",
+    "result": "Request timed out – 192.100.5.1 -l 1000 switch not reachable"
+  },
+  {
+    "datetime": "2025-08-14 12:02:00",
+    "user": "Senior Security Analyst",
+    "action": "Executed `configure terminal`",
+    "result": "Entered global configuration mode"
+  },
+  {
+    "datetime": "2025-08-14 12:03:00",
+    "user": "Senior Security Analyst",
+    "action": "Executed `interface vlan 10`",
+    "result": "Selected VLAN 10 interface"
+  },
+  {
+    "datetime": "2025-08-14 12:04:00",
+    "user": "Senior Security Analyst",
+    "action": "Executed `no shutdown`",
+    "result": "VLAN 10 interface re-enabled and is now up"
+  },
+  {
+    "datetime": "2025-08-14 12:04:30",
+    "user": "Senior Security Analyst",
+    "action": "Executed `exit`",
+    "result": "Exited configuration mode"
+  },
+  {
+    "datetime": "2025-08-14 12:04:45",
+    "user": "Senior Security Analyst",
+    "action": "Executed `write memory`",
+    "result": "Configuration saved successfully"
+  },
+  {
+    "datetime": "2025-08-14 12:05:00",
+    "user": "Senior Security Analyst",
+    "action": "Executed `ping 192.168.10.1`",
+    "result": "Reply from 192.168.10.1: bytes=32 time=2ms TTL=64 – Connectivity restored"
+  },
+  {
+    "datetime": "2025-08-14 12:05:15",
+    "user": "Senior Security Analyst",
+    "action": "Executed `show ip interface brief`",
+    "result": "Interface: VLAN 10, IP Address: 192.168.10.1, Status: up, Protocol: up"
+  },
+  {
+    "datetime": "2025-08-14 12:05:30",
+    "user": "Senior Security Analyst",
+    "action": "Executed `show vlan id 10`",
+    "result": "VLAN 10 status: Active"
+  }
+]
+,
+  "Failed Login Alert": [
+    {
+    "datetime": "2025-08-06 17:00",
+    "user": "Senior Security Analyst",
+    "action": "Incident created, name:Detected multiple failed login attempts on Server-10.0.0.25 ",
+    "result": ""
+  },
+  {
+    "datetime": "2025-08-06 17:01",
+    "user": "Pluto",
+    "action": "Retrieved host details, Host: 10.0.0.25 | OS: Windows",
+    "result": ""
+  },
+    {
+      "user": "Pluto",
+      "action": "Parsed alert details to identify impacted user",
+      "result": "User `jsmith` identified from failed login logs",
+      "datetime": "2025-08-06 19:01"
+    },
+    {
+      "user": "Pluto",
+      "action": "Queried Active Directory for user `jsmith` details",
+      "result": "User `jsmith` - John Smith - Department: IT - Status: Enabled",
+      "datetime": "2025-08-06 19:02"
+    },
+    {
+      "user": "Pluto",
+      "action": "Checked AD logs for suspicious activity",
+      "result": "No brute-force pattern. Possible incorrect password by user.",
+      "datetime": "2025-08-06 19:03"
+    },
+    {
+      "user": "Pluto",
+      "action": "Tagged incident as low severity and marked for closure",
+      "result": "\u2705 Incident resolved and auto-closed",
+      "datetime": "2025-08-06 19:04"
+    }
+  ]
+  ,
+  "Phishing Email Detected": [
+  {
+    "user": "Pluto",
+    "action": "Analyzed phishing alert details",
+    "result": "High threat level. Targeted asset: User mailbox. Threat actor: External cybercrime group. Technique: Phishing link.",
+    "datetime": "2025-08-06 19:00"
+  },
+  {
+    "user": "Pluto",
+    "action": "Extracted indicators from incident payload",
+    "result": "Indicators: https://micros0ft-secure.com, support@micros0ft-secure.com, 185.76.23.10, SHA256:xxxx",
+    "datetime": "2025-08-06 19:02"
+  },
+  {
+    "user": "Pluto",
+    "action": "Quarantined malicious email",
+    "result": "Email successfully quarantined from affected mailboxes",
+    "datetime": "2025-08-06 19:06"
+  },
+  {
+    "user": "Pluto",
+    "action": "Blocked sender domain globally",
+    "result": "Domain micros0ft-secure.com added to block list",
+    "datetime": "2025-08-06 19:08"
+  },
+  {
+    "user": "Pluto",
+    "action": "Performed threat intelligence lookup",
+    "result": "Malicious verdict confirmed for IP, URL, and file hash",
+    "datetime": "2025-08-06 19:10"
+  },
+  {
+    "user": "Pluto",
+    "action": "Checked if malicious URL was clicked",
+    "result": "Victim identified: john.smith@connecthome.com — IP 198.51.100.23",
+    "datetime": "2025-08-06 19:14"
+  },
+  {
+    "user": "Pluto",
+    "action": "Isolated compromised device",
+    "result": "Device with IP 198.51.100.23 isolated to contain threat",
+    "datetime": "2025-08-06 19:16"
+  },
+  {
+    "user": "Pluto",
+    "action": "Disabled compromised user account",
+    "result": "User john.smith@connecthome.com temporarily locked",
+    "datetime": "2025-08-06 19:18"
+  },
+  {
+    "user": "Pluto",
+    "action": "Notified SOC and user",
+    "result": "Sent email update regarding remediation steps",
+    "datetime": "2025-08-06 19:20"
+  },
+  {
+    "user": "Pluto",
+    "action": "Updated incident remediation status",
+    "result": "Incident marked as resolved in SOC dashboard",
+    "datetime": "2025-08-06 19:22"
+  }
+]
+
+}

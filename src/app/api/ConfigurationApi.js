@@ -51,7 +51,7 @@ const APIAuthDataDeleteUrl = process.env.REACT_APP_APIAUTHDATA_DELETE_URL
 const APIAuthDataUpdateUrl = process.env.REACT_APP_APIAUTHDATA_UPDATE_URL
 const ToolMasterDataUrl = process.env.REACT_APP_TOOL_MASTER_DATA_URL
 const AllUsersUrl = process.env.REACT_APP_ALL_USERS_URL
-const IncidentClientsUrl = 'http://10.41.3.232:501/api/IncidentManagement/v1/IncidentClients'
+const IncidentClientsUrl = process.env.REACT_APP_INCIDENT_CLIENTS_URL
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {
@@ -993,12 +993,11 @@ export const fetchIncidentClientsUrl = async (orgId, ToolId, clientid) => {
           'Content-Type': 'application/json',
         },
       }
-    );
-    const responseData = await response.json();
-    const data = responseData?.data;
-    return data;
+    )
+    const responseData = await response.json()
+    const data = responseData?.data
+    return data
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
-
+}
