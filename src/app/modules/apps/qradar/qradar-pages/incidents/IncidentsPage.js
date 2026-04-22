@@ -74,7 +74,7 @@ const IncidentsPage = () => {
   const [selectedDays, setSelectedDays] = useState([])
   const [selectedFilterValue, setSelectedFilterValue] = useState(1)
   const [selectedToolId, setSelectedToolId] = useState(
-    sessionStorage.getItem('incidentToolId') || 0
+    location.state?.toolId || sessionStorage.getItem('incidentToolId') || 0
   )
   const [tools, setTools] = useState([])
   const [showConfirmation, setShowConfirmation] = useState(false)
@@ -134,7 +134,12 @@ const IncidentsPage = () => {
   useEffect(() => {
     setStatusFromDashBoard(location.state?.status || '')
     setDaysFromDashBoard(location.state?.days || '')
+    if (location.state?.toolId) {
+      setSelectedToolId(location.state.toolId)
+      sessionStorage.setItem('incidentToolId', location.state.toolId)
+    }
   }, [location.state])
+
   useEffect(() => {
     const fetchNumberOfDays = async () => {
       try {
@@ -534,7 +539,6 @@ const IncidentsPage = () => {
     fetchFilteredIncidents(selectedToolId, selectedFilterValue)
     setShowMergeModal(false)
     setIsCheckboxSelected(false)
-    setselectedAlert([])
   }
 
   return (
