@@ -131,7 +131,7 @@ const IncidentChatPhishing = ({selectedAlert}) => {
             </tr>
             <tr className='text-center'>
               <td>Initial Access</td>
-              <td>T1566.001: Spearphishing Attachment</td>
+              <td>T1566: Spearphishing Attachment</td>
             </tr>
           </table>
         </div>
@@ -158,8 +158,8 @@ const IncidentChatPhishing = ({selectedAlert}) => {
             file hashes{' '}
           </p>
           <p className='fs-14'>
-            <span className='fw-bolder'>Result :</span> Indicators extracted: https://micros0ft-secure.com,
-            support@micros0ft-secure.com, 185.76.23.10, SHA256:xxxx
+            <span className='fw-bolder'>Result :</span> Indicators extracted:
+            https://micros0ft-secure.com, support@micros0ft-secure.com, 185.76.23.10, SHA256:xxxx
           </p>
         </div>
       </div>
@@ -180,8 +180,15 @@ const IncidentChatPhishing = ({selectedAlert}) => {
             </span>
           </p>
           <p className=''>Quarantine malicious email</p>
-          <p><span className='fw-bolder'>Action :</span> New-ComplianceSearchaction -Purge -Identity PhishEmailSearch</p>
-          <p> <span className='fw-bolder'>Result :</span> Email successfully quarantined from mailboxes</p>
+          <p>
+            <span className='fw-bolder'>Action :</span> New-ComplianceSearchaction -Purge -Identity
+            PhishEmailSearch
+          </p>
+          <p>
+            {' '}
+            <span className='fw-bolder'>Result :</span> Email successfully quarantined from
+            mailboxes
+          </p>
         </div>
       </div>
     </div>
@@ -202,10 +209,14 @@ const IncidentChatPhishing = ({selectedAlert}) => {
           </p>
           <p className='fs-14'>Block sender domain globally</p>
           <p className='fs-14'>
-            <span className='fw-bolder'>Action :</span> Set-HostedContentFilterPolicy -Identity \"Default\" -BlockedSenderDomains @
-            (Add = 'micros0ft-secure.com')
+            <span className='fw-bolder'>Action :</span> Set-HostedContentFilterPolicy -Identity
+            \"Default\" -BlockedSenderDomains @ (Add = 'micros0ft-secure.com')
           </p>
-          <p className='fs-14'> <span className='fw-bolder'>Result :</span> Domain micros0ft-secure.com added to block list</p>
+          <p className='fs-14'>
+            {' '}
+            <span className='fw-bolder'>Result :</span> Domain micros0ft-secure.com added to block
+            list
+          </p>
         </div>
       </div>
     </div>
@@ -226,9 +237,14 @@ const IncidentChatPhishing = ({selectedAlert}) => {
           </p>
           <p className='fs-14'>Call Threat Intel Lookup (URL, hash, IP)</p>
           <p className='fs-14'>
-            <span className='fw-bolder'>Action :</span> Invoke-WebRequest https://www.recordedfuture.com/api/... | Parse Verdict
+            <span className='fw-bolder'>Action :</span> Invoke-WebRequest
+            https://www.recordedfuture.com/api/... | Parse Verdict
           </p>
-          <p className='fs-14'> <span className='fw-bolder'>Result :</span> Malicious verdict confirmed for IP, URL and file hash</p>
+          <p className='fs-14'>
+            {' '}
+            <span className='fw-bolder'>Result :</span> Malicious verdict confirmed for IP, URL and
+            file hash
+          </p>
         </div>
       </div>
     </div>
@@ -248,9 +264,13 @@ const IncidentChatPhishing = ({selectedAlert}) => {
             </span>
           </p>
           <p className='fs-14'>Check if URL clicked</p>
-          <p className='fs-14'><span className='fw-bolder'>Action :</span> Get-MDATPURLClickEvents -Url 'micros0ft-secure.com'</p>
           <p className='fs-14'>
-            <span className='fw-bolder'>Result :</span> Victim user detected: john.smith@connecthome.com — IP 198.51.100.23
+            <span className='fw-bolder'>Action :</span> Get-MDATPURLClickEvents -Url
+            'micros0ft-secure.com'
+          </p>
+          <p className='fs-14'>
+            <span className='fw-bolder'>Result :</span> Victim user detected:
+            john.smith@connecthome.com — IP 198.51.100.23
           </p>
         </div>
       </div>
@@ -271,8 +291,14 @@ const IncidentChatPhishing = ({selectedAlert}) => {
             </span>
           </p>
           <p className='fs-14'>Isolate device if clicked</p>
-          <p className='fs-14'><span className='fw-bolder'>Action :</span> Invoke-MDEDeviceIsolation -IP 198.51.100.23</p>
-          <p className='fs-14'> <span className='fw-bolder'>Result :</span> Contain the threat by isolating compromised device</p>
+          <p className='fs-14'>
+            <span className='fw-bolder'>Action :</span> Invoke-MDEDeviceIsolation -IP 198.51.100.23
+          </p>
+          <p className='fs-14'>
+            {' '}
+            <span className='fw-bolder'>Result :</span> Contain the threat by isolating compromised
+            device
+          </p>
         </div>
       </div>
     </div>
@@ -293,9 +319,13 @@ const IncidentChatPhishing = ({selectedAlert}) => {
           </p>
           <p className='fs-14'>Disable user temporarily</p>
           <p className='fs-14'>
-            <span className='fw-bolder'>Action :</span> Set-AzureADUser -ObjectId john.smith@connecthome.com -AccountEnabled $false
+            <span className='fw-bolder'>Action :</span> Set-AzureADUser -ObjectId
+            john.smith@connecthome.com -AccountEnabled $false
           </p>
-          <p className='fs-14'> <span className='fw-bolder'>Result :</span> User john.smith@connecthome.com locked</p>
+          <p className='fs-14'>
+            {' '}
+            <span className='fw-bolder'>Result :</span> User john.smith@connecthome.com locked
+          </p>
         </div>
       </div>
     </div>
@@ -315,8 +345,14 @@ const IncidentChatPhishing = ({selectedAlert}) => {
             </span>
           </p>
           <p className='fs-14'>Notify SOC and user</p>
-          <p className='fs-14'><span className='fw-bolder'>Action :</span> Send-MailMessage -To user & SOC Team</p>
-          <p className='fs-14'> <span className='fw-bolder'>Result :</span> Communication about remediation and next steps</p>
+          <p className='fs-14'>
+            <span className='fw-bolder'>Action :</span> Send-MailMessage -To user & SOC Team
+          </p>
+          <p className='fs-14'>
+            {' '}
+            <span className='fw-bolder'>Result :</span> Communication about remediation and next
+            steps
+          </p>
         </div>
       </div>
     </div>
@@ -336,8 +372,13 @@ const IncidentChatPhishing = ({selectedAlert}) => {
             </span>
           </p>
           <p className='fs-14'>Sync remediation status to incident</p>
-          <p className='fs-14'><span className='fw-bolder'>Action :</span> Completed the task</p>
-          <p className='fs-14'> <span className='fw-bolder'>Result :</span> Incident marked as resolved in SOC dashboard</p>
+          <p className='fs-14'>
+            <span className='fw-bolder'>Action :</span> Completed the task
+          </p>
+          <p className='fs-14'>
+            {' '}
+            <span className='fw-bolder'>Result :</span> Incident marked as resolved in SOC dashboard
+          </p>
         </div>
       </div>
     </div>
