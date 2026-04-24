@@ -11,6 +11,7 @@ const assetScanDetailsUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/AssetS
 const updateRisksUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/Risks/Update'
 const deleteRisksUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/Risks/Delete'
 const createRemediateRequestUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/CreateRemediateRequest'
+const createWaiverRequestUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/CreateWaiverRequest'
 
 export const fetchRisks = async (data) => {
   try {
@@ -187,6 +188,24 @@ export const fetchdeleteRisksUrl = async (data) => {
 export const fetchcreateRemediateRequestUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${createRemediateRequestUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchcreateWaiverRequestUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${createWaiverRequestUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

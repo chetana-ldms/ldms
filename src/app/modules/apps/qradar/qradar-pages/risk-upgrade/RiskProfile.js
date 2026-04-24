@@ -21,13 +21,12 @@ import {fetchExportDataAddUrl, fetchMasterData} from '../../../../../api/Api'
 import ReactPaginate from 'react-paginate'
 import './RiskProfile.css'
 import {fetchUsersByOrgTool} from '../../../../../api/IncidentsApi'
-import { useNavigate } from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 
 function RiskProfile() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [tools, setTools] = useState([])
   const [sortConfig, setSortConfig] = useState({key: '', direction: 'ascending'})
-
   const [showUsersDropdown, setShowUsersDropdown] = useState(false)
   const [selectedUser, setSelectedUser] = useState('')
   const [currentPage, setCurrentPage] = useState(0)
@@ -46,16 +45,11 @@ function RiskProfile() {
   const [showSeverityDropdown, setShowSeverityDropdown] = useState(false)
   const [showActionsDropdown, setShowActionsDropdown] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState('')
-
-  // ── View modal (row click) ────────────────────────────────────────────────
   const [showModal, setShowModal] = useState(false)
   const [selectedRisk, setSelectedRisk] = useState(null)
-
-  // ── Edit modal (pencil icon) ──────────────────────────────────────────────
   const [showEditModal, setShowEditModal] = useState(false)
   const [editRisk, setEditRisk] = useState(null)
 
-  // ── Delete modal ─────────────────────────────────────────────────────────
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteRisk, setDeleteRisk] = useState(null)
 
@@ -77,7 +71,7 @@ function RiskProfile() {
     statusDropDown: [],
   })
   const {severityNameDropDownData, statusDropDown} = dropdownData
- const navigate = useNavigate()
+  const navigate = useNavigate()
   useEffect(() => {
     const fetchNumberOfDays = async () => {
       try {
@@ -396,7 +390,7 @@ function RiskProfile() {
           notify('Remediate Request Created')
           setActionValue('')
           setTimeout(() => {
-            navigate('/qradar/incidents', { state: { toolId: toolId } })
+            navigate('/qradar/incidents', {state: {toolId: toolId}})
           }, 2000)
         } else {
           notifyFail('Failed to Create Remediate Request')
@@ -585,6 +579,7 @@ function RiskProfile() {
                           <select onChange={createIncidentSubmit} className='form-select mb-2'>
                             <option value=''>Select</option>
                             <option value='1'>Create Remediate Request</option>
+                            <option value='5'>Create waived risks</option>
                             <option value='2'>Escalate</option>
                             <option value='3'>Ignore</option>
                             <option value='4'>Delete</option>
