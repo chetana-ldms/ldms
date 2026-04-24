@@ -10,7 +10,7 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
 } from 'reactflow'
- 
+
 import {
   dndinitialNodes as initialNodes,
   edges as initialEdges,
@@ -19,13 +19,13 @@ import {ToastContainer, toast} from 'react-toastify'
 import 'reactflow/dist/style.css'
 import '../playbooks/overview.css'
 import './custom_class_for_nodes.scss'
- 
+
 // DND Start
 let id = 13
 const getId = () => `dndnode_${id++}`
 // DND End
 const onInit = (reactFlowInstance) => console.log('flow loaded:', reactFlowInstance)
- 
+
 export const NetworkOutagePlaybook = () => {
   const [loading, setLoading] = useState(false)
   const reactFlowWrapper = useRef(null)
@@ -34,47 +34,47 @@ export const NetworkOutagePlaybook = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
   const [reactFlowInstance, setReactFlowInstance] = useState(null)
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [])
- 
+
   const onDragOver = useCallback((event) => {
     event.preventDefault()
     event.dataTransfer.dropEffect = 'move'
   }, [])
- 
+
   const onDragStart = (event, lable) => {
     event.dataTransfer.setData('application/reactflow', lable)
     event.dataTransfer.effectAllowed = 'move'
   }
- 
+
   const onEdgeUpdateStart = useCallback(() => {
     edgeUpdateSuccessful.current = false
   }, [])
- 
+
   const onEdgeUpdate = useCallback((oldEdge, newConnection) => {
     edgeUpdateSuccessful.current = true
     setEdges((els) => updateEdge(oldEdge, newConnection, els))
   }, [])
- 
+
   const onEdgeUpdateEnd = useCallback((_, edge) => {
     if (!edgeUpdateSuccessful.current) {
       setEdges((eds) => eds.filter((e) => e.id !== edge.id))
     }
- 
+
     edgeUpdateSuccessful.current = true
   }, [])
- 
+
   const onDrop = useCallback(
     (event) => {
       event.preventDefault()
- 
+
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect()
       const type = 'default'
       const lable = event.dataTransfer.getData('application/reactflow')
- 
+
       // check if the dropped element is valid
       if (typeof type === 'undefined' || !type) {
         return
       }
- 
+
       const position = reactFlowInstance.project({
         x: event.clientX - reactFlowBounds.left,
         y: event.clientY - reactFlowBounds.top,
@@ -86,7 +86,7 @@ export const NetworkOutagePlaybook = () => {
         position,
         data: {label: `${lable}`},
       }
- 
+
       setNodes((nds) => nds.concat(newNode))
     },
     [reactFlowInstance],
@@ -109,11 +109,11 @@ export const NetworkOutagePlaybook = () => {
       theme: 'colored',
     })
   }
- 
+
   return (
     <>
       <ToastContainer />
- 
+
       <div className='card mb-1 mt-1 demo-playbook pad-0'>
         <div className='row'>
           <div className='col-lg-3'>
@@ -177,9 +177,7 @@ export const NetworkOutagePlaybook = () => {
                 </div>
                 <div
                   className='btn btn7 btn-sm mb-1 dndnode'
-                  onDragStart={(event) =>
-                    onDragStart(event, 'Ping - Ip')
-                  }
+                  onDragStart={(event) => onDragStart(event, 'Ping - Ip')}
                   draggable
                 >
                   <span>Ping - Ip</span>
@@ -219,7 +217,7 @@ export const NetworkOutagePlaybook = () => {
                 >
                   <span>Ping : IP</span>
                 </div>
-                  <div
+                <div
                   className='btn btn4 btn-sm mb-1 dndnode'
                   onDragStart={(event) => onDragStart(event, 'Establish Remote Session')}
                   draggable
@@ -230,7 +228,35 @@ export const NetworkOutagePlaybook = () => {
             </div>
           </div>
           <div className='col-lg-9'>
-            <div className='' style={{height: '100%'}}>
+            <div className='d-flex align-items-center justify-content-center gap-3'>
+              <div className='w-50'>
+                <table className='table table-bordered text-center mitre-table'>
+                  <thead>
+                    <tr style={{backgroundColor: '#6c757d', color: 'white'}}>
+                      <th>Tactic</th>
+                      <th>Technique</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{backgroundColor: '#f2f2f2'}}>
+                      <td>Impact</td>
+                      <td>T1499 - Endpoint Denial of Service</td>
+                    </tr>
+                    <tr>
+                      <td>Command and Control</td>
+                      <td>T1071 - Application Layer Protocol</td>
+                    </tr>
+                    <tr style={{backgroundColor: '#f2f2f2'}}>
+                      <td>Exfiltration</td>
+                      <td>T1041 - Exfiltration Over C2 Channel</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <button className='btn btn-primary btn-small w-auto flex-shrink-0'>Map MITRE</button>
+            </div>
+            <div className='' style={{height: '50%'}}>
               {loading ? <UsersListLoading /> : ''}
               <div className='dndflow'>
                 <ReactFlowProvider>

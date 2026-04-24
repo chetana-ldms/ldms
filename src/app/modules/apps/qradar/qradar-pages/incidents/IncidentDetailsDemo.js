@@ -16,6 +16,61 @@ import {useErrorBoundary} from 'react-error-boundary'
 const IncidentDetails = ({selectedAlert, onRefreshIncidents}) => {
   console.log('selectedAlert', selectedAlert)
   const [timelineData, setTimelineData] = useState([])
+  const [selectedMitreStepId, setSelectedMitreStepId] = useState(null)
+
+  const phishingAttackChain = [
+    {
+      alert_id: 'ALT-1001',
+      name: 'Email Delivered',
+      technique_id: 'T1566',
+      completed: true,
+      description: 'Malicious email with attachment delivered to user',
+      tactic: 'Initial Access',
+      technique_name: 'Spearphishing Attachment',
+      entities: {user: 'john.doe@connecthomes.com'},
+    },
+    {
+      alert_id: 'ALT-1002',
+      name: 'User Clicked / Attachment Opened',
+      technique_id: 'T1204',
+      completed: true,
+      description: 'User opened suspicious email attachment',
+      tactic: 'Execution',
+      technique_name: 'User Execution',
+      entities: {user: 'john.doe@connecthomes.com', device: 'DESKTOP-001'},
+    },
+    {
+      alert_id: 'ALT-1003',
+      name: 'Script Executed',
+      technique_id: 'T1059',
+      completed: true,
+      description: 'Script execution detected from document',
+      tactic: 'Execution',
+      technique_name: 'Command and Scripting Interpreter',
+      entities: {device: 'DESKTOP-001'},
+    },
+    {
+      alert_id: 'ALT-1004',
+      name: 'Payload Downloaded',
+      technique_id: 'T1105',
+      completed: true,
+      description: 'Suspicious outbound connection for payload download',
+      tactic: 'Command and Control',
+      technique_name: 'Ingress Tool Transfer',
+      entities: {device: 'DESKTOP-001'},
+    },
+    {
+      alert_id: null,
+      name: 'C2 Communication',
+      technique_id: 'T1071',
+      completed: false,
+      description: 'Potential command and control communication channel',
+      tactic: 'Command and Control',
+      technique_name: 'Application Layer Protocol',
+      entities: {},
+    },
+  ]
+
   const [currentDateTime, setCurrentDateTime] = useState('')
 
   useEffect(() => {
@@ -136,7 +191,7 @@ const IncidentDetails = ({selectedAlert, onRefreshIncidents}) => {
                   Playbooks
                 </a>
               </li>
-              {/* <li className='nav-item' role='presentation'>
+              <li className='nav-item' role='presentation'>
                 <a
                   className='nav-link'
                   data-bs-toggle='tab'
@@ -145,9 +200,9 @@ const IncidentDetails = ({selectedAlert, onRefreshIncidents}) => {
                   role='tab'
                   tabindex='-1'
                 >
-                  Observables
+                  MITRE Mapping
                 </a>
-              </li> */}
+              </li>
               <li className='nav-item' role='presentation'>
                 <a
                   className='nav-link'
@@ -391,9 +446,78 @@ const IncidentDetails = ({selectedAlert, onRefreshIncidents}) => {
                   </tbody>
                 </table>
               </div>
-              {/* <div className='tab-pane fade' id='kt_tab_pane_4' role='tabpanel'>
-                Observables data
-              </div> */}
+              <div className='tab-pane fade' id='kt_tab_pane_4' role='tabpanel'>
+                {selectedAlert?.name === 'Phishing Email Detected' ? (
+                  <div className='card-body p-0 h-600px scroll-y'>
+                    <h5 className='mb-4'>Phishing Attack Chain</h5>
+                    <div className='mitre-attack-chain'>
+                      {phishingAttackChain.map((step, index) => (
+                        <div
+                          key={index}
+                          className={`attack-chain-item p-3 mb-2 border rounded ${
+                            selectedMitreStepId === step.technique_id ? 'bg-light-primary border-primary' : 'bg-light'
+                          }`}
+                        >
+                          <div 
+                            className='d-flex align-items-center justify-content-between cursor-pointer'
+                            onClick={() => setSelectedMitreStepId(selectedMitreStepId === step.technique_id ? null : step.technique_id)}
+                          >
+                            <div className='d-flex align-items-center'>
+                              <div className='me-3'>
+                                {step.completed ? (
+                                  <i className='fas fa-check-circle text-success fs-3'></i>
+                                ) : (
+                                  <i className='far fa-circle text-gray-400 fs-3'></i>
+                                )}
+                              </div>
+                              <span className='fw-bold'>
+                                {step.technique_id} - {step.name}
+                              </span>
+                            </div>
+                            <i className={`fas ${selectedMitreStepId === step.technique_id ? 'fa-chevron-down' : 'fa-chevron-right'} text-gray-400`}></i>
+                          </div>
+
+                          {selectedMitreStepId === step.technique_id && (
+                            <div className='mt-3 p-3 border-top bg-white rounded shadow-none'>
+                              <div className='fs-7'>
+                                <p>
+                                  <strong>Alert ID:</strong> {step.alert_id || 'N/A'}
+                                </p>
+                                <p>
+                                  <strong>Description:</strong> {step.description}
+                                </p>
+                                <p>
+                                  <strong>MITRE Tactic:</strong> {step.tactic}
+                                </p>
+                                <p>
+                                  <strong>MITRE Technique:</strong> {step.technique_name} (
+                                  {step.technique_id})
+                                </p>
+                                {Object.keys(step.entities).length > 0 && (
+                                  <div>
+                                    <strong>Entities:</strong>
+                                    <ul className='mb-0'>
+                                      {Object.entries(step.entities).map(([key, val]) => (
+                                        <li key={key}>
+                                          {key}: {val}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className='p-5 text-center text-muted'>
+                    No MITRE Mapping available for this alert type.
+                  </div>
+                )}
+              </div>
               <div className='tab-pane fade' id='kt_tab_pane_5' role='tabpanel'>
                 <div className='card-body p-0 h-600px scroll-y'>
                   <div className='timeline-label'>

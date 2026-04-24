@@ -50,6 +50,33 @@ const DemoAlert = () => {
   };
 
   useEffect(() => {
+    const defaultAlert = {
+      alertID: 14,
+      alertDevicePKID: 0,
+      toolID: 1,
+      orgID: 1,
+      name: 'Failed Login Alert',
+      sla: '5h 11m',
+      playBookName: 'Failed Login Alert',
+      playBookDescription: 'Failed Login Alert',
+      severity: 'Medium',
+      score: 3,
+      status: 'New',
+      statusID: null,
+      last_persisted_time: new Date().getTime(), // Added for compatibility with convertDate
+      detectedtime: new Date().toISOString(),
+      observableTagID: null,
+      observableTag: 'BruteForce',
+      ownerUserID: 0,
+      ownerusername: 'Global Admin',
+      source: 'Microsoft Sentinel',
+      alertData: null,
+      createdUser: null,
+      processed: 0,
+      mitreTactic: 'Credential Access',
+      mitreTechniques: [{id: 'T1110', name: 'Brute Force'}],
+    }
+
     const fetchData = async () => {
       try {
         const response = await axios.post(GET_RECENT_OFFENSES, {
@@ -61,11 +88,15 @@ const DemoAlert = () => {
           },
         });
         const { alertsList } = response.data;
-        localStorage.setItem("alertData", JSON.stringify(alertsList));
-        setAlertsCount(alertsList.length);
-        setAlertData(alertsList);
+        // Filter out ID 14 if it exists in response to avoid duplicates, then prepend default
+        const finalData = [defaultAlert, ...alertsList.filter((a) => a.alertID !== 14)];
+        localStorage.setItem('alertData', JSON.stringify(finalData));
+        setAlertsCount(finalData.length);
+        setAlertData(finalData);
       } catch (error) {
         console.log("Error fetching data:", error);
+        setAlertData([defaultAlert]);
+        setAlertsCount(1);
       }
     };
 
@@ -77,9 +108,12 @@ const DemoAlert = () => {
     if (!localAlertData || localAlertData.length === 0) {
       fetchData();
     } else {
-      localAlertData.sort((a, b) => b.alertID - a.alertID);
-      setAlertsCount(localAlertData.length);
-      setAlertData(localAlertData);
+      // Ensure default alert is 1st by default even when reading from local storage
+      const restOfAlerts = localAlertData.filter((a) => a.alertID !== 14);
+      restOfAlerts.sort((a, b) => b.alertID - a.alertID);
+      const finalData = [defaultAlert, ...restOfAlerts];
+      setAlertsCount(finalData.length);
+      setAlertData(finalData);
     }
 
     const timeoutId = setTimeout(() => {
@@ -174,6 +208,8 @@ const DemoAlert = () => {
                   <th className="min-w-50px">Status</th>
                   <th className="min-w-50px">Detected Time</th>
                   <th className="min-w-50px">Description</th>
+                  <th className="min-w-50px">Tactic</th>
+                  <th className="min-w-50px">Technique ID</th>
                   <th className="min-w-50px">Observables Tags</th>
                   <th className="min-w-50px">Owner</th>
                   <th className="min-w-50px">Source</th>
@@ -239,6 +275,16 @@ const DemoAlert = () => {
                         }
                       >
                         {item.DisplayName || item.name}
+                      </td>
+                       <td className="text-dark text-hover-primary">
+                        {item.mitreTactic}
+                      </td>
+                       <td className="text-dark text-hover-primary">
+                        {item.mitreTechniques?.map((technique) => (
+                          <span key={technique.id} className="badge badge-light-primary">
+                            {technique.id}
+                          </span>
+                        ))}
                       </td>
                       <td className="text-dark text-hover-primary">
                         {item.observableTag}

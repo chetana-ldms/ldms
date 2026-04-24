@@ -115,6 +115,7 @@ import RiskProfile from './qradar-pages/risk-upgrade/RiskProfile'
 import Vulnerabilities from './qradar-pages/risk-upgrade/Vulnerabilities'
 import Domain from './qradar-pages/risk-upgrade/Domain'
 import IpAddress from './qradar-pages/risk-upgrade/IpAddress'
+import MitreFramework from './qradar-pages/incidents/MitreFramework'
 
 
 const QradarPages = () => {
@@ -155,6 +156,7 @@ const QradarPages = () => {
       <Route path='demoalert/:status' element={<DemoAlert />} />
       <Route path='demoalertv1/:status' element={<DemoAlertv1 />} />
         <Route path='incidentsDemo' element={<IncidentsPageDemo />} />
+        <Route path='mitreFramework/:status' element={<MitreFramework />} />
       <Route path='demoplaybooks' element={<DemoPlaybooks />} />
       <Route path='profile' element={<UsersProfile />} />
       <Route path='demo/:status' element={<DemoPage />} />

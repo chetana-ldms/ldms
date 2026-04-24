@@ -10,22 +10,19 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
 } from 'reactflow'
- 
-import {
-  dndinitialNodes as initialNodes,
-  edges as initialEdges,
-} from './initial-elementsPhishing'
+
+import {dndinitialNodes as initialNodes, edges as initialEdges} from './initial-elementsPhishing'
 import {ToastContainer, toast} from 'react-toastify'
 import 'reactflow/dist/style.css'
 import '../playbooks/overview.css'
 import './custom_class_for_nodes.scss'
- 
+
 // DND Start
 let id = 13
 const getId = () => `dndnode_${id++}`
 // DND End
 const onInit = (reactFlowInstance) => console.log('flow loaded:', reactFlowInstance)
- 
+
 export const PhishingPlaybook = () => {
   const [loading, setLoading] = useState(false)
   const reactFlowWrapper = useRef(null)
@@ -34,47 +31,47 @@ export const PhishingPlaybook = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
   const [reactFlowInstance, setReactFlowInstance] = useState(null)
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [])
- 
+
   const onDragOver = useCallback((event) => {
     event.preventDefault()
     event.dataTransfer.dropEffect = 'move'
   }, [])
- 
+
   const onDragStart = (event, lable) => {
     event.dataTransfer.setData('application/reactflow', lable)
     event.dataTransfer.effectAllowed = 'move'
   }
- 
+
   const onEdgeUpdateStart = useCallback(() => {
     edgeUpdateSuccessful.current = false
   }, [])
- 
+
   const onEdgeUpdate = useCallback((oldEdge, newConnection) => {
     edgeUpdateSuccessful.current = true
     setEdges((els) => updateEdge(oldEdge, newConnection, els))
   }, [])
- 
+
   const onEdgeUpdateEnd = useCallback((_, edge) => {
     if (!edgeUpdateSuccessful.current) {
       setEdges((eds) => eds.filter((e) => e.id !== edge.id))
     }
- 
+
     edgeUpdateSuccessful.current = true
   }, [])
- 
+
   const onDrop = useCallback(
     (event) => {
       event.preventDefault()
- 
+
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect()
       const type = 'default'
       const lable = event.dataTransfer.getData('application/reactflow')
- 
+
       // check if the dropped element is valid
       if (typeof type === 'undefined' || !type) {
         return
       }
- 
+
       const position = reactFlowInstance.project({
         x: event.clientX - reactFlowBounds.left,
         y: event.clientY - reactFlowBounds.top,
@@ -86,7 +83,7 @@ export const PhishingPlaybook = () => {
         position,
         data: {label: `${lable}`},
       }
- 
+
       setNodes((nds) => nds.concat(newNode))
     },
     [reactFlowInstance],
@@ -109,11 +106,11 @@ export const PhishingPlaybook = () => {
       theme: 'colored',
     })
   }
- 
+
   return (
     <>
       <ToastContainer />
- 
+
       <div className='card mb-1 mt-1 demo-playbook pad-0'>
         <div className='row'>
           <div className='col-lg-3'>
@@ -177,9 +174,7 @@ export const PhishingPlaybook = () => {
                 </div>
                 <div
                   className='btn btn7 btn-sm mb-1 dndnode'
-                  onDragStart={(event) =>
-                    onDragStart(event, 'Ping - Ip')
-                  }
+                  onDragStart={(event) => onDragStart(event, 'Ping - Ip')}
                   draggable
                 >
                   <span>Quarantine malicious email</span>
@@ -203,14 +198,14 @@ export const PhishingPlaybook = () => {
                   onDragStart={(event) => onDragStart(event, 'Enable VLAN : VLAN Name')}
                   draggable
                 >
-                  <span> Check if URL clicked   </span>
+                  <span> Check if URL clicked </span>
                 </div>
                 <div
                   className='btn btn3 btn-sm mb-1 dndnode'
                   onDragStart={(event) => onDragStart(event, 'Re-configure VLAN : no Shutdown')}
                   draggable
                 >
-                  <span> isolate device  </span>
+                  <span> isolate device </span>
                 </div>
                 <div
                   className='btn btn4 btn-sm mb-1 dndnode'
@@ -219,15 +214,14 @@ export const PhishingPlaybook = () => {
                 >
                   <span>Disable user temporarily </span>
                 </div>
-                  <div
+                <div
                   className='btn btn4 btn-sm mb-1 dndnode'
                   onDragStart={(event) => onDragStart(event, 'Establish Remote Session')}
                   draggable
                 >
- 
-                   <span>Notify user and SOC team </span>
+                  <span>Notify user and SOC team </span>
                 </div>
-                  <div
+                <div
                   className='btn btn4 btn-sm mb-1 dndnode'
                   onDragStart={(event) => onDragStart(event, 'Establish Remote Session')}
                   draggable
@@ -238,7 +232,35 @@ export const PhishingPlaybook = () => {
             </div>
           </div>
           <div className='col-lg-9'>
-            <div className='' style={{height: '100%'}}>
+            <div className='d-flex align-items-center justify-content-center gap-3'>
+              <div className='w-50'>
+                <table className='table table-bordered text-center mitre-table'>
+                  <thead>
+                    <tr style={{backgroundColor: '#6c757d', color: 'white'}}>
+                      <th>Tactic</th>
+                      <th>Technique</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{backgroundColor: '#f2f2f2'}}>
+                      <td>Initial Access</td>
+                      <td>T1566.002 - Spearphishing Link</td>
+                    </tr>
+                    <tr>
+                      <td>Execution</td>
+                      <td>T1204 - User Execution</td>
+                    </tr>
+                    <tr style={{backgroundColor: '#f2f2f2'}}>
+                      <td>Credential Access</td>
+                      <td>T1556 - Modify Authentication Process</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <button className='btn btn-primary btn-small w-auto flex-shrink-0'>Map MITRE</button>
+            </div>
+            <div className='' style={{height: '50%'}}>
               {loading ? <UsersListLoading /> : ''}
               <div className='dndflow'>
                 <ReactFlowProvider>

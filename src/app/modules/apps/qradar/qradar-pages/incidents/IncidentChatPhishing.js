@@ -131,7 +131,7 @@ const IncidentChatPhishing = ({selectedAlert}) => {
             </tr>
             <tr className='text-center'>
               <td>Initial Access</td>
-              <td>Phishing: Link</td>
+              <td>T1566.001: Spearphishing Attachment</td>
             </tr>
           </table>
         </div>

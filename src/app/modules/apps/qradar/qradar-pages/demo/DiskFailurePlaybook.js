@@ -247,7 +247,30 @@ export const DiskFailurePlaybook = () => {
             </div>
           </div>
           <div className='col-lg-9'>
-            <div className='' style={{height: '100%'}}>
+            <div className='d-flex align-items-center justify-content-center gap-3'>
+              <div className='w-50'>
+                <table className='table table-bordered text-center mitre-table'>
+                  <thead>
+                    <tr style={{backgroundColor: '#6c757d', color: 'white'}}>
+                      <th>Tactic</th>
+                      <th>Technique</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{backgroundColor: '#f2f2f2'}}>
+                      <td>Impact</td>
+                      <td>T1499 - Endpoint Denial of Service</td>
+                    </tr>
+                    <tr>
+                      <td>Impact</td>
+                      <td>T1565 - Data Manipulation</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <button className='btn btn-primary btn-small w-auto flex-shrink-0'>Map MITRE</button>
+            </div>
+            <div className='' style={{height: '50%'}}>
               {loading ? <UsersListLoading /> : ''}
               <div className='dndflow'>
                 <ReactFlowProvider>

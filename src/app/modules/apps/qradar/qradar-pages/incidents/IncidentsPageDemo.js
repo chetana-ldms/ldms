@@ -249,7 +249,6 @@ const IncidentsPageDemo = () => {
                             handleAlertClick({
                               id: 'manual-failed-login',
                               name: 'Failed Login Alert',
-                              isSelected: true,
                             })
                           }
                         >
