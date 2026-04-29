@@ -129,6 +129,7 @@ import RiskProfile from './qradar-pages/risk-upgrade/RiskProfile'
 import Vulnerabilities from './qradar-pages/risk-upgrade/Vulnerabilities'
 import Domain from './qradar-pages/risk-upgrade/Domain'
 import IpAddress from './qradar-pages/risk-upgrade/IpAddress'
+import RiskWaiver from './qradar-pages/risk-upgrade/RiskWaiver'
 
 
 const QradarPages = () => {
@@ -263,6 +264,7 @@ const QradarPages = () => {
        <Route path='Vulnerabilities/:status' element={<Vulnerabilities />} />
        <Route path='Domain/:status' element={<Domain />} />
        <Route path='IpAddress/:status' element={<IpAddress />} />
+       <Route path='RiskWaiver/:status' element={<RiskWaiver />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )

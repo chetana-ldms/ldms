@@ -22,6 +22,8 @@ import ReactPaginate from 'react-paginate'
 import './RiskProfile.css'
 import {fetchUsersByOrgTool} from '../../../../../api/IncidentsApi'
 import {useNavigate} from 'react-router-dom'
+import RiskWaiverModal from './RiskWaiverModal'
+import RiskRevokeModel from './RiskRevokeModel'
 
 function RiskProfile() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -49,8 +51,10 @@ function RiskProfile() {
   const [selectedRisk, setSelectedRisk] = useState(null)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editRisk, setEditRisk] = useState(null)
-
+  const [showWaiverModal, setShowWaiverModal] = useState(false)
+  const [isWaived, setIsWaived] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showRevokeModal, setShowRevokeModal] = useState(false)
   const [deleteRisk, setDeleteRisk] = useState(null)
 
   const roleId = Number(sessionStorage.getItem('roleID'))
@@ -129,6 +133,7 @@ function RiskProfile() {
       statusId: status.current?.value || 0,
       severutyId: severity.current?.value || 0,
       userId: userID || 0,
+      isWaived: isWaived || false,
       searchDurationInDays: duration || 0,
       searchText: search || '',
     }
@@ -291,6 +296,20 @@ function RiskProfile() {
       handleCloseAll()
       setDeleteRisk(null)
       setShowDeleteModal(true)
+    } else if (value === '5') {
+      if (selectedAlert.length === 0) {
+        notifyFail('Please select at least one risk to waive.')
+        return
+      }
+      handleCloseAll()
+      setShowWaiverModal(true)
+    } else if (value === '6') {
+      if (selectedAlert.length === 0) {
+        notifyFail('Please select at least one risk to revoke.')
+        return
+      }
+      handleCloseAll()
+      setShowRevokeModal(true)
     }
   }
 
@@ -579,7 +598,8 @@ function RiskProfile() {
                           <select onChange={createIncidentSubmit} className='form-select mb-2'>
                             <option value=''>Select</option>
                             <option value='1'>Create Remediate Request</option>
-                            <option value='5'>Create waived risks</option>
+                            <option value='5'>Create waived risks Request</option>
+                            <option value='6'>Create Revoke risks Request</option>
                             <option value='2'>Escalate</option>
                             <option value='3'>Ignore</option>
                             <option value='4'>Delete</option>
@@ -650,7 +670,7 @@ function RiskProfile() {
                 <input
                   type='text'
                   className='form-control form-control-sm'
-                  placeholder='Search Alert'
+                  placeholder='Search Risk'
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                 />
@@ -659,22 +679,23 @@ function RiskProfile() {
                 </button>
               </div>
 
-              <div className='d-flex justify-content-between bd-highlight mb-3'>
-                <div className='mt-2 bd-highlight'>
-                  <div className='w-150px me-2'>
-                    <select className='form-select form-select-sm' ref={status}>
-                      <option value=''>Select</option>
-                      {statusDropDown.map((item) => (
-                        <option key={item.dataID} value={item.dataID}>
-                          {item.dataValue}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+              <div className='d-flex align-items-center gap-3 mb-1 mt-2'>
+                {/* Status */}
+                <div className='w-150px'>
+                  <select className='form-select form-select-sm' ref={status}>
+                    <option value=''>Select Status</option>
+                    {statusDropDown.map((item) => (
+                      <option key={item.dataID} value={item.dataID}>
+                        {item.dataValue}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div className='w-150px mt-2'>
+
+                {/* Severity */}
+                <div className='w-150px me-4'>
                   <select className='form-select form-select-sm' ref={severity}>
-                    <option value=''>Select</option>
+                    <option value=''>Select Severity</option>
                     {severityNameDropDownData.map((item) => (
                       <option key={item.dataID} value={item.dataID}>
                         {item.dataValue}
@@ -682,8 +703,23 @@ function RiskProfile() {
                     ))}
                   </select>
                 </div>
-                <div className='mt-2 ms-1 btn btn-primary btn-sm' onClick={handleSync}>
-                  Sync
+
+                {/* Waived Checkbox */}
+                <div className='d-flex align-items-center gap-1'>
+                  <input
+                    type='checkbox'
+                    id='waived'
+                    className='form-check-input mt-0'
+                    checked={isWaived}
+                    onChange={(e) => setIsWaived(e.target.checked)}
+                  />
+                  <label
+                    htmlFor='waived'
+                    className='form-check-label ms-3'
+                    style={{cursor: 'pointer'}}
+                  >
+                    Waived
+                  </label>
                 </div>
               </div>
             </div>
@@ -844,6 +880,28 @@ function RiskProfile() {
           risk={deleteRisk}
           riskIds={selectedAlert}
           isBulkDelete={selectedAlert.length > 1}
+          onSuccess={() => {
+            setselectedAlert([])
+            setIsCheckboxSelected(false)
+            getRisks(currentPage + 1, selectedFilterValue, searchValue)
+          }}
+        />
+
+        <RiskWaiverModal
+          show={showWaiverModal}
+          onHide={() => setShowWaiverModal(false)}
+          selectedAlertIds={selectedAlert}
+          onSuccess={() => {
+            setselectedAlert([])
+            setIsCheckboxSelected(false)
+            getRisks(currentPage + 1, selectedFilterValue, searchValue)
+          }}
+        />
+
+        <RiskRevokeModel
+          show={showRevokeModal}
+          onHide={() => setShowRevokeModal(false)}
+          selectedAlertIds={selectedAlert}
           onSuccess={() => {
             setselectedAlert([])
             setIsCheckboxSelected(false)

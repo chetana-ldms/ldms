@@ -10,8 +10,15 @@ const syncIpsUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/IP/Sync'
 const assetScanDetailsUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/AssetScanDetails'
 const updateRisksUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/Risks/Update'
 const deleteRisksUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/Risks/Delete'
-const createRemediateRequestUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/CreateRemediateRequest'
+const createRemediateRequestUrl =
+  'http://10.41.3.232:501/api/RiskManagement/v1/CreateRemediateRequest'
 const createWaiverRequestUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/CreateWaiverRequest'
+const fetchWaiversRequestSearchUrl =
+  'http://10.41.3.232:501/api/RiskManagement/v1/WaiversRequestSearch'
+const ApproveOrRejectUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/RiskWaiver/ApproveOrReject'
+const WaiverRequestDeleteUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/WaiverRequest/Delete'
+const eligibleForWaiverRequestUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/Risks/EligibleForWaiverRequest'
+const revokeWaiverRequestUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/RiskWaiver/Revoke'
 
 export const fetchRisks = async (data) => {
   try {
@@ -206,6 +213,96 @@ export const fetchcreateRemediateRequestUrl = async (data) => {
 export const fetchcreateWaiverRequestUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${createWaiverRequestUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchfetchWaiversRequestSearchUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${fetchWaiversRequestSearchUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchApproveOrRejectUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${ApproveOrRejectUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchWaiverRequestDeleteUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${WaiverRequestDeleteUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetcheligibleForWaiverRequestUrl = async (riskIds = [], toolId) => {
+  try {
+    const params = new URLSearchParams()
+    riskIds.forEach((id) => params.append('riskIds', id))
+    if (toolId) params.append('toolId', toolId)
+
+    const response = await FetchWithToken(`${eligibleForWaiverRequestUrl}?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchrevokeWaiverRequestUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${revokeWaiverRequestUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

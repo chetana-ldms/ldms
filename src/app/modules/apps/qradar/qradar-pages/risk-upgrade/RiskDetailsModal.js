@@ -110,7 +110,7 @@ function RiskDetailsModal({show, handleClose, risk}) {
           </div>
         </Modal.Header>
 
-        <Modal.Body className='h-600px scroll-y'>
+        <Modal.Body className='h-500px scroll-y'>
           {/* ACCORDION */}
           <Accordion alwaysOpen defaultActiveKey={['0', '1', '2', '3']} flush>
             {/* SUMMARY */}
@@ -148,6 +148,8 @@ function RiskDetailsModal({show, handleClose, risk}) {
                       <th>Assets</th>
                       <th>First detected</th>
                       <th>Status</th>
+                      <th>Waived</th>
+                      <th>Waiver Expiry Date</th>
                     </tr>
                   </thead>
 
@@ -167,6 +169,8 @@ function RiskDetailsModal({show, handleClose, risk}) {
                         <td>
                           <span className='badge bg-danger'>{host.statusName}</span>
                         </td>
+                        <td>{host.isWaived ? 'Yes' : 'No'}</td>
+                        <td>{host.waiverExpiryDate ? getCurrentTimeZone(host.waiverExpiryDate) : 'N/A'}</td>
                       </tr>
                     ))}
                   </tbody>
