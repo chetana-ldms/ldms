@@ -145,40 +145,38 @@ function RiskRevokeModel({show, onHide, selectedAlertIds, onSuccess}) {
               <table className='table table-bordered table-sm align-middle'>
                 <thead className='table-light'>
                   <tr>
-                    <th className='text-center' style={{width: '40px'}}>
-                      #
-                    </th>
                     <th>Risk Title</th>
-                    <th>Asset Name</th>
+                    <th>Assets</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {risksData.flatMap((risk) =>
-                    (risk.riskAssets || [])
-                      .filter((asset) => asset.isWaived)
-                      .map((asset) => (
-                        <tr key={`${risk.riskId}-${asset.assetId}`}>
-                          <td className='text-center'>
-                            <Form.Check
-                              type='checkbox'
-                              id={`risk-${risk.riskId}-asset-${asset.assetId}`}
-                              checked={
-                                selectedWaiverItems.get(risk.riskId)?.has(asset.assetId) || false
-                              }
-                              onChange={(e) =>
-                                handleAssetCheckboxChange(
-                                  risk.riskId,
-                                  asset.assetId,
-                                  e.target.checked
-                                )
-                              }
-                            />
-                          </td>
-                          <td>{risk.riskTitle || risk.finding}</td>
-                          <td>{asset.assetName}</td>
-                        </tr>
-                      ))
-                  )}
+                  {risksData.map((risk) => {
+                    const waivedAssets = (risk.riskAssets || []).filter((asset) => asset.isWaived)
+                    if (waivedAssets.length === 0) return null
+
+                    return (
+                      <tr key={risk.riskId}>
+                        <td>{risk.finding || risk.riskTitle}</td>
+                        <td>
+                          {waivedAssets.map((asset) => (
+                            <div key={asset.assetId} className='mb-1'>
+                              <Form.Check
+                                type='checkbox'
+                                id={`risk-${risk.riskId}-asset-${asset.assetId}`}
+                                label={asset.assetName}
+                                checked={
+                                  selectedWaiverItems.get(risk.riskId)?.has(asset.assetId) || false
+                                }
+                                onChange={(e) =>
+                                  handleAssetCheckboxChange(risk.riskId, asset.assetId, e.target.checked)
+                                }
+                              />
+                            </div>
+                          ))}
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>

@@ -13,16 +13,19 @@ function RiskEditModal({show, onHide, risk, onSuccess}) {
   const [statusId, setStatusId] = useState('')
   const [severityId, setSeverityId] = useState('')
   const [ownerUserId, setOwnerUserId] = useState('')
+  const [assignedToUserId, setAssignedToUserId] = useState('')
   const [comment, setComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [statusList, setStatusList] = useState([])
   const [severityList, setSeverityList] = useState([])
   const [userList, setUserList] = useState([])
+  console.log(userList, "userList in modal")
   useEffect(() => {
     if (!risk) return
     setStatusId(risk.statusId ?? '')
     setSeverityId(risk.severityId ?? '')
-    setOwnerUserId(risk.ownerUserId ?? risk.ownerId ?? '')
+    setOwnerUserId(risk.ownerId ?? '')
+    setAssignedToUserId(risk.assignedToUserId ?? '')
     setComment('')
   }, [risk])
   useEffect(() => {
@@ -58,6 +61,7 @@ function RiskEditModal({show, onHide, risk, onSuccess}) {
     if (statusId) payload.statusId = Number(statusId)
     if (severityId) payload.severityId = Number(severityId)
     if (ownerUserId) payload.ownerUserId = Number(ownerUserId)
+    if (assignedToUserId) payload.assignedToUserId = Number(assignedToUserId)
 
     try {
       setSubmitting(true)
@@ -179,6 +183,25 @@ function RiskEditModal({show, onHide, risk, onSuccess}) {
                   size='sm'
                 >
                   <option value=''>— Select owner —</option>
+                  {userList.map((user, i) => (
+                    <option key={i} value={user.userID}>
+                      {user.name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+
+            {/* Assigned To */}
+            <Col xs={12}>
+              <Form.Group controlId='edit-assigned-to'>
+                <Form.Label className='fw-semibold fs-7 mb-1'>Assigned To</Form.Label>
+                <Form.Select
+                  value={assignedToUserId}
+                  onChange={(e) => setAssignedToUserId(e.target.value)}
+                  size='sm'
+                >
+                  <option value=''>— Select user —</option>
                   {userList.map((user, i) => (
                     <option key={i} value={user.userID}>
                       {user.name}

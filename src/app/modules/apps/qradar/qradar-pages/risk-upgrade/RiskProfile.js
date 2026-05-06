@@ -54,6 +54,7 @@ function RiskProfile() {
   const [showWaiverModal, setShowWaiverModal] = useState(false)
   const [isWaived, setIsWaived] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showAssignedToDropdown, setShowAssignedToDropdown] = useState(false)
   const [showRevokeModal, setShowRevokeModal] = useState(false)
   const [deleteRisk, setDeleteRisk] = useState(null)
 
@@ -133,10 +134,13 @@ function RiskProfile() {
       statusId: status.current?.value || 0,
       severutyId: severity.current?.value || 0,
       userId: userID || 0,
-      isWaived: isWaived || false,
       searchDurationInDays: duration || 0,
       searchText: search || '',
     }
+    if (isWaived) {
+      payload.isWaived = isWaived || false
+    }
+
     try {
       setLoading(true)
       const response = await fetchRisks(payload)
@@ -184,6 +188,7 @@ function RiskProfile() {
     setShowStatusDropdown(false)
     setShowSeverityDropdown(false)
     setShowActionsDropdown(false)
+    setShowAssignedToDropdown(false)
   }
 
   const handleStatus = () => {
@@ -191,6 +196,7 @@ function RiskProfile() {
     setShowSeverityDropdown(false)
     setShowUsersDropdown(false)
     setShowActionsDropdown(false)
+    setShowAssignedToDropdown(false)
   }
 
   const handleSeverity = () => {
@@ -198,6 +204,7 @@ function RiskProfile() {
     setShowStatusDropdown(false)
     setShowUsersDropdown(false)
     setShowActionsDropdown(false)
+    setShowAssignedToDropdown(false)
   }
 
   const handleActions = () => {
@@ -205,10 +212,20 @@ function RiskProfile() {
     setShowUsersDropdown(false)
     setShowStatusDropdown(false)
     setShowSeverityDropdown(false)
+    setShowAssignedToDropdown(false)
   }
 
   const handleUsers = () => {
     setShowUsersDropdown((prev) => !prev)
+    setShowStatusDropdown(false)
+    setShowSeverityDropdown(false)
+    setShowActionsDropdown(false)
+    setShowAssignedToDropdown(false)
+  }
+
+  const handleAssignedTo = () => {
+    setShowAssignedToDropdown((prev) => !prev)
+    setShowUsersDropdown(false)
     setShowStatusDropdown(false)
     setShowSeverityDropdown(false)
     setShowActionsDropdown(false)
@@ -313,7 +330,7 @@ function RiskProfile() {
     }
   }
 
-  const handleSubmitUpdate = async ({statusId, severityId, ownerUserId}) => {
+  const handleSubmitUpdate = async ({statusId, severityId, ownerUserId, assignedToUserId}) => {
     try {
       const modifiedUserId = Number(sessionStorage.getItem('userId'))
       const payload = {
@@ -327,6 +344,7 @@ function RiskProfile() {
       if (statusId) payload.statusId = Number(statusId)
       if (severityId) payload.severityId = Number(severityId)
       if (ownerUserId) payload.ownerUserId = Number(ownerUserId)
+      if (assignedToUserId) payload.assignedToUserId = Number(assignedToUserId)
 
       const response = await fetchupdateRisksUrl(payload)
       const {isSuccess, message} = response
@@ -334,12 +352,8 @@ function RiskProfile() {
         notify(message)
         handleCloseAll()
         setNote('')
-        // setselectedAlert([])
-        // setIsCheckboxSelected(false)
         setSelectedStatus('')
         setSelectedUser('')
-        // setCurrentPage(0)
-        // setActivePage(1)
         getRisks()
         getRisks(currentPage + 1, selectedFilterValue, searchValue)
       } else {
@@ -348,11 +362,6 @@ function RiskProfile() {
     } catch (error) {
       console.error(error)
     }
-  }
-
-  const handleIgnoreSubmit = async () => {
-    if (!note.trim()) return
-    await handleSubmitUpdate({})
   }
 
   const handleSearchAlert = () => {
@@ -574,6 +583,47 @@ function RiskProfile() {
                       </div>
                     )}
                   </div>
+                    <div className='dropdown-wrapper'>
+                    <button
+                      className='btn btn-small fw-bold fs-14 btn-green'
+                      onClick={handleAssignedTo}
+                      disabled={!isCheckboxSelected}
+                    >
+                      Assigned To
+                    </button>
+                    {showAssignedToDropdown && (
+                      <div className='alert-action'>
+                        <div className='p-3'>
+                          <div className='d-flex justify-content-end mb-2'>
+                            <button type='button' className='btn-close' onClick={handleCloseAll} />
+                          </div>
+                          <select
+                            className='form-select mb-2'
+                            value={selectedUser}
+                            onChange={handleUserChange}
+                          >
+                            <option value=''>Select</option>
+                            {ldp_security_user?.map((user, index) => (
+                              <option key={index} value={user.userID}>
+                                {user.name}
+                              </option>
+                            ))}
+                          </select>
+                          <textarea
+                            className='form-control mb-2'
+                            placeholder='Write note...'
+                            onChange={handleNoteChange}
+                          />
+                          <button
+                            className='btn btn-sm btn-primary w-100'
+                            onClick={() => handleSubmitUpdate({assignedToUserId: selectedUser})}
+                          >
+                            Submit
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                   {/* ACTIONS */}
                   <div className='dropdown-wrapper'>
@@ -598,28 +648,10 @@ function RiskProfile() {
                           <select onChange={createIncidentSubmit} className='form-select mb-2'>
                             <option value=''>Select</option>
                             <option value='1'>Create Remediate Request</option>
-                            <option value='5'>Create waived risks Request</option>
-                            <option value='6'>Create Revoke risks Request</option>
-                            <option value='2'>Escalate</option>
-                            <option value='3'>Ignore</option>
+                            <option value='5'>Create waiver risks Request</option>
+                            <option value='6'>Waiver Revoke</option>
                             <option value='4'>Delete</option>
                           </select>
-                          {actionsValue === '3' && (
-                            <>
-                              <textarea
-                                className='form-control mb-2'
-                                placeholder='Write note...'
-                                value={note}
-                                onChange={handleNoteChange}
-                              />
-                              <button
-                                className='btn btn-sm btn-primary w-100'
-                                onClick={handleIgnoreSubmit}
-                              >
-                                Submit
-                              </button>
-                            </>
-                          )}
                         </div>
                       </div>
                     )}
@@ -752,6 +784,9 @@ function RiskProfile() {
               <th onClick={() => handleSort('ownerName')}>
                 Owner {renderSortIcon(sortConfig, 'ownerName')}
               </th>
+               <th onClick={() => handleSort('assignedToUserName')}>
+                Assigned To {renderSortIcon(sortConfig, 'assignedToUserName')}
+              </th>
               <th onClick={() => handleSort('source')}>
                 Source {renderSortIcon(sortConfig, 'source')}
               </th>
@@ -801,6 +836,7 @@ function RiskProfile() {
                 <td>{risk.assetCount}</td>
                 <td>{risk.statusName}</td>
                 <td>{risk.ownerName}</td>
+                <td>{risk.assignedToUserName}</td>
                 <td>{risk.source}</td>
                 <td>
                   {/* ── Edit ── */}

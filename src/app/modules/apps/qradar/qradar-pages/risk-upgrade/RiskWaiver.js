@@ -1,9 +1,8 @@
 import React, {useState, useRef, useEffect} from 'react'
 import RiskDetailsModal from './RiskDetailsModal'
-import RiskEditModal from './RiskEditModal'
+import RiskWaiverEdit from './RiskWaiverEdit'
 import {
   fetchfetchWaiversRequestSearchUrl,
-  fetchupdateRisksUrl,
   fetchApproveOrRejectUrl,
   fetchWaiverRequestDeleteUrl,
 } from '../../../../../api/BreachRiskApi'
@@ -20,6 +19,7 @@ import {fetchExportDataAddUrl, fetchMasterData} from '../../../../../api/Api'
 import './RiskProfile.css'
 import Pagination from '../../../../../../utils/Pagination'
 import DeleteConfirmation2 from './DeleteConfirmation2'
+import WaiverApprovalModal from './WaiverApprovalModal'
 
 function RiskWaiver() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -35,9 +35,7 @@ function RiskWaiver() {
   const [searchValue, setSearchValue] = useState('')
   const [selectedFilterValue, setSelectedFilterValue] = useState(1)
   const status = useRef()
-  const [showStatusDropdown, setShowStatusDropdown] = useState(false)
   const [showActionsDropdown, setShowActionsDropdown] = useState(false)
-  const [selectedStatus, setSelectedStatus] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [selectedRisk, setSelectedRisk] = useState(null)
   const [showEditModal, setShowEditModal] = useState(false)
@@ -46,6 +44,7 @@ function RiskWaiver() {
   const [refreshTrigger, setRefreshTrigger] = useState(false)
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
   const [deleteRisk, setDeleteRisk] = useState(null)
+  const [showApprovalModal, setShowApprovalModal] = useState(false)
 
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
@@ -59,6 +58,7 @@ function RiskWaiver() {
     statusDropDown: [],
   })
   const {statusDropDown} = dropdownData
+
   useEffect(() => {
     const fetchNumberOfDays = async () => {
       try {
@@ -150,18 +150,11 @@ function RiskWaiver() {
   // ─── Dropdown toggle helpers ──────────────────────────────────────────────
 
   const handleCloseAll = () => {
-    setShowStatusDropdown(false)
-    setShowActionsDropdown(false)
-  }
-
-  const handleStatus = () => {
-    setShowStatusDropdown((prev) => !prev)
     setShowActionsDropdown(false)
   }
 
   const handleActions = () => {
     setShowActionsDropdown((prev) => !prev)
-    setShowStatusDropdown(false)
   }
 
   // ─── Misc handlers ────────────────────────────────────────────────────────
@@ -200,84 +193,30 @@ function RiskWaiver() {
       return updated
     })
   }
-  const handleStatusDropDown = (e) => setSelectedStatus(e.target.value)
 
   const handleNoteChange = (e) => setNote(e.target.value)
 
   const handleActionSelection = (e) => {
     const value = e.target.value
     setActionValue(value)
-    if (value === 'Delete') {
+    if (value === 'Approve') {
+      if (selectedAlert.length === 0) {
+        notifyFail('Please select at least one waiver request.')
+        setActionValue('')
+        return
+      }
+      setShowApprovalModal(true)
+      handleCloseAll()
+      setActionValue('')
+    } else if (value === 'Delete') {
       if (selectedAlert.length === 0) {
         notifyFail('Please select at least one waiver request to delete.')
         setActionValue('')
         return
       }
-      setDeleteRisk(null) // Indicate bulk delete
+      setDeleteRisk(null)
       setShowDeleteConfirmation(true)
       handleCloseAll()
-    }
-  }
-
-  const handleSubmitUpdate = async ({statusId}) => {
-    try {
-      const payload = {
-        orgId,
-        toolId,
-        modifiedUserId: userID,
-        riskIds: selectedAlert.map(Number),
-        comment: note || '',
-        modifiedDate: new Date().toISOString(),
-      }
-      if (statusId) payload.statusId = Number(statusId)
-
-      const response = await fetchupdateRisksUrl(payload)
-      const {isSuccess, message} = response
-      if (isSuccess) {
-        notify(message)
-        handleCloseAll()
-        setNote('')
-        setSelectedStatus('')
-        setselectedAlert([])
-        setIsCheckboxSelected(false)
-        setRefreshTrigger((prev) => !prev) // Re-fetch all data to update the list
-      } else {
-        notifyFail(message)
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  const handleBulkActionSubmit = async () => {
-    if (!note.trim()) return
-
-    try {
-      const payload = {
-        orgId,
-        toolId,
-        waiverRequestIds: selectedAlert.map(Number),
-        userId: userID,
-        approveRejectReason: note,
-        isApprove: actionsValue === 'Approve',
-        approveRejectDate: new Date().toISOString(),
-      }
-
-      const response = await fetchApproveOrRejectUrl(payload)
-      if (response?.isSuccess) {
-        notify(response.message)
-        handleCloseAll()
-        setNote('')
-        setActionValue('')
-        setselectedAlert([])
-        setIsCheckboxSelected(false)
-        setRefreshTrigger((prev) => !prev)
-      } else {
-        notifyFail(response?.message || 'Failed to process waiver request.')
-      }
-    } catch (error) {
-      console.error('Waiver approval/rejection failed:', error)
-      notifyFail('An error occurred while processing the waiver request.')
     }
   }
 
@@ -288,6 +227,7 @@ function RiskWaiver() {
       const idsToDelete = deleteRisk ? [Number(deleteRisk.waiverId)] : selectedAlert.map(Number)
 
       const payload = {
+        toolId: toolId,
         waiverRequestIds: idsToDelete,
         userId: userID,
         reason: reason,
@@ -377,50 +317,6 @@ function RiskWaiver() {
             <div className='row'>
               <div className='card-toolbar float-left'>
                 <div className='d-flex align-items-center gap-2 gap-lg-3'>
-                  {/* STATUS */}
-                  <div className='dropdown-wrapper'>
-                    <button
-                      className='btn btn-small fw-bold fs-14 btn-green'
-                      onClick={handleStatus}
-                      disabled={!isCheckboxSelected}
-                    >
-                      Status
-                    </button>
-                    {showStatusDropdown && (
-                      <div className='alert-action'>
-                        <div className='p-3'>
-                          <div className='d-flex justify-content-end mb-2'>
-                            <button
-                              type='button'
-                              className='btn-close'
-                              aria-label='Close'
-                              onClick={handleCloseAll}
-                            />
-                          </div>
-                          <select className='form-select mb-2' onChange={handleStatusDropDown}>
-                            <option value=''>Select</option>
-                            {statusDropDown.map((item) => (
-                              <option key={item.dataID} value={item.dataID}>
-                                {item.dataValue}
-                              </option>
-                            ))}
-                          </select>
-                          <textarea
-                            className='form-control mb-2'
-                            placeholder='Write note...'
-                            onChange={handleNoteChange}
-                          />
-                          <button
-                            className='btn btn-sm btn-primary w-100'
-                            onClick={() => handleSubmitUpdate({statusId: selectedStatus})}
-                          >
-                            Submit
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
                   {/* ACTIONS */}
                   <div className='dropdown-wrapper'>
                     <button
@@ -444,27 +340,8 @@ function RiskWaiver() {
                           <select onChange={handleActionSelection} className='form-select mb-2'>
                             <option value=''>Select</option>
                             <option value='Approve'>Approve</option>
-                            <option value='Reject'>Reject</option>
                             <option value='Delete'>Delete</option>
                           </select>
-                          {actionsValue && actionsValue !== 'Delete' && (
-                            <>
-                              <textarea
-                                className='form-control mb-2'
-                                placeholder='Write note...'
-                                value={note}
-                                onChange={handleNoteChange}
-                              />
-                            </>
-                          )}
-                          {actionsValue && actionsValue !== 'Delete' && (
-                            <button
-                              className='btn btn-sm btn-primary w-100'
-                              onClick={handleBulkActionSubmit}
-                            >
-                              Submit
-                            </button>
-                          )}
                         </div>
                       </div>
                     )}
@@ -524,18 +401,16 @@ function RiskWaiver() {
                 </button>
               </div>
 
-              <div className='d-flex justify-content-between bd-highlight mb-3'>
-                <div className='mt-2 bd-highlight'>
-                  <div className='w-150px me-2'>
-                    <select className='form-select form-select-sm' ref={status}>
-                      <option value=''>Select</option>
-                      {statusDropDown.map((item) => (
-                        <option key={item.dataID} value={item.dataID}>
-                          {item.dataValue}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+              <div className='d-flex align-items-center gap-3 mb-1 mt-2'>
+                <div className='w-150px'>
+                  <select className='form-select form-select-sm' ref={status}>
+                    <option value=''>Select Status</option>
+                    {statusDropDown.map((item) => (
+                      <option key={item.dataID} value={item.dataID}>
+                        {item.dataValue}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
@@ -553,13 +428,18 @@ function RiskWaiver() {
               <th onClick={() => handleSort('reason')}>
                 Reason {renderSortIcon(sortConfig, 'reason')}
               </th>
-              <th onClick={() => handleSort('firstDetected')}>
-                First detected {renderSortIcon(sortConfig, 'firstDetected')}
+              <th onClick={() => handleSort('expiryDate')}>
+                Expiry Date {renderSortIcon(sortConfig, 'expiryDate')}
               </th>
               <th onClick={() => handleSort('statusName')}>
                 Status {renderSortIcon(sortConfig, 'statusName')}
               </th>
-              <th>Requested By</th>
+               <th onClick={() => handleSort('requestedByUserName')}>
+                Requested By {renderSortIcon(sortConfig, 'requestedByUserName')}
+              </th>
+               <th onClick={() => handleSort('assignedApproverUserName')}>
+                Assigned Approver {renderSortIcon(sortConfig, 'assignedApproverUserName')}
+              </th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -581,6 +461,7 @@ function RiskWaiver() {
                       name={risk.waiverId}
                       checked={selectedAlert.includes(String(risk.waiverId))}
                       onChange={(e) => handleselectedAlert(risk, e)}
+                      disabled={risk.active !== 1 || risk.statusName !== 'Pending'}
                       onClick={(e) => e.stopPropagation()}
                       autoComplete='off'
                     />
@@ -597,12 +478,13 @@ function RiskWaiver() {
                     {truncateText(risk.riskTitle, 15)}
                   </div>
                 </td>
-                <td>{getCurrentTimeZone(risk.firstDetected)}</td>
+                <td>{getCurrentTimeZone(risk.expiryDate)}</td>
                 <td>{risk.statusName}</td>
                 <td>{risk.requestedByUserName}</td>
+                <td>{risk.assignedApproverUserName}</td>
                 <td>
                   {/* ── Edit ── */}
-                  {isActionAuthorized('Update') ? (
+                  {isActionAuthorized('Update') && !(risk.active !== 1 || risk.statusName !== 'Pending') ? (
                     <span
                       title='Edit'
                       onClick={(e) => handleEditClick(e, risk)}
@@ -617,7 +499,7 @@ function RiskWaiver() {
                   )}
 
                   {/* ── Delete ── */}
-                  {isActionAuthorized('Delete') ? (
+                  {isActionAuthorized('Delete') && !(risk.active !== 1 || risk.statusName !== 'Pending') ? (
                     <span
                       className='ms-8'
                       title='Delete'
@@ -638,7 +520,7 @@ function RiskWaiver() {
             ))}
           </tbody>
         </table>
-        <RiskEditModal
+        <RiskWaiverEdit
           show={showEditModal}
           onHide={() => {
             setShowEditModal(false)
@@ -646,6 +528,17 @@ function RiskWaiver() {
           }}
           risk={editRisk}
           onSuccess={() => getWaivers()}
+        />
+
+        <WaiverApprovalModal
+          show={showApprovalModal}
+          onHide={() => setShowApprovalModal(false)}
+          waiverRequestIds={selectedAlert}
+          onSuccess={() => {
+            setselectedAlert([])
+            setIsCheckboxSelected(false)
+            setRefreshTrigger((prev) => !prev)
+          }}
         />
 
         <DeleteConfirmation2
