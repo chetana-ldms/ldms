@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react'
+import React, {useState, useRef, useEffect, Fragment} from 'react'
 import RiskDetailsModal from './RiskDetailsModal'
 import RiskEditModal from './RiskEditModal'
 import RiskDeleteModal from './RiskDeleteModal'
@@ -53,6 +53,7 @@ function RiskProfile() {
   const [editRisk, setEditRisk] = useState(null)
   const [showWaiverModal, setShowWaiverModal] = useState(false)
   const [isWaived, setIsWaived] = useState(false)
+  const [expandedRows, setExpandedRows] = useState([])
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showAssignedToDropdown, setShowAssignedToDropdown] = useState(false)
   const [showRevokeModal, setShowRevokeModal] = useState(false)
@@ -132,7 +133,7 @@ function RiskProfile() {
         rangeEnd: safePage * limit,
       },
       statusId: status.current?.value || 0,
-      severutyId: severity.current?.value || 0,
+      severityId: severity.current?.value || 0,
       userId: userID || 0,
       searchDurationInDays: duration || 0,
       searchText: search || '',
@@ -229,6 +230,12 @@ function RiskProfile() {
     setShowStatusDropdown(false)
     setShowSeverityDropdown(false)
     setShowActionsDropdown(false)
+  }
+
+  const handleToggleRow = (riskId) => {
+    setExpandedRows((prev) =>
+      prev.includes(riskId) ? prev.filter((id) => id !== riskId) : [...prev, riskId]
+    )
   }
 
   // ─── Misc handlers ────────────────────────────────────────────────────────
@@ -354,7 +361,8 @@ function RiskProfile() {
         setNote('')
         setSelectedStatus('')
         setSelectedUser('')
-        getRisks()
+        setIsCheckboxSelected(false)
+        setselectedAlert([])
         getRisks(currentPage + 1, selectedFilterValue, searchValue)
       } else {
         notifyFail(message)
@@ -796,14 +804,14 @@ function RiskProfile() {
           <tbody>
             {loading && <UsersListLoading />}
             {filteredList?.map((risk) => (
-              <tr
-                key={risk.riskId}
-                className='fs-12 table-row'
-                style={{cursor: 'pointer'}}
-                onClick={() => handleRowClick(risk)}
-              >
+              <Fragment key={risk.riskId}>
+                <tr
+                  className='fs-12 table-row'
+                  style={{cursor: 'pointer'}}
+                  onClick={() => handleRowClick(risk)}
+                >
                 <td>
-                  <div className='form-check form-check-sm form-check-custom form-check-solid px-3'>
+                  <div className='form-check form-check-sm form-check-custom form-check-solid px-3 d-flex align-items-center'>
                     <input
                       className='form-check-input widget-13-check'
                       type='checkbox'
@@ -832,7 +840,7 @@ function RiskProfile() {
                     {truncateText(risk.category, 30)}
                   </span>
                 </td>
-                <td>{getCurrentTimeZone(risk.firstDetected)}</td>
+                <td>{getCurrentTimeZone(risk.firstDetectedDate)}</td>
                 <td>{risk.assetCount}</td>
                 <td>{risk.statusName}</td>
                 <td>{risk.ownerName}</td>
@@ -871,8 +879,56 @@ function RiskProfile() {
                       <i className='fa fa-trash disabled' />
                     </span>
                   )}
+
+                  {/* Accordion Toggle Icon */}
+                  <i
+                    className={`fa fa-chevron-${expandedRows.includes(risk.riskId) ? 'down' : 'right'} ms-8 cursor-pointer text-primary`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleToggleRow(risk.riskId)
+                    }}
+                  />
                 </td>
-              </tr>
+                </tr>
+                {/* Accordion Detail Row */}
+                {expandedRows.includes(risk.riskId) && (
+                  <tr className='bg-light'>
+                    <td colSpan='11' className='ps-15'>
+                      <div className='p-4 border-start border-primary border-4'>
+                        <h6 className='fw-bold fs-7 mb-3 text-dark'>Associated Assets Details</h6>
+                        {risk.riskAssets && risk.riskAssets.length > 0 ? (
+                          <div className='table-responsive'>
+                            <table className='table table-bordered table-sm fs-7 bg-white mb-0'>
+                              <thead className='table-light'>
+                                <tr>
+                                  <th>Assets</th>
+                                  <th>First detected</th>
+                                  <th>Status</th>
+                                  <th>Waived</th>
+                                  <th>Waiver Expiry Date</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {risk.riskAssets.map((asset) => (
+                                  <tr key={asset.assetId}>
+                                    <td>{asset.assetName}</td>
+                                    <td>{getCurrentTimeZone(asset.firstDetectedDate || asset.firstDetected) || '—'}</td>
+                                    <td>{asset.statusName || '—'}</td>
+                                    <td>{asset.isWaived ? 'Yes' : 'No'}</td>
+                                    <td>{getCurrentTimeZone(asset.waiverExpiryDate) || '—'}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <span className='text-muted fs-7 fst-italic'>No asset data available for this risk.</span>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
             ))}
           </tbody>
         </table>

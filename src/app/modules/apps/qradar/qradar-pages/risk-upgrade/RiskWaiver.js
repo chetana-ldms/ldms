@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react'
+import React, {useState, useRef, useEffect, Fragment} from 'react'
 import RiskDetailsModal from './RiskDetailsModal'
 import RiskWaiverEdit from './RiskWaiverEdit'
 import {
@@ -41,6 +41,7 @@ function RiskWaiver() {
   const [showEditModal, setShowEditModal] = useState(false)
   const [editRisk, setEditRisk] = useState(null)
   const [allWaiverRisks, setAllWaiverRisks] = useState([]) // State to hold all fetched risks
+  const [expandedRows, setExpandedRows] = useState([])
   const [refreshTrigger, setRefreshTrigger] = useState(false)
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
   const [deleteRisk, setDeleteRisk] = useState(null)
@@ -155,6 +156,12 @@ function RiskWaiver() {
 
   const handleActions = () => {
     setShowActionsDropdown((prev) => !prev)
+  }
+
+  const handleToggleRow = (waiverId) => {
+    setExpandedRows((prev) =>
+      prev.includes(waiverId) ? prev.filter((id) => id !== waiverId) : [...prev, waiverId]
+    )
   }
 
   // ─── Misc handlers ────────────────────────────────────────────────────────
@@ -446,12 +453,12 @@ function RiskWaiver() {
           <tbody>
             {loading && <UsersListLoading />}
             {currentItems?.map((risk) => (
-              <tr
-                key={risk.riskId}
-                className='fs-12 table-row'
-                style={{cursor: 'pointer'}}
-                onClick={() => handleRowClick(risk)}
-              >
+              <Fragment key={risk.waiverId}>
+                <tr
+                  className='fs-12 table-row'
+                  style={{cursor: 'pointer'}}
+                  onClick={() => handleRowClick(risk)}
+                >
                 <td>
                   <div className='form-check form-check-sm form-check-custom form-check-solid px-3'>
                     <input
@@ -515,8 +522,52 @@ function RiskWaiver() {
                       <i className='fa fa-trash disabled' />
                     </span>
                   )}
+
+                  {/* Accordion Toggle Icon */}
+                  <i
+                    className={`fa fa-chevron-${expandedRows.includes(risk.waiverId) ? 'down' : 'right'} ms-8 cursor-pointer text-primary`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleToggleRow(risk.waiverId)
+                    }}
+                  />
                 </td>
-              </tr>
+                </tr>
+                {/* Accordion Detail Row */}
+                {expandedRows.includes(risk.waiverId) && (
+                  <tr className='bg-light'>
+                    <td colSpan='8' className='ps-15'>
+                      <div className='p-4 border-start border-primary border-4'>
+                        <h6 className='fw-bold fs-7 mb-3 text-dark'>Waiver Items Details</h6>
+                        {risk.items && risk.items.length > 0 ? (
+                          <div className='table-responsive'>
+                            <table className='table table-bordered table-sm fs-7 bg-white mb-0'>
+                              <thead className='table-light'>
+                                <tr>
+                                  <th>Risk ID</th>
+                                  <th>Risk Title</th>
+                                  <th>Asset Name</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {risk.items.map((item) => (
+                                  <tr key={item.waiverItemId}>
+                                    <td>{item.riskId}</td>
+                                    <td style={{width: '60%'}}>{item.riskTitle}</td>
+                                    <td>{item.assetName}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <span className='text-muted fs-7 fst-italic'>No items found in this request.</span>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
             ))}
           </tbody>
         </table>

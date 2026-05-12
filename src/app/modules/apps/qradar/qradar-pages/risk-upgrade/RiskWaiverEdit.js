@@ -14,7 +14,7 @@ function RiskWaiverEdit({show, onHide, risk, onSuccess}) {
   useEffect(() => {
     if (risk) {
       setReason(risk.reason || '')
-      const dateVal = risk.expiryDate || risk.waiverExpiryDate
+      const dateVal = getCurrentTimeZone(risk.expiryDate)
       if (dateVal) {
         setExpiryDate(new Date(dateVal).toISOString().split('T')[0])
       } else {

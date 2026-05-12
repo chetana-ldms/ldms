@@ -157,22 +157,25 @@ export const fetchOrganizationToolDetails = async (id) => {
     console.log(error)
   }
 }
-export const fetchRules = async (orgId) => {
+export const fetchRules = async (data) => {
   try {
-    const response = await FetchWithToken(`${rulesUrl}?orgId=${orgId}`, {
-      method: 'GET',
+    const response = await FetchWithToken(`${rulesUrl}`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        ...data,
+      }),
     })
+
     const responseData = await response.json()
-    const rulesList = responseData.rulesList
-    console.log(rulesList, 'rulesList')
-    return rulesList
+    return responseData
   } catch (error) {
     console.log(error)
   }
 }
+
 export const fetchRuleDetails = async (id, toolNameRef) => {
   try {
     const response = await FetchWithToken(`${ruleDetailsUrl}?ruleID=${id}`, {

@@ -15,8 +15,6 @@ import { UpdateLdpTools } from './qradar-pages/configuration/UpdateLdpTools'
 import { Playbooks } from './qradar-pages/playbooks/Playbooks'
 import { AddPlaybooks } from './qradar-pages/playbooks/AddPlaybooks'
 import { UpdatePlaybooks } from './qradar-pages/playbooks/UpdatePlaybooks'
-import { RulesEngine } from './qradar-pages/configuration/RulesEngine'
-import { AddRule } from './qradar-pages/configuration/AddRule'
 import { UpdateRule } from './qradar-pages/configuration/UpdateRule'
 import { ToolTypeActions } from './qradar-pages/configuration/ToolTypeActions'
 import { AddToolTypeAction } from './qradar-pages/configuration/AddToolTypeAction'
@@ -130,6 +128,10 @@ import Vulnerabilities from './qradar-pages/risk-upgrade/Vulnerabilities'
 import Domain from './qradar-pages/risk-upgrade/Domain'
 import IpAddress from './qradar-pages/risk-upgrade/IpAddress'
 import RiskWaiver from './qradar-pages/risk-upgrade/RiskWaiver'
+import { Techniques } from './qradar-pages/mitre/Techniques'
+import { Tactics } from './qradar-pages/mitre/Tactics'
+import { Rules } from './qradar-pages/configuration/Rules'
+import AddRule from './qradar-pages/configuration/AddRule'
 
 
 const QradarPages = () => {
@@ -179,7 +181,7 @@ const QradarPages = () => {
       <Route path='ldp-tools/:status' element={<LdpTools />} />
       <Route path='ldp-tools/add' element={<AddLdpTools />} />
       <Route path='/ldp-tools/update/:id' element={<UpdateLdpTools />} />
-      <Route path='rules-engine/:status' element={<RulesEngine />} />
+      <Route path='rules-engine/:status' element={<Rules/>} />
       <Route path='rules-engine/add' element={<AddRule />} />
       <Route path='/rules-engine/update/:id' element={<UpdateRule />} />
       <Route path='rules-actions/:status' element={<RulesActions />} />
@@ -265,6 +267,8 @@ const QradarPages = () => {
        <Route path='Domain/:status' element={<Domain />} />
        <Route path='IpAddress/:status' element={<IpAddress />} />
        <Route path='RiskWaiver/:status' element={<RiskWaiver />} />
+       <Route path='Techniques/:status' element={<Techniques />} />
+       <Route path='Tactics/:status' element={<Tactics />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )
