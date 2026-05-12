@@ -15,7 +15,6 @@ import { UpdateLdpTools } from './qradar-pages/configuration/UpdateLdpTools'
 import { Playbooks } from './qradar-pages/playbooks/Playbooks'
 import { AddPlaybooks } from './qradar-pages/playbooks/AddPlaybooks'
 import { UpdatePlaybooks } from './qradar-pages/playbooks/UpdatePlaybooks'
-import { UpdateRule } from './qradar-pages/configuration/UpdateRule'
 import { ToolTypeActions } from './qradar-pages/configuration/ToolTypeActions'
 import { AddToolTypeAction } from './qradar-pages/configuration/AddToolTypeAction'
 import { UpdateToolTypeAction } from './qradar-pages/configuration/UpdateToolTypeAction'
@@ -132,6 +131,7 @@ import { Techniques } from './qradar-pages/mitre/Techniques'
 import { Tactics } from './qradar-pages/mitre/Tactics'
 import { Rules } from './qradar-pages/configuration/Rules'
 import AddRule from './qradar-pages/configuration/AddRule'
+import UpdateRule from './qradar-pages/configuration/UpdateRule'
 
 
 const QradarPages = () => {

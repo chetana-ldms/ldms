@@ -5,7 +5,7 @@ import {fetchupdateWaiverRequestUrl} from '../../../../../api/BreachRiskApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 
 function RiskWaiverEdit({show, onHide, risk, onSuccess}) {
-    console.log(risk, 'risk in edit modal')
+  console.log(risk, 'risk in edit modal')
   const [reason, setReason] = useState('')
   const [expiryDate, setExpiryDate] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -14,9 +14,14 @@ function RiskWaiverEdit({show, onHide, risk, onSuccess}) {
   useEffect(() => {
     if (risk) {
       setReason(risk.reason || '')
-      const dateVal = getCurrentTimeZone(risk.expiryDate)
-      if (dateVal) {
-        setExpiryDate(new Date(dateVal).toISOString().split('T')[0])
+      if (risk?.expiryDate) {
+        const date = new Date(risk.expiryDate)
+
+        if (!isNaN(date.getTime())) {
+          setExpiryDate(date.toISOString().split('T')[0])
+        } else {
+          setExpiryDate('')
+        }
       } else {
         setExpiryDate('')
       }
@@ -67,28 +72,28 @@ function RiskWaiverEdit({show, onHide, risk, onSuccess}) {
       centered
     >
       <Form onSubmit={handleSubmit}>
-      <Modal.Header closeButton className='border-bottom pb-3'>
-        <Modal.Title className='fs-5 fw-semibold'>Edit Waiver Request</Modal.Title>
-        <button
-          type='button'
-          className='application-modal-close'
-          aria-label='Close'
-          onClick={onHide}
-        >
-          <i className='fa fa-close' />
-        </button>
-      </Modal.Header>
+        <Modal.Header closeButton className='border-bottom pb-3'>
+          <Modal.Title className='fs-5 fw-semibold'>Edit Waiver Request</Modal.Title>
+          <button
+            type='button'
+            className='application-modal-close'
+            aria-label='Close'
+            onClick={onHide}
+          >
+            <i className='fa fa-close' />
+          </button>
+        </Modal.Header>
 
-      <Modal.Body className='py-4'>
-        {risk && (
-          <div className='rounded bg-light p-4 border shadow-sm'>
-            <Row className='g-4 fs-14'>
-              <Col xs={6}>
-                <span className='fw-bold text-dark d-block mb-1'>Waiver ID: </span>
-                <span className='text-muted'>{risk.waiverId}</span>
-              </Col>
-              <Col xs={6}>
-                <span className='fw-bold text-dark d-block mb-1'>Status: </span>
+        <Modal.Body className='py-4'>
+          {risk && (
+            <div className='rounded bg-light p-4 border shadow-sm'>
+              <Row className='g-4 fs-14'>
+                <Col xs={6}>
+                  <span className='fw-bold text-dark d-block mb-1'>Waiver ID: </span>
+                  <span className='text-muted'>{risk.waiverId}</span>
+                </Col>
+                <Col xs={6}>
+                  <span className='fw-bold text-dark d-block mb-1'>Status: </span>
                   <span
                     className={`badge ${
                       risk.statusName === 'Approved'
@@ -100,8 +105,8 @@ function RiskWaiverEdit({show, onHide, risk, onSuccess}) {
                   >
                     {risk.statusName}
                   </span>
-              </Col>
-              <Col xs={12}>
+                </Col>
+                <Col xs={12}>
                   <Form.Group controlId='edit-reason'>
                     <Form.Label className='fw-bold text-dark mb-1'>Reason</Form.Label>
                     <Form.Control
@@ -123,28 +128,30 @@ function RiskWaiverEdit({show, onHide, risk, onSuccess}) {
                       min={new Date().toISOString().split('T')[0]}
                     />
                   </Form.Group>
-              </Col>
-              <Col xs={6}>
-                <span className='fw-bold text-dark d-block mb-1'>Requested By: </span>
-                <span className='text-muted'>{risk.requestedByUserName || '—'}</span>
-              </Col>
-              <Col xs={6}>
-                <span className='fw-bold text-dark d-block mb-1'>Requested Date: </span>
-                <span className='text-muted'>{getCurrentTimeZone(risk.requestedDate) || '—'}</span>
-              </Col>
-            </Row>
-          </div>
-        )}
-      </Modal.Body>
+                </Col>
+                <Col xs={6}>
+                  <span className='fw-bold text-dark d-block mb-1'>Requested By: </span>
+                  <span className='text-muted'>{risk.requestedByUserName || '—'}</span>
+                </Col>
+                <Col xs={6}>
+                  <span className='fw-bold text-dark d-block mb-1'>Requested Date: </span>
+                  <span className='text-muted'>
+                    {getCurrentTimeZone(risk.requestedDate) || '—'}
+                  </span>
+                </Col>
+              </Row>
+            </div>
+          )}
+        </Modal.Body>
 
-      <Modal.Footer className='border-top pt-3'>
-        <Button variant='secondary' className='btn-small' onClick={onHide} disabled={submitting}>
-          Cancel
-        </Button>
-        <Button variant='primary' className='btn-small' type='submit' disabled={submitting}>
-          {submitting ? <Spinner animation='border' size='sm' /> : 'Save Changes'}
-        </Button>
-      </Modal.Footer>
+        <Modal.Footer className='border-top pt-3'>
+          <Button variant='secondary' className='btn-small' onClick={onHide} disabled={submitting}>
+            Cancel
+          </Button>
+          <Button variant='primary' className='btn-small' type='submit' disabled={submitting}>
+            {submitting ? <Spinner animation='border' size='sm' /> : 'Save Changes'}
+          </Button>
+        </Modal.Footer>
       </Form>
     </Modal>
   )

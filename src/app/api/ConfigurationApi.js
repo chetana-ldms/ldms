@@ -1,60 +1,60 @@
-import { API } from '../../config/apiConfig'
+import {API} from '../../config/apiConfig'
 import FetchWithToken from '../modules/auth/FetchWithToken'
 
-const ldptoolsByToolTypeUrl = API.LDPTOOLS_BY_TOOLTYPE;
-const toolTypeActionDetailsUrl = API.TOOLTYPEACTION_DETAILS;
-const userDetailsUrl = API.USER_DETAILS;
-const toolActionDetailsUrl = API.TOOL_ACTION_DETAILS;
-const organizationToolDetailsUrl = API.ORGANIZATION_TOOL_DETAILS;
-const rulesUrl = API.RULES;
-const ruleDetailsUrl = API.RULE_DETAILS;
-const ruleActionsUrl = API.RULE_ACTIONS;
-const ruleActionDetailsUrl = API.RULE_ACTION_DETAILS;
-const toolActionsUrl = API.TOOL_ACTIONS;
-const ToolTypeActionsUrl = API.TOOL_TYPE_ACTIONS;
-const GetToolActionsByToolURL = API.GET_TOOL_ACTIONS_BY_TOOL;
-const ToolTypeActionUpdateUrl = API.TOOL_TYPE_ACTION_UPDATE;
-const ToolTypeActionAddUrl = API.TOOL_TYPE_ACTION_ADD;
-const OrganizationsUrl = API.ORGANIZATIONS;
-const OrganizationAddUrl = API.ORGANIZATION_ADD;
-const OrganizationUpdateUrl = API.ORGANIZATION_UPDATE;
-const UsersUrl = API.USERS;
-const UserAddUrl = API.USER_ADD;
-const UserUpdateUrl = API.USER_UPDATE;
-const RolesUrl = API.ROLES;
-const RolesAddUrl = API.ROLES_ADD;
-const RolesUpdateUrl = API.ROLES_UPDATE;
-const RolesDeleteUrl = API.ROLES_DELETE;
-const RolesDetailUrl = API.ROLE_DETAILS;
-const LDPToolsUrl = API.LDPTOOLS;
-const LDPToolsAddUrl = API.LDPTOOLS_ADD;
-const LDPToolsUpdateUrl = API.LDPTOOLS_UPDATE;
-const ToolActionsUrl = API.TOOL_ACTIONS;
-const ToolActionAddUrl = API.TOOL_ACTION_ADD;
-const ToolActionUpdateUrl = API.TOOL_ACTION_UPDATE;
-const OrganizationToolsUrl = API.ORGANIZATION_TOOLS;
-const OrganizationToolsAddUrl = API.ORGANIZATION_TOOLS_ADD;
-const OrganizationToolsUpdateUrl = API.ORGANIZATION_TOOLS_UPDATE;
-const RuleCatagoriesUrl = API.RULE_ENGINE_MASTERDATA;
-const RulesAddUrl = API.RULE_ADD;
-const RulesUpdateUrl = API.RULE_UPDATE;
-const RuleActionUrl = API.RULE_ACTION_ADD;
-const RuleActionUpdateUrl = API.RULE_ACTION_UPDATE;
-const AllMasterDataUrl = API.ALL_MASTER_DATA;
-const AllMasterDataManageUrl = API.MASTERDATA_MANAGE;
-const AllMasterDataDeleteUrl = API.MASTERDATA_DELETE;
-const ConfigurationDataUrl = API.CONFIGURATION_DATA;
-const ConfigurationDataDeleteUrl = API.CONFIGURATION_DATA_DELETE;
-const ConfigurationDataManageUrl = API.CONFIGURATION_DATA_MANAGE;
-const APIAuthDataDetailsUrl = API.APIAUTH_DETAILS;
-const APIAuthDataAddUrl = API.APIAUTH_ADD;
-const APIAuthDataDeleteUrl = API.APIAUTH_DELETE;
-const APIAuthDataUpdateUrl = API.APIAUTH_UPDATE;
-const ToolMasterDataUrl = API.TOOL_MASTER_DATA;
-const AllUsersUrl = API.ALL_USERS;
-const IncidentClientsUrl = API.INCIDENT_CLIENTS;
-const ManageSignatureUrl = API.USER_MANAGE_SIGNATURE;
-const SignatureUrl = API.USER_SIGNATURE;
+const ldptoolsByToolTypeUrl = API.LDPTOOLS_BY_TOOLTYPE
+const toolTypeActionDetailsUrl = API.TOOLTYPEACTION_DETAILS
+const userDetailsUrl = API.USER_DETAILS
+const toolActionDetailsUrl = API.TOOL_ACTION_DETAILS
+const organizationToolDetailsUrl = API.ORGANIZATION_TOOL_DETAILS
+const rulesUrl = API.RULES
+const ruleDetailsUrl = API.RULE_DETAILS
+const ruleActionsUrl = API.RULE_ACTIONS
+const ruleActionDetailsUrl = API.RULE_ACTION_DETAILS
+const toolActionsUrl = API.TOOL_ACTIONS
+const ToolTypeActionsUrl = API.TOOL_TYPE_ACTIONS
+const GetToolActionsByToolURL = API.GET_TOOL_ACTIONS_BY_TOOL
+const ToolTypeActionUpdateUrl = API.TOOL_TYPE_ACTION_UPDATE
+const ToolTypeActionAddUrl = API.TOOL_TYPE_ACTION_ADD
+const OrganizationsUrl = API.ORGANIZATIONS
+const OrganizationAddUrl = API.ORGANIZATION_ADD
+const OrganizationUpdateUrl = API.ORGANIZATION_UPDATE
+const UsersUrl = API.USERS
+const UserAddUrl = API.USER_ADD
+const UserUpdateUrl = API.USER_UPDATE
+const RolesUrl = API.ROLES
+const RolesAddUrl = API.ROLES_ADD
+const RolesUpdateUrl = API.ROLES_UPDATE
+const RolesDeleteUrl = API.ROLES_DELETE
+const RolesDetailUrl = API.ROLE_DETAILS
+const LDPToolsUrl = API.LDPTOOLS
+const LDPToolsAddUrl = API.LDPTOOLS_ADD
+const LDPToolsUpdateUrl = API.LDPTOOLS_UPDATE
+const ToolActionsUrl = API.TOOL_ACTIONS
+const ToolActionAddUrl = API.TOOL_ACTION_ADD
+const ToolActionUpdateUrl = API.TOOL_ACTION_UPDATE
+const OrganizationToolsUrl = API.ORGANIZATION_TOOLS
+const OrganizationToolsAddUrl = API.ORGANIZATION_TOOLS_ADD
+const OrganizationToolsUpdateUrl = API.ORGANIZATION_TOOLS_UPDATE
+const RuleCatagoriesUrl = API.RULE_ENGINE_MASTERDATA
+const RulesAddUrl = API.RULE_ADD
+const RulesUpdateUrl = API.RULE_UPDATE
+const RuleActionUrl = API.RULE_ACTION_ADD
+const RuleActionUpdateUrl = API.RULE_ACTION_UPDATE
+const AllMasterDataUrl = API.ALL_MASTER_DATA
+const AllMasterDataManageUrl = API.MASTERDATA_MANAGE
+const AllMasterDataDeleteUrl = API.MASTERDATA_DELETE
+const ConfigurationDataUrl = API.CONFIGURATION_DATA
+const ConfigurationDataDeleteUrl = API.CONFIGURATION_DATA_DELETE
+const ConfigurationDataManageUrl = API.CONFIGURATION_DATA_MANAGE
+const APIAuthDataDetailsUrl = API.APIAUTH_DETAILS
+const APIAuthDataAddUrl = API.APIAUTH_ADD
+const APIAuthDataDeleteUrl = API.APIAUTH_DELETE
+const APIAuthDataUpdateUrl = API.APIAUTH_UPDATE
+const ToolMasterDataUrl = API.TOOL_MASTER_DATA
+const AllUsersUrl = API.ALL_USERS
+const IncidentClientsUrl = API.INCIDENT_CLIENTS
+const ManageSignatureUrl = API.USER_MANAGE_SIGNATURE
+const SignatureUrl = API.USER_SIGNATURE
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {
@@ -176,25 +176,26 @@ export const fetchRules = async (data) => {
   }
 }
 
-export const fetchRuleDetails = async (id, toolNameRef) => {
+export const fetchRuleDetails = async (data) => {
   try {
-    const response = await FetchWithToken(`${ruleDetailsUrl}?ruleID=${id}`, {
-      method: 'GET',
+    const response = await FetchWithToken(ruleDetailsUrl, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        ruleId: data.ruleID,
+      }),
     })
+
     const responseData = await response.json()
-    const ruleData = responseData.ruleData
-    console.log(ruleData, 'ruleData')
-    // Populate the form fields with the retrieved data
-    toolNameRef.current.value = ruleData.ruleName
-    //   passwordRef.current.value = userdata.password;
-    return ruleData
+    return responseData?.data
   } catch (error) {
     console.log(error)
+    throw error
   }
 }
+
 export const fetchRuleActions = async (orgId) => {
   try {
     const response = await FetchWithToken(`${ruleActionsUrl}?orgId=${orgId}`, {
@@ -685,7 +686,7 @@ export const fetchRulesAddUrl = async (data) => {
 export const fetchRulesUpdateUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${RulesUpdateUrl}`, {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -721,7 +722,7 @@ export const fetchRuleActionUrl = async (data) => {
 export const fetchRuleActionUpdateUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${RuleActionUpdateUrl}`, {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },

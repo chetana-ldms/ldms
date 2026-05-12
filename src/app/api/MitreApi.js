@@ -1,7 +1,8 @@
 import FetchWithToken from "../modules/auth/FetchWithToken"
+import { API } from "../../config/apiConfig"
 
-const TechniquesUrl ="http://10.41.3.232:501/api/MITREFramework/v1/Techniques"
-const TacticsUrl ="http://10.41.3.232:501/api/MITREFramework/v1/Tactics"
+const TechniquesUrl = API.MITRE_TECHNIQUES
+const TacticsUrl = API.MITRE_TACTICS
 
 export const fetchTechniquesUrl = async () => {
   try {

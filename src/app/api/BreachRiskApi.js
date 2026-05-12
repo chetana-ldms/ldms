@@ -1,25 +1,24 @@
 import FetchWithToken from '../modules/auth/FetchWithToken'
+import { API } from '../../config/apiConfig'
 
-const risksUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/Risks/Search'
-const vulnerabilitiesUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/Vulnerabilities'
-const syncRisksUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/Risks/Sync'
-const domainsUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/Domains'
-const syncDomainsUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/Domain/Sync'
-const ipsUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/Ips'
-const syncIpsUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/IP/Sync'
-const assetScanDetailsUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/AssetScanDetails'
-const updateRisksUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/Risks/Update'
-const deleteRisksUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/Risks/Delete'
-const createRemediateRequestUrl =
-  'http://10.41.3.232:501/api/RiskManagement/v1/CreateRemediateRequest'
-const createWaiverRequestUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/CreateWaiverRequest'
-const fetchWaiversRequestSearchUrl =
-  'http://10.41.3.232:501/api/RiskManagement/v1/WaiversRequestSearch'
-const ApproveOrRejectUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/RiskWaiver/ApproveOrReject'
-const WaiverRequestDeleteUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/WaiverRequest/Delete'
-const eligibleForWaiverRequestUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/Risks/EligibleForWaiverRequest'
-const revokeWaiverRequestUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/RiskWaiver/Revoke'
-const updateWaiverRequestUrl = 'http://10.41.3.232:501/api/RiskManagement/v1/WaiverRequest/Update'
+const risksUrl = API.RISKS_SEARCH
+const vulnerabilitiesUrl = API.RISK_VULNERABILITIES
+const syncRisksUrl = API.RISKS_SYNC
+const domainsUrl = API.RISK_DOMAINS
+const syncDomainsUrl = API.RISK_DOMAIN_SYNC
+const ipsUrl = API.RISK_IPS
+const syncIpsUrl = API.RISK_IP_SYNC
+const assetScanDetailsUrl = API.RISK_ASSET_SCAN_DETAILS
+const updateRisksUrl = API.RISKS_UPDATE
+const deleteRisksUrl = API.RISKS_DELETE
+const createRemediateRequestUrl = API.RISK_CREATE_REMEDIATE_REQUEST
+const createWaiverRequestUrl = API.RISK_CREATE_WAIVER_REQUEST
+const fetchWaiversRequestSearchUrl = API.RISK_WAIVERS_REQUEST_SEARCH
+const ApproveOrRejectUrl = API.RISK_WAIVER_APPROVE_REJECT
+const WaiverRequestDeleteUrl = API.RISK_WAIVER_REQUEST_DELETE
+const eligibleForWaiverRequestUrl = API.RISK_ELIGIBLE_FOR_WAIVER_REQUEST
+const revokeWaiverRequestUrl = API.RISK_WAIVER_REVOKE
+const updateWaiverRequestUrl = API.RISK_WAIVER_REQUEST_UPDATE
 
 export const fetchRisks = async (data) => {
   try {

@@ -190,13 +190,13 @@ const Rules = () => {
                   <td>{item.ruleName}</td>
                   {/* <td>{item.ruleCatagoryID}</td> */}
                   <td>
-                    <span className='btn btn-new btn-circle'>
+                    <span >
                       <Link
                         className='text-white'
-                        to={`/qradar/rules-engine/update/${item.ruleID}`}
+                        to={`/qradar/rules-engine/update/${item.ruleId}`}
                         title='Edit'
                       >
-                        <i className='fa fa-pencil cursor link' />
+                          <i className='fa fa-pencil cursor link' />
                       </Link>
                     </span>
 

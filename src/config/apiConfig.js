@@ -307,4 +307,28 @@ INCIDENT_NOTES_BY_CONVERSATION: `${base}/IncidentManagement/${v}/Notes/Incidentt
   STATUS_CANCEL: `${base}/Task/${v}/Status/Cancel`,
   CHANGE_PASSWORD: `${base}/LDPSecurity/${v}/User/ChangePassword`,
   RESET_PASSWORD: `${base}/LDPSecurity/${v}/User/ResetPassword`,
+
+  // MITRE Framework
+  MITRE_TECHNIQUES: `${base}/MITREFramework/${v}/Techniques`,
+  MITRE_TACTICS: `${base}/MITREFramework/${v}/Tactics`,
+
+  // Risk Management
+  RISKS_SEARCH: `${base}/RiskManagement/${v}/Risks/Search`,
+  RISK_VULNERABILITIES: `${base}/RiskManagement/${v}/Vulnerabilities`,
+  RISKS_SYNC: `${base}/RiskManagement/${v}/Risks/Sync`,
+  RISK_DOMAINS: `${base}/RiskManagement/${v}/Domains`,
+  RISK_DOMAIN_SYNC: `${base}/RiskManagement/${v}/Domain/Sync`,
+  RISK_IPS: `${base}/RiskManagement/${v}/Ips`,
+  RISK_IP_SYNC: `${base}/RiskManagement/${v}/IP/Sync`,
+  RISK_ASSET_SCAN_DETAILS: `${base}/RiskManagement/${v}/AssetScanDetails`,
+  RISKS_UPDATE: `${base}/RiskManagement/${v}/Risks/Update`,
+  RISKS_DELETE: `${base}/RiskManagement/${v}/Risks/Delete`,
+  RISK_CREATE_REMEDIATE_REQUEST: `${base}/RiskManagement/${v}/CreateRemediateRequest`,
+  RISK_CREATE_WAIVER_REQUEST: `${base}/RiskManagement/${v}/CreateWaiverRequest`,
+  RISK_WAIVERS_REQUEST_SEARCH: `${base}/RiskManagement/${v}/WaiversRequestSearch`,
+  RISK_WAIVER_APPROVE_REJECT: `${base}/RiskManagement/${v}/RiskWaiver/ApproveOrReject`,
+  RISK_WAIVER_REQUEST_DELETE: `${base}/RiskManagement/${v}/WaiverRequest/Delete`,
+  RISK_ELIGIBLE_FOR_WAIVER_REQUEST: `${base}/RiskManagement/${v}/Risks/EligibleForWaiverRequest`,
+  RISK_WAIVER_REVOKE: `${base}/RiskManagement/${v}/RiskWaiver/Revoke`,
+  RISK_WAIVER_REQUEST_UPDATE: `${base}/RiskManagement/${v}/WaiverRequest/Update`,
 }

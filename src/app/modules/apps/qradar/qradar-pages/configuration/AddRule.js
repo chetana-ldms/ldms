@@ -77,14 +77,12 @@ function AddRule() {
   useEffect(() => {
     const processGroupExpr = (group) => {
       const groupOpLabel =
-        masterData.groupOperators.find((o) => o.dataID === group.groupOperatorId)?.dataValue ||
-        '??'
+        masterData.groupOperators.find((o) => o.dataID === group.groupOperatorId)?.dataValue || '??'
 
       const conditionStrings = (group.conditions || []).map((cond) => {
         const field =
           masterData.fieldTypes.find((f) => f.dataID === cond.fieldTypeId)?.dataValue || 'Field'
-        const op =
-          masterData.operators.find((o) => o.dataID === cond.operatorId)?.dataValue || 'Op'
+        const op = masterData.operators.find((o) => o.dataID === cond.operatorId)?.dataValue || 'Op'
         const val = cond.value || "''"
         return `(${field} ${op} ${val})`
       })
@@ -187,7 +185,9 @@ function AddRule() {
           {
             tempGroupKey: newKey,
             groupOperatorId: 0,
-            conditions: [{fieldTypeId: 0, operatorId: 0, value: '', order: 1, tempGroupKey: newKey}],
+            conditions: [
+              {fieldTypeId: 0, operatorId: 0, value: '', order: 1, tempGroupKey: newKey},
+            ],
             subGroups: [],
           },
         ],
@@ -237,14 +237,17 @@ function AddRule() {
   }
 
   const renderGroup = (group, isSubGroup = false) => (
-    <div key={group.tempGroupKey} className={`card mb-3 border-light shadow-none ${isSubGroup ? 'ms-5 border-start border-primary' : 'bg-light'}`}>
+    <div
+      key={group.tempGroupKey}
+      className={`card mb-3 border-light shadow-none ${
+        isSubGroup ? 'ms-5 border-start border-primary' : 'bg-light'
+      }`}
+    >
       <div className='card-body p-0 px-5 py-2'>
         <div className='row mb-3 align-items-center'>
           <div className='col-md-4'>
             <div className='d-flex align-items-center gap-2'>
-              <label className='form-label fw-bold small mb-0 text-nowrap'>
-                Operator:
-              </label>
+              <label className='form-label fw-bold small mb-0 text-nowrap'>Operator:</label>
               <select
                 className='form-select form-select-sm'
                 value={group.groupOperatorId}
@@ -287,7 +290,12 @@ function AddRule() {
                 className='form-select form-select-sm'
                 value={cond.fieldTypeId}
                 onChange={(e) =>
-                  handleConditionChange(group.tempGroupKey, cIdx, 'fieldTypeId', Number(e.target.value))
+                  handleConditionChange(
+                    group.tempGroupKey,
+                    cIdx,
+                    'fieldTypeId',
+                    Number(e.target.value)
+                  )
                 }
               >
                 <option value={0}>Field Type</option>
@@ -303,7 +311,12 @@ function AddRule() {
                 className='form-select form-select-sm'
                 value={cond.operatorId}
                 onChange={(e) =>
-                  handleConditionChange(group.tempGroupKey, cIdx, 'operatorId', Number(e.target.value))
+                  handleConditionChange(
+                    group.tempGroupKey,
+                    cIdx,
+                    'operatorId',
+                    Number(e.target.value)
+                  )
                 }
               >
                 <option value={0}>Operator</option>
@@ -318,17 +331,18 @@ function AddRule() {
               <input
                 className='form-control form-control-sm'
                 type='text'
+                style={{height: 0}}
                 placeholder='Value'
                 value={cond.value}
-                onChange={(e) => handleConditionChange(group.tempGroupKey, cIdx, 'value', e.target.value)}
+                onChange={(e) =>
+                  handleConditionChange(group.tempGroupKey, cIdx, 'value', e.target.value)
+                }
               />
             </div>
           </div>
         ))}
         {group.subGroups && group.subGroups.length > 0 && (
-          <div className='mt-3'>
-            {group.subGroups.map((sub) => renderGroup(sub, true))}
-          </div>
+          <div className='mt-3'>{group.subGroups.map((sub) => renderGroup(sub, true))}</div>
         )}
       </div>
     </div>
@@ -360,6 +374,7 @@ function AddRule() {
                   <input
                     className='form-control form-control-sm'
                     type='text'
+                    style={{height: 0}}
                     value={rule.ruleName}
                     onChange={(e) => handleRuleChange('ruleName', e.target.value)}
                   />
@@ -371,6 +386,7 @@ function AddRule() {
                   <input
                     className='form-control form-control-sm'
                     type='text'
+                    style={{height: 0}}
                     value={rule.ruleCode}
                     onChange={(e) => handleRuleChange('ruleCode', e.target.value)}
                   />
@@ -441,7 +457,7 @@ function AddRule() {
               Add Group
             </button>
           </div>
-        {rule.groups.map((group) => renderGroup(group))}
+          {rule.groups.map((group) => renderGroup(group))}
         </div>
 
         <div className='card mb-4'>
@@ -451,6 +467,7 @@ function AddRule() {
               <textarea
                 className='form-control form-control-sm'
                 rows='2'
+                style={{height: '200px'}}
                 value={rule.expressionText}
                 onChange={(e) => handleRuleChange('expressionText', e.target.value)}
               />

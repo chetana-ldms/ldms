@@ -441,10 +441,10 @@ function RiskWaiver() {
               <th onClick={() => handleSort('statusName')}>
                 Status {renderSortIcon(sortConfig, 'statusName')}
               </th>
-               <th onClick={() => handleSort('requestedByUserName')}>
+              <th onClick={() => handleSort('requestedByUserName')}>
                 Requested By {renderSortIcon(sortConfig, 'requestedByUserName')}
               </th>
-               <th onClick={() => handleSort('assignedApproverUserName')}>
+              <th onClick={() => handleSort('assignedApproverUserName')}>
                 Assigned Approver {renderSortIcon(sortConfig, 'assignedApproverUserName')}
               </th>
               <th>Actions</th>
@@ -459,79 +459,83 @@ function RiskWaiver() {
                   style={{cursor: 'pointer'}}
                   onClick={() => handleRowClick(risk)}
                 >
-                <td>
-                  <div className='form-check form-check-sm form-check-custom form-check-solid px-3'>
-                    <input
-                      className='form-check-input widget-13-check'
-                      type='checkbox'
-                      value={risk.waiverId}
-                      name={risk.waiverId}
-                      checked={selectedAlert.includes(String(risk.waiverId))}
-                      onChange={(e) => handleselectedAlert(risk, e)}
-                      disabled={risk.active !== 1 || risk.statusName !== 'Pending'}
-                      onClick={(e) => e.stopPropagation()}
-                      autoComplete='off'
-                    />
-                  </div>
-                </td>
-                <td>
-                  <div className='sev-icon'>{risk.waiverId}</div>
-                </td>
-                <td>
-                  <div title={risk.reason} className='fw-semibold'>
-                    {truncateText(risk.reason, 30)}
-                  </div>
-                  <div title={risk.riskTitle} className='text-muted small'>
-                    {truncateText(risk.riskTitle, 15)}
-                  </div>
-                </td>
-                <td>{getCurrentTimeZone(risk.expiryDate)}</td>
-                <td>{risk.statusName}</td>
-                <td>{risk.requestedByUserName}</td>
-                <td>{risk.assignedApproverUserName}</td>
-                <td>
-                  {/* ── Edit ── */}
-                  {isActionAuthorized('Update') && !(risk.active !== 1 || risk.statusName !== 'Pending') ? (
-                    <span
-                      title='Edit'
-                      onClick={(e) => handleEditClick(e, risk)}
-                      style={{cursor: 'pointer'}}
-                    >
-                      <i className='fa fa-pencil cursor link' />
-                    </span>
-                  ) : (
-                    <span title='Edit'>
-                      <i className='fa fa-pencil disabled' />
-                    </span>
-                  )}
+                  <td>
+                    <div className='form-check form-check-sm form-check-custom form-check-solid px-3'>
+                      <input
+                        className='form-check-input widget-13-check'
+                        type='checkbox'
+                        value={risk.waiverId}
+                        name={risk.waiverId}
+                        checked={selectedAlert.includes(String(risk.waiverId))}
+                        onChange={(e) => handleselectedAlert(risk, e)}
+                        disabled={risk.active !== 1 || risk.statusName !== 'Pending'}
+                        onClick={(e) => e.stopPropagation()}
+                        autoComplete='off'
+                      />
+                    </div>
+                  </td>
+                  <td>
+                    <div className='sev-icon'>{risk.waiverId}</div>
+                  </td>
+                  <td>
+                    <div title={risk.reason} className='fw-semibold'>
+                      {truncateText(risk.reason, 30)}
+                    </div>
+                    <div title={risk.riskTitle} className='text-muted small'>
+                      {truncateText(risk.riskTitle, 15)}
+                    </div>
+                  </td>
+                  <td>{risk.expiryDate ? getCurrentTimeZone(risk.expiryDate) : 'N/A'}</td>
+                  <td>{risk.statusName}</td>
+                  <td>{risk.requestedByUserName}</td>
+                  <td>{risk.assignedApproverUserName}</td>
+                  <td>
+                    {/* ── Edit ── */}
+                    {isActionAuthorized('Update') &&
+                    !(risk.active !== 1 || risk.statusName !== 'Pending') ? (
+                      <span
+                        title='Edit'
+                        onClick={(e) => handleEditClick(e, risk)}
+                        style={{cursor: 'pointer'}}
+                      >
+                        <i className='fa fa-pencil cursor link' />
+                      </span>
+                    ) : (
+                      <span title='Edit'>
+                        <i className='fa fa-pencil disabled' />
+                      </span>
+                    )}
 
-                  {/* ── Delete ── */}
-                  {isActionAuthorized('Delete') && !(risk.active !== 1 || risk.statusName !== 'Pending') ? (
-                    <span
-                      className='ms-8'
-                      title='Delete'
+                    {/* ── Delete ── */}
+                    {isActionAuthorized('Delete') &&
+                    !(risk.active !== 1 || risk.statusName !== 'Pending') ? (
+                      <span
+                        className='ms-8'
+                        title='Delete'
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleDelete(risk)
+                        }}
+                      >
+                        <i className='fa fa-trash cursor red' />
+                      </span>
+                    ) : (
+                      <span className='ms-8' title='Delete'>
+                        <i className='fa fa-trash disabled' />
+                      </span>
+                    )}
+
+                    {/* Accordion Toggle Icon */}
+                    <i
+                      className={`fa fa-chevron-${
+                        expandedRows.includes(risk.waiverId) ? 'down' : 'right'
+                      } ms-8 cursor-pointer text-primary`}
                       onClick={(e) => {
                         e.stopPropagation()
-                        handleDelete(risk)
+                        handleToggleRow(risk.waiverId)
                       }}
-                    >
-                      <i className='fa fa-trash cursor red' />
-                    </span>
-                  ) : (
-                    <span className='ms-8' title='Delete'>
-                      <i className='fa fa-trash disabled' />
-                    </span>
-                  )}
-
-                  {/* Accordion Toggle Icon */}
-                  <i
-                    className={`fa fa-chevron-${expandedRows.includes(risk.waiverId) ? 'down' : 'right'} ms-8 cursor-pointer text-primary`}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleToggleRow(risk.waiverId)
-                    }}
-                  />
-                </td>
+                    />
+                  </td>
                 </tr>
                 {/* Accordion Detail Row */}
                 {expandedRows.includes(risk.waiverId) && (
@@ -561,7 +565,9 @@ function RiskWaiver() {
                             </table>
                           </div>
                         ) : (
-                          <span className='text-muted fs-7 fst-italic'>No items found in this request.</span>
+                          <span className='text-muted fs-7 fst-italic'>
+                            No items found in this request.
+                          </span>
                         )}
                       </div>
                     </td>
