@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react'
-import {Link, useParams} from 'react-router-dom'
+import {Link, useNavigate, useParams} from 'react-router-dom'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer, toast} from 'react-toastify'
@@ -8,14 +8,20 @@ import {fetchRulesDelete, fetchMasterData} from '../../../../../api/Api'
 import axios from 'axios'
 import {fetchRules} from '../../../../../api/ConfigurationApi'
 import {useErrorBoundary} from 'react-error-boundary'
+import useFeatureActions from './useFeatureActions'
+import Pagination from '../../../../../../utils/Pagination'
 import DeleteConfirmation2 from '../risk-upgrade/DeleteConfirmation2'
 
 const Rules = () => {
+  const navigate = useNavigate()
   const handleError = useErrorBoundary()
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
   const [loading, setLoading] = useState(false)
   const [tools, setTools] = useState([])
+  const [currentPage, setCurrentPage] = useState(0)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [activePage, setActivePage] = useState(0)
   const severityRef = useRef()
   const scenarioRef = useRef()
   const priorityRef = useRef()
@@ -28,6 +34,21 @@ const Rules = () => {
     scenarioDropDown: [],
     priorityDropDown: [],
   })
+
+  const roleId = Number(sessionStorage.getItem('roleID'))
+  const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
+
+  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+
+  const isActionAuthorized = (actionName) => {
+    return featureActions?.some(
+      (action) => action.actionName === actionName && action.is_authorized === true
+    )
+  }
+
+  const handleNavigateToUpdate = (id) => {
+    navigate(`/qradar/rules-engine/update/${id}`, {state: {save: true}})
+  }
 
   useEffect(() => {
     const fetchAllMasterData = async () => {
@@ -100,6 +121,22 @@ const Rules = () => {
       setLoading(false)
     }
   }
+
+  const handlePageSelect = (event) => {
+    setItemsPerPage(Number(event.target.value))
+    setCurrentPage(0)
+    setActivePage(0)
+  }
+
+  const handlePageClick = (selected) => {
+    setCurrentPage(selected.selected)
+    setActivePage(selected.selected)
+  }
+
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = tools ? tools.slice(indexOfFirstItem, indexOfLastItem) : null
+
   useEffect(() => {
     reload()
   }, [])
@@ -111,10 +148,12 @@ const Rules = () => {
         <div className='col-md-5'>
           <div className='d-flex justify-content-between border-0'>
             <h3 className='align-items-start flex-column'>
-              <span className='fw-bold fs-3'>Rule Engine</span>
+              {/* <span className='fw-bold fs-3'></span> */}
+              <span className='card-label fw-bold fs-3 mb-1'>
+                Rule Engine ({currentItems ? currentItems.length : 0} / {tools ? tools.length : 0})
+              </span>
             </h3>
           </div>
-        
         </div>
 
         <div className='col-md-6'>
@@ -167,7 +206,10 @@ const Rules = () => {
           </div>
         </div>
         <div className='col-md-1 float-end text-end'>
-          <Link to='/qradar/rules-engine/add' className='btn btn-new btn-small'>
+          <Link
+            to='/qradar/rules-engine/add'
+            className={`btn btn-new btn-small ${!isActionAuthorized('Create') ? 'disabled' : ''}`}
+          >
             Add
           </Link>
         </div>
@@ -184,31 +226,56 @@ const Rules = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {tools !== null && tools.length > 0 ? (
-              tools.map((item, index) => (
+            {currentItems !== null && currentItems.length > 0 ? (
+              currentItems.map((item, index) => (
                 <tr key={index} className='fs-12'>
                   <td>{item.ruleName}</td>
                   {/* <td>{item.ruleCatagoryID}</td> */}
                   <td>
-                    <span >
-                      <Link
-                        className='text-white'
-                        to={`/qradar/rules-engine/update/${item.ruleId}`}
-                        title='Edit'
-                      >
-                          <i className='fa fa-pencil cursor link' />
-                      </Link>
-                    </span>
+                    {isActionAuthorized('View') ? (
+                      <span className='me-8' title='View'>
+                        <i
+                          className='fa fa-eye cursor'
+                          onClick={() => handleNavigateToUpdate(item.ruleId)}
+                        />
+                      </span>
+                    ) : (
+                      <span className='me-8' title='View'>
+                        <i className='fa fa-eye disabled' />
+                      </span>
+                    )}
 
-                    <span
-                      className='ms-8'
-                      onClick={() => {
-                        handleDelete(item)
-                      }}
-                      title='Delete'
-                    >
-                      <i className='fa fa-trash cursor red' />
-                    </span>
+                    {isActionAuthorized('Update') ? (
+                      <span>
+                        <Link
+                          className='text-white'
+                          to={`/qradar/rules-engine/update/${item.ruleId}`}
+                          title='Edit'
+                        >
+                          <i className='fa fa-pencil cursor link' />
+                        </Link>
+                      </span>
+                    ) : (
+                      <span className='' title='Edit'>
+                        <i className='fa fa-pencil disabled' />
+                      </span>
+                    )}
+
+                    {isActionAuthorized('Delete') ? (
+                      <span
+                        className='ms-8'
+                        onClick={() => {
+                          handleDelete(item)
+                        }}
+                        title='Delete'
+                      >
+                        <i className='fa fa-trash cursor red' />
+                      </span>
+                    ) : (
+                      <span className='ms-8' title='Delete'>
+                        <i className='fa fa-trash disabled' />
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))
@@ -220,10 +287,22 @@ const Rules = () => {
           </tbody>
         </table>
 
+        {tools && (
+          <Pagination
+            pageCount={Math.ceil(tools.length / itemsPerPage)}
+            handlePageClick={handlePageClick}
+            itemsPerPage={itemsPerPage}
+            handlePageSelect={handlePageSelect}
+            forcePage={activePage}
+          />
+        )}
+
         <DeleteConfirmation2
           show={showDeleteConfirmation}
           message={
-            itemToDelete ? `Are you sure you want to delete the rule "${itemToDelete.ruleName}"?` : ''
+            itemToDelete
+              ? `Are you sure you want to delete the rule "${itemToDelete.ruleName}"?`
+              : ''
           }
           onConfirm={handleDeleteConfirm}
           onCancel={() => {

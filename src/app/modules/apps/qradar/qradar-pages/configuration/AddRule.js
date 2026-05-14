@@ -195,6 +195,31 @@ function AddRule() {
     }))
   }
 
+  const removeGroup = (groupKey) => {
+    const filterGroups = (groups) => {
+      return groups
+        .filter((g) => g.tempGroupKey !== groupKey)
+        .map((g) => ({
+          ...g,
+          subGroups: g.subGroups ? filterGroups(g.subGroups) : [],
+        }))
+    }
+    setRule((prev) => ({
+      ...prev,
+      groups: filterGroups(prev.groups),
+    }))
+  }
+
+  const removeCondition = (groupKey, conditionIndex) => {
+    setRule((prev) => ({
+      ...prev,
+      groups: updateNestedGroup(prev.groups, groupKey, (g) => ({
+        ...g,
+        conditions: g.conditions.filter((_, idx) => idx !== conditionIndex),
+      })),
+    }))
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -247,6 +272,14 @@ function AddRule() {
         <div className='row mb-3 align-items-center'>
           <div className='col-md-4'>
             <div className='d-flex align-items-center gap-2'>
+              <button
+                type='button'
+                className='btn btn-sm btn-icon btn-light-danger me-2'
+                onClick={() => removeGroup(group.tempGroupKey)}
+                title='Remove Group'
+              >
+                <i className='fa fa-trash'></i>
+              </button>
               <label className='form-label fw-bold small mb-0 text-nowrap'>Operator:</label>
               <select
                 className='form-select form-select-sm'
@@ -284,7 +317,17 @@ function AddRule() {
         </div>
 
         {group.conditions.map((cond, cIdx) => (
-          <div key={cIdx} className='row g-2 mb-2'>
+          <div key={cIdx} className='row g-2 mb-2 align-items-center'>
+            <div className='col-md-1'>
+              <button
+                type='button'
+                className='btn btn-sm btn-icon btn-light-danger'
+                onClick={() => removeCondition(group.tempGroupKey, cIdx)}
+                title='Remove Condition'
+              >
+                <i className='fa fa-trash'></i>
+              </button>
+            </div>
             <div className='col-md-3'>
               <select
                 className='form-select form-select-sm'
@@ -327,7 +370,7 @@ function AddRule() {
                 ))}
               </select>
             </div>
-            <div className='col-md-6'>
+            <div className='col-md-5'>
               <input
                 className='form-control form-control-sm'
                 type='text'

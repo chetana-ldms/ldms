@@ -1,13 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import {fetchMasterData} from '../../../../../api/Api'
-import {
-  fetchRulesAddUrl,
-  fetchRulesUpdateUrl,
-  fetchRuleDetails,
-} from '../../../../../api/ConfigurationApi'
+import {fetchRulesUpdateUrl, fetchRuleDetails} from '../../../../../api/ConfigurationApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
-import {Link, useNavigate} from 'react-router-dom'
+import {Link, useLocation, useNavigate} from 'react-router-dom'
 import {useParams} from 'react-router-dom'
 
 function UpdateRule() {
@@ -52,6 +48,13 @@ function UpdateRule() {
     userId,
     createdDate: '', // Will be set by API or fetched
   })
+
+  const [loading, setLoading] = useState(false)
+  const location = useLocation()
+  const [save, setSave] = useState(location.state?.save || '')
+  useEffect(() => {
+    setSave(location.state?.save || '')
+  }, [location.state])
 
   useEffect(() => {
     const loadMasterData = async () => {
@@ -244,6 +247,31 @@ function UpdateRule() {
     }))
   }
 
+  const removeGroup = (groupKey) => {
+    const filterGroups = (groups) => {
+      return groups
+        .filter((g) => g.tempGroupKey !== groupKey)
+        .map((g) => ({
+          ...g,
+          subGroups: g.subGroups ? filterGroups(g.subGroups) : [],
+        }))
+    }
+    setRule((prev) => ({
+      ...prev,
+      groups: filterGroups(prev.groups),
+    }))
+  }
+
+  const removeCondition = (groupKey, conditionIndex) => {
+    setRule((prev) => ({
+      ...prev,
+      groups: updateNestedGroup(prev.groups, groupKey, (g) => ({
+        ...g,
+        conditions: g.conditions.filter((_, idx) => idx !== conditionIndex),
+      })),
+    }))
+  }
+
   const handleSubmit = async (e) => {
     if (e) e.preventDefault()
     try {
@@ -269,9 +297,9 @@ function UpdateRule() {
         orgId: rule.orgId,
         toolId: rule.toolId,
         userId: rule.userId,
-        modifiedDate: new Date().toISOString(), 
+        modifiedDate: new Date().toISOString(),
       }
-      const response = await fetchRulesUpdateUrl(payload) // Call update API
+      const response = await fetchRulesUpdateUrl(payload)
       if (response.isSuccess) {
         notify(response.message || 'Rule added successfully')
         navigate('/qradar/rules-engine/list')
@@ -295,6 +323,14 @@ function UpdateRule() {
         <div className='row mb-3 align-items-center'>
           <div className='col-md-4'>
             <div className='d-flex align-items-center gap-2'>
+              <button
+                type='button'
+                className='btn btn-sm btn-icon btn-light-danger me-2'
+                onClick={() => removeGroup(group.tempGroupKey)}
+                title='Remove Group'
+              >
+                <i className='fa fa-trash'></i>
+              </button>
               <label className='form-label fw-bold small mb-0 text-nowrap'>Operator:</label>
               <select
                 className='form-select form-select-sm'
@@ -332,7 +368,17 @@ function UpdateRule() {
         </div>
 
         {group.conditions.map((cond, cIdx) => (
-          <div key={cIdx} className='row g-2 mb-2'>
+          <div key={cIdx} className='row g-2 mb-2 align-items-center'>
+            <div className='col-md-1'>
+              <button
+                type='button'
+                className='btn btn-sm btn-icon btn-light-danger'
+                onClick={() => removeCondition(group.tempGroupKey, cIdx)}
+                title='Remove Condition'
+              >
+                <i className='fa fa-trash'></i>
+              </button>
+            </div>
             <div className='col-md-3'>
               <select
                 className='form-select form-select-sm'
@@ -375,7 +421,7 @@ function UpdateRule() {
                 ))}
               </select>
             </div>
-            <div className='col-md-6'>
+            <div className='col-md-5'>
               <input
                 className='form-control form-control-sm'
                 type='text'
@@ -401,7 +447,11 @@ function UpdateRule() {
       <ToastContainer />
       <div className='card-header bg-heading'>
         <h3 className='card-title align-items-start flex-column'>
-          <span className='white'>Update New Rule</span>
+          {save ? (
+            <span className='white'>View Rule</span>
+          ) : (
+            <span className='white'>Update Rule</span>
+          )}
         </h3>
         <div className='card-toolbar'>
           <div className='d-flex align-items-center gap-2 gap-lg-3'>
@@ -524,7 +574,11 @@ function UpdateRule() {
         </div>
 
         <div className='text-end mt-2 me-5 mb-5 '>
-          <button className='btn btn-primary' type='submit'>
+          <button
+            className='btn btn-primary'
+            type='submit'
+            style={{display: loading || save ? 'none' : 'inline-block'}}
+          >
             Save Rule
           </button>
         </div>

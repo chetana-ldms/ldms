@@ -196,18 +196,17 @@ export const fetchRuleDetails = async (data) => {
   }
 }
 
-export const fetchRuleActions = async (orgId) => {
+export const fetchRuleActions = async (data) => {
   try {
-    const response = await FetchWithToken(`${ruleActionsUrl}?orgId=${orgId}`, {
-      method: 'GET',
+    const response = await FetchWithToken(`${ruleActionsUrl}`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify(data),
     })
     const responseData = await response.json()
-    const ruleActionList = responseData.ruleActionList
-    console.log(ruleActionList, 'ruleActionList')
-    return ruleActionList
+    return responseData
   } catch (error) {
     console.log(error)
   }
@@ -686,7 +685,7 @@ export const fetchRulesAddUrl = async (data) => {
 export const fetchRulesUpdateUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${RulesUpdateUrl}`, {
-      method: 'PUT',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
