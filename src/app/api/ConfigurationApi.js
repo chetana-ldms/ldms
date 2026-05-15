@@ -226,20 +226,21 @@ export const fetchToolActions = async () => {
     console.log(error)
   }
 }
-export const fetchRuleActionDetails = async (id) => {
+
+export const fetchRuleActionDetails = async (data) => {
   try {
-    const response = await FetchWithToken(`${ruleActionDetailsUrl}?id=${id}`, {
-      method: 'GET',
+    const response = await FetchWithToken(`${ruleActionDetailsUrl}`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        ...data,
+      }),
     })
+
     const responseData = await response.json()
-    const ruleActionData = responseData.ruleActionData
-    // Populate the form fields with the retrieved data
-    //   toolNameRef.current.value = toolTypeAction.toolAction;
-    // toolTypeRef.current.value = ldpTool.toolType;
-    return ruleActionData
+    return responseData
   } catch (error) {
     console.log(error)
   }

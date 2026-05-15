@@ -1,371 +1,417 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import { UsersListLoading } from "../components/loading/UsersListLoading";
-import { notify, notifyFail } from "../components/notification/Notification";
-import {
-  fetchLDPToolsByToolType,
-  fetchRuleActionDetails,
-  fetchRuleActionUpdateUrl,
-  fetchToolActions,
-} from "../../../../../api/ConfigurationApi";
-import { fetchLDPTools, fetchMasterData } from "../../../../../api/Api";
-import { useErrorBoundary } from "react-error-boundary";
+import React, {useState, useRef, useEffect} from 'react'
+import {Link, useLocation, useNavigate, useParams} from 'react-router-dom'
+import axios from 'axios'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
+import {notify, notifyFail} from '../components/notification/Notification'
+import {fetchRuleActionDetails, fetchRuleActionUpdateUrl} from '../../../../../api/ConfigurationApi'
+import {fetchLDPTools, fetchMasterData} from '../../../../../api/Api'
+import {useErrorBoundary} from 'react-error-boundary'
 
 const UpdateRuleAction = () => {
-  const orgId = Number(sessionStorage.getItem("orgId"));
+  const orgId = Number(sessionStorage.getItem('orgId'))
   const toolIds = Number(sessionStorage.getItem('toolID'))
-  const handleError = useErrorBoundary();
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [toolTypeActions, setToolTypeActions] = useState([]);
-  const [toolAcations, setToolAcations] = useState([]);
-  const [tools, setTools] = useState([]);
-  const [toolTypes, setToolTypes] = useState([]);
-  const [toolTypeAction, setToolTypeAction] = useState({
-    ruleActionName: "",
-    toolTypeName: "",
-    toolTypeID: "",
-    toolName: "",
-    toolID: "",
-    toolActionName: "",
-    toolActionID: "",
-  });
+  const {id} = useParams()
+  const handleError = useErrorBoundary()
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
 
-  // const [ruleCatagories, setRuleCatagories] = useState([])
-  // const [rulesconditiontypes, setRulesconditiontypes] = useState([])
-  const ruleActionName = useRef();
-  const toolTypeID = useRef();
-  const toolId = useRef();
-  const toolActionID = useRef();
-  const errors = {};
+  const [tools, setTools] = useState([])
+  const [masterData, setMasterData] = useState({
+    actionTypes: [],
+    executorTypes: [],
+    dataTypes: [],
+  })
+
+  const [ruleAction, setRuleAction] = useState({
+    actionName: '',
+    actionCode: '',
+    actionTypeId: 0,
+    executorTypeId: 0,
+    toolId: 0,
+    configuration: '',
+    parameters: [],
+  })
+  const location = useLocation()
+  const [save, setSave] = useState(location.state?.save || '')
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchRuleActionDetails(id);
-        setToolTypeAction({
-          ...toolTypeAction,
-          ruleActionName: data.ruleActionName,
-          toolTypeName: data.toolTypeName,
-          toolTypeID: data.toolTypeID,
-          toolName: data.toolName,
-          toolID: data.toolID,
-          toolActionName: data.toolActionName,
-          toolActionID: data.toolActionID,
-        });
-      } catch (error) {
-        handleError(error);
-      }
-    };
-
-    fetchData();
-  }, [id]);
+    setSave(location.state?.save || '')
+  }, [location.state])
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchLDPTools();
-        setTools(data);
-      } catch (error) {
-        handleError(error);
-      }
-    };
-
-    fetchData();
-  }, []);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchToolActions();
-        setToolTypeActions(data);
-      } catch (error) {
-        handleError(error);
-      }
-    };
-
-    fetchData();
-  }, []);
-  const handleChange = (event, field) => {
-    const selectedValue = event.target.value;
-
-    if (field === "ruleActionName") {
-      setToolTypeAction((prevState) => ({
-        ...prevState,
-        [field]: selectedValue,
-      }));
-    }
-
-    if (field === "toolName" || field === "toolActionName") {
-      const selectedId = event.target.options[
-        event.target.selectedIndex
-      ].getAttribute("data-id");
-      setToolTypeAction((prevState) => ({
-        ...prevState,
-        [field === "toolName" ? "toolID" : "toolActionID"]: selectedId,
-        [field]: selectedValue,
-      }));
-    }
-
-    if (field === "toolTypeName") {
-      const selectedId = event.target.options[
-        event.target.selectedIndex
-      ].getAttribute("data-id");
-      const fetchData = async () => {
+    const loadRuleActionDetails = async () => {
+      if (id) {
         try {
-          const data = {
-            toolTypeId: Number(selectedId),
-          };
-          const response = await fetchLDPToolsByToolType(data);
-          const result = response.ldpToolsList;
-          setTools(result);
+          setLoading(true)
+          const payload = {
+            actionId: Number(id),
+          }
+          const response = await fetchRuleActionDetails(payload)
+          const data = response?.data
+          if (data) {
+            setRuleAction({
+              actionName: data.actionName || '',
+              actionCode: data.actionCode || '',
+              actionTypeId: data.actionTypeId || 0,
+              executorTypeId: data.executorTypeId || 0,
+              toolId: data.toolId || 0,
+              configuration: data.configuration || '',
+              parameters: data.parameters || [],
+            })
+          }
         } catch (error) {
-          handleError(error);
+          handleError(error)
+        } finally {
+          setLoading(false)
         }
-      };
-
-      fetchData();
-      setToolTypeAction((prevState) => ({
-        ...prevState,
-        dataID: selectedId,
-        toolTypeName: selectedValue,
-      }));
+      }
     }
-  };
+    loadRuleActionDetails()
+  }, [id])
 
   useEffect(() => {
-    const fetchToolTypesData = async () => {
-      const data = {
-        maserDataType: 'Tool_Types',
-        orgId: orgId,
-        toolId: toolIds,
-      };
-  
+    const loadData = async () => {
       try {
-        const typeData = await fetchMasterData(data);
-        setToolTypes(typeData);
+        const [toolsData, actionTypes, executorTypes, dataTypes] = await Promise.all([
+          fetchLDPTools(),
+          fetchMasterData({maserDataType: 'action_type', orgId, toolId: toolIds}),
+          fetchMasterData({maserDataType: 'executor_type', orgId, toolId: toolIds}),
+          fetchMasterData({maserDataType: 'parameter_type', orgId, toolId: toolIds}),
+        ])
+        setTools(toolsData || [])
+        setMasterData({
+          actionTypes: actionTypes || [],
+          executorTypes: executorTypes || [],
+          dataTypes: dataTypes || [],
+        })
       } catch (error) {
-        handleError(error);
+        handleError(error)
       }
-    };
-  
-    fetchToolTypesData();
-  }, []);
-  
-  const handleSubmit = async (event) => {
-    setLoading(true);
-    if (!ruleActionName.current.value) {
-      errors.ruleActionName = "Enter Rule Action Name";
-      setLoading(false);
-      return errors;
     }
-    if (!toolTypeID.current.value) {
-      errors.toolTypeID = "Select Tool Type";
-      setLoading(false);
-      return errors;
+    loadData()
+  }, [orgId, toolIds])
+
+  const handleRuleChange = (field, value) => {
+    setRuleAction((prev) => ({...prev, [field]: value}))
+  }
+
+  const addParameter = () => {
+    setRuleAction((prev) => ({
+      ...prev,
+      parameters: [
+        ...prev.parameters,
+        {
+          parameterId: 0,
+          parameterCode: '',
+          parameterName: '',
+          dataTypeId: 0,
+          isRequired: false,
+          defaultValue: '',
+          validationRulesJson: '',
+          displayOrder: prev.parameters.length + 1,
+          isSensitive: false,
+          isDeleted: false,
+        },
+      ],
+    }))
+  }
+
+  const removeParameter = (index) => {
+    setRuleAction((prev) => ({
+      ...prev,
+      parameters: prev.parameters.filter((_, i) => i !== index),
+    }))
+  }
+
+  const handleParameterChange = (index, field, value) => {
+    const newParams = [...ruleAction.parameters]
+    newParams[index][field] = value
+    setRuleAction((prev) => ({...prev, parameters: newParams}))
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!ruleAction.actionName || !ruleAction.actionCode) {
+      notifyFail('Please enter Action Name and Code')
+      return
     }
-    if (!toolId.current.value) {
-      errors.toolId = "Select Tool";
-      setLoading(false);
-      return errors;
+
+    setLoading(true)
+    const payload = {
+      actionId: Number(id),
+      actionName: ruleAction.actionName,
+      actionCode: ruleAction.actionCode,
+      executorTypeId: Number(ruleAction.executorTypeId),
+      toolId: Number(ruleAction.toolId),
+      userId: Number(sessionStorage.getItem('userId')),
+      // configuration: ruleAction.configuration,
+      parameters: ruleAction.parameters.map((param) => ({
+        parameterId: param.parameterId || 0,
+        parameterCode: param.parameterCode,
+        parameterName: param.parameterName,
+        dataTypeId: Number(param.dataTypeId),
+        isRequired: param.isRequired,
+        defaultValue: param.defaultValue,
+        validationRulesJson: param.validationRulesJson,
+        displayOrder: Number(param.displayOrder),
+        isSensitive: param.isSensitive,
+        isDeleted: param.isDeleted || false,
+      })),
+      actionTypeId: Number(ruleAction.actionTypeId),
     }
-    if (!toolActionID.current.value) {
-      errors.toolActionID = "Select Tool Action";
-      setLoading(false);
-      return errors;
-    }
-    event.preventDefault();
-    const modifieduserid = Number(sessionStorage.getItem("userId"));
-    const orgId = Number(sessionStorage.getItem("orgId"));
-    const modifieddate = new Date().toISOString();
-    var data = {
-      ruleActionName: toolTypeAction.ruleActionName,
-      toolTypeID: toolTypeAction.toolTypeID,
-      toolID: toolTypeAction.toolID,
-      toolActionID: toolTypeAction.toolActionID,
-      ruleGenerelActionID: 0,
-      ruleActionID: id,
-      orgId,
-      modifieddate,
-      modifieduserid,
-    };
+
     try {
-      const responseData = await fetchRuleActionUpdateUrl(data);
-      const { isSuccess } = responseData;
+      const responseData = await fetchRuleActionUpdateUrl(payload)
+      const {isSuccess} = responseData
 
       if (isSuccess) {
-        notify("Rule Action Updated");
-        navigate("/qradar/rules-actions/updated");
+        notify('Rule Action Saved')
+        navigate('/qradar/rules-actions/list')
       } else {
-        notifyFail("Failed to update Rule Action");
+        notifyFail('Failed to save Rule Action')
       }
     } catch (error) {
-      handleError(error);
+      handleError(error)
+    } finally {
+      setLoading(false)
     }
-    setLoading(false);
-  };
+  }
 
   return (
-    <div className="config card">
+    <div className='config card'>
       {loading && <UsersListLoading />}
-      <div className="card-header bg-heading">
-        <h3 className="card-title align-items-start flex-column">
-          <span className="white">Update Rule Action</span>
+      <div className='card-header bg-heading'>
+        <h3 className='card-title align-items-start flex-column'>
+          {save ? (
+            <span className='white'>View RuleAction</span>
+          ) : (
+            <span className='white'>Update Rule Action</span>
+          )}
         </h3>
-        <div className="card-toolbar">
-          <div className="d-flex align-items-center gap-2 gap-lg-3">
-            <Link
-              to="/qradar/rules-actions/list"
-              className="white fs-15 text-underline"
-            >
-              <i className="fa fa-chevron-left white mg-right-5" />
+        <div className='card-toolbar'>
+          <div className='d-flex align-items-center gap-2 gap-lg-3'>
+            <Link to='/qradar/rules-actions/list' className='white fs-15 text-underline'>
+              <i className='fa fa-chevron-left white mg-right-5' />
               Back
             </Link>
           </div>
         </div>
       </div>
-      <form>
-        <div className="card-body pad-10">
-          <div className="row mb-6 table-filter">
-            <div className="col-lg-6 mb-8 mb-lg-0">
-              <div className="fv-row mb-0">
-                <label
-                  htmlFor="ruleName"
-                  className="form-label fs-6 fw-bolder mb-3"
-                >
-                  Rule Action Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  className="form-control form-control-lg form-control-solid"
-                  placeholder="Ex: FreshDesk_CreateTicket"
-                  value={toolTypeAction.ruleActionName}
-                  onChange={(e) => handleChange(e, "ruleActionName")}
-                  ref={ruleActionName}
-                />
-              </div>
+      <form onSubmit={handleSubmit}>
+        <div className='card-body pad-10'>
+          <div className='row mb-8'>
+            <div className='col-md-4 mb-2'>
+              <label className='form-label fw-bold small'>Action Name</label>
+              <input
+                type='text'
+                className='form-control form-control-sm'
+                value={ruleAction.actionName}
+                onChange={(e) => handleRuleChange('actionName', e.target.value)}
+                placeholder='Action Name'
+              />
             </div>
-            <div className="col-lg-6 mb-8 mb-lg-0">
-              <div className="fv-row mb-0">
-                <label
-                  htmlFor="toolTypeID"
-                  className="form-label fs-6 fw-bolder mb-3"
-                >
-                  Select Tool Type
-                </label>
-                <select
-                  className="form-select form-select-solid"
-                  data-kt-select2="true"
-                  data-placeholder="Select option"
-                  data-allow-clear="true"
-                  id="toolTypeID"
-                  ref={toolTypeID}
-                  value={toolTypeAction.toolTypeName}
-                  onChange={(e) => handleChange(e, "toolTypeName")}
-                  // onChange={handleChangeToolType}
-                  required
-                >
-                  <option value="">Select Tool Type</option>
-                  {toolTypes.map((item, index) => (
-                    <option
-                      value={item.dataValue}
-                      key={index}
-                      data-id={item.dataID}
-                    >
-                      {item.dataValue}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className='col-md-4 mb-2'>
+              <label className='form-label fw-bold small'>Action Code</label>
+              <input
+                type='text'
+                className='form-control form-control-sm'
+                value={ruleAction.actionCode}
+                onChange={(e) => handleRuleChange('actionCode', e.target.value)}
+                placeholder='Action Code'
+              />
             </div>
-            <br />
+            <div className='col-md-4 mb-2'>
+              <label className='form-label fw-bold small'>Action Type</label>
+              <select
+                className='form-select form-select-sm'
+                value={ruleAction.actionTypeId}
+                onChange={(e) => handleRuleChange('actionTypeId', e.target.value)}
+              >
+                <option value={0}>Select Type</option>
+                {masterData.actionTypes.map((item) => (
+                  <option key={item.dataID} value={item.dataID}>
+                    {item.dataValue}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className='col-md-4 mb-2'>
+              <label className='form-label fw-bold small'>Executor Type</label>
+              <select
+                className='form-select form-select-sm'
+                value={ruleAction.executorTypeId}
+                onChange={(e) => handleRuleChange('executorTypeId', e.target.value)}
+              >
+                <option value={0}>Select Executor</option>
+                {masterData.executorTypes.map((item) => (
+                  <option key={item.dataID} value={item.dataID}>
+                    {item.dataValue}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className='col-md-4 mb-2'>
+              <label className='form-label fw-bold small'>Tool</label>
+              <select
+                className='form-select form-select-sm'
+                value={ruleAction.toolId}
+                onChange={(e) => handleRuleChange('toolId', e.target.value)}
+              >
+                <option value={0}>Select Tool</option>
+                {tools.map((item) => (
+                  <option key={item.toolId} value={item.toolId}>
+                    {item.toolName}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className='col-md-12 mb-2'>
+              <label className='form-label fw-bold small'>Configuration (JSON string)</label>
+              <textarea
+                className='form-control form-control-sm'
+                rows='3'
+                style={{height: 100}}
+                value={ruleAction.configuration}
+                onChange={(e) => handleRuleChange('configuration', e.target.value)}
+                placeholder='{"key": "value"}'
+              />
+            </div>
+          </div>
 
-            <div className="col-lg-6 mb-4 mb-lg-0 mt-5">
-              <div className="fv-row mb-0">
-                <label
-                  htmlFor="toolID"
-                  className="form-label fs-6 fw-bolder mb-3"
-                >
-                  Select Tool
-                </label>
-                <select
-                  className="form-select form-select-solid"
-                  data-kt-select2="true"
-                  data-placeholder="Select option"
-                  data-allow-clear="true"
-                  id="toolID"
-                  value={toolTypeAction.toolName}
-                  onChange={(e) => handleChange(e, "toolName")}
-                  ref={toolId}
-                  required
-                >
-                  <option value="">Select Tool</option>
-                  {tools.map((item, index) => (
-                    <option
-                      value={item.toolName}
-                      key={index}
-                      data-id={item.toolId}
-                    >
-                      {item.toolName}
-                    </option>
-                  ))}
-                </select>
-              </div>
+          <div className='border-top pt-5'>
+            <div className='d-flex justify-content-between align-items-center mb-2'>
+              <h5 className='mb-0'>Parameters</h5>
+              <button type='button' className='btn btn-sm btn-primary' onClick={addParameter}>
+                <i className='fa fa-plus me-2'></i> Add Parameter
+              </button>
             </div>
-
-            <div className="col-lg-6 mb-4 mt-5 mb-lg-0">
-              <div className="fv-row mb-0">
-                <label
-                  htmlFor="toolActionID"
-                  className="form-label fs-6 fw-bolder mb-3"
-                >
-                  Select Tool Action
-                </label>
-                <select
-                  className="form-select form-select-solid"
-                  data-kt-select2="true"
-                  data-placeholder="Select option"
-                  data-allow-clear="true"
-                  id="toolActionID"
-                  value={toolTypeAction.toolActionName}
-                  onChange={(e) => handleChange(e, "toolActionName")}
-                  ref={toolActionID}
-                  required
-                >
-                  <option value="">Select Tool Action</option>
-                  {toolTypeActions.map((item, index) => (
-                    <option
-                      value={item.toolTypeActionName}
-                      key={index}
-                      data-id={item.toolActionID}
-                    >
-                      {item.toolTypeActionName}
-                    </option>
+            <div className='table-responsive'>
+              <table className='table table-row-dashed align-middle gs-0 gy-3'>
+                <thead>
+                  <tr className='fw-bold text-muted bg-light'>
+                    <th className='ps-4 min-w-100px'>Code</th>
+                    <th className='min-w-100px'>Name</th>
+                    <th className='min-w-100px'>Data Type</th>
+                    <th className='min-w-100px'>Default Value</th>
+                    <th className='min-w-80px'>Order</th>
+                    <th className='min-w-50px'>Req.</th>
+                    <th className='min-w-50px'>Sens.</th>
+                    <th className='text-end pe-4'>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ruleAction.parameters.map((param, index) => (
+                    <tr key={index}>
+                      <td>
+                        <input
+                          type='text'
+                          className='form-control form-control-sm'
+                          value={param.parameterCode}
+                          onChange={(e) =>
+                            handleParameterChange(index, 'parameterCode', e.target.value)
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type='text'
+                          className='form-control form-control-sm'
+                          value={param.parameterName}
+                          onChange={(e) =>
+                            handleParameterChange(index, 'parameterName', e.target.value)
+                          }
+                        />
+                      </td>
+                      <td>
+                        <select
+                          className='form-select form-select-sm'
+                          value={param.dataTypeId}
+                          onChange={(e) =>
+                            handleParameterChange(index, 'dataTypeId', Number(e.target.value))
+                          }
+                        >
+                          <option value={0}>Type</option>
+                          {masterData.dataTypes.map((item) => (
+                            <option key={item.dataID} value={item.dataID}>
+                              {item.dataValue}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <input
+                          type='text'
+                          className='form-control form-control-sm'
+                          value={param.defaultValue}
+                          onChange={(e) =>
+                            handleParameterChange(index, 'defaultValue', e.target.value)
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type='number'
+                          className='form-control form-control-sm'
+                          value={param.displayOrder}
+                          onChange={(e) =>
+                            handleParameterChange(index, 'displayOrder', Number(e.target.value))
+                          }
+                        />
+                      </td>
+                      <td className='text-center'>
+                        <input
+                          type='checkbox'
+                          className='form-check-input'
+                          checked={param.isRequired}
+                          onChange={(e) =>
+                            handleParameterChange(index, 'isRequired', e.target.checked)
+                          }
+                        />
+                      </td>
+                      <td className='text-center'>
+                        <input
+                          type='checkbox'
+                          className='form-check-input'
+                          checked={param.isSensitive}
+                          onChange={(e) =>
+                            handleParameterChange(index, 'isSensitive', e.target.checked)
+                          }
+                        />
+                      </td>
+                      <td className='text-end pe-4'>
+                        <button
+                          type='button'
+                          className='btn btn-icon btn-light-danger btn-sm'
+                          onClick={() => removeParameter(index)}
+                        >
+                          <i className='fa fa-trash'></i>
+                        </button>
+                      </td>
+                    </tr>
                   ))}
-                </select>
-              </div>
+                  {ruleAction.parameters.length === 0 && (
+                    <tr>
+                      <td colSpan='8' className='text-center text-muted py-4'>
+                        No parameters added.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-        <div className="card-footer d-flex justify-content-end pad-10">
+        <div className='card-footer d-flex justify-content-end pad-10'>
           <button
-            type="submit"
-            onClick={handleSubmit}
-            className="btn btn-new btn-small"
+            type='submit'
+            className='btn btn-new btn-small'
             disabled={loading}
+            style={{display: loading || save ? 'none' : 'inline-block'}}
           >
-            {!loading && "Save Changes"}
-            {loading && (
-              <span className="indicator-progress" style={{ display: "block" }}>
-                Please wait...{" "}
-                <span className="spinner-border spinner-border-sm align-middle ms-2"></span>
-              </span>
-            )}
+            {!loading ? 'Save Rule Action' : 'Please wait...'}
           </button>
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export { UpdateRuleAction };
+export {UpdateRuleAction}

@@ -8,116 +8,109 @@ import {
   fetchRuleActionUrl,
   fetchToolActions,
 } from "../../../../../api/ConfigurationApi";
-import { fetchMasterData } from "../../../../../api/Api";
+import { fetchLDPTools, fetchMasterData } from "../../../../../api/Api";
 import { useErrorBoundary } from "react-error-boundary";
 
 const AddRuleAction = () => {
   const orgId = Number(sessionStorage.getItem("orgId"));
-  const toolIds = Number(sessionStorage.getItem('toolID'))
+  const toolIds = Number(sessionStorage.getItem("toolID"));
   const handleError = useErrorBoundary();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [toolTypeActions, setToolTypeActions] = useState([]);
-  console.log(toolTypeActions, "toolTypeActions");
-  const [toolAcations, setToolAcations] = useState([]);
+
   const [tools, setTools] = useState([]);
-  console.log(tools, "tools");
-  const [toolTypes, setToolTypes] = useState([]);
+  const [masterData, setMasterData] = useState({
+    actionTypes: [],
+    executorTypes: [],
+    dataTypes: [],
+  });
 
-  const [ruleCatagories, setRuleCatagories] = useState([]);
-  const [rulesconditiontypes, setRulesconditiontypes] = useState([]);
-  const ruleActionName = useRef();
-  const toolTypeID = useRef();
-  const toolId = useRef();
-  const toolActionID = useRef();
-  const errors = {};
+  const [ruleAction, setRuleAction] = useState({
+    actionName: "",
+    actionCode: "",
+    actionTypeId: 0,
+    executorTypeId: 0,
+    toolId: 0,
+    // configuration: "",
+    parameters: [],
+  });
+
   useEffect(() => {
-    const fetchData = async () => {
+    const loadData = async () => {
       try {
-        const data = await fetchToolActions();
-        setToolTypeActions(data);
+        const [toolsData, actionTypes, executorTypes, dataTypes] = await Promise.all([
+          fetchLDPTools(),
+          fetchMasterData({ maserDataType: "action_type", orgId, toolId: toolIds }),
+          fetchMasterData({ maserDataType: "executor_type", orgId, toolId: toolIds }),
+          fetchMasterData({ maserDataType: "parameter_type", orgId, toolId: toolIds }),
+        ]);
+        setTools(toolsData || []);
+        setMasterData({
+          actionTypes: actionTypes || [],
+          executorTypes: executorTypes || [],
+          dataTypes: dataTypes || [],
+        });
       } catch (error) {
         handleError(error);
       }
     };
+    loadData();
+  }, [orgId, toolIds]);
 
-    fetchData();
-  }, []);
-  let handleChangeToolType = (event) => {
-    let selectedValue = event.target.value;
-    const result = async () => {
-      try {
-        const data = {
-          toolTypeId: Number(selectedValue),
-        };
-        const response = await fetchLDPToolsByToolType(data);
-        const result = response.ldpToolsList;
-        setTools(result);
-      } catch (error) {
-        handleError(error);
-      }
-    };
-
-    result();
+  const handleRuleChange = (field, value) => {
+    setRuleAction((prev) => ({ ...prev, [field]: value }));
   };
-  useEffect(() => {
-    const fetchToolTypesData = async () => {
-      const data = {
-        maserDataType: 'Tool_Types',
-        orgId: orgId,
-        toolId: toolIds,
-      };
-  
-      try {
-        const typeData = await fetchMasterData(data);
-        setToolTypes(typeData);
-      } catch (error) {
-        handleError(error);
-      }
-    };
-  
-    fetchToolTypesData();
-  }, []);
-  
-  const handleSubmit = async (event) => {
-    if (!ruleActionName.current.value) {
-      errors.ruleActionName = "Enter Rule Action Name";
-      setLoading(false);
-      return errors;
+
+  const addParameter = () => {
+    setRuleAction((prev) => ({
+      ...prev,
+      parameters: [
+        ...prev.parameters,
+        {
+          parameterCode: "",
+          parameterName: "",
+          dataTypeId: 0,
+          isRequired: false,
+          defaultValue: "",
+          validationRulesJson: "",
+          displayOrder: prev.parameters.length + 1,
+          isSensitive: false,
+        },
+      ],
+    }));
+  };
+
+  const removeParameter = (index) => {
+    setRuleAction((prev) => ({
+      ...prev,
+      parameters: prev.parameters.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleParameterChange = (index, field, value) => {
+    const newParams = [...ruleAction.parameters];
+    newParams[index][field] = value;
+    setRuleAction((prev) => ({ ...prev, parameters: newParams }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!ruleAction.actionName || !ruleAction.actionCode) {
+      notifyFail("Please enter Action Name and Code");
+      return;
     }
-    if (!toolTypeID.current.value) {
-      errors.toolTypeID = "Select Tool Type";
-      setLoading(false);
-      return errors;
-    }
-    if (!toolId.current.value) {
-      errors.toolId = "Select Tool";
-      setLoading(false);
-      return errors;
-    }
-    if (!toolActionID.current.value) {
-      errors.toolActionID = "Select Tool Action";
-      setLoading(false);
-      return errors;
-    }
+
     setLoading(true);
-    event.preventDefault();
-    const createduserId = Number(sessionStorage.getItem("userId"));
-    const orgId = Number(sessionStorage.getItem("orgId"));
-    const createddate = new Date().toISOString();
-    var data = {
-      ruleActionName: ruleActionName.current.value,
-      toolTypeID: toolTypeID.current.value,
-      toolID: toolId.current.value,
-      toolActionID: toolActionID.current.value,
-      ruleGenerelActionID: 0,
-      orgId,
-      createddate,
-      createduserId,
+    const payload = {
+      ...ruleAction,
+      userId: Number(sessionStorage.getItem("userId")),
+      actionTypeId: Number(ruleAction.actionTypeId),
+      executorTypeId: Number(ruleAction.executorTypeId),
+      toolId: Number(ruleAction.toolId),
     };
 
     try {
-      const responseData = await fetchRuleActionUrl(data);
+      const responseData = await fetchRuleActionUrl(payload);
       const { isSuccess } = responseData;
 
       if (isSuccess) {
@@ -152,123 +145,213 @@ const AddRuleAction = () => {
           </div>
         </div>
       </div>
-      <form>
-        <div className="card-body pad-10 mt-5">
-          <div className="row mb-6 table-filter">
-            <div className="col-lg-6 mb-5">
-              <div className="fv-row mb-0">
-                <label
-                  htmlFor="ruleName"
-                  className="form-label fs-6 fw-bolder mb-3"
-                >
-                  Rule Action Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  className="form-control form-control-lg form-control-solid"
-                  placeholder="Ex: FreshDesk_CreateTicket"
-                  ref={ruleActionName}
-                />
-              </div>
+      <form onSubmit={handleSubmit}>
+        <div className='card-body pad-10'>
+          <div className='row mb-8'>
+            <div className='col-md-4 mb-2'>
+              <label className='form-label fw-bold small'>Action Name</label>
+              <input
+                type='text'
+                className='form-control form-control-sm'
+                value={ruleAction.actionName}
+                onChange={(e) => handleRuleChange('actionName', e.target.value)}
+                placeholder='Action Name'
+              />
             </div>
-            <div className="col-lg-6 mb-4 mb-lg-0">
-              <div className="fv-row mb-0">
-                <label
-                  htmlFor="toolTypeID"
-                  className="form-label fs-6 fw-bolder mb-3"
-                >
-                  Select Tool Type
-                </label>
-                <select
-                  className="form-select form-select-solid"
-                  data-kt-select2="true"
-                  data-placeholder="Select option"
-                  data-allow-clear="true"
-                  id="toolTypeID"
-                  ref={toolTypeID}
-                  onChange={handleChangeToolType}
-                  required
-                >
-                  <option value="">Select</option>
-                  {toolTypes.map((item, index) => (
-                    <option value={item.dataID} key={index}>
-                      {item.dataValue}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className='col-md-4 mb-2'>
+              <label className='form-label fw-bold small'>Action Code</label>
+              <input
+                type='text'
+                className='form-control form-control-sm'
+                value={ruleAction.actionCode}
+                onChange={(e) => handleRuleChange('actionCode', e.target.value)}
+                placeholder='Action Code'
+              />
             </div>
+            <div className='col-md-4 mb-2'>
+              <label className='form-label fw-bold small'>Action Type</label>
+              <select
+                className='form-select form-select-sm'
+                value={ruleAction.actionTypeId}
+                onChange={(e) => handleRuleChange('actionTypeId', e.target.value)}
+              >
+                <option value={0}>Select Type</option>
+                {masterData.actionTypes.map((item) => (
+                  <option key={item.dataID} value={item.dataID}>
+                    {item.dataValue}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className='col-md-4 mb-2'>
+              <label className='form-label fw-bold small'>Executor Type</label>
+              <select
+                className='form-select form-select-sm'
+                value={ruleAction.executorTypeId}
+                onChange={(e) => handleRuleChange('executorTypeId', e.target.value)}
+              >
+                <option value={0}>Select Executor</option>
+                {masterData.executorTypes.map((item) => (
+                  <option key={item.dataID} value={item.dataID}>
+                    {item.dataValue}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className='col-md-4 mb-2'>
+              <label className='form-label fw-bold small'>Tool</label>
+              <select
+                className='form-select form-select-sm'
+                value={ruleAction.toolId}
+                onChange={(e) => handleRuleChange('toolId', e.target.value)}
+              >
+                <option value={0}>Select Tool</option>
+                {tools.map((item) => (
+                  <option key={item.toolId} value={item.toolId}>
+                    {item.toolName}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className='col-md-12 mb-2'>
+              <label className='form-label fw-bold small'>Configuration (JSON string)</label>
+              <textarea
+                className='form-control form-control-sm'
+                rows='3'
+                style={{height: 100}}
+                value={ruleAction.configuration}
+                onChange={(e) => handleRuleChange('configuration', e.target.value)}
+                placeholder='{"key": "value"}'
+              />
+            </div>
+          </div>
 
-            <div className="col-lg-6 mb-4 mb-lg-0">
-              <div className="fv-row mb-0">
-                <label
-                  htmlFor="toolID"
-                  className="form-label fs-6 fw-bolder mb-3"
-                >
-                  Select Tool
-                </label>
-                <select
-                  className="form-select form-select-solid"
-                  data-kt-select2="true"
-                  data-placeholder="Select option"
-                  data-allow-clear="true"
-                  id="toolID"
-                  ref={toolId}
-                  required
-                >
-                  <option value="">Select</option>
-                  {tools.map((item, index) => (
-                    <option value={item.toolId} key={index}>
-                      {item.toolName}
-                    </option>
-                  ))}
-                </select>
-              </div>
+          <div className='border-top pt-5'>
+            <div className='d-flex justify-content-between align-items-center mb-2'>
+              <h5 className='mb-0'>Parameters</h5>
+              <button type='button' className='btn btn-sm btn-primary' onClick={addParameter}>
+                <i className='fa fa-plus me-2'></i> Add Parameter
+              </button>
             </div>
-
-            <div className="col-lg-6 mb-4 mb-lg-0">
-              <div className="fv-row mb-0">
-                <label
-                  htmlFor="toolActionID"
-                  className="form-label fs-6 fw-bolder mb-3"
-                >
-                  Select Tool Action
-                </label>
-                <select
-                  className="form-select form-select-solid"
-                  data-kt-select2="true"
-                  data-placeholder="Select option"
-                  data-allow-clear="true"
-                  id="toolActionID"
-                  ref={toolActionID}
-                  required
-                >
-                  <option value="">Select</option>
-                  {toolTypeActions.map((item, index) => (
-                    <option value={item.toolActionID} key={index}>
-                      {item.toolTypeActionName}
-                    </option>
+            <div className='table-responsive'>
+              <table className='table table-row-dashed align-middle gs-0 gy-3'>
+                <thead>
+                  <tr className='fw-bold text-muted bg-light'>
+                    <th className='ps-4 min-w-100px'>Code</th>
+                    <th className='min-w-100px'>Name</th>
+                    <th className='min-w-100px'>Data Type</th>
+                    <th className='min-w-100px'>Default Value</th>
+                    <th className='min-w-80px'>Order</th>
+                    <th className='min-w-50px'>Req.</th>
+                    <th className='min-w-50px'>Sens.</th>
+                    <th className='text-end pe-4'>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ruleAction.parameters.map((param, index) => (
+                    <tr key={index}>
+                      <td>
+                        <input
+                          type='text'
+                          className='form-control form-control-sm'
+                          value={param.parameterCode}
+                          onChange={(e) =>
+                            handleParameterChange(index, 'parameterCode', e.target.value)
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type='text'
+                          className='form-control form-control-sm'
+                          value={param.parameterName}
+                          onChange={(e) =>
+                            handleParameterChange(index, 'parameterName', e.target.value)
+                          }
+                        />
+                      </td>
+                      <td>
+                        <select
+                          className='form-select form-select-sm'
+                          value={param.dataTypeId}
+                          onChange={(e) =>
+                            handleParameterChange(index, 'dataTypeId', Number(e.target.value))
+                          }
+                        >
+                          <option value={0}>Type</option>
+                          {masterData.dataTypes.map((item) => (
+                            <option key={item.dataID} value={item.dataID}>
+                              {item.dataValue}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <input
+                          type='text'
+                          className='form-control form-control-sm'
+                          value={param.defaultValue}
+                          onChange={(e) =>
+                            handleParameterChange(index, 'defaultValue', e.target.value)
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type='number'
+                          className='form-control form-control-sm'
+                          value={param.displayOrder}
+                          onChange={(e) =>
+                            handleParameterChange(index, 'displayOrder', Number(e.target.value))
+                          }
+                        />
+                      </td>
+                      <td className='text-center'>
+                        <input
+                          type='checkbox'
+                          className='form-check-input'
+                          checked={param.isRequired}
+                          onChange={(e) =>
+                            handleParameterChange(index, 'isRequired', e.target.checked)
+                          }
+                        />
+                      </td>
+                      <td className='text-center'>
+                        <input
+                          type='checkbox'
+                          className='form-check-input'
+                          checked={param.isSensitive}
+                          onChange={(e) =>
+                            handleParameterChange(index, 'isSensitive', e.target.checked)
+                          }
+                        />
+                      </td>
+                      <td className='text-end pe-4'>
+                        <button
+                          type='button'
+                          className='btn btn-icon btn-light-danger btn-sm'
+                          onClick={() => removeParameter(index)}
+                        >
+                          <i className='fa fa-trash'></i>
+                        </button>
+                      </td>
+                    </tr>
                   ))}
-                </select>
-              </div>
+                  {ruleAction.parameters.length === 0 && (
+                    <tr>
+                      <td colSpan='8' className='text-center text-muted py-4'>
+                        No parameters added.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-        <div className="card-footer d-flex justify-content-end pad-10">
-          <button
-            type="submit"
-            onClick={handleSubmit}
-            className="btn btn-new btn-small"
-            disabled={loading}
-          >
-            {!loading && "Save Changes"}
-            {loading && (
-              <span className="indicator-progress" style={{ display: "block" }}>
-                Please wait...{" "}
-                <span className="spinner-border spinner-border-sm align-middle ms-2"></span>
-              </span>
-            )}
+        <div className='card-footer d-flex justify-content-end pad-10'>
+          <button type='submit' className='btn btn-new btn-small' disabled={loading}>
+            {!loading ? 'Save Rule Action' : 'Please wait...'}
           </button>
         </div>
       </form>

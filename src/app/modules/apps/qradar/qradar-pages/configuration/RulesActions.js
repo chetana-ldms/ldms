@@ -4,7 +4,7 @@ import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer, toast} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import {fetchRulesDelete, fetchMasterData} from '../../../../../api/Api'
+import {fetchRulesDelete, fetchMasterData, fetchRuleActionDelete} from '../../../../../api/Api'
 import axios from 'axios'
 import {fetchRuleActions, fetchRules} from '../../../../../api/ConfigurationApi'
 import {useErrorBoundary} from 'react-error-boundary'
@@ -44,7 +44,7 @@ const RulesActions = () => {
   }
 
   const handleNavigateToUpdate = (id) => {
-    navigate(`/qradar/rules-engine/update/${id}`, {state: {save: true}})
+    navigate(`/qradar/rules-actions/update/${id}`, {state: {save: true}})
   }
 
   useEffect(() => {
@@ -73,16 +73,14 @@ const RulesActions = () => {
   const handleDeleteConfirm = async (reason) => {
     if (!itemToDelete) return
     const deletedUserId = Number(sessionStorage.getItem('userId'))
-    const deletedDate = new Date().toISOString()
     const data = {
       actionId: itemToDelete.actionId,
-      deletedDate,
       userId: deletedUserId,
-      deleteReason: reason,
+      reason: reason,
     }
     try {
       setLoading(true)
-      const responce = await fetchRulesDelete(data)
+      const responce = await fetchRuleActionDelete(data)
       if (responce.isSuccess) {
         notify('Rule Deleted')
         setShowDeleteConfirmation(false)
@@ -245,7 +243,7 @@ const RulesActions = () => {
                       <span>
                         <Link
                           className='text-white'
-                          to={`/qradar/rules-engine/update/${item.actionId}`}
+                          to={`/qradar/rules-actions/update/${item.actionId}`}
                           title='Edit'
                         >
                           <i className='fa fa-pencil cursor link' />
@@ -297,7 +295,7 @@ const RulesActions = () => {
           show={showDeleteConfirmation}
           message={
             itemToDelete
-              ? `Are you sure you want to delete the rule "${itemToDelete.ruleName}"?`
+              ? `Are you sure you want to delete the rule Action "${itemToDelete.actionName}"?`
               : ''
           }
           onConfirm={handleDeleteConfirm}
