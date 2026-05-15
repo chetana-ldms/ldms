@@ -4,9 +4,7 @@ import axios from "axios";
 import { UsersListLoading } from "../components/loading/UsersListLoading";
 import { notify, notifyFail } from "../components/notification/Notification";
 import {
-  fetchLDPToolsByToolType,
   fetchRuleActionUrl,
-  fetchToolActions,
 } from "../../../../../api/ConfigurationApi";
 import { fetchLDPTools, fetchMasterData } from "../../../../../api/Api";
 import { useErrorBoundary } from "react-error-boundary";
