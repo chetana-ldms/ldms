@@ -132,6 +132,9 @@ import { Tactics } from './qradar-pages/mitre/Tactics'
 import { Rules } from './qradar-pages/configuration/Rules'
 import AddRule from './qradar-pages/configuration/AddRule'
 import UpdateRule from './qradar-pages/configuration/UpdateRule'
+import { Resolver } from './qradar-pages/playbook-configuration/Resolver'
+import AddResolver from './qradar-pages/playbook-configuration/AddResolver'
+import UpdateResolver from './qradar-pages/playbook-configuration/UpdateResolver'
 
 
 const QradarPages = () => {
@@ -269,6 +272,9 @@ const QradarPages = () => {
        <Route path='RiskWaiver/:status' element={<RiskWaiver />} />
        <Route path='Techniques/:status' element={<Techniques />} />
        <Route path='Tactics/:status' element={<Tactics />} />
+        <Route path='resolver/:status' element={<Resolver/>} />
+      <Route path='resolver/add' element={<AddResolver />} />
+      <Route path='/resolver/update/:id' element={<UpdateResolver />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )

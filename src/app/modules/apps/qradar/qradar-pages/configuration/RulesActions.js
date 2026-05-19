@@ -113,7 +113,7 @@ const RulesActions = () => {
       }
 
       const response = await fetchRuleActions(payload)
-      setTools(response?.data || response || [])
+      setTools(Array.isArray(response?.data) ? response.data : []) // Ensure tools is always an array
       setLoading(false)
     } catch (error) {
       handleError(error)

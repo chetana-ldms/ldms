@@ -2,17 +2,17 @@ import React, {useState, useEffect, useRef} from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {notify, notifyFail} from '../components/notification/Notification'
-import {ToastContainer, toast} from 'react-toastify'
+import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import {fetchRulesDelete, fetchMasterData} from '../../../../../api/Api'
-import axios from 'axios'
-import {fetchRules} from '../../../../../api/ConfigurationApi'
+import {fetchMasterData} from '../../../../../api/Api'
+import {fetchRulesDelete} from '../../../../../api/Api' // Keeping fetchRulesDelete as delete logic was not requested to change
 import {useErrorBoundary} from 'react-error-boundary'
-import useFeatureActions from './useFeatureActions'
 import Pagination from '../../../../../../utils/Pagination'
 import DeleteConfirmation2 from '../risk-upgrade/DeleteConfirmation2'
+import useFeatureActions from '../configuration/useFeatureActions'
+import {fetchResolverDeleteUrl, fetchResolverSearchUrl} from '../../../../../api/PlayBookConfigurationApi'
 
-const Rules = () => {
+const Resolver = () => {
   const navigate = useNavigate()
   const handleError = useErrorBoundary()
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -28,11 +28,10 @@ const Rules = () => {
   const [searchValue, setSearchValue] = useState('')
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
   const [itemToDelete, setItemToDelete] = useState(null)
-  console.log('itemToDelete', itemToDelete)
   const [dropdownData, setDropdownData] = useState({
     severityDropDown: [],
-    scenarioDropDown: [],
-    priorityDropDown: [],
+    categoryDropDown: [], // Renamed from scenarioDropDown
+    strategyTypeDropDown: [], // Renamed from priorityDropDown
   })
 
   const roleId = Number(sessionStorage.getItem('roleID'))
@@ -47,21 +46,21 @@ const Rules = () => {
   }
 
   const handleNavigateToUpdate = (id) => {
-    navigate(`/qradar/rules-engine/update/${id}`, {state: {save: true}})
+    navigate(`/qradar/resolver/update/${id}`, {state: {save: true}})
   }
 
   useEffect(() => {
     const fetchAllMasterData = async () => {
       try {
-        const [sev, scen, prio] = await Promise.all([
-          fetchMasterData({maserDataType: 'rule_severity', orgId, toolId}),
-          fetchMasterData({maserDataType: 'rule_scenario', orgId, toolId}),
-          fetchMasterData({maserDataType: 'rule_priority', orgId, toolId}),
+        const [cat, sev, stratType] = await Promise.all([
+          fetchMasterData({maserDataType: 'resolver_category', orgId, toolId}),
+          fetchMasterData({maserDataType: 'resolver_severity', orgId, toolId}),
+          fetchMasterData({maserDataType: 'resolver_strategy_type', orgId, toolId}),
         ])
         setDropdownData({
           severityDropDown: sev || [],
-          scenarioDropDown: scen || [],
-          priorityDropDown: prio || [],
+          categoryDropDown: cat || [],
+          strategyTypeDropDown: stratType || [],
         })
       } catch (error) {
         console.log(error)
@@ -80,21 +79,21 @@ const Rules = () => {
     const deletedUserId = Number(sessionStorage.getItem('userId'))
     const deletedDate = new Date().toISOString()
     const data = {
-      ruleId: itemToDelete.ruleId,
+      resolverId: itemToDelete.resolverId,
       deletedDate,
       userId: deletedUserId,
       deleteReason: reason,
     }
     try {
       setLoading(true)
-      const responce = await fetchRulesDelete(data)
+      const responce = await fetchResolverDeleteUrl(data)
       if (responce.isSuccess) {
-        notify('Rule Deleted')
+        notify(responce.message || 'Resolver Deleted Successfully')
         setShowDeleteConfirmation(false)
         setItemToDelete(null)
         await reload()
       } else {
-        notifyFail(responce.message || 'Rule not Deleted')
+        notifyFail(responce.message || 'Resolver not Deleted')
       }
     } catch (error) {
       handleError(error)
@@ -105,15 +104,25 @@ const Rules = () => {
   const reload = async () => {
     try {
       setLoading(true)
-      const payload = {
-        searchText: searchValue || '',
-        orgId: orgId,
-        toolId: toolId,
-        scenarioId: Number(scenarioRef.current?.value) || 0,
-        severityId: Number(severityRef.current?.value) || 0,
-        priority: Number(priorityRef.current?.value) || 0,
+      const payload = {active: true}
+
+      if (searchValue) {
+        payload.searchText = searchValue
       }
-      const response = await fetchRules(payload)
+      const categoryId = Number(scenarioRef.current?.value)
+      if (categoryId !== 0) {
+        payload.categoryId = categoryId
+      }
+      const severityId = Number(severityRef.current?.value)
+      if (severityId !== 0) {
+        payload.severityId = severityId
+      }
+      const strategyTypeId = Number(priorityRef.current?.value)
+      if (strategyTypeId !== 0) {
+        payload.strategyTypeId = strategyTypeId
+      }
+
+      const response = await fetchResolverSearchUrl(payload)
       setTools(Array.isArray(response?.data) ? response.data : []) // Ensure tools is always an array
       setLoading(false)
     } catch (error) {
@@ -150,7 +159,7 @@ const Rules = () => {
             <h3 className='align-items-start flex-column'>
               {/* <span className='fw-bold fs-3'></span> */}
               <span className='card-label fw-bold fs-3 mb-1'>
-                Rule Engine ({currentItems ? currentItems.length : 0} / {tools ? tools.length : 0})
+                Resolver ({currentItems ? currentItems.length : 0} / {tools ? tools.length : 0})
               </span>
             </h3>
           </div>
@@ -162,7 +171,7 @@ const Rules = () => {
               <input
                 type='text'
                 className='form-control form-control-sm'
-                placeholder='Search Rules'
+                placeholder='Search Resolver'
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
               />
@@ -174,8 +183,10 @@ const Rules = () => {
             <div className='d-flex align-items-center gap-3 mb-1 mt-2'>
               <div className='w-150px'>
                 <select className='form-select form-select-sm' ref={scenarioRef}>
-                  <option value=''>Select Scenario</option>
-                  {dropdownData.scenarioDropDown.map((item) => (
+                  {' '}
+                  {/* Changed to Category */}
+                  <option value=''>Select Category</option>
+                  {dropdownData.categoryDropDown.map((item) => (
                     <option key={item.dataID} value={item.dataID}>
                       {item.dataValue}
                     </option>
@@ -194,8 +205,10 @@ const Rules = () => {
               </div>
               <div className='w-150px'>
                 <select className='form-select form-select-sm' ref={priorityRef}>
-                  <option value=''>Select Priority</option>
-                  {dropdownData.priorityDropDown.map((item) => (
+                  {' '}
+                  {/* Changed to Strategy Type */}
+                  <option value=''>Strategy Type</option>
+                  {dropdownData.strategyTypeDropDown.map((item) => (
                     <option key={item.dataID} value={item.dataID}>
                       {item.dataValue}
                     </option>
@@ -207,7 +220,7 @@ const Rules = () => {
         </div>
         <div className='col-md-1 float-end text-end'>
           <Link
-            to='/qradar/rules-engine/add'
+            to='/qradar/resolver/add'
             className={`btn btn-new btn-small ${!isActionAuthorized('Create') ? 'disabled' : ''}`}
           >
             Add
@@ -219,24 +232,32 @@ const Rules = () => {
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
-              <th>Rule Name</th>
-              {/* <th className='min-w-50px'>Rule Conditions</th> */}
+              <th>Resolver Name</th>
+              <th>Code</th>
+              <th>Category</th>
+              <th>Severity</th>
+              <th>Strategy Type</th>
+              <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
             {currentItems !== null && currentItems.length > 0 ? (
-              currentItems?.map((item, index) => (
+              currentItems.map((item, index) => (
                 <tr key={index} className='fs-12'>
-                  <td>{item.ruleName}</td>
-                  {/* <td>{item.ruleCatagoryID}</td> */}
+                  <td>{item.resolverName}</td>
+                  <td>{item.resolverCode}</td>
+                  <td>{item.categoryName}</td>
+                  <td>{item.severityName}</td>
+                  <td>{item.strategyTypeName}</td>
+                  <td>{item.enabled === 1 ? 'Enabled' : 'Disabled'}</td>
                   <td>
                     {isActionAuthorized('View') ? (
                       <span className='me-8' title='View'>
                         <i
                           className='fa fa-eye cursor'
-                          onClick={() => handleNavigateToUpdate(item.ruleId)}
+                          onClick={() => handleNavigateToUpdate(item.resolverId)}
                         />
                       </span>
                     ) : (
@@ -249,7 +270,7 @@ const Rules = () => {
                       <span>
                         <Link
                           className='text-white'
-                          to={`/qradar/rules-engine/update/${item.ruleId}`}
+                          to={`/qradar/resolver/update/${item.resolverId}`}
                           title='Edit'
                         >
                           <i className='fa fa-pencil cursor link' />
@@ -281,7 +302,7 @@ const Rules = () => {
               ))
             ) : (
               <tr>
-                <td colSpan='2'>No data found</td>
+                <td colSpan='7'>No data found</td>
               </tr>
             )}
           </tbody>
@@ -301,7 +322,7 @@ const Rules = () => {
           show={showDeleteConfirmation}
           message={
             itemToDelete
-              ? `Are you sure you want to delete the rule "${itemToDelete.ruleName}"?`
+              ? `Are you sure you want to delete the resolver "${itemToDelete.resolverName}"?`
               : ''
           }
           onConfirm={handleDeleteConfirm}
@@ -315,4 +336,4 @@ const Rules = () => {
   )
 }
 
-export {Rules}
+export {Resolver}
