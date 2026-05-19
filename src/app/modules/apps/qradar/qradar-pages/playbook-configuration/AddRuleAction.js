@@ -71,7 +71,6 @@ const AddRuleAction = () => {
           dataTypeId: 0,
           isRequired: false,
           defaultValue: "",
-          validationRulesJson: "",
           displayOrder: prev.parameters.length + 1,
           isSensitive: false,
           isDeleted: false,
@@ -121,10 +120,7 @@ const AddRuleAction = () => {
         dataTypeId: Number(param.dataTypeId),
         isRequired: param.isRequired,
         defaultValue: param.defaultValue,
-        validationRulesJson: param.validationRulesJson,
         displayOrder: Number(param.displayOrder),
-        isSensitive: param.isSensitive,
-        isDeleted: param.isDeleted || false,
       })),
       actionTypeId: Number(ruleAction.actionTypeId),
     };
@@ -273,7 +269,7 @@ const AddRuleAction = () => {
                     <th className='min-w-100px'>Default Value</th>
                     <th className='min-w-80px'>Order</th>
                     <th className='min-w-50px'>Req.</th>
-                    <th className='min-w-50px'>Sens.</th>
+                    {/* <th className='min-w-50px'>Sens.</th> */}
                     <th className='text-end pe-4'>Action</th>
                   </tr>
                 </thead>
@@ -346,7 +342,7 @@ const AddRuleAction = () => {
                           }
                         />
                       </td>
-                      <td className='text-center'>
+                      {/* <td className='text-center'>
                         <input
                           type='checkbox'
                           className='form-check-input'
@@ -355,21 +351,21 @@ const AddRuleAction = () => {
                             handleParameterChange(index, 'isSensitive', e.target.checked)
                           }
                         />
-                      </td>
+                      </td> */}
                       <td className='text-end pe-4'>
                         <button
                           type='button'
                           className='btn btn-icon btn-light-danger btn-sm'
                           onClick={() => removeParameter(index)}
                         >
-                           <i className='fa fa-times' />
+                          <i className='fa fa-trash'></i>
                         </button>
                       </td>
                     </tr>
                   ))}
                   {ruleAction.parameters.length === 0 && (
-                    <tr>
-                      <td colSpan='8' className='text-center text-muted py-4'>
+                    <tr colSpan='7'>
+                      <td className='text-center text-muted py-4'>
                         No parameters added.
                       </td>
                     </tr>
