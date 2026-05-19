@@ -8,6 +8,7 @@ import {
 } from "../../../../../api/ConfigurationApi";
 import { fetchLDPTools, fetchMasterData } from "../../../../../api/Api";
 import { useErrorBoundary } from "react-error-boundary";
+import RuleActionConfigurationModal from './RuleActionConfigurationModal'; // Import the new component
 
 const AddRuleAction = () => {
   const orgId = Number(sessionStorage.getItem("orgId"));
@@ -16,7 +17,6 @@ const AddRuleAction = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const [tools, setTools] = useState([]);
   const [masterData, setMasterData] = useState({
     actionTypes: [],
     executorTypes: [],
@@ -29,20 +29,20 @@ const AddRuleAction = () => {
     actionTypeId: 0,
     executorTypeId: 0,
     toolId: 0,
-    // configuration: "",
+    configuration: "",
     parameters: [],
   });
+
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [toolsData, actionTypes, executorTypes, dataTypes] = await Promise.all([
-          fetchLDPTools(),
+        const [actionTypes, executorTypes, dataTypes] = await Promise.all([
           fetchMasterData({ maserDataType: "action_type", orgId, toolId: toolIds }),
           fetchMasterData({ maserDataType: "executor_type", orgId, toolId: toolIds }),
           fetchMasterData({ maserDataType: "parameter_type", orgId, toolId: toolIds }),
         ]);
-        setTools(toolsData || []);
         setMasterData({
           actionTypes: actionTypes || [],
           executorTypes: executorTypes || [],
@@ -65,6 +65,7 @@ const AddRuleAction = () => {
       parameters: [
         ...prev.parameters,
         {
+          parameterId: 0,
           parameterCode: "",
           parameterName: "",
           dataTypeId: 0,
@@ -73,6 +74,7 @@ const AddRuleAction = () => {
           validationRulesJson: "",
           displayOrder: prev.parameters.length + 1,
           isSensitive: false,
+          isDeleted: false,
         },
       ],
     }));
@@ -93,18 +95,38 @@ const AddRuleAction = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!ruleAction.actionName || !ruleAction.actionCode) {
-      notifyFail("Please enter Action Name and Code");
+    if (
+      !ruleAction.actionName ||
+      !ruleAction.actionCode ||
+      Number(ruleAction.actionTypeId) === 0 ||
+      Number(ruleAction.executorTypeId) === 0
+    ) {
+      notifyFail("Please fill all mandatory fields: Name, Code, Type, and Executor");
       return;
     }
 
     setLoading(true);
     const payload = {
-      ...ruleAction,
-      userId: Number(sessionStorage.getItem("userId")),
-      actionTypeId: Number(ruleAction.actionTypeId),
+      actionId: 0,
+      actionName: ruleAction.actionName,
+      actionCode: ruleAction.actionCode,
       executorTypeId: Number(ruleAction.executorTypeId),
-      toolId: Number(ruleAction.toolId),
+      toolId: 0,
+      userId: Number(sessionStorage.getItem("userId")),
+      // configuration: ruleAction.configuration,
+      parameters: ruleAction.parameters.map((param) => ({
+        parameterId: param.parameterId || 0,
+        parameterCode: param.parameterCode,
+        parameterName: param.parameterName,
+        dataTypeId: Number(param.dataTypeId),
+        isRequired: param.isRequired,
+        defaultValue: param.defaultValue,
+        validationRulesJson: param.validationRulesJson,
+        displayOrder: Number(param.displayOrder),
+        isSensitive: param.isSensitive,
+        isDeleted: param.isDeleted || false,
+      })),
+      actionTypeId: Number(ruleAction.actionTypeId),
     };
 
     try {
@@ -122,6 +144,11 @@ const AddRuleAction = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSaveConfig = (newConfig) => {
+    handleRuleChange('configuration', newConfig);
+    setIsConfigModalOpen(false);
   };
 
   return (
@@ -147,7 +174,7 @@ const AddRuleAction = () => {
         <div className='card-body pad-10'>
           <div className='row mb-8'>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Action Name</label>
+              <label className='form-label fw-bold small'>Action Name <span className='text-danger'>*</span></label>
               <input
                 type='text'
                 className='form-control form-control-sm'
@@ -157,7 +184,7 @@ const AddRuleAction = () => {
               />
             </div>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Action Code</label>
+              <label className='form-label fw-bold small'>Action Code <span className='text-danger'>*</span></label>
               <input
                 type='text'
                 className='form-control form-control-sm'
@@ -167,7 +194,7 @@ const AddRuleAction = () => {
               />
             </div>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Action Type</label>
+              <label className='form-label fw-bold small'>Action Type <span className='text-danger'>*</span></label>
               <select
                 className='form-select form-select-sm'
                 value={ruleAction.actionTypeId}
@@ -182,7 +209,7 @@ const AddRuleAction = () => {
               </select>
             </div>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Executor Type</label>
+              <label className='form-label fw-bold small'>Executor Type <span className='text-danger'>*</span></label>
               <select
                 className='form-select form-select-sm'
                 value={ruleAction.executorTypeId}
@@ -196,31 +223,36 @@ const AddRuleAction = () => {
                 ))}
               </select>
             </div>
-            <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Tool</label>
-              <select
-                className='form-select form-select-sm'
-                value={ruleAction.toolId}
-                onChange={(e) => handleRuleChange('toolId', e.target.value)}
-              >
-                <option value={0}>Select Tool</option>
-                {tools.map((item) => (
-                  <option key={item.toolId} value={item.toolId}>
-                    {item.toolName}
-                  </option>
-                ))}
-              </select>
-            </div>
             <div className='col-md-12 mb-2'>
               <label className='form-label fw-bold small'>Configuration (JSON string)</label>
-              <textarea
-                className='form-control form-control-sm'
-                rows='3'
-                style={{height: 100}}
-                value={ruleAction.configuration}
-                onChange={(e) => handleRuleChange('configuration', e.target.value)}
-                placeholder='{"key": "value"}'
-              />
+              <div className="input-group">
+                <textarea
+                  className='form-control form-control-sm'
+                  rows='3'
+                  style={{height: 100}}
+                  value={ruleAction.configuration}
+                  onChange={(e) => handleRuleChange('configuration', e.target.value)}
+                  placeholder='{"key": "value"}'
+                />
+                <div className="input-group-append d-flex flex-column gap-1 ms-2">
+                   <button 
+                    type="button" 
+                    className="btn btn-sm btn-icon btn-light-primary" 
+                    onClick={() => setIsConfigModalOpen(true)}
+                    title="Add/Edit Configuration"
+                   >
+                     <i className="fa fa-plus" />
+                   </button>
+                   <button 
+                    type="button" 
+                    className="btn btn-sm btn-icon btn-light-danger" 
+                    onClick={() => handleRuleChange('configuration', '')}
+                    title="Remove Configuration"
+                   >
+                     <i className="fa fa-trash" />
+                   </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -349,10 +381,17 @@ const AddRuleAction = () => {
         </div>
         <div className='card-footer d-flex justify-content-end pad-10'>
           <button type='submit' className='btn btn-new btn-small' disabled={loading}>
-            {!loading ? 'Save Rule Action' : 'Please wait...'}
+            {!loading ? 'Save' : 'Please wait...'}
           </button>
         </div>
       </form>
+
+      <RuleActionConfigurationModal
+        show={isConfigModalOpen}
+        onClose={() => setIsConfigModalOpen(false)}
+        currentConfiguration={ruleAction.configuration}
+        onSave={handleSaveConfig}
+      />
     </div>
   );
 };

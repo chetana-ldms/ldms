@@ -1,15 +1,320 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, memo} from 'react'
 import {fetchMasterData} from '../../../../../api/Api'
 import {fetchRulesAddUrl} from '../../../../../api/ConfigurationApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import {Link, useNavigate} from 'react-router-dom'
 
+export const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`
+
+const EMPTY_CONDITION = () => ({
+  tempKey: uid(),
+  fieldTypeId: 0,
+  operatorId: 0,
+  value: '',
+  order: 1,
+  conditionJoinOperatorId: 0, 
+})
+
+const EMPTY_GROUP = () => ({
+  tempGroupKey: uid(),
+  groupOperatorId: 1, // Default to AND, as it's no longer user-configurable at the group level
+  conditions: [EMPTY_CONDITION()],
+  groupJoinOperatorId: 0,
+  subGroups: [],
+})
+
+const sel = 'form-select form-select-sm'
+const inp = 'form-control form-control-sm'
+
+const cs = {
+  border: '1px solid #d1d5db',
+  padding: '4px 6px',
+  verticalAlign: 'middle',
+  fontSize: 12,
+}
+
+const hs = {
+  ...cs,
+  background: '#dbeafe',
+  fontWeight: 700,
+  textAlign: 'center',
+  whiteSpace: 'nowrap',
+  color: '#1e40af',
+}
+
+/* ───────────────────────────────────────────── */
+/* Render Group Component */
+/* ───────────────────────────────────────────── */
+
+const RenderGroup = memo(({
+  group,
+  gIdx,
+  sIdx = null,
+  isSub = false,
+  masterData,
+  rule,
+  addCondition,
+  setGroupJoinOp,
+  addSubGroup,
+  removeGroup,
+  setCondField,
+  removeCondition,
+}) => {
+
+  const activeKey = group.tempGroupKey
+  
+  const lastCond = group.conditions[group.conditions.length - 1]
+  const isConditionJoinerSet = lastCond ? lastCond.conditionJoinOperatorId !== 0 : true
+
+  const label = isSub
+    ? `Sub Group ${gIdx + 1}.${sIdx + 1}`
+    : `Group ${gIdx + 1}`
+
+  return (
+    <div
+      className={`mb-1 p-1 rounded border ${
+        isSub
+          ? 'ms-1 border-primary bg-white'
+          : 'bg-light border-gray-300'
+      }`}
+    >
+
+      {/* Toolbar */}
+
+      <div className='d-flex align-items-center gap-3 mb-4 flex-wrap'>
+
+        <span className='fw-bold text-gray-800 me-2'>
+          {label}
+        </span>
+
+        <button
+          type='button'
+          className='btn btn-sm btn-outline-info'
+          disabled={!isConditionJoinerSet}
+          onClick={() => addCondition(activeKey)}
+        >
+          <i className='fa fa-plus me-1' />
+          Condition
+        </button>
+
+        <button
+          type='button'
+          className='btn btn-sm btn-outline-success'
+          disabled={!isConditionJoinerSet}
+          onClick={() => addSubGroup(activeKey)}
+        >
+          <i className='fa fa-folder-plus me-1' />
+          Sub Group
+        </button>
+
+        {/* Joiner for top-level groups */}
+        {!isSub && (
+          <div className='d-flex align-items-center gap-2 border-start ps-3 ms-2'>
+            <label className='small fw-bold mb-0 text-nowrap'>
+              Logical Operator <span className='text-danger'>*</span>
+            </label>
+            <select
+              className={`${sel} w-100px`}
+              value={group.groupJoinOperatorId}
+              onChange={e =>
+                setGroupJoinOp(activeKey, e.target.value)
+              }
+            >
+              <option value={0}>Select</option>
+              {masterData.groupOperators.map(i => (
+                <option key={i.dataID} value={i.dataID}>
+                  {i.dataValue}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        <button
+          type='button'
+          className='btn btn-sm btn-outline-danger ms-auto'
+          disabled={!isSub && rule.groups.length === 1}
+          onClick={() => removeGroup(activeKey)}
+        >
+          <i className='fa fa-trash' />
+        </button>
+      </div>
+
+      {/* Table */}
+
+      <table
+        style={{borderCollapse: 'collapse', width: '100%'}}
+        className='mb-4'
+      >
+        <thead>
+          <tr>
+            <th style={{...hs, width: '40%'}}>Field Name</th>
+            <th style={{...hs, width: '20%'}}>Op</th>
+            <th style={{...hs, width: '30%'}}>Value</th>
+            <th style={{...hs, width: '15%'}}>Logical Operator <span className='text-danger'>*</span></th>
+            <th style={{...hs, width: '10%'}}>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          {group.conditions.map((cond, cIdx) => (
+
+            <tr key={cond.tempKey}>
+
+              {/* Field */}
+
+              <td style={cs}>
+                <select
+                  className={sel}
+                  value={cond.fieldTypeId}
+                  onChange={e =>
+                    setCondField(
+                      activeKey,
+                      cIdx,
+                      'fieldTypeId',
+                      Number(e.target.value),
+                    )
+                  }
+                >
+                  <option value={0}>Select Field</option>
+
+                  {masterData.fieldTypes.map(i => (
+                    <option key={i.dataID} value={i.dataID}>
+                      {i.dataValue}
+                    </option>
+                  ))}
+                </select>
+              </td>
+
+              {/* Operator */}
+
+              <td style={cs}>
+                <select
+                  className={sel}
+                  value={cond.operatorId}
+                  onChange={e =>
+                    setCondField(
+                      activeKey,
+                      cIdx,
+                      'operatorId',
+                      Number(e.target.value),
+                    )
+                  }
+                >
+                  <option value={0}>Op</option>
+
+                  {masterData.operators.map(i => (
+                    <option key={i.dataID} value={i.dataID}>
+                      {i.dataValue}
+                    </option>
+                  ))}
+                </select>
+              </td>
+
+              {/* Value */}
+
+              <td style={cs}>
+                <input
+                  className={inp}
+                  type='text'
+                  value={cond.value}
+                  placeholder='Enter Value'
+                  onChange={e =>
+                    setCondField(
+                      activeKey,
+                      cIdx,
+                      'value',
+                      e.target.value,
+                    )
+                  }
+                />
+              </td>
+
+              {/* Condition Joiner */}
+              <td style={cs}>
+                <select
+                  className={sel}
+                  value={cond.conditionJoinOperatorId}
+                  onChange={e =>
+                    setCondField(
+                      activeKey,
+                      cIdx,
+                      'conditionJoinOperatorId',
+                      Number(e.target.value),
+                    )
+                  }
+                >
+                  <option value={0}>Select</option>
+                  {masterData.groupOperators.map(i => (
+                    <option key={i.dataID} value={i.dataID}>
+                      {i.dataValue}
+                    </option>
+                  ))}
+                </select>
+              </td>
+
+
+              {/* Delete */}
+
+              <td style={{...cs, textAlign: 'center'}}>
+
+                <button
+                  type='button'
+                  className='btn btn-sm btn-icon btn-light-danger'
+                  disabled={
+                    group.conditions.length === 1 &&
+                    (!group.subGroups ||
+                      group.subGroups.length === 0)
+                  }
+                  onClick={() =>
+                    removeCondition(activeKey, cIdx)
+                  }
+                >
+                  <i className='fa fa-times' />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* SubGroups */}
+
+      {group.subGroups?.map((sub, ssIdx) => (
+        <RenderGroup
+          key={sub.tempGroupKey}
+          group={sub}
+          gIdx={gIdx}
+          sIdx={ssIdx}
+          isSub={true}
+          masterData={masterData}
+          rule={rule}
+          addCondition={addCondition}
+          setGroupJoinOp={setGroupJoinOp}
+          addSubGroup={addSubGroup}
+          removeGroup={removeGroup}
+          setCondField={setCondField}
+          removeCondition={removeCondition}
+        />
+      ))}
+    </div>
+  )
+})
+
+/* ───────────────────────────────────────────── */
+/* Main Component */
+/* ───────────────────────────────────────────── */
+
 function AddRule() {
+
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
   const userId = Number(sessionStorage.getItem('userId'))
+
   const navigate = useNavigate()
+
   const [masterData, setMasterData] = useState({
     operators: [],
     groupOperators: [],
@@ -19,46 +324,79 @@ function AddRule() {
     priorities: [],
   })
 
+  const [expressionText, setExpressionText] = useState('')
+
   const [rule, setRule] = useState({
     ruleName: '',
     ruleCode: '',
     priority: 0,
     severityId: 0,
     scenarioId: 0,
-    groups: [
-      {
-        tempGroupKey: Date.now(),
-        groupOperatorId: 0,
-        conditions: [
-          {
-            fieldTypeId: 0,
-            operatorId: 0,
-            value: '',
-            order: 1,
-            tempGroupKey: Date.now(),
-          },
-        ],
-        subGroups: [],
-      },
-    ],
-    expressionText: '',
+    groups: [EMPTY_GROUP()],
     orgId,
     toolId,
     userId,
     createdDate: new Date().toISOString(),
   })
 
+  const handleRuleChange = (field, value) => {
+    setRule((prev) => ({...prev, [field]: value}))
+  }
+
+
+  /* Load Master Data */
+
   useEffect(() => {
-    const loadMasterData = async () => {
+
+    const load = async () => {
+
       try {
-        const [ops, gOps, fTypes, sevs, scens, prio] = await Promise.all([
-          fetchMasterData({maserDataType: 'rule_operator', orgId, toolId}),
-          fetchMasterData({maserDataType: 'rule_group_operator', orgId, toolId}),
-          fetchMasterData({maserDataType: 'rule_field_type', orgId, toolId}),
-          fetchMasterData({maserDataType: 'rule_severity', orgId, toolId}),
-          fetchMasterData({maserDataType: 'rule_scenario', orgId, toolId}),
-          fetchMasterData({maserDataType: 'rule_priority', orgId, toolId}),
+
+        const [
+          ops,
+          gOps,
+          fTypes,
+          sevs,
+          scens,
+          prio,
+        ] = await Promise.all([
+          fetchMasterData({
+            maserDataType: 'rule_operator',
+            orgId,
+            toolId,
+          }),
+
+          fetchMasterData({
+            maserDataType: 'rule_group_operator',
+            orgId,
+            toolId,
+          }),
+
+          fetchMasterData({
+            maserDataType: 'rule_field_type',
+            orgId,
+            toolId,
+          }),
+
+          fetchMasterData({
+            maserDataType: 'rule_severity',
+            orgId,
+            toolId,
+          }),
+
+          fetchMasterData({
+            maserDataType: 'rule_scenario',
+            orgId,
+            toolId,
+          }),
+
+          fetchMasterData({
+            maserDataType: 'rule_priority',
+            orgId,
+            toolId,
+          }),
         ])
+
         setMasterData({
           operators: ops || [],
           groupOperators: gOps || [],
@@ -67,357 +405,316 @@ function AddRule() {
           scenarios: scens || [],
           priorities: prio || [],
         })
-      } catch (error) {
-        console.error('Error fetching master data:', error)
+
+      } catch (e) {
+        console.error(e)
       }
     }
-    loadMasterData()
+
+    load()
+
   }, [orgId, toolId])
 
-  useEffect(() => {
-    const processGroupExpr = (group) => {
-      const groupOpLabel =
-        masterData.groupOperators.find((o) => o.dataID === group.groupOperatorId)?.dataValue || '??'
+  /* Expression */
 
-      const conditionStrings = (group.conditions || []).map((cond) => {
-        const field =
-          masterData.fieldTypes.find((f) => f.dataID === cond.fieldTypeId)?.dataValue || 'Field'
-        const op = masterData.operators.find((o) => o.dataID === cond.operatorId)?.dataValue || 'Op'
-        const val = cond.value || "''"
-        return `(${field} ${op} ${val})`
+  useEffect(() => {
+
+    const exprForGroup = g => {
+      const groupOpLabel = masterData.groupOperators.find(o => o.dataID === g.groupOperatorId)?.dataValue || 'AND'
+      const items = []
+      const conditionsToProcess = Array.isArray(g.conditions) ? g.conditions : [];
+      const subGroupsToProcess = Array.isArray(g.subGroups) ? g.subGroups : [];
+
+      // Collect conditions
+      conditionsToProcess.forEach((c, i) => {
+        const f = masterData.fieldTypes.find(x => x.dataID === c.fieldTypeId)?.dataValue || 'Field'
+        const o = masterData.operators.find(x => x.dataID === c.operatorId)?.dataValue || 'Op'
+        const str = `(${f} ${o} ${c.value || "''"})`
+        const joiner = masterData.groupOperators.find(op => op.dataID === c.conditionJoinOperatorId)?.dataValue || 'AND'
+        
+        items.push({ str, joiner })
       })
 
-      const subGroupStrings = (group.subGroups || []).map((sub) => processGroupExpr(sub))
+      // Collect subGroups
+      subGroupsToProcess.forEach(sub => {
+        const str = exprForGroup(sub)
+        if (str) {
+          items.push({ str, joiner: groupOpLabel })
+        }
+      })
 
-      const allItems = [...conditionStrings, ...subGroupStrings]
+      // If no items, return empty string
+      if (items.length === 0) return ''
 
-      if (allItems.length === 0) return '()'
-      if (allItems.length === 1) return `(${allItems[0]})`
+      // Build flat string using the joiners
+      let expr = ''
+      items.forEach((item, i) => {
+        expr += item.str
+        if (i < items.length - 1) {
+          expr += ` ${item.joiner} `
+        }
+      })
 
-      return `(${allItems.join(` ${groupOpLabel} `)})`
+      return `(${expr})`
     }
 
-    const generateExpression = () => {
-      if (!rule.groups || rule.groups.length === 0) return ''
-      return rule.groups.map((group) => processGroupExpr(group)).join(' AND ')
-    }
+    // Join top-level groups using their individual joiners
+    let finalExpr = ''
+    const groupsToProcess = rule.groups || []
+    groupsToProcess.forEach((g, i) => {
+      const groupStr = exprForGroup(g)
+      if (groupStr && groupStr !== '()') {
+        finalExpr += groupStr
+        if (i < groupsToProcess.length - 1) {
+          const joiner = masterData.groupOperators.find(o => o.dataID === g.groupJoinOperatorId)?.dataValue || 'AND'
+          finalExpr += ` ${joiner} `
+        }
+      }
+    })
 
-    setRule((prev) => ({...prev, expressionText: generateExpression()}))
+    setExpressionText(finalExpr)
+
   }, [rule.groups, masterData])
 
-  const handleRuleChange = (field, value) => {
-    setRule((prev) => ({...prev, [field]: value}))
-  }
+  /* Helpers */
 
-  const updateNestedGroup = (groups, key, callback) => {
-    return groups.map((g) => {
-      if (g.tempGroupKey === key) {
-        return callback(g)
-      }
-      if (g.subGroups && g.subGroups.length > 0) {
-        return {...g, subGroups: updateNestedGroup(g.subGroups, key, callback)}
-      }
-      return g
-    })
-  }
+  const updateTree = (groups, key, fn) =>
+    groups.map(g =>
+      g.tempGroupKey === key
+        ? fn(g)
+        : {
+            ...g,
+            subGroups: updateTree(
+              g.subGroups || [],
+              key,
+              fn,
+            ),
+          },
+    )
 
-  const handleGroupChange = (groupKey, field, value) => {
-    setRule((prev) => ({
-      ...prev,
-      groups: updateNestedGroup(prev.groups, groupKey, (g) => ({...g, [field]: value})),
+  const removeFromTree = (groups, key) =>
+    groups
+      .filter(g => g.tempGroupKey !== key)
+      .map(g => ({
+        ...g,
+        subGroups: removeFromTree(
+          g.subGroups || [],
+          key,
+        ),
+      }))
+
+  const setGroups = fn =>
+    setRule(p => ({
+      ...p,
+      groups: fn(p.groups),
     }))
-  }
 
-  const handleConditionChange = (groupKey, conditionIndex, field, value) => {
-    setRule((prev) => ({
-      ...prev,
-      groups: updateNestedGroup(prev.groups, groupKey, (g) => {
-        const newConds = [...g.conditions]
-        newConds[conditionIndex] = {...newConds[conditionIndex], [field]: value}
-        return {...g, conditions: newConds}
-      }),
-    }))
-  }
+  /* Actions */
 
-  const addGroup = () => {
-    const newKey = Date.now()
-    setRule((prev) => ({
-      ...prev,
-      groups: [
-        ...prev.groups,
-        {
-          tempGroupKey: newKey,
-          groupOperatorId: 0,
-          conditions: [{fieldTypeId: 0, operatorId: 0, value: '', order: 1, tempGroupKey: newKey}],
-          subGroups: [],
-        },
-      ],
-    }))
-  }
+  const addGroup = () =>
+    setGroups(gs => [...gs, EMPTY_GROUP()])
 
-  const addCondition = (groupKey) => {
-    setRule((prev) => ({
-      ...prev,
-      groups: updateNestedGroup(prev.groups, groupKey, (g) => ({
+  const removeGroup = key =>
+    setGroups(gs => removeFromTree(gs, key))
+
+  const setGroupOp = (key, v) =>
+    setGroups(gs =>
+      updateTree(gs, key, g => ({
+        ...g,
+        groupOperatorId: Number(v),
+      })),
+    )
+
+  const setGroupJoinOp = (key, v) =>
+    setGroups(gs =>
+      updateTree(gs, key, g => ({
+        ...g,
+        groupJoinOperatorId: Number(v),
+      })),
+    )
+
+  const addCondition = key =>
+    setGroups(gs =>
+      updateTree(gs, key, g => ({
         ...g,
         conditions: [
           ...g.conditions,
-          {
-            fieldTypeId: 0,
-            operatorId: 0,
-            value: '',
-            order: g.conditions.length + 1,
-            tempGroupKey: groupKey,
-          },
+          EMPTY_CONDITION(),
         ],
       })),
-    }))
-  }
+    )
 
-  const addSubGroup = (groupKey) => {
-    const newKey = Date.now()
-    setRule((prev) => ({
-      ...prev,
-      groups: updateNestedGroup(prev.groups, groupKey, (g) => ({
+  const addSubGroup = key =>
+    setGroups(gs =>
+      updateTree(gs, key, g => ({
         ...g,
         subGroups: [
-          ...g.subGroups,
-          {
-            tempGroupKey: newKey,
-            groupOperatorId: 0,
-            conditions: [
-              {fieldTypeId: 0, operatorId: 0, value: '', order: 1, tempGroupKey: newKey},
-            ],
-            subGroups: [],
-          },
+          ...(g.subGroups || []),
+          EMPTY_GROUP(),
         ],
       })),
-    }))
-  }
+    )
 
-  const removeGroup = (groupKey) => {
-    const filterGroups = (groups) => {
-      return groups
-        .filter((g) => g.tempGroupKey !== groupKey)
-        .map((g) => ({
-          ...g,
-          subGroups: g.subGroups ? filterGroups(g.subGroups) : [],
-        }))
-    }
-    setRule((prev) => ({
-      ...prev,
-      groups: filterGroups(prev.groups),
-    }))
-  }
-
-  const removeCondition = (groupKey, conditionIndex) => {
-    setRule((prev) => ({
-      ...prev,
-      groups: updateNestedGroup(prev.groups, groupKey, (g) => ({
+  const removeCondition = (key, idx) =>
+    setGroups(gs =>
+      updateTree(gs, key, g => ({
         ...g,
-        conditions: g.conditions.filter((_, idx) => idx !== conditionIndex),
+        conditions: g.conditions.filter(
+          (_, i) => i !== idx,
+        ),
       })),
-    }))
-  }
+    )
 
-  const handleSubmit = async (e) => {
+  const setCondField = (
+    key,
+    idx,
+    field,
+    val,
+  ) =>
+    setGroups(gs =>
+      updateTree(gs, key, g => {
+
+        const c = [...g.conditions]
+
+        c[idx] = {
+          ...c[idx],
+          [field]: val,
+        }
+
+        return {...g, conditions: c}
+      }),
+    )
+
+  /* Submit */
+
+  const mapGroup = g => ({
+    groupOperatorId: g.groupOperatorId,
+    groupJoinOperatorId: g.groupJoinOperatorId,
+
+    conditions: (g.conditions || []).map(c => ({
+      fieldTypeId: c.fieldTypeId,
+      operatorId: c.operatorId,
+      conditionJoinOperatorId: c.conditionJoinOperatorId, // Include the new operator
+      value: c.value,
+      order: c.order,
+    })),
+
+    subGroups: (g.subGroups || []).map(s =>
+      mapGroup(s),
+    ),
+  })
+
+  const handleSubmit = async e => {
+
     e.preventDefault()
-    try {
-      const mapGroup = (group) => ({
-        groupOperatorId: group.groupOperatorId,
-        conditions: (group.conditions || []).map((cond) => ({
-          fieldTypeId: cond.fieldTypeId,
-          operatorId: cond.operatorId,
-          value: cond.value,
-          order: cond.order,
-        })),
-        subGroups: (group.subGroups || []).map((sub) => mapGroup(sub)),
-      })
 
-      // Map the state to the specific payload structure requested
-      const payload = {
+    // Validate mandatory fields
+    if (!rule.ruleName) {
+      notifyFail('Rule Name is mandatory.')
+      return
+    }
+    if (!rule.ruleCode) {
+      notifyFail('Rule Code is mandatory.')
+      return
+    }
+    if (rule.priority === 0) {
+      notifyFail('Priority is mandatory.')
+      return
+    }
+    if (rule.severityId === 0) {
+      notifyFail('Severity is mandatory.')
+      return
+    }
+    if (rule.scenarioId === 0) {
+      notifyFail('Scenario is mandatory.')
+      return
+    }
+
+    // Validate Condition Groups
+    if (!rule.groups || rule.groups.length === 0) {
+      notifyFail('At least one Condition Group is mandatory.')
+      return
+    }
+
+    // Validate Group Joiner for multiple groups
+    const hasInvalidJoiner = rule.groups.some((g, i) => 
+      i < rule.groups.length - 1 && g.groupJoinOperatorId === 0
+    )
+
+    if (rule.groups.length > 1 && hasInvalidJoiner) {
+      notifyFail('Please select a Groups Joiner operator.')
+      return
+    }
+
+    try {
+
+      const res = await fetchRulesAddUrl({
         ruleName: rule.ruleName,
         ruleCode: rule.ruleCode,
         priority: rule.priority,
         severityId: rule.severityId,
         scenarioId: rule.scenarioId,
-        groups: rule.groups.map((group) => mapGroup(group)),
-        expressionText: rule.expressionText,
-        orgId: rule.orgId,
-        toolId: rule.toolId,
-        userId: rule.userId,
+        groups: rule.groups.map(mapGroup),
+        expressionText,
+        orgId,
+        toolId,
+        userId,
         createdDate: rule.createdDate,
-      }
-      const response = await fetchRulesAddUrl(payload)
-      if (response.isSuccess) {
-        notify(response.message || 'Rule added successfully')
+      })
+
+      if (res.isSuccess) {
+
+        notify(res.message || 'Rule added')
+
         navigate('/qradar/rules-engine/list')
+
       } else {
-        notifyFail(response.message || 'Failed to add rule')
+        notifyFail(res.message || 'Failed')
       }
-    } catch (error) {
-      console.error('Error adding rule:', error)
-      notifyFail('An unexpected error occurred')
+
+    } catch {
+      notifyFail('Unexpected error')
     }
   }
 
-  const renderGroup = (group, isSubGroup = false) => (
-    <div
-      key={group.tempGroupKey}
-      className={`card mb-3 border-light shadow-none ${
-        isSubGroup ? 'ms-5 border-start border-primary' : 'bg-light'
-      }`}
-    >
-      <div className='card-body p-0 px-5 py-2'>
-        <div className='row mb-3 align-items-center'>
-          <div className='col-md-4'>
-            <div className='d-flex align-items-center gap-2'>
-              <button
-                type='button'
-                className='btn btn-sm btn-icon btn-light-danger me-2'
-                onClick={() => removeGroup(group.tempGroupKey)}
-                title='Remove Group'
-              >
-                <i className='fa fa-trash'></i>
-              </button>
-              <label className='form-label fw-bold small mb-0 text-nowrap'>Operator:</label>
-              <select
-                className='form-select form-select-sm'
-                value={group.groupOperatorId}
-                onChange={(e) =>
-                  handleGroupChange(group.tempGroupKey, 'groupOperatorId', Number(e.target.value))
-                }
-                disabled={group.conditions.length + (group.subGroups?.length || 0) < 2}
-              >
-                <option value={0}>Select</option>
-                {masterData.groupOperators.map((item) => (
-                  <option key={item.dataID} value={item.dataID}>
-                    {item.dataValue}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className='col text-end'>
-            <button
-              type='button'
-              className='btn btn-sm btn-outline-info'
-              onClick={() => addCondition(group.tempGroupKey)}
-            >
-              Add Condition
-            </button>
-            <button
-              type='button'
-              className='btn btn-sm btn-outline-secondary ms-2'
-              onClick={() => addSubGroup(group.tempGroupKey)}
-            >
-              Add Sub Group
-            </button>
-          </div>
-        </div>
-
-        {group.conditions.map((cond, cIdx) => (
-          <div key={cIdx} className='row g-2 mb-2 align-items-center'>
-            <div className='col-md-1'>
-              <button
-                type='button'
-                className='btn btn-sm btn-icon btn-light-danger'
-                onClick={() => removeCondition(group.tempGroupKey, cIdx)}
-                title='Remove Condition'
-              >
-                <i className='fa fa-trash'></i>
-              </button>
-            </div>
-            <div className='col-md-3'>
-              <select
-                className='form-select form-select-sm'
-                value={cond.fieldTypeId}
-                onChange={(e) =>
-                  handleConditionChange(
-                    group.tempGroupKey,
-                    cIdx,
-                    'fieldTypeId',
-                    Number(e.target.value)
-                  )
-                }
-              >
-                <option value={0}>Field Type</option>
-                {masterData.fieldTypes.map((item) => (
-                  <option key={item.dataID} value={item.dataID}>
-                    {item.dataValue}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className='col-md-3'>
-              <select
-                className='form-select form-select-sm'
-                value={cond.operatorId}
-                onChange={(e) =>
-                  handleConditionChange(
-                    group.tempGroupKey,
-                    cIdx,
-                    'operatorId',
-                    Number(e.target.value)
-                  )
-                }
-              >
-                <option value={0}>Operator</option>
-                {masterData.operators.map((item) => (
-                  <option key={item.dataID} value={item.dataID}>
-                    {item.dataValue}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className='col-md-5'>
-              <input
-                className='form-control form-control-sm'
-                type='text'
-                style={{height: 0}}
-                placeholder='Value'
-                value={cond.value}
-                onChange={(e) =>
-                  handleConditionChange(group.tempGroupKey, cIdx, 'value', e.target.value)
-                }
-              />
-            </div>
-          </div>
-        ))}
-        {group.subGroups && group.subGroups.length > 0 && (
-          <div className='mt-3'>{group.subGroups.map((sub) => renderGroup(sub, true))}</div>
-        )}
-      </div>
-    </div>
-  )
-
   return (
     <div className='config card'>
+
       <ToastContainer />
+
       <div className='card-header bg-heading'>
-        <h3 className='card-title align-items-start flex-column'>
-          <span className='white'>Add New Rule</span>
+
+        <h3 className='card-title'>
+          <span className='white'>
+            Add New Rule
+          </span>
         </h3>
+
         <div className='card-toolbar'>
-          <div className='d-flex align-items-center gap-2 gap-lg-3'>
-            <Link to='/qradar/rules-engine/list' className='white fs-15 text-underline'>
-              <i className='fa fa-chevron-left white mg-right-5' />
-              Back
-            </Link>
-          </div>
+
+          <Link
+            to='/qradar/rules-engine/list'
+            className='white fs-15 text-underline'
+          >
+            <i className='fa fa-chevron-left white mg-right-5' />
+            Back
+          </Link>
         </div>
       </div>
+
       <form onSubmit={handleSubmit}>
+
+        {/* Rule Details */}
         <div className='card mb-4'>
           <div className='card-body px-5 py-2'>
             <div className='row g-3'>
               <div className='col-md-4'>
                 <div className='mb-3'>
-                  <label className='form-label fw-bold small'>Rule Name</label>
+                  <label className='form-label fw-bold small'>Rule Name <span className='text-danger'>*</span></label>
                   <input
                     className='form-control form-control-sm'
                     type='text'
-                    style={{height: 0}}
+                    // Removed style={{height: 0}} as it makes the input invisible
                     value={rule.ruleName}
                     onChange={(e) => handleRuleChange('ruleName', e.target.value)}
                   />
@@ -425,11 +722,11 @@ function AddRule() {
               </div>
               <div className='col-md-4'>
                 <div className='mb-3'>
-                  <label className='form-label fw-bold small'>Rule Code</label>
+                  <label className='form-label fw-bold small'>Rule Code <span className='text-danger'>*</span></label>
                   <input
                     className='form-control form-control-sm'
                     type='text'
-                    style={{height: 0}}
+                    // Removed style={{height: 0}} as it makes the input invisible
                     value={rule.ruleCode}
                     onChange={(e) => handleRuleChange('ruleCode', e.target.value)}
                   />
@@ -437,7 +734,7 @@ function AddRule() {
               </div>
               <div className='col-md-4'>
                 <div className='mb-3'>
-                  <label className='form-label fw-bold small'>Priority</label>
+                  <label className='form-label fw-bold small'>Priority <span className='text-danger'>*</span></label>
                   <select
                     className='form-select form-select-sm'
                     value={rule.priority}
@@ -457,7 +754,7 @@ function AddRule() {
             <div className='row g-3'>
               <div className='col-md-6'>
                 <div className='mb-3'>
-                  <label className='form-label fw-bold small'>Severity</label>
+                  <label className='form-label fw-bold small'>Severity <span className='text-danger'>*</span></label>
                   <select
                     className='form-select form-select-sm'
                     value={rule.severityId}
@@ -474,7 +771,7 @@ function AddRule() {
               </div>
               <div className='col-md-6'>
                 <div className='mb-3'>
-                  <label className='form-label fw-bold small'>Scenario</label>
+                  <label className='form-label fw-bold small'>Scenario <span className='text-danger'>*</span></label>
                   <select
                     className='form-select form-select-sm'
                     value={rule.scenarioId}
@@ -493,33 +790,70 @@ function AddRule() {
           </div>
         </div>
 
-        <div className='card-body px-5 py-2'>
-          <div className='d-flex justify-content-between align-items-center mb-2'>
-            <h5 className='mb-0'>Condition Groups</h5>
-            <button type='button' className='btn btn-sm btn-primary' onClick={addGroup}>
-              Add Group
-            </button>
-          </div>
-          {rule.groups.map((group) => renderGroup(group))}
-        </div>
 
-        <div className='card mb-4'>
-          <div className='card-body px-5 py-2'>
-            <div className='mb-3'>
-              <label className='form-label fw-bold small'>Expression Text</label>
-              <textarea
-                className='form-control form-control-sm'
-                rows='2'
-                style={{height: '200px'}}
-                value={rule.expressionText}
-                onChange={(e) => handleRuleChange('expressionText', e.target.value)}
-              />
+        {/* Groups */}
+
+        <div className='card mb-3'>
+          <div className='card-body px-4 py-3'>
+            <div className='d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3'>
+              <div className='d-flex align-items-center gap-3'>
+                <h5 className='mb-0'>Condition Groups</h5>
+                <span className='text-danger'>*</span>
+              </div>
+              <button
+                type='button'
+                className='btn btn-sm btn-primary'
+                disabled={rule.groups.length > 0 && rule.groups[rule.groups.length - 1].groupJoinOperatorId === 0}
+                onClick={addGroup}
+              >
+                <i className='fa fa-plus me-2' />
+                Add Group
+              </button>
             </div>
+
+            {rule.groups.map((group, gIdx) => (
+              <RenderGroup
+                key={group.tempGroupKey}
+                group={group}
+                gIdx={gIdx}
+                masterData={masterData}
+                rule={rule}
+                addCondition={addCondition}
+                setGroupJoinOp={setGroupJoinOp}
+                addSubGroup={addSubGroup}
+                removeGroup={removeGroup}
+                setCondField={setCondField}
+                removeCondition={removeCondition}
+              />
+            ))}
           </div>
         </div>
 
-        <div className='text-end mt-2 me-5 mb-5 '>
-          <button className='btn btn-primary' type='submit'>
+        {/* Expression */}
+
+        <div className='card mb-3'>
+
+          <div className='card-body px-5 py-3'>
+
+            <label className='form-label fw-bold small'>
+              Expression Text
+            </label>
+
+            <textarea
+              className='form-control form-control-sm'
+              style={{height: '200px'}}
+              value={expressionText}
+              readOnly
+            />
+          </div>
+        </div>
+
+        <div className='text-end mt-2 me-5 mb-5'>
+
+          <button
+            className='btn btn-primary'
+            type='submit'
+          >
             Save Rule
           </button>
         </div>

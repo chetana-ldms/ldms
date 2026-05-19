@@ -6,6 +6,7 @@ import {notify, notifyFail} from '../components/notification/Notification'
 import {fetchRuleActionDetails, fetchRuleActionUpdateUrl} from '../../../../../api/ConfigurationApi'
 import {fetchLDPTools, fetchMasterData} from '../../../../../api/Api'
 import {useErrorBoundary} from 'react-error-boundary'
+import RuleActionConfigurationModal from './RuleActionConfigurationModal'; // Import the new component
 
 const UpdateRuleAction = () => {
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -15,7 +16,6 @@ const UpdateRuleAction = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
 
-  const [tools, setTools] = useState([])
   const [masterData, setMasterData] = useState({
     actionTypes: [],
     executorTypes: [],
@@ -31,6 +31,9 @@ const UpdateRuleAction = () => {
     configuration: '',
     parameters: [],
   })
+
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+
   const location = useLocation()
   const [save, setSave] = useState(location.state?.save || '')
   useEffect(() => {
@@ -70,13 +73,11 @@ const UpdateRuleAction = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [toolsData, actionTypes, executorTypes, dataTypes] = await Promise.all([
-          fetchLDPTools(),
+        const [actionTypes, executorTypes, dataTypes] = await Promise.all([
           fetchMasterData({maserDataType: 'action_type', orgId, toolId: toolIds}),
           fetchMasterData({maserDataType: 'executor_type', orgId, toolId: toolIds}),
           fetchMasterData({maserDataType: 'parameter_type', orgId, toolId: toolIds}),
         ])
-        setTools(toolsData || [])
         setMasterData({
           actionTypes: actionTypes || [],
           executorTypes: executorTypes || [],
@@ -127,10 +128,20 @@ const UpdateRuleAction = () => {
     setRuleAction((prev) => ({...prev, parameters: newParams}))
   }
 
+  const handleSaveConfig = (newConfig) => {
+    handleRuleChange('configuration', newConfig);
+    setIsConfigModalOpen(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!ruleAction.actionName || !ruleAction.actionCode) {
-      notifyFail('Please enter Action Name and Code')
+    if (
+      !ruleAction.actionName ||
+      !ruleAction.actionCode ||
+      Number(ruleAction.actionTypeId) === 0 ||
+      Number(ruleAction.executorTypeId) === 0
+    ) {
+      notifyFail('Please fill all mandatory fields: Name, Code, Type, and Executor')
       return
     }
 
@@ -140,7 +151,7 @@ const UpdateRuleAction = () => {
       actionName: ruleAction.actionName,
       actionCode: ruleAction.actionCode,
       executorTypeId: Number(ruleAction.executorTypeId),
-      toolId: Number(ruleAction.toolId),
+      toolId: 0,
       userId: Number(sessionStorage.getItem('userId')),
       // configuration: ruleAction.configuration,
       parameters: ruleAction.parameters.map((param) => ({
@@ -199,7 +210,7 @@ const UpdateRuleAction = () => {
         <div className='card-body pad-10'>
           <div className='row mb-8'>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Action Name</label>
+              <label className='form-label fw-bold small'>Action Name <span className='text-danger'>*</span></label>
               <input
                 type='text'
                 className='form-control form-control-sm'
@@ -209,7 +220,7 @@ const UpdateRuleAction = () => {
               />
             </div>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Action Code</label>
+              <label className='form-label fw-bold small'>Action Code <span className='text-danger'>*</span></label>
               <input
                 type='text'
                 className='form-control form-control-sm'
@@ -219,7 +230,7 @@ const UpdateRuleAction = () => {
               />
             </div>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Action Type</label>
+              <label className='form-label fw-bold small'>Action Type <span className='text-danger'>*</span></label>
               <select
                 className='form-select form-select-sm'
                 value={ruleAction.actionTypeId}
@@ -234,7 +245,7 @@ const UpdateRuleAction = () => {
               </select>
             </div>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Executor Type</label>
+              <label className='form-label fw-bold small'>Executor Type <span className='text-danger'>*</span></label>
               <select
                 className='form-select form-select-sm'
                 value={ruleAction.executorTypeId}
@@ -248,31 +259,36 @@ const UpdateRuleAction = () => {
                 ))}
               </select>
             </div>
-            <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Tool</label>
-              <select
-                className='form-select form-select-sm'
-                value={ruleAction.toolId}
-                onChange={(e) => handleRuleChange('toolId', e.target.value)}
-              >
-                <option value={0}>Select Tool</option>
-                {tools.map((item) => (
-                  <option key={item.toolId} value={item.toolId}>
-                    {item.toolName}
-                  </option>
-                ))}
-              </select>
-            </div>
             <div className='col-md-12 mb-2'>
               <label className='form-label fw-bold small'>Configuration (JSON string)</label>
-              <textarea
-                className='form-control form-control-sm'
-                rows='3'
-                style={{height: 100}}
-                value={ruleAction.configuration}
-                onChange={(e) => handleRuleChange('configuration', e.target.value)}
-                placeholder='{"key": "value"}'
-              />
+              <div className="input-group">
+                <textarea
+                  className='form-control form-control-sm'
+                  rows='3'
+                  style={{height: 100}}
+                  value={ruleAction.configuration}
+                  onChange={(e) => handleRuleChange('configuration', e.target.value)}
+                  placeholder='{"key": "value"}'
+                />
+                <div className="input-group-append d-flex flex-column gap-1 ms-2">
+                   <button 
+                    type="button" 
+                    className="btn btn-sm btn-icon btn-light-primary" 
+                    onClick={() => setIsConfigModalOpen(true)}
+                    title="Add/Edit Configuration"
+                   >
+                     <i className="fa fa-plus" />
+                   </button>
+                   <button 
+                    type="button" 
+                    className="btn btn-sm btn-icon btn-light-danger" 
+                    onClick={() => handleRuleChange('configuration', '')}
+                    title="Remove Configuration"
+                   >
+                     <i className="fa fa-trash" />
+                   </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -406,10 +422,17 @@ const UpdateRuleAction = () => {
             disabled={loading}
             style={{display: loading || save ? 'none' : 'inline-block'}}
           >
-            {!loading ? 'Save Rule Action' : 'Please wait...'}
+            {!loading ? 'Save' : 'Please wait...'}
           </button>
         </div>
       </form>
+
+      <RuleActionConfigurationModal
+        show={isConfigModalOpen}
+        onClose={() => setIsConfigModalOpen(false)}
+        currentConfiguration={ruleAction.configuration}
+        onSave={handleSaveConfig}
+      />
     </div>
   )
 }
