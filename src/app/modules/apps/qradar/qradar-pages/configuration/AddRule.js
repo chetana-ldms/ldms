@@ -630,20 +630,69 @@ function AddRule() {
       return
     }
 
-    // Validate Condition Groups
+    // Validate Condition Groups (at least one group must exist)
     if (!rule.groups || rule.groups.length === 0) {
       notifyFail('At least one Condition Group is mandatory.')
       return
     }
 
-    // Validate Group Joiner for multiple groups
-    const hasInvalidJoiner = rule.groups.some((g, i) => 
-      i < rule.groups.length - 1 && g.groupJoinOperatorId === 0
-    )
+    // Recursive validation for groups and conditions
+    const validateGroupContent = (groups, isTopLevel = false) => {
+      if (!groups || groups.length === 0) {
+        return true; // An empty sub-group list is valid if no conditions are expected.
+      }
 
-    if (rule.groups.length > 1 && hasInvalidJoiner) {
-      notifyFail('Please select a Groups Joiner operator.')
-      return
+      for (let i = 0; i < groups.length; i++) {
+        const group = groups[i];
+        // Use tempGroupKey for more specific identification in nested groups
+        const groupLabel = isTopLevel ? `Group ${i + 1}` : `Sub Group (Key: ${group.tempGroupKey.substring(0, 5)}...)`;
+
+        // Check if group has any content (conditions or sub-groups)
+        if ((!group.conditions || group.conditions.length === 0) && (!group.subGroups || group.subGroups.length === 0)) {
+          notifyFail(`'${groupLabel}' must contain at least one condition or sub-group.`);
+          return false;
+        }
+
+        // Validate conditions within the current group
+        for (let j = 0; j < group.conditions.length; j++) {
+          const cond = group.conditions[j];
+          if (Number(cond.fieldTypeId) === 0) {
+            notifyFail(`Please select a 'Field Name' for a condition in '${groupLabel}'.`);
+            return false;
+          }
+          if (Number(cond.operatorId) === 0) {
+            notifyFail(`Please select an 'Operator' for a condition in '${groupLabel}'.`);
+            return false;
+          }
+          if (!cond.value || String(cond.value).trim() === '') { // Ensure value is not just whitespace
+            notifyFail(`Please enter a 'Value' for a condition in '${groupLabel}'.`);
+            return false;
+          }
+          // Validate condition logical operator if it's not the last condition in its list
+          if (j < group.conditions.length - 1 && Number(cond.conditionJoinOperatorId) === 0) {
+            notifyFail(`Please select a 'Logical Operator' for all conditions in '${groupLabel}'.`);
+            return false;
+          }
+        }
+
+        // Validate sub-groups recursively
+        if (group.subGroups && group.subGroups.length > 0) {
+          if (!validateGroupContent(group.subGroups, false)) { // Pass false for isTopLevel
+            return false; // Propagate failure from sub-group
+          }
+        }
+
+        // Validate group logical operator if it's not the last group in its level
+        if (i < groups.length - 1 && Number(group.groupJoinOperatorId) === 0) {
+          notifyFail(`Please select a 'Logical Operator' to join '${groupLabel}' with the next group.`);
+          return false;
+        }
+      }
+      return true;
+    };
+
+    if (!validateGroupContent(rule.groups, true)) { // Start validation from top-level groups
+      return; // Validation failed, stop submission
     }
 
     try {
