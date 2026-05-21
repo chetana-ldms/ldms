@@ -7,6 +7,7 @@ import {fetchMasterData} from '../../../../../api/Api'
 import {fetchRules, fetchRuleActions} from '../../../../../api/ConfigurationApi'
 import {useErrorBoundary} from 'react-error-boundary'
 import {fetchResolverSearchUrl, fetchResolverUpdateUrl} from '../../../../../api/PlayBookConfigurationApi'
+import { ToastContainer } from 'react-toastify'
 
 const UpdateResolver = () => {
   const {id} = useParams()
@@ -309,6 +310,7 @@ const UpdateResolver = () => {
 
   return (
     <div className='config card'>
+      <ToastContainer />
       {loading && <UsersListLoading />}
       <div className='card-header bg-heading'>
         <h3 className='card-title'>

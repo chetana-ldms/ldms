@@ -7,6 +7,7 @@ import {fetchMasterData} from '../../../../../api/Api'
 import {fetchRules, fetchRuleActions} from '../../../../../api/ConfigurationApi'
 import {useErrorBoundary} from 'react-error-boundary'
 import {fetchResolverAddUrl} from '../../../../../api/PlayBookConfigurationApi'
+import { ToastContainer } from 'react-toastify'
 
 const AddResolver = () => {
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -261,6 +262,7 @@ const AddResolver = () => {
 
   return (
     <div className='config card'>
+       <ToastContainer />
       {loading && <UsersListLoading />}
       <div className='card-header bg-heading'>
         <h3 className='card-title'>

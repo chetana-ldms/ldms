@@ -104,6 +104,15 @@ const AddRuleAction = () => {
       return;
     }
 
+    if (ruleAction.parameters.length === 0) {
+      notifyFail("Please add at least one Parameter.");
+      return;
+    }
+    if (ruleAction.parameters.some((p) => !p.parameterCode || !p.parameterName || Number(p.dataTypeId) === 0)) {
+      notifyFail("Please ensure all fields (Code, Name, and Data Type) for added parameters are filled.");
+      return;
+    }
+
     setLoading(true);
     const payload = {
       actionId: 0,
@@ -254,7 +263,7 @@ const AddRuleAction = () => {
 
           <div className='border-top pt-5'>
             <div className='d-flex justify-content-between align-items-center mb-2'>
-              <h5 className='mb-0'>Parameters</h5>
+              <h5 className='mb-0'>Parameters <span className='text-danger'>*</span></h5>
               <button type='button' className='btn btn-sm btn-primary' onClick={addParameter}>
                 <i className='fa fa-plus me-2'></i> Add Parameter
               </button>
