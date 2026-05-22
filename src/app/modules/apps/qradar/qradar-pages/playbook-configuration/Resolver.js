@@ -10,7 +10,11 @@ import {useErrorBoundary} from 'react-error-boundary'
 import Pagination from '../../../../../../utils/Pagination'
 import DeleteConfirmation2 from '../risk-upgrade/DeleteConfirmation2'
 import useFeatureActions from '../configuration/useFeatureActions'
-import {fetchResolverDeleteUrl, fetchResolverSearchUrl} from '../../../../../api/PlayBookConfigurationApi'
+import MitreMappingModal from './MitreMappingModal'
+import {
+  fetchResolverDeleteUrl,
+  fetchResolverSearchUrl,
+} from '../../../../../api/PlayBookConfigurationApi'
 
 const Resolver = () => {
   const navigate = useNavigate()
@@ -28,6 +32,8 @@ const Resolver = () => {
   const [searchValue, setSearchValue] = useState('')
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
   const [itemToDelete, setItemToDelete] = useState(null)
+  const [showMitreModal, setShowMitreModal] = useState(false)
+  const [selectedItem, setSelectedItem] = useState(null)
   const [dropdownData, setDropdownData] = useState({
     severityDropDown: [],
     categoryDropDown: [], // Renamed from scenarioDropDown
@@ -253,6 +259,16 @@ const Resolver = () => {
                   <td>{item.strategyTypeName}</td>
                   <td>{item.enabled === 1 ? 'Enabled' : 'Disabled'}</td>
                   <td>
+                    <span
+                      className='me-8'
+                      title='MITRE Mapping'
+                      onClick={() => {
+                        setSelectedItem(item)
+                        setShowMitreModal(true)
+                      }}
+                    >
+                      <i className='fa fa-sitemap cursor' />
+                    </span>
                     {isActionAuthorized('View') ? (
                       <span className='me-8' title='View'>
                         <i
@@ -329,6 +345,15 @@ const Resolver = () => {
           onCancel={() => {
             setShowDeleteConfirmation(false)
             setItemToDelete(null)
+          }}
+        />
+
+        <MitreMappingModal
+          show={showMitreModal}
+          item={selectedItem}
+          onClose={() => {
+            setShowMitreModal(false)
+            setSelectedItem(null)
           }}
         />
       </div>

@@ -150,7 +150,7 @@ const RenderGroup = memo(({
         <thead>
           <tr>
             <th style={{...hs, width: '40%'}}>Field Name</th>
-            <th style={{...hs, width: '20%'}}>Op</th>
+            <th style={{...hs, width: '20%'}}>Operator</th>
             <th style={{...hs, width: '30%'}}>Value</th>
             <th style={{...hs, width: '15%'}}>Logical Operator <span className='text-danger'>*</span></th>
             <th style={{...hs, width: '10%'}}>Action</th>
@@ -367,7 +367,7 @@ function AddRule() {
           }),
 
           fetchMasterData({
-            maserDataType: 'rule_group_operator',
+            maserDataType: 'condition_operator',
             orgId,
             toolId,
           }),
