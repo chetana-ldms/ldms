@@ -1,6 +1,7 @@
 import React, {useState, useEffect, memo} from 'react'
 import {fetchMasterData} from '../../../../../api/Api'
 import {fetchRulesUpdateUrl, fetchRuleDetails} from '../../../../../api/ConfigurationApi'
+import {fetchGlobalStandardFieldsUrl} from '../../../../../api/PlayBookConfigurationApi'
 import {uid} from './AddRule' // Assuming uid is available or defined here
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
@@ -305,9 +306,9 @@ function UpdateRule() {
     const loadMasterData = async () => {
       try {
         const [ops, gOps, fTypes, sevs, scens, prio] = await Promise.all([
-          fetchMasterData({maserDataType: 'rule_operator', orgId, toolId}),
-          fetchMasterData({maserDataType: 'rule_group_operator', orgId, toolId}),
-          fetchMasterData({maserDataType: 'rule_field_type', orgId, toolId}),
+          fetchMasterData({maserDataType: 'condition_operator', orgId, toolId}),
+          fetchMasterData({maserDataType: 'logical_operator', orgId, toolId}),
+          fetchGlobalStandardFieldsUrl(),
           fetchMasterData({maserDataType: 'rule_severity', orgId, toolId}),
           fetchMasterData({maserDataType: 'rule_scenario', orgId, toolId}),
           fetchMasterData({maserDataType: 'rule_priority', orgId, toolId}),
@@ -315,7 +316,7 @@ function UpdateRule() {
         setMasterData({
           operators: ops || [],
           groupOperators: gOps || [],
-          fieldTypes: fTypes || [],
+          fieldTypes: fTypes?.data?.map((i) => ({dataID: i.fieldId, dataValue: i.displayName})) || [],
           severities: sevs || [],
           scenarios: scens || [],
           priorities: prio || [],

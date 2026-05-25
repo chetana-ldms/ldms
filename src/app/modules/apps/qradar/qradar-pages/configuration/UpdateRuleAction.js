@@ -80,7 +80,7 @@ const UpdateRuleAction = () => {
         const [actionTypes, executorTypes, dataTypes] = await Promise.all([
           fetchMasterData({maserDataType: 'action_type', orgId, toolId: toolIds}),
           fetchMasterData({maserDataType: 'executor_type', orgId, toolId: toolIds}),
-          fetchMasterData({maserDataType: 'parameter_type', orgId, toolId: toolIds}),
+          fetchMasterData({maserDataType: 'global_data_type', orgId, toolId: toolIds}),
         ])
         setMasterData({
           actionTypes: actionTypes || [],

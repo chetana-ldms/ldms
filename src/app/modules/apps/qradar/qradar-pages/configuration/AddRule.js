@@ -1,6 +1,7 @@
 import React, {useState, useEffect, memo} from 'react'
 import {fetchMasterData} from '../../../../../api/Api'
 import {fetchRulesAddUrl} from '../../../../../api/ConfigurationApi'
+import {fetchGlobalStandardFieldsUrl} from '../../../../../api/PlayBookConfigurationApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import {Link, useNavigate} from 'react-router-dom'
@@ -361,22 +362,18 @@ function AddRule() {
           prio,
         ] = await Promise.all([
           fetchMasterData({
-            maserDataType: 'rule_operator',
-            orgId,
-            toolId,
-          }),
-
-          fetchMasterData({
             maserDataType: 'condition_operator',
             orgId,
             toolId,
           }),
 
           fetchMasterData({
-            maserDataType: 'rule_field_type',
+            maserDataType: 'logical_operator',
             orgId,
             toolId,
           }),
+
+          fetchGlobalStandardFieldsUrl(),
 
           fetchMasterData({
             maserDataType: 'rule_severity',
@@ -400,7 +397,7 @@ function AddRule() {
         setMasterData({
           operators: ops || [],
           groupOperators: gOps || [],
-          fieldTypes: fTypes || [],
+          fieldTypes: fTypes?.data?.map((i) => ({dataID: i.fieldId, dataValue: i.displayName})) || [],
           severities: sevs || [],
           scenarios: scens || [],
           priorities: prio || [],
