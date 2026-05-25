@@ -55,6 +55,7 @@ const AllUsersUrl = API.ALL_USERS
 const IncidentClientsUrl = API.INCIDENT_CLIENTS
 const ManageSignatureUrl = API.USER_MANAGE_SIGNATURE
 const SignatureUrl = API.USER_SIGNATURE
+const SecuritySenariosUrl =API.SECURITY_SENIOS
 
 export const fetchLDPToolsByToolType = async (data) => {
   try {
@@ -1029,6 +1030,20 @@ export const fetchManageSignatureUrl = async (data) => {
 export const fetchSignatureUrl = async (id) => {
   try {
     const response = await FetchWithToken(`${SignatureUrl}?userId=${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchSecuritySenariosUrl = async () => {
+  try {
+    const response = await FetchWithToken(`${SecuritySenariosUrl}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

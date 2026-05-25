@@ -331,4 +331,5 @@ INCIDENT_NOTES_BY_CONVERSATION: `${base}/IncidentManagement/${v}/Notes/Incidentt
   RISK_ELIGIBLE_FOR_WAIVER_REQUEST: `${base}/RiskManagement/${v}/Risks/EligibleForWaiverRequest`,
   RISK_WAIVER_REVOKE: `${base}/RiskManagement/${v}/RiskWaiver/Revoke`,
   RISK_WAIVER_REQUEST_UPDATE: `${base}/RiskManagement/${v}/WaiverRequest/Update`,
+  SECURITY_SENIOS: `${base}/LDPlattform/${v}/SecuritySenarios`,
 }
