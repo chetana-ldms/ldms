@@ -136,6 +136,9 @@ import { Resolver } from './qradar-pages/playbook-configuration/Resolver'
 import AddResolver from './qradar-pages/playbook-configuration/AddResolver'
 import UpdateResolver from './qradar-pages/playbook-configuration/UpdateResolver'
 import { Senarios } from './qradar-pages/configuration/Senarios'
+import AddAlertFields from './qradar-pages/alert-fields/AddAlertFields'
+import AlertFields from './qradar-pages/alert-fields/AlertFields'
+import UpdateAlertFields from './qradar-pages/alert-fields/UpdateAlertFields'
 
 
 const QradarPages = () => {
@@ -277,6 +280,9 @@ const QradarPages = () => {
       <Route path='resolver/add' element={<AddResolver />} />
       <Route path='/resolver/update/:id' element={<UpdateResolver />} />
       <Route path='senarios/:status' element={<Senarios />} />
+       <Route path='alert-fields/:status' element={<AlertFields/>} />
+      <Route path='alert-fields/add' element={<AddAlertFields />} />
+      <Route path='/alert-fields/update/:id' element={<UpdateAlertFields />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )
