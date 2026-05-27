@@ -82,7 +82,10 @@ function AddAlertFields() {
       !formData.fieldCode ||
       !formData.fieldName ||
       !formData.displayName ||
-      formData.toolId === 0
+      formData.fieldCategoryId === 0 ||
+      formData.fieldSourceTypeId === 0 ||
+      formData.dataTypeId === 0 ||
+      (dropdowns.sourceTypes.find(i => i.dataID === formData.fieldSourceTypeId)?.dataValue === 'Raw' && formData.toolId === 0)
     ) {
       notifyFail('Please fill all mandatory fields: Name, Code, Display Name, and Tool.')
       return
@@ -166,7 +169,9 @@ function AddAlertFields() {
 
           <div className='row g-3 mb-4'>
             <div className='col-md-4'>
-              <label className='form-label fw-bold small'>Field Category</label>
+              <label className='form-label fw-bold small'>
+                Field Category <span className='text-danger'>*</span>
+              </label>
               <select
                 className='form-select form-select-sm'
                 name='fieldCategoryId'
@@ -182,7 +187,9 @@ function AddAlertFields() {
               </select>
             </div>
             <div className='col-md-4'>
-              <label className='form-label fw-bold small'>Field Source Type</label>
+              <label className='form-label fw-bold small'>
+                Field Source Type <span className='text-danger'>*</span>
+              </label>
               <select
                 className='form-select form-select-sm'
                 name='fieldSourceTypeId'
@@ -198,7 +205,9 @@ function AddAlertFields() {
               </select>
             </div>
             <div className='col-md-4'>
-              <label className='form-label fw-bold small'>Data Type</label>
+              <label className='form-label fw-bold small'>
+                Data Type <span className='text-danger'>*</span>
+              </label>
               <select
                 className='form-select form-select-sm'
                 name='dataTypeId'
@@ -216,24 +225,27 @@ function AddAlertFields() {
           </div>
 
           <div className='row g-3 mb-4'>
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Tool <span className='text-danger'>*</span>
-              </label>
-              <select
-                className='form-select form-select-sm'
-                name='toolId'
-                value={formData.toolId}
-                onChange={handleSelectChange}
-              >
-                <option value={0}>Select Tool</option>
-                {dropdowns.tools.map((item) => (
-                  <option key={item.toolId} value={item.toolId}>
-                    {item.toolName}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {dropdowns.sourceTypes.find((i) => i.dataID === formData.fieldSourceTypeId)?.dataValue ===
+              'Raw' && (
+              <div className='col-md-4'>
+                <label className='form-label fw-bold small'>
+                  Tool <span className='text-danger'>*</span>
+                </label>
+                <select
+                  className='form-select form-select-sm'
+                  name='toolId'
+                  value={formData.toolId}
+                  onChange={handleSelectChange}
+                >
+                  <option value={0}>Select Tool</option>
+                  {dropdowns.tools.map((item) => (
+                    <option key={item.toolId} value={item.toolId}>
+                      {item.toolName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className='col-md-8'>
               <label className='form-label fw-bold small'>JSON Path</label>
               <input
