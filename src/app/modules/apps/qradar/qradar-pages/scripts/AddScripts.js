@@ -183,97 +183,152 @@ const AddScripts = () => {
     }))
   }
 
-  // =========================
-  // SUBMIT
-  // =========================
+ // =========================
+// SUBMIT
+// =========================
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+const handleSubmit = async (e) => {
+  e.preventDefault()
 
+  if (
+    !formData.scriptName ||
+    formData.scriptCategoryId === 0 ||
+    formData.scriptTypeId === 0 ||
+    formData.executionTypeId === 0 ||
+    formData.operatingSystemId === 0 ||
+    !formData.scriptContent
+  ) {
+    notifyFail(
+      'Please fill all mandatory script details.'
+    )
+    return
+  }
+
+  if (formData.parameters.length === 0) {
+    notifyFail(
+      'At least one parameter is required for the script.'
+    )
+    return
+  }
+
+  for (const param of formData.parameters) {
     if (
-      !formData.scriptName ||
-      formData.scriptCategoryId === 0 ||
-      formData.scriptTypeId === 0 ||
-      formData.executionTypeId === 0 ||
-      formData.operatingSystemId === 0 ||
-      !formData.scriptContent
+      !param.parameterName ||
+      !param.parameterCode ||
+      param.parameterTypeId === 0 ||
+      !param.validationRules // Added validation for Rules(JSON)
     ) {
       notifyFail(
-        'Please fill all mandatory script details.'
+        'Please fill all mandatory fields for each parameter.'
       )
       return
     }
+  }
+
+  // =========================
+  // JSON VALIDATION
+  // =========================
+
+  try {
+    if (formData.outputSchema) {
+      JSON.parse(formData.outputSchema)
+    }
 
     for (const param of formData.parameters) {
-      if (
-        !param.parameterName ||
-        !param.parameterCode ||
-        param.parameterTypeId === 0
-      ) {
-        notifyFail(
-          'Please fill all mandatory fields for each parameter.'
-        )
-        return
+      if (param.validationRules) {
+        JSON.parse(param.validationRules)
       }
     }
-
-    setLoading(true)
-
-    try {
-      const payload = {
-        ...formData,
-
-        timeoutSeconds: Number(
-          formData.timeoutSeconds
-        ),
-
-        parameters: formData.parameters.map(
-          ({tempKey, ...rest}) => ({
-            ...rest,
-            parameterTypeId: Number(
-              rest.parameterTypeId
-            ),
-            displayOrder: Number(
-              rest.displayOrder
-            ),
-
-            // BOOLEAN
-            isRequired: Boolean(rest.isRequired),
-          })
-        ),
-
-        // BOOLEAN
-        isSecure: Boolean(formData.isSecure),
-      }
-
-      console.log(payload, 'payload')
-
-      const response = await fetchScriptAddUrl(
-        payload
-      )
-
-      if (response?.isSuccess) {
-        notify(
-          response.message ||
-            'Script added successfully'
-        )
-
-        navigate('/qradar/scripts/list')
-      } else {
-        notifyFail(
-          response?.message ||
-            'Failed to add script'
-        )
-      }
-    } catch (error) {
-      console.error(error)
-      notifyFail(
-        'An unexpected error occurred.'
-      )
-    } finally {
-      setLoading(false)
-    }
+  } catch (error) {
+    notifyFail(
+      'Please enter valid JSON for Output Schema or Validation Rules.'
+    )
+    return
   }
+
+  setLoading(true)
+
+  try {
+    const payload = {
+      ...formData,
+
+      // CONVERT JSON STRING PROPERLY
+      outputSchema: formData.outputSchema
+        ? JSON.stringify(
+            JSON.parse(formData.outputSchema)
+          )
+        : '{}',
+
+      timeoutSeconds: Number(
+        formData.timeoutSeconds
+      ),
+
+      parameters: formData.parameters.map(
+        ({tempKey, ...rest}) => ({
+          ...rest,
+
+          // JSON STRING
+          validationRules:
+            rest.validationRules
+              ? JSON.stringify(
+                  JSON.parse(
+                    rest.validationRules
+                  )
+                )
+              : '{}',
+
+          // NUMBER
+          parameterTypeId: Number(
+            rest.parameterTypeId
+          ),
+
+          // NUMBER
+          displayOrder: Number(
+            rest.displayOrder
+          ),
+
+          // BOOLEAN
+          isRequired: Boolean(
+            rest.isRequired
+          ),
+        })
+      ),
+
+      // BOOLEAN
+      isSecure: Boolean(
+        formData.isSecure
+      ),
+    }
+
+    console.log(payload, 'payload')
+
+    const response = await fetchScriptAddUrl(
+      payload
+    )
+
+    if (response?.isSuccess) {
+      notify(
+        response.message ||
+          'Script added successfully'
+      )
+
+      navigate('/qradar/scripts/list')
+    } else {
+      notifyFail(
+        response?.message ||
+          'Failed to add script'
+      )
+    }
+  } catch (error) {
+    console.error(error)
+
+    notifyFail(
+      'An unexpected error occurred.'
+    )
+  } finally {
+    setLoading(false)
+  }
+}
 
   if (initialLoading) {
     return <UsersListLoading />
@@ -558,11 +613,11 @@ const AddScripts = () => {
               >
                 <thead>
                   <tr>
-                    <th style={hs}>Name</th>
-                    <th style={hs}>Code</th>
-                    <th style={hs}>Type</th>
+                    <th style={hs}>Name <span className='text-danger'>*</span></th>
+                    <th style={hs}>Code <span className='text-danger'>*</span></th>
+                    <th style={hs}>Type <span className='text-danger'>*</span></th>
                     <th style={hs}>Default</th>
-                    <th style={hs}>Rules</th>
+                    <th style={hs}>Rules(JSON) <span className='text-danger'>*</span></th>
                     <th style={hs}>Order</th>
                     <th style={hs}>Required</th>
                     <th style={hs}>Action</th>

@@ -70,6 +70,7 @@ const Scripts = () => {
         })
       } catch (error) {
         console.error(error)
+        notifyFail('Failed to load filter options.')
       }
     }
     fetchAllMasterData()
@@ -172,6 +173,7 @@ const Scripts = () => {
                 placeholder='Search Scripts'
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && reload()}
               />
               <button className='btn btn-sm btn-primary' onClick={reload}>
                 <i className='fas fa-search' />
@@ -248,13 +250,13 @@ const Scripts = () => {
           <tbody>
             {loading && <UsersListLoading />}
             {currentItems !== null && currentItems.length > 0 ? (
-              currentItems.map((item, index) => (
-                <tr key={index} className='fs-12'>
-                  <td>{item.scriptName}</td>
-                  <td>{item.scriptCategoryName}</td>
-                  <td>{item.scriptTypeName}</td>
-                  <td>{item.executionTypeName}</td>
-                  <td>{item.operatingSystemName}</td>
+              currentItems.map((item) => (
+                <tr key={item.scriptId} className='fs-12'>
+                  <td>{item.scriptName || '-'}</td>
+                  <td>{item.scriptCategoryName || '-'}</td>
+                  <td>{item.scriptTypeName || '-'}</td>
+                  <td>{item.executionTypeName || '-'}</td>
+                  <td>{item.operatingSystemName || '-'}</td>
                   <td>
                     {isActionAuthorized('View') ? (
                       <span className='me-8' title='View'>
