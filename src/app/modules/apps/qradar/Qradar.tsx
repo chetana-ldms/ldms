@@ -139,6 +139,9 @@ import { Senarios } from './qradar-pages/configuration/Senarios'
 import AddAlertFields from './qradar-pages/alert-fields/AddAlertFields'
 import AlertFields from './qradar-pages/alert-fields/AlertFields'
 import UpdateAlertFields from './qradar-pages/alert-fields/UpdateAlertFields'
+import Scripts from './qradar-pages/scripts/Scripts'
+import AddScripts from './qradar-pages/scripts/AddScripts'
+import UpdateScripts from './qradar-pages/scripts/UpdateScripts'
 
 
 const QradarPages = () => {
@@ -283,6 +286,9 @@ const QradarPages = () => {
        <Route path='alert-fields/:status' element={<AlertFields/>} />
       <Route path='alert-fields/add' element={<AddAlertFields />} />
       <Route path='/alert-fields/update/:id' element={<UpdateAlertFields />} />
+      <Route path='scripts/:status' element={<Scripts/>} />
+      <Route path='scripts/add' element={<AddScripts />} />
+      <Route path='/scripts/update/:id' element={<UpdateScripts />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )
