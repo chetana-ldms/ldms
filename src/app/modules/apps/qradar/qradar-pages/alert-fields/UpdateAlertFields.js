@@ -1,7 +1,10 @@
 import React, {useState, useEffect} from 'react'
 import {Link, useNavigate, useParams, useLocation} from 'react-router-dom'
 import {fetchMasterData, fetchLDPTools} from '../../../../../api/Api'
-import {fetchUpdateAlertFieldsUrl, fetchAlertFieldDetailsUrl} from '../../../../../api/AlertFieldsApi'
+import {
+  fetchUpdateAlertFieldsUrl,
+  fetchAlertFieldsUrl,
+} from '../../../../../api/AlertFieldsApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
@@ -57,7 +60,7 @@ function UpdateAlertFields() {
           fetchMasterData({maserDataType: 'field_source_type', orgId, toolId: toolIdSession}),
           fetchMasterData({maserDataType: 'global_data_type', orgId, toolId: toolIdSession}),
           fetchLDPTools(),
-          fetchAlertFieldDetailsUrl(id),
+          fetchAlertFieldsUrl({alertFieldId: Number(id)}),
         ])
 
         setDropdowns({
