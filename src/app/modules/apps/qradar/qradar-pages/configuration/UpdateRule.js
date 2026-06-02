@@ -1,11 +1,12 @@
 import React, {useState, useEffect, memo} from 'react'
 import {fetchMasterData} from '../../../../../api/Api'
 import {fetchRulesUpdateUrl, fetchRuleDetails} from '../../../../../api/ConfigurationApi'
-import {fetchGlobalStandardFieldsUrl} from '../../../../../api/PlayBookConfigurationApi'
+import {fetchAlertFieldsUrl} from '../../../../../api/AlertFieldsApi'
 import {uid} from './AddRule' // Assuming uid is available or defined here
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import {Link, useLocation, useNavigate, useParams} from 'react-router-dom'
+import Select from 'react-select'
 
 const sel = 'form-select form-select-sm'
 const inp = 'form-control form-control-sm'
@@ -24,6 +25,36 @@ const hs = {
   textAlign: 'center',
   whiteSpace: 'nowrap',
   color: '#1e40af',
+}
+
+const customSelectStyles = {
+  control: (provided) => ({
+    ...provided,
+    minHeight: '30px',
+    height: '30px',
+    fontSize: '12px',
+  }),
+  valueContainer: (provided) => ({
+    ...provided,
+    height: '30px',
+    padding: '0 6px',
+  }),
+  input: (provided) => ({
+    ...provided,
+    margin: '0px',
+  }),
+  indicatorSeparator: () => ({
+    display: 'none',
+  }),
+  indicatorsContainer: (provided) => ({
+    ...provided,
+    height: '30px',
+  }),
+  menu: (provided) => ({
+    ...provided,
+    fontSize: '12px',
+    zIndex: 9999,
+  }),
 }
 
 const EMPTY_CONDITION = () => ({
@@ -56,6 +87,7 @@ const RenderGroup = memo(({
   removeGroup,
   setCondField,
   removeCondition,
+  fields,
 }) => {
   const activeKey = group.tempGroupKey
 
@@ -155,48 +187,41 @@ const RenderGroup = memo(({
             <tr key={cond.tempKey}>
               {/* Field */}
               <td style={cs}>
-                <select
-                  className={sel}
-                  value={cond.fieldTypeId}
-                  onChange={e =>
-                    setCondField(
-                      activeKey,
-                      cIdx,
-                      'fieldTypeId',
-                      Number(e.target.value),
-                    )
+                <Select
+                  options={fields.map((i) => ({value: i.fieldId, label: i.displayName}))}
+                  value={
+                    fields.find((i) => i.fieldId === cond.fieldTypeId)
+                      ? {
+                          value: cond.fieldTypeId,
+                          label: fields.find((i) => i.fieldId === cond.fieldTypeId).displayName,
+                        }
+                      : null
                   }
-                >
-                  <option value={0}>Select Field</option>
-                  {masterData.fieldTypes.map(i => (
-                    <option key={i.dataID} value={i.dataID}>
-                      {i.dataValue}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(val) => setCondField(activeKey, cIdx, 'fieldTypeId', val ? Number(val.value) : 0)}
+                  placeholder='Select Field'
+                  isClearable
+                  styles={customSelectStyles}
+                />
               </td>
 
               {/* Operator */}
               <td style={cs}>
-                <select
-                  className={sel}
-                  value={cond.operatorId}
-                  onChange={e =>
-                    setCondField(
-                      activeKey,
-                      cIdx,
-                      'operatorId',
-                      Number(e.target.value),
-                    )
+                <Select
+                  options={masterData.operators.map((i) => ({value: i.dataID, label: i.dataValue}))}
+                  value={
+                    masterData.operators.find((i) => i.dataID === cond.operatorId)
+                      ? {
+                          value: cond.operatorId,
+                          label: masterData.operators.find((i) => i.dataID === cond.operatorId)
+                            .dataValue,
+                        }
+                      : null
                   }
-                >
-                  <option value={0}>Op</option>
-                  {masterData.operators.map(i => (
-                    <option key={i.dataID} value={i.dataID}>
-                      {i.dataValue}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(val) => setCondField(activeKey, cIdx, 'operatorId', val ? Number(val.value) : 0)}
+                  placeholder='Op'
+                  isClearable
+                  styles={customSelectStyles}
+                />
               </td>
 
               {/* Value */}
@@ -259,6 +284,7 @@ const RenderGroup = memo(({
           removeGroup={removeGroup}
           setCondField={setCondField}
           removeCondition={removeCondition}
+          fields={fields}
         />
       ))}
     </div>
@@ -275,11 +301,13 @@ function UpdateRule() {
   const [masterData, setMasterData] = useState({
     operators: [],
     groupOperators: [],
-    fieldTypes: [],
     severities: [],
     scenarios: [],
     priorities: [],
+    fieldSourceTypes: [],
   })
+
+  const [fields, setFields] = useState([])
 
   const [rule, setRule] = useState({
     ruleName: '',
@@ -287,6 +315,7 @@ function UpdateRule() {
     priority: 0,
     severityId: 0,
     scenarioId: 0,
+    fieldSourceTypeId: 0,
     groups: [EMPTY_GROUP()],
     expressionText: '',
     orgId,
@@ -305,24 +334,24 @@ function UpdateRule() {
   useEffect(() => {
     const loadMasterData = async () => {
       try {
-        const [ops, gOps, fTypes, sevs, scens, prio] = await Promise.all([
+        const [ops, gOps, sevs, scens, prio, sourceTypes] = await Promise.all([
           fetchMasterData({maserDataType: 'condition_operator', orgId, toolId}),
           fetchMasterData({maserDataType: 'logical_operator', orgId, toolId}),
-          fetchGlobalStandardFieldsUrl(),
           fetchMasterData({maserDataType: 'rule_severity', orgId, toolId}),
           fetchMasterData({maserDataType: 'rule_scenario', orgId, toolId}),
           fetchMasterData({maserDataType: 'rule_priority', orgId, toolId}),
+          fetchMasterData({maserDataType: 'field_source_type', orgId, toolId}),
         ])
         setMasterData({
           operators: ops || [],
           groupOperators: gOps || [],
-          fieldTypes: fTypes?.data?.map((i) => ({dataID: i.fieldId, dataValue: i.displayName})) || [],
           severities: sevs || [],
           scenarios: scens || [],
           priorities: prio || [],
+          fieldSourceTypes: sourceTypes || [],
         })
       } catch (error) {
-        console.error('Error fetching master data:', error)
+        console.error('Error fetching rule detail master data:', error)
       }
     }
     loadMasterData()
@@ -362,6 +391,7 @@ function UpdateRule() {
               priority: data.priority || 0,
               severityId: data.severityId || 0,
               scenarioId: data.scenarioId || 0, // Ensure scenarioId is correctly set
+              fieldSourceTypeId: data.fieldSourceTypeId || 0,
               groups: (data.groups || []).map((group) => mapFetchedGroupToState(group)),
               expressionText: data.expressionText || '',
               createdDate: data.createdDate || new Date().toISOString(), // Keep original createdDate
@@ -377,6 +407,22 @@ function UpdateRule() {
   }, [id, orgId, toolId, userId, masterData]) // masterData dependency to ensure labels are ready for expression generation
 
   useEffect(() => {
+    const fetchFields = async () => {
+      if (rule.fieldSourceTypeId !== 0) {
+        try {
+          const response = await fetchAlertFieldsUrl({fieldSourceTypeId: rule.fieldSourceTypeId})
+          setFields(response?.data || [])
+        } catch (error) {
+          console.error('Error fetching alert fields:', error)
+        }
+      } else {
+        setFields([])
+      }
+    }
+    fetchFields()
+  }, [rule.fieldSourceTypeId])
+
+  useEffect(() => {
     const exprForGroup = g => {
       const groupOpLabel = masterData.groupOperators.find(o => o.dataID === g.groupOperatorId)?.dataValue || 'AND'
       const items = []
@@ -385,7 +431,7 @@ function UpdateRule() {
 
       // Collect conditions
       conditionsToProcess.forEach((c, i) => {
-        const f = masterData.fieldTypes.find(x => x.dataID === c.fieldTypeId)?.dataValue || 'Field'
+        const f = fields.find(x => x.fieldId === c.fieldTypeId)?.displayName || 'Field'
         const o = masterData.operators.find(x => x.dataID === c.operatorId)?.dataValue || 'Op'
         const str = `(${f} ${o} ${c.value || "''"})`
         const joiner = masterData.groupOperators.find(op => op.dataID === c.conditionJoinOperatorId)?.dataValue || 'AND'
@@ -430,7 +476,7 @@ function UpdateRule() {
     })
 
     setRule((prev) => ({...prev, expressionText: finalExpr}))
-  }, [rule.groups, masterData])
+  }, [rule.groups, masterData, fields])
 
   const handleRuleChange = (field, value) => {
     setRule((prev) => ({...prev, [field]: value}))
@@ -548,6 +594,10 @@ function UpdateRule() {
       notifyFail('Scenario is mandatory.')
       return
     }
+    if (rule.fieldSourceTypeId === 0) {
+      notifyFail('Field Source Type is mandatory.')
+      return
+    }
 
     // Validate Condition Groups (at least one group must exist)
     if (!rule.groups || rule.groups.length === 0) {
@@ -628,6 +678,7 @@ function UpdateRule() {
         priority: rule.priority,
         severityId: rule.severityId,
         scenarioId: rule.scenarioId,
+        fieldSourceTypeId: rule.fieldSourceTypeId,
         groups: rule.groups.map((group) => mapGroup(group)),
         expressionText: rule.expressionText,
         orgId: rule.orgId,
@@ -714,7 +765,7 @@ function UpdateRule() {
             </div>
 
             <div className='row g-3'>
-              <div className='col-md-6'>
+              <div className='col-md-4'>
                 <div className='mb-3'>
                   <label className='form-label fw-bold small'>Severity <span className='text-danger'>*</span></label>
                   <select
@@ -731,7 +782,7 @@ function UpdateRule() {
                   </select>
                 </div>
               </div>
-              <div className='col-md-6'>
+              <div className='col-md-4'>
                 <div className='mb-3'>
                   <label className='form-label fw-bold small'>Scenario <span className='text-danger'>*</span></label>
                   <select
@@ -741,6 +792,23 @@ function UpdateRule() {
                   >
                     <option value={0}>Select Scenario</option>
                     {masterData.scenarios.map((item) => (
+                      <option key={item.dataID} value={item.dataID}>
+                        {item.dataValue}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className='col-md-4'>
+                <div className='mb-3'>
+                  <label className='form-label fw-bold small'>Field Source Type <span className='text-danger'>*</span></label>
+                  <select
+                    className='form-select form-select-sm'
+                    value={rule.fieldSourceTypeId}
+                    onChange={(e) => handleRuleChange('fieldSourceTypeId', Number(e.target.value))}
+                  >
+                    <option value={0}>Select Source Type</option>
+                    {masterData.fieldSourceTypes.map((item) => (
                       <option key={item.dataID} value={item.dataID}>
                         {item.dataValue}
                       </option>
@@ -782,6 +850,7 @@ function UpdateRule() {
                 removeGroup={removeGroup}
                 setCondField={setCondField}
                 removeCondition={removeCondition}
+                fields={fields}
               />
             ))}
           </div>
