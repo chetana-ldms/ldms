@@ -179,6 +179,22 @@ function UpdateScripts() {
     }))
   }
 
+  const handleDragStart = (e, index) => {
+    e.dataTransfer.setData('draggedIndex', index)
+  }
+
+  const handleDragOver = (e) => {
+    e.preventDefault()
+  }
+
+  const handleDrop = (e, targetIndex) => {
+    const draggedIndex = e.dataTransfer.getData('draggedIndex')
+    const newParameters = [...formData.parameters]
+    const [draggedItem] = newParameters.splice(draggedIndex, 1)
+    newParameters.splice(targetIndex, 0, draggedItem)
+    setFormData((prev) => ({...prev, parameters: newParameters}))
+  }
+
   // =========================
   // SUBMIT
   // =========================
@@ -202,8 +218,7 @@ function UpdateScripts() {
       if (
         !param.parameterName ||
         !param.parameterCode ||
-        param.parameterTypeId === 0 ||
-        !param.validationRules
+        param.parameterTypeId === 0
       ) {
         notifyFail('Please fill all mandatory fields for each parameter.')
         return
@@ -234,13 +249,13 @@ function UpdateScripts() {
           ? JSON.stringify(JSON.parse(formData.outputSchema))
           : '{}',
         timeoutSeconds: Number(formData.timeoutSeconds),
-        parameters: formData.parameters.map(({tempKey, ...rest}) => ({
+        parameters: formData.parameters.map(({tempKey, ...rest}, index) => ({
           ...rest,
           validationRules: rest.validationRules
             ? JSON.stringify(JSON.parse(rest.validationRules))
             : '{}', // Send as empty JSON object if no rules are provided
           parameterTypeId: Number(rest.parameterTypeId),
-          displayOrder: Number(rest.displayOrder),
+          displayOrder: index + 1,
           isRequired: Boolean(rest.isRequired),
         })),
         isSecure: Boolean(formData.isSecure),
@@ -454,15 +469,21 @@ function UpdateScripts() {
                     <th style={hs}>Code <span className='text-danger'>*</span></th>
                     <th style={hs}>Type <span className='text-danger'>*</span></th>
                     <th style={hs}>Default</th>
-                    <th style={hs}>Rules(JSON) <span className='text-danger'>*</span></th>
-                    <th style={hs}>Order</th>
+                    <th style={hs}>Validation Rule</th>
                     <th style={hs}>Required</th>
                     <th style={hs}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {formData.parameters.map((param) => (
-                    <tr key={param.tempKey}>
+                  {formData.parameters.map((param, index) => (
+                    <tr
+                      key={param.tempKey}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, index)}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, index)}
+                      style={{cursor: 'move'}}
+                    >
                       <td style={cs}>
                         <input
                           type='text'
@@ -520,20 +541,6 @@ function UpdateScripts() {
                           value={param.validationRules}
                           onChange={(e) =>
                             handleParameterChange(param.tempKey, 'validationRules', e.target.value)
-                          }
-                        />
-                      </td>
-                      <td style={cs}>
-                        <input
-                          type='number'
-                          className='form-control form-control-sm'
-                          value={param.displayOrder}
-                          onChange={(e) =>
-                            handleParameterChange(
-                              param.tempKey,
-                              'displayOrder',
-                              Number(e.target.value)
-                            )
                           }
                         />
                       </td>

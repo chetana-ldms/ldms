@@ -149,7 +149,7 @@ const RulesActions = () => {
             <h3 className='align-items-start flex-column'>
               {/* <span className='fw-bold fs-3'></span> */}
               <span className='card-label fw-bold fs-3 mb-1'>
-                Rule Actions ({currentItems ? currentItems.length : 0} / {tools ? tools.length : 0})
+                Actions ({currentItems ? currentItems.length : 0} / {tools ? tools.length : 0})
               </span>
             </h3>
           </div>

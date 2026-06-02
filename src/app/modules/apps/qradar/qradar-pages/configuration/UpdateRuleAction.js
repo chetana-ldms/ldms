@@ -183,7 +183,7 @@ const UpdateRuleAction = () => {
       const {isSuccess} = responseData
 
       if (isSuccess) {
-        notify('Rule Action Saved')
+        notify('Action Saved')
         navigate('/qradar/rules-actions/list')
       } else {
         notifyFail('Failed to save Rule Action')
@@ -202,9 +202,9 @@ const UpdateRuleAction = () => {
       <div className='card-header bg-heading'>
         <h3 className='card-title align-items-start flex-column'>
           {save ? (
-            <span className='white'>View RuleAction</span>
+            <span className='white'>View Action</span>
           ) : (
-            <span className='white'>Update Rule Action</span>
+            <span className='white'>Update Action</span>
           )}
         </h3>
         <div className='card-toolbar'>

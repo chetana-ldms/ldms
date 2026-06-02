@@ -167,7 +167,7 @@ const AddRuleAction = () => {
       {loading && <UsersListLoading />}
       <div className="card-header bg-heading">
         <h3 className="card-title align-items-start flex-column">
-          <span className="white">Add New Rule Action</span>
+          <span className="white">Add New Action</span>
         </h3>
         <div className="card-toolbar">
           <div className="d-flex align-items-center gap-2 gap-lg-3">

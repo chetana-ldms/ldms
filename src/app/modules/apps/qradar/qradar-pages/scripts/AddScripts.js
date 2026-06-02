@@ -183,6 +183,22 @@ const AddScripts = () => {
     }))
   }
 
+  const handleDragStart = (e, index) => {
+    e.dataTransfer.setData('draggedIndex', index)
+  }
+
+  const handleDragOver = (e) => {
+    e.preventDefault()
+  }
+
+  const handleDrop = (e, targetIndex) => {
+    const draggedIndex = e.dataTransfer.getData('draggedIndex')
+    const newParameters = [...formData.parameters]
+    const [draggedItem] = newParameters.splice(draggedIndex, 1)
+    newParameters.splice(targetIndex, 0, draggedItem)
+    setFormData((prev) => ({...prev, parameters: newParameters}))
+  }
+
  // =========================
 // SUBMIT
 // =========================
@@ -204,19 +220,11 @@ const handleSubmit = async (e) => {
     return
   }
 
-  if (formData.parameters.length === 0) {
-    notifyFail(
-      'At least one parameter is required for the script.'
-    )
-    return
-  }
-
   for (const param of formData.parameters) {
     if (
       !param.parameterName ||
       !param.parameterCode ||
-      param.parameterTypeId === 0 ||
-      !param.validationRules // Added validation for Rules(JSON)
+      param.parameterTypeId === 0
     ) {
       notifyFail(
         'Please fill all mandatory fields for each parameter.'
@@ -264,7 +272,7 @@ const handleSubmit = async (e) => {
       ),
 
       parameters: formData.parameters.map(
-        ({tempKey, ...rest}) => ({
+        ({tempKey, ...rest}, index) => ({
           ...rest,
 
           // JSON STRING
@@ -283,9 +291,7 @@ const handleSubmit = async (e) => {
           ),
 
           // NUMBER
-          displayOrder: Number(
-            rest.displayOrder
-          ),
+          displayOrder: index + 1,
 
           // BOOLEAN
           isRequired: Boolean(
@@ -617,8 +623,7 @@ const handleSubmit = async (e) => {
                     <th style={hs}>Code <span className='text-danger'>*</span></th>
                     <th style={hs}>Type <span className='text-danger'>*</span></th>
                     <th style={hs}>Default</th>
-                    <th style={hs}>Rules(JSON) <span className='text-danger'>*</span></th>
-                    <th style={hs}>Order</th>
+                    <th style={hs}>Validation Rule</th>
                     <th style={hs}>Required</th>
                     <th style={hs}>Action</th>
                   </tr>
@@ -626,8 +631,15 @@ const handleSubmit = async (e) => {
 
                 <tbody>
                   {formData.parameters.map(
-                    (param) => (
-                      <tr key={param.tempKey}>
+                    (param, index) => (
+                      <tr
+                        key={param.tempKey}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, index)}
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, index)}
+                        style={{cursor: 'move'}}
+                      >
                         <td style={cs}>
                           <input
                             type='text'
@@ -731,24 +743,6 @@ const handleSubmit = async (e) => {
                           />
                         </td>
 
-                        <td style={cs}>
-                          <input
-                            type='number'
-                            className='form-control form-control-sm'
-                            value={
-                              param.displayOrder
-                            }
-                            onChange={(e) =>
-                              handleParameterChange(
-                                param.tempKey,
-                                'displayOrder',
-                                Number(
-                                  e.target.value
-                                )
-                              )
-                            }
-                          />
-                        </td>
 
                         <td
                           style={{
