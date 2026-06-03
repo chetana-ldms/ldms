@@ -245,6 +245,23 @@ function UpdateConnectionType() {
                 ))}
               </select>
             </div>
+
+            <div className='col-md-4 d-flex align-items-center'>
+              <div className='form-check form-check-custom mt-6'>
+                <input
+                  className='form-check-input'
+                  type='checkbox'
+                  name='isSystem'
+                  id='isSystem'
+                  checked={formData.isSystem}
+                  onChange={handleChange}
+                  disabled={isViewMode}
+                />
+                <label className='form-check-label small fw-bold ms-10' htmlFor='isSystem'>
+                  Is System
+                </label>
+              </div>
+            </div>
           </div>
 
           <div className='row g-3'>
@@ -263,11 +280,13 @@ function UpdateConnectionType() {
           </div>
         </div>
 
-        <div className='card-footer text-end px-5 py-4'>
-          <button type='submit' className='btn btn-primary btn-sm' disabled={loading}>
-            {loading ? 'Saving...' : 'Save Connection Type'}
-          </button>
-        </div>
+        {!isViewMode && (
+          <div className='card-footer text-end px-5 py-4'>
+            <button type='submit' className='btn btn-primary btn-sm' disabled={loading}>
+              {loading ? 'Saving...' : 'Save Connection Type'}
+            </button>
+          </div>
+        )}
       </form>
     </div>
   )

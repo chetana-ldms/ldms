@@ -145,13 +145,13 @@ const ConnectionType = () => {
     <div className='config card pad-10'>
       <ToastContainer />
       <div className='row'>
-        <div className='col-md-3'>
+        <div className='col-md-6'>
           <h3 className='card-label fw-bold fs-3 mb-1'>
             Connection Type ({currentItems ? currentItems.length : 0} / {connectionTypes ? connectionTypes.length : 0})
           </h3>
         </div>
 
-        <div className='col-md-8'>
+        <div className='col-md-5'>
           <div className='card-title header-filter'>
             <div className='input-group'>
               <input
@@ -210,6 +210,7 @@ const ConnectionType = () => {
               <th>Type Code</th>
               <th>Category</th>
               <th>Provider</th>
+              <th>System</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -222,6 +223,7 @@ const ConnectionType = () => {
                   <td>{item.connectionTypeCode || '-'}</td>
                   <td>{item.connectionCategoryName || '-'}</td>
                   <td>{item.providerTypeName || '-'}</td>
+                  <td>{item.isSystem ? 'Yes' : 'No'}</td>
                   <td>
                     {isActionAuthorized('View') ? (
                       <span className='me-8' title='View'>
