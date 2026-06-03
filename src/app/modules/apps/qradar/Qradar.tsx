@@ -142,6 +142,12 @@ import UpdateAlertFields from './qradar-pages/alert-fields/UpdateAlertFields'
 import Scripts from './qradar-pages/scripts/Scripts'
 import AddScripts from './qradar-pages/scripts/AddScripts'
 import UpdateScripts from './qradar-pages/scripts/UpdateScripts'
+import Connection from './qradar-pages/connection/Connection'
+import AddConnection from './qradar-pages/connection/AddConnection'
+import UpdateConnection from './qradar-pages/connection/UpdateConnection'
+import ConnectionType from './qradar-pages/connection/ConnectionType'
+import AddConnectionType from './qradar-pages/connection/AddConnectionType'
+import UpdateConnectionType from './qradar-pages/connection/UpdateConnectionType'
 
 
 const QradarPages = () => {
@@ -289,6 +295,12 @@ const QradarPages = () => {
       <Route path='scripts/:status' element={<Scripts/>} />
       <Route path='scripts/add' element={<AddScripts />} />
       <Route path='/scripts/update/:id' element={<UpdateScripts />} />
+        <Route path='connection/:status' element={<Connection/>} />
+      <Route path='connection/add' element={<AddConnection />} />
+      <Route path='/connection/update/:id' element={<UpdateConnection />} />
+       <Route path='connection-types/:status' element={<ConnectionType/>} />
+      <Route path='connection-types/add' element={<AddConnectionType />} />
+      <Route path='/connection-types/update/:id' element={<UpdateConnectionType />} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )
