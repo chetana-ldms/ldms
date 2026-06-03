@@ -10,24 +10,22 @@ import {useErrorBoundary} from 'react-error-boundary'
 import Pagination from '../../../../../../utils/Pagination'
 import DeleteConfirmation2 from '../risk-upgrade/DeleteConfirmation2'
 import useFeatureActions from '../configuration/useFeatureActions'
-import {fetchScriptSearchUrl, fetchScriptDeleteUrl} from '../../../../../api/ScriptsApi'
+import {fetchConnectionTypeSearchUrl, fetchConnectionTypeDeleteUrl} from '../../../../../api/ConnectionApi'
 
 const ConnectionType = () => {
   const navigate = useNavigate()
   const handleError = useErrorBoundary()
   const orgId = Number(sessionStorage.getItem('orgId'))
-  const toolIdSession = Number(sessionStorage.getItem('toolID'))
+  const toolId = Number(sessionStorage.getItem('toolID'))
 
   const [loading, setLoading] = useState(false)
-  const [scripts, setScripts] = useState([])
+  const [connectionTypes, setConnectionTypes] = useState([])
   const [currentPage, setCurrentPage] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [activePage, setActivePage] = useState(0)
 
   const categoryRef = useRef()
-  const typeRef = useRef()
-  const executionRef = useRef()
-  const osRef = useRef()
+  const providerRef = useRef()
 
   const [searchValue, setSearchValue] = useState('')
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
@@ -35,14 +33,12 @@ const ConnectionType = () => {
 
   const [dropdownData, setDropdownData] = useState({
     categories: [],
-    types: [],
-    executionTypes: [],
-    operatingSystems: [],
+    providers: [],
   })
 
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
-  const {featureActions} = useFeatureActions(orgId, toolIdSession, roleId, featureId)
+  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
 
   const isActionAuthorized = (actionName) => {
     return featureActions?.some(
@@ -51,23 +47,19 @@ const ConnectionType = () => {
   }
 
   const handleNavigateToUpdate = (id) => {
-    navigate(`/qradar/scripts/update/${id}`, {state: {save: true}})
+    navigate(`/qradar/connection-types/update/${id}`, {state: {save: true}})
   }
 
   useEffect(() => {
     const fetchAllMasterData = async () => {
       try {
-        const [cat, type, exec, os] = await Promise.all([
-          fetchMasterData({maserDataType: 'script_category', orgId, toolId: toolIdSession}),
-          fetchMasterData({maserDataType: 'script_type', orgId, toolId: toolIdSession}),
-          fetchMasterData({maserDataType: 'executor_type', orgId, toolId: toolIdSession}),
-          fetchMasterData({maserDataType: 'operating_system', orgId, toolId: toolIdSession}),
+        const [cat, prov] = await Promise.all([
+          fetchMasterData({maserDataType: 'connection_category', orgId, toolId}),
+          fetchMasterData({maserDataType: 'provider_type', orgId, toolId}),
         ])
         setDropdownData({
           categories: cat || [],
-          types: type || [],
-          executionTypes: exec || [],
-          operatingSystems: os || [],
+          providers: prov || [],
         })
       } catch (error) {
         console.error(error)
@@ -75,7 +67,7 @@ const ConnectionType = () => {
       }
     }
     fetchAllMasterData()
-  }, [orgId, toolIdSession])
+  }, [orgId, toolId])
 
   const handleDelete = (item) => {
     setItemToDelete(item)
@@ -86,15 +78,15 @@ const ConnectionType = () => {
     if (!itemToDelete) return
     const deletedUserId = Number(sessionStorage.getItem('userId'))
     const data = {
-      scriptId: itemToDelete.scriptId,
+      connectionTypeId: itemToDelete.connectionTypeId,
       userId: deletedUserId,
       deleteReason: reason,
     }
     try {
       setLoading(true)
-      const response = await fetchScriptDeleteUrl(data)
+      const response = await fetchConnectionTypeDeleteUrl(data)
       if (response?.isSuccess) {
-        notify(response.message || 'Script Deleted Successfully')
+        notify(response.message || 'Connection Type Deleted Successfully')
         setShowDeleteConfirmation(false)
         setItemToDelete(null)
         await reload()
@@ -114,21 +106,15 @@ const ConnectionType = () => {
       const payload = {}
 
       if (searchValue) payload.searchText = searchValue
-      
+
       const categoryId = Number(categoryRef.current?.value)
-      if (categoryId) payload.scriptCategoryId = categoryId
+      if (categoryId && categoryId !== 0) payload.connectionCategoryId = categoryId
 
-      const typeId = Number(typeRef.current?.value)
-      if (typeId) payload.scriptTypeId = typeId
+      const providerId = Number(providerRef.current?.value)
+      if (providerId && providerId !== 0) payload.providerTypeId = providerId
 
-      const executionTypeId = Number(executionRef.current?.value)
-      if (executionTypeId) payload.executionTypeId = executionTypeId
-
-      const osId = Number(osRef.current?.value)
-      if (osId) payload.operatingSystemId = osId
-
-      const response = await fetchScriptSearchUrl(payload)
-      setScripts(Array.isArray(response?.data) ? response.data : [])
+      const response = await fetchConnectionTypeSearchUrl(payload)
+      setConnectionTypes(Array.isArray(response?.data) ? response.data : [])
     } catch (error) {
       handleError(error)
     } finally {
@@ -149,7 +135,7 @@ const ConnectionType = () => {
 
   const indexOfLastItem = (currentPage + 1) * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = scripts ? scripts.slice(indexOfFirstItem, indexOfLastItem) : null
+  const currentItems = connectionTypes ? connectionTypes.slice(indexOfFirstItem, indexOfLastItem) : null
 
   useEffect(() => {
     reload()
@@ -161,7 +147,7 @@ const ConnectionType = () => {
       <div className='row'>
         <div className='col-md-3'>
           <h3 className='card-label fw-bold fs-3 mb-1'>
-            Connection Type ({currentItems ? currentItems.length : 0} / {scripts ? scripts.length : 0})
+            Connection Type ({currentItems ? currentItems.length : 0} / {connectionTypes ? connectionTypes.length : 0})
           </h3>
         </div>
 
@@ -193,29 +179,9 @@ const ConnectionType = () => {
                 </select>
               </div>
               <div className='w-120px'>
-                <select className='form-select form-select-sm' ref={typeRef}>
-                  <option value={0}>Type</option>
-                  {dropdownData.types.map((item) => (
-                    <option key={item.dataID} value={item.dataID}>
-                      {item.dataValue}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className='w-150px'>
-                <select className='form-select form-select-sm' ref={executionRef}>
-                  <option value={0}>Execution</option>
-                  {dropdownData.executionTypes.map((item) => (
-                    <option key={item.dataID} value={item.dataID}>
-                      {item.dataValue}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className='w-120px'>
-                <select className='form-select form-select-sm' ref={osRef}>
-                  <option value={0}>OS</option>
-                  {dropdownData.operatingSystems.map((item) => (
+                <select className='form-select form-select-sm' ref={providerRef}>
+                  <option value={0}>Provider</option>
+                  {dropdownData.providers.map((item) => (
                     <option key={item.dataID} value={item.dataID}>
                       {item.dataValue}
                     </option>
@@ -240,11 +206,10 @@ const ConnectionType = () => {
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
-              <th>Script Name</th>
+              <th>Type Name</th>
+              <th>Type Code</th>
               <th>Category</th>
-              <th>Type</th>
-              <th>Execution</th>
-              <th>OS</th>
+              <th>Provider</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -252,20 +217,19 @@ const ConnectionType = () => {
             {loading && <UsersListLoading />}
             {currentItems !== null && currentItems.length > 0 ? (
               currentItems.map((item) => (
-                <tr key={item.scriptId} className='fs-12'>
-                  <td>{item.scriptName || '-'}</td>
-                  <td>{item.scriptCategoryName || '-'}</td>
-                  <td>{item.scriptTypeName || '-'}</td>
-                  <td>{item.executionTypeName || '-'}</td>
-                  <td>{item.operatingSystemName || '-'}</td>
+                <tr key={item.connectionTypeId} className='fs-12'>
+                  <td>{item.connectionTypeName || '-'}</td>
+                  <td>{item.connectionTypeCode || '-'}</td>
+                  <td>{item.connectionCategoryName || '-'}</td>
+                  <td>{item.providerTypeName || '-'}</td>
                   <td>
                     {isActionAuthorized('View') ? (
                       <span className='me-8' title='View'>
                         <i
                           className='fa fa-eye cursor'
-                          onClick={() => handleNavigateToUpdate(item.scriptId)}
+                          onClick={() => handleNavigateToUpdate(item.connectionTypeId)}
                         />
-                      </span>
+                      </span> 
                     ) : (
                       <span className='me-8' title='View'>
                         <i className='fa fa-eye disabled' />
@@ -275,7 +239,7 @@ const ConnectionType = () => {
                     {isActionAuthorized('Update') ? (
                       <Link
                         className='text-white me-8'
-                        to={`/qradar/scripts/update/${item.scriptId}`}
+                        to={`/qradar/connection-types/update/${item.connectionTypeId}`}
                         title='Edit'
                       >
                         <i className='fa fa-pencil cursor link' />
@@ -306,9 +270,9 @@ const ConnectionType = () => {
           </tbody>
         </table>
 
-        {scripts.length > 0 && (
+        {connectionTypes.length > 0 && (
           <Pagination
-            pageCount={Math.ceil(scripts.length / itemsPerPage)}
+            pageCount={Math.ceil(connectionTypes.length / itemsPerPage)}
             handlePageClick={handlePageClick}
             itemsPerPage={itemsPerPage}
             handlePageSelect={handlePageSelect}
@@ -320,7 +284,7 @@ const ConnectionType = () => {
           show={showDeleteConfirmation}
           message={
             itemToDelete
-              ? `Are you sure you want to delete the script "${itemToDelete.scriptName}"?`
+              ? `Are you sure you want to delete the connection type "${itemToDelete.connectionTypeName}"?`
               : ''
           }
           onConfirm={handleDeleteConfirm}
