@@ -219,7 +219,7 @@ const Rules = () => {
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
-              <th>Rule Name</th>
+              <th>Name</th>
               {/* <th className='min-w-50px'>Rule Conditions</th> */}
               <th>Action</th>
             </tr>

@@ -132,7 +132,7 @@ const AddRuleAction = () => {
         isRequired: param.isRequired,
         defaultValue: param.defaultValue,
         validationRulesJson: param.validationRulesJson,
-        displayOrder: Number(param.displayOrder),
+        executionOrder: Number(param.displayOrder),
         isSensitive: param.isSensitive,
         isDeleted: param.isDeleted || false,
       })),
