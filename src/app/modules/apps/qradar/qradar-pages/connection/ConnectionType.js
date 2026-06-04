@@ -206,8 +206,8 @@ const ConnectionType = () => {
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
-              <th>Type Name</th>
-              <th>Type Code</th>
+              <th>Name</th>
+              <th>Code</th>
               <th>Category</th>
               <th>Provider</th>
               <th>System</th>

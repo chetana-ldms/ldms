@@ -220,7 +220,7 @@ const UpdateRuleAction = () => {
         <div className='card-body pad-10'>
           <div className='row mb-8'>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Action Name <span className='text-danger'>*</span></label>
+              <label className='form-label fw-bold small'>Name <span className='text-danger'>*</span></label>
               <input
                 type='text'
                 className='form-control form-control-sm'
@@ -230,7 +230,7 @@ const UpdateRuleAction = () => {
               />
             </div>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Action Code <span className='text-danger'>*</span></label>
+              <label className='form-label fw-bold small'>Code <span className='text-danger'>*</span></label>
               <input
                 type='text'
                 className='form-control form-control-sm'
@@ -240,7 +240,7 @@ const UpdateRuleAction = () => {
               />
             </div>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Action Type <span className='text-danger'>*</span></label>
+              <label className='form-label fw-bold small'>Type <span className='text-danger'>*</span></label>
               <select
                 className='form-select form-select-sm'
                 value={ruleAction.actionTypeId}

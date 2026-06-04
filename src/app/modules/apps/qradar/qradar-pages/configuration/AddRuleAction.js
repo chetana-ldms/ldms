@@ -185,7 +185,7 @@ const AddRuleAction = () => {
         <div className='card-body pad-10'>
           <div className='row mb-8'>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Action Name <span className='text-danger'>*</span></label>
+              <label className='form-label fw-bold small'>Name <span className='text-danger'>*</span></label>
               <input
                 type='text'
                 className='form-control form-control-sm'
@@ -195,7 +195,7 @@ const AddRuleAction = () => {
               />
             </div>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Action Code <span className='text-danger'>*</span></label>
+              <label className='form-label fw-bold small'>Code <span className='text-danger'>*</span></label>
               <input
                 type='text'
                 className='form-control form-control-sm'
@@ -205,7 +205,7 @@ const AddRuleAction = () => {
               />
             </div>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Action Type <span className='text-danger'>*</span></label>
+              <label className='form-label fw-bold small'>Type <span className='text-danger'>*</span></label>
               <select
                 className='form-select form-select-sm'
                 value={ruleAction.actionTypeId}
@@ -391,7 +391,7 @@ const AddRuleAction = () => {
           </div>
         </div>
         <div className='card-footer d-flex justify-content-end pad-10'>
-          <button type='submit' className='btn btn-new btn-small' disabled={loading}>
+          <button type='submit'  className='btn btn-new btn-small' disabled={loading}>
             {!loading ? 'Save' : 'Please wait...'}
           </button>
         </div>
