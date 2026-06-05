@@ -33,7 +33,7 @@ const EMPTY_PARAMETER = () => ({
   isRequired: false,
   defaultValue: '',
   validationRules: '',
-  displayOrder: 0,
+  executionOrder: 0,
 })
 
 const AddScripts = () => {
@@ -59,7 +59,7 @@ const AddScripts = () => {
     scriptName: '',
     scriptCategoryId: 0,
     scriptTypeId: 0,
-    executionTypeId: 0,
+    executorTypeId: 0,
     operatingSystemId: 0,
     scriptContent: '',
     outputSchema: '',
@@ -210,7 +210,7 @@ const handleSubmit = async (e) => {
     !formData.scriptName ||
     formData.scriptCategoryId === 0 ||
     formData.scriptTypeId === 0 ||
-    formData.executionTypeId === 0 ||
+    formData.executorTypeId === 0 ||
     formData.operatingSystemId === 0 ||
     !formData.scriptContent
   ) {
@@ -291,7 +291,7 @@ const handleSubmit = async (e) => {
           ),
 
           // NUMBER
-          displayOrder: index + 1,
+          executionOrder: index + 1,
 
           // BOOLEAN
           isRequired: Boolean(
@@ -452,7 +452,7 @@ const handleSubmit = async (e) => {
           <div className='row g-3 mb-4'>
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Execution Type{' '}
+                Executer Type{' '}
                 <span className='text-danger'>
                   *
                 </span>
@@ -460,12 +460,12 @@ const handleSubmit = async (e) => {
 
               <select
                 className='form-select form-select-sm'
-                name='executionTypeId'
-                value={formData.executionTypeId}
+                name='executorTypeId'
+                value={formData.executorTypeId}
                 onChange={handleSelectChange}
               >
                 <option value={0}>
-                  Select Execution Type
+                  Select Executer Type
                 </option>
 
                 {dropdowns.executionTypes.map(

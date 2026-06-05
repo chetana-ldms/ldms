@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
-import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import {fetchMasterData} from '../../../../../api/Api'
@@ -10,6 +9,7 @@ import Pagination from '../../../../../../utils/Pagination'
 import DeleteConfirmation2 from '../risk-upgrade/DeleteConfirmation2'
 import useFeatureActions from '../configuration/useFeatureActions'
 import {fetchScriptSearchUrl, fetchScriptDeleteUrl} from '../../../../../api/ScriptsApi'
+import { notify, notifyFail } from '../components/notification/Notification'
 
 const Scripts = () => {
   const navigate = useNavigate()
@@ -239,7 +239,7 @@ const Scripts = () => {
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
-              <th>Script Name</th>
+              <th>Name</th>
               <th>Category</th>
               <th>Type</th>
               <th>Execution</th>

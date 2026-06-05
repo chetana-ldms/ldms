@@ -73,7 +73,6 @@ const AddRuleAction = () => {
           isRequired: false,
           defaultValue: "",
           validationRulesJson: "",
-          displayOrder: prev.parameters.length + 1,
           isSensitive: false,
           isDeleted: false,
         },
@@ -91,6 +90,22 @@ const AddRuleAction = () => {
   const handleParameterChange = (index, field, value) => {
     const newParams = [...ruleAction.parameters];
     newParams[index][field] = value;
+    setRuleAction((prev) => ({ ...prev, parameters: newParams }));
+  };
+
+  const handleDragStart = (e, index) => {
+    e.dataTransfer.setData('draggedIndex', index);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, targetIndex) => {
+    const draggedIndex = e.dataTransfer.getData('draggedIndex');
+    const newParams = [...ruleAction.parameters];
+    const [draggedItem] = newParams.splice(draggedIndex, 1);
+    newParams.splice(targetIndex, 0, draggedItem);
     setRuleAction((prev) => ({ ...prev, parameters: newParams }));
   };
 
@@ -117,26 +132,23 @@ const AddRuleAction = () => {
 
     setLoading(true);
     const payload = {
-      actionId: 0,
       actionName: ruleAction.actionName,
       actionCode: ruleAction.actionCode,
+      actionTypeId: Number(ruleAction.actionTypeId),
       executorTypeId: Number(ruleAction.executorTypeId),
-      toolId: 0,
+      toolId: toolIds,
       userId: Number(sessionStorage.getItem("userId")),
       // configuration: ruleAction.configuration,
-      parameters: ruleAction.parameters.map((param) => ({
-        parameterId: param.parameterId || 0,
+      parameters: ruleAction.parameters.map((param, index) => ({
         parameterCode: param.parameterCode,
         parameterName: param.parameterName,
         dataTypeId: Number(param.dataTypeId),
         isRequired: param.isRequired,
         defaultValue: param.defaultValue,
         validationRulesJson: param.validationRulesJson,
-        executionOrder: Number(param.displayOrder),
+        executionOrder: index + 1,
         isSensitive: param.isSensitive,
-        isDeleted: param.isDeleted || false,
       })),
-      actionTypeId: Number(ruleAction.actionTypeId),
     };
 
     try {
@@ -282,7 +294,7 @@ const AddRuleAction = () => {
                     <th className='min-w-100px'>Name</th>
                     <th className='min-w-100px'>Data Type</th>
                     <th className='min-w-100px'>Default Value</th>
-                    <th className='min-w-80px'>Order</th>
+                    <th className='min-w-100px'>Validation Rules</th>
                     <th className='min-w-50px'>Req.</th>
                     <th className='min-w-50px'>Sens.</th>
                     <th className='text-end pe-4'>Action</th>
@@ -290,7 +302,14 @@ const AddRuleAction = () => {
                 </thead>
                 <tbody>
                   {ruleAction.parameters.map((param, index) => (
-                    <tr key={index}>
+                    <tr 
+                      key={index}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, index)}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, index)}
+                      style={{ cursor: 'move' }}
+                    >
                       <td>
                         <input
                           type='text'
@@ -339,18 +358,18 @@ const AddRuleAction = () => {
                       </td>
                       <td>
                         <input
-                          type='number'
+                          type='text'
                           className='form-control form-control-sm'
-                          value={param.displayOrder}
+                          value={param.validationRulesJson}
                           onChange={(e) =>
-                            handleParameterChange(index, 'displayOrder', Number(e.target.value))
+                            handleParameterChange(index, 'validationRulesJson', e.target.value)
                           }
                         />
                       </td>
                       <td className='text-center'>
                         <input
                           type='checkbox'
-                          className='form-check-input'
+                          className='form-check-input mt-2'
                           checked={param.isRequired}
                           onChange={(e) =>
                             handleParameterChange(index, 'isRequired', e.target.checked)
@@ -360,7 +379,7 @@ const AddRuleAction = () => {
                       <td className='text-center'>
                         <input
                           type='checkbox'
-                          className='form-check-input'
+                          className='form-check-input mt-2'
                           checked={param.isSensitive}
                           onChange={(e) =>
                             handleParameterChange(index, 'isSensitive', e.target.checked)

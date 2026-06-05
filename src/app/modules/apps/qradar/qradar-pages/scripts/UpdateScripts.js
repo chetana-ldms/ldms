@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
 import {fetchMasterData} from '../../../../../api/Api'
-import {fetchScriptSearchUrl, fetchScriptAddUrl, fetchScriptUpdateUrl} from '../../../../../api/ScriptsApi' // Assuming update uses a similar endpoint or fetchScriptUpdateUrl
-import {notify, notifyFail} from '../components/notification/Notification'
+import {fetchScriptSearchUrl, fetchScriptAddUrl, fetchScriptUpdateUrl} from '../../../../../api/ScriptsApi'
 import {ToastContainer} from 'react-toastify'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
+import { notify, notifyFail } from '../components/notification/Notification'
 
 // Utility to generate unique keys for list items
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`
@@ -33,7 +33,7 @@ const EMPTY_PARAMETER = () => ({
   isRequired: false,
   defaultValue: '', // Default value can be an empty string
   validationRules: '{}', // Initialize as empty JSON object string
-  displayOrder: 0,
+  executionOrder: 0,
 })
 
 function UpdateScripts() {
@@ -60,7 +60,7 @@ function UpdateScripts() {
     scriptName: '',
     scriptCategoryId: 0,
     scriptTypeId: 0,
-    executionTypeId: 0,
+    executorTypeId: 0,
     operatingSystemId: 0,
     scriptContent: '',
     outputSchema: '',
@@ -103,7 +103,7 @@ function UpdateScripts() {
             scriptName: script.scriptName || '',
             scriptCategoryId: script.scriptCategoryId || 0,
             scriptTypeId: script.scriptTypeId || 0,
-            executionTypeId: script.executionTypeId || 0,
+            executorTypeId: script.executorTypeId || 0,
             operatingSystemId: script.operatingSystemId || 0,
             scriptContent: script.scriptContent || '',
             // Ensure outputSchema is always a valid JSON string, even if empty
@@ -206,7 +206,7 @@ function UpdateScripts() {
       !formData.scriptName ||
       formData.scriptCategoryId === 0 ||
       formData.scriptTypeId === 0 ||
-      formData.executionTypeId === 0 ||
+      formData.executorTypeId === 0 ||
       formData.operatingSystemId === 0 ||
       !formData.scriptContent
     ) {
@@ -255,7 +255,7 @@ function UpdateScripts() {
             ? JSON.stringify(JSON.parse(rest.validationRules))
             : '{}', // Send as empty JSON object if no rules are provided
           parameterTypeId: Number(rest.parameterTypeId),
-          displayOrder: index + 1,
+          executionOrder: index + 1,
           isRequired: Boolean(rest.isRequired),
         })),
         isSecure: Boolean(formData.isSecure),
@@ -355,15 +355,15 @@ function UpdateScripts() {
           <div className='row g-3 mb-4'>
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Execution Type <span className='text-danger'>*</span>
+                Executer Type <span className='text-danger'>*</span>
               </label>
               <select
                 className='form-select form-select-sm'
-                name='executionTypeId'
-                value={formData.executionTypeId}
+                name='executorTypeId'
+                value={formData.executorTypeId}
                 onChange={handleSelectChange}
               >
-                <option value={0}>Select Execution Type</option>
+                <option value={0}>Select Executer Type</option>
                 {dropdowns.executionTypes.map((item) => (
                   <option key={item.dataID} value={item.dataID}>
                     {item.dataValue}
