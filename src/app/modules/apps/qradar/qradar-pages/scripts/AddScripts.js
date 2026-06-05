@@ -76,34 +76,33 @@ const AddScripts = () => {
   useEffect(() => {
     const loadMasterData = async () => {
       try {
-        const [categories, types, execTypes, os, paramTypes] =
-          await Promise.all([
-            fetchMasterData({
-              maserDataType: 'script_category',
-              orgId,
-              toolId: toolIdSession,
-            }),
-            fetchMasterData({
-              maserDataType: 'script_type',
-              orgId,
-              toolId: toolIdSession,
-            }),
-            fetchMasterData({
-              maserDataType: 'executor_type',
-              orgId,
-              toolId: toolIdSession,
-            }),
-            fetchMasterData({
-              maserDataType: 'operating_system',
-              orgId,
-              toolId: toolIdSession,
-            }),
-            fetchMasterData({
-              maserDataType: 'global_data_type',
-              orgId,
-              toolId: toolIdSession,
-            }),
-          ])
+        const [categories, types, execTypes, os, paramTypes] = await Promise.all([
+          fetchMasterData({
+            maserDataType: 'script_category',
+            orgId,
+            toolId: toolIdSession,
+          }),
+          fetchMasterData({
+            maserDataType: 'script_type',
+            orgId,
+            toolId: toolIdSession,
+          }),
+          fetchMasterData({
+            maserDataType: 'executor_type',
+            orgId,
+            toolId: toolIdSession,
+          }),
+          fetchMasterData({
+            maserDataType: 'operating_system',
+            orgId,
+            toolId: toolIdSession,
+          }),
+          fetchMasterData({
+            maserDataType: 'global_data_type',
+            orgId,
+            toolId: toolIdSession,
+          }),
+        ])
 
         setDropdowns({
           scriptCategories: categories || [],
@@ -159,17 +158,11 @@ const AddScripts = () => {
   const removeParameter = (tempKey) => {
     setFormData((prev) => ({
       ...prev,
-      parameters: prev.parameters.filter(
-        (param) => param.tempKey !== tempKey
-      ),
+      parameters: prev.parameters.filter((param) => param.tempKey !== tempKey),
     }))
   }
 
-  const handleParameterChange = (
-    tempKey,
-    field,
-    value
-  ) => {
+  const handleParameterChange = (tempKey, field, value) => {
     setFormData((prev) => ({
       ...prev,
       parameters: prev.parameters.map((param) =>
@@ -199,142 +192,100 @@ const AddScripts = () => {
     setFormData((prev) => ({...prev, parameters: newParameters}))
   }
 
- // =========================
-// SUBMIT
-// =========================
+  // =========================
+  // SUBMIT
+  // =========================
 
-const handleSubmit = async (e) => {
-  e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault()
 
-  if (
-    !formData.scriptName ||
-    formData.scriptCategoryId === 0 ||
-    formData.scriptTypeId === 0 ||
-    formData.executorTypeId === 0 ||
-    formData.operatingSystemId === 0 ||
-    !formData.scriptContent
-  ) {
-    notifyFail(
-      'Please fill all mandatory script details.'
-    )
-    return
-  }
-
-  for (const param of formData.parameters) {
-    if (
-      !param.parameterName ||
-      !param.parameterCode ||
-      param.parameterTypeId === 0
-    ) {
-      notifyFail(
-        'Please fill all mandatory fields for each parameter.'
-      )
+    if (!formData.scriptName) {
+      notifyFail('Script Name is mandatory.')
       return
     }
-  }
-
-  // =========================
-  // JSON VALIDATION
-  // =========================
-
-  try {
-    if (formData.outputSchema) {
-      JSON.parse(formData.outputSchema)
+    if (formData.scriptCategoryId === 0) {
+      notifyFail('Please select a Category.')
+      return
+    }
+    if (formData.scriptTypeId === 0) {
+      notifyFail('Please select a Type.')
+      return
+    }
+    if (formData.executorTypeId === 0) {
+      notifyFail('Please select an Executor Type.')
+      return
+    }
+    if (formData.operatingSystemId === 0) {
+      notifyFail('Please select an Operating System.')
+      return
+    }
+    if (!formData.timeoutSeconds || Number(formData.timeoutSeconds) <= 0) {
+      notifyFail('Timeout (Seconds) is mandatory and must be greater than 0.')
+      return
+    }
+    if (!formData.scriptContent) {
+      notifyFail('Script Content is mandatory.')
+      return
     }
 
     for (const param of formData.parameters) {
-      if (param.validationRules) {
-        JSON.parse(param.validationRules)
+      if (!param.parameterName || !param.parameterCode || param.parameterTypeId === 0) {
+        notifyFail('Please fill all mandatory fields for each parameter.')
+        return
       }
     }
-  } catch (error) {
-    notifyFail(
-      'Please enter valid JSON for Output Schema or Validation Rules.'
-    )
-    return
-  }
 
-  setLoading(true)
+    setLoading(true)
 
-  try {
-    const payload = {
-      ...formData,
+    try {
+      const payload = {
+        ...formData,
 
-      // CONVERT JSON STRING PROPERLY
-      outputSchema: formData.outputSchema
-        ? JSON.stringify(
-            JSON.parse(formData.outputSchema)
-          )
-        : '{}',
+        // outputSchema: formData.outputSchema || "",
+        outputSchema: null,
 
-      timeoutSeconds: Number(
-        formData.timeoutSeconds
-      ),
+        timeoutSeconds: Number(formData.timeoutSeconds),
 
-      parameters: formData.parameters.map(
-        ({tempKey, ...rest}, index) => ({
+        parameters: formData.parameters.map(({tempKey, ...rest}, index) => ({
           ...rest,
 
-          // JSON STRING
-          validationRules:
-            rest.validationRules
-              ? JSON.stringify(
-                  JSON.parse(
-                    rest.validationRules
-                  )
-                )
-              : '{}',
+          // validationRules: rest.validationRules || "",
+          validationRules: null,
 
           // NUMBER
-          parameterTypeId: Number(
-            rest.parameterTypeId
-          ),
+          parameterTypeId: Number(rest.parameterTypeId),
 
           // NUMBER
           executionOrder: index + 1,
 
           // BOOLEAN
-          isRequired: Boolean(
-            rest.isRequired
-          ),
-        })
-      ),
+          isRequired: Boolean(rest.isRequired),
+        })),
 
-      // BOOLEAN
-      isSecure: Boolean(
-        formData.isSecure
-      ),
+        // BOOLEAN
+        isSecure: Boolean(formData.isSecure),
+      }
+
+      console.log(payload, 'payload')
+
+      const response = await fetchScriptAddUrl(payload)
+
+      if (response?.isSuccess) {
+        notify(response.message || 'Script added successfully')
+        setTimeout(() => {
+          navigate('/qradar/scripts/list')
+        }, 2000)
+      } else {
+        notifyFail(response?.message || 'Failed to add script')
+      }
+    } catch (error) {
+      console.error(error)
+
+      notifyFail('An unexpected error occurred.')
+    } finally {
+      setLoading(false)
     }
-
-    console.log(payload, 'payload')
-
-    const response = await fetchScriptAddUrl(
-      payload
-    )
-
-    if (response?.isSuccess) {
-      notify(
-        response.message ||
-          'Script added successfully'
-      )
-
-      navigate('/qradar/scripts/list')
-    } else {
-      notifyFail(
-        response?.message ||
-          'Failed to add script'
-      )
-    }
-  } catch (error) {
-    console.error(error)
-
-    notifyFail(
-      'An unexpected error occurred.'
-    )
-  } finally {
-    setLoading(false)
   }
-}
 
   if (initialLoading) {
     return <UsersListLoading />
@@ -348,16 +299,11 @@ const handleSubmit = async (e) => {
 
       <div className='card-header bg-heading'>
         <h3 className='card-title'>
-          <span className='white'>
-            Add New Script
-          </span>
+          <span className='white'>Add New Script</span>
         </h3>
 
         <div className='card-toolbar'>
-          <Link
-            to='/qradar/scripts/list'
-            className='white fs-15 text-underline'
-          >
+          <Link to='/qradar/scripts/list' className='white fs-15 text-underline'>
             <i className='fa fa-chevron-left white mg-right-5' />
             Back
           </Link>
@@ -369,10 +315,7 @@ const handleSubmit = async (e) => {
           <div className='row g-3 mb-4'>
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Script Name{' '}
-                <span className='text-danger'>
-                  *
-                </span>
+                Script Name <span className='text-danger'>*</span>
               </label>
 
               <input
@@ -386,10 +329,7 @@ const handleSubmit = async (e) => {
 
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Category{' '}
-                <span className='text-danger'>
-                  *
-                </span>
+                Category <span className='text-danger'>*</span>
               </label>
 
               <select
@@ -398,29 +338,19 @@ const handleSubmit = async (e) => {
                 value={formData.scriptCategoryId}
                 onChange={handleSelectChange}
               >
-                <option value={0}>
-                  Select Category
-                </option>
+                <option value={0}>Select Category</option>
 
-                {dropdowns.scriptCategories.map(
-                  (item) => (
-                    <option
-                      key={item.dataID}
-                      value={item.dataID}
-                    >
-                      {item.dataValue}
-                    </option>
-                  )
-                )}
+                {dropdowns.scriptCategories.map((item) => (
+                  <option key={item.dataID} value={item.dataID}>
+                    {item.dataValue}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Type{' '}
-                <span className='text-danger'>
-                  *
-                </span>
+                Type <span className='text-danger'>*</span>
               </label>
 
               <select
@@ -429,20 +359,13 @@ const handleSubmit = async (e) => {
                 value={formData.scriptTypeId}
                 onChange={handleSelectChange}
               >
-                <option value={0}>
-                  Select Type
-                </option>
+                <option value={0}>Select Type</option>
 
-                {dropdowns.scriptTypes.map(
-                  (item) => (
-                    <option
-                      key={item.dataID}
-                      value={item.dataID}
-                    >
-                      {item.dataValue}
-                    </option>
-                  )
-                )}
+                {dropdowns.scriptTypes.map((item) => (
+                  <option key={item.dataID} value={item.dataID}>
+                    {item.dataValue}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -452,10 +375,7 @@ const handleSubmit = async (e) => {
           <div className='row g-3 mb-4'>
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Executer Type{' '}
-                <span className='text-danger'>
-                  *
-                </span>
+                Executer Type <span className='text-danger'>*</span>
               </label>
 
               <select
@@ -464,29 +384,19 @@ const handleSubmit = async (e) => {
                 value={formData.executorTypeId}
                 onChange={handleSelectChange}
               >
-                <option value={0}>
-                  Select Executer Type
-                </option>
+                <option value={0}>Select Executer Type</option>
 
-                {dropdowns.executionTypes.map(
-                  (item) => (
-                    <option
-                      key={item.dataID}
-                      value={item.dataID}
-                    >
-                      {item.dataValue}
-                    </option>
-                  )
-                )}
+                {dropdowns.executionTypes.map((item) => (
+                  <option key={item.dataID} value={item.dataID}>
+                    {item.dataValue}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Operating System{' '}
-                <span className='text-danger'>
-                  *
-                </span>
+                Operating System <span className='text-danger'>*</span>
               </label>
 
               <select
@@ -497,22 +407,17 @@ const handleSubmit = async (e) => {
               >
                 <option value={0}>Select OS</option>
 
-                {dropdowns.operatingSystems.map(
-                  (item) => (
-                    <option
-                      key={item.dataID}
-                      value={item.dataID}
-                    >
-                      {item.dataValue}
-                    </option>
-                  )
-                )}
+                {dropdowns.operatingSystems.map((item) => (
+                  <option key={item.dataID} value={item.dataID}>
+                    {item.dataValue}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Timeout (Seconds)
+                Timeout (Seconds) <span className='text-danger'>*</span>
               </label>
 
               <input
@@ -530,10 +435,7 @@ const handleSubmit = async (e) => {
           <div className='row g-3 mb-4'>
             <div className='col-md-12'>
               <label className='form-label fw-bold small'>
-                Script Content{' '}
-                <span className='text-danger'>
-                  *
-                </span>
+                Script Content <span className='text-danger'>*</span>
               </label>
 
               <textarea
@@ -542,7 +444,7 @@ const handleSubmit = async (e) => {
                 name='scriptContent'
                 value={formData.scriptContent}
                 onChange={handleChange}
-                 style={{height: '50px'}}
+                style={{height: '50px'}}
               />
             </div>
           </div>
@@ -551,9 +453,7 @@ const handleSubmit = async (e) => {
 
           <div className='row g-3 mb-4'>
             <div className='col-md-10'>
-              <label className='form-label fw-bold small'>
-                Output Schema (JSON)
-              </label>
+              <label className='form-label fw-bold small'>Output Schema (JSON)</label>
 
               <textarea
                 className='form-control form-control-sm'
@@ -576,10 +476,7 @@ const handleSubmit = async (e) => {
                   onChange={handleChange}
                 />
 
-                <label
-                  className='form-check-label small fw-bold ms-9'
-                  htmlFor='isSecure'
-                >
+                <label className='form-check-label small fw-bold ms-9' htmlFor='isSecure'>
                   Is Secure
                 </label>
               </div>
@@ -589,24 +486,16 @@ const handleSubmit = async (e) => {
           {/* PARAMETERS */}
 
           <div className='d-flex justify-content-between align-items-center mt-10 mb-5'>
-            <h4 className='mb-0'>
-              Parameters
-            </h4>
+            <h4 className='mb-0'>Parameters</h4>
 
-            <button
-              type='button'
-              className='btn btn-sm btn-primary'
-              onClick={addParameter}
-            >
+            <button type='button' className='btn btn-sm btn-primary' onClick={addParameter}>
               <i className='fa fa-plus me-2'></i>
               Add Parameter
             </button>
           </div>
 
           {formData.parameters.length === 0 && (
-            <div className='alert alert-info text-center'>
-              No parameters added yet.
-            </div>
+            <div className='alert alert-info text-center'>No parameters added yet.</div>
           )}
 
           {formData.parameters.length > 0 && (
@@ -619,9 +508,15 @@ const handleSubmit = async (e) => {
               >
                 <thead>
                   <tr>
-                    <th style={hs}>Name <span className='text-danger'>*</span></th>
-                    <th style={hs}>Code <span className='text-danger'>*</span></th>
-                    <th style={hs}>Type <span className='text-danger'>*</span></th>
+                    <th style={hs}>
+                      Name <span className='text-danger'>*</span>
+                    </th>
+                    <th style={hs}>
+                      Code <span className='text-danger'>*</span>
+                    </th>
+                    <th style={hs}>
+                      Type <span className='text-danger'>*</span>
+                    </th>
                     <th style={hs}>Default</th>
                     <th style={hs}>Validation Rule</th>
                     <th style={hs}>Required</th>
@@ -630,162 +525,112 @@ const handleSubmit = async (e) => {
                 </thead>
 
                 <tbody>
-                  {formData.parameters.map(
-                    (param, index) => (
-                      <tr
-                        key={param.tempKey}
-                        draggable
-                        onDragStart={(e) => handleDragStart(e, index)}
-                        onDragOver={handleDragOver}
-                        onDrop={(e) => handleDrop(e, index)}
-                        style={{cursor: 'move'}}
-                      >
-                        <td style={cs}>
-                          <input
-                            type='text'
-                            className='form-control form-control-sm'
-                            value={
-                              param.parameterName
-                            }
-                            onChange={(e) =>
-                              handleParameterChange(
-                                param.tempKey,
-                                'parameterName',
-                                e.target.value
-                              )
-                            }
-                          />
-                        </td>
+                  {formData.parameters.map((param, index) => (
+                    <tr
+                      key={param.tempKey}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, index)}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, index)}
+                      style={{cursor: 'move'}}
+                    >
+                      <td style={cs}>
+                        <input
+                          type='text'
+                          className='form-control form-control-sm'
+                          value={param.parameterName}
+                          onChange={(e) =>
+                            handleParameterChange(param.tempKey, 'parameterName', e.target.value)
+                          }
+                        />
+                      </td>
 
-                        <td style={cs}>
-                          <input
-                            type='text'
-                            className='form-control form-control-sm'
-                            value={
-                              param.parameterCode
-                            }
-                            onChange={(e) =>
-                              handleParameterChange(
-                                param.tempKey,
-                                'parameterCode',
-                                e.target.value
-                              )
-                            }
-                          />
-                        </td>
+                      <td style={cs}>
+                        <input
+                          type='text'
+                          className='form-control form-control-sm'
+                          value={param.parameterCode}
+                          onChange={(e) =>
+                            handleParameterChange(param.tempKey, 'parameterCode', e.target.value)
+                          }
+                        />
+                      </td>
 
-                        <td style={cs}>
-                          <select
-                            className='form-select form-select-sm'
-                            value={
-                              param.parameterTypeId
-                            }
-                            onChange={(e) =>
-                              handleParameterChange(
-                                param.tempKey,
-                                'parameterTypeId',
-                                Number(
-                                  e.target.value
-                                )
-                              )
-                            }
-                          >
-                            <option value={0}>
-                              Select
+                      <td style={cs}>
+                        <select
+                          className='form-select form-select-sm'
+                          value={param.parameterTypeId}
+                          onChange={(e) =>
+                            handleParameterChange(
+                              param.tempKey,
+                              'parameterTypeId',
+                              Number(e.target.value)
+                            )
+                          }
+                        >
+                          <option value={0}>Select</option>
+
+                          {dropdowns.parameterTypes.map((item) => (
+                            <option key={item.dataID} value={item.dataID}>
+                              {item.dataValue}
                             </option>
+                          ))}
+                        </select>
+                      </td>
 
-                            {dropdowns.parameterTypes.map(
-                              (item) => (
-                                <option
-                                  key={item.dataID}
-                                  value={
-                                    item.dataID
-                                  }
-                                >
-                                  {item.dataValue}
-                                </option>
-                              )
-                            )}
-                          </select>
-                        </td>
+                      <td style={cs}>
+                        <input
+                          type='text'
+                          className='form-control form-control-sm'
+                          value={param.defaultValue}
+                          onChange={(e) =>
+                            handleParameterChange(param.tempKey, 'defaultValue', e.target.value)
+                          }
+                        />
+                      </td>
 
-                        <td style={cs}>
-                          <input
-                            type='text'
-                            className='form-control form-control-sm'
-                            value={
-                              param.defaultValue
-                            }
-                            onChange={(e) =>
-                              handleParameterChange(
-                                param.tempKey,
-                                'defaultValue',
-                                e.target.value
-                              )
-                            }
-                          />
-                        </td>
+                      <td style={cs}>
+                        <input
+                          type='text'
+                          className='form-control form-control-sm'
+                          value={param.validationRules}
+                          onChange={(e) =>
+                            handleParameterChange(param.tempKey, 'validationRules', e.target.value)
+                          }
+                        />
+                      </td>
 
-                        <td style={cs}>
-                          <input
-                            type='text'
-                            className='form-control form-control-sm'
-                            value={
-                              param.validationRules
-                            }
-                            onChange={(e) =>
-                              handleParameterChange(
-                                param.tempKey,
-                                'validationRules',
-                                e.target.value
-                              )
-                            }
-                          />
-                        </td>
+                      <td
+                        style={{
+                          ...cs,
+                          textAlign: 'center',
+                        }}
+                      >
+                        <input
+                          type='checkbox'
+                          checked={param.isRequired}
+                          onChange={(e) =>
+                            handleParameterChange(param.tempKey, 'isRequired', e.target.checked)
+                          }
+                        />
+                      </td>
 
-
-                        <td
-                          style={{
-                            ...cs,
-                            textAlign: 'center',
-                          }}
+                      <td
+                        style={{
+                          ...cs,
+                          textAlign: 'center',
+                        }}
+                      >
+                        <button
+                          type='button'
+                          className='btn btn-sm btn-light-danger'
+                          onClick={() => removeParameter(param.tempKey)}
                         >
-                          <input
-                            type='checkbox'
-                            checked={
-                              param.isRequired
-                            }
-                            onChange={(e) =>
-                              handleParameterChange(
-                                param.tempKey,
-                                'isRequired',
-                                e.target.checked
-                              )
-                            }
-                          />
-                        </td>
-
-                        <td
-                          style={{
-                            ...cs,
-                            textAlign: 'center',
-                          }}
-                        >
-                          <button
-                            type='button'
-                            className='btn btn-sm btn-light-danger'
-                            onClick={() =>
-                              removeParameter(
-                                param.tempKey
-                              )
-                            }
-                          >
-                            <i className='fa fa-times'></i>
-                          </button>
-                        </td>
-                      </tr>
-                    )
-                  )}
+                          <i className='fa fa-times'></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -793,14 +638,8 @@ const handleSubmit = async (e) => {
         </div>
 
         <div className='card-footer text-end px-5 py-4'>
-          <button
-            type='submit'
-            className='btn btn-primary btn-sm'
-            disabled={loading}
-          >
-            {loading
-              ? 'Saving...'
-              : 'Save Script'}
+          <button type='submit' className='btn btn-primary btn-sm' disabled={loading}>
+            {loading ? 'Saving...' : 'Save Script'}
           </button>
         </div>
       </form>

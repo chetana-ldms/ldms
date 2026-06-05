@@ -725,7 +725,9 @@ function UpdateRule() {
       const response = await fetchRulesUpdateUrl(payload)
       if (response.isSuccess) {
         notify(response.message || 'Rule added successfully')
-        navigate('/qradar/rules-engine/list')
+         setTimeout(() => {
+          navigate('/qradar/rules-engine/list')
+        }, 2000)
       } else {
         notifyFail(response.message || 'Failed to add rule')
       }

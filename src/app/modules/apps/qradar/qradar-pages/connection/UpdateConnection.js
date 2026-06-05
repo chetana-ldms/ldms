@@ -110,7 +110,10 @@ function UpdateConnection() {
       const response = await fetchConnectionUpdateUrl(formData)
       if (response?.isSuccess) {
         notify(response.message || 'Connection updated successfully')
-        navigate('/qradar/connection/list')
+       
+          setTimeout(() => {
+           navigate('/qradar/connection/list')
+        }, 2000)
       } else {
         notifyFail(response?.message || 'Failed to update connection')
       }

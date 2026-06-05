@@ -184,7 +184,9 @@ const UpdateRuleAction = () => {
 
       if (isSuccess) {
         notify('Action Saved')
-        navigate('/qradar/rules-actions/list')
+         setTimeout(() => {
+          navigate('/qradar/rules-actions/list')
+        }, 2000)
       } else {
         notifyFail('Failed to save Rule Action')
       }

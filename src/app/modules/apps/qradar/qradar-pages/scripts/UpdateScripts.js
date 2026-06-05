@@ -202,15 +202,32 @@ function UpdateScripts() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (
-      !formData.scriptName ||
-      formData.scriptCategoryId === 0 ||
-      formData.scriptTypeId === 0 ||
-      formData.executorTypeId === 0 ||
-      formData.operatingSystemId === 0 ||
-      !formData.scriptContent
-    ) {
-      notifyFail('Please fill all mandatory script details.')
+    if (!formData.scriptName) {
+      notifyFail('Script Name is mandatory.')
+      return
+    }
+    if (formData.scriptCategoryId === 0) {
+      notifyFail('Please select a Category.')
+      return
+    }
+    if (formData.scriptTypeId === 0) {
+      notifyFail('Please select a Type.')
+      return
+    }
+    if (formData.executorTypeId === 0) {
+      notifyFail('Please select an Executor Type.')
+      return
+    }
+    if (formData.operatingSystemId === 0) {
+      notifyFail('Please select an Operating System.')
+      return
+    }
+    if (!formData.timeoutSeconds || Number(formData.timeoutSeconds) <= 0) {
+      notifyFail('Timeout (Seconds) is mandatory and must be greater than 0.')
+      return
+    }
+    if (!formData.scriptContent) {
+      notifyFail('Script Content is mandatory.')
       return
     }
 
@@ -225,35 +242,15 @@ function UpdateScripts() {
       }
     }
 
-    try {
-      // Only parse if outputSchema is not empty or just whitespace
-      if (formData.outputSchema && formData.outputSchema.trim() !== '') {
-        JSON.parse(formData.outputSchema)
-      }
-      for (const param of formData.parameters) {
-        // Only parse if validationRules is not empty or just whitespace
-        if (param.validationRules && param.validationRules.trim() !== '') {
-          JSON.parse(param.validationRules)
-        }
-      }
-    } catch (error) {
-      notifyFail('Please enter valid JSON for Output Schema or Validation Rules.')
-      return
-    }
-
     setLoading(true)
     try {
       const payload = {
         ...formData,
-        outputSchema: formData.outputSchema && formData.outputSchema.trim() !== ''
-          ? JSON.stringify(JSON.parse(formData.outputSchema))
-          : '{}',
+        outputSchema: formData.outputSchema || "",
         timeoutSeconds: Number(formData.timeoutSeconds),
         parameters: formData.parameters.map(({tempKey, ...rest}, index) => ({
           ...rest,
-          validationRules: rest.validationRules
-            ? JSON.stringify(JSON.parse(rest.validationRules))
-            : '{}', // Send as empty JSON object if no rules are provided
+          validationRules: rest.validationRules || "",
           parameterTypeId: Number(rest.parameterTypeId),
           executionOrder: index + 1,
           isRequired: Boolean(rest.isRequired),
@@ -266,7 +263,9 @@ function UpdateScripts() {
 
       if (response?.isSuccess) {
         notify(response.message || 'Script updated successfully')
-        navigate('/qradar/scripts/list')
+         setTimeout(() => {
+          navigate('/qradar/scripts/list')
+        }, 2000)
       } else {
         notifyFail(response?.message || 'Failed to update script')
       }
@@ -392,7 +391,9 @@ function UpdateScripts() {
             </div>
 
             <div className='col-md-4'>
-              <label className='form-label fw-bold small'>Timeout (Seconds)</label>
+              <label className='form-label fw-bold small'>
+                Timeout (Seconds) <span className='text-danger'>*</span>
+              </label>
               <input
                 type='number'
                 className='form-control form-control-sm'

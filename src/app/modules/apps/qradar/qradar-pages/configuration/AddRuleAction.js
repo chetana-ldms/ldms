@@ -1,64 +1,62 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { UsersListLoading } from "../components/loading/UsersListLoading";
-import { notify, notifyFail } from "../components/notification/Notification";
-import {
-  fetchRuleActionUrl,
-} from "../../../../../api/ConfigurationApi";
-import { fetchLDPTools, fetchMasterData } from "../../../../../api/Api";
-import { useErrorBoundary } from "react-error-boundary";
-import RuleActionConfigurationModal from './RuleActionConfigurationModal'; // Import the new component
-import { ToastContainer } from "react-toastify";
+import React, {useState, useRef, useEffect} from 'react'
+import {Link, useNavigate} from 'react-router-dom'
+import axios from 'axios'
+import {UsersListLoading} from '../components/loading/UsersListLoading'
+import {notify, notifyFail} from '../components/notification/Notification'
+import {fetchRuleActionUrl} from '../../../../../api/ConfigurationApi'
+import {fetchLDPTools, fetchMasterData} from '../../../../../api/Api'
+import {useErrorBoundary} from 'react-error-boundary'
+import RuleActionConfigurationModal from './RuleActionConfigurationModal' // Import the new component
+import {ToastContainer} from 'react-toastify'
 
 const AddRuleAction = () => {
-  const orgId = Number(sessionStorage.getItem("orgId"));
-  const toolIds = Number(sessionStorage.getItem("toolID"));
-  const handleError = useErrorBoundary();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const orgId = Number(sessionStorage.getItem('orgId'))
+  const toolIds = Number(sessionStorage.getItem('toolID'))
+  const handleError = useErrorBoundary()
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
 
   const [masterData, setMasterData] = useState({
     actionTypes: [],
     executorTypes: [],
     dataTypes: [],
-  });
+  })
 
   const [ruleAction, setRuleAction] = useState({
-    actionName: "",
-    actionCode: "",
+    actionName: '',
+    actionCode: '',
     actionTypeId: 0,
     executorTypeId: 0,
     toolId: 0,
-    configuration: "",
+    configuration: '',
     parameters: [],
-  });
+  })
 
-  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false)
 
   useEffect(() => {
     const loadData = async () => {
       try {
         const [actionTypes, executorTypes, dataTypes] = await Promise.all([
-          fetchMasterData({ maserDataType: "action_type", orgId, toolId: toolIds }),
-          fetchMasterData({ maserDataType: "executor_type", orgId, toolId: toolIds }),
-          fetchMasterData({ maserDataType: "global_data_type", orgId, toolId: toolIds }),
-        ]);
+          fetchMasterData({maserDataType: 'action_type', orgId, toolId: toolIds}),
+          fetchMasterData({maserDataType: 'executor_type', orgId, toolId: toolIds}),
+          fetchMasterData({maserDataType: 'global_data_type', orgId, toolId: toolIds}),
+        ])
         setMasterData({
           actionTypes: actionTypes || [],
           executorTypes: executorTypes || [],
           dataTypes: dataTypes || [],
-        });
+        })
       } catch (error) {
-        handleError(error);
+        handleError(error)
       }
-    };
-    loadData();
-  }, [orgId, toolIds]);
+    }
+    loadData()
+  }, [orgId, toolIds])
 
   const handleRuleChange = (field, value) => {
-    setRuleAction((prev) => ({ ...prev, [field]: value }));
-  };
+    setRuleAction((prev) => ({...prev, [field]: value}))
+  }
 
   const addParameter = () => {
     setRuleAction((prev) => ({
@@ -67,77 +65,83 @@ const AddRuleAction = () => {
         ...prev.parameters,
         {
           parameterId: 0,
-          parameterCode: "",
-          parameterName: "",
+          parameterCode: '',
+          parameterName: '',
           dataTypeId: 0,
           isRequired: false,
-          defaultValue: "",
-          validationRulesJson: "",
+          defaultValue: '',
+          validationRulesJson: '',
           isSensitive: false,
           isDeleted: false,
         },
       ],
-    }));
-  };
+    }))
+  }
 
   const removeParameter = (index) => {
     setRuleAction((prev) => ({
       ...prev,
       parameters: prev.parameters.filter((_, i) => i !== index),
-    }));
-  };
+    }))
+  }
 
   const handleParameterChange = (index, field, value) => {
-    const newParams = [...ruleAction.parameters];
-    newParams[index][field] = value;
-    setRuleAction((prev) => ({ ...prev, parameters: newParams }));
-  };
+    const newParams = [...ruleAction.parameters]
+    newParams[index][field] = value
+    setRuleAction((prev) => ({...prev, parameters: newParams}))
+  }
 
   const handleDragStart = (e, index) => {
-    e.dataTransfer.setData('draggedIndex', index);
-  };
+    e.dataTransfer.setData('draggedIndex', index)
+  }
 
   const handleDragOver = (e) => {
-    e.preventDefault();
-  };
+    e.preventDefault()
+  }
 
   const handleDrop = (e, targetIndex) => {
-    const draggedIndex = e.dataTransfer.getData('draggedIndex');
-    const newParams = [...ruleAction.parameters];
-    const [draggedItem] = newParams.splice(draggedIndex, 1);
-    newParams.splice(targetIndex, 0, draggedItem);
-    setRuleAction((prev) => ({ ...prev, parameters: newParams }));
-  };
+    const draggedIndex = e.dataTransfer.getData('draggedIndex')
+    const newParams = [...ruleAction.parameters]
+    const [draggedItem] = newParams.splice(draggedIndex, 1)
+    newParams.splice(targetIndex, 0, draggedItem)
+    setRuleAction((prev) => ({...prev, parameters: newParams}))
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (
       !ruleAction.actionName ||
       !ruleAction.actionCode ||
       Number(ruleAction.actionTypeId) === 0 ||
       Number(ruleAction.executorTypeId) === 0
     ) {
-      notifyFail("Please fill all mandatory fields: Name, Code, Type, and Executor");
-      return;
+      notifyFail('Please fill all mandatory fields: Name, Code, Type, and Executor')
+      return
     }
 
     if (ruleAction.parameters.length === 0) {
-      notifyFail("Please add at least one Parameter.");
-      return;
+      notifyFail('Please add at least one Parameter.')
+      return
     }
-    if (ruleAction.parameters.some((p) => !p.parameterCode || !p.parameterName || Number(p.dataTypeId) === 0)) {
-      notifyFail("Please ensure all fields (Code, Name, and Data Type) for added parameters are filled.");
-      return;
+    if (
+      ruleAction.parameters.some(
+        (p) => !p.parameterCode || !p.parameterName || Number(p.dataTypeId) === 0
+      )
+    ) {
+      notifyFail(
+        'Please ensure all fields (Code, Name, and Data Type) for added parameters are filled.'
+      )
+      return
     }
 
-    setLoading(true);
+    setLoading(true)
     const payload = {
       actionName: ruleAction.actionName,
       actionCode: ruleAction.actionCode,
       actionTypeId: Number(ruleAction.actionTypeId),
       executorTypeId: Number(ruleAction.executorTypeId),
       toolId: toolIds,
-      userId: Number(sessionStorage.getItem("userId")),
+      userId: Number(sessionStorage.getItem('userId')),
       // configuration: ruleAction.configuration,
       parameters: ruleAction.parameters.map((param, index) => ({
         parameterCode: param.parameterCode,
@@ -149,45 +153,45 @@ const AddRuleAction = () => {
         executionOrder: index + 1,
         isSensitive: param.isSensitive,
       })),
-    };
+    }
 
     try {
-      const responseData = await fetchRuleActionUrl(payload);
-      const { isSuccess } = responseData;
+      const responseData = await fetchRuleActionUrl(payload)
+      const {isSuccess} = responseData
 
       if (isSuccess) {
-        notify("Rule Action Saved");
-        navigate("/qradar/rules-actions/list");
+        notify('Rule Action Saved')
+
+        setTimeout(() => {
+          navigate('/qradar/rules-actions/list')
+        }, 2000)
       } else {
-        notifyFail("Failed to save Rule Action");
+        notifyFail('Failed to save Rule Action')
       }
     } catch (error) {
-      handleError(error);
+      handleError(error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleSaveConfig = (newConfig) => {
-    handleRuleChange('configuration', newConfig);
-    setIsConfigModalOpen(false);
-  };
+    handleRuleChange('configuration', newConfig)
+    setIsConfigModalOpen(false)
+  }
 
   return (
-    <div className="config card">
-       <ToastContainer />
+    <div className='config card'>
+      <ToastContainer />
       {loading && <UsersListLoading />}
-      <div className="card-header bg-heading">
-        <h3 className="card-title align-items-start flex-column">
-          <span className="white">Add New Action</span>
+      <div className='card-header bg-heading'>
+        <h3 className='card-title align-items-start flex-column'>
+          <span className='white'>Add New Action</span>
         </h3>
-        <div className="card-toolbar">
-          <div className="d-flex align-items-center gap-2 gap-lg-3">
-            <Link
-              to="/qradar/rules-actions/list"
-              className="white fs-15 text-underline"
-            >
-              <i className="fa fa-chevron-left white mg-right-5" />
+        <div className='card-toolbar'>
+          <div className='d-flex align-items-center gap-2 gap-lg-3'>
+            <Link to='/qradar/rules-actions/list' className='white fs-15 text-underline'>
+              <i className='fa fa-chevron-left white mg-right-5' />
               Back
             </Link>
           </div>
@@ -197,7 +201,9 @@ const AddRuleAction = () => {
         <div className='card-body pad-10'>
           <div className='row mb-8'>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Name <span className='text-danger'>*</span></label>
+              <label className='form-label fw-bold small'>
+                Name <span className='text-danger'>*</span>
+              </label>
               <input
                 type='text'
                 className='form-control form-control-sm'
@@ -207,7 +213,9 @@ const AddRuleAction = () => {
               />
             </div>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Code <span className='text-danger'>*</span></label>
+              <label className='form-label fw-bold small'>
+                Code <span className='text-danger'>*</span>
+              </label>
               <input
                 type='text'
                 className='form-control form-control-sm'
@@ -217,7 +225,9 @@ const AddRuleAction = () => {
               />
             </div>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Type <span className='text-danger'>*</span></label>
+              <label className='form-label fw-bold small'>
+                Type <span className='text-danger'>*</span>
+              </label>
               <select
                 className='form-select form-select-sm'
                 value={ruleAction.actionTypeId}
@@ -232,7 +242,9 @@ const AddRuleAction = () => {
               </select>
             </div>
             <div className='col-md-4 mb-2'>
-              <label className='form-label fw-bold small'>Executor Type <span className='text-danger'>*</span></label>
+              <label className='form-label fw-bold small'>
+                Executor Type <span className='text-danger'>*</span>
+              </label>
               <select
                 className='form-select form-select-sm'
                 value={ruleAction.executorTypeId}
@@ -248,7 +260,7 @@ const AddRuleAction = () => {
             </div>
             <div className='col-md-12 mb-2'>
               <label className='form-label fw-bold small'>Configuration (JSON string)</label>
-              <div className="input-group">
+              <div className='input-group'>
                 <textarea
                   className='form-control form-control-sm'
                   rows='3'
@@ -257,23 +269,23 @@ const AddRuleAction = () => {
                   onChange={(e) => handleRuleChange('configuration', e.target.value)}
                   placeholder='{"key": "value"}'
                 />
-                <div className="input-group-append d-flex flex-column gap-1 ms-2">
-                   <button 
-                    type="button" 
-                    className="btn btn-sm btn-icon btn-light-primary" 
+                <div className='input-group-append d-flex flex-column gap-1 ms-2'>
+                  <button
+                    type='button'
+                    className='btn btn-sm btn-icon btn-light-primary'
                     onClick={() => setIsConfigModalOpen(true)}
-                    title="Add/Edit Configuration"
-                   >
-                     <i className="fa fa-plus" />
-                   </button>
-                   <button 
-                    type="button" 
-                    className="btn btn-sm btn-icon btn-light-danger" 
+                    title='Add/Edit Configuration'
+                  >
+                    <i className='fa fa-plus' />
+                  </button>
+                  <button
+                    type='button'
+                    className='btn btn-sm btn-icon btn-light-danger'
                     onClick={() => handleRuleChange('configuration', '')}
-                    title="Remove Configuration"
-                   >
-                     <i className="fa fa-trash" />
-                   </button>
+                    title='Remove Configuration'
+                  >
+                    <i className='fa fa-trash' />
+                  </button>
                 </div>
               </div>
             </div>
@@ -281,7 +293,9 @@ const AddRuleAction = () => {
 
           <div className='border-top pt-5'>
             <div className='d-flex justify-content-between align-items-center mb-2'>
-              <h5 className='mb-0'>Parameters <span className='text-danger'>*</span></h5>
+              <h5 className='mb-0'>
+                Parameters <span className='text-danger'>*</span>
+              </h5>
               <button type='button' className='btn btn-sm btn-primary' onClick={addParameter}>
                 <i className='fa fa-plus me-2'></i> Add Parameter
               </button>
@@ -302,13 +316,13 @@ const AddRuleAction = () => {
                 </thead>
                 <tbody>
                   {ruleAction.parameters.map((param, index) => (
-                    <tr 
+                    <tr
                       key={index}
                       draggable
                       onDragStart={(e) => handleDragStart(e, index)}
                       onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, index)}
-                      style={{ cursor: 'move' }}
+                      style={{cursor: 'move'}}
                     >
                       <td>
                         <input
@@ -392,7 +406,7 @@ const AddRuleAction = () => {
                           className='btn btn-icon btn-light-danger btn-sm'
                           onClick={() => removeParameter(index)}
                         >
-                           <i className='fa fa-times' />
+                          <i className='fa fa-times' />
                         </button>
                       </td>
                     </tr>
@@ -410,7 +424,7 @@ const AddRuleAction = () => {
           </div>
         </div>
         <div className='card-footer d-flex justify-content-end pad-10'>
-          <button type='submit'  className='btn btn-new btn-small' disabled={loading}>
+          <button type='submit' className='btn btn-new btn-small' disabled={loading}>
             {!loading ? 'Save' : 'Please wait...'}
           </button>
         </div>
@@ -423,7 +437,7 @@ const AddRuleAction = () => {
         onSave={handleSaveConfig}
       />
     </div>
-  );
-};
+  )
+}
 
-export { AddRuleAction };
+export {AddRuleAction}

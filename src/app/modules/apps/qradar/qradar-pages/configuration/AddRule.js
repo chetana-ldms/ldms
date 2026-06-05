@@ -718,8 +718,9 @@ function AddRule() {
 
       if (res.isSuccess) {
         notify(res.message || 'Rule added')
-
-        navigate('/qradar/rules-engine/list')
+        setTimeout(() => {
+          navigate('/qradar/rules-engine/list')
+        }, 2000)
       } else {
         notifyFail(res.message || 'Failed')
       }

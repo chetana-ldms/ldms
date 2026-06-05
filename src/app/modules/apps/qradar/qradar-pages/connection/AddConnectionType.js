@@ -86,7 +86,10 @@ function AddConnectionType() {
       const response = await fetchConnectionTypeAddUrl(formData)
       if (response?.isSuccess) {
         notify(response.message || 'Connection Type added successfully')
-        navigate('/qradar/connection-types/list')
+        
+          setTimeout(() => {
+           navigate('/qradar/connection-types/list')
+        }, 2000)
       } else {
         notifyFail(response?.message || 'Failed to add connection type')
       }

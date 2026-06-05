@@ -1,8 +1,10 @@
-
 import React, {useState, useEffect} from 'react'
 import {Link, useLocation, useNavigate, useParams} from 'react-router-dom'
 import {fetchMasterData} from '../../../../../api/Api'
-import {fetchConnectionTypeSearchUrl, fetchConnectionTypeUpdateUrl} from '../../../../../api/ConnectionApi'
+import {
+  fetchConnectionTypeSearchUrl,
+  fetchConnectionTypeUpdateUrl,
+} from '../../../../../api/ConnectionApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
@@ -117,10 +119,16 @@ function UpdateConnectionType() {
 
     setLoading(true)
     try {
-      const response = await fetchConnectionTypeUpdateUrl({...formData, connectionTypeId: Number(id)})
+      const response = await fetchConnectionTypeUpdateUrl({
+        ...formData,
+        connectionTypeId: Number(id),
+      })
       if (response?.isSuccess) {
         notify(response.message || 'Connection Type added successfully')
-        navigate('/qradar/connection-types/list')
+
+        setTimeout(() => {
+          navigate('/qradar/connection-types/list')
+        }, 2000)
       } else {
         notifyFail(response?.message || 'Failed to add connection type')
       }
@@ -146,7 +154,6 @@ function UpdateConnectionType() {
           ) : (
             <span className='white'>Update Connection Type</span>
           )}
-         
         </h3>
         <div className='card-toolbar'>
           <Link to='/qradar/connection-types/list' className='white fs-15 text-underline'>
@@ -190,9 +197,7 @@ function UpdateConnectionType() {
             </div>
 
             <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Icon
-              </label>
+              <label className='form-label fw-bold small'>Icon</label>
               <input
                 type='text'
                 className='form-control form-control-sm'
