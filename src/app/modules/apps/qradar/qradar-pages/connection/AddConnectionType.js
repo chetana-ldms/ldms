@@ -1,4 +1,3 @@
-
 import React, {useState, useEffect} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {fetchMasterData} from '../../../../../api/Api'
@@ -86,9 +85,9 @@ function AddConnectionType() {
       const response = await fetchConnectionTypeAddUrl(formData)
       if (response?.isSuccess) {
         notify(response.message || 'Connection Type added successfully')
-        
-          setTimeout(() => {
-           navigate('/qradar/connection-types/list')
+
+        setTimeout(() => {
+          navigate('/qradar/connection-types/list')
         }, 2000)
       } else {
         notifyFail(response?.message || 'Failed to add connection type')
@@ -123,7 +122,7 @@ function AddConnectionType() {
           <div className='row g-3 mb-4'>
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Type Name <span className='text-danger'>*</span>
+                Name <span className='text-danger'>*</span>
               </label>
               <input
                 type='text'
@@ -137,7 +136,7 @@ function AddConnectionType() {
 
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Type Code <span className='text-danger'>*</span>
+                Code <span className='text-danger'>*</span>
               </label>
               <input
                 type='text'
@@ -150,9 +149,7 @@ function AddConnectionType() {
             </div>
 
             <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Icon
-              </label>
+              <label className='form-label fw-bold small'>Icon</label>
               <input
                 type='text'
                 className='form-control form-control-sm'

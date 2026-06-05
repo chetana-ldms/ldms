@@ -18,6 +18,7 @@ function AddConnection() {
     authTypes: [],
     environments: [],
     connectionTypes: [],
+    executorTypes: [],
   })
 
   const [formData, setFormData] = useState({
@@ -27,6 +28,7 @@ function AddConnection() {
     authTypeId: 0,
     environmentId: 0,
     configJson: '',
+    executorTypeId: 0,
     isDefault: 0,
     isSystem: 0,
     userId: userId,
@@ -35,15 +37,17 @@ function AddConnection() {
   useEffect(() => {
     const loadMasterData = async () => {
       try {
-        const [auths, envs, types] = await Promise.all([
+        const [auths, envs, types, executors] = await Promise.all([
           fetchMasterData({maserDataType: 'auth_type', orgId, toolId}),
           fetchMasterData({maserDataType: 'environment', orgId, toolId}),
           fetchConnectionTypeSearchUrl({}),
+          fetchMasterData({maserDataType: 'executor_type', orgId, toolId}),
         ])
         setDropdownData({
           authTypes: auths || [],
           environments: envs || [],
           connectionTypes: types?.data || [],
+          executorTypes: executors || [],
         })
       } catch (error) {
         console.error('Error loading master data:', error)
@@ -79,7 +83,8 @@ function AddConnection() {
       !formData.connectionName ||
       formData.connectionTypeId === 0 ||
       formData.authTypeId === 0 ||
-      formData.environmentId === 0
+      formData.environmentId === 0 ||
+      formData.executorTypeId === 0
     ) {
       notifyFail('Please fill all mandatory fields.')
       return
@@ -127,7 +132,7 @@ function AddConnection() {
           <div className='row g-3 mb-4'>
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Connection Name <span className='text-danger'>*</span>
+               Name <span className='text-danger'>*</span>
               </label>
               <input
                 type='text'
@@ -139,7 +144,7 @@ function AddConnection() {
             </div>
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Connection Code <span className='text-danger'>*</span>
+              Code <span className='text-danger'>*</span>
               </label>
               <input
                 type='text'
@@ -151,7 +156,7 @@ function AddConnection() {
             </div>
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Connection Type <span className='text-danger'>*</span>
+             Type <span className='text-danger'>*</span>
               </label>
               <select
                 className='form-select form-select-sm'
@@ -206,13 +211,31 @@ function AddConnection() {
                 ))}
               </select>
             </div>
-            <div className='col-md-4 d-flex align-items-center gap-4'>
+            <div className='col-md-4'>
+              <label className='form-label fw-bold small'>
+                Executor Type <span className='text-danger'>*</span>
+              </label>
+              <select
+                className='form-select form-select-sm'
+                name='executorTypeId'
+                value={formData.executorTypeId}
+                onChange={handleSelectChange}
+              >
+                <option value={0}>Select Executor Type</option>
+                {dropdownData.executorTypes.map((i) => (
+                  <option key={i.dataID} value={i.dataID}>
+                    {i.dataValue}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className='row g-3 mb-4'>
+            <div className='col-md-12 d-flex align-items-center gap-4'>
               <div className='form-check form-check-custom mt-6'>
                 <input
                   className='form-check-input'
                   type='checkbox'
-                  name='isDefault'
-                  id='isDefault'
                   checked={formData.isDefault === 1}
                   onChange={handleChange}
                 />

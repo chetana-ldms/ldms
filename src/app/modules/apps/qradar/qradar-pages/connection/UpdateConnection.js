@@ -26,6 +26,7 @@ function UpdateConnection() {
     authTypes: [],
     environments: [],
     connectionTypes: [],
+    executorTypes: [],
   })
 
   const [formData, setFormData] = useState({
@@ -36,6 +37,7 @@ function UpdateConnection() {
     authTypeId: 0,
     environmentId: 0,
     configJson: '',
+    executorTypeId: 0,
     isDefault: 0,
     isSystem: 0,
     userId: userId,
@@ -44,17 +46,19 @@ function UpdateConnection() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [auths, envs, types, details] = await Promise.all([
+        const [auths, envs, types, details, executors] = await Promise.all([
           fetchMasterData({maserDataType: 'auth_type', orgId, toolId}),
           fetchMasterData({maserDataType: 'environment', orgId, toolId}),
           fetchConnectionTypeSearchUrl({}),
           fetchConnectionSearchUrl({connectionId: Number(id)}),
+          fetchMasterData({maserDataType: 'executor_type', orgId, toolId}),
         ])
 
         setDropdownData({
           authTypes: auths || [],
           environments: envs || [],
           connectionTypes: types?.data || [],
+          executorTypes: executors || [],
         })
 
         if (details?.isSuccess && details.data?.length > 0) {
@@ -67,6 +71,7 @@ function UpdateConnection() {
             authTypeId: item.authTypeId || 0,
             environmentId: item.environmentId || 0,
             configJson: item.configJson || '',
+            executorTypeId: item.executorTypeId || 0,
             isDefault: item.isDefault || 0,
             isSystem: item.isSystem || 0,
             userId: userId,
@@ -100,7 +105,12 @@ function UpdateConnection() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!formData.connectionCode || !formData.connectionName || formData.connectionTypeId === 0) {
+    if (
+      !formData.connectionCode ||
+      !formData.connectionName ||
+      formData.connectionTypeId === 0 ||
+      formData.executorTypeId === 0
+    ) {
       notifyFail('Please fill mandatory fields.')
       return
     }
@@ -147,7 +157,7 @@ function UpdateConnection() {
           <div className='row g-3 mb-4'>
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Connection Name <span className='text-danger'>*</span>
+              Name <span className='text-danger'>*</span>
               </label>
               <input
                 disabled={isViewMode}
@@ -160,7 +170,7 @@ function UpdateConnection() {
             </div>
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Connection Code <span className='text-danger'>*</span>
+               Code <span className='text-danger'>*</span>
               </label>
               <input
                 disabled={isViewMode}
@@ -173,7 +183,7 @@ function UpdateConnection() {
             </div>
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Connection Type <span className='text-danger'>*</span>
+              Type <span className='text-danger'>*</span>
               </label>
               <select
                 disabled={isViewMode}
@@ -231,7 +241,28 @@ function UpdateConnection() {
                 ))}
               </select>
             </div>
-            <div className='col-md-4 d-flex align-items-center gap-4'>
+            <div className='col-md-4'>
+              <label className='form-label fw-bold small'>
+                Executor Type <span className='text-danger'>*</span>
+              </label>
+              <select
+                disabled={isViewMode}
+                className='form-select form-select-sm'
+                name='executorTypeId'
+                value={formData.executorTypeId}
+                onChange={handleSelectChange}
+              >
+                <option value={0}>Select Executor Type</option>
+                {dropdownData.executorTypes.map((i) => (
+                  <option key={i.dataID} value={i.dataID}>
+                    {i.dataValue}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className='row g-3 mb-4'>
+            <div className='col-md-12 d-flex align-items-center gap-4'>
               <div className='form-check form-check-custom mt-6'>
                 <input
                   disabled={isViewMode}

@@ -168,7 +168,7 @@ function UpdateConnectionType() {
           <div className='row g-3 mb-4'>
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Type Name <span className='text-danger'>*</span>
+                Name <span className='text-danger'>*</span>
               </label>
               <input
                 type='text'
@@ -183,7 +183,7 @@ function UpdateConnectionType() {
 
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Type Code <span className='text-danger'>*</span>
+                Code <span className='text-danger'>*</span>
               </label>
               <input
                 type='text'
