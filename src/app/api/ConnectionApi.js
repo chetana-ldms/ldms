@@ -1,13 +1,13 @@
 import FetchWithToken from "../modules/auth/FetchWithToken"
 
-const ConnectionTypeAddUrl ="http://10.41.3.232:501/api/v1/ConnectionEngine/ConnectionType/Add"
-const ConnectionTypeUpdateUrl ="http://10.41.3.232:501/api/v1/ConnectionEngine/ConnectionType/Update"
-const ConnectionTypeDeleteUrl ="http://10.41.3.232:501/api/v1/ConnectionEngine/ConnectionType/Delete"
-const ConnectionTypeSearchUrl ="http://10.41.3.232:501/api/v1/ConnectionEngine/ConnectionType/Search"
-const ConnectionAddUrl ="http://10.41.3.232:501/api/v1/ConnectionEngine/Connection/Add"
-const ConnectionUpdateUrl ="http://10.41.3.232:501/api/v2/ConnectionEngine/Connection/Update"
-const ConnectionDeleteUrl ="http://10.41.3.232:501/api/v1/ConnectionEngine/Connection/Delete"
-const ConnectionSearchUrl ="http://10.41.3.232:501/api/v1/ConnectionEngine/Connection/Search"
+const ConnectionTypeAddUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/ConnectionType/Add"
+const ConnectionTypeUpdateUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/ConnectionType/Update"
+const ConnectionTypeDeleteUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/ConnectionType/Delete"
+const ConnectionTypeSearchUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/ConnectionType/Search"
+const ConnectionAddUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/Connection/Add"
+const ConnectionUpdateUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/Connection/Update"
+const ConnectionDeleteUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/Connection/Delete"
+const ConnectionSearchUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/Connection/Search"
 
 export const fetchConnectionTypeAddUrl = async (data) => {
   try {
