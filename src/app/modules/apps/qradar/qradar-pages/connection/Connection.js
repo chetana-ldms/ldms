@@ -130,7 +130,7 @@ const Connection = () => {
               <th>Name</th>
               <th>Code</th>
               <th>Type</th>
-              <th>Auth</th>
+              <th>Auth Type</th>
               <th>Env</th>
               <th>Default</th>
               <th>System</th>

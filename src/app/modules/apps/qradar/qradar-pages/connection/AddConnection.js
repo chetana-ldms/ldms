@@ -236,6 +236,8 @@ function AddConnection() {
                 <input
                   className='form-check-input'
                   type='checkbox'
+                  name='isDefault'
+                  id='isDefault'
                   checked={formData.isDefault === 1}
                   onChange={handleChange}
                 />
