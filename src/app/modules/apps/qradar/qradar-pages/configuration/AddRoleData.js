@@ -31,18 +31,13 @@ const AddRoleData = () => {
       setLoading(false)
       return
     }
-     if (!parentRoleId) {
-      notifyFail('Select Parent Role')
-      setLoading(false)
-      return
-    }
     const createdUserId = Number(sessionStorage.getItem('userId'))
     const createdDate = new Date().toISOString()
     var data = {
       roleName: roleName.current.value,
       sysrole: 0,
       orgId: selectedOrganization,
-      parentRoleId: parentRoleId || null,
+      parentRoleId: parentRoleId || 0,
       globalAdminRole: 0,
       clientAdminRole: 0,
       createdDate,

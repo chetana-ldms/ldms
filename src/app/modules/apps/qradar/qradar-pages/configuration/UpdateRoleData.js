@@ -90,12 +90,7 @@ const UpdateRoleData = () => {
       setLoading(false)
       return
     }
-    if (!role.parentRoleId) {
-      notifyFail('select a Parent Role')
-      setLoading(false)
-      return
-    }
-    if (Number(id) === Number(role.parentRoleId)) {
+    if (role.parentRoleId && Number(id) === Number(role.parentRoleId)) {
       notifyFail('Role and Parent Role should be different')
       setLoading(false)
       return

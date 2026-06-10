@@ -1,3 +1,5 @@
+import FetchWithToken from "../modules/auth/FetchWithToken"
+
 const ControlsTrackingUrl="http://10.41.3.232:501/api/Compliance/v1/Controls/Tracking"
 const ControlsUpdateStatusUrl="http://10.41.3.232:501/api/Compliance/v1/Controls/UpdateStatus"
 const ControlsStatusSummaryUrl="http://10.41.3.232:501/api/Compliance/v1/Controls/StatusSummary"
