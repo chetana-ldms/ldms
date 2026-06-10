@@ -1,13 +1,14 @@
 
 import React, {useState, useEffect, useRef} from 'react'
-import {Link, useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import {useErrorBoundary} from 'react-error-boundary'
 import Pagination from '../../../../../../utils/Pagination'
 import useFeatureActions from '../configuration/useFeatureActions'
-import {fetchControlsTrackingUrl} from '../../../../../api/ComplianceApi'
+import {fetchControlsTrackingUrl, fetchControlsUpdateStatusUrl} from '../../../../../api/ComplianceApi'
+import {fetchMasterData} from '../../../../../api/Api'
 
 const ControlsTracking = () => {
   const navigate = useNavigate()
@@ -23,6 +24,9 @@ const ControlsTracking = () => {
   const [searchValue, setSearchValue] = useState('')
   const [selectedTrackingIds, setSelectedTrackingIds] = useState([])
   const [expandedId, setExpandedId] = useState(null)
+  const [statusDropDown, setStatusDropDown] = useState([])
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false)
+  const [selectedStatus, setSelectedStatus] = useState('')
 
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
@@ -37,6 +41,18 @@ const ControlsTracking = () => {
   }
 
   useEffect(() => { reload() }, [])
+
+  useEffect(() => {
+    const fetchStatusData = async () => {
+      try {
+        const data = await fetchMasterData({maserDataType: 'compliance_control_status', orgId, toolId})
+        setStatusDropDown(data || [])
+      } catch (error) {
+        console.error('Error fetching status master data:', error)
+      }
+    }
+    fetchStatusData()
+  }, [orgId, toolId])
 
   const handleSearchChange = (e) => {
     setSearchValue(e.target.value)
@@ -61,6 +77,36 @@ const ControlsTracking = () => {
     } else {
       setSelectedTrackingIds([])
     }
+  }
+
+  const handleSubmitStatus = async () => {
+    if (!selectedStatus) {
+      notifyFail('Please select a status')
+      return
+    }
+    try {
+      setLoading(true)
+      const userId = Number(sessionStorage.getItem('userId'))
+
+      const requests = selectedTrackingIds.map((id) =>
+        fetchControlsUpdateStatusUrl({
+          trackingId: Number(id),
+          statusId: Number(selectedStatus),
+          userId: userId,
+        })
+      )
+
+      const responses = await Promise.all(requests)
+      if (responses.every((res) => res?.isSuccess)) {
+        notify('Status updated successfully')
+        setSelectedTrackingIds([])
+        setShowStatusDropdown(false)
+        setSelectedStatus('')
+        reload()
+      } else {
+        notifyFail('Update failed for one or more records')
+      }
+    } catch (e) { handleError(e) } finally { setLoading(false) }
   }
 
   const handleExportCSV = () => {
@@ -99,32 +145,47 @@ const ControlsTracking = () => {
   return (
     <div className='config card pad-10'>
       <ToastContainer />
-      <div className='row align-items-center g-3'>
-        <div className='col-md-4'>
+      <div className='row align-items-center mb-5'>
+        <div className='col-md-3'>
           <h3 className='card-label fw-bold fs-3 mb-0 text-nowrap'>
             Controls Tracking ({filteredControls.length})
           </h3>
         </div>
-        <div className='col-md-4 d-flex gap-2 justify-content-center'>
-          <button
-            className='btn btn-sm btn-primary'
-            disabled={selectedTrackingIds.length === 0}
-            onClick={() => console.log('Status Update for:', selectedTrackingIds)}
-          >
-            Status
-          </button>
-          <button
-            className='btn btn-sm btn-secondary'
-            onClick={handleExportCSV}
-          >
-            Export
-          </button>
+        <div className='col-md-1 d-flex gap-2 justify-content-start align-items-center'>
+          <div className='dropdown-wrapper position-relative'>
+            <button
+              className='btn btn-small fw-bold fs-14 btn-green'
+              disabled={selectedTrackingIds.length === 0}
+              onClick={() => setShowStatusDropdown(!showStatusDropdown)}
+            >
+              Status
+            </button>
+            {showStatusDropdown && (
+              <div className='alert-action shadow' style={{position: 'absolute', right: 0, zIndex: 1050, background: 'white', border: '1px solid #ccc', borderRadius: '4px', marginTop: '5px', padding: '10px', width: '250px'}}>
+                <div className='d-flex justify-content-end mb-2'>
+                  <button type='button' className='btn-close' onClick={() => setShowStatusDropdown(false)} />
+                </div>
+                <select className='form-select form-select-sm mb-3' value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
+                  <option value=''>Select Status</option>
+                  {statusDropDown.map((item) => (
+                    <option key={item.dataID} value={item.dataID}>
+                      {item.dataValue}
+                    </option>
+                  ))}
+                </select>
+                <button className='btn btn-sm btn-primary w-100' onClick={handleSubmitStatus}>
+                  Submit
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-        <div className='col-md-4'>
+         <div className='col-md-7 d-flex gap-2 justify-content-end align-items-center'>
+        
           <div className='input-group'>
             <input
               type='text'
-              className='form-control form-control-sm'
+              className='form-control form-control-sm border-end-0'
               placeholder='Search by Control Name...'
               value={searchValue}
               onChange={handleSearchChange}
@@ -133,6 +194,15 @@ const ControlsTracking = () => {
               <i className='fas fa-search' />
             </button>
           </div>
+        </div>
+         <div className='col-md-1 d-flex gap-2 justify-content-end align-items-center'>
+        
+          <button
+            className='btn btn-sm btn-secondary'
+            onClick={handleExportCSV}
+          >
+            Export
+          </button>
         </div>
       </div>
 
@@ -154,8 +224,6 @@ const ControlsTracking = () => {
               <th>Control Name</th>
               <th>Domain</th>
               <th>Status</th>
-              <th>Modified Date</th>
-              <th>Modified User</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -178,20 +246,15 @@ const ControlsTracking = () => {
                   <td>{item.controlName}</td>
                   <td>{item.domainName}</td>
                   <td>{item.statusName}</td>
-                  <td>{item.modifiedDate}</td>
-                  <td>{item.modifiedUser}</td>
                   <td>
                     <span className='me-5' title='Details' onClick={() => toggleRow(item.trackingId)}>
                       <i className={`fa ${expandedId === item.trackingId ? 'fa-chevron-up' : 'fa-chevron-down'} cursor`} />
                     </span>
-                    <Link className='text-white me-5' to={`/qradar/compliance/controls-tracking/update/${item.trackingId}`} title='Edit'>
-                      <i className='fa fa-pencil cursor link' />
-                    </Link>
                   </td>
                 </tr>
                 {expandedId === item.trackingId && (
                   <tr className='bg-light fs-12'>
-                    <td colSpan={8}>
+                    <td colSpan={6}>
                       <div className='p-5'>
                         <div className='mb-2'><strong>Control Description:</strong> {item.controlDescription || '-'}</div>
                         <div><strong>Remarks:</strong> {item.remarks || '-'}</div>
