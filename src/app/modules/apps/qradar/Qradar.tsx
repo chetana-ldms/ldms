@@ -148,6 +148,9 @@ import UpdateConnection from './qradar-pages/connection/UpdateConnection'
 import ConnectionType from './qradar-pages/connection/ConnectionType'
 import AddConnectionType from './qradar-pages/connection/AddConnectionType'
 import UpdateConnectionType from './qradar-pages/connection/UpdateConnectionType'
+import Dashboard from './qradar-pages/compliance/Dashboard'
+import ControlsTracking from './qradar-pages/compliance/ControlsTracking'
+import Domains from './qradar-pages/compliance/Domains'
 
 
 const QradarPages = () => {
@@ -301,6 +304,9 @@ const QradarPages = () => {
        <Route path='connection-types/:status' element={<ConnectionType/>} />
       <Route path='connection-types/add' element={<AddConnectionType />} />
       <Route path='/connection-types/update/:id' element={<UpdateConnectionType />} />
+       <Route path='dashboard/:status' element={<Dashboard/>} />
+       <Route path='controls-tracking/:status' element={<ControlsTracking/>} />
+       <Route path='domains/:status' element={<Domains/>} />
       <Route index element={<Navigate to='/apps/qradar/users' />} />
     </Routes>
   )
