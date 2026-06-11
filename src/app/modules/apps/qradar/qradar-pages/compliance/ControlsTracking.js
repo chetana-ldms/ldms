@@ -72,10 +72,11 @@ const ControlsTracking = () => {
   }
 
   const handleSelectAll = (e) => {
+    const currentPageIds = currentItems.map((item) => item.trackingId)
     if (e.target.checked) {
-      setSelectedTrackingIds(currentItems.map((item) => item.trackingId))
+      setSelectedTrackingIds((prev) => Array.from(new Set([...prev, ...currentPageIds])))
     } else {
-      setSelectedTrackingIds([])
+      setSelectedTrackingIds((prev) => prev.filter((id) => !currentPageIds.includes(id)))
     }
   }
 
@@ -216,7 +217,10 @@ const ControlsTracking = () => {
                     className='form-check-input'
                     type='checkbox'
                     onChange={handleSelectAll}
-                    checked={currentItems.length > 0 && selectedTrackingIds.length === currentItems.length}
+                    checked={
+                      currentItems.length > 0 &&
+                      currentItems.every((item) => selectedTrackingIds.includes(item.trackingId))
+                    }
                   />
                 </div>
               </th>
@@ -257,7 +261,7 @@ const ControlsTracking = () => {
                     <td colSpan={6}>
                       <div className='p-5'>
                         <div className='mb-2'><strong>Control Description:</strong> {item.controlDescription || '-'}</div>
-                        <div><strong>Remarks:</strong> {item.remarks || '-'}</div>
+                        {/* <div><strong>Remarks:</strong> {item.remarks || '-'}</div> */}
                       </div>
                     </td>
                   </tr>
@@ -269,9 +273,17 @@ const ControlsTracking = () => {
         {filteredControls.length > 0 && (
           <Pagination
             pageCount={Math.ceil(filteredControls.length / itemsPerPage)}
-            handlePageClick={p => { setCurrentPage(p.selected); setActivePage(p.selected); setSelectedTrackingIds([]); setExpandedId(null); }}
+            handlePageClick={(p) => {
+              setCurrentPage(p.selected)
+              setActivePage(p.selected)
+              setExpandedId(null)
+            }}
             itemsPerPage={itemsPerPage}
-            handlePageSelect={e => { setItemsPerPage(Number(e.target.value)); setCurrentPage(0); setSelectedTrackingIds([]); setExpandedId(null); }}
+            handlePageSelect={(e) => {
+              setItemsPerPage(Number(e.target.value))
+              setCurrentPage(0)
+              setExpandedId(null)
+            }}
             forcePage={activePage}
           />
         )}

@@ -161,8 +161,12 @@ export function Login() {
                 setMessage('Please contact administrator')
               }
               if (features.length > 0) {
-                const featureUrl = features[0]?.featureUrl
-                navigate(featureUrl)
+                let targetUrl = features[0]?.featureUrl
+                if (targetUrl === '#') {
+                  const firstSubFeature = features.find((f) => f.parentFeatureId > 0)
+                  if (firstSubFeature) targetUrl = firstSubFeature.featureUrl
+                }
+                navigate(targetUrl)
               }
             } catch (error) {
               console.log(error)
