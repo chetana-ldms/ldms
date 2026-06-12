@@ -8,6 +8,7 @@ import {fetchChangePasswordUrl} from '../../../api/UserProfileApi'
 import {ToastContainer} from 'react-toastify'
 import {useNavigate} from 'react-router'
 import TasksPopUp from './TasksPopUp'
+import { fetchFeaturesAuthorizedUrl } from '../../../api/Api'
 
 function ChangePasswordPopUp({showChangePwdModal, setShowChangePwdModal}) {
   const [message, setMessage] = useState('')
@@ -49,10 +50,37 @@ function ChangePasswordPopUp({showChangePwdModal, setShowChangePwdModal}) {
       const {isSuccess, message} = responseData
       if (isSuccess) {
         // notify("Password Updated");
+        // The original code had a setTimeout for navigation, but the new logic is async.
+        // The notification will appear before the navigation.
         setShowChangePwdModal(false)
-        setTimeout(() => {
-          navigate('/dashboard')
-        }, 2000)
+        // Start of new navigation logic using fetchFeaturesAuthorizedUrl
+        const orgId = sessionStorage.getItem('orgId')
+        const toolId = sessionStorage.getItem('toolID')
+        const roleId = sessionStorage.getItem('roleID')
+        try {
+          const data = {
+            orgId: orgId,
+            toolId: toolId ?? 0,
+            roleId: roleId,
+            parentFeatureId: 0,
+          }
+          const response = await fetchFeaturesAuthorizedUrl(data)
+          const features = response.features
+          if (response.isSuccess == false) {
+            setMessage('Please contact administrator')
+          }
+          if (features.length > 0) {
+            let targetUrl = features[0]?.featureUrl
+            if (targetUrl === '#') {
+              const firstSubFeature = features.find((f) => f.parentFeatureId > 0)
+              if (firstSubFeature) targetUrl = firstSubFeature.featureUrl
+            }
+            navigate(targetUrl)
+          }
+        } catch (error) {
+          console.log(error)
+        }
+        // End of new navigation logic
       } else {
         setMessage('Invalid user')
       }
