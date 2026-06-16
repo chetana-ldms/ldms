@@ -32,6 +32,7 @@ const ControlsTracking = () => {
   const [selectedStatus, setSelectedStatus] = useState('')
   const [showAssignmentModal, setShowAssignmentModal] = useState(false)
 
+  const [initialAssignmentsForModal, setInitialAssignmentsForModal] = useState([]) // New state for initial assignments
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
   const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
@@ -182,7 +183,26 @@ const ControlsTracking = () => {
           <button
             className='btn btn-small fw-bold fs-14 btn-green'
             disabled={selectedTrackingIds.length === 0}
-            onClick={() => setShowAssignmentModal(true)}
+            onClick={async () => {
+              if (selectedTrackingIds.length === 1) {
+                setLoading(true)
+                try {
+                  const res = await fetchControlsTrackingUrl({
+                    orgId,
+                    projectId: 1,
+                    trackingId: selectedTrackingIds[0],
+                  })
+                  setInitialAssignmentsForModal(res?.data?.[0]?.assignments || [])
+                } catch (error) {
+                  console.error('Error fetching assignment details:', error)
+                } finally {
+                  setLoading(false)
+                }
+              } else {
+                setInitialAssignmentsForModal([])
+              }
+              setShowAssignmentModal(true)
+            }}
           >
             Assign To
           </button>
@@ -191,7 +211,9 @@ const ControlsTracking = () => {
             handleClose={() => setShowAssignmentModal(false)}
             selectedTrackingIds={selectedTrackingIds}
             orgId={orgId}
+            initialAssignments={initialAssignmentsForModal} // Pass initial assignments
             onSuccess={() => {
+              setInitialAssignmentsForModal([]) // Clear initial assignments after success
               setSelectedTrackingIds([])
               reload()
             }}
@@ -320,6 +342,33 @@ const ControlsTracking = () => {
                           expandedId === item.trackingId ? 'fa-chevron-up' : 'fa-chevron-down'
                         } cursor`}
                       />
+                    </span>
+                    
+                    <span
+                      className='me-2'
+                      title='Edit Assignment'
+                      onClick={() => {
+                        const fetchSingle = async () => {
+                          setLoading(true)
+                          try {
+                            const res = await fetchControlsTrackingUrl({
+                              orgId,
+                              projectId: 1,
+                              trackingId: item.trackingId,
+                            })
+                            setInitialAssignmentsForModal(res?.data?.[0]?.assignments || [])
+                            setSelectedTrackingIds([item.trackingId])
+                            setShowAssignmentModal(true)
+                          } catch (error) {
+                            console.error('Error fetching assignment details:', error)
+                          } finally {
+                            setLoading(false)
+                          }
+                        }
+                        fetchSingle()
+                      }}
+                    >
+                      <i className='fa fa-edit text-primary cursor' />
                     </span>
                   </td>
                 </tr>

@@ -6,8 +6,8 @@ import {
   fetchControlsTrackingAssignmentsUrl,
 } from '../../../../../api/ComplianceApi'
 import {notify, notifyFail} from '../components/notification/Notification'
-
-const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId, onSuccess}) => {
+ 
+const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId, onSuccess, initialAssignments}) => {
   const [roles, setRoles] = useState([])
   const [selectedRole, setSelectedRole] = useState('')
   const [users, setUsers] = useState([])
@@ -27,6 +27,17 @@ const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId,
           console.error('Error fetching roles:', error)
         }
       }
+
+      // If editing a single control, pre-populate assignments from initialAssignments prop
+      if (selectedTrackingIds.length === 1 && initialAssignments) {
+        setAssignments(initialAssignments.map(assignment => ({
+          userId: assignment.userId,
+          userName: assignment.userName,
+          roleTypeId: assignment.roleTypeId,
+          roleName: assignment.roleTypeName, // Map roleTypeName from API to roleName in local state
+          isPrimary: assignment.isPrimary,
+        })))
+      }
       fetchRoles()
     } else {
       setSelectedRole('')
@@ -35,8 +46,8 @@ const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId,
       setAssignments([])
       setIsPrimary(false)
       setEditingIndex(null)
-    }
-  }, [show, orgId])
+    } // Add initialAssignments to dependency array
+  }, [show, orgId, selectedTrackingIds, initialAssignments])
 
   useEffect(() => {
     if (selectedRole) {
@@ -141,11 +152,8 @@ const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId,
       keyboard={false}
       className='addANoteModal application-modal'
     >
-      <Modal.Header closeButton>
+      <Modal.Header closeButton> {/* Using closeButton prop for standard close functionality */}
         <Modal.Title>Assign Controls</Modal.Title>
-        <button type='button' class='application-modal-close' aria-label='Close'>
-          <i className='fa fa-close' />
-        </button>
       </Modal.Header>
       <Modal.Body>
         <div className='mb-3'>
