@@ -39,7 +39,11 @@ const ControlsTracking = () => {
   const reload = async () => {
     try {
       setLoading(true)
-      const res = await fetchControlsTrackingUrl()
+      const payload = {
+        orgId,
+        projectId : 1,
+      }
+      const res = await fetchControlsTrackingUrl(payload)
       setControls(Array.isArray(res?.data) ? res.data : [])
     } catch (e) {
       handleError(e)
@@ -157,7 +161,7 @@ const ControlsTracking = () => {
   }
 
   const filteredControls = controls.filter((item) =>
-    item.controlName?.toLowerCase().includes(searchValue.toLowerCase())
+    item.searchText?.toLowerCase().includes(searchValue.toLowerCase())
   )
 
   const currentItems = filteredControls.slice(
@@ -325,6 +329,34 @@ const ControlsTracking = () => {
                       <div className='p-5'>
                         <div className='mb-2'>
                           <strong>Control Description:</strong> {item.controlDescription || '-'}
+                        </div>
+
+                        <div className='mt-4'>
+                          <strong className='d-block mb-2'>Assignments:</strong>
+                          {item.assignments && item.assignments.length > 0 ? (
+                            <div className='table-responsive'>
+                              <table className='table table-sm table-bordered mb-0'>
+                                <thead>
+                                  <tr className='bg-light text-muted fw-bold fs-11'>
+                                    <th className='ps-2'>User Name</th>
+                                    <th className='ps-2'>Role</th>
+                                    <th className='ps-2'>Primary</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {item.assignments.map((assign) => (
+                                    <tr key={assign.assignmentId} className='fs-11'>
+                                      <td className='ps-2'>{assign.userName}</td>
+                                      <td className='ps-2'>{assign.roleTypeName}</td>
+                                      <td className='ps-2'>{assign.isPrimary ? 'Yes' : 'No'}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          ) : (
+                            <div className='text-muted fs-11 ms-2'>No assignments found.</div>
+                          )}
                         </div>
                         {/* <div><strong>Remarks:</strong> {item.remarks || '-'}</div> */}
                       </div>

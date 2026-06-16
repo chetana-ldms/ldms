@@ -1,6 +1,10 @@
 import React, {useState, useEffect} from 'react'
 import {Modal} from 'react-bootstrap'
-import {fetchRolesByParentRoleNameUrl, fetchUsersByRoleIdUrl, fetchControlsTrackingAssignmentsUrl} from '../../../../../api/ComplianceApi'
+import {
+  fetchRolesByParentRoleNameUrl,
+  fetchUsersByRoleIdUrl,
+  fetchControlsTrackingAssignmentsUrl,
+} from '../../../../../api/ComplianceApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 
 const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId, onSuccess}) => {
@@ -8,6 +12,9 @@ const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId,
   const [selectedRole, setSelectedRole] = useState('')
   const [users, setUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState('')
+  const [assignments, setAssignments] = useState([])
+  const [isPrimary, setIsPrimary] = useState(false)
+  const [editingIndex, setEditingIndex] = useState(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -25,6 +32,9 @@ const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId,
       setSelectedRole('')
       setSelectedUser('')
       setUsers([])
+      setAssignments([])
+      setIsPrimary(false)
+      setEditingIndex(null)
     }
   }, [show, orgId])
 
@@ -45,9 +55,52 @@ const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId,
     }
   }, [selectedRole])
 
-  const handleSubmit = async () => {
+  const handleAddAssignment = () => {
     if (!selectedRole || !selectedUser) {
       notifyFail('Please select both role and user')
+      return
+    }
+
+    const roleName = roles.find((r) => r.roleID === Number(selectedRole))?.roleName || ''
+    const userName = users.find((u) => u.userID === Number(selectedUser))?.name || ''
+
+    const newAssignment = {
+      userId: Number(selectedUser),
+      userName,
+      roleTypeId: Number(selectedRole),
+      roleName,
+      isPrimary,
+    }
+
+    if (editingIndex !== null) {
+      const updated = [...assignments]
+      updated[editingIndex] = newAssignment
+      setAssignments(updated)
+      setEditingIndex(null)
+    } else {
+      setAssignments([...assignments, newAssignment])
+    }
+
+    setSelectedRole('')
+    setSelectedUser('')
+    setIsPrimary(false)
+  }
+
+  const handleDeleteAssignment = (index) => {
+    setAssignments(assignments.filter((_, i) => i !== index))
+  }
+
+  const handleEditAssignment = (index) => {
+    const item = assignments[index]
+    setSelectedRole(item.roleTypeId.toString())
+    setSelectedUser(item.userId.toString())
+    setIsPrimary(item.isPrimary)
+    setEditingIndex(index)
+  }
+
+  const handleSubmit = async () => {
+    if (assignments.length === 0) {
+      notifyFail('Please add at least one assignment')
       return
     }
 
@@ -57,13 +110,11 @@ const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId,
       const payload = {
         trackingIds: selectedTrackingIds.map(Number),
         createdByUserId: userId,
-        assignments: [
-          {
-            userId: Number(selectedUser),
-            roleTypeId: Number(selectedRole),
-            isPrimary: true,
-          },
-        ],
+        assignments: assignments.map((item) => ({
+          userId: item.userId,
+          roleTypeId: item.roleTypeId,
+          isPrimary: item.isPrimary,
+        })),
       }
 
       const res = await fetchControlsTrackingAssignmentsUrl(payload)
@@ -83,33 +134,119 @@ const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId,
   }
 
   return (
-    <Modal show={show} onHide={handleClose} backdrop='static' keyboard={false}>
+    <Modal
+      show={show}
+      onHide={handleClose}
+      backdrop='static'
+      keyboard={false}
+      className='addANoteModal application-modal'
+    >
       <Modal.Header closeButton>
         <Modal.Title>Assign Controls</Modal.Title>
+        <button type='button' class='application-modal-close' aria-label='Close'>
+          <i className='fa fa-close' />
+        </button>
       </Modal.Header>
       <Modal.Body>
         <div className='mb-3'>
           <label className='form-label fw-bold'>Select Role</label>
-          <select className='form-select form-select-sm' value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
+          <select
+            className='form-select form-select-sm'
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value)}
+          >
             <option value=''>Choose a role...</option>
             {roles.map((role) => (
-              <option key={role.roleID} value={role.roleID}>{role.roleName}</option>
+              <option key={role.roleID} value={role.roleID}>
+                {role.roleName}
+              </option>
             ))}
           </select>
         </div>
         <div className='mb-3'>
           <label className='form-label fw-bold'>Select User</label>
-          <select className='form-select form-select-sm' value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)} disabled={!selectedRole}>
+          <select
+            className='form-select form-select-sm'
+            value={selectedUser}
+            onChange={(e) => setSelectedUser(e.target.value)}
+            disabled={!selectedRole}
+          >
             <option value=''>Choose a user...</option>
             {users.map((user) => (
-              <option key={user.userID} value={user.userID}>{user.name}</option>
+              <option key={user.userID} value={user.userID}>
+                {user.name}
+              </option>
             ))}
           </select>
         </div>
+        <div className='mb-3 form-check'>
+          <input
+            type='checkbox'
+            className='form-check-input'
+            id='isPrimaryCheck'
+            checked={isPrimary}
+            onChange={(e) => setIsPrimary(e.target.checked)}
+          />
+          <label className='form-check-label' htmlFor='isPrimaryCheck'>
+            Is Primary
+          </label>
+        </div>
+        <div className='mb-4'>
+          <button type='button' className='btn btn-sm btn-info' onClick={handleAddAssignment}>
+            {editingIndex !== null ? 'Update Assignment' : 'Add Assignment'}
+          </button>
+        </div>
+
+        {assignments.length > 0 && (
+          <div className='table-responsive'>
+            <table className='table table-sm table-bordered'>
+              <thead>
+                <tr className='bg-light'>
+                  <th>Role</th>
+                  <th>User</th>
+                  <th>Primary</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {assignments.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.roleName}</td>
+                    <td>{item.userName}</td>
+                    <td>{item.isPrimary ? 'Yes' : 'No'}</td>
+                    <td>
+                      <button
+                        className='btn btn-icon btn-sm me-1'
+                        onClick={() => handleEditAssignment(index)}
+                      >
+                        <i className='fa fa-edit text-primary' />
+                      </button>
+                      <button
+                        className='btn btn-icon btn-sm'
+                        onClick={() => handleDeleteAssignment(index)}
+                      >
+                        <i className='fa fa-trash text-danger' />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </Modal.Body>
       <Modal.Footer>
-        <button type='button' className='btn btn-sm btn-light' onClick={handleClose}>Close</button>
-        <button type='button' className='btn btn-sm btn-primary' onClick={handleSubmit} disabled={loading || !selectedUser}>{loading ? 'Processing...' : 'Assign'}</button>
+        <button type='button' className='btn btn-sm btn-light' onClick={handleClose}>
+          Close
+        </button>
+        <button
+          type='button'
+          className='btn btn-sm btn-primary'
+          onClick={handleSubmit}
+          disabled={loading || assignments.length === 0}
+        >
+          {loading ? 'Processing...' : 'Assign'}
+        </button>
       </Modal.Footer>
     </Modal>
   )
