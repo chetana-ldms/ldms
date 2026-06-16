@@ -1,4 +1,3 @@
-
 import React, {useState, useEffect, useRef} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
@@ -7,8 +6,12 @@ import {ToastContainer} from 'react-toastify'
 import {useErrorBoundary} from 'react-error-boundary'
 import Pagination from '../../../../../../utils/Pagination'
 import useFeatureActions from '../configuration/useFeatureActions'
-import {fetchControlsTrackingUrl, fetchControlsUpdateStatusUrl} from '../../../../../api/ComplianceApi'
+import {
+  fetchControlsTrackingUrl,
+  fetchControlsUpdateStatusUrl,
+} from '../../../../../api/ComplianceApi'
 import {fetchMasterData} from '../../../../../api/Api'
+import ControlsAssignmentModal from './ControlsAssignmentModal'
 
 const ControlsTracking = () => {
   const navigate = useNavigate()
@@ -27,6 +30,7 @@ const ControlsTracking = () => {
   const [statusDropDown, setStatusDropDown] = useState([])
   const [showStatusDropdown, setShowStatusDropdown] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState('')
+  const [showAssignmentModal, setShowAssignmentModal] = useState(false)
 
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
@@ -37,15 +41,25 @@ const ControlsTracking = () => {
       setLoading(true)
       const res = await fetchControlsTrackingUrl()
       setControls(Array.isArray(res?.data) ? res.data : [])
-    } catch (e) { handleError(e) } finally { setLoading(false) }
+    } catch (e) {
+      handleError(e)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  useEffect(() => { reload() }, [])
+  useEffect(() => {
+    reload()
+  }, [])
 
   useEffect(() => {
     const fetchStatusData = async () => {
       try {
-        const data = await fetchMasterData({maserDataType: 'compliance_control_status', orgId, toolId})
+        const data = await fetchMasterData({
+          maserDataType: 'compliance_control_status',
+          orgId,
+          toolId,
+        })
         setStatusDropDown(data || [])
       } catch (error) {
         console.error('Error fetching status master data:', error)
@@ -89,45 +103,53 @@ const ControlsTracking = () => {
       setLoading(true)
       const userId = Number(sessionStorage.getItem('userId'))
 
-      const requests = selectedTrackingIds.map((id) =>
-        fetchControlsUpdateStatusUrl({
-          trackingId: Number(id),
-          statusId: Number(selectedStatus),
-          userId: userId,
-        })
-      )
+      const response = await fetchControlsUpdateStatusUrl({
+        trackingIds: selectedTrackingIds.map(Number),
+        statusId: Number(selectedStatus),
+        userId: userId,
+      })
 
-      const responses = await Promise.all(requests)
-      if (responses.every((res) => res?.isSuccess)) {
+      if (response?.isSuccess) {
         notify('Status updated successfully')
         setSelectedTrackingIds([])
         setShowStatusDropdown(false)
         setSelectedStatus('')
         reload()
       } else {
-        notifyFail('Update failed for one or more records')
+        notifyFail('Update failed')
       }
-    } catch (e) { handleError(e) } finally { setLoading(false) }
+    } catch (e) {
+      handleError(e)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleExportCSV = () => {
     if (filteredControls.length === 0) return
-    const headers = ['Control Code', 'Control Name', 'Domain', 'Status', 'Modified Date', 'Modified User']
-    const rows = filteredControls.map(item => [
+    const headers = [
+      'Control Code',
+      'Control Name',
+      'Domain',
+      'Status',
+      'Modified Date',
+      'Modified User',
+    ]
+    const rows = filteredControls.map((item) => [
       item.controlCode,
       `"${item.controlName}"`,
       item.domainName,
       item.statusName,
       item.modifiedDate,
-      item.modifiedUser
+      item.modifiedUser,
     ])
 
-    const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n")
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const csvContent = [headers, ...rows].map((e) => e.join(',')).join('\n')
+    const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'})
     const url = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.setAttribute("href", url)
-    link.setAttribute("download", "controls_tracking.csv")
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', 'controls_tracking.csv')
     link.style.visibility = 'hidden'
     document.body.appendChild(link)
     link.click()
@@ -152,7 +174,24 @@ const ControlsTracking = () => {
             Controls Tracking ({filteredControls.length})
           </h3>
         </div>
-        <div className='col-md-1 d-flex gap-2 justify-content-start align-items-center'>
+        <div className='col-md-3 d-flex gap-2 justify-content-start align-items-center'>
+          <button
+            className='btn btn-small fw-bold fs-14 btn-green'
+            disabled={selectedTrackingIds.length === 0}
+            onClick={() => setShowAssignmentModal(true)}
+          >
+            Assign To
+          </button>
+          <ControlsAssignmentModal
+            show={showAssignmentModal}
+            handleClose={() => setShowAssignmentModal(false)}
+            selectedTrackingIds={selectedTrackingIds}
+            orgId={orgId}
+            onSuccess={() => {
+              setSelectedTrackingIds([])
+              reload()
+            }}
+          />
           <div className='dropdown-wrapper position-relative'>
             <button
               className='btn btn-small fw-bold fs-14 btn-green'
@@ -162,11 +201,32 @@ const ControlsTracking = () => {
               Status
             </button>
             {showStatusDropdown && (
-              <div className='alert-action shadow' style={{position: 'absolute', right: 0, zIndex: 1050, background: 'white', border: '1px solid #ccc', borderRadius: '4px', marginTop: '5px', padding: '10px', width: '250px'}}>
+              <div
+                className='alert-action shadow'
+                style={{
+                  position: 'absolute',
+                  right: 0,
+                  zIndex: 1050,
+                  background: 'white',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  marginTop: '5px',
+                  padding: '10px',
+                  width: '250px',
+                }}
+              >
                 <div className='d-flex justify-content-end mb-2'>
-                  <button type='button' className='btn-close' onClick={() => setShowStatusDropdown(false)} />
+                  <button
+                    type='button'
+                    className='btn-close'
+                    onClick={() => setShowStatusDropdown(false)}
+                  />
                 </div>
-                <select className='form-select form-select-sm mb-3' value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
+                <select
+                  className='form-select form-select-sm mb-3'
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                >
                   <option value=''>Select Status</option>
                   {statusDropDown.map((item) => (
                     <option key={item.dataID} value={item.dataID}>
@@ -181,8 +241,7 @@ const ControlsTracking = () => {
             )}
           </div>
         </div>
-         <div className='col-md-7 d-flex gap-2 justify-content-end align-items-center'>
-        
+        <div className='col-md-5 d-flex gap-2 justify-content-end align-items-center'>
           <div className='input-group'>
             <input
               type='text'
@@ -196,12 +255,8 @@ const ControlsTracking = () => {
             </button>
           </div>
         </div>
-         <div className='col-md-1 d-flex gap-2 justify-content-end align-items-center'>
-        
-          <button
-            className='btn btn-sm btn-secondary'
-            onClick={handleExportCSV}
-          >
+        <div className='col-md-1 d-flex gap-2 justify-content-end align-items-center'>
+          <button className='btn btn-sm btn-secondary' onClick={handleExportCSV}>
             Export
           </button>
         </div>
@@ -233,7 +288,7 @@ const ControlsTracking = () => {
           </thead>
           <tbody>
             {loading && <UsersListLoading />}
-            {currentItems.map(item => (
+            {currentItems.map((item) => (
               <React.Fragment key={item.trackingId}>
                 <tr className='fs-12'>
                   <td>
@@ -251,8 +306,16 @@ const ControlsTracking = () => {
                   <td>{item.domainName}</td>
                   <td>{item.statusName}</td>
                   <td>
-                    <span className='me-5' title='Details' onClick={() => toggleRow(item.trackingId)}>
-                      <i className={`fa ${expandedId === item.trackingId ? 'fa-chevron-up' : 'fa-chevron-down'} cursor`} />
+                    <span
+                      className='me-5'
+                      title='Details'
+                      onClick={() => toggleRow(item.trackingId)}
+                    >
+                      <i
+                        className={`fa ${
+                          expandedId === item.trackingId ? 'fa-chevron-up' : 'fa-chevron-down'
+                        } cursor`}
+                      />
                     </span>
                   </td>
                 </tr>
@@ -260,7 +323,9 @@ const ControlsTracking = () => {
                   <tr className='bg-light fs-12'>
                     <td colSpan={6}>
                       <div className='p-5'>
-                        <div className='mb-2'><strong>Control Description:</strong> {item.controlDescription || '-'}</div>
+                        <div className='mb-2'>
+                          <strong>Control Description:</strong> {item.controlDescription || '-'}
+                        </div>
                         {/* <div><strong>Remarks:</strong> {item.remarks || '-'}</div> */}
                       </div>
                     </td>

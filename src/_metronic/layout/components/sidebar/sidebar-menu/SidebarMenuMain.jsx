@@ -1,10 +1,12 @@
 /* eslint-disable react/jsx-no-target-blank */
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useIntl } from 'react-intl';
 import { SidebarMenuItemWithSub } from './SidebarMenuItemWithSub';
 import { SidebarMenuItem } from './SidebarMenuItem';
 import { fetchFeaturesAuthorizedUrl } from '../../../../../app/api/Api';
 import { toAbsoluteUrl } from '../../../../helpers';
+import { MenuComponent } from '../../../../assets/ts/components';
 
 const SidebarMenuMain = () => {
   const intl = useIntl();
@@ -13,11 +15,12 @@ const SidebarMenuMain = () => {
   const login_toolID = Number(sessionStorage.getItem('login_toolID'));
   const roleId = Number(sessionStorage.getItem('roleID'));
   const isQA = process.env.REACT_APP_ENV === 'demo';
+  const { pathname } = useLocation();
   const [features, setFeatures] = useState([]);
   const [mainFeatures, setMainFeatures] = useState([]);
   console.log(mainFeatures, "mainFeatures")
   const [subFeatureId, setSubFeatureId] = useState([]);
-  const [selectedFeatureId, setSelectedFeatureId] = useState(null); 
+  const [selectedFeatureId, setSelectedFeatureId] = useState(sessionStorage.getItem('selectedFeatureId') ? Number(sessionStorage.getItem('selectedFeatureId')) : null); 
   console.log(selectedFeatureId, "selectedFeatureId")
 
   const reload = async () => {
@@ -49,6 +52,17 @@ const SidebarMenuMain = () => {
   useEffect(() => {
     reload();
   }, []);
+
+  useEffect(() => {
+    if (features.length > 0 || mainFeatures.length > 0) {
+      // Trigger re-initialization of Metronic menu to detect active routes for dynamic items
+      const timer = setTimeout(() => {
+        MenuComponent.reinitialization();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [features, mainFeatures, pathname]);
+
   const handleItemClick = (feature) => { 
     sessionStorage.setItem('selectedFeatureId', feature.featureId);
     setSelectedFeatureId(feature.featureId);
@@ -80,10 +94,16 @@ const SidebarMenuMain = () => {
         );
       } else if (feature.subfeatureExists === 1) {
         const subFeatures = features.filter(sub => sub.parentFeatureId === feature.featureId);
+        
+        // Check if the current URL matches any sub-feature or if the selected ID is a child
+        const isChildActive = subFeatures.some(
+          sub => sub.featureUrl === pathname || sub.featureId === selectedFeatureId
+        );
+
         return (
           <SidebarMenuItemWithSub
             key={feature.featureId}
-            to="#"
+            to={isChildActive ? pathname : '#'}
             icon={feature.featureImageUrl}
             title={feature.featureDisplayName}
             onClick={() => handleItemClick(feature)}
