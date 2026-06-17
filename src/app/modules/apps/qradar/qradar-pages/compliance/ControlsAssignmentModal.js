@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import {Modal} from 'react-bootstrap'
+import Select from 'react-select'
 import {
   fetchRolesByParentRoleNameUrl,
   fetchUsersByRoleIdUrl,
@@ -16,6 +17,18 @@ const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId,
   const [isPrimary, setIsPrimary] = useState(false)
   const [editingIndex, setEditingIndex] = useState(null)
   const [loading, setLoading] = useState(false)
+
+  const customSelectStyle = {
+    control: (provided) => ({
+      ...provided,
+      minHeight: '36px',
+      fontSize: '0.9rem',
+    }),
+    menu: (provided) => ({
+      ...provided,
+      zIndex: 9999,
+    }),
+  }
 
   useEffect(() => {
     if (show) {
@@ -109,6 +122,11 @@ const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId,
     setEditingIndex(index)
   }
 
+  const userOptions = users.map((user) => ({
+    value: user.userID.toString(),
+    label: user.name,
+  }))
+
   const handleSubmit = async () => {
     if (assignments.length === 0) {
       notifyFail('Please add at least one assignment')
@@ -173,19 +191,15 @@ const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId,
         </div>
         <div className='mb-3'>
           <label className='form-label fw-bold'>Select User</label>
-          <select
-            className='form-select form-select-sm'
-            value={selectedUser}
-            onChange={(e) => setSelectedUser(e.target.value)}
-            disabled={!selectedRole}
-          >
-            <option value=''>Choose a user...</option>
-            {users.map((user) => (
-              <option key={user.userID} value={user.userID}>
-                {user.name}
-              </option>
-            ))}
-          </select>
+          <Select
+            options={userOptions}
+            value={userOptions.find((option) => option.value === selectedUser) || null}
+            onChange={(option) => setSelectedUser(option ? option.value : '')}
+            isDisabled={!selectedRole}
+            placeholder='Choose a user...'
+            isClearable
+            styles={customSelectStyle}
+          />
         </div>
         <div className='mb-3 form-check'>
           <input
