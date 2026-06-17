@@ -20,6 +20,7 @@ function ControlsStatusSummary() {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [viewType, setViewType] = useState('pie')
   const orgId = Number(sessionStorage.getItem('orgId'))
 
   useEffect(() => {
@@ -111,6 +112,23 @@ function ControlsStatusSummary() {
     else if (format === 'pdf') exportToPDF()
   }
 
+  // Logic to group items beyond the top 5 into "Miscellaneous" for the Pie Chart
+  const getProcessedPieData = () => {
+    if (data.length <= 5) return data
+    const sortedData = [...data].sort((a, b) => b.controlCount - a.controlCount)
+    const topFive = sortedData.slice(0, 5)
+    const remaining = sortedData.slice(5)
+    const miscCount = remaining.reduce((sum, item) => sum + item.controlCount, 0)
+    const miscPercentage = remaining.reduce((sum, item) => sum + item.percentage, 0)
+
+    return [
+      ...topFive,
+      {statusName: 'Miscellaneous', controlCount: miscCount, percentage: miscPercentage},
+    ]
+  }
+
+  const processedPieData = getProcessedPieData()
+
   const options = {
     exportEnabled: true,
     animationEnabled: true,
@@ -128,10 +146,36 @@ function ControlsStatusSummary() {
         legendText: '{label}',
         indexLabelFontSize: 13,
         indexLabel: '{label} - {y}% ({count})',
-        dataPoints: data.map((item) => ({
+        dataPoints: processedPieData.map((item) => ({
           y: item.percentage,
           label: item.statusName,
           count: item.controlCount,
+        })),
+      },
+    ],
+  }
+
+  const barOptions = {
+    animationEnabled: true,
+    colorSet: 'complianceShades',
+    title: {
+      text: 'Compliance Controls by Status',
+      fontSize: 20,
+    },
+    axisX: {
+      title: 'Statuses',
+      labelFontSize: 12,
+      interval: 1,
+    },
+    axisY: {
+      title: 'Control Count',
+    },
+    data: [
+      {
+        type: 'column',
+        dataPoints: data.map((item) => ({
+          label: item.statusName,
+          y: item.controlCount,
         })),
       },
     ],
@@ -143,28 +187,74 @@ function ControlsStatusSummary() {
         <p>Loading...</p>
       ) : data.length > 0 ? (
         <>
-          <h4 className='mb-10 bg-heading'>Compliance Controls by Status</h4>
-          <CanvasJSChart options={options} />
+          <div className='d-flex justify-content-between align-items-center mb-2 bg-heading'>
+            <h4 className='text-white mb-0'>Compliance Controls by Status</h4>
+            <div className='btn-group'>
+              <button
+                className={`btn btn-sm btn-light-primary ${viewType === 'pie' ? 'active' : ''}`}
+                onClick={() => setViewType('pie')}
+              >
+                Pie
+              </button>
+              <button
+                className={`btn btn-sm btn-light-primary ${viewType === 'bar' ? 'active' : ''}`}
+                onClick={() => setViewType('bar')}
+              >
+                Bar
+              </button>
+              <button
+                className={`btn btn-sm btn-light-primary ${viewType === 'table' ? 'active' : ''}`}
+                onClick={() => setViewType('table')}
+              >
+                Table
+              </button>
+            </div>
+            <div className=''>
+              <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
+                <DropdownToggle caret className='p-0 m-0 px-5 py-2'>
+                  Export <i className='fa fa-file-export link mg-left-10 p-0 m-0' />
+                </DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem onClick={() => handleExport('excel')}>
+                    Export to CSV <i className='fa fa-file-excel link float-right' />
+                  </DropdownItem>
+                  <hr className='no-margin' />
+                  <DropdownItem onClick={() => handleExport('pdf')}>
+                    Export to PDF <i className='fa fa-file-pdf red float-right' />
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+          </div>
+
+          {viewType === 'pie' && <CanvasJSChart options={options} />}
+          {viewType === 'bar' && <CanvasJSChart options={barOptions} />}
+          {viewType === 'table' && (
+            <div className='table-responsive mt-5'>
+              <table className='table table-row-bordered table-row-gray-300 align-middle gs-0 gy-4'>
+                <thead>
+                  <tr className='fw-bold text-muted bg-blue'>
+                    <th>Status Name</th>
+                    <th>Control Count</th>
+                    <th>Percentage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((item, index) => (
+                    <tr key={index}>
+                      <td>{item.statusName}</td>
+                      <td>{item.controlCount}</td>
+                      <td>{item.percentage.toFixed(2)}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </>
       ) : (
         <p className='text-center'>No data found</p>
       )}
-      <div className='export-report mt-5 me-5'>
-        <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
-          <DropdownToggle caret>
-            Export <i className='fa fa-file-export link mg-left-10' />
-          </DropdownToggle>
-          <DropdownMenu>
-            <DropdownItem onClick={() => handleExport('excel')}>
-              Export to CSV <i className='fa fa-file-excel link float-right' />
-            </DropdownItem>
-            <hr className='no-margin' />
-            <DropdownItem onClick={() => handleExport('pdf')}>
-              Export to PDF <i className='fa fa-file-pdf red float-right' />
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-      </div>
     </div>
   )
 }

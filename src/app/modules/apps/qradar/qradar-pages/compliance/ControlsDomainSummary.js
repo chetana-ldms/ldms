@@ -232,7 +232,7 @@ function ControlsDomainSummary() {
             <div className='table-responsive mt-5'>
               <table className='table table-row-bordered table-row-gray-300 align-middle gs-0 gy-4'>
                 <thead>
-                  <tr className='fw-bold text-muted'>
+                   <tr className='fw-bold text-muted bg-blue'>
                     <th>Domain Name</th>
                     <th>Control Count</th>
                     <th>Percentage</th>
