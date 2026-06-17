@@ -20,6 +20,7 @@ function ControlsDomainSummary() {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const orgId = Number(sessionStorage.getItem('orgId'))
 
   useEffect(() => {
     if (CanvasJS && typeof CanvasJS.getColorSet === 'function') {
@@ -34,8 +35,12 @@ function ControlsDomainSummary() {
 
   useEffect(() => {
     const fetchData = async () => {
+      const payload = {
+        orgId: Number(sessionStorage.getItem('orgId')),
+        projectId: 1,
+      }
       try {
-        const response = await fetchControlsDomainSummaryUrl()
+        const response = await fetchControlsDomainSummaryUrl(payload)
         if (response?.isSuccess) {
           setData(response.data || [])
         }

@@ -20,6 +20,7 @@ function ControlsStatusSummary() {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const orgId = Number(sessionStorage.getItem('orgId'))
 
   useEffect(() => {
     if (CanvasJS && typeof CanvasJS.getColorSet === 'function') {
@@ -35,7 +36,11 @@ function ControlsStatusSummary() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetchControlsStatusSummaryUrl()
+        const payload = {
+          orgId: Number(sessionStorage.getItem('orgId')),
+          projectId: 1,
+        }
+        const response = await fetchControlsStatusSummaryUrl(payload)
         if (response?.isSuccess) {
           setData(response.data || [])
         }

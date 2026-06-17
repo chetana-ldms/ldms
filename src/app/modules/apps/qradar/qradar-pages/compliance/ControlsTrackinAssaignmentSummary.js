@@ -15,11 +15,12 @@ import {fetchExportDataAddUrl} from '../../../../../api/Api'
 const CanvasJS = CanvasJSReact.CanvasJS
 const CanvasJSChart = CanvasJSReact.CanvasJSChart
 
-function ControlsDomainStatusSummary() {
+function ControlsTrackingAssignmentSummary() {
   const handleError = useErrorBoundary()
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const orgId = Number(sessionStorage.getItem('orgId'))
 
   useEffect(() => {
     if (CanvasJS && typeof CanvasJS.getColorSet === 'function') {
@@ -190,4 +191,4 @@ function ControlsDomainStatusSummary() {
   )
 }
 
-export default ControlsDomainStatusSummary
+export default ControlsTrackingAssignmentSummary
