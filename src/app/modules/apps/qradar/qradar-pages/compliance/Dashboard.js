@@ -2,7 +2,6 @@ import React from 'react'
 import {Tabs, Tab, TabList, TabPanel} from 'react-tabs'
 import ControlsStatusSummary from './ControlsStatusSummary'
 import ControlsDomainSummary from './ControlsDomainSummary'
-import ControlsDomainStatusSummary from './ControlsTrackinAssaignmentSummary'
 import ControlsTrackingAssignmentSummary from './ControlsTrackinAssaignmentSummary'
 
 function Dashboard() {
@@ -31,7 +30,7 @@ function Dashboard() {
               <TabList className='tab-list mt-5'>
                 <Tab>Status Summary</Tab>
                 <Tab>Domain Summary</Tab>
-                <Tab>Domain Status Summary</Tab>
+                <Tab>Tracking Assignment Summary</Tab>
               </TabList>
             </Tabs>
           </div>
