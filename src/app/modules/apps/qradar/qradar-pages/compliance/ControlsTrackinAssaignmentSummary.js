@@ -1,314 +1,310 @@
 import React, {useState, useEffect} from 'react'
 import CanvasJSReact from '../reports/assets/canvasjs.react'
-import {fetchControlsDomainStatusSummaryUrl, fetchControlsTrackingAssignmentsUrl, fetchRolesByParentRoleNameUrl} from '../../../../../api/ComplianceApi'
-import {useErrorBoundary} from 'react-error-boundary'
+import {
+  fetchControlsTrackingAssignmentsSummaryUrl,
+  fetchControlsTrackingAssignmentsUrl,
+  fetchRolesByParentRoleNameUrl,
+} from '../../../../../api/ComplianceApi'
+import {fetchExportDataAddUrl} from '../../../../../api/Api'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
-import {
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from 'reactstrap'
-import {fetchExportDataAddUrl} from '../../../../../api/Api'
+import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
 
-const CanvasJS = CanvasJSReact.CanvasJS
 const CanvasJSChart = CanvasJSReact.CanvasJSChart
 
 function ControlsTrackingAssignmentSummary() {
-  const handleError = useErrorBoundary()
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [viewType, setViewType] = useState('bar')
-   const [roles, setRoles] = useState([])
-     const [selectedRole, setSelectedRole] = useState('')
+  const [roles, setRoles] = useState([])
+  const [selectedRole, setSelectedRole] = useState('')
+
+  const [viewType, setViewType] = useState('pie') // Default view type
+
   const orgId = Number(sessionStorage.getItem('orgId'))
 
+  // Fetch Roles
   useEffect(() => {
-    if (CanvasJS && typeof CanvasJS.getColorSet === 'function') {
-      if (!CanvasJS.getColorSet('complianceShades')) {
-        CanvasJS.addColorSet('complianceShades', [
-          '#f0e68c', '#ffb700', '#008080', '#cc99ff',
-          '#acddde', '#b4f0a7', '#ffb1b0',
-        ]);
-      }
-    }
-  }, []); // Run once after initial render
-
-  useEffect(() => {
-       const fetchRoles = async () => {
-            try {
-              const res = await fetchRolesByParentRoleNameUrl('Compliance Roles', orgId)
-              setRoles(Array.isArray(res?.rolesList) ? res.rolesList : [])
-            } catch (error) {
-              console.error('Error fetching roles:', error)
-            }
-          }
-      fetchRoles()
-    const fetchData = async () => {
+    const fetchRoles = async () => {
       try {
-        const payload = {
-          orgId,
-          projectId: 1,
-          userRoleTypeId: selectedRole || null, 
-        }
-        const response = await fetchControlsTrackingAssignmentsUrl(payload)
-        if (response?.data) {
-          setData(response.data)
+        const res = await fetchRolesByParentRoleNameUrl('Compliance Roles', orgId)
+
+        const rolesList = Array.isArray(res?.rolesList) ? res.rolesList : []
+
+        setRoles(rolesList)
+
+        // Select first role by default
+        if (rolesList.length > 0) {
+          setSelectedRole(rolesList[0].roleID)
         }
       } catch (error) {
-        handleError(error)
+        console.error('Error fetching roles:', error)
+      }
+    }
+
+    if (orgId) {
+      fetchRoles()
+    }
+  }, [orgId])
+
+  // Fetch Summary Data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+
+        const payload = {
+          orgId: orgId,
+          projectId: 1,
+          userRoleTypeId: Number(selectedRole),
+        }
+
+        const response = await fetchControlsTrackingAssignmentsSummaryUrl(payload)
+
+        if (response?.data) {
+          setData(response.data)
+        } else {
+          setData([])
+        }
+      } catch (error) {
+        console.error(error)
       } finally {
         setLoading(false)
       }
     }
-    if (orgId) fetchData()
-  }, [handleError, orgId])
 
-  // Transform data for stacked column chart
-  const allStatuses = new Set()
-  data.forEach((domain) => {
-    domain.statusSummary.forEach((s) => allStatuses.add(s.status))
-  });
+    if (orgId && selectedRole) {
+      fetchData()
+    }
+  }, [orgId, selectedRole])
 
-  // Logic to group items beyond the top 5 into "Miscellaneous" for the Pie Chart
-  const getProcessedPieData = () => {
-    const totalAllDomains = data.reduce((sum, item) => sum + item.totalControls, 0)
-    
-    const mappedData = data.map(item => ({
-      ...item,
-      percentage: totalAllDomains > 0 ? (item.totalControls / totalAllDomains) * 100 : 0
-    }))
+  // Bar Chart Options
+  const barOptions = {
+    animationEnabled: true,
 
-    if (mappedData.length <= 5) return mappedData
-    
-    const sortedData = [...mappedData].sort((a, b) => b.totalControls - a.totalControls)
-    const topFive = sortedData.slice(0, 5)
-    const remaining = sortedData.slice(5)
-    const miscCount = remaining.reduce((sum, item) => sum + item.totalControls, 0)
-    const miscPercentage = remaining.reduce((sum, item) => sum + item.percentage, 0)
+    title: {
+      text: 'Pending Controls by User',
+    },
 
-    return [
-      ...topFive,
-      {domainName: 'Miscellaneous', totalControls: miscCount, percentage: miscPercentage},
-    ]
+    axisX: {
+      title: 'Users',
+    },
+
+    axisY: {
+      title: 'Pending Controls',
+    },
+
+    data: [
+      {
+        type: 'column',
+
+        dataPoints: data.map((item) => ({
+          label: item.userName,
+          y: item.pendingControls,
+        })),
+      },
+    ],
   }
 
-  const processedPieData = getProcessedPieData()
+  // Pie Chart Options
 
-  const dataSeries = Array.from(allStatuses).map((statusName) => ({
-    type: 'stackedColumn',
-    name: statusName,
-    showInLegend: true,
-    dataPoints: data.map((domain) => {
-      const statusItem = domain.statusSummary.find((s) => s.status === statusName)
-      return {
-        label: domain.domainName,
-        y: statusItem ? statusItem.count : 0,
-      }
-    }),
-  }))
+  const pieOptions = {
+    animationEnabled: true,
 
+    title: {
+      text: 'Pending Controls Distribution',
+    },
+
+    data: [
+      {
+        type: 'pie',
+
+        showInLegend: true,
+
+        indexLabel: '{label} - {y}%',
+
+        toolTipContent: '<b>{label}</b><br/>Pending Controls: {count}<br/>Percentage: {y}%',
+
+        dataPoints: data.map((item) => ({
+          label: item.userName,
+          y: item.percentage,
+          count: item.pendingControls,
+        })),
+      },
+    ],
+  }
   const exportToExcel = async () => {
-    const statusList = Array.from(allStatuses)
-    const headerRow = ['Domain', 'Total Controls', ...statusList]
-    const content = [headerRow]
-      .concat(
-        data.map((domain) => [
-          domain.domainName,
-          domain.totalControls,
-          ...statusList.map((s) => {
-            const found = domain.statusSummary.find((item) => item.status === s)
-            return found ? found.count : 0
-          }),
-        ])
-      )
-      .map((row) => row.join(','))
-      .join('\n')
+    try {
+      const headers = ['User Name', 'Pending Controls', 'Percentage (%)']
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + encodeURIComponent(content)
-    const link = document.createElement('a')
-    link.href = csvContent
-    link.setAttribute('download', 'domain_status_summary.csv')
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+      const rows = data.map((item) => [item.userName, item.pendingControls, item.percentage])
 
-    await fetchExportDataAddUrl({
-      createdDate: new Date().toISOString(),
-      createdUserId: Number(sessionStorage.getItem('userId')),
-      orgId: Number(sessionStorage.getItem('orgId')),
-      exportDataType: 'Domain Status Summary Report',
-    })
+      const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n')
+
+      // Create Blob
+      const blob = new Blob([csvContent], {
+        type: 'text/csv;charset=utf-8;',
+      })
+
+      const url = window.URL.createObjectURL(blob)
+
+      const link = document.createElement('a')
+
+      link.href = url
+
+      link.setAttribute('download', 'control_tracking_assignment_summary.csv')
+
+      document.body.appendChild(link)
+
+      link.click()
+
+      document.body.removeChild(link)
+
+      window.URL.revokeObjectURL(url)
+
+      // Save export history
+      await fetchExportDataAddUrl({
+        createdDate: new Date().toISOString(),
+        createdUserId: Number(sessionStorage.getItem('userId')),
+        orgId: Number(sessionStorage.getItem('orgId')),
+        exportDataType: 'Control Tracking Assignment Summary',
+      })
+    } catch (error) {
+      console.error('CSV Export Error:', error)
+    }
   }
-
   const exportToPDF = async () => {
-    const doc = new jsPDF('landscape')
-    doc.text('Domain wise Status Breakdown', 10, 10)
+    const doc = new jsPDF()
 
-    const statusList = Array.from(allStatuses)
-    const tableHead = [['Domain', 'Total', ...statusList]]
-    const tableBody = data.map((domain) => [
-      domain.domainName,
-      domain.totalControls,
-      ...statusList.map((s) => {
-        const found = domain.statusSummary.find((item) => item.status === s)
-        return found ? found.count : 0
-      }),
+    doc.text('Control Tracking Assignment Summary', 10, 10)
+
+    const tableHead = [['User Name', 'Pending Controls', 'Percentage']]
+
+    const tableBody = data.map((item) => [
+      item.userName,
+      item.pendingControls,
+      `${item.percentage}%`,
     ])
 
     doc.autoTable({
       startY: 20,
       head: tableHead,
       body: tableBody,
-      styles: {fontSize: 8},
+      styles: {
+        fontSize: 10,
+      },
     })
 
-    doc.save('domain_status_summary.pdf')
+    doc.save('control_tracking_assignment_summary.pdf')
+
     await fetchExportDataAddUrl({
       createdDate: new Date().toISOString(),
       createdUserId: Number(sessionStorage.getItem('userId')),
       orgId: Number(sessionStorage.getItem('orgId')),
-      exportDataType: 'Domain Status Summary Report',
+      exportDataType: 'Control Tracking Assignment Summary',
     })
   }
 
-  const handleExport = (format) => {
-    if (format === 'excel') exportToExcel()
-    else if (format === 'pdf') exportToPDF()
-  }
-
-  const pieOptions = {
-    exportEnabled: true,
-    animationEnabled: true,
-    colorSet: 'complianceShades',
-    title: {
-      text: 'Total Controls by Domain',
-      fontSize: 20,
-    },
-    data: [
-      {
-        type: 'pie',
-        startAngle: 240,
-        toolTipContent: '<b>{label}</b>: {y}% ({count})',
-        showInLegend: 'true',
-        legendText: '{label}',
-        indexLabelFontSize: 13,
-        indexLabel: '{label} - {y}% ({count})',
-        dataPoints: processedPieData.map((item) => ({
-          y: Number(item.percentage.toFixed(2)),
-          label: item.domainName,
-          count: item.totalControls,
-        })),
-      },
-    ],
-  }
-
-  const options = {
-    animationEnabled: true,
-    exportEnabled: true,
-    colorSet: 'complianceShades',
-    title: {
-      text: 'Domain wise Status Breakdown',
-      fontSize: 20,
-    },
-    axisX: {
-      title: 'Domains',
-      labelFontSize: 12,
-    },
-    axisY: {
-      title: 'Control Count',
-    },
-    toolTip: {
-      shared: true,
-      content: '<strong>{label}</strong><br/>{name}: {y}',
-    },
-    data: dataSeries,
-  }
-
   return (
-    <div className='' id='controlsDomainStatusSummary'>
+    <div className='container-fluid'>
+      {/* Header */}
+
+      <div className='row align-items-center bg-heading p-3 mb-4 rounded'>
+        {/* Title */}
+
+        <div className='col-md-4'>
+          <h4 className='text-white mb-0'>Control Tracking Assignment Summary</h4>
+        </div>
+
+        {/* View Buttons */}
+
+        <div className='col-md-3 text-center'>
+          <div className='btn-group'>
+            <button
+              className={`btn btn-sm btn-light-primary ${viewType === 'pie' ? 'active' : ''}`}
+              onClick={() => setViewType('pie')}
+            >
+              Pie
+            </button>
+            <button
+              className={`btn btn-sm btn-light-primary ${viewType === 'bar' ? 'active' : ''}`}
+              onClick={() => setViewType('bar')}
+            >
+              Bar
+            </button>
+            <button
+              className={`btn btn-sm btn-light-primary ${viewType === 'table' ? 'active' : ''}`}
+              onClick={() => setViewType('table')}
+            >
+              Table
+            </button>
+          </div>
+        </div>
+
+        {/* Role Dropdown */}
+
+        <div className='col-md-4'>
+          <div className='d-flex justify-content-end align-items-center gap-2'>
+            <label className='text-white fw-bold mb-0'>Select Role</label>
+
+            <select
+              className='form-select form-select-sm'
+              style={{width: '250px'}}
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value)}
+            >
+              {roles.map((role) => (
+                <option key={role.roleID} value={role.roleID}>
+                  {role.roleName}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className='col-md-1'>
+          <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
+            <DropdownToggle caret>Export</DropdownToggle>
+
+            <DropdownMenu>
+              <DropdownItem onClick={exportToExcel}>Export to CSV</DropdownItem>
+
+              <DropdownItem onClick={exportToPDF}>Export to PDF</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </div>
+      </div>
+
+      {/* Body */}
+
       {loading ? (
-        <p>Loading...</p>
+        <div className='text-center'>Loading...</div>
       ) : data.length > 0 ? (
         <>
-          <div className='d-flex justify-content-between align-items-center mb-2 bg-heading'>
-            <h4 className='text-white mb-0'>Domain wise Status Breakdown</h4>
-            <div className='btn-group'>
-              <button
-                className={`btn btn-sm btn-light-primary ${viewType === 'pie' ? 'active' : ''}`}
-                onClick={() => setViewType('pie')}
-              >
-                Pie
-              </button>
-              <button
-                className={`btn btn-sm btn-light-primary ${viewType === 'bar' ? 'active' : ''}`}
-                onClick={() => setViewType('bar')}
-              >
-                Bar
-              </button>
-              <button
-                className={`btn btn-sm btn-light-primary ${viewType === 'table' ? 'active' : ''}`}
-                onClick={() => setViewType('table')}
-              >
-                Table
-              </button>
-            </div>
-            <label className='form-label fw-bold'>Select Role</label>
-          <select
-            className='form-select form-select-sm'
-            value={selectedRole}
-            onChange={(e) => setSelectedRole(e.target.value)}
-          >
-            <option value=''>Choose a role...</option>
-            {roles.map((role) => (
-              <option key={role.roleID} value={role.roleID}>
-                {role.roleName}
-              </option>
-            ))}
-          </select>
-        </div>
-            <div className=''>
-              <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
-                <DropdownToggle caret className='p-0 m-0 px-5 py-2'>
-                  Export <i className='fa fa-file-export link mg-left-10 p-0 m-0' />
-                </DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem onClick={() => handleExport('excel')}>
-                    Export to CSV <i className='fa fa-file-excel link float-right' />
-                  </DropdownItem>
-                  <hr className='no-margin' />
-                  <DropdownItem onClick={() => handleExport('pdf')}>
-                    Export to PDF <i className='fa fa-file-pdf red float-right' />
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </div>
+          {viewType === 'bar' && <CanvasJSChart options={barOptions} />}
 
           {viewType === 'pie' && <CanvasJSChart options={pieOptions} />}
-          {viewType === 'bar' && <CanvasJSChart options={options} />}
+
           {viewType === 'table' && (
-            <div className='table-responsive mt-5'>
-              <table className='table table-row-bordered table-row-gray-300 align-middle gs-0 gy-4'>
+            <div className='table-responsive mt-3'>
+               <table className='table table-row-bordered table-row-gray-300 align-middle gs-0 gy-4'>
                 <thead>
-                  <tr className='fw-bold text-muted bg-blue'>
-                    <th>Domain Name</th>
-                    <th>Total Controls</th>
-                    {Array.from(allStatuses).map((status, idx) => (
-                      <th key={idx}>{status}</th>
-                    ))}
+                   <tr className='fw-bold text-muted bg-blue'>
+                    <th>User Name</th>
+
+                    <th>Pending Controls</th>
+
+                    <th>Percentage (%)</th>
                   </tr>
                 </thead>
+
                 <tbody>
-                  {data.map((domain, index) => (
+                  {data.map((item, index) => (
                     <tr key={index}>
-                      <td>{domain.domainName}</td>
-                      <td>{domain.totalControls}</td>
-                      {Array.from(allStatuses).map((status, sIdx) => {
-                        const found = domain.statusSummary.find((s) => s.status === status)
-                        return <td key={sIdx}>{found ? found.count : 0}</td>
-                      })}
+                      <td>{item.userName}</td>
+
+                      <td>{item.pendingControls}</td>
+
+                      <td>{item.percentage}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -317,7 +313,7 @@ function ControlsTrackingAssignmentSummary() {
           )}
         </>
       ) : (
-        <p className='text-center'>No data found</p>
+        <div className='text-center'>No data found</div>
       )}
     </div>
   )

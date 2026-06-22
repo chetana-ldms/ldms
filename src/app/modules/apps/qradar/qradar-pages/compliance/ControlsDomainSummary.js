@@ -229,7 +229,7 @@ function ControlsDomainSummary() {
           {viewType === 'pie' && <CanvasJSChart options={options} />}
           {viewType === 'bar' && <CanvasJSChart options={barOptions} />}
           {viewType === 'table' && (
-            <div className='table-responsive mt-5'>
+            <div className='table-responsive mt-3 p-3'>
               <table className='table table-row-bordered table-row-gray-300 align-middle gs-0 gy-4'>
                 <thead>
                    <tr className='fw-bold text-muted bg-blue'>

@@ -8,6 +8,7 @@ const ControlsDomainStatusSummaryUrl="http://10.41.3.232:501/api/Compliance/v1/C
 const ControlsTrackingAssignmentsUrl="http://10.41.3.232:501/api/Compliance/v1/Controls/Tracking/Assignments"
 const RolesByParentRoleNameUrl="http://10.41.3.232:501/api/LDPSecurity/v1/RolesByParentRoleName"
 const UsersByRoleIdUrl="http://10.41.3.232:501/api/LDPSecurity/v1/UsersByRoleId"
+const ControlsTrackingAssignmentsSummaryUrl="http://10.41.3.232:501/api/Compliance/v1/Controls/Tracking/Assignments/Summary"
 
 export const fetchControlsTrackingUrl = async (data) => {
   try {
@@ -139,6 +140,24 @@ export const fetchUsersByRoleIdUrl = async (roleId) => {
         'Content-Type': 'application/json',
       },
     })
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchControlsTrackingAssignmentsSummaryUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${ControlsTrackingAssignmentsSummaryUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
     const responseData = await response.json()
     return responseData
   } catch (error) {
