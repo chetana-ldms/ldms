@@ -133,6 +133,13 @@ function ControlsTrackingAssignmentSummary() {
       },
     ],
   }
+  const handleExport = (format) => {
+    if (format === 'excel') {
+      exportToExcel()
+    } else if (format === 'pdf') {
+      exportToPDF()
+    }
+  }
   const exportToExcel = async () => {
     try {
       const headers = ['User Name', 'Pending Controls', 'Percentage (%)']
@@ -218,34 +225,34 @@ function ControlsTrackingAssignmentSummary() {
 
         {/* View Buttons */}
 
-        <div className='col-md-3 text-center'>
+        <div className='col-md-4 text-center'>
           <div className='btn-group'>
             <button
               className={`btn btn-sm btn-light-primary ${viewType === 'pie' ? 'active' : ''}`}
               onClick={() => setViewType('pie')}
             >
-              Pie
+              Pie chart
             </button>
             <button
               className={`btn btn-sm btn-light-primary ${viewType === 'bar' ? 'active' : ''}`}
               onClick={() => setViewType('bar')}
             >
-              Bar
+              Bar chart
             </button>
             <button
               className={`btn btn-sm btn-light-primary ${viewType === 'table' ? 'active' : ''}`}
               onClick={() => setViewType('table')}
             >
-              Table
+              Table chart
             </button>
           </div>
         </div>
 
         {/* Role Dropdown */}
 
-        <div className='col-md-4'>
+        <div className='col-md-3'>
           <div className='d-flex justify-content-end align-items-center gap-2'>
-            <label className='text-white fw-bold mb-0'>Select Role</label>
+            <label className='text-white fw-bold mb-0'>Role:</label>
 
             <select
               className='form-select form-select-sm'
@@ -261,14 +268,25 @@ function ControlsTrackingAssignmentSummary() {
             </select>
           </div>
         </div>
-        <div className='col-md-1'>
+        <div className='col-md-1 m-0 p-0'>
           <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
-            <DropdownToggle caret>Export</DropdownToggle>
+            <DropdownToggle caret className='p-0 m-0 px-3 py-2'>
+              Export
+              <i className='fa fa-file-export link mg-left-10 ms-1 p-0 m-0' />
+            </DropdownToggle>
 
             <DropdownMenu>
-              <DropdownItem onClick={exportToExcel}>Export to CSV</DropdownItem>
+              <DropdownItem onClick={() => handleExport('excel')}>
+                Export to CSV
+                <i className='fa fa-file-excel link float-right' />
+              </DropdownItem>
 
-              <DropdownItem onClick={exportToPDF}>Export to PDF</DropdownItem>
+              <hr className='no-margin' />
+
+              <DropdownItem onClick={() => handleExport('pdf')}>
+                Export to PDF
+                <i className='fa fa-file-pdf red float-right' />
+              </DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </div>
@@ -286,9 +304,9 @@ function ControlsTrackingAssignmentSummary() {
 
           {viewType === 'table' && (
             <div className='table-responsive mt-3'>
-               <table className='table table-row-bordered table-row-gray-300 align-middle gs-0 gy-4'>
+              <table className='table table-row-bordered table-row-gray-300 align-middle gs-0 gy-4'>
                 <thead>
-                   <tr className='fw-bold text-muted bg-blue'>
+                  <tr className='fw-bold text-muted bg-blue'>
                     <th>User Name</th>
 
                     <th>Pending Controls</th>

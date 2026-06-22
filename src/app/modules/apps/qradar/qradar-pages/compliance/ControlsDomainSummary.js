@@ -193,19 +193,19 @@ function ControlsDomainSummary() {
                 className={`btn btn-sm btn-light-primary ${viewType === 'pie' ? 'active' : ''}`}
                 onClick={() => setViewType('pie')}
               >
-                Pie
+                Pie chart
               </button>
               <button
                 className={`btn btn-sm btn-light-primary ${viewType === 'bar' ? 'active' : ''}`}
                 onClick={() => setViewType('bar')}
               >
-                Bar
+                Bar chart
               </button>
               <button
                 className={`btn btn-sm btn-light-primary ${viewType === 'table' ? 'active' : ''}`}
                 onClick={() => setViewType('table')}
               >
-                Table
+                Table chart
               </button>
             </div>
             <div className=''>
