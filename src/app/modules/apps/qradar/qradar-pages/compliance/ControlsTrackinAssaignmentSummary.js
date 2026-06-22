@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import CanvasJSReact from '../reports/assets/canvasjs.react'
-import {fetchControlsDomainStatusSummaryUrl} from '../../../../../api/ComplianceApi'
+import {fetchControlsDomainStatusSummaryUrl, fetchControlsTrackingAssignmentsUrl, fetchRolesByParentRoleNameUrl} from '../../../../../api/ComplianceApi'
 import {useErrorBoundary} from 'react-error-boundary'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
@@ -21,6 +21,8 @@ function ControlsTrackingAssignmentSummary() {
   const [loading, setLoading] = useState(true)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [viewType, setViewType] = useState('bar')
+   const [roles, setRoles] = useState([])
+     const [selectedRole, setSelectedRole] = useState('')
   const orgId = Number(sessionStorage.getItem('orgId'))
 
   useEffect(() => {
@@ -35,13 +37,23 @@ function ControlsTrackingAssignmentSummary() {
   }, []); // Run once after initial render
 
   useEffect(() => {
+       const fetchRoles = async () => {
+            try {
+              const res = await fetchRolesByParentRoleNameUrl('Compliance Roles', orgId)
+              setRoles(Array.isArray(res?.rolesList) ? res.rolesList : [])
+            } catch (error) {
+              console.error('Error fetching roles:', error)
+            }
+          }
+      fetchRoles()
     const fetchData = async () => {
       try {
         const payload = {
           orgId,
           projectId: 1,
+          userRoleTypeId: selectedRole || null, 
         }
-        const response = await fetchControlsDomainStatusSummaryUrl(payload)
+        const response = await fetchControlsTrackingAssignmentsUrl(payload)
         if (response?.data) {
           setData(response.data)
         }
@@ -243,6 +255,20 @@ function ControlsTrackingAssignmentSummary() {
                 Table
               </button>
             </div>
+            <label className='form-label fw-bold'>Select Role</label>
+          <select
+            className='form-select form-select-sm'
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value)}
+          >
+            <option value=''>Choose a role...</option>
+            {roles.map((role) => (
+              <option key={role.roleID} value={role.roleID}>
+                {role.roleName}
+              </option>
+            ))}
+          </select>
+        </div>
             <div className=''>
               <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
                 <DropdownToggle caret className='p-0 m-0 px-5 py-2'>
@@ -259,7 +285,6 @@ function ControlsTrackingAssignmentSummary() {
                 </DropdownMenu>
               </Dropdown>
             </div>
-          </div>
 
           {viewType === 'pie' && <CanvasJSChart options={pieOptions} />}
           {viewType === 'bar' && <CanvasJSChart options={options} />}

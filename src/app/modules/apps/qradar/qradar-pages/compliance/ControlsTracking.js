@@ -32,6 +32,7 @@ const ControlsTracking = () => {
   const [selectedStatus, setSelectedStatus] = useState('')
   const [showAssignmentModal, setShowAssignmentModal] = useState(false)
 
+  const [statusFilter, setStatusFilter] = useState('')
   const [initialAssignmentsForModal, setInitialAssignmentsForModal] = useState([]) // New state for initial assignments
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
@@ -42,7 +43,7 @@ const ControlsTracking = () => {
       setLoading(true)
       const payload = {
         orgId,
-        projectId : 1,
+        projectId: 1,
       }
       const res = await fetchControlsTrackingUrl(payload)
       setControls(Array.isArray(res?.data) ? res.data : [])
@@ -75,6 +76,13 @@ const ControlsTracking = () => {
 
   const handleSearchChange = (e) => {
     setSearchValue(e.target.value)
+    setCurrentPage(0)
+    setActivePage(0)
+    setSelectedTrackingIds([])
+  }
+
+  const handleStatusFilterChange = (e) => {
+    setStatusFilter(e.target.value)
     setCurrentPage(0)
     setActivePage(0)
     setSelectedTrackingIds([])
@@ -137,16 +145,12 @@ const ControlsTracking = () => {
       'Control Name',
       'Domain',
       'Status',
-      'Modified Date',
-      'Modified User',
     ]
     const rows = filteredControls.map((item) => [
       item.controlCode,
       `"${item.controlName}"`,
       item.domainName,
       item.statusName,
-      item.modifiedDate,
-      item.modifiedUser,
     ])
 
     const csvContent = [headers, ...rows].map((e) => e.join(',')).join('\n')
@@ -161,9 +165,11 @@ const ControlsTracking = () => {
     document.body.removeChild(link)
   }
 
-  const filteredControls = controls.filter((item) =>
-    item.searchText?.toLowerCase().includes(searchValue.toLowerCase())
-  )
+  const filteredControls = controls.filter((item) => {
+    const matchesSearch = item.searchText?.toLowerCase().includes(searchValue.toLowerCase())
+    const matchesStatus = statusFilter === '' || item.statusId === Number(statusFilter)
+    return matchesSearch && matchesStatus
+  })
 
   const currentItems = filteredControls.slice(
     currentPage * itemsPerPage,
@@ -204,7 +210,7 @@ const ControlsTracking = () => {
               setShowAssignmentModal(true)
             }}
           >
-            Assign To
+            Assignment
           </button>
           <ControlsAssignmentModal
             show={showAssignmentModal}
@@ -268,6 +274,18 @@ const ControlsTracking = () => {
           </div>
         </div>
         <div className='col-md-5 d-flex gap-2 justify-content-end align-items-center'>
+          <select
+            className='form-select form-select-sm w-150px'
+            value={statusFilter}
+            onChange={handleStatusFilterChange}
+          >
+            <option value=''>Filter by Status</option>
+            {statusDropDown.map((item) => (
+              <option key={item.dataID} value={item.dataID}>
+                {item.dataValue}
+              </option>
+            ))}
+          </select>
           <div className='input-group'>
             <input
               type='text'
@@ -343,7 +361,7 @@ const ControlsTracking = () => {
                         } cursor`}
                       />
                     </span>
-                    
+
                     <span
                       className='me-2'
                       title='Edit Assignment'

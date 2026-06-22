@@ -265,7 +265,6 @@ const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId,
           type='button'
           className='btn btn-sm btn-primary'
           onClick={handleSubmit}
-          disabled={loading || assignments.length === 0}
         >
           {loading ? 'Processing...' : 'Assign'}
         </button>
