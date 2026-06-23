@@ -4,6 +4,7 @@ import {UsersListLoading} from '../components/loading/UsersListLoading'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import {useErrorBoundary} from 'react-error-boundary'
+import Select from 'react-select'
 import Pagination from '../../../../../../utils/Pagination'
 import useFeatureActions from '../configuration/useFeatureActions'
 import {
@@ -33,6 +34,7 @@ const ControlsTracking = () => {
   const [showAssignmentModal, setShowAssignmentModal] = useState(false)
 
   const [statusFilter, setStatusFilter] = useState('')
+  const [domainFilter, setDomainFilter] = useState('')
   const [initialAssignmentsForModal, setInitialAssignmentsForModal] = useState([]) // New state for initial assignments
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
@@ -83,6 +85,13 @@ const ControlsTracking = () => {
 
   const handleStatusFilterChange = (e) => {
     setStatusFilter(e.target.value)
+    setCurrentPage(0)
+    setActivePage(0)
+    setSelectedTrackingIds([])
+  }
+
+  const handleDomainFilterChange = (selectedOption) => {
+    setDomainFilter(selectedOption?.value || '')
     setCurrentPage(0)
     setActivePage(0)
     setSelectedTrackingIds([])
@@ -168,8 +177,21 @@ const ControlsTracking = () => {
   const filteredControls = controls.filter((item) => {
     const matchesSearch = item.searchText?.toLowerCase().includes(searchValue.toLowerCase())
     const matchesStatus = statusFilter === '' || item.statusId === Number(statusFilter)
-    return matchesSearch && matchesStatus
+    const matchesDomain = domainFilter === '' || item.domainName === domainFilter
+    return matchesSearch && matchesStatus && matchesDomain
   })
+
+  const domainOptions = Array.from(
+    new Set(controls.map((item) => item.domainName).filter(Boolean))
+  )
+    .sort((a, b) => a.localeCompare(b))
+    .map((domainName) => ({
+      label: domainName,
+      value: domainName,
+    }))
+
+  const selectedDomainOption =
+    domainOptions.find((option) => option.value === domainFilter) || null
 
   const currentItems = filteredControls.slice(
     currentPage * itemsPerPage,
@@ -273,7 +295,50 @@ const ControlsTracking = () => {
             )}
           </div>
         </div>
-        <div className='col-md-5 d-flex gap-2 justify-content-end align-items-center'>
+        <div className='col-md-5 '>
+           <div className='input-group mb-1'>
+            <input
+              type='text'
+              className='form-control form-control-sm border-end-0'
+              placeholder='Search by Control Name...'
+              value={searchValue}
+              onChange={handleSearchChange}
+            />
+            <button className='btn btn-sm btn-primary' onClick={reload}>
+              <i className='fas fa-search' />
+            </button>
+          </div>
+          <div className='d-flex d-flex gap-2 justify-content-end align-items-center'> 
+          <div className='w-400px'>
+            <Select
+              classNamePrefix='react-select'
+              isClearable
+              isSearchable
+              options={domainOptions}
+              placeholder='Filter by Domain'
+              value={selectedDomainOption}
+              onChange={handleDomainFilterChange}
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  minHeight: '31px',
+                  fontSize: '12px',
+                }),
+                valueContainer: (base) => ({
+                  ...base,
+                  padding: '0 8px',
+                }),
+                indicatorsContainer: (base) => ({
+                  ...base,
+                  height: '31px',
+                }),
+                menu: (base) => ({
+                  ...base,
+                  zIndex: 1050,
+                }),
+              }}
+            />
+          </div>
           <select
             className='form-select form-select-sm w-150px'
             value={statusFilter}
@@ -286,18 +351,7 @@ const ControlsTracking = () => {
               </option>
             ))}
           </select>
-          <div className='input-group'>
-            <input
-              type='text'
-              className='form-control form-control-sm border-end-0'
-              placeholder='Search by Control Name...'
-              value={searchValue}
-              onChange={handleSearchChange}
-            />
-            <button className='btn btn-sm btn-primary' onClick={reload}>
-              <i className='fas fa-search' />
-            </button>
-          </div>
+         </div>
         </div>
         <div className='col-md-1 d-flex gap-2 justify-content-end align-items-center'>
           <button className='btn btn-sm btn-secondary' onClick={handleExportCSV}>
@@ -425,7 +479,6 @@ const ControlsTracking = () => {
                             <div className='text-muted fs-11 ms-2'>No assignments found.</div>
                           )}
                         </div>
-                        {/* <div><strong>Remarks:</strong> {item.remarks || '-'}</div> */}
                       </div>
                     </td>
                   </tr>
