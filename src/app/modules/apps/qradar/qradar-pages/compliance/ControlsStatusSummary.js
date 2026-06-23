@@ -253,7 +253,7 @@ function ControlsStatusSummary() {
           )}
         </>
       ) : (
-        <p className='text-center'>No data found</p>
+        <p className='text-center'>No Pending Status</p>
       )}
     </div>
   )

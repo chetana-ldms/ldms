@@ -252,7 +252,7 @@ function ControlsDomainSummary() {
           )}
         </>
       ) : (
-        <p className='text-center'>No data found</p>
+        <p className='text-center'>No Pending Domain</p>
       )}
     </div>
   )

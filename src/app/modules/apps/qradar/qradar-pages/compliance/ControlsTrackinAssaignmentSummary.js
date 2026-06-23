@@ -331,7 +331,7 @@ function ControlsTrackingAssignmentSummary() {
           )}
         </>
       ) : (
-        <div className='text-center'>No data found</div>
+        <div className='text-center'>No Pending Assignment </div>
       )}
     </div>
   )
