@@ -267,9 +267,9 @@ const orgNames = organizations
           <div>{orgNames}</div>
         )}
       </div>
-      {toolExpireMessage && typeof toolExpireMessage === 'object' && (
+      {/* {toolExpireMessage && typeof toolExpireMessage === 'object' && (
         <div className='d-flex align-items-center me-10'>{toolExpireMessage.message}</div>
-      )}
+      )} */}
        {toolId == 0 && (
       <div className="d-flex align-items-center text-center me-10">
         Organisation tool configuration not found

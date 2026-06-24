@@ -303,7 +303,7 @@ const ControlsTracking = () => {
                 <input
                   type='text'
                   className='form-control form-control-sm border-end-0'
-                  placeholder='Search by Control Name...'
+                  placeholder='Search ...'
                   value={searchValue}
                   onChange={handleSearchChange}
                 />

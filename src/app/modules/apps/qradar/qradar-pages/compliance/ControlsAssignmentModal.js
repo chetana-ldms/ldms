@@ -85,6 +85,34 @@ const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId,
       return
     }
 
+    // Check if user already exists (unless we're editing the same assignment)
+    const userAlreadyExists = assignments.some((item, index) => 
+      item.userId === Number(selectedUser) && index !== editingIndex
+    )
+    
+    if (userAlreadyExists) {
+      notifyFail('User already exist')
+      return
+    }
+
+    // Check if trying to mark as primary and there's already a primary assignment
+    if (isPrimary && editingIndex === null) {
+      const hasPrimary = assignments.some(item => item.isPrimary)
+      if (hasPrimary) {
+        notifyFail('Only 1 user can be marked as Primary')
+        return
+      }
+    }
+
+    // If editing and changing primary status, check for duplicates
+    if (isPrimary && editingIndex !== null) {
+      const hasPrimary = assignments.some((item, index) => item.isPrimary && index !== editingIndex)
+      if (hasPrimary) {
+        notifyFail('Only 1 user can be marked as Primary')
+        return
+      }
+    }
+
     const roleName = roles.find((r) => r.roleID === Number(selectedRole))?.roleName || ''
     const userName = users.find((u) => u.userID === Number(selectedUser))?.name || ''
 
@@ -130,6 +158,13 @@ const ControlsAssignmentModal = ({show, handleClose, selectedTrackingIds, orgId,
   const handleSubmit = async () => {
     if (assignments.length === 0) {
       notifyFail('Please add at least one assignment')
+      return
+    }
+
+    // Validate that only 1 assignment has isPrimary = true
+    const primaryCount = assignments.filter(item => item.isPrimary).length
+    if (primaryCount !== 1) {
+      notifyFail('Only 1 user must be marked as Primary')
       return
     }
 
