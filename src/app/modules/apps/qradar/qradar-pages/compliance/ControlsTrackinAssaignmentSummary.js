@@ -106,6 +106,23 @@ function ControlsTrackingAssignmentSummary() {
     ],
   }
 
+  // Logic to group items beyond the top 5 into "Miscellaneous" for the Pie Chart
+  const getProcessedPieData = () => {
+    if (data.length <= 5) return data
+    const sortedData = [...data].sort((a, b) => b.pendingControls - a.pendingControls)
+    const topFive = sortedData.slice(0, 5)
+    const remaining = sortedData.slice(5)
+    const miscCount = remaining.reduce((sum, item) => sum + item.pendingControls, 0)
+    const miscPercentage = remaining.reduce((sum, item) => sum + item.percentage, 0)
+
+    return [
+      ...topFive,
+      {userName: 'Miscellaneous', pendingControls: miscCount, percentage: miscPercentage},
+    ]
+  }
+
+  const processedPieData = getProcessedPieData()
+
   // Pie Chart Options
 
   const pieOptions = {
@@ -121,11 +138,11 @@ function ControlsTrackingAssignmentSummary() {
 
         showInLegend: true,
 
-        indexLabel: '{label} - {y}%',
+        indexLabel: '{label} - {y}% ({count})',
 
-        toolTipContent: '<b>{label}</b><br/>Pending Controls: {count}<br/>Percentage: {y}%',
+        toolTipContent: '<b>{label}</b>: {y}% ({count})',
 
-        dataPoints: data.map((item) => ({
+        dataPoints: processedPieData.map((item) => ({
           label: item.userName,
           y: item.percentage,
           count: item.pendingControls,
@@ -144,7 +161,7 @@ function ControlsTrackingAssignmentSummary() {
     try {
       const headers = ['User Name', 'Pending Controls', 'Percentage (%)']
 
-      const rows = data.map((item) => [item.userName, item.pendingControls, item.percentage])
+      const rows = processedPieData.map((item) => [item.userName, item.pendingControls, item.percentage])
 
       const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n')
 
@@ -187,7 +204,7 @@ function ControlsTrackingAssignmentSummary() {
 
     const tableHead = [['User Name', 'Pending Controls', 'Percentage']]
 
-    const tableBody = data.map((item) => [
+    const tableBody = processedPieData.map((item) => [
       item.userName,
       item.pendingControls,
       `${item.percentage}%`,
@@ -316,7 +333,7 @@ function ControlsTrackingAssignmentSummary() {
                 </thead>
 
                 <tbody>
-                  {data.map((item, index) => (
+                  {processedPieData.map((item, index) => (
                     <tr key={index}>
                       <td>{item.userName}</td>
 
