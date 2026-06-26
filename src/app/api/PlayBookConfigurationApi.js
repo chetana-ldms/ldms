@@ -1,15 +1,9 @@
 import FetchWithToken from "../modules/auth/FetchWithToken"
-const ResolverSearchUrl = 'http://10.41.3.232:501/api/ResolverEngine/v1/Resolver/Search'
-const ResolverDeleteUrl = 'http://10.41.3.232:501/api/ResolverEngine/v1/Resolver/Delete'
-const ResolverAddUrl = 'http://10.41.3.232:501/api/ResolverEngine/v1/Resolver/Add'
-const ResolverUpdateUrl = 'http://10.41.3.232:501/api/ResolverEngine/v1/Resolver/Update'
-const ResolverMitreSetMappingUrl = 'http://10.41.3.232:501/api/ResolverEngine/v1/Resolver/Mitre/SetMapping'
-const ResolverMitreMappingsUrl = 'http://10.41.3.232:501/api/ResolverEngine/v1/Resolver/Mitre/Mappings'
-const GlobalStandardFieldsUrl = 'http://10.41.3.232:501/api/LDPlattform/v1/GlobalStandardFields'
+import { API } from "../../config/apiConfig"
 
 export const fetchResolverSearchUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ResolverSearchUrl}`, {
+    const response = await FetchWithToken(`${API.RESOLVER_SEARCH}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -28,7 +22,7 @@ export const fetchResolverSearchUrl = async (data) => {
 }
 export const fetchResolverDeleteUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ResolverDeleteUrl}`, {
+    const response = await FetchWithToken(`${API.RESOLVER_DELETE}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -47,7 +41,7 @@ export const fetchResolverDeleteUrl = async (data) => {
 }
 export const fetchResolverAddUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ResolverAddUrl}`, {
+    const response = await FetchWithToken(`${API.RESOLVER_ADD}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -66,7 +60,7 @@ export const fetchResolverAddUrl = async (data) => {
 }
 export const fetchResolverUpdateUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ResolverUpdateUrl}`, {
+    const response = await FetchWithToken(`${API.RESOLVER_UPDATE}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -85,7 +79,7 @@ export const fetchResolverUpdateUrl = async (data) => {
 }
 export const fetchResolverMitreSetMappingUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ResolverMitreSetMappingUrl}`, {
+    const response = await FetchWithToken(`${API.RESOLVER_MITRE_SET_MAPPING}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -105,7 +99,7 @@ export const fetchResolverMitreSetMappingUrl = async (data) => {
 export const fetchResolverMitreMappingsUrl = async (id) => {
   try {
     const response = await FetchWithToken(
-      `${ResolverMitreMappingsUrl}/${id}`,
+      `${API.RESOLVER_MITRE_MAPPINGS}/${id}`,
       {
         method: 'GET',
         headers: {
@@ -123,7 +117,7 @@ export const fetchResolverMitreMappingsUrl = async (id) => {
 export const fetchGlobalStandardFieldsUrl = async () => {
   try {
     const response = await FetchWithToken(
-      `${GlobalStandardFieldsUrl}`,
+      `${API.GLOBAL_STANDARD_FIELDS}`,
       {
         method: 'GET',
         headers: {

@@ -1,18 +1,9 @@
 import FetchWithToken from "../modules/auth/FetchWithToken"
-
-const ControlsTrackingUrl="http://10.41.3.232:501/api/Compliance/v1/Controls/Tracking"
-const ControlsUpdateStatusUrl="http://10.41.3.232:501/api/Compliance/v1/Controls/UpdateStatus"
-const ControlsStatusSummaryUrl="http://10.41.3.232:501/api/Compliance/v1/Controls/StatusSummary"
-const ControlsDomainSummaryUrl="http://10.41.3.232:501/api/Compliance/v1/Controls/DomainSummary"
-const ControlsDomainStatusSummaryUrl="http://10.41.3.232:501/api/Compliance/v1/Controls/DomainStatusSummary"
-const ControlsTrackingAssignmentsUrl="http://10.41.3.232:501/api/Compliance/v1/Controls/Tracking/Assignments"
-const RolesByParentRoleNameUrl="http://10.41.3.232:501/api/LDPSecurity/v1/RolesByParentRoleName"
-const UsersByRoleIdUrl="http://10.41.3.232:501/api/LDPSecurity/v1/UsersByRoleId"
-const ControlsTrackingAssignmentsSummaryUrl="http://10.41.3.232:501/api/Compliance/v1/Controls/Tracking/Assignments/Summary"
+import { API } from "../../config/apiConfig"
 
 export const fetchControlsTrackingUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ControlsTrackingUrl}`, {
+    const response = await FetchWithToken(`${API.CONTROLS_TRACKING}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,7 +21,7 @@ export const fetchControlsTrackingUrl = async (data) => {
 }
 export const fetchControlsUpdateStatusUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ControlsUpdateStatusUrl}`, {
+    const response = await FetchWithToken(`${API.CONTROLS_UPDATE_STATUS}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -48,7 +39,7 @@ export const fetchControlsUpdateStatusUrl = async (data) => {
 }
 export const fetchControlsStatusSummaryUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ControlsStatusSummaryUrl}`, {
+    const response = await FetchWithToken(`${API.CONTROLS_STATUS_SUMMARY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -66,7 +57,7 @@ export const fetchControlsStatusSummaryUrl = async (data) => {
 }
 export const fetchControlsDomainSummaryUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ControlsDomainSummaryUrl}`, {
+    const response = await FetchWithToken(`${API.CONTROLS_DOMAIN_SUMMARY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -84,7 +75,7 @@ export const fetchControlsDomainSummaryUrl = async (data) => {
 }
 export const fetchControlsDomainStatusSummaryUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ControlsDomainStatusSummaryUrl}`, {
+    const response = await FetchWithToken(`${API.CONTROLS_DOMAIN_STATUS_SUMMARY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -102,7 +93,7 @@ export const fetchControlsDomainStatusSummaryUrl = async (data) => {
 }
 export const fetchControlsTrackingAssignmentsUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ControlsTrackingAssignmentsUrl}`, {
+    const response = await FetchWithToken(`${API.CONTROLS_TRACKING_ASSIGNMENTS}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -120,7 +111,7 @@ export const fetchControlsTrackingAssignmentsUrl = async (data) => {
 }
 export const fetchRolesByParentRoleNameUrl = async (parentRoleName, orgId) => {
   try {
-    const response = await FetchWithToken(`${RolesByParentRoleNameUrl}?parentRoleName=${encodeURIComponent(parentRoleName)}&orgId=${orgId}`, {
+    const response = await FetchWithToken(`${API.ROLES_BY_PARENT_ROLE_NAME}?parentRoleName=${encodeURIComponent(parentRoleName)}&orgId=${orgId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -134,7 +125,7 @@ export const fetchRolesByParentRoleNameUrl = async (parentRoleName, orgId) => {
 }
 export const fetchUsersByRoleIdUrl = async (roleId) => {
   try {
-    const response = await FetchWithToken(`${UsersByRoleIdUrl}?roleid=${roleId}`, {
+    const response = await FetchWithToken(`${API.USERS_BY_ROLE_ID}?roleid=${roleId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -148,7 +139,7 @@ export const fetchUsersByRoleIdUrl = async (roleId) => {
 }
 export const fetchControlsTrackingAssignmentsSummaryUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ControlsTrackingAssignmentsSummaryUrl}`, {
+    const response = await FetchWithToken(`${API.CONTROLS_TRACKING_ASSIGNMENTS_SUMMARY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

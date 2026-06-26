@@ -332,4 +332,43 @@ INCIDENT_NOTES_BY_CONVERSATION: `${base}/IncidentManagement/${v}/Notes/Incidentt
   RISK_WAIVER_REVOKE: `${base}/RiskManagement/${v}/RiskWaiver/Revoke`,
   RISK_WAIVER_REQUEST_UPDATE: `${base}/RiskManagement/${v}/WaiverRequest/Update`,
   SECURITY_SENIOS: `${base}/LDPlattform/${v}/SecuritySenarios`,
+
+  // Compliance API
+  CONTROLS_TRACKING: `${base}/Compliance/${v}/Controls/Tracking`,
+  CONTROLS_UPDATE_STATUS: `${base}/Compliance/${v}/Controls/UpdateStatus`,
+  CONTROLS_STATUS_SUMMARY: `${base}/Compliance/${v}/Controls/StatusSummary`,
+  CONTROLS_DOMAIN_SUMMARY: `${base}/Compliance/${v}/Controls/DomainSummary`,
+  CONTROLS_DOMAIN_STATUS_SUMMARY: `${base}/Compliance/${v}/Controls/DomainStatusSummary`,
+  CONTROLS_TRACKING_ASSIGNMENTS: `${base}/Compliance/${v}/Controls/Tracking/Assignments`,
+  CONTROLS_TRACKING_ASSIGNMENTS_SUMMARY: `${base}/Compliance/${v}/Controls/Tracking/Assignments/Summary`,
+  ROLES_BY_PARENT_ROLE_NAME: `${base}/LDPSecurity/${v}/RolesByParentRoleName`,
+  USERS_BY_ROLE_ID: `${base}/LDPSecurity/${v}/UsersByRoleId`,
+
+  // Connection Engine API
+  CONNECTION_TYPE_ADD: `${base}/ConnectionEngine/${v}/ConnectionType/Add`,
+  CONNECTION_TYPE_UPDATE: `${base}/ConnectionEngine/${v}/ConnectionType/Update`,
+  CONNECTION_TYPE_DELETE: `${base}/ConnectionEngine/${v}/ConnectionType/Delete`,
+  CONNECTION_TYPE_SEARCH: `${base}/ConnectionEngine/${v}/ConnectionType/Search`,
+  CONNECTION_ADD: `${base}/ConnectionEngine/${v}/Connection/Add`,
+  CONNECTION_UPDATE: `${base}/ConnectionEngine/${v}/Connection/Update`,
+  CONNECTION_DELETE: `${base}/ConnectionEngine/${v}/Connection/Delete`,
+  CONNECTION_SEARCH: `${base}/ConnectionEngine/${v}/Connection/Search`,
+
+  // MITRE Framework
+  TECHNIQUES_BY_TACTIC: `${base}/MItreFramework/${v}/TechniquesByTactic`,
+
+  // Resolver Engine API
+  RESOLVER_SEARCH: `${base}/ResolverEngine/${v}/Resolver/Search`,
+  RESOLVER_DELETE: `${base}/ResolverEngine/${v}/Resolver/Delete`,
+  RESOLVER_ADD: `${base}/ResolverEngine/${v}/Resolver/Add`,
+  RESOLVER_UPDATE: `${base}/ResolverEngine/${v}/Resolver/Update`,
+  RESOLVER_MITRE_SET_MAPPING: `${base}/ResolverEngine/${v}/Resolver/Mitre/SetMapping`,
+  RESOLVER_MITRE_MAPPINGS: `${base}/ResolverEngine/${v}/Resolver/Mitre/Mappings`,
+  GLOBAL_STANDARD_FIELDS: `${base}/LDPlattform/${v}/GlobalStandardFields`,
+
+  // Script Repository API
+  SCRIPT_SEARCH: `${base}/ScriptRepository/${v}/Script/Search`,
+  SCRIPT_ADD: `${base}/ScriptRepository/${v}/Script/Add`,
+  SCRIPT_UPDATE: `${base}/ScriptRepository/${v}/Script/Update`,
+  SCRIPT_DELETE: `${base}/ScriptRepository/${v}/Script/Delete`,
 }

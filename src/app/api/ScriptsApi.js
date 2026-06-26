@@ -1,13 +1,9 @@
 import FetchWithToken from "../modules/auth/FetchWithToken"
-
-const ScriptSearchUrl ="http://10.41.3.232:501/api/ScriptRepository/v1/Script/Search"
-const ScriptAddUrl ="http://10.41.3.232:501/api/ScriptRepository/v1/Script/Add"
-const ScriptUpdateUrl="http://10.41.3.232:501/api/ScriptRepository/v1/Script/Update"
-const ScriptDeleteUrl="http://10.41.3.232:501/api/ScriptRepository/v1/Script/Delete"
+import { API } from "../../config/apiConfig"
 
 export const fetchScriptSearchUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ScriptSearchUrl}`, {
+    const response = await FetchWithToken(`${API.SCRIPT_SEARCH}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -22,7 +18,7 @@ export const fetchScriptSearchUrl = async (data) => {
 }
 export const fetchScriptAddUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ScriptAddUrl}`, {
+    const response = await FetchWithToken(`${API.SCRIPT_ADD}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -37,7 +33,7 @@ export const fetchScriptAddUrl = async (data) => {
 }
 export const fetchScriptUpdateUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ScriptUpdateUrl}`, {
+    const response = await FetchWithToken(`${API.SCRIPT_UPDATE}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,7 +48,7 @@ export const fetchScriptUpdateUrl = async (data) => {
 }
 export const fetchScriptDeleteUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ScriptDeleteUrl}`, {
+    const response = await FetchWithToken(`${API.SCRIPT_DELETE}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

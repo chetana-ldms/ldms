@@ -1,17 +1,9 @@
 import FetchWithToken from "../modules/auth/FetchWithToken"
-
-const ConnectionTypeAddUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/ConnectionType/Add"
-const ConnectionTypeUpdateUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/ConnectionType/Update"
-const ConnectionTypeDeleteUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/ConnectionType/Delete"
-const ConnectionTypeSearchUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/ConnectionType/Search"
-const ConnectionAddUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/Connection/Add"
-const ConnectionUpdateUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/Connection/Update"
-const ConnectionDeleteUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/Connection/Delete"
-const ConnectionSearchUrl ="http://10.41.3.232:501/api/ConnectionEngine/v1/Connection/Search"
+import { API } from "../../config/apiConfig"
 
 export const fetchConnectionTypeAddUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ConnectionTypeAddUrl}`, {
+    const response = await FetchWithToken(`${API.CONNECTION_TYPE_ADD}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -29,7 +21,7 @@ export const fetchConnectionTypeAddUrl = async (data) => {
 }
 export const fetchConnectionTypeUpdateUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ConnectionTypeUpdateUrl}`, {
+    const response = await FetchWithToken(`${API.CONNECTION_TYPE_UPDATE}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -47,7 +39,7 @@ export const fetchConnectionTypeUpdateUrl = async (data) => {
 }
 export const fetchConnectionTypeDeleteUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ConnectionTypeDeleteUrl}`, {
+    const response = await FetchWithToken(`${API.CONNECTION_TYPE_DELETE}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -65,7 +57,7 @@ export const fetchConnectionTypeDeleteUrl = async (data) => {
 }
 export const fetchConnectionTypeSearchUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ConnectionTypeSearchUrl}`, {
+    const response = await FetchWithToken(`${API.CONNECTION_TYPE_SEARCH}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -83,7 +75,7 @@ export const fetchConnectionTypeSearchUrl = async (data) => {
 }
 export const fetchConnectionAddUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ConnectionAddUrl}`, {
+    const response = await FetchWithToken(`${API.CONNECTION_ADD}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -101,7 +93,7 @@ export const fetchConnectionAddUrl = async (data) => {
 }
 export const fetchConnectionUpdateUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ConnectionUpdateUrl}`, {
+    const response = await FetchWithToken(`${API.CONNECTION_UPDATE}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -119,7 +111,7 @@ export const fetchConnectionUpdateUrl = async (data) => {
 }
 export const fetchConnectionDeleteUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ConnectionDeleteUrl}`, {
+    const response = await FetchWithToken(`${API.CONNECTION_DELETE}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -137,7 +129,7 @@ export const fetchConnectionDeleteUrl = async (data) => {
 }
 export const fetchConnectionSearchUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${ConnectionSearchUrl}`, {
+    const response = await FetchWithToken(`${API.CONNECTION_SEARCH}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

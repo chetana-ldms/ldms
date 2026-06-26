@@ -3,7 +3,7 @@ import { API } from "../../config/apiConfig"
 
 const TechniquesUrl = API.MITRE_TECHNIQUES
 const TacticsUrl = API.MITRE_TACTICS
-const TechniquesByTacticUrl = "http://10.41.3.232:501/api/MItreFramework/v1/TechniquesByTactic"
+const TechniquesByTacticUrl = API.TECHNIQUES_BY_TACTIC
 
 export const fetchTechniquesUrl = async () => {
   try {

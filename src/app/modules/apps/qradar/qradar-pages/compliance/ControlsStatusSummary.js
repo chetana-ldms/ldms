@@ -234,7 +234,7 @@ function ControlsStatusSummary() {
               <table className='table table-row-bordered table-row-gray-300 align-middle gs-0 gy-4'>
                 <thead>
                   <tr className='fw-bold text-muted bg-blue'>
-                    <th>Status Name</th>
+                    <th>Control Status</th>
                     <th>Control Count</th>
                     <th>Percentage</th>
                   </tr>
