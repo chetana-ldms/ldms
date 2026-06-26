@@ -49,6 +49,7 @@ const IncidentConversationWithoutAttachmentsUrl = API.INCIDENT_CONVERSATION_NO_A
 const NotesDetailsUrl = API.NOTES_DETAILS
 const NotesDeleteUrl = API.NOTES_DELETE
 const IncidenttNotesByIncidentByConversationIdUrl = API.INCIDENT_NOTES_BY_CONVERSATION
+const IncidentEntityMappingUrl = "http://10.41.3.232:501/api/IncidentManagement/v1/IncidentEntityMapping"
 
 
 export const fetchUsersByOrgTool = async (id, toolId, userID) => {
@@ -1141,6 +1142,20 @@ export const fetchIncidenttNotesByIncidentByConversationIdUrl = async (Conversat
     const responseData = await response.json()
     const incidentNotes = responseData.incidentNotes
     return incidentNotes
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchIncidentEntityMappingUrl = async (incidentID) => {
+  try {
+    const response = await FetchWithToken(`${IncidentEntityMappingUrl}?incidentId=${incidentID}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const responseData = await response.json()
+    return responseData
   } catch (error) {
     console.log(error)
   }

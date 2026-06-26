@@ -341,10 +341,10 @@ export const fetchLDPToolDetails = async (id, toolNameRef) => {
     })
     const responseData = await response.json()
     const ldpTool = responseData.ldpTool
-    console.log(ldpTool, 'ldpTool') // Output the fetched data to the console
-    // Populate the form fields with the retrieved data
-    toolNameRef.current.value = ldpTool.toolName
-    // toolTypeRef.current.value = ldpTool.toolType;
+    if (toolNameRef?.current) {
+      toolNameRef.current.value = ldpTool?.toolName || ''
+    }
+
     return ldpTool
   } catch (error) {
     console.log(error)

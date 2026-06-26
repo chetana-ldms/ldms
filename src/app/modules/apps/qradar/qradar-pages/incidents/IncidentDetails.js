@@ -7,6 +7,7 @@ import {
   fetchGetIncidentHistory,
   fetchGroupUsersUrl,
   fetchIncidentDetails,
+  fetchIncidentEntityMappingUrl,
   fetchIncidentGroupsUrl,
   fetchIncidentNotesListUrl,
   fetchIncidentProductsUrl,
@@ -37,6 +38,7 @@ import DetailsModal from './DetailsModal '
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
 import NotesListModalComponent from './NotesListModalComponent'
+import {fetchLDPToolDetails} from '../../../../../api/Api'
 
 const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const handleError = useErrorBoundary()
@@ -88,6 +90,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const [selectedTags, setSelectedTags] = useState([])
   const [incidentCreatorRole, setIncidentCreatorRole] = useState([])
   const [incidentGroup, setIncidentGroup] = useState([])
+  const [incidentEntityMapping, setIncidentEntityMapping] = useState([])
   const [incidentProducts, setIncidentProducts] = useState([])
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -142,7 +145,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   const [showModal, setShowModal] = useState(false)
   const [showForwardModal, setShowForwardModal] = useState(false)
   const [showSendMailModal, setShowSendMailModal] = useState(false)
-
+  const [ldpTools, setLdpTools] = useState({})
   const handleAddClick = () => {
     setShowModal(true)
   }
@@ -415,6 +418,20 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
     }
   }
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (toolId && toolId !== 0) {
+          const data = await fetchLDPToolDetails(toolId)
+          setLdpTools(data)
+        }
+      } catch (error) {
+        handleError(error)
+      }
+    }
+
+    fetchData()
+  }, [toolId])
   const handleSubmit = async (event, incidentData) => {
     event.preventDefault()
     if (!incidentData.requestorUserId) {
@@ -493,6 +510,22 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
       reloadHistory()
     }
   }, [id])
+
+  useEffect(() => {
+    const fetchEntityMapping = async () => {
+      try {
+        if (id !== null && id !== undefined) {
+          const response = await fetchIncidentEntityMappingUrl(id)
+          setIncidentEntityMapping(response?.entityMapping || [])
+        }
+      } catch (error) {
+        handleError(error)
+      }
+    }
+
+    fetchEntityMapping()
+  }, [id])
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -733,18 +766,21 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   Description
                 </a>
               </li>
-              <li className='nav-item'>
-                <a
-                  className='nav-link'
-                  href='#'
-                  onClick={(e) => {
-                    e.preventDefault()
-                    setShowConversationModal(true)
-                  }}
-                >
-                  Conversation
-                </a>
-              </li>
+              {ldpTools?.toolName === 'FreshDesk' && (
+                <li className='nav-item'>
+                  <a
+                    className='nav-link'
+                    href='#'
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setShowConversationModal(true)
+                    }}
+                  >
+                    Conversation
+                  </a>
+                </li>
+              )}
+
               <li className='nav-item'>
                 <a
                   className={`nav-link ${activeTab === 'timeline' ? 'active' : ''}`}
@@ -767,17 +803,18 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                   Notes
                 </a>
               </li>
-
-              <li className='nav-item'>
-                <a
-                  className={`nav-link ${activeTab === 'sla' ? 'active' : ''}`}
-                  data-bs-toggle='tab'
-                  href='#kt_tab_pane_sla'
-                  onClick={() => setActiveTab('sla')}
-                >
-                  SLA
-                </a>
-              </li>
+              {ldpTools?.toolName === 'FreshDesk' && (
+                <li className='nav-item'>
+                  <a
+                    className={`nav-link ${activeTab === 'sla' ? 'active' : ''}`}
+                    data-bs-toggle='tab'
+                    href='#kt_tab_pane_sla'
+                    onClick={() => setActiveTab('sla')}
+                  >
+                    SLA
+                  </a>
+                </li>
+              )}
 
               {Array.isArray(incidentData?.alertId) && incidentData.alertId.length > 0 && (
                 <li className='nav-item'>
@@ -788,6 +825,18 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     onClick={() => setActiveTab('alerts')}
                   >
                     Alerts
+                  </a>
+                </li>
+              )}
+              {Array.isArray(incidentEntityMapping) && incidentEntityMapping.length > 0 && (
+                <li className='nav-item'>
+                  <a
+                    className={`nav-link ${activeTab === 'reference' ? 'active' : ''}`}
+                    data-bs-toggle='tab'
+                    href='#kt_tab_pane_reference'
+                    onClick={() => setActiveTab('reference')}
+                  >
+                    Reference
                   </a>
                 </li>
               )}
@@ -1315,6 +1364,34 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                       </tr>
                     </tbody>
                   </table>
+                </div>
+              </div>
+              <div className='tab-pane fade' id='kt_tab_pane_reference' role='tabpanel'>
+                <div className='p-3'>
+                  {incidentEntityMapping.length > 0 ? (
+                    <table className='table table-bordered table-sm w-auto'>
+                      <thead>
+                        <tr>
+                          <th>Map ID</th>
+                          <th>Entity Type</th>
+                          <th>Entity ID</th>
+                          <th>Relation</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {incidentEntityMapping.map((mapping) => (
+                          <tr key={mapping.mapId}>
+                            <td>{mapping.mapId}</td>
+                            <td>{mapping.entityType}</td>
+                            <td>{mapping.entityId}</td>
+                            <td>{mapping.relationType}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className='text-gray-500'>No reference data available.</div>
+                  )}
                 </div>
               </div>
             </div>
