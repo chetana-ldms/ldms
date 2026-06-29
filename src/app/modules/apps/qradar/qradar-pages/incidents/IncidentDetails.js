@@ -434,12 +434,15 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
   }, [toolId])
   const handleSubmit = async (event, incidentData) => {
     event.preventDefault()
-    if (!incidentData.requestorUserId) {
-      notifyFail('select the Requestor')
+    // Only require Requester, Contact, Priority for FreshDesk tool
+    const isFreshDeskTool = ldpTools?.toolName === 'FreshDesk'
+    
+    if (isFreshDeskTool && !incidentData.requestorUserId) {
+      notifyFail('select the Requester')
       return
     }
-    if (!incidentData.incidentEmail) {
-      notifyFail('Enter the Email')
+    if (isFreshDeskTool && !incidentData.incidentEmail) {
+      notifyFail('Enter the Contact')
       return
     }
     if (!incidentData.subject) {
@@ -450,7 +453,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
       notifyFail('select the Status')
       return
     }
-    if (!incidentData.priority) {
+    if (isFreshDeskTool && !incidentData.priority) {
       notifyFail('select the Priority')
       return
     }
@@ -882,7 +885,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 </div>
                 <div className='row bd-highlight mb-3'>
                   <div className='col-md-3 bd-highlight mt-2'>
-                    Requester<sup className='red'>*</sup>
+                    Requester{ldpTools?.toolName === 'FreshDesk' && <sup className='red'>*</sup>}
                   </div>
                   <div className='col-md-9 bd-highlight'>
                     <div className='w-100'>
@@ -902,7 +905,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
 
                 <div className='row bd-highlight mb-3'>
                   <div className='col-md-3 bd-highlight mt-2'>
-                    Contact<sup className='red'>*</sup>
+                    Contact{ldpTools?.toolName === 'FreshDesk' && <sup className='red'>*</sup>}
                   </div>
                   <div className='col-md-9 bd-highlight'>
                     <input
@@ -947,7 +950,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                 {/* Priority */}
                 <div className='row bd-highlight mb-1'>
                   <div className='col-md-3 bd-highlight mt-2'>
-                    Priority<sup className='red'>*</sup>
+                    Priority{ldpTools?.toolName === 'FreshDesk' && <sup className='red'>*</sup>}
                   </div>
                   <div className='col-md-9 bd-highlight'>
                     <div className='w-120px'>
@@ -1017,8 +1020,6 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     </div>
                   </div>
                 </div>
-
-                {/* Type */}
                 <div className='row bd-highlight mb-1'>
                   <div className='col-md-3 bd-highlight mt-2'>Type</div>
                   <div className='col-md-9 bd-highlight'>
@@ -1041,6 +1042,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     </div>
                   </div>
                 </div>
+                {ldpTools?.toolName === 'FreshDesk' && (
                 <div className='row bd-highlight mb-3'>
                   <div className='col-md-3 bd-highlight mt-2'>Group</div>
                   <div className='col-md-9 bd-highlight'>
@@ -1068,6 +1070,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     </div>
                   </div>
                 </div>
+                )}
                 <div className='row bd-highlight mb-3'>
                   <div className='col-md-3 bd-highlight mt-2'>Owner</div>
                   <div className='col-md-9 bd-highlight'>
@@ -1095,6 +1098,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     </div>
                   </div>
                 </div>
+                {ldpTools?.toolName === 'FreshDesk' && (
                 <div className='row bd-highlight mb-3'>
                   <div className='col-md-3 bd-highlight mt-2'>Product</div>
                   <div className='col-md-9 bd-highlight'>
@@ -1125,6 +1129,7 @@ const IncidentDetails = ({incident, onRefreshIncidents}) => {
                     </div>
                   </div>
                 </div>
+                )}
                 <div className='checkbox-wrapper'>
                   <input
                     className='p-2 v-middle'
