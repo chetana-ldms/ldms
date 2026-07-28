@@ -224,7 +224,7 @@ const AddMasterData = () => {
             <div className='col-lg-4'>
               <label>Organization</label>
               <select
-                className='form-control'
+                className='form-control p-0 ps-2'
                 value={selectedOrganization}
                 onChange={handleOrganizationChange}
               >
@@ -239,7 +239,7 @@ const AddMasterData = () => {
 
             <div className='col-lg-4'>
               <label>Tool Name</label>
-              <select className='form-control' value={selectedTool} onChange={handleToolChange}>
+              <select className='form-control p-0 ps-2' value={selectedTool} onChange={handleToolChange}>
                 <option value=''>Select Tool Name</option>
                 {tools.map((tool, idx) => (
                   <option key={idx} value={tool.toolId}>
@@ -277,7 +277,7 @@ const AddMasterData = () => {
                 maxLength={200}
               />
             </div>
-            <div className='col-lg-4 mt-3'>
+            <div className='col-lg-4'>
               <label>Map DataID</label>
               <input
                 type='number'
@@ -288,7 +288,7 @@ const AddMasterData = () => {
                 maxLength={200}
               />
             </div>
-            <div className='col-lg-4 mt-3'>
+            <div className='col-lg-4'>
               <div className='fv-row mt-10'>
                 <button
                   type='button'

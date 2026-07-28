@@ -247,7 +247,7 @@ const UpdateMasterData = () => {
             <div className='col-lg-4'>
               <label>Organization</label>
               <select
-                className='form-control'
+                className='form-control p-0 ps-2'
                 value={organizationName}
                 onChange={(e) => setOrganizationName(e.target.value)}
               >
@@ -262,7 +262,7 @@ const UpdateMasterData = () => {
             <div className='col-lg-4'>
               <label>Tool Name</label>
               <select
-                className='form-control'
+                className='form-control p-0 ps-2'
                 value={selectedTool}
                 onChange={(e) => setSelectedTool(e.target.value)}
               >
@@ -302,7 +302,7 @@ const UpdateMasterData = () => {
                 maxLength={200}
               />
             </div>
-            <div className='col-lg-4 mt-3'>
+            <div className='col-lg-4'>
               <label>Map DataID</label>
               <input
                 type='number'
@@ -314,7 +314,7 @@ const UpdateMasterData = () => {
                 maxLength={200}
               />
             </div>
-            <div className='col-lg-4 mt-3'>
+            <div className='col-lg-4'>
               <div className='fv-row mt-10'>
                 <button
                   type='button'

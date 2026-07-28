@@ -4,16 +4,24 @@ import {fetchControlsStatusSummaryUrl} from '../../../../../api/ComplianceApi'
 import {useErrorBoundary} from 'react-error-boundary'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
-import {
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from 'reactstrap'
+import {Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
 import {fetchExportDataAddUrl} from '../../../../../api/Api'
 
 const CanvasJS = CanvasJSReact.CanvasJS
 const CanvasJSChart = CanvasJSReact.CanvasJSChart
+
+// Centralized status -> color mapping so pie, bar, and table all stay in sync.
+// Falls back to null for any status that isn't Approved/Pending, so those
+// points keep using the default colorSet instead of a hardcoded color.
+const STATUS_COLORS = {
+  approved: '#28a745', // green
+  pending: '#007bff', // blue
+}
+
+const getStatusColor = (statusName) => {
+  if (!statusName) return null
+  return STATUS_COLORS[statusName.toLowerCase()] || null
+}
 
 function ControlsStatusSummary() {
   const handleError = useErrorBoundary()
@@ -27,12 +35,17 @@ function ControlsStatusSummary() {
     if (CanvasJS && typeof CanvasJS.getColorSet === 'function') {
       if (!CanvasJS.getColorSet('complianceShades')) {
         CanvasJS.addColorSet('complianceShades', [
-          '#f0e68c', '#ffb700', '#008080', '#cc99ff',
-          '#acddde', '#b4f0a7', '#ffb1b0',
-        ]);
+          '#f0e68c',
+          '#ffb700',
+          '#008080',
+          '#cc99ff',
+          '#acddde',
+          '#b4f0a7',
+          '#ffb1b0',
+        ])
       }
     }
-  }, []); // Run once after initial render
+  }, []) // Run once after initial render
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,11 +71,7 @@ function ControlsStatusSummary() {
     const headerRow = ['Status Name', 'Percentage', 'Control Count']
     const content = [headerRow]
       .concat(
-        data.map((item) => [
-          item.statusName,
-          `${item.percentage.toFixed(2)}%`,
-          item.controlCount,
-        ])
+        data.map((item) => [item.statusName, `${item.percentage.toFixed(2)}%`, item.controlCount])
       )
       .map((row) => row.join(','))
       .join('\n')
@@ -146,11 +155,15 @@ function ControlsStatusSummary() {
         legendText: '{label}',
         indexLabelFontSize: 13,
         indexLabel: '{label} - {y}% ({count})',
-        dataPoints: processedPieData.map((item) => ({
-          y: item.percentage,
-          label: item.statusName,
-          count: item.controlCount,
-        })),
+        dataPoints: processedPieData.map((item) => {
+          const color = getStatusColor(item.statusName)
+          return {
+            y: item.percentage,
+            label: item.statusName,
+            count: item.controlCount,
+            ...(color ? {color} : {}),
+          }
+        }),
       },
     ],
   }
@@ -173,10 +186,14 @@ function ControlsStatusSummary() {
     data: [
       {
         type: 'column',
-        dataPoints: data.map((item) => ({
-          label: item.statusName,
-          y: item.controlCount,
-        })),
+        dataPoints: data.map((item) => {
+          const color = getStatusColor(item.statusName)
+          return {
+            label: item.statusName,
+            y: item.controlCount,
+            ...(color ? {color} : {}),
+          }
+        }),
       },
     ],
   }
@@ -240,13 +257,23 @@ function ControlsStatusSummary() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.map((item, index) => (
-                    <tr key={index}>
-                      <td>{item.statusName}</td>
-                      <td>{item.controlCount}</td>
-                      <td>{item.percentage.toFixed(2)}%</td>
-                    </tr>
-                  ))}
+                  {data.map((item, index) => {
+                    const color = getStatusColor(item.statusName)
+                    return (
+                      <tr key={index}>
+                        <td
+                          style={{
+                            color: color || 'inherit',
+                            fontWeight: color ? 'bold' : 'normal',
+                          }}
+                        >
+                          {item.statusName}
+                        </td>
+                        <td>{item.controlCount}</td>
+                        <td>{item.percentage.toFixed(2)}%</td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
