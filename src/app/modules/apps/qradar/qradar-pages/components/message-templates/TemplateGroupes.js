@@ -129,7 +129,7 @@ const TemplateGroupes = () => {
       <div className='card-header no-pad'>
         <h3 className='card-title align-items-start flex-column'>
           <span className='card-label fw-bold fs-3 mb-1'>
-            Template Groupes ({currentItems ? currentItems.length : 0} /{' '}
+            Template Groups ({currentItems ? currentItems.length : 0} /{' '}
             {filteredList ? filteredList.length : 0})
           </span>
         </h3>

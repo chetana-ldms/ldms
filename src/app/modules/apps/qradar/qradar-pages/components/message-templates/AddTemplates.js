@@ -302,17 +302,24 @@ const AddTemplates = () => {
                   ))}
                 </div>
               )}
-              <RichTextEditor
-                value={message}
-                onChange={setMessage}
-                onAttach={(file) => setAttachments((prev) => [...prev, file])}
-              />
-              <i
-                className='fa fa-plus-circle text-success position-absolute'
-                style={{bottom: '12px', right: '15px', cursor: 'pointer', fontSize: '18px'}}
-                title='Add Placeholder'
-                onClick={() => setShowModal(true)}
-              ></i>
+              <div
+                style={{
+                  maxHeight: '300px',
+                  overflowY: 'auto',
+                }}
+              >
+                <RichTextEditor
+                  value={message}
+                  onChange={setMessage}
+                  onAttach={(file) => setAttachments((prev) => [...prev, file])}
+                />
+                <i
+                  className='fa fa-plus-circle text-success position-absolute'
+                  style={{bottom: '12px', right: '30px', cursor: 'pointer', fontSize: '18px'}}
+                  title='Add Placeholder'
+                  onClick={() => setShowModal(true)}
+                ></i>
+              </div>
             </div>
           </div>
 

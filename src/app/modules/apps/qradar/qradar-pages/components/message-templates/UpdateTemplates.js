@@ -17,7 +17,7 @@ import Select from 'react-select'
 import PlaceholdersModal from './PlaceholdersModal'
 import RichTextEditor from '../../../../../../../utils/RichTextEditor'
 import {processHtmlWithInlineImages} from '../../incidents/processHtmlWithInlineImages'
-import { UsersListLoading } from '../loading/UsersListLoading'
+import {UsersListLoading} from '../loading/UsersListLoading'
 
 const UpdateTemplates = () => {
   const {showBoundary} = useErrorBoundary()
@@ -442,6 +442,12 @@ const UpdateTemplates = () => {
                   ))}
                 </div>
               )}
+              <div
+                style={{
+                  maxHeight: '300px',
+                  overflowY: 'auto',
+                }}
+              >
               <RichTextEditor
                 value={message}
                 onChange={setMessage}
@@ -449,10 +455,11 @@ const UpdateTemplates = () => {
               />
               <i
                 className='fa fa-plus-circle text-success position-absolute'
-                style={{bottom: '12px', right: '15px', cursor: 'pointer', fontSize: '18px'}}
+                style={{bottom: '12px', right: '30px', cursor: 'pointer', fontSize: '18px'}}
                 title='Add Placeholder'
                 onClick={() => setShowModal(true)}
               ></i>
+              </div>
             </div>
           </div>
           {selectedPlaceholders.length > 0 && (
