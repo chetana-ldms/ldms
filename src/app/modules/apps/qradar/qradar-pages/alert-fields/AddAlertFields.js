@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {fetchMasterData, fetchLDPTools} from '../../../../../api/Api'
 import {fetchAddAlertFieldsUrl} from '../../../../../api/AlertFieldsApi'
@@ -13,42 +13,29 @@ function AddAlertFields() {
 
   const [loading, setLoading] = useState(false)
   const [dropdowns, setDropdowns] = useState({
-    categories: [],
-    sourceTypes: [],
+    fieldTypes: [],
     dataTypes: [],
     tools: [],
   })
-
   const [formData, setFormData] = useState({
-    fieldCode: '',
-    fieldName: '',
-    displayName: '',
-    fieldCategoryId: 0,
-    fieldSourceTypeId: 0,
-    dataTypeId: 0,
+    fieldTypeId: 0,
     toolId: 0,
-    jsonPath: '',
-    isSearchable: 0,
-    isFilterable: 0,
-    isRequired: 0,
-    isSystem: 0,
-    defaultValue: '',
-    remarks: '',
-    userId: userId,
+    fieldName: '',
+    dataTypeId: 0,
+    active: true,
+    userId,
   })
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [categories, sourceTypes, dataTypes, tools] = await Promise.all([
-          fetchMasterData({maserDataType: 'field_category', orgId, toolId: toolIdSession}),
+        const [fieldTypes, dataTypes, tools] = await Promise.all([
           fetchMasterData({maserDataType: 'field_source_type', orgId, toolId: toolIdSession}),
           fetchMasterData({maserDataType: 'global_data_type', orgId, toolId: toolIdSession}),
           fetchLDPTools(),
         ])
         setDropdowns({
-          categories: categories || [],
-          sourceTypes: sourceTypes || [],
+          fieldTypes: fieldTypes || [],
           dataTypes: dataTypes || [],
           tools: tools || [],
         })
@@ -59,35 +46,29 @@ function AddAlertFields() {
     loadData()
   }, [orgId, toolIdSession])
 
-  const handleChange = (e) => {
-    const {name, value, type, checked} = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? (checked ? 1 : 0) : value,
+  const handleChange = (event) => {
+    const {name, value, type, checked} = event.target
+    setFormData((previous) => ({
+      ...previous,
+      [name]: type === 'checkbox' ? checked : value,
     }))
   }
 
-  const handleSelectChange = (e) => {
-    const {name, value} = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: Number(value),
-    }))
+  const handleSelectChange = (event) => {
+    const {name, value} = event.target
+    setFormData((previous) => ({...previous, [name]: Number(value)}))
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async (event) => {
+    event.preventDefault()
 
     if (
-      !formData.fieldCode ||
-      !formData.fieldName ||
-      !formData.displayName ||
-      formData.fieldCategoryId === 0 ||
-      formData.fieldSourceTypeId === 0 ||
-      formData.dataTypeId === 0 ||
-      (dropdowns.sourceTypes.find(i => i.dataID === formData.fieldSourceTypeId)?.dataValue === 'Raw' && formData.toolId === 0)
+      !formData.fieldName.trim() ||
+      !formData.fieldTypeId ||
+      !formData.toolId ||
+      !formData.dataTypeId
     ) {
-      notifyFail('Please fill all mandatory fields: Name, Code, Display Name, and Tool.')
+      notifyFail('Please fill all mandatory fields.')
       return
     }
 
@@ -128,82 +109,42 @@ function AddAlertFields() {
           <div className='row g-3 mb-4'>
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Field Name <span className='text-danger'>*</span>
+                Field Type <span className='text-danger'>*</span>
               </label>
-              <input
-                type='text'
-                className='form-control form-control-sm'
-                name='fieldName'
-                value={formData.fieldName}
-                onChange={handleChange}
-                placeholder='Ex: SourceIP'
-              />
+              <select
+                className='form-select form-select-sm'
+                name='fieldTypeId'
+                value={formData.fieldTypeId}
+                onChange={handleSelectChange}
+              >
+                <option value={0}>Select Field Type</option>
+                {dropdowns.fieldTypes.map((item) => (
+                  <option key={item.dataID} value={item.dataID}>
+                    {item.dataValue}
+                  </option>
+                ))}
+              </select>
             </div>
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Field Code <span className='text-danger'>*</span>
-              </label>
-              <input
-                type='text'
-                className='form-control form-control-sm'
-                name='fieldCode'
-                value={formData.fieldCode}
-                onChange={handleChange}
-                placeholder='Ex: source_ip'
-              />
-            </div>
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Display Name <span className='text-danger'>*</span>
-              </label>
-              <input
-                type='text'
-                className='form-control form-control-sm'
-                name='displayName'
-                value={formData.displayName}
-                onChange={handleChange}
-                placeholder='Ex: Source IP Address'
-              />
-            </div>
-          </div>
 
-          <div className='row g-3 mb-4'>
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
-                Field Category <span className='text-danger'>*</span>
+                Tool <span className='text-danger'>*</span>
               </label>
               <select
                 className='form-select form-select-sm'
-                name='fieldCategoryId'
-                value={formData.fieldCategoryId}
+                name='toolId'
+                value={formData.toolId}
                 onChange={handleSelectChange}
               >
-                <option value={0}>Select Category</option>
-                {dropdowns.categories.map((item) => (
-                  <option key={item.dataID} value={item.dataID}>
-                    {item.dataValue}
+                <option value={0}>Select Tool</option>
+                {dropdowns.tools.map((item) => (
+                  <option key={item.toolId} value={item.toolId}>
+                    {item.toolName}
                   </option>
                 ))}
               </select>
             </div>
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Field Source Type <span className='text-danger'>*</span>
-              </label>
-              <select
-                className='form-select form-select-sm'
-                name='fieldSourceTypeId'
-                value={formData.fieldSourceTypeId}
-                onChange={handleSelectChange}
-              >
-                <option value={0}>Select Source Type</option>
-                {dropdowns.sourceTypes.map((item) => (
-                  <option key={item.dataID} value={item.dataID}>
-                    {item.dataValue}
-                  </option>
-                ))}
-              </select>
-            </div>
+
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
                 Data Type <span className='text-danger'>*</span>
@@ -224,119 +165,34 @@ function AddAlertFields() {
             </div>
           </div>
 
-          <div className='row g-3 mb-4'>
-            {dropdowns.sourceTypes.find((i) => i.dataID === formData.fieldSourceTypeId)?.dataValue ===
-              'Raw' && (
-              <div className='col-md-4'>
-                <label className='form-label fw-bold small'>
-                  Tool <span className='text-danger'>*</span>
-                </label>
-                <select
-                  className='form-select form-select-sm'
-                  name='toolId'
-                  value={formData.toolId}
-                  onChange={handleSelectChange}
-                >
-                  <option value={0}>Select Tool</option>
-                  {dropdowns.tools.map((item) => (
-                    <option key={item.toolId} value={item.toolId}>
-                      {item.toolName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-            <div className='col-md-8'>
-              <label className='form-label fw-bold small'>JSON Path</label>
-              <input
-                type='text'
-                className='form-control form-control-sm'
-                name='jsonPath'
-                value={formData.jsonPath}
-                onChange={handleChange}
-                placeholder='Ex: $.network.source.ip'
-              />
-            </div>
-          </div>
-
-          <div className='row g-3 mb-4'>
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>Default Value</label>
-              <input
-                type='text'
-                className='form-control form-control-sm'
-                name='defaultValue'
-                value={formData.defaultValue || ''}
-                onChange={handleChange}
-              />
-            </div>
-            <div className='col-md-8 d-flex align-items-center gap-4 mt-5'>
-              <div className='form-check'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  name='isSearchable'
-                  id='isSearchable'
-                  checked={formData.isSearchable === 1}
-                  onChange={handleChange}
-                />
-                <label className='form-check-label small fw-bold' htmlFor='isSearchable'>
-                  Searchable
-                </label>
-              </div>
-              <div className='form-check'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  name='isFilterable'
-                  id='isFilterable'
-                  checked={formData.isFilterable === 1}
-                  onChange={handleChange}
-                />
-                <label className='form-check-label small fw-bold' htmlFor='isFilterable'>
-                  Filterable
-                </label>
-              </div>
-              <div className='form-check'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  name='isRequired'
-                  id='isRequired'
-                  checked={formData.isRequired === 1}
-                  onChange={handleChange}
-                />
-                <label className='form-check-label small fw-bold' htmlFor='isRequired'>
-                  Required
-                </label>
-              </div>
-              <div className='form-check'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  name='isSystem'
-                  id='isSystem'
-                  checked={formData.isSystem === 1}
-                  onChange={handleChange}
-                />
-                <label className='form-check-label small fw-bold' htmlFor='isSystem'>
-                  System Field
-                </label>
-              </div>
-            </div>
-          </div>
-
           <div className='row g-3'>
-            <div className='col-md-12'>
-              <label className='form-label fw-bold small'>Remarks</label>
-              <textarea
+            <div className='col-md-8'>
+              <label className='form-label fw-bold small'>
+                Field Name <span className='text-danger'>*</span>
+              </label>
+              <input
+                type='text'
                 className='form-control form-control-sm'
-                name='remarks'
-                rows={3}
-                value={formData.remarks}
+                name='fieldName'
+                value={formData.fieldName}
                 onChange={handleChange}
-                placeholder='Enter any additional information...'
+                placeholder='Ex: SourceIP'
               />
+            </div>
+            <div className='col-md-4 d-flex align-items-end'>
+              <div className='form-check mb-2'>
+                <input
+                  className='form-check-input'
+                  type='checkbox'
+                  name='active'
+                  id='active'
+                  checked={formData.active}
+                  onChange={handleChange}
+                />
+                <label className='form-check-label small fw-bold' htmlFor='active'>
+                  Active
+                </label>
+              </div>
             </div>
           </div>
         </div>

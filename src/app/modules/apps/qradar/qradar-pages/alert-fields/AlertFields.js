@@ -24,7 +24,6 @@ const AlertFields = () => {
   const [activePage, setActivePage] = useState(0)
 
   const toolRef = useRef()
-  const categoryRef = useRef()
   const dataTypeRef = useRef()
 
   const [searchValue, setSearchValue] = useState('')
@@ -76,13 +75,12 @@ const AlertFields = () => {
     setShowDeleteConfirmation(true)
   }
 
-  const handleDeleteConfirm = async (reason) => {
+  const handleDeleteConfirm = async () => {
     if (!itemToDelete) return
     const deletedUserId = Number(sessionStorage.getItem('userId'))
     const data = {
-      fieldId: itemToDelete.fieldId,
+      fieldId: itemToDelete.id,
       userId: deletedUserId,
-      deletedReason: reason,
     }
     try {
       setLoading(true)
@@ -105,18 +103,13 @@ const AlertFields = () => {
   const reload = async () => {
     try {
       setLoading(true)
-      const payload = {}
-
-      if (searchValue) payload.searchText = searchValue
-      
       const toolId = Number(toolRef.current?.value)
-      if (toolId) payload.toolId = toolId
-
-      const categoryId = Number(categoryRef.current?.value)
-      if (categoryId) payload.fieldCategoryId = categoryId
-
-      const dataTypeId = Number(dataTypeRef.current?.value)
-      if (dataTypeId) payload.dataTypeId = dataTypeId
+      const fieldTypeId = Number(dataTypeRef.current?.value)
+      const payload = {
+        searchText: searchValue.trim() || null,
+        fieldTypeId: fieldTypeId || null,
+        toolId: toolId || null,
+      }
 
       const response = await fetchAlertFieldsUrl(payload)
       setFields(Array.isArray(response?.data) ? response.data : [])
@@ -150,13 +143,13 @@ const AlertFields = () => {
     <div className='config card pad-10'>
       <ToastContainer />
       <div className='row'>
-        <div className='col-md-4'>
+        <div className='col-md-5'>
           <h3 className='card-label fw-bold fs-3 mb-1'>
             Alert Fields ({currentItems ? currentItems.length : 0} / {fields ? fields.length : 0})
           </h3>
         </div>
 
-        <div className='col-md-7'>
+        <div className='col-md-5'>
           <div className='card-title header-filter'>
             <div className='input-group'>
               <input
@@ -183,18 +176,8 @@ const AlertFields = () => {
                 </select>
               </div>
               <div className='w-150px'>
-                <select className='form-select form-select-sm' ref={categoryRef}>
-                  <option value={0}>Category</option>
-                  {dropdownData.categories.map((item) => (
-                    <option key={item.dataID} value={item.dataID}>
-                      {item.dataValue}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className='w-150px'>
                 <select className='form-select form-select-sm' ref={dataTypeRef}>
-                  <option value={0}>Data Type</option>
+                  <option value={0}>Field Type</option>
                   {dropdownData.dataTypes.map((item) => (
                     <option key={item.dataID} value={item.dataID}>
                       {item.dataValue}
@@ -206,7 +189,7 @@ const AlertFields = () => {
           </div>
         </div>
 
-        <div className='col-md-1 text-end'>
+        <div className='col-md-2 text-end'>
           <Link
             to='/qradar/alert-fields/add'
             className={`btn btn-new btn-small ${!isActionAuthorized('Create') ? 'disabled' : ''}`}
@@ -220,10 +203,8 @@ const AlertFields = () => {
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
+              <th>Id</th>
               <th>Field Name</th>
-              <th>Code</th>
-              <th>Display Name</th>
-              <th>Category</th>
               <th>Data Type</th>
               <th>Tool</th>
               <th>Action</th>
@@ -234,15 +215,8 @@ const AlertFields = () => {
             {currentItems !== null && currentItems.length > 0 ? (
               currentItems.map((item, index) => (
                 <tr key={index} className='fs-12'>
+                  <td>{item.id}</td>
                   <td>{item.fieldName}</td>
-                  <td>{item.fieldCode}</td>
-                  <td>{item.displayName}</td>
-                  <td>
-                    {item.fieldCategoryName ||
-                      dropdownData.categories.find((c) => c.dataID === item.fieldCategoryId)
-                        ?.dataValue ||
-                      '--'}
-                  </td>
                   <td>
                     {item.dataTypeName ||
                       dropdownData.dataTypes.find((d) => d.dataID === item.dataTypeId)?.dataValue ||
@@ -258,7 +232,7 @@ const AlertFields = () => {
                       <span className='me-8' title='View'>
                         <i
                           className='fa fa-eye cursor'
-                          onClick={() => handleNavigateToUpdate(item.fieldId)}
+                          onClick={() => handleNavigateToUpdate(item.id)}
                         />
                       </span>
                     ) : (
@@ -270,7 +244,7 @@ const AlertFields = () => {
                     {isActionAuthorized('Update') ? (
                       <Link
                         className='text-white me-8'
-                        to={`/qradar/alert-fields/update/${item.fieldId}`}
+                        to={`/qradar/alert-fields/update/${item.id}`}
                         title='Edit'
                       >
                         <i className='fa fa-pencil cursor link' />
@@ -295,7 +269,9 @@ const AlertFields = () => {
               ))
             ) : (
               <tr>
-                <td colSpan='7' className='text-center'>No data found</td>
+                <td colSpan='7' className='text-center'>
+                  No data found
+                </td>
               </tr>
             )}
           </tbody>
