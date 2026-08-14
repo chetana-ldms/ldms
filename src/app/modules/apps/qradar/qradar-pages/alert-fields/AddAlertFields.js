@@ -166,7 +166,7 @@ function AddAlertFields() {
           </div>
 
           <div className='row g-3'>
-            <div className='col-md-8'>
+            <div className='col-md-12'>
               <label className='form-label fw-bold small'>
                 Field Name <span className='text-danger'>*</span>
               </label>
@@ -178,21 +178,6 @@ function AddAlertFields() {
                 onChange={handleChange}
                 placeholder='Ex: SourceIP'
               />
-            </div>
-            <div className='col-md-4 d-flex align-items-end'>
-              <div className='form-check mb-2'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  name='active'
-                  id='active'
-                  checked={formData.active}
-                  onChange={handleChange}
-                />
-                <label className='form-check-label small fw-bold' htmlFor='active'>
-                  Active
-                </label>
-              </div>
             </div>
           </div>
         </div>
