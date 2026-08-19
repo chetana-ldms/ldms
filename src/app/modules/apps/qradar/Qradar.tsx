@@ -151,6 +151,9 @@ import UpdateConnectionType from './qradar-pages/connection/UpdateConnectionType
 import Dashboard from './qradar-pages/compliance/Dashboard'
 import ControlsTracking from './qradar-pages/compliance/ControlsTracking'
 import Domains from './qradar-pages/compliance/Domains'
+import { AlertFieldMapping } from './qradar-pages/alert-fields/AlertFieldMapping'
+import AddAlertFieldMapping from './qradar-pages/alert-fields/AddAlertFieldMapping'
+import UpdateAlertFieldMapping from './qradar-pages/alert-fields/UpdateAlertFieldMapping'
 
 
 const QradarPages = () => {
@@ -295,6 +298,9 @@ const QradarPages = () => {
        <Route path='alert-fields/:status' element={<AlertFields/>} />
       <Route path='alert-fields/add' element={<AddAlertFields />} />
       <Route path='/alert-fields/update/:id' element={<UpdateAlertFields />} />
+      <Route path='alert-fields-mapping/:status' element={<AlertFieldMapping/>} />
+      <Route path='alert-fields-mapping/add' element={<AddAlertFieldMapping />} />
+      <Route path='/alert-fields-mapping/update/:id' element={<UpdateAlertFieldMapping />} />
       <Route path='scripts/:status' element={<Scripts/>} />
       <Route path='scripts/add' element={<AddScripts />} />
       <Route path='/scripts/update/:id' element={<UpdateScripts />} />
