@@ -154,6 +154,9 @@ import Domains from './qradar-pages/compliance/Domains'
 import { AlertFieldMapping } from './qradar-pages/alert-fields/AlertFieldMapping'
 import AddAlertFieldMapping from './qradar-pages/alert-fields/AddAlertFieldMapping'
 import UpdateAlertFieldMapping from './qradar-pages/alert-fields/UpdateAlertFieldMapping'
+import AddPlaybook from './qradar-pages/alert-fields/AddPlaybook'
+import UpdatePlaybook from './qradar-pages/alert-fields/UpdatePlaybook'
+import Playbook from './qradar-pages/alert-fields/Playbook'
 
 
 const QradarPages = () => {
@@ -301,6 +304,9 @@ const QradarPages = () => {
       <Route path='alert-fields-mapping/:status' element={<AlertFieldMapping/>} />
       <Route path='alert-fields-mapping/add' element={<AddAlertFieldMapping />} />
       <Route path='/alert-fields-mapping/update/:id' element={<UpdateAlertFieldMapping />} />
+       <Route path='alert-fields/playbook/:status' element={<Playbook/>} />
+      <Route path='alert-fields/playbook/add' element={<AddPlaybook />} />
+      <Route path='/alert-fields/playbook/update/:id' element={<UpdatePlaybook />} />
       <Route path='scripts/:status' element={<Scripts/>} />
       <Route path='scripts/add' element={<AddScripts />} />
       <Route path='/scripts/update/:id' element={<UpdateScripts />} />
