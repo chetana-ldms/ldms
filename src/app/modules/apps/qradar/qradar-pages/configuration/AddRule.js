@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, memo} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {ToastContainer} from 'react-toastify'
 import Select from 'react-select'
@@ -9,10 +9,57 @@ import {notify, notifyFail} from '../components/notification/Notification'
 
 export const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`
 
-const createKey = uid
+const sel = 'form-select form-select-sm'
+const inp = 'form-control form-control-sm'
+
+const cs = {
+  border: '1px solid #d1d5db',
+  padding: '4px 6px',
+  verticalAlign: 'middle',
+  fontSize: 12,
+}
+
+const hs = {
+  ...cs,
+  background: '#dbeafe',
+  fontWeight: 700,
+  textAlign: 'center',
+  whiteSpace: 'nowrap',
+  color: '#1e40af',
+}
+
+const customSelectStyles = {
+  control: (provided) => ({
+    ...provided,
+    minHeight: '30px',
+    height: '30px',
+    fontSize: '12px',
+  }),
+  valueContainer: (provided) => ({
+    ...provided,
+    height: '30px',
+    padding: '0 6px',
+  }),
+  input: (provided) => ({
+    ...provided,
+    margin: '0px',
+  }),
+  indicatorSeparator: () => ({
+    display: 'none',
+  }),
+  indicatorsContainer: (provided) => ({
+    ...provided,
+    height: '30px',
+  }),
+  menu: (provided) => ({
+    ...provided,
+    fontSize: '12px',
+    zIndex: 9999,
+  }),
+}
 
 const newCondition = () => ({
-  key: createKey(),
+  tempKey: uid(),
   stdFieldId: 0,
   operatorId: 0,
   conditionValue: '',
@@ -20,13 +67,199 @@ const newCondition = () => ({
 })
 
 const newGroup = () => ({
-  key: createKey(),
+  tempKey: uid(),
   logicalOperatorId: 0,
   conditions: [newCondition()],
 })
 
 const responseItems = (response) =>
   Array.isArray(response) ? response : Array.isArray(response?.data) ? response.data : []
+
+const RenderGroup = memo(
+  ({
+    group,
+    groupIndex,
+    operators,
+    logicalOperators,
+    standardFields,
+    updateGroup,
+    updateCondition,
+    addCondition,
+    removeCondition,
+    removeGroup,
+    groups,
+  }) => {
+    const activeKey = group.tempKey
+    const lastCondition = group.conditions[group.conditions.length - 1]
+    const isConditionJoinerSet = lastCondition ? lastCondition.logicalOperatorId !== 0 : true
+
+    return (
+      <div className='mb-1 p-1 rounded border bg-light border-gray-300'>
+        <div className='d-flex align-items-center gap-3 mb-4 flex-wrap'>
+          <span className='fw-bold text-gray-800 me-2'>Group {groupIndex + 1}</span>
+
+          <button
+            type='button'
+            className='btn btn-sm btn-outline-info'
+            disabled={!isConditionJoinerSet}
+            onClick={() => addCondition(groupIndex)}
+          >
+            <i className='fa fa-plus me-1' />
+            Condition
+          </button>
+
+          <div className='d-flex align-items-center gap-2 border-start ps-3 ms-2'>
+            <label className='small fw-bold mb-0 text-nowrap'>
+              Logical Operator <span className='text-danger'>*</span>
+            </label>
+            <select
+              className={`${sel} w-100px`}
+              value={group.logicalOperatorId}
+              onChange={(event) =>
+                updateGroup(groupIndex, {logicalOperatorId: Number(event.target.value)})
+              }
+            >
+              <option value={0}>Select</option>
+              {logicalOperators.map((operator) => (
+                <option key={operator.dataID} value={operator.dataID}>
+                  {operator.dataValue}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            type='button'
+            className='btn btn-sm btn-outline-danger ms-auto'
+            disabled={groups.length === 1}
+            onClick={() => removeGroup(groupIndex)}
+          >
+            <i className='fa fa-trash' />
+          </button>
+        </div>
+
+        <table style={{borderCollapse: 'collapse', width: '100%'}} className='mb-4'>
+          <thead>
+            <tr>
+              <th style={{...hs, width: '40%'}}>Field Name</th>
+              <th style={{...hs, width: '20%'}}>Op</th>
+              <th style={{...hs, width: '30%'}}>Value</th>
+              <th style={{...hs, width: '15%'}}>
+                Logical Operator <span className='text-danger'>*</span>
+              </th>
+              <th style={{...hs, width: '10%'}}>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {group.conditions.map((condition, conditionIndex) => (
+              <tr key={condition.tempKey}>
+                <td style={cs}>
+                  <Select
+                    options={standardFields.map((field) => ({
+                      value: field.id,
+                      label: field.fieldName || field.displayName,
+                    }))}
+                    value={
+                      standardFields.find((field) => field.id === condition.stdFieldId)
+                        ? {
+                            value: condition.stdFieldId,
+                            label:
+                              standardFields.find((field) => field.id === condition.stdFieldId)
+                                .fieldName ||
+                              standardFields.find((field) => field.id === condition.stdFieldId)
+                                .displayName,
+                          }
+                        : null
+                    }
+                    onChange={(val) =>
+                      updateCondition(groupIndex, conditionIndex, {
+                        stdFieldId: val ? Number(val.value) : 0,
+                      })
+                    }
+                    placeholder='Select Field'
+                    isClearable
+                    styles={customSelectStyles}
+                  />
+                </td>
+
+                <td style={cs}>
+                  <Select
+                    options={operators.map((operator) => ({
+                      value: operator.dataID,
+                      label: operator.dataValue,
+                    }))}
+                    value={
+                      operators.find((operator) => operator.dataID === condition.operatorId)
+                        ? {
+                            value: condition.operatorId,
+                            label: operators.find((operator) => operator.dataID === condition.operatorId)
+                              .dataValue,
+                          }
+                        : null
+                    }
+                    onChange={(val) =>
+                      updateCondition(groupIndex, conditionIndex, {
+                        operatorId: val ? Number(val.value) : 0,
+                      })
+                    }
+                    placeholder='Op'
+                    isClearable
+                    styles={customSelectStyles}
+                  />
+                </td>
+
+                <td style={cs}>
+                  <input
+                    className={inp}
+                    type='text'
+                    value={condition.conditionValue}
+                    placeholder='Enter Value'
+                    onChange={(event) =>
+                      updateCondition(groupIndex, conditionIndex, {
+                        conditionValue: event.target.value,
+                      })
+                    }
+                  />
+                </td>
+
+                <td style={cs}>
+                  <select
+                    className={sel}
+                    value={condition.logicalOperatorId}
+                    onChange={(event) =>
+                      updateCondition(groupIndex, conditionIndex, {
+                        logicalOperatorId: Number(event.target.value),
+                      })
+                    }
+                  >
+                    <option value={0}>Select</option>
+                    {logicalOperators.map((operator) => (
+                      <option key={operator.dataID} value={operator.dataID}>
+                        {operator.dataValue}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+
+                <td style={{...cs, textAlign: 'center'}}>
+                  <button
+                    type='button'
+                    className='btn btn-sm btn-icon btn-light-danger'
+                    disabled={group.conditions.length === 1}
+                    onClick={() => removeCondition(groupIndex, conditionIndex)}
+                  >
+                    <i className='fa fa-times' />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+)
 
 export function AddRule() {
   const navigate = useNavigate()
@@ -52,6 +285,7 @@ export function AddRule() {
             fetchAlertFieldsUrl({searchText: null, fieldTypeId: null, toolId: null}),
             fetchGetPlaybooksUrl({searchtext: ''}),
           ])
+
         setOperators(operatorData || [])
         setLogicalOperators(logicalOperatorData || [])
         setStandardFields(
@@ -73,39 +307,61 @@ export function AddRule() {
   }
 
   const updateCondition = (groupIndex, conditionIndex, update) => {
-    const group = groups[groupIndex]
-    updateGroup(groupIndex, {
-      conditions: group.conditions.map((condition, index) =>
-        index === conditionIndex ? {...condition, ...update} : condition
-      ),
-    })
+    setGroups((previous) =>
+      previous.map((group, index) => {
+        if (index !== groupIndex) return group
+        return {
+          ...group,
+          conditions: group.conditions.map((condition, idx) =>
+            idx === conditionIndex ? {...condition, ...update} : condition
+          ),
+        }
+      })
+    )
   }
 
   const addCondition = (groupIndex) => {
-    const group = groups[groupIndex]
-    const lastCondition = group.conditions[group.conditions.length - 1]
-    if (!lastCondition.logicalOperatorId) {
-      notifyFail('Please select a Logical Operator before adding another condition.')
-      return
-    }
-    updateGroup(groupIndex, {conditions: [...group.conditions, newCondition()]})
+    setGroups((previous) =>
+      previous.map((group, index) => {
+        if (index !== groupIndex) return group
+        const lastCondition = group.conditions[group.conditions.length - 1]
+        if (!lastCondition || lastCondition.logicalOperatorId === 0) {
+          notifyFail('Please select a Logical Operator before adding another condition.')
+          return group
+        }
+        return {
+          ...group,
+          conditions: [...group.conditions, newCondition()],
+        }
+      })
+    )
+  }
+
+  const removeCondition = (groupIndex, conditionIndex) => {
+    setGroups((previous) =>
+      previous.map((group, index) => {
+        if (index !== groupIndex) return group
+        if (group.conditions.length === 1) return group
+        return {
+          ...group,
+          conditions: group.conditions.filter((_, idx) => idx !== conditionIndex),
+        }
+      })
+    )
   }
 
   const addGroup = () => {
     const lastGroup = groups[groups.length - 1]
-    if (!lastGroup.logicalOperatorId) {
+    if (!lastGroup || lastGroup.logicalOperatorId === 0) {
       notifyFail('Please select a Group Logical Operator before adding another group.')
       return
     }
     setGroups((previous) => [...previous, newGroup()])
   }
 
-  const removeCondition = (groupIndex, conditionIndex) => {
-    const group = groups[groupIndex]
-    if (group.conditions.length === 1) return
-    updateGroup(groupIndex, {
-      conditions: group.conditions.filter((_, index) => index !== conditionIndex),
-    })
+  const removeGroup = (groupIndex) => {
+    if (groups.length === 1) return
+    setGroups((previous) => previous.filter((_, index) => index !== groupIndex))
   }
 
   const handleSubmit = async (event) => {
@@ -174,186 +430,92 @@ export function AddRule() {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className='card-body px-5 py-4'>
-          <div className='row g-3 mb-4'>
-            <div className='col-md-6'>
-              <label className='form-label fw-bold small'>
-                Rule Name <span className='text-danger'>*</span>
-              </label>
-              <input
-                className='form-control form-control-sm'
-                type='text'
-                value={ruleName}
-                onChange={(event) => setRuleName(event.target.value)}
-              />
-            </div>
-            <div className='col-md-6'>
-              <label className='form-label fw-bold small'>Playbooks</label>
-              <Select
-                isMulti
-                isClearable
-                options={playbooks.map((playbook) => ({
-                  value: playbook.playbookId ?? playbook.id,
-                  label: playbook.playbookName,
-                }))}
-                value={playbooks
-                  .filter((playbook) =>
-                    selectedPlaybookIds.includes(playbook.playbookId ?? playbook.id)
-                  )
-                  .map((playbook) => ({
-                    value: playbook.playbookId ?? playbook.id,
-                    label: playbook.playbookName,
-                  }))}
-                onChange={(options) =>
-                  setSelectedPlaybookIds((options || []).map((option) => Number(option.value)))
-                }
-                placeholder='Select Playbooks'
-              />
+        <div className='card mb-4'>
+          <div className='card-body px-5 py-2'>
+            <div className='row g-3'>
+              <div className='col-md-6'>
+                <div className='mb-3'>
+                  <label className='form-label fw-bold small'>
+                    Rule Name <span className='text-danger'>*</span>
+                  </label>
+                  <input
+                    className='form-control form-control-sm'
+                    type='text'
+                    value={ruleName}
+                    onChange={(event) => setRuleName(event.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className='col-md-6'>
+                <div className='mb-3'>
+                  <label className='form-label fw-bold small'>Playbooks</label>
+                  <Select
+                    isMulti
+                    isClearable
+                    options={playbooks.map((playbook) => ({
+                      value: playbook.playbookId ?? playbook.id,
+                      label: playbook.playbookName || playbook.name,
+                    }))}
+                    value={playbooks
+                      .filter((playbook) =>
+                        selectedPlaybookIds.includes(playbook.playbookId ?? playbook.id)
+                      )
+                      .map((playbook) => ({
+                        value: playbook.playbookId ?? playbook.id,
+                        label: playbook.playbookName || playbook.name,
+                      }))}
+                    onChange={(options) =>
+                      setSelectedPlaybookIds((options || []).map((option) => Number(option.value)))
+                    }
+                    placeholder='Select Playbooks'
+                    styles={customSelectStyles}
+                  />
+                </div>
+              </div>
             </div>
           </div>
+        </div>
 
-          <div className='d-flex justify-content-between align-items-center mb-3'>
+        <div className='card-body px-5 py-2'>
+          <div className='d-flex justify-content-between align-items-center mb-2'>
             <h5 className='mb-0'>Condition Groups</h5>
-            <button type='button' className='btn btn-sm btn-primary' onClick={addGroup}>
+            <button
+              type='button'
+              className='btn btn-sm btn-primary'
+              onClick={addGroup}
+              disabled={groups.length > 0 && groups[groups.length - 1].logicalOperatorId === 0}
+            >
               <i className='fa fa-plus me-1' />
               Add Group
             </button>
           </div>
 
           {groups.map((group, groupIndex) => (
-            <div key={group.key} className='border rounded p-3 mb-3 bg-light shadow-sm'>
-              <div className='d-flex justify-content-between align-items-center gap-3 mb-3 pb-3 border-bottom'>
-                <h6 className='mb-0 text-primary'>Group {groupIndex + 1}</h6>
-                <div className='d-flex align-items-center gap-2 ms-auto'>
-                  <label className='form-label small fw-bold mb-0 text-nowrap'>
-                    Group Logical Operator
-                  </label>
-                  <select
-                    className='form-select form-select-sm w-125px'
-                    value={group.logicalOperatorId}
-                    onChange={(event) =>
-                      updateGroup(groupIndex, {logicalOperatorId: Number(event.target.value)})
-                    }
-                  >
-                    <option value={0}>Select</option>
-                    {logicalOperators.map((operator) => (
-                      <option key={operator.dataID} value={operator.dataID}>
-                        {operator.dataValue}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className='d-flex gap-2'>
-                  <button
-                    type='button'
-                    className='btn btn-sm btn-outline-primary'
-                    onClick={() => addCondition(groupIndex)}
-                  >
-                    <i className='fa fa-plus me-1' />
-                    Condition
-                  </button>
-                  <button
-                    type='button'
-                    className='btn btn-sm btn-outline-danger'
-                    disabled={groups.length === 1}
-                    onClick={() =>
-                      setGroups((previous) => previous.filter((_, index) => index !== groupIndex))
-                    }
-                  >
-                    <i className='fa fa-trash' />
-                  </button>
-                </div>
-              </div>
-
-              {group.conditions.map((condition, conditionIndex) => (
-                <div key={condition.key} className='row g-2 align-items-end mb-2'>
-                  <div className='col-md-3'>
-                    <label className='form-label small'>Standard Field</label>
-                    <select
-                      className='form-select form-select-sm'
-                      value={condition.stdFieldId}
-                      onChange={(event) =>
-                        updateCondition(groupIndex, conditionIndex, {
-                          stdFieldId: Number(event.target.value),
-                        })
-                      }
-                    >
-                      <option value={0}>Select Field</option>
-                      {standardFields.map((field) => (
-                        <option key={field.id} value={field.id}>
-                          {field.fieldName}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className='col-md-2'>
-                    <label className='form-label small'>Operator</label>
-                    <select
-                      className='form-select form-select-sm'
-                      value={condition.operatorId}
-                      onChange={(event) =>
-                        updateCondition(groupIndex, conditionIndex, {
-                          operatorId: Number(event.target.value),
-                        })
-                      }
-                    >
-                      <option value={0}>Select Operator</option>
-                      {operators.map((operator) => (
-                        <option key={operator.dataID} value={operator.dataID}>
-                          {operator.dataValue}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className='col-md-3'>
-                    <label className='form-label small'>Condition Value</label>
-                    <input
-                      className='form-control form-control-sm'
-                      value={condition.conditionValue}
-                      onChange={(event) =>
-                        updateCondition(groupIndex, conditionIndex, {
-                          conditionValue: event.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className='col-md-2'>
-                    <label className='form-label small'>Logical Operator</label>
-                    <select
-                      className='form-select form-select-sm'
-                      value={condition.logicalOperatorId}
-                      onChange={(event) =>
-                        updateCondition(groupIndex, conditionIndex, {
-                          logicalOperatorId: Number(event.target.value),
-                        })
-                      }
-                    >
-                      <option value={0}>None</option>
-                      {logicalOperators.map((operator) => (
-                        <option key={operator.dataID} value={operator.dataID}>
-                          {operator.dataValue}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className='col-md-2'>
-                    <button
-                      type='button'
-                      className='btn btn-sm btn-outline-danger'
-                      disabled={group.conditions.length === 1}
-                      onClick={() => removeCondition(groupIndex, conditionIndex)}
-                    >
-                      <i className='fa fa-trash' />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <RenderGroup
+              key={group.tempKey}
+              group={group}
+              groupIndex={groupIndex}
+              operators={operators}
+              logicalOperators={logicalOperators}
+              standardFields={standardFields}
+              updateGroup={updateGroup}
+              updateCondition={updateCondition}
+              addCondition={addCondition}
+              removeCondition={removeCondition}
+              removeGroup={removeGroup}
+              groups={groups}
+            />
           ))}
         </div>
-        <div className='card-footer text-end px-5 py-4'>
-          <button type='submit' className='btn btn-primary btn-sm' disabled={loading}>
-            {loading ? 'Saving...' : 'Save Rule'}
+
+        <div className='text-end mt-2 me-5 mb-5'>
+          <button
+            className='btn btn-new btn-small'
+            type='submit'
+            style={{display: loading ? 'none' : 'inline-block'}}
+          >
+            Save Rule
           </button>
         </div>
       </form>

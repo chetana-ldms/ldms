@@ -185,12 +185,12 @@ export const fetchRuleDetails = async (data) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        ruleId: data.ruleID,
+        ruleId: data?.ruleId ?? data?.ruleID,
       }),
     })
 
     const responseData = await response.json()
-    return responseData?.data
+    return responseData?.rule ?? responseData?.data ?? responseData
   } catch (error) {
     console.log(error)
     throw error

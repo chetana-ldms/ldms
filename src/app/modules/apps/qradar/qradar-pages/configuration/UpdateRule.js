@@ -1,8 +1,8 @@
 import React, {useState, useEffect, memo} from 'react'
 import {fetchMasterData} from '../../../../../api/Api'
 import {fetchRulesUpdateUrl, fetchRuleDetails} from '../../../../../api/ConfigurationApi'
-import {fetchAlertFieldsUrl} from '../../../../../api/AlertFieldsApi'
-import {uid} from './AddRule' // Assuming uid is available or defined here
+import {fetchAlertFieldsUrl, fetchGetPlaybooksUrl} from '../../../../../api/AlertFieldsApi'
+import {uid} from './AddRule'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import {Link, useLocation, useNavigate, useParams} from 'react-router-dom'
@@ -317,6 +317,8 @@ function UpdateRule() {
   })
 
   const [fields, setFields] = useState([])
+  const [playbooks, setPlaybooks] = useState([])
+  const [selectedPlaybookIds, setSelectedPlaybookIds] = useState([])
 
   const [rule, setRule] = useState({
     ruleName: '',
@@ -330,7 +332,7 @@ function UpdateRule() {
     orgId,
     toolId,
     userId,
-    createdDate: '', // Will be set by API or fetched
+    createdDate: '',
   })
 
   const [loading, setLoading] = useState(false)
@@ -343,13 +345,14 @@ function UpdateRule() {
   useEffect(() => {
     const loadMasterData = async () => {
       try {
-        const [ops, gOps, sevs, scens, prio, sourceTypes] = await Promise.all([
+        const [ops, gOps, sevs, scens, prio, sourceTypes, playbookResponse] = await Promise.all([
           fetchMasterData({maserDataType: 'condition_operator', orgId, toolId}),
           fetchMasterData({maserDataType: 'logical_operator', orgId, toolId}),
           fetchMasterData({maserDataType: 'rule_severity', orgId, toolId}),
           fetchMasterData({maserDataType: 'rule_scenario', orgId, toolId}),
           fetchMasterData({maserDataType: 'rule_priority', orgId, toolId}),
           fetchMasterData({maserDataType: 'field_source_type', orgId, toolId}),
+          fetchGetPlaybooksUrl({searchtext: ''}),
         ])
         setMasterData({
           operators: ops || [],
@@ -359,12 +362,46 @@ function UpdateRule() {
           priorities: prio || [],
           fieldSourceTypes: sourceTypes || [],
         })
+        setPlaybooks(Array.isArray(playbookResponse?.data) ? playbookResponse.data : [])
       } catch (error) {
         console.error('Error fetching rule detail master data:', error)
       }
     }
     loadMasterData()
   }, [orgId, toolId])
+
+  useEffect(() => {
+    const loadAllStandardFields = async () => {
+      try {
+        const response = await fetchAlertFieldsUrl({searchText: null, fieldTypeId: null, toolId: null})
+        const fieldList = Array.isArray(response?.data)
+          ? response.data.filter((field) => field.fieldType === 'Standard')
+          : []
+        setFields(fieldList)
+      } catch (error) {
+        console.error('Error loading standard fields:', error)
+        setFields([])
+      }
+    }
+    loadAllStandardFields()
+  }, [])
+
+  const normalizeGroupFromApi = (group, index = 0) => ({
+    tempGroupKey: uid(),
+    groupOperatorId: Number(group?.logicalOperatorId || 1),
+    groupJoinOperatorId: 0,
+    subGroups: [],
+    conditions: Array.isArray(group?.conditions)
+      ? group.conditions.map((cond, condIndex) => ({
+          tempKey: uid(),
+          fieldTypeId: Number(cond?.stdFieldId || cond?.fieldTypeId || 0),
+          operatorId: Number(cond?.operatorId || 0),
+          value: cond?.conditionValue || '',
+          order: Number(cond?.conditionOrder ?? condIndex + 1),
+          conditionJoinOperatorId: Number(cond?.logicalOperatorId || 0),
+        }))
+      : [EMPTY_CONDITION()],
+  })
 
   // Helper to recursively add tempGroupKey for UI management
   const mapFetchedGroupToState = (group) => {
@@ -391,20 +428,30 @@ function UpdateRule() {
     const loadRuleDetails = async () => {
       if (id) {
         try {
-          const data = await fetchRuleDetails({ruleId: Number(id)})
-          if (data) {
+          const detail = await fetchRuleDetails({ruleId: Number(id)})
+          if (detail) {
+            const ruleData = detail?.rule || detail
+            const mappedGroups = Array.isArray(ruleData?.groups) && ruleData.groups.length
+              ? ruleData.groups.map((group, index) => normalizeGroupFromApi(group, index))
+              : [EMPTY_GROUP()]
+
             setRule((prev) => ({
               ...prev,
-              ruleName: data.ruleName || '',
-              ruleCode: data.ruleCode || '',
-              priority: data.priority || 0,
-              severityId: data.severityId || 0,
-              scenarioId: data.scenarioId || 0, // Ensure scenarioId is correctly set
-              fieldSourceTypeId: data.fieldSourceTypeId || 0,
-              groups: (data.groups || []).map((group) => mapFetchedGroupToState(group)),
-              expressionText: data.expressionText || '',
-              createdDate: data.createdDate || new Date().toISOString(), // Keep original createdDate
+              ruleName: ruleData.ruleName || '',
+              ruleCode: ruleData.ruleCode || '',
+              priority: ruleData.priority || 0,
+              severityId: ruleData.severityId || 0,
+              scenarioId: ruleData.scenarioId || 0,
+              fieldSourceTypeId: ruleData.fieldSourceTypeId || 0,
+              groups: mappedGroups,
+              expressionText: ruleData.expressionText || '',
+              createdDate: ruleData.createdDate || new Date().toISOString(),
             }))
+            setSelectedPlaybookIds(
+              Array.isArray(ruleData?.playbooks)
+                ? ruleData.playbooks.map((playbook) => Number(playbook.playbookId ?? playbook.id))
+                : []
+            )
           }
         } catch (error) {
           console.error('Error fetching rule details:', error)
@@ -413,7 +460,7 @@ function UpdateRule() {
       }
     }
     loadRuleDetails()
-  }, [id, orgId, toolId, userId, masterData]) // masterData dependency to ensure labels are ready for expression generation
+  }, [id, orgId, toolId, userId])
 
   useEffect(() => {
     const fetchFields = async () => {
@@ -598,26 +645,6 @@ function UpdateRule() {
       notifyFail('Rule Name is mandatory.')
       return
     }
-    if (!rule.ruleCode) {
-      notifyFail('Rule Code is mandatory.')
-      return
-    }
-    if (rule.priority === 0) {
-      notifyFail('Priority is mandatory.')
-      return
-    }
-    if (rule.severityId === 0) {
-      notifyFail('Severity is mandatory.')
-      return
-    }
-    if (rule.scenarioId === 0) {
-      notifyFail('Scenario is mandatory.')
-      return
-    }
-    if (rule.fieldSourceTypeId === 0) {
-      notifyFail('Field Source Type is mandatory.')
-      return
-    }
 
     // Validate Condition Groups (at least one group must exist)
     if (!rule.groups || rule.groups.length === 0) {
@@ -696,31 +723,23 @@ function UpdateRule() {
 
     try {
       const mapGroup = (group) => ({
-        groupOperatorId: group.groupOperatorId,
-        groupJoinOperatorId: group.groupJoinOperatorId,
-        conditions: (group.conditions || []).map((c) => ({
-          fieldTypeId: c.fieldTypeId,
-          operatorId: c.operatorId,
-          conditionJoinOperatorId: c.conditionJoinOperatorId,
-          value: c.value,
-          order: c.order,
+        groupOrder: 0,
+        logicalOperatorId: Number(group.groupOperatorId || group.logicalOperatorId || 1),
+        conditions: (group.conditions || []).map((c, index) => ({
+          stdFieldId: Number(c.fieldTypeId || c.stdFieldId || 0),
+          operatorId: Number(c.operatorId || 0),
+          conditionValue: String(c.value || c.conditionValue || ''),
+          logicalOperatorId: Number(c.conditionJoinOperatorId || c.logicalOperatorId || 0),
+          conditionOrder: Number(c.order || c.conditionOrder || index + 1),
         })),
-        subGroups: (group.subGroups || []).map((sub) => mapGroup(sub)),
       })
+
       const payload = {
         ruleId: Number(id),
         ruleName: rule.ruleName,
-        ruleCode: rule.ruleCode,
-        priority: rule.priority,
-        severityId: rule.severityId,
-        scenarioId: rule.scenarioId,
-        fieldSourceTypeId: rule.fieldSourceTypeId,
         groups: rule.groups.map((group) => mapGroup(group)),
-        expressionText: rule.expressionText,
-        orgId: rule.orgId,
-        toolId: rule.toolId,
-        userId: rule.userId,
-        modifiedDate: new Date().toISOString(),
+        playbooks: selectedPlaybookIds.map((playbookId) => ({playbookId: Number(playbookId)})),
+        userId: Number(userId),
       }
       const response = await fetchRulesUpdateUrl(payload)
       if (response.isSuccess) {
@@ -761,10 +780,10 @@ function UpdateRule() {
         <div className='card mb-4'>
           <div className='card-body px-5 py-2'>
             <div className='row g-3'>
-              <div className='col-md-4'>
+              <div className='col-md-6'>
                 <div className='mb-3'>
                   <label className='form-label fw-bold small'>
-                    Name <span className='text-danger'>*</span>
+                    Rule Name <span className='text-danger'>*</span>
                   </label>
                   <input
                     className='form-control form-control-sm'
@@ -774,96 +793,30 @@ function UpdateRule() {
                   />
                 </div>
               </div>
-              <div className='col-md-4'>
+              <div className='col-md-6'>
                 <div className='mb-3'>
-                  <label className='form-label fw-bold small'>
-                    Code <span className='text-danger'>*</span>
-                  </label>
-                  <input
-                    className='form-control form-control-sm'
-                    type='text'
-                    value={rule.ruleCode}
-                    onChange={(e) => handleRuleChange('ruleCode', e.target.value)}
+                  <label className='form-label fw-bold small'>Playbooks</label>
+                  <Select
+                    isMulti
+                    isClearable
+                    options={playbooks.map((playbook) => ({
+                      value: playbook.playbookId ?? playbook.id,
+                      label: playbook.playbookName || playbook.name,
+                    }))}
+                    value={playbooks
+                      .filter((playbook) =>
+                        selectedPlaybookIds.includes(playbook.playbookId ?? playbook.id)
+                      )
+                      .map((playbook) => ({
+                        value: playbook.playbookId ?? playbook.id,
+                        label: playbook.playbookName || playbook.name,
+                      }))}
+                    onChange={(options) =>
+                      setSelectedPlaybookIds((options || []).map((option) => Number(option.value)))
+                    }
+                    placeholder='Select Playbooks'
+                    styles={customSelectStyles}
                   />
-                </div>
-              </div>
-              <div className='col-md-4'>
-                <div className='mb-3'>
-                  <label className='form-label fw-bold small'>
-                    Priority <span className='text-danger'>*</span>
-                  </label>
-                  <select
-                    className='form-select form-select-sm'
-                    value={rule.priority}
-                    onChange={(e) => handleRuleChange('priority', Number(e.target.value))}
-                  >
-                    <option value={0}>Select Priority</option>
-                    {masterData.priorities.map((item) => (
-                      <option key={item.dataID} value={item.dataID}>
-                        {item.dataValue}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div className='row g-3'>
-              <div className='col-md-4'>
-                <div className='mb-3'>
-                  <label className='form-label fw-bold small'>
-                    Severity <span className='text-danger'>*</span>
-                  </label>
-                  <select
-                    className='form-select form-select-sm'
-                    value={rule.severityId}
-                    onChange={(e) => handleRuleChange('severityId', Number(e.target.value))}
-                  >
-                    <option value={0}>Select Severity</option>
-                    {masterData.severities.map((item) => (
-                      <option key={item.dataID} value={item.dataID}>
-                        {item.dataValue}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className='col-md-4'>
-                <div className='mb-3'>
-                  <label className='form-label fw-bold small'>
-                    Scenario <span className='text-danger'>*</span>
-                  </label>
-                  <select
-                    className='form-select form-select-sm'
-                    value={rule.scenarioId}
-                    onChange={(e) => handleRuleChange('scenarioId', Number(e.target.value))}
-                  >
-                    <option value={0}>Select Scenario</option>
-                    {masterData.scenarios.map((item) => (
-                      <option key={item.dataID} value={item.dataID}>
-                        {item.dataValue}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className='col-md-4'>
-                <div className='mb-3'>
-                  <label className='form-label fw-bold small'>
-                    Field Source Type <span className='text-danger'>*</span>
-                  </label>
-                  <select
-                    className='form-select form-select-sm'
-                    value={rule.fieldSourceTypeId}
-                    onChange={(e) => handleRuleChange('fieldSourceTypeId', Number(e.target.value))}
-                  >
-                    <option value={0}>Select Source Type</option>
-                    {masterData.fieldSourceTypes.map((item) => (
-                      <option key={item.dataID} value={item.dataID}>
-                        {item.dataValue}
-                      </option>
-                    ))}
-                  </select>
                 </div>
               </div>
             </div>
