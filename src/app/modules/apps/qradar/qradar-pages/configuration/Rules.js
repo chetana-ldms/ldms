@@ -22,18 +22,9 @@ const Rules = () => {
   const [currentPage, setCurrentPage] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [activePage, setActivePage] = useState(0)
-  const severityRef = useRef()
-  const scenarioRef = useRef()
-  const priorityRef = useRef()
   const [searchValue, setSearchValue] = useState('')
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
   const [itemToDelete, setItemToDelete] = useState(null)
-  console.log('itemToDelete', itemToDelete)
-  const [dropdownData, setDropdownData] = useState({
-    severityDropDown: [],
-    scenarioDropDown: [],
-    priorityDropDown: [],
-  })
 
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
@@ -49,26 +40,6 @@ const Rules = () => {
   const handleNavigateToUpdate = (id) => {
     navigate(`/qradar/rules-engine/update/${id}`, {state: {save: true}})
   }
-
-  useEffect(() => {
-    const fetchAllMasterData = async () => {
-      try {
-        const [sev, scen, prio] = await Promise.all([
-          fetchMasterData({maserDataType: 'rule_severity', orgId, toolId}),
-          fetchMasterData({maserDataType: 'rule_scenario', orgId, toolId}),
-          fetchMasterData({maserDataType: 'rule_priority', orgId, toolId}),
-        ])
-        setDropdownData({
-          severityDropDown: sev || [],
-          scenarioDropDown: scen || [],
-          priorityDropDown: prio || [],
-        })
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    fetchAllMasterData()
-  }, [orgId, toolId])
 
   const handleDelete = (item) => {
     setItemToDelete(item)
@@ -107,14 +78,9 @@ const Rules = () => {
       setLoading(true)
       const payload = {
         searchText: searchValue || '',
-        orgId: orgId,
-        toolId: toolId,
-        scenarioId: Number(scenarioRef.current?.value) || 0,
-        severityId: Number(severityRef.current?.value) || 0,
-        priority: Number(priorityRef.current?.value) || 0,
       }
       const response = await fetchRules(payload)
-      setTools(Array.isArray(response?.data) ? response.data : []) // Ensure tools is always an array
+      setTools(Array.isArray(response?.rules) ? response.rules : []) // Ensure tools is always an array
       setLoading(false)
     } catch (error) {
       handleError(error)
@@ -131,6 +97,26 @@ const Rules = () => {
   const handlePageClick = (selected) => {
     setCurrentPage(selected.selected)
     setActivePage(selected.selected)
+  }
+
+  const getPlaybooksText = (rule) => {
+    const playbooks = Array.isArray(rule?.playbooks) ? rule.playbooks : []
+    if (!playbooks.length) return 'No playbooks'
+    return playbooks
+      .map((playbook) => playbook?.playbookName || playbook?.name || 'Unnamed playbook')
+      .join(', ')
+  }
+
+  const getGroupsText = (rule) => {
+    const groups = Array.isArray(rule?.groups) ? rule.groups : []
+    return groups.length ? groups.length : 0
+  }
+
+  const handleSearchKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      reload()
+    }
   }
 
   const indexOfLastItem = (currentPage + 1) * itemsPerPage
@@ -162,47 +148,16 @@ const Rules = () => {
               <input
                 type='text'
                 className='form-control form-control-sm'
-                placeholder='Search Rules'
+                placeholder='Search rule or playbook'
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
               />
-              <button className='btn btn-sm btn-primary' onClick={reload}>
+              <button type='button' className='btn btn-sm btn-primary' onClick={reload}>
                 <i className='fas fa-search' />
               </button>
             </div>
 
-            <div className='d-flex align-items-center gap-3 mb-1 mt-2'>
-              <div className='w-150px'>
-                <select className='form-select form-select-sm' ref={scenarioRef}>
-                  <option value=''>Select Scenario</option>
-                  {dropdownData.scenarioDropDown.map((item) => (
-                    <option key={item.dataID} value={item.dataID}>
-                      {item.dataValue}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className='w-150px'>
-                <select className='form-select form-select-sm' ref={severityRef}>
-                  <option value=''>Select Severity</option>
-                  {dropdownData.severityDropDown.map((item) => (
-                    <option key={item.dataID} value={item.dataID}>
-                      {item.dataValue}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className='w-150px'>
-                <select className='form-select form-select-sm' ref={priorityRef}>
-                  <option value=''>Select Priority</option>
-                  {dropdownData.priorityDropDown.map((item) => (
-                    <option key={item.dataID} value={item.dataID}>
-                      {item.dataValue}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
           </div>
         </div>
         <div className='col-md-1 float-end text-end'>
@@ -219,8 +174,9 @@ const Rules = () => {
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
-              <th>Name</th>
-              {/* <th className='min-w-50px'>Rule Conditions</th> */}
+              <th>Rule Name</th>
+              <th>Groups</th>
+              <th>Playbooks</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -228,9 +184,10 @@ const Rules = () => {
             {loading && <UsersListLoading />}
             {currentItems !== null && currentItems.length > 0 ? (
               currentItems?.map((item, index) => (
-                <tr key={index} className='fs-12'>
-                  <td>{item.ruleName}</td>
-                  {/* <td>{item.ruleCatagoryID}</td> */}
+                <tr key={item?.ruleId || index} className='fs-12'>
+                  <td>{item?.ruleName || '--'}</td>
+                  <td>{getGroupsText(item)}</td>
+                  <td>{getPlaybooksText(item)}</td>
                   <td>
                     {isActionAuthorized('View') ? (
                       <span className='me-8' title='View'>
@@ -281,7 +238,7 @@ const Rules = () => {
               ))
             ) : (
               <tr>
-                <td colSpan='2'>No data found</td>
+                <td colSpan='4'>No data found</td>
               </tr>
             )}
           </tbody>

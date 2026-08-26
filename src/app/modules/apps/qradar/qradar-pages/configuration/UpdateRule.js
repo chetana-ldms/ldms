@@ -391,7 +391,7 @@ function UpdateRule() {
     const loadRuleDetails = async () => {
       if (id) {
         try {
-          const data = await fetchRuleDetails({ruleID: Number(id)})
+          const data = await fetchRuleDetails({ruleId: Number(id)})
           if (data) {
             setRule((prev) => ({
               ...prev,
