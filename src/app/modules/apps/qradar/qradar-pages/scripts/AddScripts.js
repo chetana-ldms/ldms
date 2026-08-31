@@ -6,36 +6,6 @@ import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 
-// Utility to generate unique keys for list items
-const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`
-
-const cs = {
-  border: '1px solid #d1d5db',
-  padding: '4px 6px',
-  verticalAlign: 'middle',
-  fontSize: 12,
-}
-
-const hs = {
-  ...cs,
-  background: '#dbeafe',
-  fontWeight: 700,
-  textAlign: 'center',
-  whiteSpace: 'nowrap',
-  color: '#1e40af',
-}
-
-const EMPTY_PARAMETER = () => ({
-  tempKey: uid(),
-  parameterName: '',
-  parameterCode: '',
-  parameterTypeId: 0,
-  isRequired: false,
-  defaultValue: '',
-  validationRules: '',
-  executionOrder: 0,
-})
-
 const AddScripts = () => {
   const navigate = useNavigate()
 
@@ -44,28 +14,18 @@ const AddScripts = () => {
   const userId = Number(sessionStorage.getItem('userId'))
 
   const [loading, setLoading] = useState(false)
-
   const [initialLoading, setInitialLoading] = useState(true)
 
   const [dropdowns, setDropdowns] = useState({
-    scriptCategories: [],
     scriptTypes: [],
-    executionTypes: [],
-    operatingSystems: [],
-    parameterTypes: [],
   })
 
   const [formData, setFormData] = useState({
     scriptName: '',
-    scriptCategoryId: 0,
     scriptTypeId: 0,
-    executorTypeId: 0,
-    operatingSystemId: 0,
     scriptContent: '',
-    outputSchema: '',
-    timeoutSeconds: 0,
-    isSecure: false,
-    parameters: [],
+    description: '',
+    version: '',
     userId: userId,
   })
 
@@ -76,40 +36,16 @@ const AddScripts = () => {
   useEffect(() => {
     const loadMasterData = async () => {
       try {
-        const [categories, types, execTypes, os, paramTypes] = await Promise.all([
-          fetchMasterData({
-            maserDataType: 'script_category',
-            orgId,
-            toolId: toolIdSession,
-          }),
+        const [types] = await Promise.all([
           fetchMasterData({
             maserDataType: 'script_type',
-            orgId,
-            toolId: toolIdSession,
-          }),
-          fetchMasterData({
-            maserDataType: 'executor_type',
-            orgId,
-            toolId: toolIdSession,
-          }),
-          fetchMasterData({
-            maserDataType: 'operating_system',
-            orgId,
-            toolId: toolIdSession,
-          }),
-          fetchMasterData({
-            maserDataType: 'global_data_type',
             orgId,
             toolId: toolIdSession,
           }),
         ])
 
         setDropdowns({
-          scriptCategories: categories || [],
           scriptTypes: types || [],
-          executionTypes: execTypes || [],
-          operatingSystems: os || [],
-          parameterTypes: paramTypes || [],
         })
       } catch (error) {
         console.error(error)
@@ -127,11 +63,11 @@ const AddScripts = () => {
   // =========================
 
   const handleChange = (e) => {
-    const {name, value, type, checked} = e.target
+    const {name, value} = e.target
 
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: value,
     }))
   }
 
@@ -145,128 +81,36 @@ const AddScripts = () => {
   }
 
   // =========================
-  // PARAMETERS
-  // =========================
-
-  const addParameter = () => {
-    setFormData((prev) => ({
-      ...prev,
-      parameters: [...prev.parameters, EMPTY_PARAMETER()],
-    }))
-  }
-
-  const removeParameter = (tempKey) => {
-    setFormData((prev) => ({
-      ...prev,
-      parameters: prev.parameters.filter((param) => param.tempKey !== tempKey),
-    }))
-  }
-
-  const handleParameterChange = (tempKey, field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      parameters: prev.parameters.map((param) =>
-        param.tempKey === tempKey
-          ? {
-              ...param,
-              [field]: value,
-            }
-          : param
-      ),
-    }))
-  }
-
-  const handleDragStart = (e, index) => {
-    e.dataTransfer.setData('draggedIndex', index)
-  }
-
-  const handleDragOver = (e) => {
-    e.preventDefault()
-  }
-
-  const handleDrop = (e, targetIndex) => {
-    const draggedIndex = e.dataTransfer.getData('draggedIndex')
-    const newParameters = [...formData.parameters]
-    const [draggedItem] = newParameters.splice(draggedIndex, 1)
-    newParameters.splice(targetIndex, 0, draggedItem)
-    setFormData((prev) => ({...prev, parameters: newParameters}))
-  }
-
-  // =========================
   // SUBMIT
   // =========================
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!formData.scriptName) {
+    if (!formData.scriptName.trim()) {
       notifyFail('Script Name is mandatory.')
-      return
-    }
-    if (formData.scriptCategoryId === 0) {
-      notifyFail('Please select a Category.')
       return
     }
     if (formData.scriptTypeId === 0) {
       notifyFail('Please select a Type.')
       return
     }
-    if (formData.executorTypeId === 0) {
-      notifyFail('Please select an Executor Type.')
-      return
-    }
-    if (formData.operatingSystemId === 0) {
-      notifyFail('Please select an Operating System.')
-      return
-    }
-    if (!formData.timeoutSeconds || Number(formData.timeoutSeconds) <= 0) {
-      notifyFail('Timeout (Seconds) is mandatory and must be greater than 0.')
-      return
-    }
-    if (!formData.scriptContent) {
+    if (!formData.scriptContent.trim()) {
       notifyFail('Script Content is mandatory.')
       return
-    }
-
-    for (const param of formData.parameters) {
-      if (!param.parameterName || !param.parameterCode || param.parameterTypeId === 0) {
-        notifyFail('Please fill all mandatory fields for each parameter.')
-        return
-      }
     }
 
     setLoading(true)
 
     try {
       const payload = {
-        ...formData,
-
-        // outputSchema: formData.outputSchema || "",
-        outputSchema: null,
-
-        timeoutSeconds: Number(formData.timeoutSeconds),
-
-        parameters: formData.parameters.map(({tempKey, ...rest}, index) => ({
-          ...rest,
-
-          // validationRules: rest.validationRules || "",
-          validationRules: null,
-
-          // NUMBER
-          parameterTypeId: Number(rest.parameterTypeId),
-
-          // NUMBER
-          executionOrder: index + 1,
-
-          // BOOLEAN
-          isRequired: Boolean(rest.isRequired),
-        })),
-
-        // BOOLEAN
-        isSecure: Boolean(formData.isSecure),
+        userId: formData.userId,
+        scriptName: formData.scriptName.trim(),
+        scriptTypeId: formData.scriptTypeId,
+        scriptContent: formData.scriptContent.trim(),
+        description: formData.description.trim(),
+        version: formData.version.trim(),
       }
-
-      console.log(payload, 'payload')
 
       const response = await fetchScriptAddUrl(payload)
 
@@ -280,7 +124,6 @@ const AddScripts = () => {
       }
     } catch (error) {
       console.error(error)
-
       notifyFail('An unexpected error occurred.')
     } finally {
       setLoading(false)
@@ -313,7 +156,7 @@ const AddScripts = () => {
       <form onSubmit={handleSubmit}>
         <div className='card-body px-5 py-5'>
           <div className='row g-3 mb-4'>
-            <div className='col-md-4'>
+            <div className='col-md-6'>
               <label className='form-label fw-bold small'>
                 Script Name <span className='text-danger'>*</span>
               </label>
@@ -324,31 +167,11 @@ const AddScripts = () => {
                 name='scriptName'
                 value={formData.scriptName}
                 onChange={handleChange}
+                placeholder='Enter script name'
               />
             </div>
 
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Category <span className='text-danger'>*</span>
-              </label>
-
-              <select
-                className='form-select form-select-sm'
-                name='scriptCategoryId'
-                value={formData.scriptCategoryId}
-                onChange={handleSelectChange}
-              >
-                <option value={0}>Select Category</option>
-
-                {dropdowns.scriptCategories.map((item) => (
-                  <option key={item.dataID} value={item.dataID}>
-                    {item.dataValue}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className='col-md-4'>
+            <div className='col-md-6'>
               <label className='form-label fw-bold small'>
                 Type <span className='text-danger'>*</span>
               </label>
@@ -370,62 +193,30 @@ const AddScripts = () => {
             </div>
           </div>
 
-          {/* EXECUTION */}
-
           <div className='row g-3 mb-4'>
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Executer Type <span className='text-danger'>*</span>
-              </label>
-
-              <select
-                className='form-select form-select-sm'
-                name='executorTypeId'
-                value={formData.executorTypeId}
-                onChange={handleSelectChange}
-              >
-                <option value={0}>Select Executer Type</option>
-
-                {dropdowns.executionTypes.map((item) => (
-                  <option key={item.dataID} value={item.dataID}>
-                    {item.dataValue}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Operating System <span className='text-danger'>*</span>
-              </label>
-
-              <select
-                className='form-select form-select-sm'
-                name='operatingSystemId'
-                value={formData.operatingSystemId}
-                onChange={handleSelectChange}
-              >
-                <option value={0}>Select OS</option>
-
-                {dropdowns.operatingSystems.map((item) => (
-                  <option key={item.dataID} value={item.dataID}>
-                    {item.dataValue}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Timeout (Seconds) <span className='text-danger'>*</span>
-              </label>
+            <div className='col-md-6'>
+              <label className='form-label fw-bold small'>Version</label>
 
               <input
-                type='number'
+                type='text'
                 className='form-control form-control-sm'
-                name='timeoutSeconds'
-                value={formData.timeoutSeconds}
+                name='version'
+                value={formData.version}
                 onChange={handleChange}
+                placeholder='Enter version'
+              />
+            </div>
+
+            <div className='col-md-6'>
+              <label className='form-label fw-bold small'>Description</label>
+
+              <input
+                type='text'
+                className='form-control form-control-sm'
+                name='description'
+                value={formData.description}
+                onChange={handleChange}
+                placeholder='Enter description'
               />
             </div>
           </div>
@@ -440,207 +231,24 @@ const AddScripts = () => {
 
               <textarea
                 className='form-control form-control-sm'
-                rows={5}
+                rows={8}
                 name='scriptContent'
                 value={formData.scriptContent}
                 onChange={handleChange}
-                style={{height: '50px'}}
+                placeholder='Enter your script content here'
               />
             </div>
           </div>
 
-          {/* OUTPUT */}
+          {/* BUTTONS */}
 
-          <div className='row g-3 mb-4'>
-            <div className='col-md-10'>
-              <label className='form-label fw-bold small'>Output Schema (JSON)</label>
-
-              <textarea
-                className='form-control form-control-sm'
-                rows={3}
-                name='outputSchema'
-                value={formData.outputSchema}
-                onChange={handleChange}
-                style={{height: '50px'}}
-              />
-            </div>
-
-            <div className='col-md-2 d-flex align-items-center'>
-              <div className='form-check form-check-custom form-check-solid'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  name='isSecure'
-                  id='isSecure'
-                  checked={formData.isSecure}
-                  onChange={handleChange}
-                />
-
-                <label className='form-check-label small fw-bold ms-9' htmlFor='isSecure'>
-                  Is Secure
-                </label>
-              </div>
+          <div className='row mt-5'>
+            <div className='col-md-12 text-end'>
+              <button type='submit' className='btn btn-primary' disabled={loading}>
+                {loading ? 'Saving...' : 'Save Script'}
+              </button>
             </div>
           </div>
-
-          {/* PARAMETERS */}
-
-          <div className='d-flex justify-content-between align-items-center mt-10 mb-5'>
-            <h4 className='mb-0'>Parameters</h4>
-
-            <button type='button' className='btn btn-sm btn-primary' onClick={addParameter}>
-              <i className='fa fa-plus me-2'></i>
-              Add Parameter
-            </button>
-          </div>
-
-          {formData.parameters.length === 0 && (
-            <div className='alert alert-info text-center'>No parameters added yet.</div>
-          )}
-
-          {formData.parameters.length > 0 && (
-            <div className='table-responsive'>
-              <table
-                style={{
-                  borderCollapse: 'collapse',
-                  width: '100%',
-                }}
-              >
-                <thead>
-                  <tr>
-                    <th style={hs}>
-                      Name <span className='text-danger'>*</span>
-                    </th>
-                    <th style={hs}>
-                      Code <span className='text-danger'>*</span>
-                    </th>
-                    <th style={hs}>
-                      Type <span className='text-danger'>*</span>
-                    </th>
-                    <th style={hs}>Default</th>
-                    <th style={hs}>Validation Rule</th>
-                    <th style={hs}>Required</th>
-                    <th style={hs}>Action</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {formData.parameters.map((param, index) => (
-                    <tr
-                      key={param.tempKey}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, index)}
-                      onDragOver={handleDragOver}
-                      onDrop={(e) => handleDrop(e, index)}
-                      style={{cursor: 'move'}}
-                    >
-                      <td style={cs}>
-                        <input
-                          type='text'
-                          className='form-control form-control-sm'
-                          value={param.parameterName}
-                          onChange={(e) =>
-                            handleParameterChange(param.tempKey, 'parameterName', e.target.value)
-                          }
-                        />
-                      </td>
-
-                      <td style={cs}>
-                        <input
-                          type='text'
-                          className='form-control form-control-sm'
-                          value={param.parameterCode}
-                          onChange={(e) =>
-                            handleParameterChange(param.tempKey, 'parameterCode', e.target.value)
-                          }
-                        />
-                      </td>
-
-                      <td style={cs}>
-                        <select
-                          className='form-select form-select-sm'
-                          value={param.parameterTypeId}
-                          onChange={(e) =>
-                            handleParameterChange(
-                              param.tempKey,
-                              'parameterTypeId',
-                              Number(e.target.value)
-                            )
-                          }
-                        >
-                          <option value={0}>Select</option>
-
-                          {dropdowns.parameterTypes.map((item) => (
-                            <option key={item.dataID} value={item.dataID}>
-                              {item.dataValue}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-
-                      <td style={cs}>
-                        <input
-                          type='text'
-                          className='form-control form-control-sm'
-                          value={param.defaultValue}
-                          onChange={(e) =>
-                            handleParameterChange(param.tempKey, 'defaultValue', e.target.value)
-                          }
-                        />
-                      </td>
-
-                      <td style={cs}>
-                        <input
-                          type='text'
-                          className='form-control form-control-sm'
-                          value={param.validationRules}
-                          onChange={(e) =>
-                            handleParameterChange(param.tempKey, 'validationRules', e.target.value)
-                          }
-                        />
-                      </td>
-
-                      <td
-                        style={{
-                          ...cs,
-                          textAlign: 'center',
-                        }}
-                      >
-                        <input
-                          type='checkbox'
-                          checked={param.isRequired}
-                          onChange={(e) =>
-                            handleParameterChange(param.tempKey, 'isRequired', e.target.checked)
-                          }
-                        />
-                      </td>
-
-                      <td
-                        style={{
-                          ...cs,
-                          textAlign: 'center',
-                        }}
-                      >
-                        <button
-                          type='button'
-                          className='btn btn-sm btn-light-danger'
-                          onClick={() => removeParameter(param.tempKey)}
-                        >
-                          <i className='fa fa-times'></i>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
-        <div className='card-footer text-end px-5 py-4'>
-          <button type='submit' className='btn btn-primary btn-sm' disabled={loading}>
-            {loading ? 'Saving...' : 'Save Script'}
-          </button>
         </div>
       </form>
     </div>

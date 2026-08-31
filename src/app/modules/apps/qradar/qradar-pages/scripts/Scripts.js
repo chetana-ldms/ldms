@@ -8,7 +8,7 @@ import {useErrorBoundary} from 'react-error-boundary'
 import Pagination from '../../../../../../utils/Pagination'
 import DeleteConfirmation2 from '../risk-upgrade/DeleteConfirmation2'
 import useFeatureActions from '../configuration/useFeatureActions'
-import {fetchScriptSearchUrl, fetchScriptDeleteUrl} from '../../../../../api/ScriptsApi'
+import {fetchScriptSearchUrl, fetchScriptDeleteUrl, fetchScriptGetByIdUrl} from '../../../../../api/ScriptsApi'
 import { notify, notifyFail } from '../components/notification/Notification'
 
 const Scripts = () => {
@@ -23,20 +23,14 @@ const Scripts = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [activePage, setActivePage] = useState(0)
 
-  const categoryRef = useRef()
   const typeRef = useRef()
-  const executionRef = useRef()
-  const osRef = useRef()
 
   const [searchValue, setSearchValue] = useState('')
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
   const [itemToDelete, setItemToDelete] = useState(null)
 
   const [dropdownData, setDropdownData] = useState({
-    categories: [],
     types: [],
-    executionTypes: [],
-    operatingSystems: [],
   })
 
   const roleId = Number(sessionStorage.getItem('roleID'))
@@ -56,17 +50,11 @@ const Scripts = () => {
   useEffect(() => {
     const fetchAllMasterData = async () => {
       try {
-        const [cat, type, exec, os] = await Promise.all([
-          fetchMasterData({maserDataType: 'script_category', orgId, toolId: toolIdSession}),
+        const [type] = await Promise.all([
           fetchMasterData({maserDataType: 'script_type', orgId, toolId: toolIdSession}),
-          fetchMasterData({maserDataType: 'executor_type', orgId, toolId: toolIdSession}),
-          fetchMasterData({maserDataType: 'operating_system', orgId, toolId: toolIdSession}),
         ])
         setDropdownData({
-          categories: cat || [],
           types: type || [],
-          executionTypes: exec || [],
-          operatingSystems: os || [],
         })
       } catch (error) {
         console.error(error)
@@ -112,22 +100,13 @@ const Scripts = () => {
       setLoading(true)
       const payload = {}
 
-      if (searchValue) payload.searchText = searchValue
-      
-      const categoryId = Number(categoryRef.current?.value)
-      if (categoryId) payload.scriptCategoryId = categoryId
+      if (searchValue.trim()) payload.search = searchValue.trim()
 
       const typeId = Number(typeRef.current?.value)
       if (typeId) payload.scriptTypeId = typeId
 
-      const executionTypeId = Number(executionRef.current?.value)
-      if (executionTypeId) payload.executionTypeId = executionTypeId
-
-      const osId = Number(osRef.current?.value)
-      if (osId) payload.operatingSystemId = osId
-
       const response = await fetchScriptSearchUrl(payload)
-      setScripts(Array.isArray(response?.data) ? response.data : [])
+      setScripts(Array.isArray(response?.scripts) ? response.scripts : [])
     } catch (error) {
       handleError(error)
     } finally {
@@ -181,40 +160,10 @@ const Scripts = () => {
             </div>
 
             <div className='d-flex align-items-center gap-2 mb-1 mt-2 flex-wrap'>
-              <div className='w-150px'>
-                <select className='form-select form-select-sm' ref={categoryRef}>
-                  <option value={0}>Category</option>
-                  {dropdownData.categories.map((item) => (
-                    <option key={item.dataID} value={item.dataID}>
-                      {item.dataValue}
-                    </option>
-                  ))}
-                </select>
-              </div>
               <div className='w-120px'>
                 <select className='form-select form-select-sm' ref={typeRef}>
                   <option value={0}>Type</option>
                   {dropdownData.types.map((item) => (
-                    <option key={item.dataID} value={item.dataID}>
-                      {item.dataValue}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className='w-150px'>
-                <select className='form-select form-select-sm' ref={executionRef}>
-                  <option value={0}>Execution</option>
-                  {dropdownData.executionTypes.map((item) => (
-                    <option key={item.dataID} value={item.dataID}>
-                      {item.dataValue}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className='w-120px'>
-                <select className='form-select form-select-sm' ref={osRef}>
-                  <option value={0}>OS</option>
-                  {dropdownData.operatingSystems.map((item) => (
                     <option key={item.dataID} value={item.dataID}>
                       {item.dataValue}
                     </option>
@@ -240,10 +189,7 @@ const Scripts = () => {
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
               <th>Name</th>
-              <th>Category</th>
               <th>Type</th>
-              <th>Execution</th>
-              <th>OS</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -253,10 +199,7 @@ const Scripts = () => {
               currentItems.map((item) => (
                 <tr key={item.scriptId} className='fs-12'>
                   <td>{item.scriptName || '-'}</td>
-                  <td>{item.scriptCategoryName || '-'}</td>
                   <td>{item.scriptTypeName || '-'}</td>
-                  <td>{item.executionTypeName || '-'}</td>
-                  <td>{item.operatingSystemName || '-'}</td>
                   <td>
                     {isActionAuthorized('View') ? (
                       <span className='me-8' title='View'>
@@ -299,7 +242,7 @@ const Scripts = () => {
               ))
             ) : (
               <tr>
-                <td colSpan='6' className='text-center'>No data found</td>
+                <td colSpan='3' className='text-center'>No data found</td>
               </tr>
             )}
           </tbody>
