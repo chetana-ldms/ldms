@@ -274,6 +274,7 @@ export function AddRule() {
   const [ruleName, setRuleName] = useState('')
   const [groups, setGroups] = useState([newGroup()])
   const [selectedPlaybookIds, setSelectedPlaybookIds] = useState([])
+  const [expressionText, setExpressionText] = useState('')
 
   useEffect(() => {
     const loadFormData = async () => {
@@ -299,6 +300,53 @@ export function AddRule() {
     }
     loadFormData()
   }, [orgId, toolId])
+
+  // Auto-compute expression text whenever groups or lookup data change
+  useEffect(() => {
+    const exprForGroup = (g) => {
+      const conditionsToProcess = Array.isArray(g.conditions) ? g.conditions : []
+      if (conditionsToProcess.length === 0) return ''
+
+      const items = []
+      conditionsToProcess.forEach((c) => {
+        const field = standardFields.find((x) => x.id === c.stdFieldId)
+        const fieldLabel = field ? (field.fieldName || field.displayName || 'Field') : 'Field'
+        const op = operators.find((x) => x.dataID === c.operatorId)
+        const opLabel = op ? op.dataValue : 'Op'
+        const str = `(${fieldLabel} ${opLabel} ${c.conditionValue || "''"})`
+        const joiner =
+          logicalOperators.find((x) => x.dataID === c.logicalOperatorId)?.dataValue || 'AND'
+        items.push({str, joiner})
+      })
+
+      if (items.length === 0) return ''
+
+      let expr = ''
+      items.forEach((item, i) => {
+        expr += item.str
+        if (i < items.length - 1) {
+          expr += ` ${item.joiner} `
+        }
+      })
+
+      return `(${expr})`
+    }
+
+    let finalExpr = ''
+    groups.forEach((g, i) => {
+      const groupStr = exprForGroup(g)
+      if (groupStr && groupStr !== '()') {
+        finalExpr += groupStr
+        if (i < groups.length - 1) {
+          const joiner =
+            logicalOperators.find((x) => x.dataID === g.logicalOperatorId)?.dataValue || 'AND'
+          finalExpr += ` ${joiner} `
+        }
+      }
+    })
+
+    setExpressionText(finalExpr)
+  }, [groups, standardFields, operators, logicalOperators])
 
   const updateGroup = (groupIndex, update) => {
     setGroups((previous) =>
@@ -507,6 +555,21 @@ export function AddRule() {
               groups={groups}
             />
           ))}
+        </div>
+
+        <div className='card mb-4'>
+          <div className='card-body px-5 py-2'>
+            <div className='mb-3'>
+              <label className='form-label fw-bold small'>Expression Text</label>
+              <textarea
+                className='form-control form-control-sm'
+                rows={6}
+                style={{height: '200px'}}
+                value={expressionText}
+                onChange={(e) => setExpressionText(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
 
         <div className='text-end mt-2 me-5 mb-5'>

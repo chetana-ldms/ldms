@@ -374,9 +374,19 @@ function UpdateRule() {
     const loadAllStandardFields = async () => {
       try {
         const response = await fetchAlertFieldsUrl({searchText: null, fieldTypeId: null, toolId: null})
-        const fieldList = Array.isArray(response?.data)
-          ? response.data.filter((field) => field.fieldType === 'Standard')
+        const rawList = Array.isArray(response?.data)
+          ? response.data
+          : Array.isArray(response)
+          ? response
           : []
+        const fieldList = rawList
+          .filter((field) => field.fieldType === 'Standard')
+          .map((field) => ({
+            // Normalize: RenderGroup expects fieldId and displayName
+            fieldId: field.fieldId ?? field.id,
+            displayName: field.displayName || field.fieldName || '',
+            fieldType: field.fieldType,
+          }))
         setFields(fieldList)
       } catch (error) {
         console.error('Error loading standard fields:', error)
@@ -462,21 +472,8 @@ function UpdateRule() {
     loadRuleDetails()
   }, [id, orgId, toolId, userId])
 
-  useEffect(() => {
-    const fetchFields = async () => {
-      if (rule.fieldSourceTypeId !== 0) {
-        try {
-          const response = await fetchAlertFieldsUrl({fieldSourceTypeId: rule.fieldSourceTypeId})
-          setFields(response?.data || [])
-        } catch (error) {
-          console.error('Error fetching alert fields:', error)
-        }
-      } else {
-        setFields([])
-      }
-    }
-    fetchFields()
-  }, [rule.fieldSourceTypeId])
+  // Note: The fields list is loaded once from the Standard fields endpoint above.
+  // Removing the fieldSourceTypeId-based effect that was overwriting/clearing the fields state.
 
   useEffect(() => {
     const exprForGroup = (g) => {
