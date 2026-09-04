@@ -723,7 +723,7 @@ export const fetchRuleActionUrl = async (data) => {
 export const fetchRuleActionUpdateUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${RuleActionUpdateUrl}`, {
-      method: 'PUT',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
