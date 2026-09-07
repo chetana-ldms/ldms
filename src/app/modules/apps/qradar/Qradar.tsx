@@ -157,6 +157,9 @@ import UpdateAlertFieldMapping from './qradar-pages/alert-fields/UpdateAlertFiel
 import AddPlaybook from './qradar-pages/alert-fields/AddPlaybook'
 import UpdatePlaybook from './qradar-pages/alert-fields/UpdatePlaybook'
 import Playbook from './qradar-pages/alert-fields/Playbook'
+import ActionParameter from './qradar-pages/scripts/ActionParameter'
+import UpdateActionParameter from './qradar-pages/scripts/UpdateActionParameter'
+import AddActionParameter from './qradar-pages/scripts/AddActionParameter'
 
 
 const QradarPages = () => {
@@ -310,7 +313,10 @@ const QradarPages = () => {
       <Route path='scripts/:status' element={<Scripts/>} />
       <Route path='scripts/add' element={<AddScripts />} />
       <Route path='/scripts/update/:id' element={<UpdateScripts />} />
-        <Route path='connection/:status' element={<Connection/>} />
+      <Route path='action_parameter/:status' element={<ActionParameter/>} />
+      <Route path='action_parameter/add' element={<AddActionParameter />} />
+      <Route path='/action_parameter/update/:id' element={<UpdateActionParameter />} />
+      <Route path='connection/:status' element={<Connection/>} />
       <Route path='connection/add' element={<AddConnection />} />
       <Route path='/connection/update/:id' element={<UpdateConnection />} />
        <Route path='connection-types/:status' element={<ConnectionType/>} />
