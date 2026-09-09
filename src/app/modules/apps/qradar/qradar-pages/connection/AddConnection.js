@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
-import {fetchMasterData} from '../../../../../api/Api'
 import {fetchConnectionAddUrl, fetchConnectionTypeSearchUrl} from '../../../../../api/ConnectionApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
@@ -8,62 +7,53 @@ import {UsersListLoading} from '../components/loading/UsersListLoading'
 
 function AddConnection() {
   const navigate = useNavigate()
+  const userId = Number(sessionStorage.getItem('userId'))
   const orgId = Number(sessionStorage.getItem('orgId'))
   const toolId = Number(sessionStorage.getItem('toolID'))
-  const userId = Number(sessionStorage.getItem('userId'))
 
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
-  const [dropdownData, setDropdownData] = useState({
-    authTypes: [],
-    environments: [],
-    connectionTypes: [],
-    executorTypes: [],
-  })
+  const [connectionTypes, setConnectionTypes] = useState([])
 
   const [formData, setFormData] = useState({
-    connectionCode: '',
     connectionName: '',
     connectionTypeId: 0,
-    authTypeId: 0,
-    environmentId: 0,
-    configJson: '',
-    executorTypeId: 0,
-    isDefault: 0,
-    isSystem: 0,
+    hostName: '',
+    port: '',
+    username: '',
+    password: '',
+    description: '',
     userId: userId,
   })
 
+  // =========================
+  // LOAD CONNECTION TYPES
+  // =========================
+
   useEffect(() => {
-    const loadMasterData = async () => {
+    const loadData = async () => {
       try {
-        const [auths, envs, types, executors] = await Promise.all([
-          fetchMasterData({maserDataType: 'auth_type', orgId, toolId}),
-          fetchMasterData({maserDataType: 'environment', orgId, toolId}),
-          fetchConnectionTypeSearchUrl({}),
-          fetchMasterData({maserDataType: 'executor_type', orgId, toolId}),
-        ])
-        setDropdownData({
-          authTypes: auths || [],
-          environments: envs || [],
-          connectionTypes: types?.data || [],
-          executorTypes: executors || [],
-        })
+        const res = await fetchConnectionTypeSearchUrl({})
+        setConnectionTypes(Array.isArray(res?.connectionTypes) ? res.connectionTypes : res?.data || [])
       } catch (error) {
-        console.error('Error loading master data:', error)
-        notifyFail('Failed to load form options.')
+        console.error(error)
+        notifyFail('Failed to load connection types.')
       } finally {
         setInitialLoading(false)
       }
     }
-    loadMasterData()
+    loadData()
   }, [orgId, toolId])
 
+  // =========================
+  // INPUT CHANGE
+  // =========================
+
   const handleChange = (e) => {
-    const {name, value, type, checked} = e.target
+    const {name, value} = e.target
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (checked ? 1 : 0) : value,
+      [name]: value,
     }))
   }
 
@@ -75,30 +65,45 @@ function AddConnection() {
     }))
   }
 
+  // =========================
+  // SUBMIT
+  // =========================
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (
-      !formData.connectionCode ||
-      !formData.connectionName ||
-      formData.connectionTypeId === 0 ||
-      formData.authTypeId === 0 ||
-      formData.environmentId === 0 ||
-      formData.executorTypeId === 0
-    ) {
-      notifyFail('Please fill all mandatory fields.')
+    if (!formData.connectionName.trim()) {
+      notifyFail('Connection Name is mandatory.')
+      return
+    }
+    if (formData.connectionTypeId === 0) {
+      notifyFail('Please select a Connection Type.')
+      return
+    }
+    if (!formData.hostName.trim()) {
+      notifyFail('Host Name is mandatory.')
       return
     }
 
     setLoading(true)
     try {
-      const response = await fetchConnectionAddUrl(formData)
+      const payload = {
+        connectionName: formData.connectionName.trim(),
+        connectionTypeId: formData.connectionTypeId,
+        hostName: formData.hostName.trim(),
+        port: formData.port ? Number(formData.port) : 0,
+        username: formData.username.trim(),
+        password: formData.password,
+        description: formData.description.trim(),
+        userId: formData.userId,
+      }
+
+      const response = await fetchConnectionAddUrl(payload)
       if (response?.isSuccess) {
         notify(response.message || 'Connection added successfully')
-         setTimeout(() => {
-           navigate('/qradar/connection/list')
+        setTimeout(() => {
+          navigate('/qradar/connection/list')
         }, 2000)
-       
       } else {
         notifyFail(response?.message || 'Failed to add connection')
       }
@@ -115,9 +120,12 @@ function AddConnection() {
   return (
     <div className='card config'>
       <ToastContainer />
+
+      {/* HEADER */}
+
       <div className='card-header bg-heading'>
         <h3 className='card-title'>
-          <span className='white'>Add Connection</span>
+          <span className='white'>Add New Connection</span>
         </h3>
         <div className='card-toolbar'>
           <Link to='/qradar/connection/list' className='white fs-15 text-underline'>
@@ -130,9 +138,9 @@ function AddConnection() {
       <form onSubmit={handleSubmit}>
         <div className='card-body px-5 py-5'>
           <div className='row g-3 mb-4'>
-            <div className='col-md-4'>
+            <div className='col-md-6'>
               <label className='form-label fw-bold small'>
-               Name <span className='text-danger'>*</span>
+                Connection Name <span className='text-danger'>*</span>
               </label>
               <input
                 type='text'
@@ -140,23 +148,13 @@ function AddConnection() {
                 name='connectionName'
                 value={formData.connectionName}
                 onChange={handleChange}
+                placeholder='Enter connection name'
               />
             </div>
-            <div className='col-md-4'>
+
+            <div className='col-md-6'>
               <label className='form-label fw-bold small'>
-              Code <span className='text-danger'>*</span>
-              </label>
-              <input
-                type='text'
-                className='form-control form-control-sm'
-                name='connectionCode'
-                value={formData.connectionCode}
-                onChange={handleChange}
-              />
-            </div>
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-             Type <span className='text-danger'>*</span>
+                Connection Type <span className='text-danger'>*</span>
               </label>
               <select
                 className='form-select form-select-sm'
@@ -164,8 +162,8 @@ function AddConnection() {
                 value={formData.connectionTypeId}
                 onChange={handleSelectChange}
               >
-                <option value={0}>Select Type</option>
-                {dropdownData.connectionTypes.map((i) => (
+                <option value={0}>Select Connection Type</option>
+                {connectionTypes.map((i) => (
                   <option key={i.connectionTypeId} value={i.connectionTypeId}>
                     {i.connectionTypeName}
                   </option>
@@ -175,112 +173,83 @@ function AddConnection() {
           </div>
 
           <div className='row g-3 mb-4'>
-            <div className='col-md-4'>
+            <div className='col-md-6'>
               <label className='form-label fw-bold small'>
-                Auth Type <span className='text-danger'>*</span>
+                Host Name <span className='text-danger'>*</span>
               </label>
-              <select
-                className='form-select form-select-sm'
-                name='authTypeId'
-                value={formData.authTypeId}
-                onChange={handleSelectChange}
-              >
-                <option value={0}>Select Auth Type</option>
-                {dropdownData.authTypes.map((i) => (
-                  <option key={i.dataID} value={i.dataID}>
-                    {i.dataValue}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Environment <span className='text-danger'>*</span>
-              </label>
-              <select
-                className='form-select form-select-sm'
-                name='environmentId'
-                value={formData.environmentId}
-                onChange={handleSelectChange}
-              >
-                <option value={0}>Select Environment</option>
-                {dropdownData.environments.map((i) => (
-                  <option key={i.dataID} value={i.dataID}>
-                    {i.dataValue}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Executor Type <span className='text-danger'>*</span>
-              </label>
-              <select
-                className='form-select form-select-sm'
-                name='executorTypeId'
-                value={formData.executorTypeId}
-                onChange={handleSelectChange}
-              >
-                <option value={0}>Select Executor Type</option>
-                {dropdownData.executorTypes.map((i) => (
-                  <option key={i.dataID} value={i.dataID}>
-                    {i.dataValue}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className='row g-3 mb-4'>
-            <div className='col-md-12 d-flex align-items-center gap-4'>
-              <div className='form-check form-check-custom mt-6'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  name='isDefault'
-                  id='isDefault'
-                  checked={formData.isDefault === 1}
-                  onChange={handleChange}
-                />
-                <label className='form-check-label small fw-bold ms-10' htmlFor='isDefault'>
-                  Is Default
-                </label>
-              </div>
-              <div className='form-check form-check-custom mt-6'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  name='isSystem'
-                  id='isSystem'
-                  checked={formData.isSystem === 1}
-                  onChange={handleChange}
-                />
-                <label className='form-check-label small fw-bold ms-10' htmlFor='isSystem'>
-                  Is System
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div className='row g-3'>
-            <div className='col-md-12'>
-              <label className='form-label fw-bold small'>Config JSON</label>
-              <textarea
+              <input
+                type='text'
                 className='form-control form-control-sm'
-                rows={4}
-                name='configJson'
-                value={formData.configJson}
+                name='hostName'
+                value={formData.hostName}
                 onChange={handleChange}
-                placeholder='{}'
-                style={{height: '100px'}}
+                placeholder='Enter host name or IP'
+              />
+            </div>
+
+            <div className='col-md-6'>
+              <label className='form-label fw-bold small'>Port</label>
+              <input
+                type='number'
+                className='form-control form-control-sm'
+                name='port'
+                value={formData.port}
+                onChange={handleChange}
+                placeholder='Enter port number'
+                min={0}
               />
             </div>
           </div>
-        </div>
 
-        <div className='card-footer text-end px-5 py-4'>
-          <button type='submit' className='btn btn-primary btn-sm' disabled={loading}>
-            {loading ? 'Saving...' : 'Save Connection'}
-          </button>
+          <div className='row g-3 mb-4'>
+            <div className='col-md-6'>
+              <label className='form-label fw-bold small'>Username</label>
+              <input
+                type='text'
+                className='form-control form-control-sm'
+                name='username'
+                value={formData.username}
+                onChange={handleChange}
+                placeholder='Enter username'
+              />
+            </div>
+
+            <div className='col-md-6'>
+              <label className='form-label fw-bold small'>Password</label>
+              <input
+                type='password'
+                className='form-control form-control-sm'
+                name='password'
+                value={formData.password}
+                onChange={handleChange}
+                placeholder='Enter password'
+              />
+            </div>
+          </div>
+
+          <div className='row g-3 mb-4'>
+            <div className='col-md-12'>
+              <label className='form-label fw-bold small'>Description</label>
+              <input
+                type='text'
+                className='form-control form-control-sm'
+                name='description'
+                value={formData.description}
+                onChange={handleChange}
+                placeholder='Enter description'
+              />
+            </div>
+          </div>
+
+          {/* BUTTONS */}
+
+          <div className='row mt-5'>
+            <div className='col-md-12 text-end'>
+              <button type='submit' className='btn btn-primary' disabled={loading}>
+                {loading ? 'Saving...' : 'Save Connection'}
+              </button>
+            </div>
+          </div>
         </div>
       </form>
     </div>

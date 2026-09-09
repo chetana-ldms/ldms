@@ -1,8 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import {Link, useNavigate, useParams, useLocation} from 'react-router-dom'
-import {fetchMasterData} from '../../../../../api/Api'
 import {
-  fetchConnectionSearchUrl,
+  fetchConnectionDetailUrl,
   fetchConnectionUpdateUrl,
   fetchConnectionTypeSearchUrl,
 } from '../../../../../api/ConnectionApi'
@@ -22,76 +21,71 @@ function UpdateConnection() {
 
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
-  const [dropdownData, setDropdownData] = useState({
-    authTypes: [],
-    environments: [],
-    connectionTypes: [],
-    executorTypes: [],
-  })
+  const [connectionTypes, setConnectionTypes] = useState([])
 
   const [formData, setFormData] = useState({
     connectionId: Number(id),
-    connectionCode: '',
     connectionName: '',
     connectionTypeId: 0,
-    authTypeId: 0,
-    environmentId: 0,
-    configJson: '',
-    executorTypeId: 0,
-    isDefault: 0,
-    isSystem: 0,
+    hostName: '',
+    port: '',
+    username: '',
+    password: '',
+    description: '',
     userId: userId,
   })
+
+  // =========================
+  // LOAD DATA
+  // =========================
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [auths, envs, types, details, executors] = await Promise.all([
-          fetchMasterData({maserDataType: 'auth_type', orgId, toolId}),
-          fetchMasterData({maserDataType: 'environment', orgId, toolId}),
+        const [typesRes, detailRes] = await Promise.all([
           fetchConnectionTypeSearchUrl({}),
-          fetchConnectionSearchUrl({connectionId: Number(id)}),
-          fetchMasterData({maserDataType: 'executor_type', orgId, toolId}),
+          fetchConnectionDetailUrl({connectionId: Number(id)}),
         ])
 
-        setDropdownData({
-          authTypes: auths || [],
-          environments: envs || [],
-          connectionTypes: types?.data || [],
-          executorTypes: executors || [],
-        })
+        setConnectionTypes(
+          Array.isArray(typesRes?.connectionTypes) ? typesRes.connectionTypes : typesRes?.data || []
+        )
 
-        if (details?.isSuccess && details.data?.length > 0) {
-          const item = details.data[0]
+        if (detailRes?.isSuccess && detailRes.connection) {
+          const item = detailRes.connection
           setFormData({
             connectionId: item.connectionId,
-            connectionCode: item.connectionCode || '',
             connectionName: item.connectionName || '',
             connectionTypeId: item.connectionTypeId || 0,
-            authTypeId: item.authTypeId || 0,
-            environmentId: item.environmentId || 0,
-            configJson: item.configJson || '',
-            executorTypeId: item.executorTypeId || 0,
-            isDefault: item.isDefault || 0,
-            isSystem: item.isSystem || 0,
+            hostName: item.hostName || '',
+            port: item.port || '',
+            username: item.username || '',
+            password: item.password || '',
+            description: item.description || '',
             userId: userId,
           })
+        } else {
+          notifyFail('Failed to fetch connection details.')
         }
       } catch (error) {
-        console.error('Error loading connection data:', error)
-        notifyFail('Failed to load data.')
+        console.error(error)
+        notifyFail('An error occurred while loading data.')
       } finally {
         setInitialLoading(false)
       }
     }
     loadData()
-  }, [id, orgId, toolId])
+  }, [id, orgId, toolId, userId])
+
+  // =========================
+  // INPUT CHANGE
+  // =========================
 
   const handleChange = (e) => {
-    const {name, value, type, checked} = e.target
+    const {name, value} = e.target
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (checked ? 1 : 0) : value,
+      [name]: value,
     }))
   }
 
@@ -103,26 +97,45 @@ function UpdateConnection() {
     }))
   }
 
+  // =========================
+  // SUBMIT
+  // =========================
+
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (
-      !formData.connectionCode ||
-      !formData.connectionName ||
-      formData.connectionTypeId === 0 ||
-      formData.executorTypeId === 0
-    ) {
-      notifyFail('Please fill mandatory fields.')
+
+    if (!formData.connectionName.trim()) {
+      notifyFail('Connection Name is mandatory.')
+      return
+    }
+    if (formData.connectionTypeId === 0) {
+      notifyFail('Please select a Connection Type.')
+      return
+    }
+    if (!formData.hostName.trim()) {
+      notifyFail('Host Name is mandatory.')
       return
     }
 
     setLoading(true)
     try {
-      const response = await fetchConnectionUpdateUrl(formData)
+      const payload = {
+        connectionId: formData.connectionId,
+        connectionName: formData.connectionName.trim(),
+        connectionTypeId: formData.connectionTypeId,
+        hostName: formData.hostName.trim(),
+        port: formData.port ? Number(formData.port) : 0,
+        username: formData.username.trim(),
+        password: formData.password,
+        description: formData.description.trim(),
+        userId: formData.userId,
+      }
+
+      const response = await fetchConnectionUpdateUrl(payload)
       if (response?.isSuccess) {
         notify(response.message || 'Connection updated successfully')
-       
-          setTimeout(() => {
-           navigate('/qradar/connection/list')
+        setTimeout(() => {
+          navigate('/qradar/connection/list')
         }, 2000)
       } else {
         notifyFail(response?.message || 'Failed to update connection')
@@ -140,6 +153,7 @@ function UpdateConnection() {
   return (
     <div className='card config'>
       <ToastContainer />
+
       <div className='card-header bg-heading'>
         <h3 className='card-title'>
           <span className='white'>{isViewMode ? 'View' : 'Update'} Connection</span>
@@ -155,45 +169,34 @@ function UpdateConnection() {
       <form onSubmit={handleSubmit}>
         <div className='card-body px-5 py-5'>
           <div className='row g-3 mb-4'>
-            <div className='col-md-4'>
+            <div className='col-md-6'>
               <label className='form-label fw-bold small'>
-              Name <span className='text-danger'>*</span>
+                Connection Name <span className='text-danger'>*</span>
               </label>
               <input
-                disabled={isViewMode}
                 type='text'
                 className='form-control form-control-sm'
                 name='connectionName'
                 value={formData.connectionName}
                 onChange={handleChange}
-              />
-            </div>
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-               Code <span className='text-danger'>*</span>
-              </label>
-              <input
+                placeholder='Enter connection name'
                 disabled={isViewMode}
-                type='text'
-                className='form-control form-control-sm'
-                name='connectionCode'
-                value={formData.connectionCode}
-                onChange={handleChange}
               />
             </div>
-            <div className='col-md-4'>
+
+            <div className='col-md-6'>
               <label className='form-label fw-bold small'>
-              Type <span className='text-danger'>*</span>
+                Connection Type <span className='text-danger'>*</span>
               </label>
               <select
-                disabled={isViewMode}
                 className='form-select form-select-sm'
                 name='connectionTypeId'
                 value={formData.connectionTypeId}
                 onChange={handleSelectChange}
+                disabled={isViewMode}
               >
-                <option value={0}>Select Type</option>
-                {dropdownData.connectionTypes.map((i) => (
+                <option value={0}>Select Connection Type</option>
+                {connectionTypes.map((i) => (
                   <option key={i.connectionTypeId} value={i.connectionTypeId}>
                     {i.connectionTypeName}
                   </option>
@@ -203,120 +206,91 @@ function UpdateConnection() {
           </div>
 
           <div className='row g-3 mb-4'>
-            <div className='col-md-4'>
+            <div className='col-md-6'>
               <label className='form-label fw-bold small'>
-                Auth Type <span className='text-danger'>*</span>
+                Host Name <span className='text-danger'>*</span>
               </label>
-              <select
-                disabled={isViewMode}
-                className='form-select form-select-sm'
-                name='authTypeId'
-                value={formData.authTypeId}
-                onChange={handleSelectChange}
-              >
-                <option value={0}>Select Auth Type</option>
-                {dropdownData.authTypes.map((i) => (
-                  <option key={i.dataID} value={i.dataID}>
-                    {i.dataValue}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Environment <span className='text-danger'>*</span>
-              </label>
-              <select
-                disabled={isViewMode}
-                className='form-select form-select-sm'
-                name='environmentId'
-                value={formData.environmentId}
-                onChange={handleSelectChange}
-              >
-                <option value={0}>Select Environment</option>
-                {dropdownData.environments.map((i) => (
-                  <option key={i.dataID} value={i.dataID}>
-                    {i.dataValue}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Executor Type <span className='text-danger'>*</span>
-              </label>
-              <select
-                disabled={isViewMode}
-                className='form-select form-select-sm'
-                name='executorTypeId'
-                value={formData.executorTypeId}
-                onChange={handleSelectChange}
-              >
-                <option value={0}>Select Executor Type</option>
-                {dropdownData.executorTypes.map((i) => (
-                  <option key={i.dataID} value={i.dataID}>
-                    {i.dataValue}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className='row g-3 mb-4'>
-            <div className='col-md-12 d-flex align-items-center gap-4'>
-              <div className='form-check form-check-custom mt-6'>
-                <input
-                  disabled={isViewMode}
-                  className='form-check-input'
-                  type='checkbox'
-                  name='isDefault'
-                  id='isDefault'
-                  checked={formData.isDefault === 1}
-                  onChange={handleChange}
-                />
-                <label className='form-check-label small fw-bold ms-10' htmlFor='isDefault'>
-                  Is Default
-                </label>
-              </div>
-              <div className='form-check form-check-custom mt-6'>
-                <input
-                  disabled={isViewMode}
-                  className='form-check-input'
-                  type='checkbox'
-                  name='isSystem'
-                  id='isSystem'
-                  checked={formData.isSystem === 1}
-                  onChange={handleChange}
-                />
-                <label className='form-check-label small fw-bold ms-10' htmlFor='isSystem'>
-                  Is System
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div className='row g-3'>
-            <div className='col-md-12'>
-              <label className='form-label fw-bold small'>Config JSON</label>
-              <textarea
-                disabled={isViewMode}
+              <input
+                type='text'
                 className='form-control form-control-sm'
-                rows={4}
-                name='configJson'
-                value={formData.configJson}
+                name='hostName'
+                value={formData.hostName}
                 onChange={handleChange}
-                style={{height: '100px'}}
+                placeholder='Enter host name or IP'
+                disabled={isViewMode}
+              />
+            </div>
+
+            <div className='col-md-6'>
+              <label className='form-label fw-bold small'>Port</label>
+              <input
+                type='number'
+                className='form-control form-control-sm'
+                name='port'
+                value={formData.port}
+                onChange={handleChange}
+                placeholder='Enter port number'
+                min={0}
+                disabled={isViewMode}
               />
             </div>
           </div>
-        </div>
 
-        {!isViewMode && (
-          <div className='card-footer text-end px-5 py-4'>
-            <button type='submit' className='btn btn-primary btn-sm' disabled={loading}>
-              {loading ? 'Updating...' : 'Update Connection'}
-            </button>
+          <div className='row g-3 mb-4'>
+            <div className='col-md-6'>
+              <label className='form-label fw-bold small'>Username</label>
+              <input
+                type='text'
+                className='form-control form-control-sm'
+                name='username'
+                value={formData.username}
+                onChange={handleChange}
+                placeholder='Enter username'
+                disabled={isViewMode}
+              />
+            </div>
+
+            <div className='col-md-6'>
+              <label className='form-label fw-bold small'>Password</label>
+              <input
+                type='password'
+                className='form-control form-control-sm'
+                name='password'
+                value={formData.password}
+                onChange={handleChange}
+                placeholder='Enter password'
+                disabled={isViewMode}
+              />
+            </div>
           </div>
-        )}
+
+          <div className='row g-3 mb-4'>
+            <div className='col-md-12'>
+              <label className='form-label fw-bold small'>Description</label>
+              <input
+                type='text'
+                className='form-control form-control-sm'
+                name='description'
+                value={formData.description}
+                onChange={handleChange}
+                placeholder='Enter description'
+                disabled={isViewMode}
+              />
+            </div>
+          </div>
+
+          {/* BUTTONS */}
+
+          {!isViewMode && (
+            <div className='row mt-5'>
+              <div className='col-md-12 text-end'>
+                <button type='submit' className='btn btn-primary' disabled={loading}>
+                  {loading ? 'Saving...' : 'Update Connection'}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </form>
     </div>
   )

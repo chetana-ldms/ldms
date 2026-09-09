@@ -129,7 +129,25 @@ export const fetchConnectionDeleteUrl = async (data) => {
 }
 export const fetchConnectionSearchUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${API.CONNECTION_SEARCH}`, {
+    const response = await FetchWithToken(`${API.CONNECTION_GET}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchConnectionDetailUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${API.CONNECTION_GET_DETAIL}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

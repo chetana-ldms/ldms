@@ -349,10 +349,11 @@ INCIDENT_NOTES_BY_CONVERSATION: `${base}/IncidentManagement/${v}/Notes/Incidentt
   CONNECTION_TYPE_UPDATE: `${base}/ConnectionEngine/${v}/ConnectionType/Update`,
   CONNECTION_TYPE_DELETE: `${base}/ConnectionEngine/${v}/ConnectionType/Delete`,
   CONNECTION_TYPE_SEARCH: `${base}/ConnectionEngine/${v}/ConnectionType/Search`,
-  CONNECTION_ADD: `${base}/ConnectionEngine/${v}/Connection/Add`,
-  CONNECTION_UPDATE: `${base}/ConnectionEngine/${v}/Connection/Update`,
-  CONNECTION_DELETE: `${base}/ConnectionEngine/${v}/Connection/Delete`,
-  CONNECTION_SEARCH: `${base}/ConnectionEngine/${v}/Connection/Search`,
+  CONNECTION_ADD: `${base}/Connection/${v}/CreateConnection`,
+  CONNECTION_GET_DETAIL: `${base}/Connection/${v}/GetConnectionDetail`,
+  CONNECTION_UPDATE: `${base}/Connection/${v}/UpdateConnection`,
+  CONNECTION_DELETE: `${base}/Connection/${v}/DeleteConnection`,
+  CONNECTION_GET: `${base}/Connection/${v}/GetConnections`,
 
   // MITRE Framework
   TECHNIQUES_BY_TACTIC: `${base}/MItreFramework/${v}/TechniquesByTactic`,
