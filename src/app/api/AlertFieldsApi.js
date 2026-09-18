@@ -2,9 +2,9 @@ import FetchWithToken from '../modules/auth/FetchWithToken'
 
 const AlertFieldsUrl = 'http://10.41.3.232:501/api/AlertField/v1/GetAlertField'
 const AddAlertFieldsUrl = 'http://10.41.3.232:501/api/AlertField/v1/CreateAlertField'
-const UpdateAlertFieldsUrl = 'http://10.41.3.232:501/api/AlertField/v1/update'
-const DeleteAlertFieldsUrl = 'http://10.41.3.232:501/api/AlertField/v1/delete'
-const GetAlertFieldDetailUrl = 'http://10.41.3.232:501/api/AlertField/v1/detail'
+const UpdateAlertFieldsUrl = 'http://10.41.3.232:501/api/AlertField/v1/AlertFieldupdate'
+const DeleteAlertFieldsUrl = 'http://10.41.3.232:501/api/AlertField/v1/AlertFielddelete'
+const GetAlertFieldDetailUrl = 'http://10.41.3.232:501/api/AlertField/v1/AlertFielddetail'
 const GetAlertFieldMappingUrl = 'http://10.41.3.232:501/api/AlertField/v1/GetAlertFieldMapping'
 const CreateAlertFieldMappingUrl = 'http://10.41.3.232:501/api/AlertField/v1/CreateMapping'
 const GetAlertFieldMappingDetailUrl =

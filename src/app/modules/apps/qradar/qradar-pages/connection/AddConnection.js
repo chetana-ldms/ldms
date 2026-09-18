@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
-import {fetchConnectionAddUrl, fetchConnectionTypeSearchUrl} from '../../../../../api/ConnectionApi'
+import {fetchConnectionAddUrl} from '../../../../../api/ConnectionApi'
+import {fetchMasterData} from '../../../../../api/Api'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
@@ -33,8 +34,8 @@ function AddConnection() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const res = await fetchConnectionTypeSearchUrl({})
-        setConnectionTypes(Array.isArray(res?.connectionTypes) ? res.connectionTypes : res?.data || [])
+        const connectionTypes = await fetchMasterData({maserDataType: 'connection_type'})
+        setConnectionTypes(connectionTypes || [])
       } catch (error) {
         console.error(error)
         notifyFail('Failed to load connection types.')
@@ -163,9 +164,9 @@ function AddConnection() {
                 onChange={handleSelectChange}
               >
                 <option value={0}>Select Connection Type</option>
-                {connectionTypes.map((i) => (
-                  <option key={i.connectionTypeId} value={i.connectionTypeId}>
-                    {i.connectionTypeName}
+                {connectionTypes.map((item) => (
+                  <option key={item.dataID} value={item.dataID}>
+                    {item.dataValue}
                   </option>
                 ))}
               </select>
@@ -257,3 +258,4 @@ function AddConnection() {
 }
 
 export default AddConnection
+

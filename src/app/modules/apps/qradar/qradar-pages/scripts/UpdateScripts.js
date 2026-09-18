@@ -74,7 +74,6 @@ function UpdateScripts() {
     loadData()
   }, [id, orgId, toolIdSession, userId])
 
-
   // =========================
   // INPUT CHANGE
   // =========================
@@ -241,6 +240,7 @@ function UpdateScripts() {
                 value={formData.scriptContent}
                 onChange={handleChange}
                 placeholder='Enter your script content here'
+                style={{height: '250px'}}
               />
             </div>
           </div>

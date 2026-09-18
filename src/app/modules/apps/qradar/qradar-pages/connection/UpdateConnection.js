@@ -3,8 +3,8 @@ import {Link, useNavigate, useParams, useLocation} from 'react-router-dom'
 import {
   fetchConnectionDetailUrl,
   fetchConnectionUpdateUrl,
-  fetchConnectionTypeSearchUrl,
 } from '../../../../../api/ConnectionApi'
+import {fetchMasterData} from '../../../../../api/Api'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
@@ -42,14 +42,12 @@ function UpdateConnection() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [typesRes, detailRes] = await Promise.all([
-          fetchConnectionTypeSearchUrl({}),
+        const [connectionTypes, detailRes] = await Promise.all([
+          fetchMasterData({maserDataType: 'connection_type'}),
           fetchConnectionDetailUrl({connectionId: Number(id)}),
         ])
 
-        setConnectionTypes(
-          Array.isArray(typesRes?.connectionTypes) ? typesRes.connectionTypes : typesRes?.data || []
-        )
+        setConnectionTypes(connectionTypes || [])
 
         if (detailRes?.isSuccess && detailRes.connection) {
           const item = detailRes.connection
@@ -196,9 +194,9 @@ function UpdateConnection() {
                 disabled={isViewMode}
               >
                 <option value={0}>Select Connection Type</option>
-                {connectionTypes.map((i) => (
-                  <option key={i.connectionTypeId} value={i.connectionTypeId}>
-                    {i.connectionTypeName}
+                {connectionTypes.map((item) => (
+                  <option key={item.dataID} value={item.dataID}>
+                    {item.dataValue}
                   </option>
                 ))}
               </select>

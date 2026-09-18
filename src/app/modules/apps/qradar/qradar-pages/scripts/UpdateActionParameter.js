@@ -46,7 +46,7 @@ function UpdateActionParameter() {
         // Load dropdowns in parallel with detail fetch
         const [actionsRes, parameterTypes, detailRes] = await Promise.all([
           fetchRuleActions({orgId, toolId}),
-          fetchMasterData({maserDataType: 'parameter_type', orgId, toolId}),
+          fetchMasterData({maserDataType: 'parameter_type'}),
           fetchGET_ACTION_PARAMETER_DETAIL_URL({actionParameterId: Number(id)}),
         ])
 

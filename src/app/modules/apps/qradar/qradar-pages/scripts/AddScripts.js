@@ -235,6 +235,7 @@ const AddScripts = () => {
                 name='scriptContent'
                 value={formData.scriptContent}
                 onChange={handleChange}
+                style={{height: '250px'}}
                 placeholder='Enter your script content here'
               />
             </div>
