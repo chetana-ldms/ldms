@@ -1,62 +1,100 @@
-import { API } from "../../config/apiConfig";
-import FetchWithToken from "../modules/auth/FetchWithToken";
+import {API} from '../../config/apiConfig'
+import FetchWithToken from '../modules/auth/FetchWithToken'
 
-const playBooksUrl = API.PLAYBOOKS;
-const deletePlaybookUrl = API.DELETE_PLAYBOOK;
-const playbookByIdUrl = API.PLAYBOOK_BY_ID;
+const playBooksCreateUrl = API.PLAYBOOKS_CREATE
+const playBooksUrl = API.PLAYBOOKS
+const deletePlaybookUrl = API.DELETE_PLAYBOOK
+const playbookByIdUrl = API.PLAYBOOK_BY_ID
+const playbookUpdateUrl = API.PLAYBOOK_UPDATE
 
-
-export const fetchDelete = async (data) => {
+export const fetchplayBooksCreateUrl = async (data) => {
   try {
-    const response = await FetchWithToken(`${deletePlaybookUrl}`, {
-      method: "POST",
+    const response = await FetchWithToken(`${playBooksCreateUrl}`, {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...data,
       }),
-    });
+    })
 
-    const responseData = await response.json();
-    console.log(responseData, "responseData111");
-    return responseData;
+    const responseData = await response.json()
+    console.log(responseData, 'responseData111')
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
-export const fetchPlayBooks = async (orgId) => {
+}
+export const fetchDelete = async (data) => {
   try {
-    const response = await FetchWithToken(`${playBooksUrl}?orgId=${orgId}`, {
-      method: "GET",
+    const response = await FetchWithToken(`${deletePlaybookUrl}`, {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const playbooks = responseData.playbooks;
-    console.log(playbooks, "playbooks");
-    return playbooks;
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
+    const responseData = await response.json()
+    console.log(responseData, 'responseData111')
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
-export const fetchPlaybookByID = async (id, toolNameRef, remarksRef) => {
+}
+export const fetchPlayBooks = async (data) => {
   try {
-    const response = await FetchWithToken(`${playbookByIdUrl}?PlaybookID=${id}`, {
-      method: "GET",
+    const response = await FetchWithToken(`${playBooksUrl}`, {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
-    const responseData = await response.json();
-    const playbooks = responseData.playbooks;
-    console.log(playbooks, "playbooks");
-    // Populate the form fields with the retrieved data
-    toolNameRef.current.value = playbooks[0].playBookName;
-    remarksRef.current.value = playbooks[0].remarks;
-    return playbooks;
+      body: JSON.stringify({
+        ...data,
+      }),
+    })
+
+    const responseData = await response.json()
+    console.log(responseData, 'responseData111')
+    return responseData
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
+export const fetchplaybookByIdUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${playbookByIdUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      },
+      body: JSON.stringify(data),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchPlaybookUpdateUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${playbookUpdateUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      },
+      body: JSON.stringify(data),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}

@@ -1,76 +1,61 @@
 import React, {memo} from 'react'
-import {Handle, useReactFlow, useStoreApi} from 'reactflow'
+import {Handle, Position} from 'reactflow'
 
-const options = [
-  {
-    value: 'smoothstep',
-    label: 'Smoothstep',
-  },
-  {
-    value: 'step',
-    label: 'Step',
-  },
-  {
-    value: 'default',
-    label: 'Bezier (default)',
-  },
-  {
-    value: 'straight',
-    label: 'Straight',
-  },
-]
-
-function Select({value, handleId, nodeId}) {
-  const {setNodes} = useReactFlow()
-  const store = useStoreApi()
-
-  const onChange = (evt) => {
-    const {nodeInternals} = store.getState()
-    setNodes(
-      Array.from(nodeInternals.values()).map((node) => {
-        if (node.id === nodeId) {
-          node.data = {
-            ...node.data,
-            selects: {
-              ...node.data.selects,
-              [handleId]: evt.target.value,
-            },
-          }
-        }
-
-        return node
-      })
-    )
-  }
-
+// ──────────────── Start Node ────────────────
+export const StartNode = memo(({data, selected}) => {
   return (
-    <div className='custom-node__select'>
-      <div>Edge Type</div>
-      <select className='nodrag' onChange={onChange} value={value}>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      <Handle type='source' position='right' id={handleId} />
+    <div
+      className={`playbook-node playbook-node--start ${selected ? 'playbook-node--selected' : ''}`}
+    >
+      <div className='playbook-node__icon'>
+        <i className='fas fa-play' />
+      </div>
+      <span className='playbook-node__label'>Start</span>
+      <Handle type='source' position={Position.Bottom} id='out' />
     </div>
   )
-}
+})
+StartNode.displayName = 'StartNode'
 
-function CustomNode({id, data}) {
+// ──────────────── End Node ────────────────
+export const EndNode = memo(({data, selected}) => {
   return (
-    <>
-      <div className='custom-node__header'>
-        This is a <strong>custom node</strong>
+    <div
+      className={`playbook-node playbook-node--end ${selected ? 'playbook-node--selected' : ''}`}
+    >
+      <Handle type='target' position={Position.Top} id='in' />
+      <div className='playbook-node__icon'>
+        <i className='fas fa-stop' />
       </div>
-      <div className='custom-node__body'>
-        {Object.keys(data.selects).map((handleId) => (
-          <Select key={handleId} nodeId={id} value={data.selects[handleId]} handleId={handleId} />
-        ))}
-      </div>
-    </>
+      <span className='playbook-node__label'>End</span>
+    </div>
   )
-}
+})
+EndNode.displayName = 'EndNode'
 
-export default memo(CustomNode)
+// ──────────────── Action Node ────────────────
+export const ActionNode = memo(({data, selected}) => {
+  return (
+    <div
+      className={`playbook-node playbook-node--action ${selected ? 'playbook-node--selected' : ''}`}
+    >
+      <Handle type='target' position={Position.Top} id='in' />
+      <div className='playbook-node__header'>
+        <div className='playbook-node__icon-wrap'>
+          <i className='fas fa-bolt' />
+        </div>
+        <div className='playbook-node__info'>
+          <div className='playbook-node__title'>{data.label || 'Action'}</div>
+          <div className='playbook-node__type'>Action</div>
+        </div>
+        <div className='playbook-node__menu'>
+          <i className='fas fa-ellipsis-v' />
+        </div>
+      </div>
+      <Handle type='source' position={Position.Bottom} id='out' />
+    </div>
+  )
+})
+ActionNode.displayName = 'ActionNode'
+
+export default {StartNode, EndNode, ActionNode}

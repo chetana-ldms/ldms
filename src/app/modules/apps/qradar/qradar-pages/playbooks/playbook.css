@@ -1,0 +1,610 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Playbook Designer – Full Styles
+   Matches the LDP Playbook Designer mockup
+═══════════════════════════════════════════════════════════════════ */
+
+/* ── Root layout ─────────────────────────────────────────────────── */
+.playbook-designer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: #f8f9fb;
+  font-family: inherit;
+}
+
+/* ── Header Bar ──────────────────────────────────────────────────── */
+.playbook-designer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.playbook-designer__header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.playbook-designer__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.playbook-designer__breadcrumb-link {
+  color: #3b82f6;
+  text-decoration: none;
+}
+.playbook-designer__breadcrumb-link:hover {
+  text-decoration: underline;
+}
+
+.playbook-designer__breadcrumb-sep {
+  color: #d1d5db;
+}
+
+.playbook-designer__title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.playbook-designer__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.playbook-designer__btn {
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 6px;
+}
+
+/* ── Meta Bar ────────────────────────────────────────────────────── */
+.playbook-designer__meta-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 20px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.playbook-designer__meta-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 150px;
+}
+
+.playbook-designer__meta-field--wide {
+  flex: 1;
+  min-width: 220px;
+}
+
+.playbook-designer__meta-label {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin: 0;
+}
+
+.playbook-designer__meta-input {
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 13px;
+  color: #111827;
+  outline: none;
+  background: #fff;
+}
+.playbook-designer__meta-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+}
+
+.playbook-designer__meta-value {
+  font-size: 13px;
+  color: #374151;
+  font-weight: 500;
+}
+
+/* ── Body: 3-column ──────────────────────────────────────────────── */
+.playbook-designer__body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Left Sidebar ────────────────────────────────────────────────── */
+.playbook-sidebar {
+  width: 220px;
+  min-width: 200px;
+  background: #fff;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.playbook-sidebar__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  padding: 14px 16px 8px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.playbook-sidebar__group {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.playbook-sidebar__group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  background: #f9fafb;
+}
+.playbook-sidebar__group-header::-webkit-details-marker {
+  display: none;
+}
+details[open] .playbook-sidebar__chevron {
+  transform: rotate(0deg);
+}
+.playbook-sidebar__chevron {
+  font-size: 10px;
+  color: #9ca3af;
+  transition: transform 0.2s;
+  transform: rotate(-90deg);
+}
+details[open] > summary .playbook-sidebar__chevron {
+  transform: rotate(0deg);
+}
+
+.playbook-sidebar__items {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.playbook-sidebar__loading,
+.playbook-sidebar__empty {
+  font-size: 12px;
+  color: #9ca3af;
+  padding: 6px;
+  text-align: center;
+}
+
+.playbook-sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  cursor: grab;
+  font-size: 12px;
+  color: #374151;
+  background: #fff;
+  transition: box-shadow 0.15s, border-color 0.15s;
+  user-select: none;
+}
+.playbook-sidebar__item:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-color: #d1d5db;
+}
+.playbook-sidebar__item:active {
+  cursor: grabbing;
+}
+
+.playbook-sidebar__item-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #fff;
+  flex-shrink: 0;
+}
+.playbook-sidebar__item-icon--start { background: #22c55e; }
+.playbook-sidebar__item-icon--end   { background: #ef4444; }
+.playbook-sidebar__item-icon--action { background: #3b82f6; }
+
+.playbook-sidebar__item-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+/* ── Centre: Canvas Wrap ─────────────────────────────────────────── */
+.playbook-designer__canvas-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.playbook-designer__canvas {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Bottom Panel ────────────────────────────────────────────────── */
+.playbook-designer__bottom-panel {
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  max-height: 260px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.playbook-designer__bottom-tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.playbook-designer__bottom-tab {
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.playbook-designer__bottom-tab.active,
+.playbook-designer__bottom-tab:hover {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+
+.playbook-designer__bottom-content {
+  overflow-y: auto;
+  flex: 1;
+  padding: 10px 16px;
+}
+
+.playbook-designer__bottom-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.playbook-designer__bottom-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.playbook-designer__table-wrap {
+  overflow-x: auto;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.playbook-designer__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.playbook-designer__table thead th {
+  padding: 7px 12px;
+  background: #f9fafb;
+  color: #6b7280;
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.playbook-designer__table tbody td {
+  padding: 6px 12px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+}
+
+.playbook-designer__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Right: Node Properties Panel ───────────────────────────────── */
+.playbook-designer__props-panel {
+  width: 280px;
+  min-width: 260px;
+  background: #fff;
+  border-left: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.playbook-designer__props-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 30px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.playbook-designer__props-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.playbook-designer__props-node-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3b82f6;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.playbook-designer__props-node-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.playbook-designer__props-node-type {
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.playbook-designer__props-tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.playbook-designer__props-tab {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.playbook-designer__props-tab.active,
+.playbook-designer__props-tab:hover {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+
+.playbook-designer__props-body {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.playbook-designer__props-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.playbook-designer__props-field--row {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.playbook-designer__props-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+/* ── Custom ReactFlow Nodes ──────────────────────────────────────── */
+.playbook-node {
+  border-radius: 8px;
+  padding: 0;
+  font-family: inherit;
+  min-width: 130px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  border: 2px solid transparent;
+  background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.playbook-node--selected {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.2), 0 2px 8px rgba(0,0,0,0.12);
+}
+
+/* Start node */
+.playbook-node--start {
+  background: #22c55e;
+  border-color: #16a34a;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  min-width: 90px;
+}
+
+/* End node */
+.playbook-node--end {
+  background: #ef4444;
+  border-color: #dc2626;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  min-width: 80px;
+}
+
+.playbook-node__label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.playbook-node__icon {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+
+/* Action node */
+.playbook-node--action {
+  border: 1.5px solid #bfdbfe;
+  background: #fff;
+  border-radius: 8px;
+  min-width: 160px;
+  max-width: 200px;
+}
+
+.playbook-node__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.playbook-node__icon-wrap {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3b82f6;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.playbook-node__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.playbook-node__title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playbook-node__type {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.playbook-node__menu {
+  color: #9ca3af;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.playbook-node__menu:hover { color: #374151; }
+
+/* ── ReactFlow overrides ─────────────────────────────────────────── */
+.react-flow__pane {
+  background: transparent;
+}
+
+.react-flow__background {
+  background: #f3f4f6;
+}
+
+.react-flow__handle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #3b82f6;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.react-flow__handle:hover {
+  background: #1d4ed8;
+}
+
+.react-flow__edge-path {
+  stroke: #94a3b8;
+  stroke-width: 2;
+}
+
+.react-flow__controls {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.react-flow__controls-button {
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+  color: #374151;
+  width: 28px;
+  height: 28px;
+}
+.react-flow__controls-button:hover {
+  background: #f3f4f6;
+}
+.react-flow__controls-button:last-child {
+  border-bottom: none;
+}
