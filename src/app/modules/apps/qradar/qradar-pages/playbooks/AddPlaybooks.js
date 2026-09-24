@@ -20,7 +20,7 @@ import {notify, notifyFail} from '../components/notification/Notification'
 import {fetchRuleActions} from '../../../../../api/ConfigurationApi'
 import {fetchConnectionSearchUrl} from '../../../../../api/ConnectionApi'
 import {fetchGET_ACTION_PARAMETERS_URL} from '../../../../../api/ScriptsApi'
-import {fetchSavePlaybookDesigner} from '../../../../../api/playBookApi'
+import {fetchplayBooksCreateUrl} from '../../../../../api/playBookApi'
 import {fetchGetPlaybooksUrl} from '../../../../../api/AlertFieldsApi'
 import {useErrorBoundary} from 'react-error-boundary'
 import './playbook.css'
@@ -324,7 +324,10 @@ const AddPlaybooks = () => {
         return {
           nodeName: props.nodeName || node.data.label || `Node ${index + 1}`,
           nodeOrder: index + 1,
-          actionId: props.actionId || node.data.actionId || 0,
+          actionId: props.actionId || node.data.actionId || null,
+          positionX: Number(node.position?.x || 0),
+          positionY: Number(node.position?.y || 0),
+          positionZ: Number(node.position?.z || 0),
           parameters: (props.parameters || []).map((p) => ({
             actionParameterId: p.actionParameterId || 0,
             parameterValue: p.parameterValue || '',
@@ -342,7 +345,7 @@ const AddPlaybooks = () => {
         userId: userId,
       }
 
-      const result = await fetchSavePlaybookDesigner(payload)
+      const result = await fetchplayBooksCreateUrl(payload)
       if (result?.isSuccess) {
         notify('Playbook saved successfully!')
         navigate('/qradar/playbooks/list')
@@ -434,16 +437,6 @@ const AddPlaybooks = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-        </div>
-        <div className='playbook-designer__meta-field'>
-          <label className='playbook-designer__meta-label'>Status</label>
-          <span className='badge bg-success'>Active</span>
-        </div>
-        <div className='playbook-designer__meta-field'>
-          <label className='playbook-designer__meta-label'>Created By</label>
-          <span className='playbook-designer__meta-value'>
-            {sessionStorage.getItem('userName') || 'Global Admin'}
-          </span>
         </div>
       </div>
 
