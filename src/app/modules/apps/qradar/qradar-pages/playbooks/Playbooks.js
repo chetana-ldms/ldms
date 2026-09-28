@@ -81,11 +81,7 @@ const Playbooks = () => {
             </button>
           </div>
         </div>
-        <div className='col-md-1 text-end'>
-          <Link to='/qradar/addplaybooks' className='btn btn-new btn-small'>
-            Add
-          </Link>
-        </div>
+        <div className='col-md-1' />
       </div>{' '}
       <div className='card-body no-pad mt-3'>
         <table className='table align-middle gs-0 gy-4 dash-table alert-table'>
@@ -104,6 +100,23 @@ const Playbooks = () => {
                   <td>{playbook.playbookName || '--'}</td>
                   <td>{playbook.description || '--'}</td>
                   <td>
+                    {!playbook.designerCreated && (
+                      <Link
+                        className='text-white me-8'
+                        to='/qradar/addplaybooks'
+                        title='Add designer'
+                      >
+                        <i className='fa fa-plus cursor link' />
+                      </Link>
+                    )}
+                    <Link
+                      className='text-white me-8'
+                      to={`/qradar/updateplaybooks/${playbook.playbookId}`}
+                      title='Edit'
+                    >
+                      <i className='fa fa-pencil cursor link' />
+                    </Link>
+
                     <span className='me-8' title='View'>
                       <i
                         className='fa fa-eye cursor'
@@ -114,13 +127,7 @@ const Playbooks = () => {
                         }
                       />
                     </span>
-                    <Link
-                      className='text-white me-8'
-                      to={`/qradar/updateplaybooks/${playbook.playbookId}`}
-                      title='Edit'
-                    >
-                      <i className='fa fa-pencil cursor link' />
-                    </Link>
+
                     <span
                       title='Delete'
                       onClick={() => {

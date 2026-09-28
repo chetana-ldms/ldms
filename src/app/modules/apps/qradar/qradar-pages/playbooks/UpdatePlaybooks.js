@@ -35,6 +35,12 @@ const defaultEdgeOptions = {
 
 const getDetail = (response) => response?.data || response?.playbook || response
 const getNodeId = (node) => node.playbookNodeId || node.id
+const getNodeType = (node) => {
+  const nodeName = String(node.nodeName || '').trim().toLowerCase()
+  if (nodeName === 'start') return 'startNode'
+  if (nodeName === 'end') return 'endNode'
+  return 'actionNode'
+}
 
 const UpdatePlaybooks = () => {
   const navigate = useNavigate()
@@ -65,29 +71,41 @@ const UpdatePlaybooks = () => {
         ])
         const detail = getDetail(detailResponse)
         const detailNodes = Array.isArray(detail?.nodes) ? detail.nodes : []
-        const mappedNodes = detailNodes.map((node, index) => {
+        const sortedDetailNodes = [...detailNodes].sort(
+          (first, second) => Number(first.nodeOrder || 0) - Number(second.nodeOrder || 0)
+        )
+        const mappedNodes = sortedDetailNodes.map((node, index) => {
           const nodeId = String(getNodeId(node) || `node_${index + 1}`)
           const actionId = Number(node.actionId || 0)
           return {
             id: nodeId,
-            type: node.type || (actionId ? 'actionNode' : 'actionNode'),
+            type: getNodeType(node),
             position: {
               x: Number(node.positionX || 0),
               y: Number(node.positionY || 0),
             },
             data: {
-              label: node.nodeName || node.actionName || `Node ${index + 1}`,
+              label: `${node.nodeOrder || index + 1}. ${node.nodeName || node.actionName || `Node ${index + 1}`}`,
               actionId,
             },
           }
         })
+
+        setEdges(
+          mappedNodes.slice(1).map((node, index) => ({
+            id: `execution-${mappedNodes[index].id}-${node.id}`,
+            source: mappedNodes[index].id,
+            target: node.id,
+            ...defaultEdgeOptions,
+          }))
+        )
 
         setPlaybookName(detail?.playbookName || detail?.playBookName || '')
         setDescription(detail?.description || detail?.playbookDescription || '')
         setNodes(mappedNodes)
         setNodeProps(
           Object.fromEntries(
-            detailNodes.map((node, index) => [
+            sortedDetailNodes.map((node, index) => [
               String(getNodeId(node) || `node_${index + 1}`),
               {
                 playbookNodeId: Number(node.playbookNodeId || 0),
@@ -238,7 +256,8 @@ const UpdatePlaybooks = () => {
             playbookNodeId: Number(props.playbookNodeId || 0),
             nodeName: props.nodeName || node.data.label || `Node ${index + 1}`,
             nodeOrder: index + 1,
-            actionId: Number(props.actionId || node.data.actionId || 0),
+            actionId:
+              Number(props.actionId || node.data.actionId || 0) || null,
             positionX: Number(node.position?.x || 0),
             positionY: Number(node.position?.y || 0),
             positionZ: Number(props.positionZ || 0),
