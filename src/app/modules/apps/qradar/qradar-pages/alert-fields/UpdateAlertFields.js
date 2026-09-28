@@ -9,6 +9,12 @@ import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 import {UsersListLoading} from '../components/loading/UsersListLoading'
 
+const isStandardFieldType = (fieldType) =>
+  String(fieldType ?? '')
+    .trim()
+    .toLowerCase()
+    .includes('standard')
+
 function UpdateAlertFields() {
   const {id} = useParams()
   const navigate = useNavigate()
@@ -29,6 +35,8 @@ function UpdateAlertFields() {
     dataTypeId: 0,
     modifiedUserid: userId,
   })
+  const [selectedFieldTypeName, setSelectedFieldTypeName] = useState('')
+  const isStandardField = isStandardFieldType(selectedFieldTypeName)
 
   useEffect(() => {
     setViewOnly(Boolean(location.state?.save))
@@ -61,6 +69,10 @@ function UpdateAlertFields() {
             dataTypeId: item.dataTypeId || 0,
             modifiedUserid: userId,
           })
+          const selectedFieldType = fieldTypes?.find(
+            (fieldType) => Number(fieldType.dataID) === Number(item.fieldTypeId)
+          )
+          setSelectedFieldTypeName(item.fieldTypeName || selectedFieldType?.dataValue || '')
         } else {
           notifyFail(details?.message || 'Failed to load alert field details')
         }
@@ -81,7 +93,16 @@ function UpdateAlertFields() {
 
   const handleSelectChange = (event) => {
     const {name, value} = event.target
-    setFormData((previous) => ({...previous, [name]: Number(value)}))
+    const selectedValue = Number(value)
+    const selectedName = event.target.selectedOptions[0]?.textContent?.trim() || ''
+    if (name === 'fieldTypeId') setSelectedFieldTypeName(selectedName)
+    setFormData((previous) => ({
+      ...previous,
+      [name]: selectedValue,
+      ...(name === 'fieldTypeId' && isStandardFieldType(selectedName)
+        ? {toolId: 0}
+        : {}),
+    }))
   }
 
   const handleSubmit = async (event) => {
@@ -90,7 +111,7 @@ function UpdateAlertFields() {
     if (
       !formData.fieldName.trim() ||
       !formData.fieldTypeId ||
-      !formData.toolId ||
+      (!isStandardField && !formData.toolId) ||
       !formData.dataTypeId
     ) {
       notifyFail('Please fill all mandatory fields.')
@@ -153,25 +174,27 @@ function UpdateAlertFields() {
               </select>
             </div>
 
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Tool <span className='text-danger'>*</span>
-              </label>
-              <select
-                className='form-select form-select-sm'
-                name='toolId'
-                value={formData.toolId}
-                onChange={handleSelectChange}
-                disabled={viewOnly}
-              >
-                <option value={0}>Select Tool</option>
-                {dropdowns.tools.map((item) => (
-                  <option key={item.toolId} value={item.toolId}>
-                    {item.toolName}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {!isStandardField && (
+              <div className='col-md-4'>
+                <label className='form-label fw-bold small'>
+                  Tool <span className='text-danger'>*</span>
+                </label>
+                <select
+                  className='form-select form-select-sm'
+                  name='toolId'
+                  value={formData.toolId}
+                  onChange={handleSelectChange}
+                  disabled={viewOnly}
+                >
+                  <option value={0}>Select Tool</option>
+                  {dropdowns.tools.map((item) => (
+                    <option key={item.toolId} value={item.toolId}>
+                      {item.toolName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>

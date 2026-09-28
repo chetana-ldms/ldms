@@ -5,6 +5,9 @@ import {fetchAddAlertFieldsUrl} from '../../../../../api/AlertFieldsApi'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {ToastContainer} from 'react-toastify'
 
+const isStandardFieldType = (fieldType) =>
+  String(fieldType ?? '').trim().toLowerCase() === 'standard'
+
 function AddAlertFields() {
   const navigate = useNavigate()
   const orgId = Number(sessionStorage.getItem('orgId'))
@@ -25,6 +28,8 @@ function AddAlertFields() {
     active: true,
     userId,
   })
+  const [selectedFieldTypeName, setSelectedFieldTypeName] = useState('')
+  const isStandardField = isStandardFieldType(selectedFieldTypeName)
 
   useEffect(() => {
     const loadData = async () => {
@@ -56,7 +61,14 @@ function AddAlertFields() {
 
   const handleSelectChange = (event) => {
     const {name, value} = event.target
-    setFormData((previous) => ({...previous, [name]: Number(value)}))
+    const selectedValue = Number(value)
+    const selectedName = event.target.selectedOptions[0]?.textContent?.trim() || ''
+    if (name === 'fieldTypeId') setSelectedFieldTypeName(selectedName)
+    setFormData((previous) => ({
+      ...previous,
+      [name]: selectedValue,
+      ...(name === 'fieldTypeId' && isStandardFieldType(selectedName) ? {toolId: null} : {}),
+    }))
   }
 
   const handleSubmit = async (event) => {
@@ -65,7 +77,7 @@ function AddAlertFields() {
     if (
       !formData.fieldName.trim() ||
       !formData.fieldTypeId ||
-      !formData.toolId ||
+      (!isStandardField && !formData.toolId) ||
       !formData.dataTypeId
     ) {
       notifyFail('Please fill all mandatory fields.')
@@ -126,24 +138,26 @@ function AddAlertFields() {
               </select>
             </div>
 
-            <div className='col-md-4'>
-              <label className='form-label fw-bold small'>
-                Tool <span className='text-danger'>*</span>
-              </label>
-              <select
-                className='form-select form-select-sm'
-                name='toolId'
-                value={formData.toolId}
-                onChange={handleSelectChange}
-              >
-                <option value={0}>Select Tool</option>
-                {dropdowns.tools.map((item) => (
-                  <option key={item.toolId} value={item.toolId}>
-                    {item.toolName}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {!isStandardField && (
+              <div className='col-md-4'>
+                <label className='form-label fw-bold small'>
+                  Tool <span className='text-danger'>*</span>
+                </label>
+                <select
+                  className='form-select form-select-sm'
+                  name='toolId'
+                  value={formData.toolId}
+                  onChange={handleSelectChange}
+                >
+                  <option value={0}>Select Tool</option>
+                  {dropdowns.tools.map((item) => (
+                    <option key={item.toolId} value={item.toolId}>
+                      {item.toolName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div className='col-md-4'>
               <label className='form-label fw-bold small'>
