@@ -52,13 +52,13 @@ const UpdatePlaybooks = () => {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [playbookName, setPlaybookName] = useState('')
-  const [description, setDescription] = useState('')
   const [actions, setActions] = useState([])
   const [actionsLoading, setActionsLoading] = useState(false)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [nodeProps, setNodeProps] = useState({})
   const [selectedNode, setSelectedNode] = useState(null)
+  const [nodeParams, setNodeParams] = useState([])
   const reactFlowWrapper = useRef(null)
   const [rfInstance, setRfInstance] = useState(null)
 
@@ -101,7 +101,6 @@ const UpdatePlaybooks = () => {
         )
 
         setPlaybookName(detail?.playbookName || detail?.playBookName || '')
-        setDescription(detail?.description || detail?.playbookDescription || '')
         setNodes(mappedNodes)
         setNodeProps(
           Object.fromEntries(
@@ -129,6 +128,41 @@ const UpdatePlaybooks = () => {
 
     loadData()
   }, [id, setNodes])
+
+  useEffect(() => {
+    if (!selectedNode) {
+      setNodeParams([])
+      return
+    }
+
+    const saved = nodeProps[selectedNode.id] || {}
+    const savedParameters = saved.parameters || []
+    setNodeParams(savedParameters)
+
+    const actionId = saved.actionId || selectedNode.data?.actionId || 0
+    if (actionId && savedParameters.length === 0) {
+      fetchGET_ACTION_PARAMETERS_URL({actionId})
+        .then((response) => {
+          const parameters = Array.isArray(response)
+            ? response
+            : Array.isArray(response?.data)
+            ? response.data
+            : Array.isArray(response?.actionParameters)
+            ? response.actionParameters
+            : []
+          const mapped = parameters.map((parameter) => ({
+            actionParameterId: parameter.actionParameterId || parameter.id || 0,
+            actionParameterName:
+              parameter.actionParameterName || parameter.parameterName || parameter.name || '',
+            parameterValue: parameter.parameterValue || '',
+            valueSource: parameter.valueSource || 'Static',
+          }))
+          setNodeParams(mapped)
+          updateNodeProp(selectedNode.id, 'parameters', mapped)
+        })
+        .catch(() => {})
+    }
+  }, [selectedNode]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateNodeProp = useCallback((nodeId, field, value) => {
     setNodeProps((currentProps) => ({
@@ -228,15 +262,32 @@ const UpdatePlaybooks = () => {
       : Array.isArray(response?.actionParameters)
       ? response.actionParameters
       : []
-    updateNodeProp(
-      selectedNode.id,
-      'parameters',
-      parameters.map((parameter) => ({
-        actionParameterId: parameter.actionParameterId || parameter.id || 0,
-        parameterValue: parameter.parameterValue || '',
-        valueSource: parameter.valueSource || 'Static',
-      }))
+    const mappedParameters = parameters.map((parameter) => ({
+      actionParameterId: parameter.actionParameterId || parameter.id || 0,
+      actionParameterName:
+        parameter.actionParameterName || parameter.parameterName || parameter.name || '',
+      parameterValue: parameter.parameterValue || '',
+      valueSource: parameter.valueSource || 'Static',
+    }))
+    setNodeParams(mappedParameters)
+    updateNodeProp(selectedNode.id, 'parameters', mappedParameters)
+  }
+
+  const handleParamChange = (index, field, value) => {
+    const updated = nodeParams.map((parameter, currentIndex) =>
+      currentIndex === index ? {...parameter, [field]: value} : parameter
     )
+    setNodeParams(updated)
+    updateNodeProp(selectedNode.id, 'parameters', updated)
+  }
+
+  const addParam = () => {
+    const updated = [
+      ...nodeParams,
+      {actionParameterId: 0, actionParameterName: '', parameterValue: '', valueSource: 'Static'},
+    ]
+    setNodeParams(updated)
+    updateNodeProp(selectedNode.id, 'parameters', updated)
   }
 
   const handleSave = async (event) => {
@@ -307,7 +358,18 @@ const UpdatePlaybooks = () => {
             <span className='playbook-designer__breadcrumb-sep'>&rsaquo;</span>
             <span className='playbook-designer__breadcrumb-current'>Update Designer</span>
           </div>
-          <h2 className='playbook-designer__title'>{isViewMode ? 'View' : 'Update'} Playbook</h2>
+          <div className='playbook-designer__title-row'>
+            <h2 className='playbook-designer__title'>{isViewMode ? 'View' : 'Update'} Playbook</h2>
+            <div className='playbook-designer__meta-field playbook-designer__meta-field--inline'>
+              <label className='playbook-designer__meta-label'>Playbook Name</label>
+              <input
+                className='playbook-designer__meta-input'
+                value={playbookName}
+                onChange={(event) => setPlaybookName(event.target.value)}
+                disabled={isViewMode}
+              />
+            </div>
+          </div>
         </div>
         <div className='playbook-designer__header-actions'>
           {!isViewMode && (
@@ -319,17 +381,6 @@ const UpdatePlaybooks = () => {
             <i className='fas fa-arrow-left me-1' />
             Back
           </Link>
-        </div>
-      </div>
-
-      <div className='playbook-designer__meta-bar'>
-        <div className='playbook-designer__meta-field playbook-designer__meta-field--wide'>
-          <label className='playbook-designer__meta-label'>Playbook Name</label>
-          <input className='playbook-designer__meta-input' value={playbookName} onChange={(event) => setPlaybookName(event.target.value)} disabled={isViewMode} />
-        </div>
-        <div className='playbook-designer__meta-field playbook-designer__meta-field--wide'>
-          <label className='playbook-designer__meta-label'>Description</label>
-          <input className='playbook-designer__meta-input' value={description} onChange={(event) => setDescription(event.target.value)} disabled={isViewMode} />
         </div>
       </div>
 
@@ -368,13 +419,98 @@ const UpdatePlaybooks = () => {
               </ReactFlow>
             </ReactFlowProvider>
           </div>
+          {selectedNode && (
+            <div className='playbook-designer__bottom-panel'>
+              <div className='playbook-designer__bottom-content'>
+                <div className='playbook-designer__bottom-section'>
+                  <div className='playbook-designer__bottom-section-title'>Parameters</div>
+                  <div className='playbook-designer__table-wrap'>
+                    <table className='playbook-designer__table'>
+                      <thead>
+                        <tr>
+                          <th>Parameter Name</th>
+                          <th>Value Source</th>
+                          <th>Parameter Value</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {nodeParams.map((parameter, index) => (
+                          <tr key={parameter.actionParameterId || index}>
+                            <td>
+                              <input
+                                type='text'
+                                className='form-control form-control-sm'
+                                value={parameter.actionParameterName || parameter.parameterName || ''}
+                                onChange={(event) => handleParamChange(index, 'actionParameterName', event.target.value)}
+                                disabled={isViewMode}
+                              />
+                            </td>
+                            <td>
+                              <select
+                                className='form-select form-select-sm'
+                                value={parameter.valueSource || 'Static'}
+                                onChange={(event) => handleParamChange(index, 'valueSource', event.target.value)}
+                                disabled={isViewMode}
+                              >
+                                <option value='Static'>Static</option>
+                                <option value='Dynamic'>Dynamic</option>
+                              </select>
+                            </td>
+                            <td>
+                              <input
+                                type='text'
+                                className='form-control form-control-sm'
+                                value={parameter.parameterValue || ''}
+                                onChange={(event) => handleParamChange(index, 'parameterValue', event.target.value)}
+                                disabled={isViewMode}
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                        {nodeParams.length === 0 && (
+                          <tr>
+                            <td colSpan={3} className='text-center text-muted py-3'>No parameters added.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                  {!isViewMode && (
+                    <button className='btn btn-sm btn-outline-primary mt-2' onClick={addParam}>
+                      <i className='fas fa-plus me-1' /> Add Parameter
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {selectedNode && (
           <div className='playbook-designer__props-panel'>
             <div className='playbook-designer__props-header'>
-              <div className='playbook-designer__props-node-name'>
-                {currentProps.nodeName || selectedNode.data?.label || 'Node'}
+              <div className='playbook-designer__props-node-icon'>
+                <i
+                  className={
+                    selectedNode.type === 'startNode'
+                      ? 'fas fa-play'
+                      : selectedNode.type === 'endNode'
+                      ? 'fas fa-stop'
+                      : 'fas fa-bolt'
+                  }
+                />
+              </div>
+              <div>
+                <div className='playbook-designer__props-node-name'>
+                  {currentProps.nodeName || selectedNode.data?.label || 'Node'}
+                </div>
+                <div className='playbook-designer__props-node-type'>
+                  {selectedNode.type === 'startNode'
+                    ? 'Start'
+                    : selectedNode.type === 'endNode'
+                    ? 'End'
+                    : 'Action'}
+                </div>
               </div>
               {!isViewMode && (
                 <button type='button' className='btn btn-sm btn-outline-danger ms-auto' onClick={removeSelectedNode} title='Delete node'>
@@ -383,21 +519,17 @@ const UpdatePlaybooks = () => {
               )}
             </div>
             <div className='playbook-designer__props-body'>
-              <label className='playbook-designer__props-label'>Node Name</label>
-              <input className='form-control form-control-sm' value={currentProps.nodeName || ''} onChange={(event) => handleNodeNameChange(event.target.value)} disabled={isViewMode} />
-              {selectedNode.type === 'actionNode' && (
-                <>
-                  <label className='playbook-designer__props-label mt-3'>Action</label>
-                  <select className='form-select form-select-sm' value={currentProps.actionId || 0} onChange={(event) => handleActionChange(Number(event.target.value))} disabled={isViewMode}>
-                    <option value={0}>Select Action</option>
-                    {actions.map((action) => (
-                      <option key={action.actionId} value={action.actionId}>
-                        {action.actionName || action.name}
-                      </option>
-                    ))}
-                  </select>
-                </>
-              )}
+              <div className='playbook-designer__props-field'>
+                <label className='playbook-designer__props-label'>
+                  Node Name <span className='text-danger'>*</span>
+                </label>
+                <input
+                  className='form-control form-control-sm'
+                  value={currentProps.nodeName || ''}
+                  onChange={(event) => handleNodeNameChange(event.target.value)}
+                  disabled={isViewMode}
+                />
+              </div>
             </div>
           </div>
         )}

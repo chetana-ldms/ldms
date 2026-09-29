@@ -1,5 +1,5 @@
 import React, {useCallback, useRef, useState, useEffect} from 'react'
-import {Link, useNavigate} from 'react-router-dom'
+import {Link, useLocation, useNavigate} from 'react-router-dom'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import ReactFlow, {
@@ -18,7 +18,6 @@ import Sidebar from './Sidebar'
 import {StartNode, EndNode, ActionNode} from './CustomNode'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {fetchRuleActions} from '../../../../../api/ConfigurationApi'
-import {fetchConnectionSearchUrl} from '../../../../../api/ConnectionApi'
 import {fetchGET_ACTION_PARAMETERS_URL} from '../../../../../api/ScriptsApi'
 import {fetchplayBooksCreateUrl} from '../../../../../api/playBookApi'
 import {fetchGetPlaybooksUrl} from '../../../../../api/AlertFieldsApi'
@@ -45,6 +44,7 @@ const getNewId = () => `node_${nodeIdCounter++}`
 // ═══════════════════════════════════════════════════════════════════════════
 const AddPlaybooks = () => {
   const handleError = useErrorBoundary()
+  const location = useLocation()
   const navigate = useNavigate()
 
   const orgId = Number(sessionStorage.getItem('orgId') || 0)
@@ -52,13 +52,11 @@ const AddPlaybooks = () => {
   const userId = Number(sessionStorage.getItem('userId') || 0)
 
   // ── Meta fields ─────────────────────────────────────────────────────────
-  const [playbookName, setPlaybookName] = useState('')
-  const [playbookId, setPlaybookId] = useState('')
-  const [description, setDescription] = useState('')
+  const [playbookName, setPlaybookName] = useState(location.state?.playbookName || '')
+  const [playbookId, setPlaybookId] = useState(String(location.state?.playbookId || ''))
 
   // ── API data ─────────────────────────────────────────────────────────────
   const [actions, setActions] = useState([])
-  const [connections, setConnections] = useState([])
   const [playbooks, setPlaybooks] = useState([])
   const [actionsLoading, setActionsLoading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -71,24 +69,20 @@ const AddPlaybooks = () => {
 
   // ── Selected node & properties panel ────────────────────────────────────
   const [selectedNode, setSelectedNode] = useState(null)
-  const [propTab, setPropTab] = useState('general') // 'general' | 'config'
-  const [bottomTab, setBottomTab] = useState('actions') // 'actions' | 'connections'
 
   // Per-node properties stored by nodeId
   const [nodeProps, setNodeProps] = useState({})
 
   // Parameters for the selected node (fetched from API or user-added)
   const [nodeParams, setNodeParams] = useState([])
-  const [nodeConnections, setNodeConnections] = useState([])
 
   // ── Fetch Action Master & Connections on mount ──────────────────────────
   useEffect(() => {
     const load = async () => {
       setActionsLoading(true)
       try {
-        const [actRes, connRes, playbookRes] = await Promise.allSettled([
+        const [actRes, playbookRes] = await Promise.allSettled([
           fetchRuleActions({orgId, toolId, active: true}),
-          fetchConnectionSearchUrl({orgId, toolId}),
           fetchGetPlaybooksUrl({searchtext: ''}),
         ])
 
@@ -96,24 +90,15 @@ const AddPlaybooks = () => {
           setActions(Array.isArray(actRes.value.actions) ? actRes.value.actions : [])
         }
 
-        if (connRes.status === 'fulfilled' && connRes.value) {
-          const data = connRes.value
-          const list = Array.isArray(data)
-            ? data
-            : Array.isArray(data?.data)
-            ? data.data
-            : Array.isArray(data?.connections)
-            ? data.connections
-            : []
-          setConnections(list)
-        }
-
         if (playbookRes.status === 'fulfilled' && playbookRes.value) {
-          const list = Array.isArray(playbookRes.value?.data) ? playbookRes.value.data : []
+          const list = Array.isArray(playbookRes.value.data) ? playbookRes.value.data : []
           setPlaybooks(list)
-          if (list.length > 0) {
-            setPlaybookId(String(list[0].playbookId))
-            setPlaybookName(list[0].playbookName || list[0].playBookName || '')
+          const selected = list.find(
+            (playbook) => String(playbook.playbookId) === String(location.state?.playbookId)
+          ) || list[0]
+          if (selected) {
+            setPlaybookId(String(selected.playbookId))
+            setPlaybookName(selected.playbookName || selected.playBookName || '')
           }
         }
       } catch (err) {
@@ -129,12 +114,10 @@ const AddPlaybooks = () => {
   useEffect(() => {
     if (!selectedNode) {
       setNodeParams([])
-      setNodeConnections([])
       return
     }
     const saved = nodeProps[selectedNode.id] || {}
     setNodeParams(saved.parameters || [])
-    setNodeConnections(saved.connections || [])
 
     // If the node has an actionId, fetch parameters from API
     const actionId = saved.actionId || selectedNode.data?.actionId || 0
@@ -221,8 +204,6 @@ const AddPlaybooks = () => {
         [newId]: {
           nodeName: nodeData.label,
           actionId: nodeData.actionId || 0,
-          connectionId: 0,
-          nodeDescription: '',
           active: true,
           parameters: [],
           connections: [],
@@ -234,8 +215,6 @@ const AddPlaybooks = () => {
 
   const onNodeClick = useCallback((_, node) => {
     setSelectedNode(node)
-    setPropTab('general')
-    setBottomTab('actions')
   }, [])
 
   const onPaneClick = useCallback(() => {
@@ -294,19 +273,6 @@ const AddPlaybooks = () => {
   }
 
   // ── Connection row changes ───────────────────────────────────────────────
-  const handleNodeConnChange = (idx, field, value) => {
-    const updated = nodeConnections.map((c, i) => (i === idx ? {...c, [field]: value} : c))
-    setNodeConnections(updated)
-    updateNodeProp(selectedNode.id, 'connections', updated)
-  }
-
-  const addNodeConn = () => {
-    const newConn = {connectionId: 0}
-    const updated = [...nodeConnections, newConn]
-    setNodeConnections(updated)
-    updateNodeProp(selectedNode.id, 'connections', updated)
-  }
-
   // ── Build & Save payload ─────────────────────────────────────────────────
   const handleSave = useCallback(async () => {
     if (!playbookName.trim()) {
@@ -333,9 +299,7 @@ const AddPlaybooks = () => {
             parameterValue: p.parameterValue || '',
             valueSource: p.valueSource || 'Static',
           })),
-          connections: (props.connections || []).map((c) => ({
-            connectionId: c.connectionId || 0,
-          })),
+          connections: [],
         }
       })
 
@@ -381,7 +345,30 @@ const AddPlaybooks = () => {
             <span className='playbook-designer__breadcrumb-sep'>&rsaquo;</span>
             <span className='playbook-designer__breadcrumb-current'>Playbook Designer</span>
           </div>
-          <h2 className='playbook-designer__title'>Playbook Designer</h2>
+          <div className='playbook-designer__title-row'>
+            <h2 className='playbook-designer__title'>Playbook Designer</h2>
+            <div className='playbook-designer__meta-field playbook-designer__meta-field--inline'>
+              <label className='playbook-designer__meta-label'>Playbook Name</label>
+              <select
+                className='playbook-designer__meta-input'
+                value={playbookId}
+                onChange={(event) => {
+                  const selected = playbooks.find(
+                    (playbook) => String(playbook.playbookId) === event.target.value
+                  )
+                  setPlaybookId(event.target.value)
+                  setPlaybookName(selected?.playbookName || selected?.playBookName || '')
+                }}
+              >
+                <option value='' disabled>Select playbook</option>
+                {playbooks.map((playbook) => (
+                  <option key={playbook.playbookId} value={playbook.playbookId}>
+                    {playbook.playbookName || playbook.playBookName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
         <div className='playbook-designer__header-actions'>
           <button
@@ -404,42 +391,6 @@ const AddPlaybooks = () => {
       </div>
 
       {/* ── Meta Bar ── */}
-      <div className='playbook-designer__meta-bar'>
-        <div className='playbook-designer__meta-field'>
-          <label className='playbook-designer__meta-label'>Playbook Name</label>
-          <select
-            className='playbook-designer__meta-input'
-            value={playbookId}
-            onChange={(e) => {
-              const selected = playbooks.find(
-                (playbook) => String(playbook.playbookId) === e.target.value
-              )
-              setPlaybookId(e.target.value)
-              setPlaybookName(selected?.playbookName || selected?.playBookName || '')
-            }}
-          >
-            <option value='' disabled>
-              Select playbook
-            </option>
-            {playbooks.map((playbook) => (
-              <option key={playbook.playbookId} value={playbook.playbookId}>
-                {playbook.playbookName || playbook.playBookName}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className='playbook-designer__meta-field playbook-designer__meta-field--wide'>
-          <label className='playbook-designer__meta-label'>Description</label>
-          <input
-            type='text'
-            className='playbook-designer__meta-input'
-            placeholder='Enter description'
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-      </div>
-
       {/* ── Main 3-column layout ── */}
       <div className='playbook-designer__body'>
         {/* LEFT: Sidebar */}
@@ -481,111 +432,10 @@ const AddPlaybooks = () => {
             </ReactFlowProvider>
           </div>
 
-          {/* ── Bottom Tabs: Parameters / Connections ── */}
+          {/* Parameters */}
           {selectedNode && (
             <div className='playbook-designer__bottom-panel'>
-              <div className='playbook-designer__bottom-tabs'>
-                <button
-                  className={`playbook-designer__bottom-tab ${
-                    bottomTab === 'actions' ? 'active' : ''
-                  }`}
-                  onClick={() => setBottomTab('actions')}
-                >
-                  Actions
-                </button>
-                <button
-                  className={`playbook-designer__bottom-tab ${
-                    bottomTab === 'parameters' ? 'active' : ''
-                  }`}
-                  onClick={() => setBottomTab('parameters')}
-                >
-                  Parameters
-                </button>
-                <button
-                  className={`playbook-designer__bottom-tab ${
-                    bottomTab === 'connections' ? 'active' : ''
-                  }`}
-                  onClick={() => setBottomTab('connections')}
-                >
-                  Connections
-                </button>
-              </div>
-
               <div className='playbook-designer__bottom-content'>
-                {/* Actions Tab */}
-                {bottomTab === 'actions' && (
-                  <div className='playbook-designer__bottom-section'>
-                    <div className='playbook-designer__bottom-section-title'>Action Details</div>
-                    <div className='playbook-designer__table-wrap'>
-                      <table className='playbook-designer__table'>
-                        <thead>
-                          <tr>
-                            <th>Parameter Name</th>
-                            <th>Value Source</th>
-                            <th>Parameter Value</th>
-                            <th>Active</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {nodeParams.length === 0 ? (
-                            <tr>
-                              <td colSpan={4} className='text-center text-muted py-3'>
-                                No parameters. Select an action or add manually.
-                              </td>
-                            </tr>
-                          ) : (
-                            nodeParams.map((p, i) => (
-                              <tr key={i}>
-                                <td>{p.parameterName || '—'}</td>
-                                <td>
-                                  <select
-                                    className='form-select form-select-sm'
-                                    value={p.valueSource}
-                                    onChange={(e) =>
-                                      handleParamChange(i, 'valueSource', e.target.value)
-                                    }
-                                  >
-                                    <option value='Static'>Static</option>
-                                    <option value='Dynamic'>Dynamic</option>
-                                  </select>
-                                </td>
-                                <td>
-                                  <input
-                                    type='text'
-                                    className='form-control form-control-sm'
-                                    value={p.parameterValue}
-                                    onChange={(e) =>
-                                      handleParamChange(i, 'parameterValue', e.target.value)
-                                    }
-                                  />
-                                </td>
-                                <td>
-                                  <div className='form-check form-switch'>
-                                    <input
-                                      className='form-check-input'
-                                      type='checkbox'
-                                      checked={!!p.active}
-                                      onChange={(e) =>
-                                        handleParamChange(i, 'active', e.target.checked)
-                                      }
-                                    />
-                                  </div>
-                                </td>
-                              </tr>
-                            ))
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                    <button className='btn btn-sm btn-outline-primary mt-2' onClick={addParam}>
-                      <i className='fas fa-plus me-1' />
-                      Add Parameter
-                    </button>
-                  </div>
-                )}
-
-                {/* Parameters Tab */}
-                {bottomTab === 'parameters' && (
                   <div className='playbook-designer__bottom-section'>
                     <div className='playbook-designer__bottom-section-title'>Parameters</div>
                     <div className='playbook-designer__table-wrap'>
@@ -649,76 +499,15 @@ const AddPlaybooks = () => {
                       Add Parameter
                     </button>
                   </div>
-                )}
 
-                {/* Connections Tab */}
-                {bottomTab === 'connections' && (
-                  <div className='playbook-designer__bottom-section'>
-                    <div className='playbook-designer__bottom-section-title'>Connections</div>
-                    <div className='playbook-designer__table-wrap'>
-                      <table className='playbook-designer__table'>
-                        <thead>
-                          <tr>
-                            <th>Connection Name</th>
-                            <th>Connection Type</th>
-                            <th></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {nodeConnections.length === 0 ? (
-                            <tr>
-                              <td colSpan={3} className='text-center text-muted py-3'>
-                                No connections added.
-                              </td>
-                            </tr>
-                          ) : (
-                            nodeConnections.map((c, i) => {
-                              const conn = connections.find(
-                                (x) => x.connectionId === Number(c.connectionId)
-                              )
-                              return (
-                                <tr key={i}>
-                                  <td>{conn?.connectionName || conn?.name || '—'}</td>
-                                  <td>{conn?.connectionType || '—'}</td>
-                                  <td>
-                                    <button
-                                      className='btn btn-sm btn-outline-danger'
-                                      onClick={() => {
-                                        const upd = nodeConnections.filter((_, idx) => idx !== i)
-                                        setNodeConnections(upd)
-                                        updateNodeProp(selectedNode.id, 'connections', upd)
-                                      }}
-                                    >
-                                      <i className='fas fa-trash' />
-                                    </button>
-                                  </td>
-                                </tr>
-                              )
-                            })
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                    <button className='btn btn-sm btn-outline-primary mt-2' onClick={addNodeConn}>
-                      <i className='fas fa-plus me-1' />
-                      Add Connection
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
           )}
         </div>
 
         {/* RIGHT: Node Properties Panel */}
-        <div className='playbook-designer__props-panel'>
-          {!selectedNode ? (
-            <div className='playbook-designer__props-empty'>
-              <i className='fas fa-mouse-pointer mb-2' style={{fontSize: 24, opacity: 0.3}} />
-              <p className='text-muted'>Click a node to view its properties</p>
-            </div>
-          ) : (
-            <>
+        {selectedNode && (
+          <div className='playbook-designer__props-panel'>
               {/* Props header */}
               <div className='playbook-designer__props-header'>
                 <div className='playbook-designer__props-node-icon'>
@@ -754,20 +543,7 @@ const AddPlaybooks = () => {
                 </button>
               </div>
 
-              {/* Props tabs */}
-              <div className='playbook-designer__props-tabs'>
-                <button
-                  className={`playbook-designer__props-tab ${
-                    propTab === 'general' ? 'active' : ''
-                  }`}
-                  onClick={() => setPropTab('general')}
-                >
-                  General
-                </button>
-              </div>
-
               {/* General tab */}
-              {propTab === 'general' && (
                 <div className='playbook-designer__props-body'>
                   <div className='playbook-designer__props-field'>
                     <label className='playbook-designer__props-label'>
@@ -781,70 +557,9 @@ const AddPlaybooks = () => {
                     />
                   </div>
 
-                  {selectedNode.type === 'actionNode' && (
-                    <div className='playbook-designer__props-field'>
-                      <label className='playbook-designer__props-label'>
-                        Action <span className='text-danger'>*</span>
-                      </label>
-                      <select
-                        className='form-select form-select-sm'
-                        value={currentProps.actionId || 0}
-                        onChange={(e) => handlePropChange('actionId', Number(e.target.value))}
-                      >
-                        <option value={0}>Select Action</option>
-                        {actions.map((a) => (
-                          <option key={a.actionId} value={a.actionId}>
-                            {a.actionName || a.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-
-                  {selectedNode.type === 'actionNode' && (
-                    <div className='playbook-designer__props-field'>
-                      <label className='playbook-designer__props-label'>Connection</label>
-                      <select
-                        className='form-select form-select-sm'
-                        value={currentProps.connectionId || 0}
-                        onChange={(e) => handlePropChange('connectionId', Number(e.target.value))}
-                      >
-                        <option value={0}>Select Connection</option>
-                        {connections.map((c) => (
-                          <option key={c.connectionId} value={c.connectionId}>
-                            {c.connectionName || c.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-
-                  <div className='playbook-designer__props-field'>
-                    <label className='playbook-designer__props-label'>Description</label>
-                    <textarea
-                      className='form-control form-control-sm'
-                      rows={3}
-                      value={currentProps.nodeDescription || ''}
-                      onChange={(e) => handlePropChange('nodeDescription', e.target.value)}
-                    />
-                  </div>
-
-                  <div className='playbook-designer__props-field playbook-designer__props-field--row'>
-                    <label className='playbook-designer__props-label'>Active</label>
-                    <div className='form-check form-switch'>
-                      <input
-                        className='form-check-input'
-                        type='checkbox'
-                        checked={currentProps.active !== false}
-                        onChange={(e) => handlePropChange('active', e.target.checked)}
-                      />
-                    </div>
-                  </div>
                 </div>
-              )}
-            </>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   )
