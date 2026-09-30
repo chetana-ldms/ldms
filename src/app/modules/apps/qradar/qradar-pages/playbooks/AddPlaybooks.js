@@ -18,6 +18,7 @@ import Sidebar from './Sidebar'
 import {StartNode, EndNode, ActionNode} from './CustomNode'
 import {notify, notifyFail} from '../components/notification/Notification'
 import {fetchRuleActions} from '../../../../../api/ConfigurationApi'
+import {fetchConnectionSearchUrl} from '../../../../../api/ConnectionApi'
 import {fetchGET_ACTION_PARAMETERS_URL} from '../../../../../api/ScriptsApi'
 import {fetchplayBooksCreateUrl} from '../../../../../api/playBookApi'
 import {fetchGetPlaybooksUrl} from '../../../../../api/AlertFieldsApi'
@@ -54,10 +55,12 @@ const AddPlaybooks = () => {
   // ── Meta fields ─────────────────────────────────────────────────────────
   const [playbookName, setPlaybookName] = useState(location.state?.playbookName || '')
   const [playbookId, setPlaybookId] = useState(String(location.state?.playbookId || ''))
+  const [connectionId, setConnectionId] = useState('')
 
   // ── API data ─────────────────────────────────────────────────────────────
   const [actions, setActions] = useState([])
   const [playbooks, setPlaybooks] = useState([])
+  const [connections, setConnections] = useState([])
   const [actionsLoading, setActionsLoading] = useState(false)
   const [saving, setSaving] = useState(false)
 
@@ -81,9 +84,10 @@ const AddPlaybooks = () => {
     const load = async () => {
       setActionsLoading(true)
       try {
-        const [actRes, playbookRes] = await Promise.allSettled([
+        const [actRes, playbookRes, connectionRes] = await Promise.allSettled([
           fetchRuleActions({orgId, toolId, active: true}),
           fetchGetPlaybooksUrl({searchtext: ''}),
+          fetchConnectionSearchUrl({searchText: ''}),
         ])
 
         if (actRes.status === 'fulfilled' && actRes.value) {
@@ -100,6 +104,18 @@ const AddPlaybooks = () => {
             setPlaybookId(String(selected.playbookId))
             setPlaybookName(selected.playbookName || selected.playBookName || '')
           }
+        }
+
+        if (connectionRes.status === 'fulfilled' && connectionRes.value) {
+          const response = connectionRes.value
+          const list = Array.isArray(response)
+            ? response
+            : Array.isArray(response.connections)
+            ? response.connections
+            : Array.isArray(response.data)
+            ? response.data
+            : []
+          setConnections(list)
         }
       } catch (err) {
         console.error('Error loading playbook designer data', err)
@@ -305,6 +321,7 @@ const AddPlaybooks = () => {
 
       const payload = {
         playbookId: Number(playbookId),
+        connectionId: Number(connectionId) || 0,
         nodes: nodePayload,
         userId: userId,
       }
@@ -322,7 +339,7 @@ const AddPlaybooks = () => {
     } finally {
       setSaving(false)
     }
-  }, [playbookId, playbookName, nodes, nodeProps, userId, navigate, handleError])
+  }, [playbookId, playbookName, connectionId, nodes, nodeProps, userId, navigate, handleError])
 
   // ── Action name lookup ───────────────────────────────────────────────────
   const getActionName = (actionId) => {
@@ -364,6 +381,21 @@ const AddPlaybooks = () => {
                 {playbooks.map((playbook) => (
                   <option key={playbook.playbookId} value={playbook.playbookId}>
                     {playbook.playbookName || playbook.playBookName}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className='playbook-designer__meta-field playbook-designer__meta-field--inline'>
+              <label className='playbook-designer__meta-label'>Connection</label>
+              <select
+                className='playbook-designer__meta-input'
+                value={connectionId}
+                onChange={(event) => setConnectionId(event.target.value)}
+              >
+                <option value=''>Select connection</option>
+                {connections.map((connection) => (
+                  <option key={connection.connectionId} value={connection.connectionId}>
+                    {connection.connectionName || connection.name || `Connection ${connection.connectionId}`}
                   </option>
                 ))}
               </select>

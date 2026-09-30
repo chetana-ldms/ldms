@@ -16,6 +16,7 @@ import 'reactflow/dist/style.css'
 import Sidebar from './Sidebar'
 import {ActionNode, EndNode, StartNode} from './CustomNode'
 import {fetchRuleActions} from '../../../../../api/ConfigurationApi'
+import {fetchConnectionSearchUrl} from '../../../../../api/ConnectionApi'
 import {fetchGET_ACTION_PARAMETERS_URL} from '../../../../../api/ScriptsApi'
 import {fetchplaybookByIdUrl, fetchPlaybookUpdateUrl} from '../../../../../api/playBookApi'
 import {notify, notifyFail} from '../components/notification/Notification'
@@ -52,6 +53,8 @@ const UpdatePlaybooks = () => {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [playbookName, setPlaybookName] = useState('')
+  const [connectionId, setConnectionId] = useState('')
+  const [connections, setConnections] = useState([])
   const [actions, setActions] = useState([])
   const [actionsLoading, setActionsLoading] = useState(false)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
@@ -65,10 +68,14 @@ const UpdatePlaybooks = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [detailResponse, actionResponse] = await Promise.all([
+        const [detailResult, actionResult, connectionResult] = await Promise.allSettled([
           fetchplaybookByIdUrl({playbookId: Number(id)}),
           fetchRuleActions({active: true}),
+          fetchConnectionSearchUrl({searchText: ''}),
         ])
+        if (detailResult.status === 'rejected') throw detailResult.reason
+        const detailResponse = detailResult.value
+        const actionResponse = actionResult.status === 'fulfilled' ? actionResult.value : null
         const detail = getDetail(detailResponse)
         const detailNodes = Array.isArray(detail?.nodes) ? detail.nodes : []
         const sortedDetailNodes = [...detailNodes].sort(
@@ -101,6 +108,18 @@ const UpdatePlaybooks = () => {
         )
 
         setPlaybookName(detail?.playbookName || detail?.playBookName || '')
+        setConnectionId(String(detail?.connection?.connectionId || detail?.connectionId || ''))
+        if (connectionResult.status === 'fulfilled' && connectionResult.value) {
+          const response = connectionResult.value
+          const connectionList = Array.isArray(response)
+            ? response
+            : Array.isArray(response.connections)
+            ? response.connections
+            : Array.isArray(response.data)
+            ? response.data
+            : []
+          setConnections(connectionList)
+        }
         setNodes(mappedNodes)
         setNodeProps(
           Object.fromEntries(
@@ -301,6 +320,7 @@ const UpdatePlaybooks = () => {
     try {
       const payload = {
         playbookId: Number(id),
+        connectionId: Number(connectionId) || 0,
         nodes: nodes.map((node, index) => {
           const props = nodeProps[node.id] || {}
           return {
@@ -360,7 +380,7 @@ const UpdatePlaybooks = () => {
           </div>
           <div className='playbook-designer__title-row'>
             <h2 className='playbook-designer__title'>{isViewMode ? 'View' : 'Update'} Playbook</h2>
-            <div className='playbook-designer__meta-field playbook-designer__meta-field--inline'>
+            <div className='playbook-designer__meta-field'>
               <label className='playbook-designer__meta-label'>Playbook Name</label>
               <input
                 className='playbook-designer__meta-input'
@@ -368,6 +388,22 @@ const UpdatePlaybooks = () => {
                 onChange={(event) => setPlaybookName(event.target.value)}
                 disabled={isViewMode}
               />
+            </div>
+            <div className='playbook-designer__meta-field'>
+              <label className='playbook-designer__meta-label'>Connection</label>
+              <select
+                className='playbook-designer__meta-input'
+                value={connectionId}
+                onChange={(event) => setConnectionId(event.target.value)}
+                disabled={isViewMode}
+              >
+                <option value=''>Select connection</option>
+                {connections.map((connection) => (
+                  <option key={connection.connectionId} value={connection.connectionId}>
+                    {connection.connectionName || connection.name || `Connection ${connection.connectionId}`}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
