@@ -177,7 +177,7 @@ const AlertFields = () => {
               </div>
               <div className='w-150px'>
                 <select className='form-select form-select-sm' ref={dataTypeRef}>
-                  <option value={0}>Field Type</option>
+                  <option value={0}>Data Type</option>
                   {dropdownData.dataTypes.map((item) => (
                     <option key={item.dataID} value={item.dataID}>
                       {item.dataValue}
@@ -204,6 +204,7 @@ const AlertFields = () => {
           <thead>
             <tr className='fw-bold text-muted bg-blue'>
               <th>Id</th>
+              <th>Field Type</th>
               <th>Field Name</th>
               <th>Data Type</th>
               <th>Tool</th>
@@ -216,6 +217,7 @@ const AlertFields = () => {
               currentItems.map((item, index) => (
                 <tr key={index} className='fs-12'>
                   <td>{item.id}</td>
+                  <td>{item.fieldType}</td>
                   <td>{item.fieldName}</td>
                   <td>
                     {item.dataTypeName ||
