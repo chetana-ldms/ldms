@@ -222,7 +222,6 @@ const AddPlaybooks = () => {
           actionId: nodeData.actionId || 0,
           active: true,
           parameters: [],
-          connections: [],
         },
       }))
     },
@@ -275,6 +274,12 @@ const AddPlaybooks = () => {
     updateNodeProp(selectedNode.id, 'parameters', updated)
   }
 
+  const removeParam = (idx) => {
+    const updated = nodeParams.filter((_, i) => i !== idx)
+    setNodeParams(updated)
+    updateNodeProp(selectedNode.id, 'parameters', updated)
+  }
+
   const addParam = () => {
     const newParam = {
       actionParameterId: 0,
@@ -315,7 +320,6 @@ const AddPlaybooks = () => {
             parameterValue: p.parameterValue || '',
             valueSource: p.valueSource || 'Static',
           })),
-          connections: [],
         }
       })
 
@@ -365,7 +369,9 @@ const AddPlaybooks = () => {
           <div className='playbook-designer__title-row'>
             <h2 className='playbook-designer__title'>Playbook Designer</h2>
             <div className='playbook-designer__meta-field playbook-designer__meta-field--inline'>
-              <label className='playbook-designer__meta-label'>Playbook Name</label>
+              <label className='playbook-designer__meta-label'>
+                Playbook Name <span className='text-danger'>*</span>
+              </label>
               <select
                 className='playbook-designer__meta-input'
                 value={playbookId}
@@ -386,7 +392,9 @@ const AddPlaybooks = () => {
               </select>
             </div>
             <div className='playbook-designer__meta-field playbook-designer__meta-field--inline'>
-              <label className='playbook-designer__meta-label'>Connection</label>
+              <label className='playbook-designer__meta-label'>
+                Connection <span className='text-danger'>*</span>
+              </label>
               <select
                 className='playbook-designer__meta-input'
                 value={connectionId}
@@ -477,6 +485,7 @@ const AddPlaybooks = () => {
                             <th>Parameter Name</th>
                             <th>Value Source</th>
                             <th>Parameter Value</th>
+                            <th>Actions</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -512,13 +521,24 @@ const AddPlaybooks = () => {
                                   onChange={(e) =>
                                     handleParamChange(i, 'parameterValue', e.target.value)
                                   }
-                                />
+                                  />
+                              </td>
+                              <td className='text-center'>
+                                <button
+                                  type='button'
+                                  className='btn btn-sm btn-outline-danger'
+                                  title='Delete parameter'
+                                  aria-label={`Delete parameter ${p.parameterName || i + 1}`}
+                                  onClick={() => removeParam(i)}
+                                >
+                                  <i className='fas fa-trash' />
+                                </button>
                               </td>
                             </tr>
                           ))}
                           {nodeParams.length === 0 && (
                             <tr>
-                              <td colSpan={3} className='text-center text-muted py-3'>
+                              <td colSpan={4} className='text-center text-muted py-3'>
                                 No parameters added.
                               </td>
                             </tr>
