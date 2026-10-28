@@ -160,6 +160,8 @@ import Playbook from './qradar-pages/alert-fields/Playbook'
 import ActionParameter from './qradar-pages/scripts/ActionParameter'
 import UpdateActionParameter from './qradar-pages/scripts/UpdateActionParameter'
 import AddActionParameter from './qradar-pages/scripts/AddActionParameter'
+import ExecutionDetails from './qradar-pages/playbooks/ExecutionDetails'
+import ExecutionHistory from './qradar-pages/playbooks/ExecutionHistory'
 
 
 const QradarPages = () => {
@@ -206,6 +208,8 @@ const QradarPages = () => {
       <Route path='playbooks/:status' element={<Playbooks />} />
       <Route path='addplaybooks' element={<AddPlaybooks />} />
       <Route path='updateplaybooks/:id' element={<UpdatePlaybooks />} />
+      <Route path='execution-history/:status' element={<ExecutionHistory />} />
+      <Route path='execution-details/:id' element={<ExecutionDetails />} />
       <Route path='ldp-tools/:status' element={<LdpTools />} />
       <Route path='ldp-tools/add' element={<AddLdpTools />} />
       <Route path='/ldp-tools/update/:id' element={<UpdateLdpTools />} />

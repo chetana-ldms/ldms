@@ -6,6 +6,8 @@ const playBooksUrl = API.PLAYBOOKS
 const deletePlaybookUrl = API.DELETE_PLAYBOOK
 const playbookByIdUrl = API.PLAYBOOK_BY_ID
 const playbookUpdateUrl = API.PLAYBOOK_UPDATE
+const getExecutionHistoryUrl = "http://10.41.3.232:501/api/AutomationExecution/v1/GetExecutionHistory"
+const getExecutionDetailsUrl = "http://10.41.3.232:501/api/AutomationExecution/v1/GetExecutionDetails"
 
 export const fetchplayBooksCreateUrl = async (data) => {
   try {
@@ -84,6 +86,40 @@ export const fetchplaybookByIdUrl = async (data) => {
 export const fetchPlaybookUpdateUrl = async (data) => {
   try {
     const response = await FetchWithToken(`${playbookUpdateUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      },
+      body: JSON.stringify(data),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchgetExecutionHistoryUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${getExecutionHistoryUrl}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      },
+      body: JSON.stringify(data),
+    })
+
+    const responseData = await response.json()
+    return responseData
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const fetchgetExecutionDetailsUrl = async (data) => {
+  try {
+    const response = await FetchWithToken(`${getExecutionDetailsUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
