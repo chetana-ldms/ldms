@@ -47,8 +47,6 @@ const ApiAuthConfig = ({show, onClose, orgToolID, selectedOrgToolActionId}) => {
     const fetchAllMasterData = async () => {
       const statusDataRequest = {
         maserDataType: 'Api Authentication Type',
-        // orgId: orgId,
-        // toolId: toolId,
         orgId: 0,
         toolId: 0,
       }
