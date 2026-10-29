@@ -9,7 +9,7 @@
   ],
   "whois": {
     "registrar": "NameCheap",
-    "creationDate": "12-4-2025",
+    "creationDate": "29-10-2026",
     "country": "US"
   },
   "dns": {
@@ -28,8 +28,8 @@
       "activity": "Phishing email campaign"
     }
   ],
-  "firstSeen": "19-1-2026 2:00 PM",
-  "lastSeen": "20-1-2026 6:00 AM",
+  "firstSeen": "29-10-2026 2:00 PM",
+  "lastSeen": "30-10-2026 6:00 AM",
   "evidenceSummary": "Used in Office365 credential phishing attacks",
   "confidence": "Medium",
   "recommendation": "Add to blocklist and monitor DNS traffic"

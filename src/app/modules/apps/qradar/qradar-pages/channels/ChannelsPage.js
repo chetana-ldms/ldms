@@ -32,6 +32,7 @@ const NewChannelModal = ({show, onClose, onAdd}) => {
   const channelNames = useRef()
   const channelDescriptions = useRef()
   const [channels, setChannels] = useState([])
+  console.log(channels, 'channels')
   const fetchData = async () => {
     try {
       const data = await fetchChannels(orgId)
