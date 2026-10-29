@@ -13,7 +13,7 @@ import DeleteConfirmation from '../../../../../../utils/DeleteConfirmation'
 import {truncateText} from '../../../../../../utils/TruncateText'
 import {fetchMasterData} from '../../../../../api/Api'
 
-const ApiAuthConfig = ({show, onClose, orgToolID, selectedOrgToolActionId}) => {
+const ApiAuthConfig = ({show, onClose, orgToolID, selectedOrgToolActionId, toolID, orgID}) => {
   const [authType, setAuthType] = useState('')
   const [authName, setAuthName] = useState('')
   const [authKey, setAuthKey] = useState('')
@@ -32,12 +32,10 @@ const ApiAuthConfig = ({show, onClose, orgToolID, selectedOrgToolActionId}) => {
     statusDropDown: [],
   })
 
-  const orgId = Number(sessionStorage.getItem('orgId'))
-  const toolId = Number(sessionStorage.getItem('toolID'))
   const roleId = Number(sessionStorage.getItem('roleID'))
   const featureId = Number(sessionStorage.getItem('selectedFeatureId'))
 
-  const {featureActions} = useFeatureActions(orgId, toolId, roleId, featureId)
+  const {featureActions} = useFeatureActions(orgID, toolID, roleId, featureId)
   const isActionAuthorized = (actionName) => {
     return featureActions?.some(
       (action) => action.actionName === actionName && action.is_authorized === true
@@ -71,8 +69,8 @@ const ApiAuthConfig = ({show, onClose, orgToolID, selectedOrgToolActionId}) => {
     const data = {
       authLevel: selectedOrgToolActionId ? 'Org Tool Action' : 'Org Tool',
       authLevelRefId: selectedOrgToolActionId ? selectedOrgToolActionId : orgToolID,
-      orgId: orgId,
-      toolId: toolId,
+      orgId: orgID,
+      toolId: toolID,
     }
 
     try {
@@ -135,8 +133,8 @@ const ApiAuthConfig = ({show, onClose, orgToolID, selectedOrgToolActionId}) => {
       tenantId,
       clientId,
       clientSecret,
-      orgId: orgId,
-      toolId: toolId,
+      orgId: orgID,
+      toolId: toolID,
       authLevel: selectedOrgToolActionId ? 'Org Tool Action' : 'Org Tool',
       authLevelRefId: selectedOrgToolActionId ? selectedOrgToolActionId : orgToolID,
     }

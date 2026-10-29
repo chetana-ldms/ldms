@@ -375,6 +375,8 @@ const UpdateOrganizationTools = () => {
               onClose={() => setShowModal(false)}
               orgToolID={orgToolID}
               selectedOrgToolActionId={selectedOrgToolActionId}
+              toolID={toolTypeAction.toolID}
+              orgID={toolTypeAction.orgID}
             />
             <div className='d-flex justify-content-end me-5'>
               <button
