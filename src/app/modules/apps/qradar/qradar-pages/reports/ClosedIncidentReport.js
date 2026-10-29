@@ -219,34 +219,42 @@ function ClosedIncidentReport({fromDate, toDate, toolID: parentToolID}) {
 
   return (
     <div>
-      <div className='row bg-heading m-0 align-items-center'>
-        <div className='col-md-6 fs-15 pt-1'>Closed Incidents</div>
-        <div className='col-md-2 d-flex align-items-center'>
-          <label className='me-2 mb-0'>From:</label>
+      <div className='row bg-heading m-0 g-3 px-3 py-3 align-items-end'>
+        <div className='col-12 col-xl-3 fs-15 fw-semibold'>Closed Incidents</div>
+        <div className='col-12 col-sm-6 col-xl-3 d-flex align-items-center gap-2'>
+          <label className='mb-0 text-white flex-shrink-0' htmlFor='closed-incident-start-date'>
+            From
+          </label>
           <input
+            id='closed-incident-start-date'
             type='date'
-            className='form-control form-control-sm'
+            className='form-control form-control-sm flex-grow-1'
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             max={endDate}
           />
         </div>
-        <div className='col-md-2 d-flex align-items-center'>
-          <label className='me-2 mb-0'>To:</label>
+        <div className='col-12 col-sm-6 col-xl-3 d-flex align-items-center gap-2'>
+          <label className='mb-0 text-white flex-shrink-0' htmlFor='closed-incident-end-date'>
+            To
+          </label>
           <input
+            id='closed-incident-end-date'
             type='date'
-            className='form-control form-control-sm'
+            className='form-control form-control-sm flex-grow-1'
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             min={startDate}
             max={today.toISOString().slice(0, 10)}
           />
         </div>
-        <div className='col-md-2 d-flex align-items-center'>
-          <label className='me-2 mb-0'>Tool:</label>
+        <div className='col-12 col-sm-6 col-xl-3 d-flex align-items-center gap-2'>
+          <label className='mb-0 text-white flex-shrink-0' htmlFor='closed-incident-tool'>
+            Tool
+          </label>
           <select
-            className='form-select form-select-sm'
-            style={{width: 'auto', display: 'inline-block'}}
+            id='closed-incident-tool'
+            className='form-select form-select-sm flex-grow-1'
             value={incidentData.toolID}
             onChange={(e) => handleChange(e, 'toolID')}
           >
@@ -266,20 +274,25 @@ function ClosedIncidentReport({fromDate, toDate, toolID: parentToolID}) {
         <p>Error: {error}</p>
       ) : alertData !== null ? (
         <>
-          <div className='export-report mt-5 me-5'>
-            <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
-              <DropdownToggle caret>
-                Export <i className='fa fa-file-export link mg-left-10' />
-              </DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem onClick={exportToExcel}>
-                  Export to CSV <i className='fa fa-file-excel link float-right' />
-                </DropdownItem>
-                <DropdownItem onClick={exportToPDF}>
-                  Export to PDF <i className='fa fa-file-pdf red float-right' />
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+          <div className='d-flex justify-content-end px-3 pt-3'>
+            <div
+              className='export-report'
+              style={{position: 'relative', top: 'auto', right: 'auto', zIndex: 'auto'}}
+            >
+              <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
+                <DropdownToggle caret>
+                  Export <i className='fa fa-file-export link mg-left-10' />
+                </DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem onClick={exportToExcel}>
+                    Export to CSV <i className='fa fa-file-excel link float-right' />
+                  </DropdownItem>
+                  <DropdownItem onClick={exportToPDF}>
+                    Export to PDF <i className='fa fa-file-pdf red float-right' />
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
           </div>
           <CanvasJSChart options={closedoptions} />
         </>
